@@ -4,6 +4,32 @@
 @section('meta_description', Str::limit($property->description, 160))
 @section('og_image', $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png'))
 
+@push('scripts')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "RealEstateListing",
+  "name": "{{ $property->title }}",
+  "description": "{{ Str::limit(strip_tags($property->description), 150) }}",
+  "url": "{{ route('properties.show', $property) }}",
+  "image": "{{ $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png') }}",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ $property->address }}",
+    "addressLocality": "{{ $property->location }}",
+    "addressRegion": "{{ $property->state }}",
+    "addressCountry": "IN"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ $property->price }}",
+    "priceCurrency": "INR",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
+@endpush
+
 @section('content')
 
 <section class="py-8 lg:py-12" id="property-detail">
