@@ -93,6 +93,14 @@ Route::get('/properties', [PropertyController::class, 'index'])->name('propertie
 // Plans browsing (public)
 Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
 
+// Dynamic Sitemap Route
+Route::get('/sitemap.xml', function () {
+    $properties = \App\Models\Property::approved()->latest('updated_at')->get();
+    return response()->view('sitemap', [
+        'properties' => $properties
+    ])->header('Content-Type', 'text/xml');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Guest Routes (not authenticated)
