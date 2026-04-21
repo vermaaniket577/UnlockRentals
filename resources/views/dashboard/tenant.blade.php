@@ -49,7 +49,7 @@
                 <div class="p-6 hover:bg-stone-50/[0.02] transition-colors">
                     <div class="flex gap-4">
                         @if($inquiry->property && $inquiry->property->primaryImage)
-                            <img src="{{ asset('storage/' . $inquiry->property->primaryImage->path) }}" class="w-16 h-16 rounded-sm object-cover border border-stone-200/50 flex-shrink-0" alt="">
+                            <img src="{{ $inquiry->property->primaryImage->imageUrl() }}" class="w-16 h-16 rounded-sm object-cover border border-stone-200/50 flex-shrink-0" alt="">
                         @else
                             <div class="w-16 h-16 rounded-sm bg-stone-50 flex items-center justify-center flex-shrink-0">
                                 <i class="ph ph-image text-zinc-500"></i>

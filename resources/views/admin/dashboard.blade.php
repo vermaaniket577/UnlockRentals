@@ -122,7 +122,7 @@
                 <div class="p-6 hover:bg-stone-50/[0.02] transition-colors">
                     <div class="flex flex-col sm:flex-row gap-4">
                         @if($property->primaryImage)
-                            <img src="{{ asset('storage/' . $property->primaryImage->path) }}" class="w-full sm:w-24 h-32 sm:h-24 rounded-sm object-cover border border-stone-200/50 flex-shrink-0" alt="">
+                            <img src="{{ $property->primaryImage->imageUrl() }}" class="w-full sm:w-24 h-32 sm:h-24 rounded-sm object-cover border border-stone-200/50 flex-shrink-0" alt="">
                         @else
                             <div class="w-full sm:w-24 h-32 sm:h-24 rounded-sm bg-stone-50 flex items-center justify-center flex-shrink-0">
                                 <i class="ph ph-image text-2xl text-zinc-500"></i>

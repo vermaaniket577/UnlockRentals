@@ -22,7 +22,7 @@
             <div class="bg-stone-50 border border-stone-200/50 rounded-sm p-6 hover:border-[#2563EB]/50 transition-all {{ $inquiry->status === 'unread' ? 'border-l-4 border-l-blue-600' : '' }}">
                 <div class="flex flex-col sm:flex-row gap-4">
                     @if($inquiry->property && $inquiry->property->primaryImage)
-                        <img src="{{ asset('storage/' . $inquiry->property->primaryImage->path) }}" class="w-full sm:w-20 h-32 sm:h-20 rounded-sm object-cover border border-stone-200/50 flex-shrink-0" alt="">
+                        <img src="{{ $inquiry->property->primaryImage->imageUrl() }}" class="w-full sm:w-20 h-32 sm:h-20 rounded-sm object-cover border border-stone-200/50 flex-shrink-0" alt="">
                     @endif
                     <div class="flex-1">
                         <div class="flex items-start justify-between gap-2 mb-2">

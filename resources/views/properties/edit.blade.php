@@ -188,7 +188,7 @@
                 <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
                     @foreach($property->images as $image)
                     <div class="relative group">
-                        <img src="{{ asset('storage/' . $image->path) }}" class="w-full h-24 object-cover rounded-sm border border-stone-200/50">
+                        <img src="{{ $image->imageUrl() }}" class="w-full h-24 object-cover rounded-sm border border-stone-200/50">
                         <label class="absolute inset-0 bg-red-500/0 group-hover:bg-red-500/40 rounded-sm flex items-center justify-center cursor-pointer transition-all">
                             <input type="checkbox" name="remove_images[]" value="{{ $image->id }}" class="sr-only peer">
                             <span class="hidden group-hover:flex peer-checked:flex items-center gap-1 text-xs text-zinc-900 font-medium bg-red-500 px-2 py-1 rounded-sm">

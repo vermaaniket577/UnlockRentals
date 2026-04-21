@@ -7,6 +7,20 @@
     <meta name="description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
     <title>@yield('title', 'UnlockRentals - Property Rental Marketplace')</title>
 
+    {{-- Open Graph / Facebook --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', 'UnlockRentals - Property Rental Marketplace')">
+    <meta property="og:description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
+    <meta property="og:image" content="@yield('og_image', asset('images/logo.png'))">
+
+    {{-- Twitter --}}
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="@yield('title', 'UnlockRentals - Property Rental Marketplace')">
+    <meta property="twitter:description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
+    <meta property="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
+
     @php
         $faviconVersion = max(
             file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : 0,

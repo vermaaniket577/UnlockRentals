@@ -194,10 +194,12 @@ class PropertyController extends Controller
         // Handle image uploads
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('properties/' . $property->id, 'public');
+                $binaryData = file_get_contents($image->getRealPath());
+                
                 PropertyImage::create([
                     'property_id' => $property->id,
-                    'path' => $path,
+                    'path' => null, // Store completely as binary data in the database
+                    'image_data' => $binaryData,
                     'is_primary' => ($index === (int) $request->get('primary_image', 0)),
                     'sort_order' => $index,
                 ]);
@@ -251,10 +253,12 @@ class PropertyController extends Controller
         if ($request->hasFile('images')) {
             $maxOrder = $property->images()->max('sort_order') ?? -1;
             foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('properties/' . $property->id, 'public');
+                $binaryData = file_get_contents($image->getRealPath());
+                
                 PropertyImage::create([
                     'property_id' => $property->id,
-                    'path' => $path,
+                    'path' => null, // Exclusively binary dataset
+                    'image_data' => $binaryData,
                     'is_primary' => false,
                     'sort_order' => $maxOrder + $index + 1,
                 ]);

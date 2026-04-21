@@ -54,7 +54,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     @if($property->primaryImage)
-                                        <img src="{{ asset('storage/' . $property->primaryImage->path) }}" class="w-10 h-10 rounded-sm object-cover border border-stone-200/50" alt="">
+                                        <img src="{{ $property->primaryImage->imageUrl() }}" class="w-10 h-10 rounded-sm object-cover border border-stone-200/50" alt="">
                                     @else
                                         <div class="w-10 h-10 rounded-sm bg-stone-50 flex items-center justify-center">
                                             <i class="ph ph-image text-zinc-500 text-sm"></i>

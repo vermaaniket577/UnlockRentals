@@ -83,6 +83,26 @@ Route::get('/', function(Illuminate\Http\Request $request) {
     return view('welcome', compact('featuredRentals'));
 })->name('home');
 
+// Serve a property image directly from binary DB data
+Route::get('/property-image/{id}', function ($id) {
+    $image = \App\Models\PropertyImage::findOrFail($id);
+
+    if (empty($image->image_data)) {
+        abort(404);
+    }
+
+    // Detect MIME type from the binary data
+    $finfo = new \finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->buffer($image->image_data);
+    if (!$mimeType || !str_starts_with($mimeType, 'image/')) {
+        $mimeType = 'image/jpeg';
+    }
+
+    return response($image->image_data, 200)
+        ->header('Content-Type', $mimeType)
+        ->header('Cache-Control', 'public, max-age=604800, immutable');
+})->name('property.image');
+
 Route::post('/feedback', [\App\Http\Controllers\SupportController::class, 'storeFeedback'])->name('feedback.store');
 Route::post('/chatbot/save', [\App\Http\Controllers\SupportController::class, 'saveChatMessage'])->name('chatbot.save');
 Route::post('/chatbot/callback', [\App\Http\Controllers\SupportController::class, 'requestCallback'])->name('chatbot.callback');

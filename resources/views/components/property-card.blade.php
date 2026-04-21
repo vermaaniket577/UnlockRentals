@@ -5,7 +5,7 @@
     {{-- Image Section --}}
     <div class="card-img-wrap">
         @if($property->primaryImage)
-            <img src="{{ asset('storage/' . $property->primaryImage->path) }}"
+            <img src="{{ $property->primaryImage->imageUrl() }}"
                  alt="{{ $property->title }}"
                  loading="lazy">
         @else

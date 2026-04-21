@@ -2,6 +2,7 @@
 
 @section('title', $property->title . ' - UnlockRentals')
 @section('meta_description', Str::limit($property->description, 160))
+@section('og_image', $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png'))
 
 @section('content')
 
@@ -25,7 +26,7 @@
                     @if($property->images->count() > 0)
                         {{-- Main Image --}}
                         <div class="relative h-72 sm:h-96 lg:h-[500px] rounded-sm overflow-hidden mb-3" id="gallery-main">
-                            <img src="{{ asset('storage/' . ($property->images->where('is_primary', true)->first()?->path ?? $property->images->first()->path)) }}"
+                            <img src="{{ ($property->images->where('is_primary', true)->first() ?? $property->images->first())->imageUrl() }}"
                                  alt="{{ $property->title }}"
                                  class="w-full h-full object-cover"
                                  id="gallery-main-img">
@@ -52,9 +53,9 @@
                         @if($property->images->count() > 1)
                         <div class="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-2" id="gallery-thumbs">
                             @foreach($property->images as $image)
-                            <button onclick="document.getElementById('gallery-main-img').src='{{ asset('storage/' . $image->path) }}'"
+                            <button onclick="document.getElementById('gallery-main-img').src='{{ $image->imageUrl() }}'"
                                     class="h-20 rounded-sm overflow-hidden border-2 border-transparent hover:border-[#2563EB]/50 transition-all focus:border-[#2563EB]/50 focus:outline-none">
-                                <img src="{{ asset('storage/' . $image->path) }}" alt="" class="w-full h-full object-cover">
+                                <img src="{{ $image->imageUrl() }}" alt="" class="w-full h-full object-cover">
                             </button>
                             @endforeach
                         </div>

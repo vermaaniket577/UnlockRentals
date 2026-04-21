@@ -4,6 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Unlock Rental | Premium Real Estate</title>
+    <meta name="description" content="UnlockRental - Find your perfect house or shop for rent in India. Browse thousands of verified luxury rentals with advanced search filters.">
+
+    {{-- Open Graph / Facebook --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="Unlock Rental | Premium Real Estate">
+    <meta property="og:description" content="Find your perfect house or shop for rent in India. Browse thousands of verified luxury rentals.">
+    <meta property="og:image" content="{{ asset('images/logo.png') }}">
+
+    {{-- Twitter --}}
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="Unlock Rental | Premium Real Estate">
+    <meta property="twitter:description" content="Find your perfect house or shop for rent in India. Browse thousands of verified luxury rentals.">
+    <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
