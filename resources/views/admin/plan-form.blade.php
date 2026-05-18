@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', ($plan ? 'Edit' : 'Create') . ' Plan - Admin')
 

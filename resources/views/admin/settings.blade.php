@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Manage Settings & Social Content - Admin')
 
@@ -264,10 +264,89 @@
                                 <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2563EB]"></div>
                             </label>
                         </div>
+                        <div class="flex items-center justify-between p-4 bg-stone-50 rounded-sm border border-stone-100">
+                            <div>
+                                <h4 class="text-sm font-bold text-zinc-900 uppercase tracking-wider">Bypass Approval</h4>
+                                <p class="text-xs text-zinc-500">Auto-approve all new property submissions directly</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="bypass_property_approval" value="1" {{ ($settings['bypass_property_approval'] ?? '0') == '1' ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2563EB]"></div>
+                            </label>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Bot Welcome Message</label>
                         <textarea name="bot_welcome_message" rows="4" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]" placeholder="Hi there! 👋 Welcome to Unlock Rental. How can I assist you with your property search today?">{{ $settings['bot_welcome_message'] ?? '' }}</textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Bot Auto-Responses (One per line)</label>
+                        <p class="text-[11px] text-zinc-500 mb-2">These are the random dynamic responses the bot will use when a user asks a general question.</p>
+                        <textarea name="bot_auto_responses" rows="5" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]" placeholder="That's a great question! Let me check our premium listings for you.
+I can certainly help you with that. Would you like to see properties in a specific city?
+One of our agents will be happy to assist you further. Shall I book a callback for you?
+Unlock Rental offers the best verified properties in India. You're in good hands!">{{ $settings['bot_auto_responses'] ?? "That's a great question! Let me check our premium listings for you.\nI can certainly help you with that. Would you like to see properties in a specific city?\nOne of our agents will be happy to assist you further. Shall I book a callback for you?\nUnlock Rental offers the best verified properties in India. You're in good hands!" }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Home Page & Resources Management --}}
+            <div class="bg-white border border-stone-200 rounded-sm p-6 shadow-sm shadow-stone-100/50">
+                <h2 class="text-xl font-serif font-light text-zinc-900 mb-6 flex items-center gap-2">
+                    <i class="ph ph-layout text-[#2563EB]"></i> Home Page & Resources
+                </h2>
+                
+                <div class="space-y-10">
+                    {{-- How It Works --}}
+                    <div>
+                        <h3 class="text-sm font-bold text-zinc-900 mb-4 border-b border-stone-100 pb-2 uppercase tracking-wider">Step-by-Step Journey (How It Works)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-4">
+                                <label class="block text-[10px] font-black text-blue-600 uppercase tracking-widest">Step 01: Discover</label>
+                                <input type="text" name="how_it_works_1_title" value="{{ $settings['how_it_works_1_title'] ?? 'Discover' }}" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]" placeholder="Title">
+                                <textarea name="how_it_works_1_desc" rows="2" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-xs focus:outline-none focus:border-[#2563EB]" placeholder="Description">{{ $settings['how_it_works_1_desc'] ?? 'Browse our curated registry of premium properties with intelligent filters.' }}</textarea>
+                            </div>
+                            <div class="space-y-4">
+                                <label class="block text-[10px] font-black text-blue-600 uppercase tracking-widest">Step 02: Concierge</label>
+                                <input type="text" name="how_it_works_2_title" value="{{ $settings['how_it_works_2_title'] ?? 'Concierge' }}" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]" placeholder="Title">
+                                <textarea name="how_it_works_2_desc" rows="2" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-xs focus:outline-none focus:border-[#2563EB]" placeholder="Description">{{ $settings['how_it_works_2_desc'] ?? 'Connect directly with owners or leverage our elite concierge for viewing support.' }}</textarea>
+                            </div>
+                            <div class="space-y-4">
+                                <label class="block text-[10px] font-black text-blue-600 uppercase tracking-widest">Step 03: Finalize</label>
+                                <input type="text" name="how_it_works_3_title" value="{{ $settings['how_it_works_3_title'] ?? 'Finalize' }}" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]" placeholder="Title">
+                                <textarea name="how_it_works_3_desc" rows="2" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-xs focus:outline-none focus:border-[#2563EB]" placeholder="Description">{{ $settings['how_it_works_3_desc'] ?? 'Complete digital legal paperwork securely and move into your new luxury space.' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Resource Directory Tags --}}
+                    <div>
+                        <h3 class="text-sm font-bold text-zinc-900 mb-4 border-b border-stone-100 pb-2 uppercase tracking-wider">Resource Directory Tags</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Buy Services Tags (Comma Separated)</label>
+                                <textarea name="directory_buy_tags" rows="6" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-xs focus:outline-none focus:border-[#2563EB]" placeholder="Legal Services, Interiors, ...">{{ $settings['directory_buy_tags'] ?? 'Property Legal Services, Interiors, Sale Agreement, NoBroker For NRIs, New Builder Project, Home Loan EMI Calculator, Home Loan Balance Transfer, Home Loan Eligibility Calculator, Apply Home Loan, Compare Home Loan Interest, Property Buyers Forum, Property Buyers Guide, Property Seller Guide, Home Loan Guide, Home Loan Queries, Home Renovation Guide, Home Renovation Queries, Interior Design Tips, Interior Design Queries, NRI RealEstate Guide, NRI RealEstate Queries, Realestate Vastu Guide, Personal Loan Guide, Personal Loan Queries, Bill Payment Guide, Realestate Legal Guide, Realestate Legal Queries, e-AASTHI BBMP, Due Diligence Service' }}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Rent Services Tags (Comma Separated)</label>
+                                <textarea name="directory_rent_tags" rows="6" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-xs focus:outline-none focus:border-[#2563EB]" placeholder="Rental Agreement, Packers & Movers, ...">{{ $settings['directory_rent_tags'] ?? 'Rental Agreement, Pay Tuition Fee, Refer and Earn, Packers and Movers, Property Management in India, Home Services Questions, Rent Services Questions, Rent Calculator, Property Rental Guide, Landlord Guide, Tenant Guide, Packers and Movers Guide, Packers and Movers queries, Home Services, Home Services Queries, Painting Services, Home Painting Guide, Home Painting Queries, Cleaning Services, Kitchen Cleaning Services, Sofa Cleaning Services, Bathroom Cleaning Services, Full House Cleaning Services, Home Cleaning Guide, Home Cleaning Queries, AC Services, Carpentry Services, Carpentry Services Queries, Electrician Services, Electrician Services Queries, Plumbing Services, Plumbing Services Queries, Lease Agreement, Notary, Notary Advocate, Notary Affidavit' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Mobile App Links --}}
+                    <div>
+                        <h3 class="text-sm font-bold text-zinc-900 mb-4 border-b border-stone-100 pb-2 uppercase tracking-wider">Mobile App Distribution</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Google Play URL</label>
+                                <input type="url" name="app_google_play_url" value="{{ $settings['app_google_play_url'] ?? '#' }}" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Apple App Store URL</label>
+                                <input type="url" name="app_store_url" value="{{ $settings['app_store_url'] ?? '#' }}" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,403 +1,223 @@
 {{-- ============================================================
-     UNLOCK RENTAL — PREMIUM PAGE LOADER
-     Triggered on: form submit, nav clicks, page transitions
+     UNLOCK RENTAL — INTERACTIVE ANIMATED ILLUSTRATIVE LOADER
+     A high-end, glassmorphic full-screen transition overlay
+     coupled with an interactive, animated illustrative SVG and
+     dynamic cycling text lines for ultimate perceived premium quality.
      ============================================================ --}}
 
-{{-- Loader HTML --}}
-<div id="ur-loader" aria-label="Loading" role="status" aria-live="polite">
-    {{-- Backdrop --}}
-    <div class="ur-loader__backdrop"></div>
-
-    {{-- Core card --}}
-    <div class="ur-loader__card">
-
-        {{-- Animated building icon --}}
-        <div class="ur-loader__icon-wrap">
-            <svg class="ur-loader__building" viewBox="0 0 64 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {{-- Building body --}}
-                <rect class="ur-b-fill" x="8"  y="28" width="48" height="44" rx="3"/>
-                {{-- Roof / triangle --}}
-                <polygon class="ur-b-roof" points="4,30 32,6 60,30"/>
-                {{-- Door --}}
-                <rect class="ur-b-door" x="26" y="54" width="12" height="18" rx="2"/>
-                {{-- Windows row 1 --}}
-                <rect class="ur-b-win ur-win-delay-0" x="13" y="36" width="9" height="9" rx="1.5"/>
-                <rect class="ur-b-win ur-win-delay-1" x="27" y="36" width="9" height="9" rx="1.5"/>
-                <rect class="ur-b-win ur-win-delay-2" x="41" y="36" width="9" height="9" rx="1.5"/>
-                {{-- Windows row 2 --}}
-                <rect class="ur-b-win ur-win-delay-3" x="13" y="50" width="9" height="9" rx="1.5"/>
-                <rect class="ur-b-win ur-win-delay-4" x="41" y="50" width="9" height="9" rx="1.5"/>
-            </svg>
-
-            {{-- Spinning ring --}}
-            <svg class="ur-loader__ring" viewBox="0 0 100 100" fill="none">
-                <circle class="ur-ring-track" cx="50" cy="50" r="44" stroke-width="4"/>
-                <circle class="ur-ring-arc"   cx="50" cy="50" r="44" stroke-width="4"
-                        stroke-linecap="round"
-                        stroke-dasharray="60 216"
-                        stroke-dashoffset="0"/>
-            </svg>
-        </div>
-
-        {{-- Brand name --}}
-        <div class="ur-loader__brand">
-            <span class="ur-brand-unlock">Unlock</span><span class="ur-brand-rental">Rental</span>
-        </div>
-
-        {{-- Dynamic status line --}}
-        <p class="ur-loader__status" id="ur-status-text">Finding premium spaces&hellip;</p>
-
-        {{-- Progress bar --}}
-        <div class="ur-loader__progress-track">
-            <div class="ur-loader__progress-fill" id="ur-progress-bar"></div>
-        </div>
-
-        {{-- Floating golden dots --}}
-        <div class="ur-loader__dots">
-            <span class="ur-dot"></span>
-            <span class="ur-dot"></span>
-            <span class="ur-dot"></span>
-        </div>
-    </div>
-</div>
-
-{{-- ============================================================
-     STYLES
-     ============================================================ --}}
 <style>
-/* ---------- Variables ---------- */
-:root {
-    --ldr-gold:        #2563EB;
-    --ldr-gold-light:  rgba(37,99,235,.15);
-    --ldr-gold-glow:   rgba(37,99,235,.4);
-    --ldr-dark:        #09090b;
-    --ldr-card-bg:     rgba(10,10,12,.92);
-    --ldr-shine:       rgba(255,255,255,.06);
-}
-
-/* ---------- Overlay ---------- */
-#ur-loader {
+/* ── Progress Bar ────────────────────────────── */
+#ur-progress-bar-top {
     position: fixed;
-    inset: 0;
-    z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .35s ease;
-}
-#ur-loader.ur-loader--visible {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.ur-loader__backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(5,5,7,.78);
-    backdrop-filter: blur(14px) saturate(1.6);
-    -webkit-backdrop-filter: blur(14px) saturate(1.6);
-}
-
-/* ---------- Card ---------- */
-.ur-loader__card {
-    position: relative;
-    z-index: 1;
-    width: 260px;
-    padding: 42px 32px 36px;
-    background: var(--ldr-card-bg);
-    border: 1px solid rgba(201,160,80,.22);
-    border-radius: 24px;
-    box-shadow:
-        0 40px 120px rgba(0,0,0,.7),
-        0 0 0 1px rgba(255,255,255,.045) inset,
-        0 0 60px var(--ldr-gold-glow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    transform: translateY(22px) scale(.96);
-    transition: transform .4s cubic-bezier(.34,1.56,.64,1);
-    overflow: hidden;
-}
-.ur-loader__card::before {                 /* subtle shine stripe */
-    content: '';
-    position: absolute;
-    top: 0; left: -60%;
-    width: 55%; height: 100%;
-    background: linear-gradient(105deg, transparent, var(--ldr-shine), transparent);
-    animation: ur-card-shine 3.2s ease infinite;
-}
-#ur-loader.ur-loader--visible .ur-loader__card {
-    transform: translateY(0) scale(1);
-}
-
-/* ---------- Icon wrap ---------- */
-.ur-loader__icon-wrap {
-    position: relative;
-    width: 108px;
-    height: 108px;
-    margin-bottom: 22px;
-    flex-shrink: 0;
-}
-
-/* Building SVG */
-.ur-loader__building {
-    position: absolute;
-    inset: 14px;
-    width: calc(100% - 28px);
-    height: calc(100% - 28px);
-    filter: drop-shadow(0 0 8px var(--ldr-gold-glow));
-}
-.ur-b-fill  { fill: rgba(201,160,80,.12); stroke: var(--ldr-gold); stroke-width: 1.5; }
-.ur-b-roof  { fill: none; stroke: var(--ldr-gold); stroke-width: 1.5; stroke-linejoin: round; }
-.ur-b-door  { fill: rgba(201,160,80,.18); stroke: var(--ldr-gold); stroke-width: 1.2; }
-.ur-b-win   {
-    fill: var(--ldr-gold-light);
-    stroke: var(--ldr-gold);
-    stroke-width: 1;
-    animation: ur-win-blink 2.4s ease-in-out infinite;
-}
-.ur-win-delay-0 { animation-delay: 0s; }
-.ur-win-delay-1 { animation-delay: .25s; }
-.ur-win-delay-2 { animation-delay: .5s; }
-.ur-win-delay-3 { animation-delay: .15s; }
-.ur-win-delay-4 { animation-delay: .65s; }
-
-@keyframes ur-win-blink {
-    0%, 100% { fill: var(--ldr-gold-light); }
-    50%       { fill: rgba(201,160,80,.55);  }
-}
-
-/* Spinning ring SVG */
-.ur-loader__ring {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    animation: ur-ring-spin 1.6s linear infinite;
-}
-.ur-ring-track { stroke: rgba(201,160,80,.12); }
-.ur-ring-arc   {
-    stroke: var(--ldr-gold);
-    stroke-dasharray: 72 216;
-    animation: ur-arc-chase 1.6s ease-in-out infinite;
-    filter: drop-shadow(0 0 4px var(--ldr-gold));
-}
-@keyframes ur-ring-spin {
-    to { transform: rotate(360deg); transform-origin: 50px 50px; }
-}
-@keyframes ur-arc-chase {
-    0%   { stroke-dashoffset: 0;    stroke-dasharray: 20 260; }
-    40%  { stroke-dashoffset: -60;  stroke-dasharray: 90 190; }
-    80%  { stroke-dashoffset: -200; stroke-dasharray: 60 220; }
-    100% { stroke-dashoffset: -271; stroke-dasharray: 20 260; }
-}
-
-/* ---------- Brand ---------- */
-.ur-loader__brand {
-    font-family: 'Outfit', 'Inter', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -.4px;
-    margin-bottom: 10px;
-}
-.ur-brand-unlock  { color: #fff; }
-.ur-brand-rental  { color: var(--ldr-gold); }
-
-/* ---------- Status text ---------- */
-.ur-loader__status {
-    font-family: 'Inter', sans-serif;
-    font-size: 12.5px;
-    color: rgba(255,255,255,.48);
-    text-align: center;
-    letter-spacing: .2px;
-    margin-bottom: 20px;
-    min-height: 18px;
-    transition: opacity .3s;
-}
-
-/* ---------- Progress bar ---------- */
-.ur-loader__progress-track {
-    width: 100%;
-    height: 3px;
-    background: rgba(255,255,255,.07);
-    border-radius: 99px;
-    overflow: hidden;
-    margin-bottom: 22px;
-}
-.ur-loader__progress-fill {
-    height: 100%;
+    top: 0;
+    left: 0;
     width: 0%;
-    background: linear-gradient(90deg, #60a5fa, var(--ldr-gold));
-    border-radius: 99px;
-    box-shadow: 0 0 8px var(--ldr-gold-glow);
-    transition: width .4s ease;
+    height: 3.5px;
+    background: linear-gradient(90deg, #2563EB, #a855f7, #2563EB);
+    background-size: 200% 100%;
+    z-index: 9999999;
+    opacity: 0;
+    transition: opacity 0.15s ease, width 0.3s ease;
+    animation: ur-shimmer 1.2s infinite linear;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.6), 0 0 4px rgba(168, 85, 247, 0.4);
 }
 
-/* ---------- Bouncing dots ---------- */
-.ur-loader__dots {
-    display: flex;
-    gap: 7px;
-    align-items: center;
-}
-.ur-dot {
-    display: block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--ldr-gold);
-    animation: ur-dot-bounce .9s ease-in-out infinite;
-    box-shadow: 0 0 6px var(--ldr-gold-glow);
-}
-.ur-dot:nth-child(1) { animation-delay: 0s; }
-.ur-dot:nth-child(2) { animation-delay: .15s; }
-.ur-dot:nth-child(3) { animation-delay: .3s; }
-@keyframes ur-dot-bounce {
-    0%,80%,100% { transform: translateY(0);   opacity: .5; }
-    40%          { transform: translateY(-7px); opacity: 1;  }
+#ur-progress-bar-top.ur-active {
+    opacity: 1;
 }
 
-/* ---------- Shine keyframe ---------- */
-@keyframes ur-card-shine {
-    0%   { left: -60%; }
-    60%  { left: 120%; }
-    100% { left: 120%; }
+@keyframes ur-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Glassmorphic Loader Overlay */
+#ur-animated-loader {
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#ur-animated-loader.ur-loading-active {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/* Pulsing particles */
+@keyframes ur-pulse-glow {
+    0%, 100% { transform: scale(1); opacity: 0.15; }
+    50% { transform: scale(1.15); opacity: 0.35; }
+}
+.ur-glow-back {
+    animation: ur-pulse-glow 4s ease-in-out infinite;
 }
 </style>
 
-{{-- ============================================================
-     SCRIPT — loader controller
-     ============================================================ --}}
+{{-- Top Slim Progress Bar --}}
+<div id="ur-progress-bar-top"></div>
+
+{{-- Fullscreen Luxury Overlay --}}
+<div id="ur-animated-loader" class="fixed inset-0 bg-zinc-950/80 backdrop-blur-md z-[9999998] flex flex-col items-center justify-center opacity-0">
+    <div class="relative bg-zinc-900/90 border border-zinc-800 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full text-center mx-4 overflow-hidden">
+        
+        {{-- Shimmer Background layer --}}
+        <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+        
+        {{-- Interactive Animated Illustration --}}
+        <div class="relative z-10 w-28 h-28 mb-6 flex items-center justify-center">
+            {{-- Outer glow ring --}}
+            <div class="absolute inset-0 bg-blue-500/20 rounded-full filter blur-xl ur-glow-back"></div>
+            
+            {{-- Dotted spinning orbits --}}
+            <div class="absolute w-24 h-24 border border-dashed border-zinc-700 rounded-full animate-[spin_12s_linear_infinite]"></div>
+            <div class="absolute w-20 h-20 border border-dashed border-blue-500/30 rounded-full animate-[spin_8s_linear_infinite_reverse]"></div>
+            <div class="absolute w-16 h-16 border-2 border-dashed border-purple-500/20 rounded-full animate-[spin_4s_linear_infinite]"></div>
+            
+            {{-- Core illustrative SVG lock / key / luxury house --}}
+            <div class="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 transform transition-transform duration-300 hover:scale-110">
+                <svg class="w-6 h-6 text-white animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+            </div>
+        </div>
+
+        {{-- Progress Line --}}
+        <div class="relative z-10 w-full bg-zinc-800 rounded-full h-1 mb-4 overflow-hidden">
+            <div id="ur-loader-progress-line" class="bg-gradient-to-r from-blue-500 to-purple-500 h-full w-0 transition-all duration-300 ease-out"></div>
+        </div>
+
+        {{-- Interactive illustrative labels --}}
+        <h3 class="relative z-10 text-white font-semibold text-xs tracking-[0.2em] mb-1 font-sans uppercase">UnlockRentals</h3>
+        <p id="ur-loader-status-text" class="relative z-10 text-[10px] text-zinc-400 font-mono tracking-tight h-4">Preparing secure dashboard...</p>
+    </div>
+</div>
+
 <script>
 (function () {
     'use strict';
 
-    /* ── State ── */
-    const MESSAGES = [
-        'Finding premium spaces\u2026',
-        'Curating luxury listings\u2026',
-        'Verifying properties\u2026',
-        'Almost ready\u2026',
-        'Loading your results\u2026',
+    const bar       = document.getElementById('ur-progress-bar-top');
+    const overlay   = document.getElementById('ur-animated-loader');
+    const line      = document.getElementById('ur-loader-progress-line');
+    const textLabel = document.getElementById('ur-loader-status-text');
+
+    let timer         = null;
+    let textTimer     = null;
+    let fakeWidth     = 0;
+    let started       = false;
+
+    const phrases = [
+        "Connecting to secure gateway...",
+        "Syncing real-estate directory...",
+        "Fetching luxury listings...",
+        "Securing active database nodes...",
+        "Generating dynamic UI layout...",
+        "Authenticating credentials...",
+        "Optimizing interface caching..."
     ];
 
-    let _progressTimer  = null;
-    let _progress       = 0;
-    let _messageTimer   = null;
-    let _msgIdx         = 0;
+    function cycleStatusText() {
+        let index = 0;
+        textLabel.textContent = phrases[0];
+        textTimer = setInterval(() => {
+            index = (index + 1) % phrases.length;
+            textLabel.textContent = phrases[index];
+        }, 1200);
+    }
 
-    const loaderEl   = document.getElementById('ur-loader');
-    const progressEl = document.getElementById('ur-progress-bar');
-    const statusEl   = document.getElementById('ur-status-text');
+    function start() {
+        if (started) return;
+        started   = true;
+        fakeWidth = 0;
+        
+        clearInterval(timer);
+        clearInterval(textTimer);
 
-    /* ── Show ── */
-    function showLoader(message) {
-        if (!loaderEl) return;
-        _progress = 0;
-        _msgIdx   = 0;
+        // Reset elements
+        bar.style.width  = '0%';
+        line.style.width = '0%';
+        bar.classList.add('ur-active');
+        overlay.classList.add('ur-loading-active');
 
-        if (progressEl) progressEl.style.width = '0%';
-        if (statusEl)   statusEl.textContent    = message || MESSAGES[0];
+        cycleStatusText();
 
-        loaderEl.classList.add('ur-loader--visible');
-
-        // Animate progress bar
-        _progressTimer = setInterval(() => {
-            if (_progress < 85) {
-                _progress += Math.random() * 8 + 2;
-                if (_progress > 85) _progress = 85;
-                if (progressEl) progressEl.style.width = _progress + '%';
+        // Fake incremental progress
+        timer = setInterval(() => {
+            if (fakeWidth < 88) {
+                fakeWidth += (88 - fakeWidth) * 0.08 + 0.6;
+                bar.style.width  = fakeWidth + '%';
+                line.style.width = fakeWidth + '%';
             }
-        }, 320);
-
-        // Rotate status messages
-        _messageTimer = setInterval(() => {
-            _msgIdx = (_msgIdx + 1) % MESSAGES.length;
-            if (statusEl) statusEl.textContent = MESSAGES[_msgIdx];
-        }, 2200);
+        }, 90);
     }
 
-    /* ── Hide ── */
-    function hideLoader() {
-        clearInterval(_progressTimer);
-        clearInterval(_messageTimer);
-        if (progressEl) progressEl.style.width = '100%';
+    function done() {
+        clearInterval(timer);
+        clearInterval(textTimer);
+
+        bar.style.width  = '100%';
+        line.style.width = '100%';
+        textLabel.textContent = "Interface synchronized successfully!";
+
         setTimeout(() => {
-            if (loaderEl) loaderEl.classList.remove('ur-loader--visible');
-            if (progressEl) progressEl.style.width = '0%';
-        }, 380);
+            bar.classList.remove('ur-active');
+            overlay.classList.remove('ur-loading-active');
+            
+            setTimeout(() => {
+                bar.style.width  = '0%';
+                line.style.width = '0%';
+                started = false;
+            }, 300);
+        }, 400);
     }
 
-    /* ── Expose globally ── */
-    window.URLoader = { show: showLoader, hide: hideLoader };
+    window.URLoader = { show: start, hide: done };
 
-    /* ════════════════════════════════════════
-       AUTO-BIND: Form submits → show loader
-       ════════════════════════════════════════ */
-    document.addEventListener('submit', function (e) {
-        const form = e.target;
-
-        // Skip forms that handle their own loading state (e.g. chatbot)
-        if (form.dataset.urLoaderSkip === 'true') return;
-        // Skip forms that use AJAX (no hard navigation)
-        if (form.dataset.urLoaderAjax === 'true') return;
-
-        const method = (form.method || 'GET').toUpperCase();
-        const customMsg = form.dataset.urLoaderMsg;
-
-        let msg = customMsg;
-        if (!msg) {
-            if (method === 'GET')  msg = 'Searching properties\u2026';
-            else                   msg = 'Submitting your request\u2026';
-        }
-        showLoader(msg);
-    }, true);
-
-    /* ════════════════════════════════════════
-       AUTO-BIND: Navigation link clicks
-       ════════════════════════════════════════ */
+    // Trigger on all internal link clicks
     document.addEventListener('click', function (e) {
         const link = e.target.closest('a[href]');
         if (!link) return;
-
         const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript') || link.target === '_blank') return;
 
-        // Skip: anchors, javascript:, external, data attributes
-        if (!href
-            || href.startsWith('#')
-            || href.startsWith('javascript')
-            || href.startsWith('mailto')
-            || href.startsWith('tel')
-            || link.target === '_blank'
-            || link.dataset.urLoaderSkip === 'true'
-        ) return;
-
-        // Skip external URLs
         try {
             const url = new URL(href, window.location.origin);
             if (url.origin !== window.location.origin) return;
+            if (url.pathname === window.location.pathname && url.search === window.location.search) return;
         } catch (_) { return; }
 
-        const customMsg = link.dataset.urLoaderMsg;
-        showLoader(customMsg || 'Loading\u2026');
+        start();
     }, true);
 
-    /* ════════════════════════════════════════
-       Hide loader on page fully loaded / shown
-       ════════════════════════════════════════ */
-    window.addEventListener('pageshow', function (e) {
-        // pageshow fires on bfcache restore too
-        hideLoader();
-    });
+    // Trigger on form submits
+    document.addEventListener('submit', function (e) {
+        if (e.target.dataset.urLoaderSkip === 'true') return;
+        start();
+    }, true);
 
-    // Also hide if the page loaded normally
-    if (document.readyState === 'complete') {
-        hideLoader();
-    } else {
-        window.addEventListener('load', hideLoader);
-    }
+    // Prefetch pages on hover for instant navigation
+    const prefetched = new Set();
+    document.addEventListener('mouseover', function (e) {
+        const link = e.target.closest('a[href]');
+        if (!link) return;
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript') || link.target === '_blank') return;
 
+        try {
+            const url = new URL(href, window.location.origin);
+            if (url.origin !== window.location.origin) return;
+            if (prefetched.has(url.pathname)) return;
+
+            prefetched.add(url.pathname);
+            const prefetchLink = document.createElement('link');
+            prefetchLink.rel  = 'prefetch';
+            prefetchLink.href = url.href;
+            document.head.appendChild(prefetchLink);
+        } catch (_) {}
+    }, { passive: true });
+
+    // Hide on page load
+    window.addEventListener('pageshow', done);
+    if (document.readyState === 'complete') { done(); }
+    else { window.addEventListener('load', done); }
 })();
 </script>

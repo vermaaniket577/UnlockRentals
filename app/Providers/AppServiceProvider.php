@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Setting;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,7 +29,9 @@ class AppServiceProvider extends ServiceProvider
 
         try {
             if (Schema::hasTable('settings')) {
-                $settings = Setting::pluck('value', 'key')->toArray();
+                $settings = Cache::rememberForever('site_settings', function () {
+                    return Setting::pluck('value', 'key')->toArray();
+                });
                 View::share('site_settings', $settings);
 
                 // Dynamically override mail config
@@ -63,5 +67,24 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // Silently fail if table/DB not ready (e.g. during migration)
         }
+
+        // Performance Optimization: Prevent N+1 query issues
+        Model::preventLazyLoading(!app()->isProduction());
+
+        // Global variables for admin navigation notifications
+        View::composer(['components.navbar', 'admin.dashboard', 'layouts.admin'], function ($view) {
+            if (auth()->check() && auth()->user()->isAdmin()) {
+                $adminNotifications = Cache::remember('admin_notifications', 60, function () {
+                    return [
+                        'new_feedbacks' => \App\Models\Feedback::where('status', 'new')->count(),
+                        'unread_chats'  => \App\Models\ChatbotMessage::where('is_read', false)->where('sender', 'user')->count(),
+                        'new_callbacks' => \App\Models\CallbackRequest::where('status', 'new')->count(),
+                        'pending_resets' => \Illuminate\Support\Facades\DB::table('password_reset_tokens')->count(),
+                    ];
+                });
+                $adminNotifications['total_unread'] = $adminNotifications['new_feedbacks'] + $adminNotifications['unread_chats'] + $adminNotifications['new_callbacks'] + $adminNotifications['pending_resets'];
+                $view->with('adminNotifications', $adminNotifications);
+            }
+        });
     }
 }

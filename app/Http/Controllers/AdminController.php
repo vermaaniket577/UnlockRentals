@@ -10,6 +10,7 @@ use App\Models\Plan;
 use App\Models\UserPlan;
 use App\Models\Feedback;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class AdminController extends Controller
 {
@@ -18,21 +19,23 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        $stats = [
-            'total_users' => User::count(),
-            'total_owners' => User::where('role', 'owner')->count(),
-            'total_tenants' => User::where('role', 'tenant')->count(),
-            'total_properties' => Property::count(),
-            'pending_properties' => Property::pending()->count(),
-            'approved_properties' => Property::approved()->count(),
-            'total_inquiries' => Inquiry::count(),
-            'unread_inquiries' => Inquiry::unread()->count(),
-            'total_plans' => Plan::count(),
-            'pending_subscriptions' => UserPlan::pending()->count(),
-            'active_subscriptions' => UserPlan::active()->count(),
-            'total_feedback' => Feedback::count(),
-            'new_feedback' => Feedback::where('status', 'new')->count(),
-        ];
+        $stats = Cache::remember('admin_dashboard_stats', 120, function () {
+            return [
+                'total_users'           => User::count(),
+                'total_owners'          => User::where('role', 'owner')->count(),
+                'total_tenants'         => User::where('role', 'tenant')->count(),
+                'total_properties'      => Property::count(),
+                'pending_properties'    => Property::pending()->count(),
+                'approved_properties'   => Property::approved()->count(),
+                'total_inquiries'       => Inquiry::count(),
+                'unread_inquiries'      => Inquiry::unread()->count(),
+                'total_plans'           => Plan::count(),
+                'pending_subscriptions' => UserPlan::pending()->count(),
+                'active_subscriptions'  => UserPlan::active()->count(),
+                'total_feedback'        => Feedback::count(),
+                'new_feedback'          => Feedback::where('status', 'new')->count(),
+            ];
+        });
 
         $pendingProperties = Property::pending()
             ->with(['owner', 'primaryImage', 'category'])
@@ -74,6 +77,11 @@ class AdminController extends Controller
             'status' => 'approved',
             'approved_at' => now(),
         ]);
+        Cache::forget('admin_dashboard_stats');
+        Cache::forget('home_featured_properties');
+        Cache::forget('home_latest_properties');
+        Cache::forget('home_featured_rentals');
+        Cache::forget('home_stats');
 
         return redirect()->back()
             ->with('success', "Property \"{$property->title}\" has been approved.");
@@ -87,6 +95,11 @@ class AdminController extends Controller
         $property->update([
             'status' => 'rejected',
         ]);
+        Cache::forget('admin_dashboard_stats');
+        Cache::forget('home_featured_properties');
+        Cache::forget('home_latest_properties');
+        Cache::forget('home_featured_rentals');
+        Cache::forget('home_stats');
 
         return redirect()->back()
             ->with('success', "Property \"{$property->title}\" has been rejected.");
@@ -115,7 +128,7 @@ class AdminController extends Controller
      */
     public function settings()
     {
-        $settings = Setting::pluck('value', 'key')->toArray();
+        $settings = Cache::get('site_settings', []);
         return view('admin.settings', compact('settings'));
     }
 
@@ -127,7 +140,7 @@ class AdminController extends Controller
         $data = $request->except('_token');
         
         // Handle checkboxes (if they aren't in request, they should be '0')
-        $checkboxes = ['chatbot_enabled', 'feedback_enabled'];
+        $checkboxes = ['chatbot_enabled', 'feedback_enabled', 'bypass_property_approval'];
         foreach($checkboxes as $box) {
             if(!$request->has($box)) $data[$box] = '0';
         }
@@ -138,6 +151,8 @@ class AdminController extends Controller
                 ['value' => $value]
             );
         }
+
+        Cache::forget('site_settings');
 
         return redirect()->back()->with('success', 'Settings updated successfully.');
     }
@@ -162,8 +177,14 @@ class AdminController extends Controller
      */
     public function chats()
     {
+        // Mark all unread messages from users as read
+        \App\Models\ChatbotMessage::where('is_read', false)->where('sender', 'user')->update(['is_read' => true]);
+        Cache::forget('admin_notifications');
+
+        // Limit to latest 500 messages to prevent full-table load
         $chats = \App\Models\ChatbotMessage::with('user')
             ->orderBy('created_at', 'desc')
+            ->take(500)
             ->get()
             ->groupBy('session_id');
 
@@ -177,6 +198,55 @@ class AdminController extends Controller
     {
         $callbacks = \App\Models\CallbackRequest::with('user')->latest()->paginate(20);
         return view('admin.callbacks', compact('callbacks'));
+    }
+
+    /**
+     * List all password reset tokens.
+     */
+    public function resets()
+    {
+        $resets = \Illuminate\Support\Facades\DB::table('password_reset_tokens')->orderBy('created_at', 'desc')->paginate(20);
+        return view('admin.resets', compact('resets'));
+    }
+
+    /**
+     * Delete/Invalidate a password reset token.
+     */
+    public function deleteReset($email)
+    {
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $email)->delete();
+        Cache::forget('admin_notifications');
+        return redirect()->back()->with('success', 'Password reset token invalidated successfully.');
+    }
+
+    /**
+     * Manually trigger/send password reset email to a user.
+     */
+    public function sendReset(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->with('error', 'We could not find a user with that email address.');
+        }
+
+        $token = \Illuminate\Support\Str::random(64);
+
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            ['token' => $token, 'created_at' => \Carbon\Carbon::now()]
+        );
+
+        \Illuminate\Support\Facades\Mail::send('auth.emails.password', ['token' => $token, 'email' => $request->email], function($message) use($request){
+            $message->to($request->email);
+            $message->subject('Reset Password Notification - Manually Triggered');
+        });
+
+        Cache::forget('admin_notifications');
+
+        return redirect()->back()->with('success', 'A password reset link has been successfully generated and sent to ' . $request->email);
     }
 
     // ─── PLAN MANAGEMENT ────────────────────────
@@ -360,5 +430,27 @@ class AdminController extends Controller
             ->get();
 
         return view('admin.user-activity', compact('user', 'contactViews'));
+    }
+
+    /**
+     * Toggle the bypass approval setting dynamically.
+     */
+    public function toggleBypassApproval(Request $request)
+    {
+        $current = \App\Models\Setting::get('bypass_property_approval', '0');
+        $newVal = ($current == '1') ? '0' : '1';
+
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'bypass_property_approval'],
+            ['value' => $newVal]
+        );
+
+        \Illuminate\Support\Facades\Cache::forget('site_settings');
+
+        $statusMsg = ($newVal === '1') 
+            ? 'Bypass Approval turned ON! All new properties will post directly.' 
+            : 'Bypass Approval turned OFF! All new properties will now require manual verification.';
+
+        return redirect()->back()->with('success', $statusMsg);
     }
 }

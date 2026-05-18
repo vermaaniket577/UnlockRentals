@@ -6,6 +6,7 @@ use App\Models\Plan;
 use App\Models\Setting;
 use App\Models\UserPlan;
 use App\Models\Property;
+use Illuminate\Support\Facades\Cache;
 use Razorpay\Api\Api;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -51,7 +52,7 @@ class PlanController extends Controller
             return redirect()->route('plans.index')->with('error', 'You already have an active plan.');
         }
 
-        $settings = Setting::pluck('value', 'key')->toArray();
+        $settings = Cache::get('site_settings', []);
         $razorpayKeyId = $settings['razorpay_key_id'] ?? null;
         $razorpayKeySecret = $settings['razorpay_key_secret'] ?? null;
 
@@ -78,7 +79,7 @@ class PlanController extends Controller
     public function processPayment(Request $request, Plan $plan)
     {
         $user = auth()->user();
-        $settings = Setting::pluck('value', 'key')->toArray();
+        $settings = Cache::get('site_settings', []);
         $razorpayKeyId = $settings['razorpay_key_id'] ?? null;
         $razorpayKeySecret = $settings['razorpay_key_secret'] ?? null;
 

@@ -209,6 +209,9 @@
     </div>
 </section>
 
+{{-- App Download Section --}}
+@include('components.app-download')
+
 {{-- CTA Section --}}
 <section class="py-16 lg:py-24" id="cta-section">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -236,43 +239,5 @@
         </div>
     </div>
 </section>
-
-{{-- Footer / Social Media --}}
-<footer class="bg-white border-t border-stone-100 py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-        <x-brand-logo
-            href="{{ route('home') }}"
-            imageClass="h-9 w-auto"
-            textClass="text-lg font-bold tracking-tight text-zinc-900"
-            accentClass="text-[#2563EB]"
-        />
-        
-        <p class="text-sm text-zinc-500">{{ $site_settings['footer_text'] ?? '© 2026 UnlockRentals. All rights reserved.' }}</p>
-
-        {{-- Social Media Cards --}}
-        <div class="flex gap-4">
-            @if(!empty($site_settings['social_facebook']))
-            <a href="{{ $site_settings['social_facebook'] }}" target="_blank" class="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center text-zinc-400 hover:text-[#2563EB] hover:border-[#2563EB] transition-all">
-                <i class="ph ph-facebook-logo text-xl"></i>
-            </a>
-            @endif
-            @if(!empty($site_settings['social_instagram']))
-            <a href="{{ $site_settings['social_instagram'] }}" target="_blank" class="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center text-zinc-400 hover:text-[#2563EB] hover:border-[#2563EB] transition-all">
-                <i class="ph ph-instagram-logo text-xl"></i>
-            </a>
-            @endif
-            @if(!empty($site_settings['social_twitter']))
-            <a href="{{ $site_settings['social_twitter'] }}" target="_blank" class="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center text-zinc-400 hover:text-[#2563EB] hover:border-[#2563EB] transition-all">
-                <i class="ph ph-twitter-logo text-xl"></i>
-            </a>
-            @endif
-            @if(!empty($site_settings['social_linkedin']))
-            <a href="{{ $site_settings['social_linkedin'] }}" target="_blank" class="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center text-zinc-400 hover:text-[#2563EB] hover:border-[#2563EB] transition-all">
-                <i class="ph ph-linkedin-logo text-xl"></i>
-            </a>
-            @endif
-        </div>
-    </div>
-</footer>
 
 @endsection

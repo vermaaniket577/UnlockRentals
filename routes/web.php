@@ -18,67 +18,67 @@ use App\Http\Controllers\ResetPasswordController;
 */
 
 Route::get('/', function(Illuminate\Http\Request $request) {
-    $query = \App\Models\Property::approved()
-        ->with(['primaryImage', 'owner']);
-    
-    // Apply Filter by state
-    if ($request->filled('state')) {
-        $query->where('state', $request->state);
-    }
+    $hasFilters = $request->hasAny(['state','district','locality','type','price','rooms','purpose']);
 
-    // Apply Filter by district
-    if ($request->filled('district')) {
-        $districtName = str_replace('-', ' ', $request->district);
-        $query->where('location', 'like', '%' . $districtName . '%');
-    }
-
-    // Apply Filter by locality
-    if ($request->filled('locality')) {
-        $localityName = str_replace('-', ' ', $request->locality);
-        $query->where(function($q) use ($localityName) {
-            $q->where('locality', 'like', '%' . $localityName . '%')
-              ->orWhere('location', 'like', '%' . $localityName . '%')
-              ->orWhere('address', 'like', '%' . $localityName . '%');
+    if (!$hasFilters) {
+        // Cache unfiltered homepage listings for 5 minutes
+        $featuredRentals = \Illuminate\Support\Facades\Cache::remember('home_featured_rentals', 300, function () {
+            return \App\Models\Property::approved()
+                ->with(['primaryImage', 'owner'])
+                ->latest()
+                ->take(12)
+                ->get();
         });
-    }
+    } else {
+        $query = \App\Models\Property::approved()
+            ->with(['primaryImage', 'owner']);
 
-    // Filter by type
-    if ($request->filled('type') && $request->type !== 'all') {
-        $query->where('type', $request->type);
-    }
-
-    // Handle string-based price range
-    if ($request->filled('price') && $request->price !== 'any') {
-        if ($request->price === '0-20000') {
-            $query->where('price', '<=', 20000);
-        } elseif ($request->price === '20000-50000') {
-            $query->whereBetween('price', [20000, 50000]);
-        } elseif ($request->price === '50000-plus') {
-            $query->where('price', '>=', 50000);
+        if ($request->filled('state')) {
+            $query->where('state', $request->state);
         }
-    }
-
-    // Filter by UI rooms configuration
-    if ($request->filled('rooms') && $request->rooms !== 'any') {
-        if ($request->rooms === '1rk') {
-            $query->where('bedrooms', 0);
-        } elseif ($request->rooms === '1bhk') {
-            $query->where('bedrooms', 1);
-        } elseif ($request->rooms === '2bhk') {
-            $query->where('bedrooms', 2);
-        } elseif ($request->rooms === '3bhk') {
-            $query->where('bedrooms', 3);
-        } elseif ($request->rooms === '4bhk-plus') {
-            $query->where('bedrooms', '>=', 4);
+        if ($request->filled('district')) {
+            $districtName = str_replace('-', ' ', $request->district);
+            $query->where('location', 'like', '%' . $districtName . '%');
         }
-    }
+        if ($request->filled('locality')) {
+            $localityName = str_replace('-', ' ', $request->locality);
+            $query->where(function($q) use ($localityName) {
+                $q->where('locality', 'like', '%' . $localityName . '%')
+                  ->orWhere('location', 'like', '%' . $localityName . '%')
+                  ->orWhere('address', 'like', '%' . $localityName . '%');
+            });
+        }
+        if ($request->filled('type') && $request->type !== 'all') {
+            $query->where('type', $request->type);
+        }
+        if ($request->filled('price') && $request->price !== 'any') {
+            if ($request->price === '0-20000') {
+                $query->where('price', '<=', 20000);
+            } elseif ($request->price === '20000-50000') {
+                $query->whereBetween('price', [20000, 50000]);
+            } elseif ($request->price === '50000-plus') {
+                $query->where('price', '>=', 50000);
+            }
+        }
+        if ($request->filled('rooms') && $request->rooms !== 'any') {
+            if ($request->rooms === '1rk') {
+                $query->where('bedrooms', 0);
+            } elseif ($request->rooms === '1bhk') {
+                $query->where('bedrooms', 1);
+            } elseif ($request->rooms === '2bhk') {
+                $query->where('bedrooms', 2);
+            } elseif ($request->rooms === '3bhk') {
+                $query->where('bedrooms', 3);
+            } elseif ($request->rooms === '4bhk-plus') {
+                $query->where('bedrooms', '>=', 4);
+            }
+        }
+        if ($request->filled('purpose')) {
+            $query->where('purpose', $request->purpose);
+        }
 
-    // Filter by purpose
-    if ($request->filled('purpose')) {
-        $query->where('purpose', $request->purpose);
+        $featuredRentals = $query->latest()->take(12)->get();
     }
-
-    $featuredRentals = $query->latest()->get();
 
     return view('welcome', compact('featuredRentals'));
 })->name('home');
@@ -105,6 +105,7 @@ Route::get('/property-image/{id}', function ($id) {
 
 Route::post('/feedback', [\App\Http\Controllers\SupportController::class, 'storeFeedback'])->name('feedback.store');
 Route::post('/chatbot/save', [\App\Http\Controllers\SupportController::class, 'saveChatMessage'])->name('chatbot.save');
+Route::get('/chatbot/history/{session_id}', [\App\Http\Controllers\SupportController::class, 'getChatHistory'])->name('chatbot.history');
 Route::post('/chatbot/callback', [\App\Http\Controllers\SupportController::class, 'requestCallback'])->name('chatbot.callback');
 
 // Property browsing (public)
@@ -196,12 +197,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/properties', [AdminController::class, 'properties'])->name('properties');
     Route::post('/properties/{property}/approve', [AdminController::class, 'approve'])->name('properties.approve');
     Route::post('/properties/{property}/reject', [AdminController::class, 'reject'])->name('properties.reject');
+    Route::post('/properties/toggle-bypass', [AdminController::class, 'toggleBypassApproval'])->name('properties.toggle-bypass');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     Route::get('/feedback', [AdminController::class, 'feedback'])->name('feedback');
     Route::get('/chats', [AdminController::class, 'chats'])->name('chats');
     Route::get('/callbacks', [AdminController::class, 'callbacks'])->name('callbacks');
+    Route::get('/resets', [AdminController::class, 'resets'])->name('resets');
+    Route::post('/resets/{email}/delete', [AdminController::class, 'deleteReset'])->name('resets.delete');
+    Route::post('/resets/send', [AdminController::class, 'sendReset'])->name('resets.send');
 
     // Plan management
     Route::get('/plans', [AdminController::class, 'plans'])->name('plans');

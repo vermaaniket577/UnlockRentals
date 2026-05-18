@@ -11,7 +11,7 @@
     <img
         src="{{ asset('images/logo.png') }}"
         alt="{{ $alt }}"
-        class="{{ $imageClass }}"
+        class="{{ $imageClass }} max-h-10 w-auto object-contain"
     >
 
     @if($showText)

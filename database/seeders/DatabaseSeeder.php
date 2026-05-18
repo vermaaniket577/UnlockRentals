@@ -16,6 +16,40 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed Pricing Plans
+        \App\Models\Plan::create([
+            'name' => 'Silver Plan',
+            'description' => 'Perfect for tenants looking for a basic start',
+            'price' => 199.00,
+            'duration_days' => 30,
+            'contact_limit' => 5,
+            'features' => ['Unlock up to 5 owner details', 'Standard email support', '30-days validity period'],
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        \App\Models\Plan::create([
+            'name' => 'Gold Plan',
+            'description' => 'Most popular plan for active rental seekers',
+            'price' => 499.00,
+            'duration_days' => 90,
+            'contact_limit' => 15,
+            'features' => ['Unlock up to 15 owner details', 'Priority support response', '90-days validity period', 'Advanced search filters enabled'],
+            'is_active' => true,
+            'sort_order' => 2,
+        ]);
+
+        \App\Models\Plan::create([
+            'name' => 'Platinum Plan',
+            'description' => 'Ultimate plan with maximum access and features',
+            'price' => 999.00,
+            'duration_days' => 180,
+            'contact_limit' => 50,
+            'features' => ['Unlock up to 50 owner details', 'Dedicated manager support', '180-days validity period', 'Immediate WhatsApp alerts', 'Premium verified badge'],
+            'is_active' => true,
+            'sort_order' => 3,
+        ]);
+
         // Create Admin
         User::create([
             'name' => 'Admin User',

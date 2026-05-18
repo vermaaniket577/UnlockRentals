@@ -28,9 +28,6 @@
         {{-- Price Badge --}}
         <div class="card-price">
             {{ $property->formatted_price }}
-            @if($property->purpose === 'rent')
-                <span class="price-period">/mo</span>
-            @endif
         </div>
     </div>
 

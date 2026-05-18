@@ -8,6 +8,12 @@
     <meta name="description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
     <title>@yield('title', 'UnlockRentals - Property Rental Marketplace')</title>
 
+    {{-- Performance: DNS prefetch for external resources --}}
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
+
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -22,29 +28,41 @@
     <meta property="twitter:description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
     <meta property="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
 
-    @php
-        $faviconVersion = max(
-            file_exists(public_path('favicon.ico')) ? filemtime(public_path('favicon.ico')) : 0,
-            file_exists(public_path('favicon.png')) ? filemtime(public_path('favicon.png')) : 0,
-        );
-    @endphp
     {{-- Favicon --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v={{ $faviconVersion }}">
-    <link rel="icon" type="image/png" sizes="256x256" href="{{ asset('favicon.png') }}?v={{ $faviconVersion }}">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v={{ $faviconVersion }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=1">
+    <link rel="icon" type="image/png" sizes="256x256" href="{{ asset('favicon.png') }}?v=1">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=1">
 
 
-    {{-- Google Fonts --}}
+    {{-- Premium Fonts (Optimized) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 
-    {{-- Phosphor Icons --}}
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/fill/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/light/style.css">
+    {{-- Icon Systems (SRI Protected) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.0/src/bold/style.css" integrity="sha384-nblAP2mo2pVPyMQZDw9Xy9Cwgs9lowushAYep4w5+Q9kF4Ibf3n0B/gCMVdR+Vqy" crossorigin="anonymous">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Performance Optimized Tailwind CDN (blocking to avoid FOUC) --}}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        'zinc-850': '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    {{-- Premium Unlock Rental Styles --}}
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}">
 </head>
 <body class="min-h-screen bg-white text-zinc-800 font-sans antialiased font-light selection:bg-[#2563EB]/30 selection:text-zinc-900">
 

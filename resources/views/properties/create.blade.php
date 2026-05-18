@@ -245,7 +245,7 @@
                                 <i class="ph ph-cloud-arrow-up text-3xl"></i>
                             </div>
                             <p class="text-zinc-600 font-semibold mb-1">Click or drag images here</p>
-                            <p class="text-xs text-zinc-400">Suports JPG, PNG, WebP (Max 2MB per image)</p>
+                            <p class="text-xs text-zinc-400">Suports JPG, PNG, WebP (Max 5MB per image)</p>
                             
                             <input type="file" name="images[]" multiple accept="image/*" required
                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -286,6 +286,14 @@ function previewImages(event) {
     if (selectedFiles.length + newFiles.length > 10) {
         alert('You can only upload a maximum of 10 images per property.');
         // Sync input back to our internal state
+        syncInputFiles();
+        return;
+    }
+
+    // 5MB limit check (5 * 1024 * 1024 bytes)
+    const overSizeFiles = newFiles.filter(f => f.size > 5 * 1024 * 1024);
+    if (overSizeFiles.length > 0) {
+        alert('Each image must be under 5MB.');
         syncInputFiles();
         return;
     }

@@ -7,21 +7,21 @@
 @push('scripts')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org/",
-  "@type": "RealEstateListing",
+  "@@context": "https://schema.org/",
+  "@@type": "RealEstateListing",
   "name": "{{ $property->title }}",
   "description": "{{ Str::limit(strip_tags($property->description), 150) }}",
   "url": "{{ route('properties.show', $property) }}",
   "image": "{{ $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png') }}",
   "address": {
-    "@type": "PostalAddress",
+    "@@type": "PostalAddress",
     "streetAddress": "{{ $property->address }}",
     "addressLocality": "{{ $property->location }}",
     "addressRegion": "{{ $property->state }}",
     "addressCountry": "IN"
   },
   "offers": {
-    "@type": "Offer",
+    "@@type": "Offer",
     "price": "{{ $property->price }}",
     "priceCurrency": "INR",
     "availability": "https://schema.org/InStock"
@@ -54,7 +54,7 @@
                         <div class="relative h-72 sm:h-96 lg:h-[500px] rounded-sm overflow-hidden mb-3" id="gallery-main">
                             <img src="{{ ($property->images->where('is_primary', true)->first() ?? $property->images->first())->imageUrl() }}"
                                  alt="{{ $property->title }}"
-                                 class="w-full h-full object-cover"
+                                 class="w-full h-full object-contain bg-stone-100/50"
                                  id="gallery-main-img">
 
                             {{-- Badges --}}
@@ -174,7 +174,7 @@
                                 </div>
                             </div>
 
-                            @auth
+                            @if(auth()->check())
                                 @php
                                     $canView = auth()->user()->canViewContact($property);
                                     $hasViewed = auth()->user()->hasViewedContact($property);
@@ -244,12 +244,12 @@
                                         </a>
                                     </div>
                                 </div>
-                            @endauth
+                            @endif
                         </div>
                         @endif
 
                         {{-- Edit/Delete for owner --}}
-                        @auth
+                        @if(auth()->check())
                             @if(auth()->id() === $property->user_id || auth()->user()->isAdmin())
                             <div class="flex gap-2 mb-4">
                                 <a href="{{ route('properties.edit', $property) }}" class="flex-1 text-center px-4 py-2.5 bg-stone-50 border border-stone-200/50 text-gray-300 text-sm font-medium rounded-sm hover:bg-stone-100 transition-all">
@@ -264,7 +264,7 @@
                                 </form>
                             </div>
                             @endif
-                        @endauth
+                        @endif
                     </div>
 
                     {{-- Inquiry Form --}}
@@ -274,7 +274,7 @@
                             Send Inquiry
                         </h3>
 
-                        @auth
+                        @if(auth()->check())
                         <form method="POST" action="{{ route('inquiries.store') }}" id="inquiry-form">
                             @csrf
                             <input type="hidden" name="property_id" value="{{ $property->id }}">
@@ -320,7 +320,7 @@
                                 Sign In
                             </a>
                         </div>
-                        @endauth
+                        @endif
                     </div>
                 </div>
             </div>

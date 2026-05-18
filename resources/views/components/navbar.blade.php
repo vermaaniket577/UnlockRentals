@@ -48,12 +48,15 @@
 
                     {{-- User Menu --}}
                     <div class="relative" x-data="{ open: false }">
-                        <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex items-center gap-2 px-3 py-2 rounded-sm hover:bg-stone-50 transition-all" id="nav-user-menu">
+                        <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex items-center gap-2 px-3 py-2 rounded-sm hover:bg-stone-50 transition-all relative" id="nav-user-menu">
                             <div class="w-8 h-8 bg-[#2563EB] rounded-full flex items-center justify-center text-white text-sm font-medium">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                             <span class="hidden md:inline text-sm font-medium text-zinc-700">{{ auth()->user()->name }}</span>
                             <i class="ph ph-caret-down text-xs text-zinc-500"></i>
+                            @if(isset($adminNotifications) && $adminNotifications['total_unread'] > 0)
+                                <span class="absolute top-1 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                            @endif
                         </button>
 
                         {{-- Dropdown --}}
@@ -78,14 +81,29 @@
                                 <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-admin-settings">
                                     <i class="ph ph-gear"></i> Content & Settings
                                 </a>
-                                <a href="{{ route('admin.feedback') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-admin-feedback">
-                                    <i class="ph ph-chat-centered-text"></i> Customer Feedback
+                                <a href="{{ route('admin.feedback') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-admin-feedback">
+                                    <div class="flex items-center gap-3">
+                                        <i class="ph ph-chat-centered-text"></i> Customer Feedback
+                                    </div>
+                                    @if(isset($adminNotifications) && $adminNotifications['new_feedbacks'] > 0)
+                                        <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['new_feedbacks'] }}</span>
+                                    @endif
                                 </a>
-                                <a href="{{ route('admin.chats') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-admin-chats">
-                                    <i class="ph ph-chat-circle-dots"></i> Chat History
+                                <a href="{{ route('admin.chats') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-admin-chats">
+                                    <div class="flex items-center gap-3">
+                                        <i class="ph ph-chat-circle-dots"></i> Chat History
+                                    </div>
+                                    @if(isset($adminNotifications) && $adminNotifications['unread_chats'] > 0)
+                                        <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['unread_chats'] }}</span>
+                                    @endif
                                 </a>
-                                <a href="{{ route('admin.callbacks') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-admin-callbacks">
-                                    <i class="ph ph-phone-call"></i> Callback Leads
+                                <a href="{{ route('admin.callbacks') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-admin-callbacks">
+                                    <div class="flex items-center gap-3">
+                                        <i class="ph ph-phone-call"></i> Callback Leads
+                                    </div>
+                                    @if(isset($adminNotifications) && $adminNotifications['new_callbacks'] > 0)
+                                        <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['new_callbacks'] }}</span>
+                                    @endif
                                 </a>
                                 <a href="{{ route('admin.plans') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-admin-plans">
                                     <i class="ph ph-crown"></i> Manage Plans

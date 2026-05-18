@@ -213,7 +213,7 @@
                 <input type="file" name="images[]" multiple accept="image/*"
                        class="block w-full text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-sm file:font-medium file:bg-[#2563EB]/10 file:text-[#2563EB] hover:file:bg-[#2563EB]/10 cursor-pointer"
                        id="edit-images-input" onchange="checkMaxFiles(event)">
-                <p class="text-xs text-zinc-500 mt-2">JPG, PNG, WebP — Max 2MB each. Up to 10 images total.</p>
+                <p class="text-xs text-zinc-500 mt-2">JPG, PNG, WebP — Max 5MB each. Up to 10 images total.</p>
             </div>
 
             <script>

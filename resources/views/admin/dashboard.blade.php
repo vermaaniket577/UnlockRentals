@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Admin Dashboard - UnlockRentals')
 
@@ -11,6 +11,41 @@
             <h1 class="text-3xl font-medium text-zinc-900 mb-1">Admin Dashboard</h1>
             <p class="text-zinc-500">Overview of the UnlockRentals platform</p>
         </div>
+
+        {{-- Notifications --}}
+        @if(isset($adminNotifications) && $adminNotifications['total_unread'] > 0)
+        <div class="mb-8 space-y-3">
+            @if($adminNotifications['new_feedbacks'] > 0)
+            <div class="bg-blue-50 border border-blue-200 rounded-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 text-blue-800">
+                    <i class="ph ph-chat-centered-text text-xl"></i>
+                    <span class="font-medium">You have {{ $adminNotifications['new_feedbacks'] }} new customer feedback submissions.</span>
+                </div>
+                <a href="{{ route('admin.feedback') }}" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors flex-shrink-0">View Feedback</a>
+            </div>
+            @endif
+            
+            @if($adminNotifications['unread_chats'] > 0)
+            <div class="bg-amber-50 border border-amber-200 rounded-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 text-amber-800">
+                    <i class="ph ph-chat-circle-dots text-xl"></i>
+                    <span class="font-medium">You have {{ $adminNotifications['unread_chats'] }} unread customer chat messages.</span>
+                </div>
+                <a href="{{ route('admin.chats') }}" class="text-sm bg-amber-600 text-white px-4 py-2 rounded-sm hover:bg-amber-700 transition-colors flex-shrink-0">View Chats</a>
+            </div>
+            @endif
+
+            @if($adminNotifications['new_callbacks'] > 0)
+            <div class="bg-red-50 border border-red-200 rounded-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3 text-red-800">
+                    <i class="ph ph-phone-call text-xl"></i>
+                    <span class="font-medium">You have {{ $adminNotifications['new_callbacks'] }} new callback requests.</span>
+                </div>
+                <a href="{{ route('admin.callbacks') }}" class="text-sm bg-red-600 text-white px-4 py-2 rounded-sm hover:bg-red-700 transition-colors flex-shrink-0">View Callbacks</a>
+            </div>
+            @endif
+        </div>
+        @endif
 
         {{-- Stats Grid --}}
         <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">

@@ -20,16 +20,35 @@
     <meta property="twitter:description" content="Find your perfect house or shop for rent in India. Browse thousands of verified luxury rentals.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
-    <!-- Google Fonts -->
+    <!-- Optimized Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}">
     
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Phosphor Icons (Full Library) -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/style.css">
     
     <!-- GSAP for animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -67,9 +86,13 @@
                 Commercial
             </a>
         </nav>
-        <div class="auth-nav">
+        <div class="auth-nav" style="display: flex; align-items: center; gap: 10px;">
             @if (Route::has('login'))
                 @auth
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 28px; height: 44px; margin-right: 5px;">
+                        <i class="ph-fill ph-megaphone-simple" style="font-size: 18px;"></i>
+                        {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
+                    </a>
                     <div class="relative" style="position:relative; display:inline-block;">
                         <button onclick="toggleUserDropdown(event)" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all" style="background:transparent; border:none; color:#fff; cursor:pointer;" id="userDropdownBtn">
                             <span style="color:rgba(255,255,255,0.9); font-size:14px; font-weight:600;">{{ auth()->user()->name }}</span>
@@ -133,7 +156,7 @@
                     @if (Route::has('register'))
                         <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 28px; height: 44px;">
                             <i class="ph-fill ph-megaphone-simple" style="font-size: 18px;"></i>
-                            {{ $site_settings['cta_button_text'] ?? 'Post Free Advertisement to Rent or Sell your Property' }}
+                            {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
                         </a>
                     @endif
                 @endauth
@@ -168,13 +191,17 @@
                         <p style="color:rgba(255,255,255,0.5); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Signed in as</p>
                         <p style="color:#fff; font-weight:600; font-size:15px;">{{ auth()->user()->name }}</p>
                     </div>
-                    <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center;">Dashboard</a>
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px;">
+                        <i class="ph-fill ph-megaphone-simple" style="font-size: 20px;"></i>
+                        {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
+                    </a>
+                    <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%;">Dashboard</a>
                 @else
                     <a href="{{ route('login') }}" class="btn-ghost-sm" style="text-align:center; display:block;">Log in</a>
                     @if (Route::has('register'))
                         <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px;">
                             <i class="ph-fill ph-megaphone-simple" style="font-size: 20px;"></i>
-                            {{ $site_settings['cta_button_text'] ?? 'Post Free Advertisement to Rent or Sell your Property' }}
+                            {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
                         </a>
                     @endif
                 @endauth
@@ -186,7 +213,7 @@
         <div class="hero-bg">
             <div class="glow-orb orb-1"></div>
             <div class="glow-orb orb-2"></div>
-            <img src="{{ asset('images/hero-bg.png') }}" alt="Premium Indian City Skyline Real Estate">
+            <img src="{{ asset('images/hero-bg.png') }}" alt="Premium Indian City Skyline Real Estate" loading="eager" fetchpriority="high">
             <div class="overlay-gradient"></div>
         </div>
 
@@ -433,11 +460,23 @@
                 </button>
             </div>
             
-            <div style="text-align: center; margin-top: 40px;">
-                <a href="{{ route('properties.index') }}" class="btn-ghost" style="padding: 12px 32px; display: inline-block; text-decoration: none;">Explore All Rentals</a>
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="{{ route('properties.index') }}" class="btn-explore-premium">
+                    <span>Explore All Rentals</span>
+                    <i class="ph ph-bold ph-arrow-right"></i>
+                </a>
             </div>
         </div>
     </section>
+
+    {{-- Why Choose Us Section --}}
+    @include('components.why-choose-us')
+
+    {{-- How It Works Section --}}
+    @include('components.how-it-works')
+
+    {{-- App Download Section --}}
+    @include('components.app-download')
 
     <!-- Testimonials / Success Stories -->
     <section class="premium-section success-stories">
@@ -450,7 +489,7 @@
                     <div class="stars">★★★★★</div>
                     <p class="quote">"Unlock Rental made finding our company's new office space in Cyber City incredibly seamless. The verified listings and sleek UI saved us weeks of searching."</p>
                     <div class="author">
-                        <div class="author-img" style="background-image: url('https://randomuser.me/api/portraits/men/43.jpg')"></div>
+                        <div class="author-img" style="background-image: url('https://randomuser.me/api/portraits/men/43.jpg')" loading="lazy"></div>
                         <div class="author-details">
                             <h4>Rahul S.</h4>
                             <span>CEO, TechFlow India</span>
@@ -483,69 +522,26 @@
         </div>
     </section>
 
+    {{-- Resource Directory --}}
+    @include('components.resource-directory')
 
-    <footer class="main-footer">
-        <div class="footer-glow"></div>
-        <div class="section-container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <x-brand-logo
-                        href="{{ route('home') }}"
-                        class="logo"
-                        style="margin-bottom: 20px;"
-                        imageClass="logo-asset"
-                        textClass="logo-text"
-                        accentClass=""
-                    />
-                    <p class="brand-desc">Elevating the standard of modern living and premium commercial spaces worldwide. Experience luxury redefined.</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Explore</h4>
-                    <a href="{{ route('properties.index', ['type' => 'house']) }}">Luxury Homes</a>
-                    <a href="{{ route('properties.index', ['type' => 'commercial']) }}">Commercial Spaces</a>
-                    <a href="{{ route('properties.index', ['type' => 'villa']) }}">Private Villas</a>
-                    <a href="{{ route('properties.index', ['type' => 'apartment']) }}">Apartments</a>
-                </div>
-                <div class="footer-links">
-                    <h4>Company</h4>
-                    <a href="javascript:void(0)">About Us</a>
-                    <a href="javascript:void(0)">Concierge Services</a>
-                    <a href="javascript:void(0)">Trust & Safety</a>
-                    <a href="javascript:void(0)">Careers</a>
-                </div>
-                <div class="footer-contact">
-                    <h4>Contact Support</h4>
-                    <p><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> {{ $site_settings['site_phone'] ?? '+91 7974164274' }}</p>
-                    <p><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> {{ $site_settings['site_email'] ?? 'vip@unlockrental.com' }}</p>
-                    <div class="social-icons">
-                        <a href="{{ $site_settings['social_twitter'] ?? 'javascript:void(0)' }}" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
-                        <a href="{{ $site_settings['social_facebook'] ?? 'javascript:void(0)' }}" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-                        <a href="{{ $site_settings['social_instagram'] ?? 'javascript:void(0)' }}" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.203 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
-                        <a href="{{ $site_settings['social_linkedin'] ?? 'javascript:void(0)' }}" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; {{ date('Y') }} Unlock Rental. All rights reserved.</p>
-                <div class="legal-links">
-                    <a href="javascript:void(0)">Privacy Policy</a>
-                    <a href="javascript:void(0)">Terms of Service</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    {{-- Property Links Bar --}}
+    @include('components.property-links-bar')
+
+    <x-footer />
+
 
     @if(($site_settings['chatbot_enabled'] ?? '1') == '1')
     <!-- Chatbot Overlay -->
-    <div class="chatbot-trigger" id="chatTrigger">
-        <i class="ph-fill ph-chat-centered-text"></i>
+    <div class="chatbot-trigger" id="chatTrigger" style="overflow: hidden; padding: 0; background: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+        <video src="{{ asset('videos/chatbot.mp4') }}" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%;"></video>
     </div>
 
     <div class="chat-window" id="chatWindow">
         <div class="chat-header">
             <div class="chat-header-content">
                 <div class="chat-avatar">
-                    <i class="ph-fill ph-robot"></i>
+                    <img src="{{ asset('images/icons/chatbot.png') }}" alt="Bot" style="width: 24px; height: 24px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
                 </div>
                 <div class="chat-header-info">
                     <h4>Unlock Support</h4>
@@ -562,7 +558,7 @@
         <div class="chat-input-area">
             <input type="text" class="chat-input" id="chatInput" placeholder="Write a message...">
             <button class="chat-send-btn" id="chatSend">
-                <i class="ph-fill ph-paper-plane-right"></i>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #ffffff;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
         </div>
     </div>
@@ -649,9 +645,46 @@
             const chatMessages = document.getElementById('chatMessages');
             
             // Chat session ID
-            const chatSessionId = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            let chatSessionId = localStorage.getItem('ur_chat_session');
+            if (!chatSessionId) {
+                chatSessionId = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('ur_chat_session', chatSessionId);
+            }
 
-            chatTrigger.addEventListener('click', () => chatWindow.classList.add('active'));
+            // Load Chat History
+            fetch(`/chatbot/history/${chatSessionId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.messages && data.messages.length > 0) {
+                        chatMessages.innerHTML = ''; 
+                        data.messages.forEach(msg => {
+                            const m = document.createElement('div');
+                            m.className = `msg ${msg.sender}`;
+                            m.textContent = msg.message;
+                            chatMessages.appendChild(m);
+                        });
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    } else {
+                        // Save the initial welcome message to the DB for history
+                        const welcomeText = "{{ $site_settings['bot_welcome_message'] ?? 'Hi there! 👋 Welcome to Unlock Rental. How can I assist you with your property search today?' }}";
+                        fetch("{{ route('chatbot.save') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                message: welcomeText,
+                                sender: 'bot',
+                                session_id: chatSessionId
+                            })
+                        }).catch(err => console.error('Chat save error:', err));
+                    }
+                })
+                .catch(err => console.error('Chat history error:', err));
+
+            chatTrigger.addEventListener('click', () => chatWindow.classList.toggle('active'));
             chatClose.addEventListener('click', (e) => {
                 e.stopPropagation();
                 chatWindow.classList.remove('active');
@@ -733,12 +766,16 @@
                         return;
                     }
 
-                    const responses = [
+                    const dbResponses = {!! json_encode(array_values(array_filter(array_map('trim', explode("\n", $site_settings['bot_auto_responses'] ?? "That's a great question! Let me check our premium listings for you.\nI can certainly help you with that. Would you like to see properties in a specific city?\nOne of our agents will be happy to assist you further. Shall I book a callback for you?\nUnlock Rental offers the best verified properties in India. You're in good hands!"))))) !!};
+                    
+                    const fallbackResponses = [
                         "That's a great question! Let me check our premium listings for you.",
                         "I can certainly help you with that. Would you like to see properties in a specific city?",
                         "One of our agents will be happy to assist you further. Shall I book a callback for you?",
                         "Unlock Rental offers the best verified properties in India. You're in good hands!"
                     ];
+                    
+                    const responses = dbResponses.length > 0 ? dbResponses : fallbackResponses;
                     addMessage(responses[Math.floor(Math.random() * responses.length)], 'bot');
                 }, 1000);
             });
@@ -827,14 +864,14 @@
     @if(($site_settings['feedback_enabled'] ?? '1') == '1')
     <!-- Feedback Modal Trigger -->
     <button class="feedback-modal-trigger" onclick="openFeedbackModal()" style="position: fixed; left: 30px; bottom: 30px; width: 60px; height: 60px; background: rgba(25, 25, 30, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; color: var(--primary); font-size: 24px; cursor: pointer; z-index: 9998; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s;">
-        <i class="ph-fill ph-chat-teardrop-dots"></i>
+        <img src="{{ asset('images/icons/feedback.png') }}" alt="Feedback" style="width: 32px; height: 32px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
     </button>
 
     <!-- Feedback Modal Overlay -->
     <div class="feedback-overlay" id="feedbackModal">
         <div class="feedback-modal">
-            <div class="modal-close" onclick="closeFeedbackModal()">
-                <i class="ph ph-x"></i>
+            <div class="modal-close" onclick="closeFeedbackModal()" style="display: flex; align-items: center; justify-content: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </div>
             
             <div class="modal-header">
@@ -852,10 +889,15 @@
 
             <div class="modal-form">
                 <textarea class="modal-textarea" id="modalComment" placeholder="Share your thoughts or report an issue..."></textarea>
-                <button class="modal-submit" onclick="submitModalFeedback(this)">
-                    Send Feedback
-                    <i class="ph ph-paper-plane-tilt"></i>
-                </button>
+                <div style="display: flex; gap: 12px; width: 100%;">
+                    <button class="modal-cancel" onclick="closeFeedbackModal()" style="flex: 1; padding: 12px 24px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                        Cancel
+                    </button>
+                    <button class="modal-submit" onclick="submitModalFeedback(this)" style="flex: 2;">
+                        Send Feedback
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-left: 8px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

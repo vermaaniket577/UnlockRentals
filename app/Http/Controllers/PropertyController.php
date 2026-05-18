@@ -9,6 +9,7 @@ use App\Http\Requests\StorePropertyRequest;
 use App\Http\Requests\UpdatePropertyRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class PropertyController extends Controller
@@ -123,13 +124,15 @@ class PropertyController extends Controller
         }
 
         $properties = $query->paginate(12)->withQueryString();
-        $categories = Category::all();
+        $categories = Cache::remember('all_categories', 3600, fn () => Category::all());
 
-        // Get unique locations for filter dropdown
-        $locations = Property::approved()
-            ->select('location')
-            ->distinct()
-            ->pluck('location');
+        // Get unique locations for filter dropdown (cached 30 min)
+        $locations = Cache::remember('approved_locations', 1800, function () {
+            return Property::approved()
+                ->select('location')
+                ->distinct()
+                ->pluck('location');
+        });
 
         return view('properties.index', compact('properties', 'categories', 'locations'));
     }
@@ -155,7 +158,7 @@ class PropertyController extends Controller
                       ->orWhere('category_id', $property->category_id)
                       ->orWhere('location', $property->location);
             })
-            ->with(['primaryImage', 'category'])
+            ->with(['primaryImage', 'category', 'owner'])
             ->take(4)
             ->get();
 
@@ -178,7 +181,8 @@ class PropertyController extends Controller
     {
         $data = $request->validated();
         $data['user_id'] = auth()->id();
-        $data['status'] = 'pending'; // Requires admin approval
+        $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
+        $data['status'] = $bypassApproval ? 'approved' : 'pending';
 
         // If user is a tenant, upgrade to owner upon posting a property
         $user = auth()->user();
@@ -191,23 +195,27 @@ class PropertyController extends Controller
 
         $property = Property::create($data);
 
-        // Handle image uploads
+        // Handle image uploads — save to disk for fast serving
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
-                $binaryData = file_get_contents($image->getRealPath());
-                
+                $path = $image->store('properties/' . $property->id, 'public');
+
                 PropertyImage::create([
                     'property_id' => $property->id,
-                    'path' => null, // Store completely as binary data in the database
-                    'image_data' => $binaryData,
-                    'is_primary' => ($index === (int) $request->get('primary_image', 0)),
-                    'sort_order' => $index,
+                    'path'        => $path,
+                    'image_data'  => null,
+                    'is_primary'  => ($index === (int) $request->get('primary_image', 0)),
+                    'sort_order'  => $index,
                 ]);
             }
         }
 
+        $successMsg = $bypassApproval 
+            ? 'Property posted successfully! It is now live on the website.' 
+            : 'Property submitted successfully! It will be visible after admin approval.';
+
         return redirect()->route('dashboard')
-            ->with('success', 'Property submitted successfully! It will be visible after admin approval.');
+            ->with('success', $successMsg);
     }
 
     /**
@@ -229,8 +237,8 @@ class PropertyController extends Controller
     {
         $this->authorize('update', $property);
 
-        $data = $request->validated();
-        $data['status'] = 'pending'; // Re-submit for approval after edit
+        $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
+        $data['status'] = $bypassApproval ? 'approved' : 'pending';
 
         // Remove images from the data array before updating
         unset($data['images'], $data['primary_image'], $data['remove_images']);
@@ -249,18 +257,18 @@ class PropertyController extends Controller
             }
         }
 
-        // Handle new image uploads
+        // Handle new image uploads — save to disk
         if ($request->hasFile('images')) {
             $maxOrder = $property->images()->max('sort_order') ?? -1;
             foreach ($request->file('images') as $index => $image) {
-                $binaryData = file_get_contents($image->getRealPath());
-                
+                $path = $image->store('properties/' . $property->id, 'public');
+
                 PropertyImage::create([
                     'property_id' => $property->id,
-                    'path' => null, // Exclusively binary dataset
-                    'image_data' => $binaryData,
-                    'is_primary' => false,
-                    'sort_order' => $maxOrder + $index + 1,
+                    'path'        => $path,
+                    'image_data'  => null,
+                    'is_primary'  => false,
+                    'sort_order'  => $maxOrder + $index + 1,
                 ]);
             }
         }
@@ -273,8 +281,12 @@ class PropertyController extends Controller
                 ->update(['is_primary' => true]);
         }
 
+        $successMsg = $bypassApproval 
+            ? 'Property updated successfully! Changes are live.' 
+            : 'Property updated successfully! It will be reviewed by admin.';
+
         return redirect()->route('dashboard')
-            ->with('success', 'Property updated successfully! It will be reviewed by admin.');
+            ->with('success', $successMsg);
     }
 
     /**

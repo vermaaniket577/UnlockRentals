@@ -52,7 +52,7 @@ class AuthController extends Controller
             Auth::login($user);
         }
 
-        return redirect('/dashboard')->with('success', 'Logged in successfully via ' . ucfirst($provider));
+        return redirect()->route('home')->with('success', 'Logged in successfully via ' . ucfirst($provider));
     }
 
     /**
@@ -81,7 +81,7 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard');
             }
 
-            return redirect()->intended(route('dashboard'));
+            return redirect()->intended(route('home'))->with('success', 'Welcome back, ' . auth()->user()->name . '!');
         }
 
         return back()->withErrors([
@@ -120,7 +120,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')
+        return redirect()->route('home')
             ->with('success', 'Welcome to UnlockRentals! Your account has been created.');
     }
 

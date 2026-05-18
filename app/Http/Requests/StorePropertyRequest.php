@@ -35,7 +35,7 @@ class StorePropertyRequest extends FormRequest
             'area_sqft' => 'nullable|integer|min:0',
             'furnishing' => 'required|in:unfurnished,semi-furnished,fully-furnished',
             'images' => 'required|array|min:1|max:10',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'primary_image' => 'nullable|integer|min:0',
         ];
     }
@@ -46,7 +46,7 @@ class StorePropertyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'images.*.max' => 'Each image must be under 2MB.',
+            'images.*.max' => 'Each image must be under 5MB.',
             'images.*.image' => 'Only image files are allowed.',
             'images.*.mimes' => 'Accepted formats: JPEG, PNG, JPG, WebP.',
             'description.min' => 'Please provide a detailed description (at least 20 characters).',
