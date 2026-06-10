@@ -1,0 +1,1 @@
+<?php // Cleared for security.

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    
+    <!-- Accent Gold Gradient -->
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+
+    <!-- Metallic Shield Gradient -->
+    <linearGradient id="metal-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.03" />
+    </linearGradient>
+    
+    <!-- Shadow Filter -->
+    <filter id="drop-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Background -->
+  <rect width="512" height="512" rx="118" fill="url(#bg-grad)" />
+
+  <!-- Glassmorphism Accent Ring -->
+  <rect x="24" y="24" width="464" height="464" rx="94" fill="none" stroke="url(#metal-grad)" stroke-width="6" />
+
+  <!-- Shield Shape for Lock/Unlock Theme -->
+  <g filter="url(#drop-shadow)">
+    <!-- Main House/Shield Outline -->
+    <path d="M256,96 L400,208 L400,384 C400,401.7 385.7,416 368,416 L144,416 C126.3,416 112,401.7 112,384 L112,208 Z" fill="#0F172A" opacity="0.9" />
+    
+    <!-- House Roof Highlight -->
+    <path d="M256,84 L416,208 L396,224 L256,115 L116,224 L96,208 Z" fill="url(#gold-grad)" />
+    
+    <!-- Integrated Key & Door Lock Concept -->
+    <!-- Door Silhouette -->
+    <rect x="224" y="288" width="64" height="128" rx="8" fill="#1E293B" />
+    
+    <!-- Glowing Keyhole / Key Icon -->
+    <!-- Key Head (Ring) -->
+    <circle cx="256" cy="220" r="32" fill="none" stroke="url(#gold-grad)" stroke-width="8" />
+    <!-- Key Shaft -->
+    <rect x="252" y="252" width="8" height="64" fill="url(#gold-grad)" />
+    <!-- Key Teeth -->
+    <path d="M260,284 L276,284 L276,296 L260,296 Z" fill="url(#gold-grad)" />
+    <path d="M260,304 L272,304 L272,316 L260,316 Z" fill="url(#gold-grad)" />
+  </g>
+
+  <!-- Verified Badge -->
+  <g transform="translate(350, 310)" filter="url(#drop-shadow)">
+    <circle cx="40" cy="40" r="36" fill="#10B981" />
+    <circle cx="40" cy="40" r="30" fill="none" stroke="#FFFFFF" stroke-width="3" />
+    <path d="M28,40 L36,48 L52,30" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>
