@@ -148,7 +148,7 @@
                                 <i class="ph-bold ph-check-circle text-2xl"></i>
                             </div>
                             <div>
-                                <p class="text-sm font-black text-slate-950">Active premium plan: {{ $activePlan->plan->name }}</p>
+                                <p class="text-sm font-black text-slate-950">Active premium plan: {{ $activePlan->plan->name ?? 'Premium Plan' }}</p>
                                 <p class="text-xs text-slate-500">{{ $activePlan->remaining_contacts }} unlocks left. Valid until {{ $activePlan->expires_at->format('M d, Y') }}.</p>
                             </div>
                         </div>
@@ -162,7 +162,7 @@
                             <i class="ph-bold ph-clock text-2xl"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-black text-slate-950">Payment review pending: {{ $pendingPlan->plan->name }}</p>
+                            <p class="text-sm font-black text-slate-950">Payment review pending: {{ $pendingPlan->plan->name ?? 'Premium Plan' }}</p>
                             <p class="text-xs text-slate-500">Admin verification is in progress. Your plan activates once approved.</p>
                         </div>
                     </div>
@@ -216,23 +216,15 @@
                         </li>
                     </ul>
                     <div class="mt-8">
-                        @auth
-                            @if($activePlan && $activePlan->plan_id === $plan->id)
-                                <button disabled class="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700">Current Plan</button>
-                            @elseif($activePlan || $pendingPlan)
-                                <button disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-black text-slate-400">{{ $activePlan ? 'Already Subscribed' : 'Request Pending' }}</button>
-                            @else
-                                <form method="POST" action="{{ route('plans.purchase', $plan) }}">
-                                    @csrf
-                                    <input type="hidden" name="billing_period" value="monthly" class="billing-input">
-                                    <button class="choose-plan-btn w-full rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-blue-700" type="submit">
-                                        Choose Plan
-                                    </button>
-                                </form>
-                            @endif
+                        @if(auth()->check() && $activePlan && $activePlan->plan_id === $plan->id)
+                            <button disabled class="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700">Current Plan</button>
+                        @elseif(auth()->check() && ($activePlan || $pendingPlan))
+                            <button disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-black text-slate-400">{{ $activePlan ? 'Already Subscribed' : 'Request Pending' }}</button>
                         @else
-                            <a href="{{ route('login') }}" class="block w-full rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-blue-700">Sign In to Subscribe</a>
-                        @endauth
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link block w-full rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-blue-700">
+                                Choose Plan
+                            </a>
+                        @endif
                     </div>
                 </article>
             @endforeach
@@ -313,7 +305,6 @@
     function setBilling(period) {
         toggle.classList.toggle('yearly', period === 'yearly');
         buttons.forEach(button => button.classList.toggle('active', button.dataset.billingChoice === period));
-        inputs.forEach(input => input.value = period);
 
         cards.forEach(card => {
             const price = period === 'yearly' ? card.dataset.yearly : card.dataset.monthly;
@@ -321,23 +312,28 @@
             const periodEl = card.querySelector('.plan-period');
             const note = card.querySelector('.yearly-note');
             const duration = card.querySelector('.duration-label');
+            const checkoutLink = card.querySelector('.plan-checkout-link');
 
             if (priceEl && price !== 'Custom') priceEl.textContent = Number(price).toLocaleString('en-IN');
             if (periodEl) periodEl.textContent = period === 'yearly' ? '/buy' : '/rent';
             if (note) note.classList.toggle('hidden', period !== 'yearly');
             if (duration) duration.textContent = period === 'yearly' ? '365 days' : `${card.dataset.duration || 30} days`;
+
+            if (checkoutLink) {
+                const url = new URL(checkoutLink.href, window.location.origin);
+                url.searchParams.set('billing', period);
+                checkoutLink.href = url.pathname + url.search;
+            }
         });
     }
 
     buttons.forEach(button => button.addEventListener('click', () => setBilling(button.dataset.billingChoice)));
 
-    document.querySelectorAll('form[action*="/plans/"][action$="/purchase"]').forEach(form => {
-        form.addEventListener('submit', () => {
-            const button = form.querySelector('.choose-plan-btn');
-            if (button) {
-                button.disabled = true;
-                button.textContent = 'Opening secure checkout...';
-            }
+    document.querySelectorAll('.plan-checkout-link').forEach(link => {
+        link.addEventListener('click', () => {
+            link.style.pointerEvents = 'none';
+            link.style.opacity = '0.7';
+            link.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin" style="margin-right:6px"></i> Opening secure checkout...';
         });
     });
 })();

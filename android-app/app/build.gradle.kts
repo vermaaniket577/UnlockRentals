@@ -1,41 +1,55 @@
 plugins {
-  alias(libs.plugins.android.application)
-  alias(libs.plugins.compose.compiler)
-  alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.android.application)
 }
 
 android {
     namespace = "com.example.unlockrentals"
     compileSdk = 36
+
     defaultConfig {
         applicationId = "com.example.unlockrentals"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
+    }
+
+    // Release signing config — fill in your keystore details
+    signingConfigs {
+        create("release") {
+            // Uncomment and fill these in before building a release APK:
+            // storeFile = file("keystore/unlockrentals-release.jks")
+            // storePassword = "YOUR_KEYSTORE_PASSWORD"
+            // keyAlias = "unlockrentals"
+            // keyPassword = "YOUR_KEY_PASSWORD"
+        }
     }
 
     buildTypes {
+        debug {
+            isDebuggable = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // Uncomment after setting up signing config:
+            // signingConfig = signingConfigs.getByName("release")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
-      compose = true
-      aidl = false
-      buildConfig = false
-      shaders = false
+        viewBinding = true
     }
 
     packaging {
-      resources {
-        excludes += "/META-INF/{AL2.0,LGPL2.1}"
-      }
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
@@ -44,41 +58,19 @@ kotlin {
 }
 
 dependencies {
-  val composeBom = platform(libs.androidx.compose.bom)
-  implementation(composeBom)
-  androidTestImplementation(composeBom)
+    // Core Android
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
-  // Core Android dependencies
-  implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.lifecycle.runtime.ktx)
-  implementation(libs.androidx.activity.compose)
+    // AppCompat for AppCompatActivity
+    implementation("androidx.appcompat:appcompat:1.7.0")
 
-  // Arch Components
-  implementation(libs.androidx.lifecycle.runtime.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.compose)
+    // Splash Screen API (backward compatible)
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
-  // Compose
-  implementation(libs.androidx.compose.ui)
-  implementation(libs.androidx.compose.ui.tooling.preview)
-  implementation(libs.androidx.compose.material3)
-  // Tooling
-  debugImplementation(libs.androidx.compose.ui.tooling)
-  // Instrumented tests
-  androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-  debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // SwipeRefreshLayout for pull-to-refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
-  // Local tests: jUnit, coroutines, Android runner
-  testImplementation(libs.junit)
-  testImplementation(libs.kotlinx.coroutines.test)
-
-  // Instrumented tests: jUnit rules and runners
-  androidTestImplementation(libs.androidx.test.core)
-  androidTestImplementation(libs.androidx.test.ext.junit)
-  androidTestImplementation(libs.androidx.test.runner)
-  androidTestImplementation(libs.androidx.test.espresso.core)
-
-  // Navigation
-  implementation(libs.androidx.navigation3.ui)
-  implementation(libs.androidx.navigation3.runtime)
-  implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    // WebKit (enhanced WebView APIs)
+    implementation("androidx.webkit:webkit:1.12.1")
 }

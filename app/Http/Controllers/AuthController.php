@@ -92,7 +92,7 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard');
             }
 
-            return redirect()->route('home')->with('success', 'Welcome back, ' . auth()->user()->name . '!');
+            return redirect()->intended(route('home'))->with('success', 'Welcome back, ' . auth()->user()->name . '!');
         }
 
         return back()->withErrors([

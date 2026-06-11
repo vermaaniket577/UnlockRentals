@@ -114,6 +114,7 @@
                             <th class="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Type</th>
                             <th class="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Price</th>
                             <th class="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Status</th>
+                            <th class="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Booked</th>
                             <th class="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Actions</th>
                         </tr>
                     </thead>
@@ -149,6 +150,18 @@
                                 <span class="px-2.5 py-1 bg-{{ $color }}-500/10 text-{{ $color }}-400 text-xs font-medium rounded-sm">
                                     {{ ucfirst($property->status) }}
                                 </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <form method="POST" action="{{ route('properties.toggle-booked', $property) }}" class="inline-block align-middle">
+                                    @csrf
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="is_booked" class="sr-only peer" onchange="this.form.submit()" {{ $property->is_booked ? 'checked' : '' }}>
+                                        <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2563EB]"></div>
+                                        <span class="ml-2 text-xs font-semibold {{ $property->is_booked ? 'text-red-500 font-bold' : 'text-zinc-400' }}">
+                                            {{ $property->is_booked ? 'Booked' : 'Available' }}
+                                        </span>
+                                    </label>
+                                </form>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">

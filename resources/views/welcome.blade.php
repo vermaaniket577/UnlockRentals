@@ -47,7 +47,7 @@
     </script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260609-pill-fix">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260611-header-fix">
 
     <!-- Phosphor Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.0/src/bold/style.css" crossorigin="anonymous">
@@ -339,6 +339,16 @@
                 width: 36px;
             }
         }
+        
+        @media (max-width: 768px) {
+            .main-header {
+                padding-top: 42px !important;
+                padding-bottom: 12px !important;
+                padding-left: 14px !important;
+                padding-right: 14px !important;
+                gap: 8px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -348,9 +358,9 @@
 
     <header class="main-header" style="z-index: 9999;">
         <div class="logo-wrapper">
-            <a href="{{ route('home') }}" class="logo">
-                <img src="{{ asset('images/logo.png') }}" alt="Unlock Rentals" class="logo-img" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
-                <span class="logo-text">Unlock<span>Rentals</span></span>
+            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;">
+                <img src="{{ asset('images/logo.png') }}" alt="Unlock Rentals" class="logo-img" style="width: 28px !important; height: 28px !important; flex-shrink: 0 !important; object-fit: contain !important;" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
+                <span class="logo-text" style="font-size: 18px !important; white-space: nowrap !important;">Unlock<span>Rentals</span></span>
             </a>
         </div>
         <nav class="main-nav">
@@ -374,9 +384,10 @@
         <div class="auth-nav" style="display: flex; align-items: center; gap: 10px;">
             @if (Route::has('login'))
                 @auth
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 28px; height: 44px; margin-right: 5px;">
-                        <i class="ph-fill ph-megaphone-simple" style="font-size: 18px;"></i>
-                        {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 20px; height: 44px; margin-right: 5px; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="ph-bold ph-plus-circle" style="font-size: 18px;"></i>
+                        <span class="hidden md:inline">{{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}</span>
+                        <span class="inline md:hidden">Post Ad</span>
                     </a>
                     <div class="relative" style="position:relative; display:inline-block;">
                         <button onclick="toggleUserDropdown(event)" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all" style="background:transparent; border:none; color:#fff; cursor:pointer;" id="userDropdownBtn">
@@ -439,9 +450,10 @@
                         Log in
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 28px; height: 44px;">
-                            <i class="ph-fill ph-megaphone-simple" style="font-size: 18px;"></i>
-                            {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 20px; height: 44px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="ph-bold ph-plus-circle" style="font-size: 18px;"></i>
+                            <span class="hidden md:inline">{{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}</span>
+                            <span class="inline md:hidden">Post Ad</span>
                         </a>
                     @endif
                 @endauth
@@ -875,6 +887,10 @@
         <x-footer />
     </div>
 
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/917974164274" target="_blank" class="whatsapp-trigger" style="position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 32px; box-shadow: 0 10px 30px rgba(37,211,102,0.4); z-index: 10000; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
+        <i class="ph-fill ph-whatsapp-logo"></i>
+    </a>
 
     @if(($site_settings['chatbot_enabled'] ?? '1') == '1')
     <!-- Chatbot Overlay -->

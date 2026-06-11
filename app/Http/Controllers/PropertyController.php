@@ -429,4 +429,25 @@ class PropertyController extends Controller
 
         return redirect()->back()->with('success', 'Callback request submitted! Our agent will call you shortly.');
     }
+
+    /**
+     * Toggle the booked status of a property.
+     */
+    public function toggleBooked(Request $request, Property $property)
+    {
+        // Enforce owner / admin permission
+        if (auth()->id() != $property->user_id && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $property->is_booked = !$property->is_booked;
+        $property->save();
+
+        // Clear homepage cache to update watermark instantly
+        \Illuminate\Support\Facades\Cache::forget('home_featured_rentals');
+
+        return redirect()->back()->with('success', $property->is_booked 
+            ? 'Property marked as Booked!' 
+            : 'Property marked as Available!');
+    }
 }

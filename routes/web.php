@@ -124,6 +124,35 @@ Route::get('/sitemap.xml', function () {
     ])->header('Content-Type', 'text/xml');
 });
 
+// App Download Landing Page
+Route::get('/app', function () {
+    return view('app.download');
+})->name('app.download');
+
+// Direct APK Download
+Route::get('/download/apk', function () {
+    $apkUrl = \App\Models\Setting::where('key', 'app_apk_download_url')->value('value');
+    
+    if (!$apkUrl || $apkUrl === '#') {
+        abort(404, 'APK download is not available yet.');
+    }
+
+    // If it's an external URL, redirect to it
+    if (str_starts_with($apkUrl, 'http')) {
+        return redirect($apkUrl);
+    }
+
+    // If it's a local file path
+    $filePath = public_path($apkUrl);
+    if (!file_exists($filePath)) {
+        abort(404, 'APK file not found.');
+    }
+
+    return response()->download($filePath, 'UnlockRentals.apk', [
+        'Content-Type' => 'application/vnd.android.package-archive'
+    ]);
+})->name('app.download.apk');
+
 // Offline Fallback Route
 Route::view('/offline', 'errors.offline')->name('offline');
 
@@ -191,6 +220,7 @@ Route::middleware(['auth', 'role:owner,admin,tenant'])->group(function () {
     Route::get('/properties/{property}/edit', [PropertyController::class, 'edit'])->name('properties.edit');
     Route::put('/properties/{property}', [PropertyController::class, 'update'])->name('properties.update');
     Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])->name('properties.destroy');
+    Route::post('/properties/{property}/toggle-booked', [PropertyController::class, 'toggleBooked'])->name('properties.toggle-booked');
 
     // Owner inquiries
     Route::get('/inquiries', [InquiryController::class, 'index'])->name('inquiries.index');
@@ -248,6 +278,152 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/subscriptions/{userPlan}/update-plan', [AdminController::class, 'updateSubscriptionPlanTier'])->name('subscriptions.update-plan');
     Route::get('/users/{user}/activity', [AdminController::class, 'userActivity'])->name('users.activity');
 });
+
+// Database Migration & Seeding Route (Securely triggered via key)
+Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
+    $key = $request->query('key');
+    $expectedKey = env('MIGRATION_KEY', 'UnlockRentalsSecureMigrateKey2026');
+
+    if ($key !== $expectedKey) {
+        abort(404);
+    }
+
+    // Reset OPcache if enabled to force loading updated files
+    if (function_exists('opcache_reset')) {
+        opcache_reset();
+    }
+
+    try {
+        echo "<html><head><title>UnlockRentals Database Setup</title></head><body style='font-family: sans-serif; padding: 20px; line-height: 1.6;'>";
+        echo "<h2>UnlockRentals Database Migrations & Seeding</h2>";
+
+        // Canon list of migrations in current codebase
+        $localMigrations = [
+            '0001_01_01_000000_create_users_table.php',
+            '0001_01_01_000001_create_cache_table.php',
+            '0001_01_01_000002_create_jobs_table.php',
+            '2024_01_01_000003_create_categories_table.php',
+            '2024_01_01_000004_create_properties_table.php',
+            '2024_01_01_000005_create_property_images_table.php',
+            '2024_01_01_000006_create_inquiries_table.php',
+            '2026_04_13_180505_create_settings_table.php',
+            '2026_04_15_170000_create_plans_table.php',
+            '2026_04_15_170001_create_user_plans_table.php',
+            '2026_04_15_170002_create_contact_views_table.php',
+            '2026_04_16_155846_add_locality_to_properties_table.php',
+            '2026_04_16_161707_add_state_to_properties_table.php',
+            '2026_04_16_173236_create_feedback_table.php',
+            '2026_04_16_175034_create_chatbot_messages_table.php',
+            '2026_04_16_180138_create_callback_requests_table.php',
+            '2026_04_21_104155_add_binary_data_to_property_images_table.php',
+            '2026_05_16_025451_add_purpose_to_properties_table.php',
+            '2026_05_17_110254_add_is_read_to_chatbot_messages_table.php',
+            '2026_05_20_044315_add_payment_fields_to_user_plans_table.php',
+            '2026_05_20_044315_create_coupons_table.php',
+            '2026_05_20_044316_add_wallet_to_users_table.php',
+            '2026_05_20_044317_create_wallet_transactions_table.php',
+            '2026_05_20_044318_create_activity_logs_table.php',
+            '2026_05_20_044318_create_referrals_table.php',
+            '2026_05_20_044319_create_payment_logs_table.php',
+            '2026_05_20_052820_add_is_private_to_plans_table.php',
+            '2026_05_20_052820_create_private_user_offers_table.php',
+            '2026_05_20_054524_add_discounted_price_to_private_user_offers_table.php',
+            '2026_05_20_064500_create_visit_bookings_table.php',
+            '2026_05_20_064501_add_property_id_to_callback_requests_table.php',
+            '2026_05_23_170001_add_billing_fields_to_user_plans_table.php',
+            '2026_05_25_220600_create_locations_tables.php',
+            '2026_06_10_184500_create_process_steps_table.php',
+            '2026_06_11_110000_add_is_booked_to_properties_table.php',
+        ];
+
+        // Check for leftover duplicate migration files on the server
+        $migrationPath = database_path('migrations');
+        if (is_dir($migrationPath)) {
+            $serverFiles = scandir($migrationPath);
+            $leftoverFiles = [];
+            foreach ($serverFiles as $file) {
+                if ($file === '.' || $file === '..' || is_dir($migrationPath . '/' . $file)) {
+                    continue;
+                }
+                if (!in_array($file, $localMigrations)) {
+                    $leftoverFiles[] = $file;
+                }
+            }
+
+            if (!empty($leftoverFiles)) {
+                echo "<div style='background: #fee; border: 1px solid #f99; padding: 15px; border-radius: 5px; margin-bottom: 20px; color: #a11;'>";
+                echo "<strong>⚠️ Warning: Leftover/Duplicate Migration Files Detected!</strong><br>";
+                echo "The following files exist on your server but are NOT part of your current codebase. Please delete them from your server using cPanel File Manager, then refresh this page:<br><ul>";
+                foreach ($leftoverFiles as $file) {
+                    echo "<li><code>laravel_project/database/migrations/$file</code></li>";
+                }
+                echo "</ul></div>";
+            }
+        }
+
+        // Debug: Check if the migration file on disk contains the new changes
+        $migrationFile = database_path('migrations/2026_05_23_170001_add_billing_fields_to_user_plans_table.php');
+        if (file_exists($migrationFile)) {
+            $content = file_get_contents($migrationFile);
+            $hasCheck = str_contains($content, 'Schema::hasColumn');
+            echo "<div style='background: #eef; padding: 10px; border-radius: 5px; margin-bottom: 15px;'>";
+            echo "<strong>File check:</strong> <code>2026_05_23_170001_add_billing_fields_to_user_plans_table.php</code><br>";
+            echo "Contains safety check: " . ($hasCheck ? "<span style='color:green;font-weight:bold;'>YES</span>" : "<span style='color:red;font-weight:bold;'>NO</span>") . "<br>";
+            echo "</div>";
+        }
+
+        // Debug: Check if the seeder file on disk contains the new changes
+        $seederFile = database_path('seeders/DatabaseSeeder.php');
+        if (file_exists($seederFile)) {
+            $content = file_get_contents($seederFile);
+            $hasCheck = str_contains($content, 'admin@unlockrentals.com') && str_contains($content, 'exists');
+            echo "<div style='background: #eef; padding: 10px; border-radius: 5px; margin-bottom: 15px;'>";
+            echo "<strong>File check:</strong> <code>DatabaseSeeder.php</code><br>";
+            echo "Contains safety check: " . ($hasCheck ? "<span style='color:green;font-weight:bold;'>YES</span>" : "<span style='color:red;font-weight:bold;'>NO (Please copy and paste the updated DatabaseSeeder.php code into this file on cPanel)</span>") . "<br>";
+            echo "</div>";
+        } else {
+            echo "<div style='background: #ffe; padding: 10px; border-radius: 5px; margin-bottom: 15px; color: red;'>";
+            echo "<strong>Warning:</strong> DatabaseSeeder.php file not found at <code>$seederFile</code>";
+            echo "</div>";
+        }
+        
+        echo "<strong>Step 0: Cleaning duplicate plans...</strong><br>";
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        \Illuminate\Support\Facades\DB::table('plans')->truncate();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+        echo "Plans table truncated.<br><br>";
+
+        echo "<strong>Step 1: Running migrations...</strong><br>";
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        echo "Output:<br><pre style='background: #f4f4f4; padding: 10px; border-radius: 5px;'>";
+        echo htmlspecialchars(\Illuminate\Support\Facades\Artisan::output());
+        echo "</pre>";
+        
+        echo "<strong>Step 2: Running database seeder...</strong><br>";
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        echo "Output:<br><pre style='background: #f4f4f4; padding: 10px; border-radius: 5px;'>";
+        echo htmlspecialchars(\Illuminate\Support\Facades\Artisan::output());
+        echo "</pre>";
+        
+        echo "<h3 style='color: green;'>✓ Database setup completed successfully!</h3>";
+        echo "</body></html>";
+    } catch (\Exception $e) {
+        echo "<h3 style='color: red;'>✗ Error occurred:</h3>";
+        echo "<pre style='background: #fff0f0; border: 1px solid red; padding: 10px; color: red;'>";
+        echo htmlspecialchars($e->getMessage()) . "\n" . htmlspecialchars($e->getTraceAsString());
+        echo "</pre>";
+        echo "</body></html>";
+    }
+})->name('run-migrations');
+
+// Fallback route to serve images directly from storage/app/public without a symlink
+Route::get('/property-image-file/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    return response()->file($fullPath);
+})->where('path', '.*')->name('property.image.file');
 
 // Dynamic Catch-All Route for Programmatic SEO Pages
 Route::get('/{seo_slug}', [\App\Http\Controllers\SeoController::class, 'handle'])->name('seo.landing');

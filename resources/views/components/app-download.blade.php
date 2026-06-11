@@ -384,6 +384,22 @@
                         </div>
                     </a>
                 </div>
+
+                @if(($site_settings['app_apk_download_url'] ?? '') !== '' && ($site_settings['app_apk_download_url'] ?? '') !== '#')
+                <div style="margin-top: 1.5rem;">
+                    <a href="{{ $site_settings['app_apk_download_url'] }}" download style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 10px; color: #2563eb; text-decoration: none; font-size: 13px; font-weight: 700; transition: all 0.3s;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Download APK Directly
+                    </a>
+                </div>
+                @endif
+
+                <div style="margin-top: 2rem;">
+                    <a href="{{ route('app.download') }}" style="color: #6b7280; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: color 0.3s;" onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#6b7280'">
+                        View full download page
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </a>
+                </div>
             </div>
 
         </div>

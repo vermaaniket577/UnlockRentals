@@ -362,7 +362,7 @@ UnlockRentals offers the best verified properties in India. You're in good hands
                     {{-- Mobile App Links --}}
                     <div>
                         <h3 class="text-sm font-bold text-zinc-900 mb-4 border-b border-stone-100 pb-2 uppercase tracking-wider">Mobile App Distribution</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Google Play URL</label>
                                 <input type="url" name="app_google_play_url" value="{{ $settings['app_google_play_url'] ?? '#' }}" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]">
@@ -370,6 +370,11 @@ UnlockRentals offers the best verified properties in India. You're in good hands
                             <div>
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Apple App Store URL</label>
                                 <input type="url" name="app_store_url" value="{{ $settings['app_store_url'] ?? '#' }}" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">APK Direct Download URL</label>
+                                <input type="url" name="app_apk_download_url" value="{{ $settings['app_apk_download_url'] ?? '' }}" placeholder="https://your-domain.com/downloads/UnlockRentals.apk" class="w-full px-4 py-2 bg-stone-50 border border-stone-200 rounded-sm text-zinc-900 text-sm focus:outline-none focus:border-[#2563EB]">
+                                <p class="mt-1 text-[10px] text-zinc-400 italic">Upload the APK file to your server and paste the direct URL here. Users can download the app without Google Play.</p>
                             </div>
                         </div>
                     </div>

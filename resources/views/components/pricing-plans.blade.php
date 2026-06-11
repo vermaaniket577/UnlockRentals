@@ -813,21 +813,10 @@
                                 </li>
                             </ul>
 
-                            @auth
-                                <form method="POST" action="{{ route('plans.purchase', $plan) }}">
-                                    @csrf
-                                    <input type="hidden" name="billing_period" value="monthly" class="billing-period-input">
-                                    <button type="submit" class="ur-plan-card__cta {{ $isGold ? 'ur-plan-card__cta--primary' : 'ur-plan-card__cta--outline' }}">
-                                        <i class="ph-bold {{ $isGold ? 'ph-crown' : ($isPlatinum ? 'ph-lightning' : 'ph-arrow-right') }}"></i>
-                                        <span>Choose Plan</span>
-                                    </button>
-                                </form>
-                            @else
-                                <a href="{{ route('login') }}" class="ur-plan-card__cta {{ $isGold ? 'ur-plan-card__cta--primary' : 'ur-plan-card__cta--outline' }}">
-                                    <i class="ph-bold ph-sign-in"></i>
-                                    <span>Sign In to Subscribe</span>
-                                </a>
-                            @endauth
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="ur-plan-card__cta {{ $isGold ? 'ur-plan-card__cta--primary' : 'ur-plan-card__cta--outline' }} plan-checkout-link">
+                                <i class="ph-bold {{ $isGold ? 'ph-crown' : ($isPlatinum ? 'ph-lightning' : 'ph-arrow-right') }}"></i>
+                                <span>Choose Plan</span>
+                            </a>
                         </div>
                     @endforeach
                 </div>
@@ -928,6 +917,13 @@
                         : 'GST inclusive · Instant activation';
                     noteEl.style.opacity = '1';
                 }, 150);
+            });
+
+            const checkoutLinks = document.querySelectorAll('.plan-checkout-link');
+            checkoutLinks.forEach(link => {
+                const url = new URL(link.href, window.location.origin);
+                url.searchParams.set('billing', isYearly ? 'yearly' : 'monthly');
+                link.href = url.pathname + url.search;
             });
         }
         
@@ -1066,6 +1062,14 @@
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(updateSlider, 100);
+        });
+
+        document.querySelectorAll('.plan-checkout-link').forEach(link => {
+            link.addEventListener('click', () => {
+                link.style.pointerEvents = 'none';
+                link.style.opacity = '0.7';
+                link.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin" style="margin-right:6px"></i> Opening secure checkout...';
+            });
         });
 
         // Initial update

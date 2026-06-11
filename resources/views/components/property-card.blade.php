@@ -13,6 +13,14 @@
                  alt="Premium Property Placeholder">
         @endif
 
+        @if($property->is_booked)
+            <div class="absolute inset-0 bg-black/45 backdrop-blur-[1.5px] flex items-center justify-center z-[11] pointer-events-none" style="position: absolute; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(1.5px); display: flex; align-items: center; justify-content: center; z-index: 11;">
+                <div class="px-4 py-2 bg-red-600/90 text-white font-extrabold text-xs uppercase tracking-widest rounded shadow-lg border border-red-500/30 transform -rotate-6 flex items-center gap-1.5" style="background: rgba(220, 38, 38, 0.9); color: #fff; padding: 8px 16px; border-radius: 4px; font-weight: 850; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; transform: rotate(-6deg); box-shadow: 0 10px 20px -5px rgba(220, 38, 38, 0.4); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; gap: 6px;">
+                    <i class="ph-bold ph-lock-key"></i> Booked
+                </div>
+            </div>
+        @endif
+
         {{-- Top Badges --}}
         <div class="absolute top-4 left-4 flex gap-2 z-10" style="position: absolute; top: 16px; left: 16px; display: flex; gap: 8px;">
             <span style="background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); color: var(--primary); padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">

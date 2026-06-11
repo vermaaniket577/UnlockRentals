@@ -2044,9 +2044,9 @@ a { text-decoration: none; color: inherit; }
     }
 
     .logo-text {
-        max-width: 92px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        max-width: none !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
         white-space: nowrap !important;
     }
 
@@ -2203,5 +2203,33 @@ a { text-decoration: none; color: inherit; }
     .auth-nav .btn-cta-premium {
         max-width: 132px !important;
         font-size: 9px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .chatbot-trigger {
+        bottom: 80px !important;
+        right: 15px !important;
+        width: 50px !important;
+        height: 50px !important;
+    }
+    .chat-window {
+        bottom: 80px !important;
+        height: calc(100vh - 150px) !important;
+    }
+}
+
+.whatsapp-trigger:hover {
+    transform: scale(1.1) rotate(5deg) !important;
+    box-shadow: 0 15px 40px rgba(37,211,102,0.6) !important;
+}
+
+@media (max-width: 768px) {
+    .whatsapp-trigger {
+        bottom: 80px !important;
+        left: 15px !important;
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 26px !important;
     }
 }

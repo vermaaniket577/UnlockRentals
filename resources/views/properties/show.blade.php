@@ -165,6 +165,14 @@
                                  class="w-full h-full object-cover sm:object-contain bg-zinc-50 group-hover:scale-[1.02] transition-transform duration-500 ease-out cursor-zoom-in"
                                  id="gallery-main-img">
 
+                            @if($property->is_booked)
+                            <div class="absolute inset-0 bg-black/45 backdrop-blur-[1.5px] flex items-center justify-center z-10 pointer-events-none" style="position: absolute; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(1.5px); display: flex; align-items: center; justify-content: center; z-index: 10;">
+                                <div class="px-6 py-2.5 bg-red-600/90 text-white font-extrabold text-sm uppercase tracking-widest rounded shadow-lg border border-red-500/30 transform -rotate-12 flex items-center gap-2" style="background: rgba(220, 38, 38, 0.9); color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 850; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; transform: rotate(-12deg); box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; gap: 8px;">
+                                    <i class="ph-bold ph-lock-key"></i> Booked
+                                </div>
+                            </div>
+                            @endif
+
                             {{-- Image Overlay Badge --}}
                             <div class="absolute bottom-4 right-4 bg-zinc-900/80 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow-md flex items-center gap-1">
                                 <i class="ph-bold ph-image text-sm"></i>

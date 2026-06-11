@@ -34,6 +34,7 @@ class Property extends Model
         'status',
         'is_featured',
         'approved_at',
+        'is_booked',
     ];
 
     protected function casts(): array
@@ -44,6 +45,7 @@ class Property extends Model
             'longitude' => 'decimal:8',
             'is_featured' => 'boolean',
             'approved_at' => 'datetime',
+            'is_booked' => 'boolean',
         ];
     }
 

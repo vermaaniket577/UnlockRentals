@@ -73,7 +73,7 @@
     </script>
 
     {{-- Premium UnlockRentals Styles --}}
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260609-pill-fix">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260611-header-fix">
     <style>
         @keyframes premiumShine {
             0% { transform: translateX(-140%); }

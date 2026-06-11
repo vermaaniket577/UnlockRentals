@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Display Name -->
+    <key>CFBundleDisplayName</key>
+    <string>UnlockRentals</string>
+
+    <!-- Bundle Identifier -->
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
+    <!-- Bundle Name -->
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+
+    <!-- Bundle Version -->
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <!-- Executable -->
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <!-- iOS specific -->
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+
+    <!-- Supported interface orientations -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+
+    <!-- Status Bar -->
+    <key>UIStatusBarStyle</key>
+    <string>UIStatusBarStyleLightContent</string>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <true/>
+
+    <!-- App Transport Security (ATS) — enforce HTTPS -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>unlockrentals.in</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <false/>
+                <key>NSExceptionMinimumTLSVersion</key>
+                <string>TLSv1.2</string>
+            </dict>
+        </dict>
+    </dict>
+
+    <!-- Camera & Photo Library Permissions (for property image uploads) -->
+    <key>NSCameraUsageDescription</key>
+    <string>UnlockRentals needs camera access to take photos of your property for listings.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>UnlockRentals needs photo library access to upload property images.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>UnlockRentals needs permission to save downloaded images.</string>
+
+    <!-- Location Permission (optional, for nearby properties) -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>UnlockRentals uses your location to show nearby rental properties.</string>
+
+    <!-- Launch Screen -->
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+
+    <!-- Universal Links (Associated Domains configured in entitlements) -->
+
+    <!-- Background Modes -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+    </array>
+
+    <!-- Required device capabilities -->
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>armv7</string>
+    </array>
+</dict>
+</plist>

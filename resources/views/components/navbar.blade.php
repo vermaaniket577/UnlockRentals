@@ -91,7 +91,7 @@
                                             <span class="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-r {{ $navBadgeClass }} text-white"><i class="ph-bold ph-crown"></i></span>
                                             <div>
                                                 <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Pro Member</p>
-                                                <p class="text-xs font-black text-slate-900 dark:text-white">{{ $navActivePlan->plan->name }}</p>
+                                                <p class="text-xs font-black text-slate-900 dark:text-white">{{ $navActivePlan->plan->name ?? 'Pro Plan' }}</p>
                                                 @if($navActivePlan->expires_at)
                                                     <p class="mt-0.5 text-[10px] font-semibold text-slate-500">Expires {{ $navActivePlan->expires_at->format('M d, Y') }}</p>
                                                 @endif
