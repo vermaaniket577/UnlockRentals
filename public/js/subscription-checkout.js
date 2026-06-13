@@ -257,6 +257,13 @@ window.UnlockSubscriptionCheckout = (config) => {
             hideLoading();
             razorpay.open();
         });
+
+        // Automatically trigger the Razorpay modal on page load
+        if (payButton) {
+            setTimeout(() => {
+                payButton.click();
+            }, 300);
+        }
     } else {
         payButton?.addEventListener('click', (event) => {
             if (manualPaymentLink && form && !form.checkValidity()) {
