@@ -764,10 +764,10 @@
         <div style="margin: auto 0.75rem 1rem; padding: 1rem; background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(124,58,237,0.06)); border-radius:12px; border: 1px solid rgba(37,99,235,0.15);">
             <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
                 <i class="ph-bold ph-crown" style="color:#7c3aed;font-size:0.95rem;"></i>
-                <span style="font-size:0.75rem;font-weight:700;color:#7c3aed;">{{ $activePlan->plan->name ?? 'Active Plan' }}</span>
+                <span style="font-size:0.75rem;font-weight:700;color:#7c3aed;">{{ $activePlan->plan?->name ?? 'Active Plan' }}</span>
             </div>
             @php
-                $total    = $activePlan->plan->contact_limit ?? 0;
+                $total    = $activePlan->plan?->contact_limit ?? 0;
                 $used     = $activePlan->contacts_used ?? 0;
                 $pct      = $total > 0 ? min(100, round($used / $total * 100)) : 0;
                 $daysLeft = $activePlan->expires_at ? max(0, now()->diffInDays($activePlan->expires_at, false)) : '∞';

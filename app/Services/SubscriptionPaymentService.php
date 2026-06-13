@@ -84,7 +84,7 @@ class SubscriptionPaymentService
     public function successPayload(UserPlan $userPlan, string $invoiceId): array
     {
         return [
-            'plan' => $userPlan->plan->name ?? 'Premium',
+            'plan' => $userPlan->plan?->name ?? 'Premium',
             'expires_at' => $userPlan->expires_at ? $userPlan->expires_at->format('M d, Y') : '—',
             'invoice_id' => $invoiceId,
         ];

@@ -175,4 +175,19 @@ class PaymentFlowTest extends TestCase
         $response->assertSee('Billed To');
         $response->assertSee('Michael Tenant');
     }
+
+    public function test_user_plan_is_null_safe_when_plan_is_missing()
+    {
+        $userPlan = new UserPlan([
+            'user_id' => $this->tenant->id,
+            'plan_id' => null,
+            'status' => 'approved',
+            'contacts_used' => 5,
+        ]);
+
+        // Verify relationships and attributes are null-safe
+        $this->assertNull($userPlan->plan);
+        $this->assertFalse($userPlan->hasContactsRemaining());
+        $this->assertEquals(0, $userPlan->remaining_contacts);
+    }
 }

@@ -310,14 +310,14 @@
             <tbody>
                 <tr>
                     <td>
-                        <div class="item-title">UnlockRentals Premium Subscription: {{ $userPlan->plan->name }}</div>
+                        <div class="item-title">UnlockRentals Premium Subscription: {{ $userPlan->plan?->name ?? 'Premium Plan' }}</div>
                         <div class="item-desc">Premium owner contact unlock package. Access is validated across system properties.</div>
                     </td>
                     <td class="right" style="font-weight: 500;">
                         {{ $userPlan->billing_period === 'yearly' ? '365 days' : '30 days' }}
                     </td>
                     <td class="right" style="font-weight: 500;">
-                        {{ $userPlan->plan->contact_limit }} Unlocks
+                        {{ $userPlan->plan?->contact_limit ?? 'N/A' }} Unlocks
                     </td>
                     <td class="right" style="font-weight: 600;">
                         Rs. {{ number_format($userPlan->subtotal_amount, 2) }}

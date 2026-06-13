@@ -285,7 +285,7 @@
                                         {{ $up->invoice_id ?? 'INV-MOCK-' . $up->id }}
                                     </td>
                                     <td>
-                                        <div class="font-semibold text-slate-900 dark:text-white">{{ $up->plan->name ?? 'Premium Plan' }}</div>
+                                        <div class="font-semibold text-slate-900 dark:text-white">{{ $up->plan?->name ?? 'Premium Plan' }}</div>
                                         <div class="text-xs text-slate-500">{{ ($up->billing_period ?? 'monthly') === 'yearly' ? 'Buy' : 'Rent' }} plan</div>
                                     </td>
                                     <td class="text-slate-600 dark:text-slate-400 font-medium">

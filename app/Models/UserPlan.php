@@ -77,7 +77,7 @@ class UserPlan extends Model
      */
     public function hasContactsRemaining(): bool
     {
-        return $this->contacts_used < $this->plan->contact_limit;
+        return $this->plan ? ($this->contacts_used < $this->plan->contact_limit) : false;
     }
 
     /**
@@ -85,7 +85,7 @@ class UserPlan extends Model
      */
     public function getRemainingContactsAttribute(): int
     {
-        return max(0, $this->plan->contact_limit - $this->contacts_used);
+        return $this->plan ? max(0, $this->plan->contact_limit - $this->contacts_used) : 0;
     }
 
     /**
