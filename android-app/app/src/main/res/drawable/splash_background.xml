@@ -2,11 +2,11 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Dark branded background -->
     <item android:drawable="@color/primary_dark" />
-    <!-- Centered app icon -->
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/ic_launcher"
-            android:tileMode="disabled" />
-    </item>
+
+    <!-- Centered app icon - safe for vector/adaptive icons on API 24+ -->
+    <item
+        android:drawable="@mipmap/ic_launcher"
+        android:gravity="center"
+        android:width="96dp"
+        android:height="96dp" />
 </layer-list>
