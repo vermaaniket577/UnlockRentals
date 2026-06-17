@@ -30,6 +30,7 @@ class StorePropertyRequest extends FormRequest
             'location' => 'required|string|max:255',
             'locality' => 'nullable|string|max:255',
             'address' => 'required|string|max:500',
+            'contact_phone' => 'required|string|max:20',
             'bedrooms' => 'nullable|integer|min:0|max:20',
             'bathrooms' => 'nullable|integer|min:0|max:20',
             'area_sqft' => 'nullable|integer|min:0',

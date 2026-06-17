@@ -26,7 +26,12 @@ class SubscriptionPaymentService
         $yearlyDiscount = $billingPeriod === 'yearly' ? round($offerSubtotal * 0.20, 2) : 0;
         $discount = max(0, $subtotal - $offerSubtotal) + $yearlyDiscount;
         $taxable = max(0, $offerSubtotal - $yearlyDiscount);
-        $gst = round($taxable * 0.18, 2);
+        $gstRate = (float) \App\Models\Setting::get('gst_rate', '18');
+        $gst = round($taxable * ($gstRate / 100), 2);
+
+        // Razorpay requires minimum ₹1 (100 paise). Enforce this at billing level
+        // so the displayed amount always matches the Razorpay charge.
+        $final = max(1.00, round($taxable + $gst, 2));
 
         return [
             'period' => $billingPeriod,
@@ -34,7 +39,8 @@ class SubscriptionPaymentService
             'subtotal' => round($subtotal, 2),
             'discount' => round($discount, 2),
             'gst' => $gst,
-            'final' => round($taxable + $gst, 2),
+            'gst_rate' => $gstRate,
+            'final' => $final,
             'yearly_savings' => $yearlyDiscount,
         ];
     }
@@ -196,12 +202,12 @@ class SubscriptionPaymentService
             'ip_address' => $request->ip(),
         ]);
 
-        if ($plan->is_private) {
-            \App\Models\PrivateUserOffer::where('user_id', $user->id)
-                ->where('plan_id', $plan->id)
-                ->where('status', 'active')
-                ->update(['status' => 'claimed']);
-        }
+        // Mark any matching private offers as claimed (works for both private and public plans
+        // since admins can assign discounted offers for any plan)
+        \App\Models\PrivateUserOffer::where('user_id', $user->id)
+            ->where('plan_id', $plan->id)
+            ->where('status', 'active')
+            ->update(['status' => 'claimed']);
 
         return $userPlan;
     }

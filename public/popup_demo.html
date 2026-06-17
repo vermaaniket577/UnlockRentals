@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Conversion Popup Demo - UnlockRentals</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/style.css">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-glow: rgba(37, 99, 235, 0.15);
+            --accent: #7c3aed;
+            --accent-glow: rgba(124, 58, 237, 0.15);
+            --cyan: #0891b2;
+            --light-bg: #f8fafc;
+            --font-outfit: 'Outfit', 'Inter', sans-serif;
+            --font-inter: 'Inter', sans-serif;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(15, 23, 42, 0.08);
+            --glass-glow: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: var(--font-inter);
+            color: #334155;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ─── AMBIENT BACKGROUND GLOWS ─── */
+        .ambient-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            mix-blend-mode: multiply;
+            animation: floatOrb 12s infinite alternate ease-in-out;
+        }
+
+        .orb-1 {
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+            top: -10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 45vw;
+            height: 45vw;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            bottom: -5%;
+            right: -5%;
+            animation-delay: -4s;
+        }
+
+        .orb-3 {
+            width: 35vw;
+            height: 35vw;
+            background: radial-gradient(circle, var(--cyan) 0%, transparent 70%);
+            top: 40%;
+            left: 45%;
+            animation-delay: -8s;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 5%) scale(1.1); }
+        }
+
+        /* ─── DEMO BUTTON ─── */
+        .demo-trigger-btn {
+            z-index: 10;
+            font-family: var(--font-outfit);
+            font-weight: 700;
+            font-size: 1rem;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px var(--primary-glow);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 0.5px;
+        }
+
+        .demo-trigger-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.35), 0 0 15px rgba(168, 85, 247, 0.2);
+        }
+
+        .demo-trigger-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ─── POPUP MODAL OVERLAY ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ─── MODAL CARD (GLASSMORPHISM) ─── */
+        .modal-card {
+            width: 100%;
+            max-width: 900px;
+            min-height: 520px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.12), 0 10px 20px -5px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr;
+            position: relative;
+            transform: scale(0.9) translateY(20px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        @media (min-width: 768px) {
+            .modal-card {
+                grid-template-columns: 1.1fr 1fr;
+            }
+        }
+
+        /* ─── LEFT SIDE (ILLUSTRATION COLUMN) ─── */
+        .modal-left {
+            position: relative;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.04) 0%, rgba(168, 85, 247, 0.02) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 3rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        @media (min-width: 768px) {
+            .modal-left {
+                border-bottom: none;
+                border-right: 1px solid var(--glass-border);
+            }
+        }
+
+        .illustration-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .illustration-img {
+            max-width: 100%;
+            max-height: 280px;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 40px rgba(15, 23, 42, 0.12));
+            animation: floatArt 6s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatArt {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-12px) rotate(1deg); }
+        }
+
+        /* Abstract shapes */
+        .shape-decor {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(1px);
+            pointer-events: none;
+        }
+
+        .shape-decor-1 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--primary) 100%);
+            top: 15%;
+            left: 10%;
+            opacity: 0.1;
+            animation: spinShape 20s infinite linear;
+        }
+
+        .shape-decor-2 {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent) 0%, #ec4899 100%);
+            bottom: 10%;
+            right: 5%;
+            opacity: 0.08;
+            animation: spinShape 30s infinite linear reverse;
+        }
+
+        @keyframes spinShape {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ─── RIGHT SIDE (FORM COLUMN) ─── */
+        .modal-right {
+            padding: 2.75rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* ─── CLOSE BUTTON ─── */
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.04);
+            border: 1px solid rgba(15, 23, 42, 0.05);
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            z-index: 10;
+        }
+
+        .close-btn:hover {
+            background: rgba(15, 23, 42, 0.08);
+            color: #0f172a;
+            transform: scale(1.05);
+        }
+
+        .close-btn i {
+            font-size: 1.25rem;
+        }
+
+        /* ─── FORM CONTENT ─── */
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(37, 99, 235, 0.06);
+            border: 1px solid rgba(37, 99, 235, 0.12);
+            color: #2563eb;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .form-badge i {
+            font-size: 0.85rem;
+        }
+
+        .form-title {
+            font-family: var(--font-outfit);
+            font-size: 2rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.25;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .form-title span {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #0891b2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-desc {
+            font-size: 0.925rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        /* Form Controls */
+        .input-group {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1.25rem;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem 1rem 1rem 2.75rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(15, 23, 42, 0.10);
+            color: #0f172a;
+            font-family: var(--font-inter);
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            outline: none;
+        }
+
+        .input-field::placeholder {
+            color: #94a3b8;
+        }
+
+        .input-field:focus {
+            background: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .input-field:focus + .input-icon {
+            color: #2563eb;
+        }
+
+        /* Button controls */
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border: none;
+            color: #ffffff;
+            font-family: var(--font-outfit);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.3), 0 0 10px rgba(124, 58, 237, 0.2);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn i {
+            font-size: 1.15rem;
+            transition: transform 0.25s ease;
+        }
+
+        .submit-btn:hover i {
+            transform: translateX(3px);
+        }
+
+        /* Dismiss Link */
+        .dismiss-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.25rem;
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+
+        .dismiss-link:hover {
+            color: #0f172a;
+        }
+
+        /* ─── SUCCESS STATE ─── */
+        .success-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .success-icon {
+            width: 4.5rem;
+            height: 4.5rem;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.05);
+        }
+
+        .success-title {
+            font-family: var(--font-outfit);
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 0.75rem;
+        }
+
+        .success-desc {
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 1.75rem;
+            max-width: 320px;
+        }
+
+        .success-btn {
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.04);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            color: #0f172a;
+            font-family: var(--font-outfit);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .success-btn:hover {
+            background: rgba(15, 23, 42, 0.08);
+            border-color: rgba(15, 23, 42, 0.12);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient background animations -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Main trigger button for demonstration -->
+    <button class="demo-trigger-btn" id="openPopupBtn">
+        Open Premium Popup
+    </button>
+
+    <!-- Modal Popup Overlay -->
+    <div class="modal-overlay" id="popupOverlay">
+        <div class="modal-card">
+            
+            <!-- Close Button -->
+            <button class="close-btn" id="closePopupBtn" aria-label="Close popup">
+                <i class="ph ph-x"></i>
+            </button>
+            
+            <!-- Left Side: Custom Illustration -->
+            <div class="modal-left">
+                <!-- Abstract Vector Decors -->
+                <div class="shape-decor shape-decor-1"></div>
+                <div class="shape-decor shape-decor-2"></div>
+                
+                <div class="illustration-wrap">
+                    <!-- High-end vector illustration generated for customer -->
+                    <img src="/images/modern_popup_illustration.png" alt="SaaS Startup Portal Concept" class="illustration-img" onerror="this.src='https://illustrations.popsy.co/white/idea-launch.svg'">
+                </div>
+            </div>
+            
+            <!-- Right Side: Conversion Form -->
+            <div class="modal-right">
+                
+                <!-- Main Form State -->
+                <div class="form-state" id="formState">
+                    <div class="form-header">
+                        <span class="form-badge">
+                            <i class="ph-bold ph-sparkle"></i> Exclusive Access
+                        </span>
+                        <h2 class="form-title">Unlock Premium <span>Deal Flow</span></h2>
+                        <p class="form-desc">Join 10,000+ real estate operators and landlords receiving weekly premium rental listings, custom analytics, and direct owner contract unlocks.</p>
+                    </div>
+                    
+                    <form id="popupForm" novalidate>
+                        <div class="input-group">
+                            <input type="email" class="input-field" id="emailInput" placeholder="Enter your business email" required>
+                            <i class="ph ph-envelope-simple input-icon"></i>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <span>Get Started Free</span>
+                            <i class="ph ph-arrow-right"></i>
+                        </button>
+                    </form>
+                    
+                    <a href="#" class="dismiss-link" id="dismissLink">No thanks, I'll pass</a>
+                </div>
+                
+                <!-- Success Confirmation State -->
+                <div class="success-state" id="successState">
+                    <div class="success-icon">
+                        <i class="ph-bold ph-check"></i>
+                    </div>
+                    <h3 class="success-title">You're on the list!</h3>
+                    <p class="success-desc">We've sent an activation link to your inbox. Get ready to supercharge your property deals.</p>
+                    <button class="success-btn" id="successCloseBtn">Continue</button>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('popupOverlay');
+            const card = document.querySelector('.modal-card');
+            const openBtn = document.getElementById('openPopupBtn');
+            const closeBtn = document.getElementById('closePopupBtn');
+            const dismissLink = document.getElementById('dismissLink');
+            const form = document.getElementById('popupForm');
+            const emailInput = document.getElementById('emailInput');
+            const formState = document.getElementById('formState');
+            const successState = document.getElementById('successState');
+            const successCloseBtn = document.getElementById('successCloseBtn');
+
+            // Open popup
+            function openPopup() {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Close popup
+            function closePopup() {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                // Reset form state after close animation completes
+                setTimeout(() => {
+                    formState.style.display = 'block';
+                    successState.style.display = 'none';
+                    form.reset();
+                    emailInput.style.borderColor = 'rgba(15, 23, 42, 0.1)';
+                }, 400);
+            }
+
+            // Trigger modal on load after a brief 1.5s delay
+            setTimeout(openPopup, 1500);
+
+            // Button Event Listeners
+            openBtn.addEventListener('click', openPopup);
+            closeBtn.addEventListener('click', closePopup);
+            dismissLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                closePopup();
+            });
+            successCloseBtn.addEventListener('click', closePopup);
+
+            // Form Submit and Validation
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = emailInput.value.trim();
+                
+                // Simple regex verification
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email || !emailPattern.test(email)) {
+                    emailInput.style.borderColor = '#ef4444';
+                    emailInput.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.2)';
+                    emailInput.focus();
+                    return;
+                }
+
+                // Animate to success state
+                formState.style.display = 'none';
+                successState.style.display = 'flex';
+            });
+
+            // Remove error glow on input focus/type
+            emailInput.addEventListener('input', () => {
+                emailInput.style.borderColor = 'var(--primary)';
+                emailInput.style.boxShadow = '0 0 0 4px var(--primary-glow)';
+            });
+
+            // Close modal by clicking outside the card
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    closePopup();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

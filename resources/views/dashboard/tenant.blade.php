@@ -749,6 +749,9 @@
                 <span class="sidebar-badge">!</span>
             @endif
         </a>
+        <a href="#" onclick="event.preventDefault(); window.openProfileModal();" class="sidebar-link" id="sidebar-profile">
+            <i class="ph-bold ph-user-gear"></i> Profile Settings
+        </a>
         <a href="{{ route('billing.history') }}" class="sidebar-link" id="sidebar-billing">
             <i class="ph-bold ph-receipt"></i> Billing & Invoices
         </a>

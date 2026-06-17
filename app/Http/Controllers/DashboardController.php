@@ -18,12 +18,22 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // Get active plan IDs for this user (so we can hide offers for plans they already own)
+        $activePlanIds = \App\Models\UserPlan::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->where(function($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->pluck('plan_id')
+            ->toArray();
+
         $privateOffers = \App\Models\PrivateUserOffer::with('plan')
             ->where('user_id', $user->id)
             ->where('status', 'active')
             ->where(function($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
+            ->whereNotIn('plan_id', $activePlanIds)
             ->latest()
             ->get();
 
@@ -110,6 +120,37 @@ class DashboardController extends Controller
 
         $userPlan->load(['user', 'plan']);
         return view('dashboard.invoice', compact('userPlan'));
+    }
+
+    /**
+     * Update the authenticated user's profile info.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:20'],
+        ]);
+
+        $user->update([
+            'name' => $data['name'],
+            'phone' => $data['phone'],
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile updated successfully!',
+                'user' => [
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                ]
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 }
 

@@ -87,6 +87,17 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <div class="mt-6">
+                                <label for="create-phone" class="block text-xs font-bold text-zinc-450 uppercase tracking-wider mb-2">Contact Mobile Number *</label>
+                                <div class="relative">
+                                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400"><i class="ph ph-phone"></i></span>
+                                    <input type="tel" name="contact_phone" id="create-phone" value="{{ old('contact_phone', auth()->user()->phone) }}" required
+                                           class="w-full pl-12 pr-5 py-4 bg-zinc-50/50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/5 focus:border-[#2563EB] transition-all font-semibold"
+                                           placeholder="e.g., +91 98765 43210">
+                                </div>
+                                @error('contact_phone') <p class="text-red-500 text-xs mt-2 font-medium">{{ $message }}</p> @enderror
+                            </div>
                         </div>
                     </div>
 

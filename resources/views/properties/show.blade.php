@@ -1,5 +1,20 @@
 @extends('layouts.app')
 
+@php
+    $isOwnerOrAdmin = false;
+    $hasViewed = false;
+    $canView = false;
+    $activePlan = null;
+    
+    if (auth()->check()) {
+        $user = auth()->user();
+        $isOwnerOrAdmin = $user->id === $property->user_id || $user->isAdmin();
+        $hasViewed = $user->hasViewedContact($property);
+        $canView = $user->canViewContact($property);
+        $activePlan = $user->activePlan();
+    }
+@endphp
+
 @section('title', $property->title . ' for Rent in ' . $property->location . ' - UnlockRentals')
 @section('meta_description', Str::limit('View rent, photos, location, and contact details for ' . $property->title . ' in ' . $property->location . ', ' . $property->state . '. Find verified rental properties on UnlockRentals.', 160))
 @section('og_image', $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png'))
@@ -15,7 +30,7 @@
   "image": @json($property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png')),
   "address": {
     "@@type": "PostalAddress",
-    "streetAddress": @json($property->address),
+    "streetAddress": @json(($isOwnerOrAdmin || $hasViewed) ? $property->address : 'Exact address locked'),
     "addressLocality": @json($property->location),
     "addressRegion": @json($property->state),
     "addressCountry": "IN"
@@ -144,7 +159,13 @@
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-zinc-650 text-xs sm:text-sm border-t border-zinc-100 pt-4 mt-3">
                         <div class="flex items-center gap-1.5 font-medium">
                             <i class="ph-bold ph-map-pin text-[#2874F0] text-base"></i>
-                            <span>{{ $property->address }}, {{ $property->location }}</span>
+                            <span>
+                                @if($isOwnerOrAdmin || $hasViewed)
+                                    {{ $property->address }}, {{ $property->location }}
+                                @else
+                                    <span class="inline-flex items-center gap-1 text-amber-600 bg-amber-50 px-2 py-0.5 rounded text-xs border border-amber-100 font-bold"><i class="ph-bold ph-lock"></i> Exact address locked</span> · {{ $property->location }}
+                                @endif
+                            </span>
                         </div>
                         @if($property->category)
                         <div class="flex items-center gap-1.5 font-medium border-l border-zinc-200 pl-5">
@@ -334,42 +355,70 @@
                     </div>
                 </div>
 
-                {{-- Mock Map Section --}}
+                {{-- Google Map Section --}}
                 <div class="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
                     <h3 class="text-lg font-extrabold text-zinc-900 mb-4 flex items-center gap-2 border-b border-zinc-150 pb-3">
                         <i class="ph-bold ph-compass text-[#2874F0]"></i> Map Location
                     </h3>
                     <div class="relative rounded-xl overflow-hidden h-[240px] sm:h-[300px] bg-zinc-100 border border-zinc-200 shadow-inner group">
-                        {{-- Sleek Blueprint City Map Backdrop --}}
-                        <div class="absolute inset-0 bg-[#0f172a] opacity-[0.98] flex items-center justify-center p-4">
-                            <div class="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-25" style="background-image: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=80');"></div>
-                            
-                            {{-- Geometric grid lines for a stylized mockup map --}}
-                            <div class="absolute inset-0" style="background-size: 30px 30px; background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);"></div>
-                            <div class="absolute w-full h-1 bg-gradient-to-r from-transparent via-[#2874F0]/30 to-transparent top-1/4 animate-pulse"></div>
-                            <div class="absolute h-full w-1 bg-gradient-to-b from-transparent via-[#2874F0]/30 to-transparent left-1/3 animate-pulse"></div>
-
-                            {{-- Map Marker Pin --}}
-                            <div class="relative z-10 text-center flex flex-col items-center group">
-                                <div class="w-14 h-14 rounded-full bg-[#2874F0] text-white flex items-center justify-center shadow-lg relative group-hover:scale-110 transition-transform duration-300">
-                                    <i class="ph-bold ph-map-pin-line text-2xl animate-bounce"></i>
-                                    <span class="absolute inset-0 rounded-full bg-[#2874F0] animate-ping opacity-25"></span>
-                                </div>
-                                <div class="mt-3.5 bg-zinc-900/90 backdrop-blur-md border border-zinc-800 text-white rounded-lg p-2.5 shadow-xl max-w-xs text-xs font-semibold">
+                        @if($isOwnerOrAdmin || $hasViewed)
+                            {{-- UNLOCKED: Show real Google Maps embed with exact address --}}
+                            @php
+                                $mapQuery = urlencode($property->address . ', ' . $property->location . ', ' . ($property->state ?? '') . ', India');
+                            @endphp
+                            <iframe
+                                src="https://www.google.com/maps?q={{ $mapQuery }}&output=embed&hl=en"
+                                width="100%"
+                                height="100%"
+                                style="border:0; min-height:100%;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                class="w-full h-full">
+                            </iframe>
+                            {{-- Unlocked Address Tooltip --}}
+                            <div class="absolute bottom-4 left-4 right-4 z-10">
+                                <div class="bg-white/95 backdrop-blur-md border border-zinc-200/80 rounded-xl p-3 shadow-xl text-xs font-semibold max-w-sm">
                                     <p class="font-bold text-[#2874F0] mb-0.5 truncate">{{ $property->title }}</p>
-                                    <p class="text-zinc-400 font-normal leading-tight text-[11px]">{{ $property->address }}, {{ $property->location }}</p>
+                                    <p class="text-zinc-500 font-medium leading-tight text-[11px]">{{ $property->address }}, {{ $property->location }}</p>
                                 </div>
                             </div>
-                        </div>
-
-                        {{-- Map Controls Mock --}}
-                        <div class="absolute bottom-4 left-4 z-10 flex flex-col gap-1.5">
-                            <button class="w-8 h-8 rounded-lg bg-zinc-950/80 backdrop-blur-md text-white text-base font-bold flex items-center justify-center border border-zinc-800 hover:bg-[#2874F0] transition-colors"><i class="ph-bold ph-plus"></i></button>
-                            <button class="w-8 h-8 rounded-lg bg-zinc-950/80 backdrop-blur-md text-white text-base font-bold flex items-center justify-center border border-zinc-800 hover:bg-[#2874F0] transition-colors"><i class="ph-bold ph-minus"></i></button>
-                        </div>
-                        <div class="absolute top-4 right-4 z-10">
-                            <span class="bg-emerald-500/90 text-white font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full shadow-md flex items-center gap-1"><i class="ph-bold ph-compass"></i> Live Map Active</span>
-                        </div>
+                            <div class="absolute top-4 right-4 z-10">
+                                <span class="bg-emerald-500/90 text-white font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full shadow-md flex items-center gap-1"><i class="ph-bold ph-map-pin"></i> Exact Location</span>
+                            </div>
+                        @else
+                            {{-- LOCKED: Show blurred city-level map with lock overlay --}}
+                            @php
+                                $lockedMapQuery = urlencode($property->location . ', ' . ($property->state ?? '') . ', India');
+                            @endphp
+                            <iframe
+                                src="https://www.google.com/maps?q={{ $lockedMapQuery }}&output=embed&hl=en&z=11"
+                                width="100%"
+                                height="100%"
+                                style="border:0; min-height:100%; filter: blur(6px); pointer-events: none;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                class="w-full h-full">
+                            </iframe>
+                            {{-- Lock Overlay --}}
+                            <div class="absolute inset-0 z-10 flex items-center justify-center" style="background: rgba(255,255,255,0.55); backdrop-filter: blur(2px);">
+                                <div class="text-center px-6 py-5 max-w-xs">
+                                    <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3 shadow-lg border-2 border-amber-200">
+                                        <i class="ph-bold ph-lock-key text-2xl"></i>
+                                    </div>
+                                    <p class="text-sm font-extrabold text-zinc-800 mb-1">Exact Location Locked</p>
+                                    <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Subscribe to a plan to see the exact property address on the map.</p>
+                                    <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
+                                        <i class="ph-bold ph-crown"></i> Unlock Location
+                                    </a>
+                                </div>
+                            </div>
+                            {{-- Locked Badge --}}
+                            <div class="absolute top-4 right-4 z-20">
+                                <span class="bg-amber-500/90 text-white font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full shadow-md flex items-center gap-1"><i class="ph-bold ph-lock"></i> Location Locked</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -466,9 +515,15 @@
                                     {{-- Show full contact details --}}
                                     <div class="space-y-3 pt-4 border-t border-zinc-200 mt-4">
                                         <div class="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 bg-white p-2.5 rounded-lg border border-zinc-150 shadow-inner">
+                                            @php
+                                                $displayPhone = !empty($property->contact_phone) ? $property->contact_phone : (!empty($property->owner->phone) ? $property->owner->phone : 'Not provided');
+                                            @endphp
                                             <i class="ph-bold ph-phone text-[#2874F0] text-base"></i>
-                                            <a href="tel:{{ $property->owner->phone }}" class="text-zinc-800 hover:text-[#2874F0] truncate flex-1">
-                                                {{ $property->owner->phone ?? 'Not provided' }}
+                                            <a href="tel:{{ $displayPhone !== 'Not provided' ? $displayPhone : '' }}" class="text-zinc-800 hover:text-[#2874F0] truncate flex-1">
+                                                {{ $displayPhone }}
+                                                @if(auth()->check() && (auth()->user()->isAdmin() || auth()->id() === $property->user_id))
+                                                    <span class="text-[10px] text-zinc-400 font-normal ml-1">(Property Phone: "{{ $property->contact_phone ?? 'NULL' }}", Owner Phone: "{{ $property->owner->phone ?? 'NULL' }}")</span>
+                                                @endif
                                             </a>
                                         </div>
                                         <div class="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 bg-white p-2.5 rounded-lg border border-zinc-150 shadow-inner">
@@ -501,17 +556,28 @@
                                         </form>
                                     </div>
                                 @else
-                                    {{-- No active plan — prompt to buy --}}
+                                    {{-- No active plan or plan views exhausted — prompt to buy/upgrade --}}
                                     <div class="pt-4 border-t border-zinc-200 mt-4">
                                         <div class="text-center p-4 bg-amber-50/50 border border-amber-200 rounded-xl">
-                                            <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
-                                                <i class="ph-bold ph-lock-key text-xl"></i>
-                                            </div>
-                                            <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Premium details locked</p>
-                                            <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Get a subscription plan to access the property owner's verified phone & email details.</p>
-                                            <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
-                                                <i class="ph-bold ph-crown"></i> View Unlock Plans
-                                            </a>
+                                            @if(auth()->check() && auth()->user()->hasActivePlan())
+                                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
+                                                    <i class="ph-bold ph-lock-key text-xl"></i>
+                                                </div>
+                                                <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Contact limit reached</p>
+                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You have used all contact views in your active plan. Please upgrade your plan to unlock more contact details.</p>
+                                                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
+                                                    <i class="ph-bold ph-crown"></i> Upgrade Plan
+                                                </a>
+                                            @else
+                                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
+                                                    <i class="ph-bold ph-lock-key text-xl"></i>
+                                                </div>
+                                                <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Premium details locked</p>
+                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Get a subscription plan to access the property owner's verified phone & email details.</p>
+                                                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
+                                                    <i class="ph-bold ph-crown"></i> View Unlock Plans
+                                                </a>
+                                            @endif
                                         </div>
                                     </div>
                                 @endif
@@ -779,7 +845,13 @@
                     @endif
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-bold text-zinc-900 truncate">{{ $property->title }}</p>
-                        <p class="text-xs text-zinc-500 truncate">{{ $property->address }}, {{ $property->location }}</p>
+                        <p class="text-xs text-zinc-500 truncate">
+                            @if($isOwnerOrAdmin || $hasViewed)
+                                {{ $property->address }}, {{ $property->location }}
+                            @else
+                                {{ $property->location }}
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>
@@ -868,7 +940,13 @@
                     @endif
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-bold text-zinc-900 truncate">{{ $property->title }}</p>
-                        <p class="text-xs text-zinc-500 truncate">{{ $property->address }}, {{ $property->location }}</p>
+                        <p class="text-xs text-zinc-500 truncate">
+                            @if($isOwnerOrAdmin || $hasViewed)
+                                {{ $property->address }}, {{ $property->location }}
+                            @else
+                                {{ $property->location }}
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>

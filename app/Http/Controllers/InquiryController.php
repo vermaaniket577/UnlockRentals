@@ -19,6 +19,13 @@ class InquiryController extends Controller
 
         Inquiry::create($data);
 
+        if (auth()->check()) {
+            $user = auth()->user();
+            if (empty($user->phone) && !empty($data['phone'])) {
+                $user->update(['phone' => $data['phone']]);
+            }
+        }
+
         return redirect()->back()
             ->with('success', 'Your inquiry has been sent to the property owner!');
     }

@@ -143,7 +143,8 @@
         $yearlyDiscount = $billingPeriod === 'yearly' ? round($offerSubtotal * 0.20, 2) : 0;
         $discount = max(0, $subtotal - $offerSubtotal) + $yearlyDiscount;
         $taxable = max(0, $offerSubtotal - $yearlyDiscount);
-        $gst = round($taxable * 0.18, 2);
+        $gstRate = (float) ($site_settings['gst_rate'] ?? 18);
+        $gst = round($taxable * ($gstRate / 100), 2);
 
         $billing = [
             'period' => $billingPeriod,
@@ -151,7 +152,8 @@
             'subtotal' => round($subtotal, 2),
             'discount' => round($discount, 2),
             'gst' => $gst,
-            'final' => round($taxable + $gst, 2),
+            'gst_rate' => $gstRate,
+            'final' => max(1.00, round($taxable + $gst, 2)),
             'yearly_savings' => $yearlyDiscount,
         ];
     }
@@ -369,7 +371,7 @@
                     <div class="flex justify-between gap-4"><span class="text-slate-500">Plan Option</span><strong class="text-slate-950">{{ $billingPeriod === 'yearly' ? 'Buy' : 'Rent' }} / {{ $billing['duration_days'] }} days</strong></div>
                     <div class="flex justify-between gap-4"><span class="text-slate-500">Subtotal</span><strong class="text-slate-950">Rs. {{ number_format($billing['subtotal'], 2) }}</strong></div>
                     <div class="flex justify-between gap-4"><span class="text-slate-500">Discount</span><strong class="text-emerald-600">- Rs. {{ number_format($billing['discount'], 2) }}</strong></div>
-                    <div class="flex justify-between gap-4"><span class="text-slate-500">GST (18%)</span><strong class="text-slate-950">Rs. {{ number_format($billing['gst'], 2) }}</strong></div>
+                    <div class="flex justify-between gap-4"><span class="text-slate-500">GST ({{ $billing['gst_rate'] ?? (float) ($site_settings['gst_rate'] ?? 18) }}%)</span><strong class="text-slate-950">Rs. {{ number_format($billing['gst'], 2) }}</strong></div>
                     <div class="border-t border-slate-200 pt-4">
                         <div class="flex items-end justify-between gap-4">
                             <span class="text-xs font-black uppercase tracking-widest text-slate-400">Final amount</span>

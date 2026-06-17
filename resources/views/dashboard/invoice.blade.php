@@ -328,6 +328,11 @@
 
         <!-- Totals Box -->
         <div class="totals-section">
+            @php
+                $taxable = max(0.01, (float) $userPlan->subtotal_amount - (float) $userPlan->discount_amount);
+                $calculatedGstRate = round(((float) $userPlan->gst_amount / $taxable) * 100, 2);
+                $gstDisplayRate = (float) $calculatedGstRate;
+            @endphp
             <div class="totals-box">
                 <div class="totals-row">
                     <span>Subtotal</span>
@@ -340,7 +345,7 @@
                 </div>
                 @endif
                 <div class="totals-row">
-                    <span>Tax (GST 18%)</span>
+                    <span>Tax (GST {{ $gstDisplayRate }}%)</span>
                     <span>Rs. {{ number_format($userPlan->gst_amount, 2) }}</span>
                 </div>
                 <div class="totals-row final">

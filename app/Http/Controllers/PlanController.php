@@ -57,7 +57,10 @@ class PlanController extends Controller
         $user = auth()->user();
 
         if ($user->hasActivePlan()) {
-            return redirect()->back()->with('error', 'You already have an active plan.');
+            $activePlan = $user->activePlan();
+            if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
+                return redirect()->back()->with('error', 'You already have an active plan of this tier or higher with remaining contact views. You can only upgrade to a higher plan.');
+            }
         }
 
         $billing = request('billing_period', 'monthly') === 'yearly' ? 'yearly' : 'monthly';
@@ -69,7 +72,10 @@ class PlanController extends Controller
     {
         $user = auth()->user();
         if ($user->hasActivePlan()) {
-            return redirect()->route('plans.index')->with('error', 'You already have an active plan.');
+            $activePlan = $user->activePlan();
+            if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
+                return redirect()->route('plans.index')->with('error', 'You already have an active plan of this tier or higher with remaining contact views. You can only upgrade to a higher plan.');
+            }
         }
 
         $billingPeriod = request('billing', 'monthly') === 'yearly' ? 'yearly' : 'monthly';
@@ -90,7 +96,10 @@ class PlanController extends Controller
         $user = auth()->user();
 
         if ($user->hasActivePlan()) {
-            return response()->json(['message' => 'You already have an active plan.'], 409);
+            $activePlan = $user->activePlan();
+            if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
+                return response()->json(['message' => 'You already have an active plan of this tier or higher with remaining contact views. You can only upgrade to a higher plan.'], 409);
+            }
         }
 
         $activeGateway = Setting::activePaymentGateway();

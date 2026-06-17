@@ -80,7 +80,26 @@ Route::get('/', function(Illuminate\Http\Request $request) {
         $featuredRentals = $query->latest()->take(18)->get();
     }
 
-    return view('welcome', compact('featuredRentals'));
+    $feedbacks = \Illuminate\Support\Facades\Cache::remember('home_approved_feedbacks', 300, function () {
+        return \App\Models\Feedback::with('user')
+            ->where('status', 'approved')
+            ->latest()
+            ->take(3)
+            ->get();
+    });
+
+    $userOffers = collect();
+    if (auth()->check()) {
+        $userOffers = \App\Models\PrivateUserOffer::where('user_id', auth()->id())
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->get()
+            ->keyBy('plan_id');
+    }
+
+    return view('welcome', compact('featuredRentals', 'feedbacks', 'userOffers'));
 })->name('home');
 
 // Serve a property image directly from binary DB data
@@ -206,6 +225,7 @@ Route::middleware('auth')->group(function () {
     // Billing & Invoices
     Route::get('/billing/history', [DashboardController::class, 'billingHistory'])->name('billing.history');
     Route::get('/billing/invoice/{userPlan}', [DashboardController::class, 'invoice'])->name('billing.invoice');
+    Route::post('/profile/update', [DashboardController::class, 'updateProfile'])->name('profile.update');
 });
 
 /*
@@ -246,6 +266,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     Route::get('/feedback', [AdminController::class, 'feedback'])->name('feedback');
+    Route::post('/feedback/{feedback}/approve', [AdminController::class, 'approveFeedback'])->name('feedback.approve');
+    Route::post('/feedback/{feedback}/reject', [AdminController::class, 'rejectFeedback'])->name('feedback.reject');
+    Route::delete('/feedback/{feedback}', [AdminController::class, 'destroyFeedback'])->name('feedback.delete');
     Route::get('/chats', [AdminController::class, 'chats'])->name('chats');
     Route::get('/callbacks', [AdminController::class, 'callbacks'])->name('callbacks');
     Route::get('/resets', [AdminController::class, 'resets'])->name('resets');
@@ -268,6 +291,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/process-steps/{processStep}', [AdminController::class, 'updateProcessStep'])->name('process-steps.update');
     Route::delete('/process-steps/{processStep}', [AdminController::class, 'destroyProcessStep'])->name('process-steps.destroy');
 
+    // Locations management
+    Route::get('/locations', [AdminController::class, 'locations'])->name('locations');
+
     // Subscription management
     Route::get('/subscriptions', [AdminController::class, 'subscriptions'])->name('subscriptions');
     Route::get('/subscriptions/assign', [AdminController::class, 'showAssignSubscriptionForm'])->name('subscriptions.assign');
@@ -276,6 +302,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/subscriptions/{userPlan}/reject', [AdminController::class, 'rejectSubscription'])->name('subscriptions.reject');
     Route::post('/subscriptions/{userPlan}/cancel', [AdminController::class, 'cancelSubscription'])->name('subscriptions.cancel');
     Route::post('/subscriptions/{userPlan}/update-plan', [AdminController::class, 'updateSubscriptionPlanTier'])->name('subscriptions.update-plan');
+    Route::delete('/subscriptions/{userPlan}', [AdminController::class, 'destroySubscription'])->name('subscriptions.destroy');
     Route::get('/users/{user}/activity', [AdminController::class, 'userActivity'])->name('users.activity');
 });
 

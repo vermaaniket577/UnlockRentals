@@ -12,8 +12,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class PropertyController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of approved properties with search/filter.
      */
@@ -149,6 +152,14 @@ class PropertyController extends Controller
             }
         }
 
+        // Automatically unlock contact for paid users with remaining contact views
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->hasActivePlan() && !$user->hasViewedContact($property)) {
+                $user->viewContact($property);
+            }
+        }
+
         $property->load(['images', 'category', 'owner']);
 
         $similarProperties = Property::approved()
@@ -188,6 +199,12 @@ class PropertyController extends Controller
         $user = auth()->user();
         if ($user->role === 'tenant') {
             $user->update(['role' => 'owner']);
+        }
+
+        if ($request->filled('contact_phone')) {
+            if (empty($user->phone)) {
+                $user->update(['phone' => $request->contact_phone]);
+            }
         }
 
         // Remove images from the data array before creating
@@ -237,8 +254,16 @@ class PropertyController extends Controller
     {
         $this->authorize('update', $property);
 
+        $data = $request->validated();
         $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
         $data['status'] = $bypassApproval ? 'approved' : 'pending';
+
+        $owner = $property->owner;
+        if ($request->filled('contact_phone') && $owner) {
+            if (empty($owner->phone)) {
+                $owner->update(['phone' => $request->contact_phone]);
+            }
+        }
 
         // Remove images from the data array before updating
         unset($data['images'], $data['primary_image'], $data['remove_images']);
@@ -367,6 +392,10 @@ class PropertyController extends Controller
             'status' => 'pending',
         ]);
 
+        if (empty($user->phone) && !empty($data['phone'])) {
+            $user->update(['phone' => $data['phone']]);
+        }
+
         Cache::forget('admin_notifications');
 
         if ($request->ajax()) {
@@ -417,6 +446,10 @@ class PropertyController extends Controller
             'email' => $user->email,
             'status' => 'new',
         ]);
+
+        if (empty($user->phone) && !empty($data['phone'])) {
+            $user->update(['phone' => $data['phone']]);
+        }
 
         Cache::forget('admin_notifications');
 

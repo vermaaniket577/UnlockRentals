@@ -839,40 +839,74 @@
             <h2 class="section-title">Trusted by <span class="text-gradient">Thousands</span></h2>
             <p class="section-subtitle">Real experiences from customers who found their perfect rental spaces.</p>
             
+            @php
+                $displayTestimonials = [];
+                
+                // 1. Add approved database feedbacks
+                if (isset($feedbacks) && $feedbacks->count() > 0) {
+                    foreach ($feedbacks as $fb) {
+                        $displayTestimonials[] = [
+                            'stars' => $fb->rating,
+                            'quote' => '"' . ($fb->comment ?: 'No comment provided.') . '"',
+                            'author' => $fb->user->name ?? 'Guest User',
+                            'role' => $fb->user ? ucfirst($fb->user->role) : 'Verified Customer',
+                            'image' => $fb->user && $fb->user->role === 'landlord' 
+                                ? 'https://randomuser.me/api/portraits/women/68.jpg' 
+                                : 'https://randomuser.me/api/portraits/men/' . (($fb->id % 50) + 1) . '.jpg',
+                        ];
+                    }
+                }
+                
+                // 2. Add fallback testimonials from settings if we need more to reach 3
+                if (count($displayTestimonials) < 3) {
+                    $fallbacks = [
+                        [
+                            'stars' => $site_settings['testimonial_1_stars'] ?? 5,
+                            'quote' => '"' . ($site_settings['testimonial_1_quote'] ?? "UnlockRentals made finding our company's new office space in Cyber City incredibly seamless. The verified listings and sleek UI saved us weeks of searching.") . '"',
+                            'author' => $site_settings['testimonial_1_author'] ?? 'Rahul S.',
+                            'role' => $site_settings['testimonial_1_role'] ?? 'CEO, TechFlow India',
+                            'image' => $site_settings['testimonial_1_image'] ?? 'https://randomuser.me/api/portraits/men/43.jpg',
+                        ],
+                        [
+                            'stars' => $site_settings['testimonial_2_stars'] ?? 5,
+                            'quote' => '"' . ($site_settings['testimonial_2_quote'] ?? "I listed my luxury villa in Assagao and within 48 hours I had a verified, high-quality tenant. The platform's concierge support is world-class.") . '"',
+                            'author' => $site_settings['testimonial_2_author'] ?? 'Priya D.',
+                            'role' => $site_settings['testimonial_2_role'] ?? 'Property Owner',
+                            'image' => $site_settings['testimonial_2_image'] ?? 'https://randomuser.me/api/portraits/women/68.jpg',
+                        ],
+                        [
+                            'stars' => $site_settings['testimonial_3_stars'] ?? 5,
+                            'quote' => '"' . ($site_settings['testimonial_3_quote'] ?? "The filtering is incredibly smart. We found a beautiful apartment that checked off all our boxes in South Mumbai without dealing with broker spam.") . '"',
+                            'author' => $site_settings['testimonial_3_author'] ?? 'Aditya P.',
+                            'role' => $site_settings['testimonial_3_role'] ?? 'Renter',
+                            'image' => $site_settings['testimonial_3_image'] ?? 'https://randomuser.me/api/portraits/men/57.jpg',
+                        ]
+                    ];
+                    
+                    $needed = 3 - count($displayTestimonials);
+                    for ($i = 0; $i < $needed; $i++) {
+                        $fallbackIndex = 3 - $needed + $i;
+                        if (isset($fallbacks[$fallbackIndex])) {
+                            $displayTestimonials[] = $fallbacks[$fallbackIndex];
+                        }
+                    }
+                }
+            @endphp
+
             <div class="testimonial-grid">
-                <div class="testimonial-card glass-card">
-                    <div class="stars">@for($i = 0; $i < ($site_settings['testimonial_1_stars'] ?? 5); $i++)★@endfor</div>
-                    <p class="quote">"{{ $site_settings['testimonial_1_quote'] ?? "UnlockRentals made finding our company's new office space in Cyber City incredibly seamless. The verified listings and sleek UI saved us weeks of searching." }}"</p>
-                    <div class="author">
-                        <div class="author-img" style="background-image: url('{{ $site_settings['testimonial_1_image'] ?? 'https://randomuser.me/api/portraits/men/43.jpg' }}')" loading="lazy"></div>
-                        <div class="author-details">
-                            <h4>{{ $site_settings['testimonial_1_author'] ?? 'Rahul S.' }}</h4>
-                            <span>{{ $site_settings['testimonial_1_role'] ?? 'CEO, TechFlow India' }}</span>
+                @foreach($displayTestimonials as $t)
+                    <div class="testimonial-card glass-card">
+                        <div class="stars">@for($i = 0; $i < $t['stars']; $i++)★@endfor</div>
+                        <p class="quote">{{ $t['quote'] }}</p>
+                        <div class="author">
+                            <div class="author-img" style="background-image: url('{{ $t['image'] }}')" loading="lazy"></div>
+                            <div class="author-details">
+                                <h4>{{ $t['author'] }}</h4>
+                                <span>{{ $t['role'] }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="testimonial-card glass-card">
-                    <div class="stars">@for($i = 0; $i < ($site_settings['testimonial_2_stars'] ?? 5); $i++)★@endfor</div>
-                    <p class="quote">"{{ $site_settings['testimonial_2_quote'] ?? "I listed my luxury villa in Assagao and within 48 hours I had a verified, high-quality tenant. The platform's concierge support is world-class." }}"</p>
-                    <div class="author">
-                        <div class="author-img" style="background-image: url('{{ $site_settings['testimonial_2_image'] ?? 'https://randomuser.me/api/portraits/women/68.jpg' }}')"></div>
-                        <div class="author-details">
-                            <h4>{{ $site_settings['testimonial_2_author'] ?? 'Priya D.' }}</h4>
-                            <span>{{ $site_settings['testimonial_2_role'] ?? 'Property Owner' }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card glass-card">
-                    <div class="stars">@for($i = 0; $i < ($site_settings['testimonial_3_stars'] ?? 5); $i++)★@endfor</div>
-                    <p class="quote">"{{ $site_settings['testimonial_3_quote'] ?? "The filtering is incredibly smart. We found a beautiful apartment that checked off all our boxes in South Mumbai without dealing with broker spam." }}"</p>
-                    <div class="author">
-                        <div class="author-img" style="background-image: url('{{ $site_settings['testimonial_3_image'] ?? 'https://randomuser.me/api/portraits/men/57.jpg' }}')"></div>
-                        <div class="author-details">
-                            <h4>{{ $site_settings['testimonial_3_author'] ?? 'Aditya P.' }}</h4>
-                            <span>{{ $site_settings['testimonial_3_role'] ?? 'Renter' }}</span>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -887,10 +921,6 @@
         <x-footer />
     </div>
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/917974164274" target="_blank" class="whatsapp-trigger" style="position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 32px; box-shadow: 0 10px 30px rgba(37,211,102,0.4); z-index: 10000; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
-        <i class="ph-fill ph-whatsapp-logo"></i>
-    </a>
 
     @if(($site_settings['chatbot_enabled'] ?? '1') == '1')
     <!-- Chatbot Overlay -->
@@ -1228,14 +1258,15 @@
                 document.body.style.overflow = '';
             }
 
-            const modalStars = document.querySelectorAll('.modal-star');
             let modalRating = 0;
-
-            modalStars.forEach(star => {
-                star.addEventListener('click', () => {
-                    modalRating = star.dataset.rating;
-                    modalStars.forEach(s => {
-                        s.classList.toggle('active', s.dataset.rating <= modalRating);
+            document.addEventListener('DOMContentLoaded', () => {
+                const modalStars = document.querySelectorAll('.modal-star');
+                modalStars.forEach(star => {
+                    star.addEventListener('click', () => {
+                        modalRating = parseInt(star.dataset.rating) || 0;
+                        modalStars.forEach(s => {
+                            s.classList.toggle('active', (parseInt(s.dataset.rating) || 0) <= modalRating);
+                        });
                     });
                 });
             });
@@ -1300,11 +1331,11 @@
             </div>
 
             <div class="modal-stars" id="modalStars">
-                <i class="ph-fill ph-star modal-star" data-rating="1"></i>
-                <i class="ph-fill ph-star modal-star" data-rating="2"></i>
-                <i class="ph-fill ph-star modal-star" data-rating="3"></i>
-                <i class="ph-fill ph-star modal-star" data-rating="4"></i>
-                <i class="ph-fill ph-star modal-star" data-rating="5"></i>
+                <span class="modal-star" data-rating="1" style="font-style: normal; display: inline-block;">★</span>
+                <span class="modal-star" data-rating="2" style="font-style: normal; display: inline-block;">★</span>
+                <span class="modal-star" data-rating="3" style="font-style: normal; display: inline-block;">★</span>
+                <span class="modal-star" data-rating="4" style="font-style: normal; display: inline-block;">★</span>
+                <span class="modal-star" data-rating="5" style="font-style: normal; display: inline-block;">★</span>
             </div>
 
             <div class="modal-form">

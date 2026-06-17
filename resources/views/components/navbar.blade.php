@@ -104,6 +104,9 @@
                                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-dashboard">
                                     <i class="ph ph-squares-four"></i> Dashboard
                                 </a>
+                                <a href="#" onclick="event.preventDefault(); window.openProfileModal();" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-profile-settings">
+                                    <i class="ph ph-user-gear"></i> Profile Settings
+                                </a>
                                 @if(auth()->user()->isOwner())
                                 <a href="{{ route('inquiries.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-inquiries">
                                     <i class="ph ph-chat-dots"></i> Inquiries

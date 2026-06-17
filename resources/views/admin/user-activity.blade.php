@@ -48,16 +48,20 @@
                     @php $activePlan = $user->activePlan(); @endphp
                     @if($activePlan)
                         <div class="p-4 bg-blue-50/50 border border-blue-100 rounded-sm mb-4">
-                            <p class="font-bold text-zinc-900">{{ $activePlan->plan->name }}</p>
-                            <p class="text-xs text-zinc-500 mt-1">Expires {{ $activePlan->expires_at->format('d M, Y') }}</p>
+                            <p class="font-bold text-zinc-900">{{ $activePlan->plan?->name ?? 'Deleted Plan' }}</p>
+                            <p class="text-xs text-zinc-500 mt-1">Expires {{ $activePlan->expires_at ? $activePlan->expires_at->format('d M, Y') : 'N/A' }}</p>
                         </div>
                         <div class="space-y-2">
                             <div class="flex justify-between text-sm">
                                 <span class="text-zinc-500">Unlocks Used</span>
-                                <span class="text-zinc-900 font-bold">{{ $activePlan->contacts_used }} / {{ $activePlan->plan->contact_limit }}</span>
+                                @php
+                                    $limit = $activePlan->plan?->contact_limit ?? 0;
+                                    $pct = $limit > 0 ? min(100, round(($activePlan->contacts_used / $limit) * 100)) : 0;
+                                @endphp
+                                <span class="text-zinc-900 font-bold">{{ $activePlan->contacts_used }} / {{ $limit ?: 'N/A' }}</span>
                             </div>
                             <div class="w-full bg-stone-100 h-1 rounded-full overflow-hidden">
-                                <div class="bg-[#2563EB] h-full" style="width: {{ ($activePlan->contacts_used / $activePlan->plan->contact_limit) * 100 }}%"></div>
+                                <div class="bg-[#2563EB] h-full" style="width: {{ $pct }}%"></div>
                             </div>
                         </div>
                     @else

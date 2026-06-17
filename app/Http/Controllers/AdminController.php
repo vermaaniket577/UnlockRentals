@@ -143,6 +143,10 @@ class AdminController extends Controller
      */
     public function updateSettings(Request $request)
     {
+        $request->validate([
+            'gst_rate' => ['required', 'numeric', 'min:0', 'max:100'],
+        ]);
+
         $data = $request->except('_token', 'payment_gateways', 'active_payment_gateway_id');
         
         // Handle checkboxes (if they aren't in request, they should be '0')
@@ -210,6 +214,36 @@ class AdminController extends Controller
 
         $feedbacks = $query->latest()->paginate(15);
         return view('admin.feedback', compact('feedbacks'));
+    }
+
+    /**
+     * Approve customer feedback.
+     */
+    public function approveFeedback(\App\Models\Feedback $feedback)
+    {
+        $feedback->update(['status' => 'approved']);
+        \Illuminate\Support\Facades\Cache::forget('home_approved_feedbacks');
+        return redirect()->back()->with('success', 'Feedback approved successfully.');
+    }
+
+    /**
+     * Reject customer feedback.
+     */
+    public function rejectFeedback(\App\Models\Feedback $feedback)
+    {
+        $feedback->update(['status' => 'rejected']);
+        \Illuminate\Support\Facades\Cache::forget('home_approved_feedbacks');
+        return redirect()->back()->with('success', 'Feedback rejected successfully.');
+    }
+
+    /**
+     * Delete customer feedback.
+     */
+    public function destroyFeedback(\App\Models\Feedback $feedback)
+    {
+        $feedback->delete();
+        \Illuminate\Support\Facades\Cache::forget('home_approved_feedbacks');
+        return redirect()->back()->with('success', 'Feedback deleted successfully.');
     }
 
     /**
@@ -539,6 +573,18 @@ class AdminController extends Controller
     }
 
     /**
+     * Delete a user's subscription permanently.
+     */
+    public function destroySubscription(UserPlan $userPlan)
+    {
+        $userName = $userPlan->user->name ?? 'User';
+        $userPlan->delete();
+
+        return redirect()->back()
+            ->with('success', "Subscription for {$userName} deleted permanently.");
+    }
+
+    /**
      * Show all activity for a specific user.
      */
     public function userActivity(User $user)
@@ -656,5 +702,26 @@ class AdminController extends Controller
         $processStep->delete();
         Cache::forget('home_process_steps');
         return redirect()->route('admin.process-steps')->with('success', 'Process step deleted successfully.');
+    }
+
+    /**
+     * List and manage locations.
+     */
+    public function locations()
+    {
+        $states = \App\Models\State::orderBy('name')->get();
+        
+        $selectedStateId = request('state_id');
+        $selectedDistrictId = request('district_id');
+
+        $districts = $selectedStateId 
+            ? \App\Models\District::where('state_id', $selectedStateId)->orderBy('name')->get()
+            : collect();
+
+        $localities = $selectedDistrictId
+            ? \App\Models\Locality::where('district_id', $selectedDistrictId)->orderBy('name')->paginate(20)
+            : collect();
+
+        return view('admin.locations', compact('states', 'districts', 'localities', 'selectedStateId', 'selectedDistrictId'));
     }
 }

@@ -14,6 +14,9 @@
                 <p class="text-zinc-500">Welcome back, {{ auth()->user()->name }}!</p>
             </div>
             <div class="flex flex-wrap gap-2">
+                <a href="#" onclick="event.preventDefault(); window.openProfileModal();" class="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-250/60 hover:bg-stone-300 text-zinc-750 text-sm font-semibold rounded-sm transition-all cursor-pointer" id="dash-profile-settings">
+                    <i class="ph ph-user-gear"></i> Profile Settings
+                </a>
                 <a href="{{ route('billing.history') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-200/60 hover:bg-stone-200 text-zinc-700 text-sm font-semibold rounded-sm transition-all" id="dash-billing-history">
                     <i class="ph ph-receipt"></i> Billing History
                 </a>

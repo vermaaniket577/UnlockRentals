@@ -34,7 +34,7 @@
         </div>
         @endif
 
-        <div class="bg-stone-50 border border-stone-200/50 rounded-sm overflow-hidden">
+        <div class="bg-stone-50 border border-stone-200/50 rounded-sm overflow-visible">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-stone-200/50 bg-stone-100/50">
@@ -63,13 +63,13 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <p class="font-semibold text-zinc-900">{{ $sub->plan->name }}</p>
-                            <p class="text-xs text-zinc-500">{{ $sub->plan->formatted_price }} / {{ $sub->plan->duration_days }} days</p>
+                            <p class="font-semibold text-zinc-900">{{ $sub->plan?->name ?? 'Deleted Plan' }}</p>
+                            <p class="text-xs text-zinc-500">{{ $sub->plan?->formatted_price ?? 'N/A' }} / {{ $sub->plan?->duration_days ?? 'N/A' }} days</p>
                         </td>
                         <td class="px-6 py-4 text-zinc-700">
                             <div class="flex items-center gap-2">
                                 <span class="font-bold">{{ $sub->contact_views_count ?? $sub->contacts_used }}</span>
-                                <span class="text-xs text-stone-400">/ {{ $sub->plan->contact_limit }}</span>
+                                <span class="text-xs text-stone-400">/ {{ $sub->plan?->contact_limit ?? 'N/A' }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4">
@@ -116,19 +116,19 @@
                                         </button>
                                     </form>
                                 @elseif($sub->status === 'approved' && $sub->isActive())
-                                    {{-- Update Plan Dropdown Simplified --}}
-                                    <div class="relative group/menu inline-block">
-                                        <button class="p-2 bg-[#2563EB]/10 text-[#2563EB] rounded-sm hover:bg-[#2563EB] hover:text-white transition-all border border-blue-500/20" title="Manage Plan">
+                                    {{-- Update Plan Dropdown (Click-based) --}}
+                                    <div class="relative inline-block">
+                                        <button type="button" onclick="togglePlanMenu(this, event)" class="p-2 bg-[#2563EB]/10 text-[#2563EB] rounded-sm hover:bg-[#2563EB] hover:text-white transition-all border border-blue-500/20" title="Manage Plan">
                                             <i class="ph ph-arrows-left-right text-lg"></i>
                                         </button>
-                                        <div class="hidden group-hover/menu:block absolute right-0 mt-2 w-48 bg-white border border-stone-200 rounded-sm shadow-xl z-50 text-left p-2">
-                                            <p class="text-[10px] font-bold text-stone-400 uppercase p-2 border-bottom">Change Plan</p>
+                                        <div class="plan-dropdown hidden absolute right-0 top-full mt-1 w-48 bg-white border border-stone-200 rounded-sm shadow-xl z-50 text-left p-2">
+                                            <p class="text-[10px] font-bold text-stone-400 uppercase p-2">Change Plan</p>
                                             @foreach($plans as $plan)
                                                 @if($plan->id !== $sub->plan_id)
                                                     <form action="{{ route('admin.subscriptions.update-plan', $sub) }}" method="POST">
                                                         @csrf
                                                         <input type="hidden" name="plan_id" value="{{ $plan->id }}">
-                                                        <button type="submit" class="w-full text-left px-3 py-2 text-xs hover:bg-stone-50 text-zinc-700 rounded-sm">
+                                                        <button type="submit" class="w-full text-left px-3 py-2 text-xs hover:bg-stone-100 text-zinc-700 rounded-sm transition-colors">
                                                             To {{ $plan->name }}
                                                         </button>
                                                     </form>
@@ -147,6 +147,15 @@
                                 <a href="{{ route('admin.users.activity', $sub->user) }}" class="p-2 bg-stone-50 text-zinc-600 rounded-sm hover:bg-zinc-800 hover:text-white transition-all border border-stone-200" title="View Activity">
                                     <i class="ph ph-eye text-lg"></i>
                                 </a>
+                                @if($sub->id)
+                                <form method="POST" action="{{ route('admin.subscriptions.destroy', $sub) }}" onsubmit="return confirm('Are you sure you want to permanently delete this subscription plan?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-2 bg-red-500/10 text-red-600 rounded-sm hover:bg-red-600 hover:text-white transition-all border border-red-500/20 shadow-sm" title="Delete Subscription">
+                                        <i class="ph ph-trash text-lg"></i>
+                                    </button>
+                                </form>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -170,3 +179,26 @@
 </section>
 
 @endsection
+
+@push('scripts')
+<script>
+    function togglePlanMenu(btn, e) {
+        e.stopPropagation();
+        const dropdown = btn.parentElement.querySelector('.plan-dropdown');
+        const isOpen = !dropdown.classList.contains('hidden');
+
+        // Close all other open dropdowns first
+        document.querySelectorAll('.plan-dropdown').forEach(d => d.classList.add('hidden'));
+
+        // Toggle this one
+        if (!isOpen) {
+            dropdown.classList.remove('hidden');
+        }
+    }
+
+    // Close all dropdowns when clicking anywhere else on the page
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.plan-dropdown').forEach(d => d.classList.add('hidden'));
+    });
+</script>
+@endpush

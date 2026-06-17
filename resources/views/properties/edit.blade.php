@@ -57,6 +57,14 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="mt-4">
+                        <label for="edit-phone" class="block text-sm font-medium text-zinc-500 mb-1.5">Contact Mobile Number *</label>
+                        <input type="tel" name="contact_phone" id="edit-phone" value="{{ old('contact_phone', $property->contact_phone ?? $property->owner->phone ?? auth()->user()->phone) }}" required
+                               class="w-full px-4 py-3 bg-stone-50 border border-stone-200/50 rounded-sm text-sm text-zinc-900 placeholder-gray-500 focus:outline-none focus:border-[#2563EB]/50 transition-all font-semibold"
+                               placeholder="e.g., +91 98765 43210">
+                        @error('contact_phone') <p class="text-red-450 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
                 </div>
             </div>
 

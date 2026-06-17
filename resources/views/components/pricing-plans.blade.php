@@ -706,12 +706,14 @@
         'instant'   => 'ph-lightning',
     ];
 
-    function getFeatureIcon($feature, $featureIcons) {
-        $lower = strtolower($feature);
-        foreach ($featureIcons as $keyword => $icon) {
-            if (str_contains($lower, $keyword)) return $icon;
+    if (!function_exists('getFeatureIcon')) {
+        function getFeatureIcon($feature, $featureIcons) {
+            $lower = strtolower($feature);
+            foreach ($featureIcons as $keyword => $icon) {
+                if (str_contains($lower, $keyword)) return $icon;
+            }
+            return 'ph-check-circle';
         }
-        return 'ph-check-circle';
     }
 @endphp
 
@@ -757,6 +759,12 @@
                             $cardThemeClass = 'ur-plan-card--silver';
                             if ($isGold) $cardThemeClass = 'ur-plan-card--gold';
                             if ($isPlatinum) $cardThemeClass = 'ur-plan-card--platinum';
+
+                            $offer = isset($userOffers) ? $userOffers->get($plan->id) : null;
+                            $hasOffer = $offer && $offer->discounted_price !== null;
+                            $originalPrice = (float) $plan->price;
+                            $monthlyPrice = $hasOffer ? (float) $offer->discounted_price : $originalPrice;
+                            $yearlyPrice = $monthlyPrice * 0.8;
                         @endphp
                         <div class="ur-plan-card {{ $cardThemeClass }}"
                              style="--plan-accent: {{ $meta['accent'] }}; --plan-bg: {{ $meta['bg'] }}; --plan-glow: {{ $meta['glow'] }}; --plan-border: {{ $meta['border'] }}; --plan-check-bg: {{ $meta['check'] }};">
@@ -782,11 +790,17 @@
                             <h3 class="ur-plan-card__name">{{ $plan->name }}</h3>
                             <p class="ur-plan-card__desc">{{ $plan->description }}</p>
 
-                            <div class="ur-plan-card__price">
+                            <div class="ur-plan-card__price" style="flex-wrap: wrap; align-items: center;">
+                                @if($hasOffer)
+                                    <div style="width: 100%; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                        <span style="font-size: 0.65rem; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;">Special Offer</span>
+                                        <span style="font-size: 0.875rem; text-decoration: line-through; color: #94a3b8; font-weight: 700;">₹{{ number_format($originalPrice, 0) }}</span>
+                                    </div>
+                                @endif
                                 <span class="ur-plan-card__currency">₹</span>
                                 <span class="ur-plan-card__amount"
-                                      data-monthly="{{ number_format($plan->price, 0) }}"
-                                      data-yearly="{{ number_format($plan->price * 0.8, 0) }}">{{ number_format($plan->price, 0) }}</span>
+                                      data-monthly="{{ number_format($monthlyPrice, 0) }}"
+                                      data-yearly="{{ number_format($yearlyPrice, 0) }}">{{ number_format($monthlyPrice, 0) }}</span>
                                 <span class="ur-plan-card__period">/rent</span>
                             </div>
                             <div class="ur-plan-card__price-note">
