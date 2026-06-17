@@ -7,22 +7,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.unlockrentals"
+        applicationId = "com.unlockrentals.app"
         minSdk = 24
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
-    }
-
-    // Release signing config — fill in your keystore details
-    signingConfigs {
-        create("release") {
-            // Uncomment and fill these in before building a release APK:
-            // storeFile = file("keystore/unlockrentals-release.jks")
-            // storePassword = "YOUR_KEYSTORE_PASSWORD"
-            // keyAlias = "unlockrentals"
-            // keyPassword = "YOUR_KEY_PASSWORD"
-        }
+        targetSdk = 35
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     buildTypes {
@@ -32,8 +21,6 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Uncomment after setting up signing config:
-            // signingConfig = signingConfigs.getByName("release")
         }
     }
 

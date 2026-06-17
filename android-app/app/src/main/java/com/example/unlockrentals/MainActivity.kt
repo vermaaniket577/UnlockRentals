@@ -13,8 +13,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
+import android.view.animation.AlphaAnimation
 import android.webkit.*
 import android.widget.FrameLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var errorView: View
+    private lateinit var progressBar: ProgressBar
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
 
     private val fileChooserLauncher: ActivityResultLauncher<Intent> =
@@ -59,11 +62,9 @@ class MainActivity : AppCompatActivity() {
         // Build layout programmatically
         val rootLayout = FrameLayout(this).apply {
             fitsSystemWindows = true
-            // Immediately apply static status bar and navigation bar padding as a fallback
-            setPadding(0, getStatusBarHeight(), 0, getNavigationBarHeight())
         }
 
-        // Apply system bar insets dynamically to handle changes (e.g. keyboard, rotation, notch)
+        // Apply system bar insets dynamically
         ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -76,9 +77,7 @@ class MainActivity : AppCompatActivity() {
                 getColor(R.color.primary),
                 getColor(R.color.primary_light)
             )
-            setProgressBackgroundColorSchemeColor(
-                getColor(R.color.primary_dark)
-            )
+            setProgressBackgroundColorSchemeColor(getColor(R.color.white))
         }
 
         // WebView
@@ -87,6 +86,24 @@ class MainActivity : AppCompatActivity() {
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
+            visibility = View.INVISIBLE // Hidden until page loads
+        }
+
+        // Top progress bar for page loading
+        progressBar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                6 // 6px height
+            ).apply {
+                gravity = android.view.Gravity.TOP
+            }
+            isIndeterminate = false
+            max = 100
+            progressDrawable = resources.getDrawable(android.R.drawable.progress_horizontal, theme).mutate().apply {
+                setTint(getColor(R.color.primary))
+            }
+            visibility = View.GONE
+            elevation = 10f
         }
 
         // Error View (hidden by default)
@@ -108,6 +125,7 @@ class MainActivity : AppCompatActivity() {
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
+        rootLayout.addView(progressBar)
         rootLayout.addView(errorView, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
@@ -150,12 +168,15 @@ class MainActivity : AppCompatActivity() {
             cacheMode = WebSettings.LOAD_DEFAULT
             mediaPlaybackRequiresUserGesture = false
 
+            // Enable geolocation for Google Maps
+            setGeolocationEnabled(true)
+
             // Custom User-Agent to identify the app
             val defaultUA = userAgentString
-            userAgentString = "$defaultUA UnlockRentalsApp/1.0"
+            userAgentString = "$defaultUA UnlockRentalsApp/1.1"
         }
 
-        // WebViewClient — handles navigation
+        // WebViewClient — handles navigation and page lifecycle
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url.toString()
@@ -170,51 +191,110 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 return when {
+                    // Phone calls
                     url.startsWith("tel:") -> {
                         startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
                         true
                     }
+                    // Email
                     url.startsWith("mailto:") -> {
                         startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse(url)))
                         true
                     }
-                    url.startsWith("whatsapp://") || host.contains("wa.me") -> {
+                    // WhatsApp
+                    url.startsWith("whatsapp://") || host.contains("wa.me") || host.contains("api.whatsapp.com") -> {
                         try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                         catch (e: Exception) { Toast.makeText(this@MainActivity, "WhatsApp not installed", Toast.LENGTH_SHORT).show() }
                         true
                     }
+                    // App stores
                     url.startsWith("market://") || host.contains("play.google.com") || host.contains("apps.apple.com") -> {
                         try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
-                        catch (e: Exception) { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url.replace("market://", "https://play.google.com/store/apps/")))) }
+                        catch (e: Exception) { /* Ignore */ }
                         true
                     }
-                    prodHost.isNotEmpty() && (host == prodHost || host.contains(prodHost)) -> {
-                        false // Allow loading in WebView
-                    }
-                    !host.contains("unlockrentals") && !host.contains("10.0.2.2") && !host.contains("localhost") -> {
-                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    // Google Maps embeds — let them load inside WebView
+                    host.contains("google.com") && url.contains("maps") -> false
+                    host.contains("maps.google") -> false
+                    // UPI payment links
+                    url.startsWith("upi://") -> {
+                        try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+                        catch (e: Exception) { Toast.makeText(this@MainActivity, "No UPI app found", Toast.LENGTH_SHORT).show() }
                         true
                     }
-                    else -> false
+                    // Internal navigation — keep in WebView
+                    prodHost.isNotEmpty() && (host == prodHost || host.contains(prodHost)) -> false
+                    host.contains("unlockrentals") -> false
+                    // Dev/test hosts
+                    host.contains("10.0.2.2") || host.contains("localhost") || host.contains("127.0.0.1") -> false
+                    // Everything else — open external browser
+                    else -> {
+                        try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+                        catch (e: Exception) { /* Ignore */ }
+                        true
+                    }
                 }
+            }
+
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                progressBar.visibility = View.VISIBLE
+                progressBar.progress = 0
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 swipeRefresh.isRefreshing = false
+                progressBar.visibility = View.GONE
+
+                // Smoothly reveal WebView if it was hidden
+                if (webView.visibility != View.VISIBLE) {
+                    val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 300 }
+                    webView.startAnimation(fadeIn)
+                    webView.visibility = View.VISIBLE
+                }
+
+                // Inject CSS to hide web-only elements in the app context
+                val hideScript = """
+                    (function() {
+                        var style = document.createElement('style');
+                        style.innerHTML = '.pwa-install-prompt, .feedback-modal-trigger, .app-download-section, .app-dl-section { display: none !important; }';
+                        document.head.appendChild(style);
+                    })();
+                """.trimIndent()
+                webView.evaluateJavascript(hideScript, null)
             }
 
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                 super.onReceivedError(view, request, error)
                 if (request?.isForMainFrame == true) {
                     swipeRefresh.isRefreshing = false
+                    progressBar.visibility = View.GONE
+                    showErrorPage()
+                }
+            }
+
+            override fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
+                super.onReceivedHttpError(view, request, errorResponse)
+                // Handle HTTP errors for main frame (e.g. 500, 503)
+                if (request?.isForMainFrame == true && (errorResponse?.statusCode ?: 200) >= 500) {
+                    swipeRefresh.isRefreshing = false
+                    progressBar.visibility = View.GONE
                     showErrorPage()
                 }
             }
         }
 
-        // WebChromeClient — handles file uploads
+        // WebChromeClient — handles file uploads and progress
         webView.webChromeClient = object : WebChromeClient() {
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                progressBar.progress = newProgress
+                if (newProgress >= 100) {
+                    progressBar.visibility = View.GONE
+                }
+            }
+
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -239,9 +319,14 @@ class MainActivity : AppCompatActivity() {
                 }
                 return true
             }
+
+            // Enable geolocation
+            override fun onGeolocationPermissionsShowPrompt(origin: String?, callback: GeolocationPermissions.Callback?) {
+                callback?.invoke(origin, true, false)
+            }
         }
 
-        // Download listener
+        // Download listener — handles file downloads (APKs, PDFs, etc.)
         webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
             try {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
@@ -275,6 +360,7 @@ class MainActivity : AppCompatActivity() {
         webView.visibility = View.GONE
         errorView.visibility = View.VISIBLE
         swipeRefresh.isRefreshing = false
+        progressBar.visibility = View.GONE
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -294,21 +380,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getStatusBarHeight(): Int {
-        var result = 0
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            result = resources.getDimensionPixelSize(resourceId)
-        }
-        return result
+    override fun onResume() {
+        super.onResume()
+        webView.onResume()
     }
 
-    private fun getNavigationBarHeight(): Int {
-        var result = 0
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            result = resources.getDimensionPixelSize(resourceId)
-        }
-        return result
+    override fun onPause() {
+        super.onPause()
+        webView.onPause()
     }
 }
