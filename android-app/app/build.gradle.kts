@@ -60,4 +60,7 @@ dependencies {
 
     // WebKit (enhanced WebView APIs)
     implementation("androidx.webkit:webkit:1.12.1")
+
+    // Testing
+    testImplementation(libs.junit)
 }
