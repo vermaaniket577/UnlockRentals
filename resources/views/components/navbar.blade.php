@@ -27,6 +27,9 @@
                 <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="nav-link px-4 py-2 rounded-sm text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-shops">
                     Shops
                 </a>
+                <a href="{{ route('blog.index') }}" class="nav-link px-4 py-2 rounded-sm text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all {{ request()->routeIs('blog.*') ? 'text-zinc-900 bg-stone-50 font-semibold' : '' }}" id="nav-blog">
+                    Blog
+                </a>
             </div>
 
             {{-- Auth Actions --}}
@@ -178,6 +181,7 @@
             <a href="{{ route('properties.index') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Properties</a>
             <a href="{{ route('properties.index', ['type' => 'house']) }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Houses</a>
             <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Shops</a>
+            <a href="{{ route('blog.index') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Blog</a>
             @guest
                 <a href="{{ route('login') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Sign In</a>
             @endguest

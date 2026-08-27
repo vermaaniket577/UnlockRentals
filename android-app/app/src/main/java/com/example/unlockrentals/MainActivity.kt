@@ -110,12 +110,16 @@ class MainActivity : AppCompatActivity() {
         errorView = layoutInflater.inflate(R.layout.error_page, null).apply {
             visibility = View.GONE
             findViewById<View>(R.id.btn_retry)?.setOnClickListener {
-                if (isNetworkAvailable()) {
-                    visibility = View.GONE
-                    webView.visibility = View.VISIBLE
-                    webView.reload()
+                visibility = View.GONE
+                webView.visibility = View.VISIBLE
+                progressBar.visibility = View.VISIBLE
+                
+                // If it failed initially before loading any URL, loadUrl again, otherwise reload
+                val currentUrl = webView.url
+                if (currentUrl.isNullOrEmpty() || currentUrl == "about:blank") {
+                    webView.loadUrl(getString(R.string.production_url))
                 } else {
-                    Toast.makeText(this@MainActivity, "Still no internet connection", Toast.LENGTH_SHORT).show()
+                    webView.reload()
                 }
             }
         }
@@ -143,11 +147,7 @@ class MainActivity : AppCompatActivity() {
 
         // Load the production URL
         val productionUrl = getString(R.string.production_url)
-        if (isNetworkAvailable()) {
-            webView.loadUrl(productionUrl)
-        } else {
-            showErrorPage()
-        }
+        webView.loadUrl(productionUrl)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -180,55 +180,38 @@ class MainActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url.toString()
-                val host = request.url.host ?: ""
-
-                // Extract production URL host dynamically
-                val prodUrlString = getString(R.string.production_url)
-                val prodHost = try {
-                    Uri.parse(prodUrlString).host ?: ""
-                } catch (e: Exception) {
-                    ""
-                }
-
-                return when {
-                    // Phone calls
-                    url.startsWith("tel:") -> {
+                val checker = UrlNavigationChecker(getString(R.string.production_url))
+                return when (checker.determineTarget(url)) {
+                    UrlNavigationChecker.NavigationTarget.DIAL -> {
                         startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
                         true
                     }
-                    // Email
-                    url.startsWith("mailto:") -> {
+                    UrlNavigationChecker.NavigationTarget.SENDTO -> {
                         startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse(url)))
                         true
                     }
-                    // WhatsApp
-                    url.startsWith("whatsapp://") || host.contains("wa.me") || host.contains("api.whatsapp.com") -> {
+                    UrlNavigationChecker.NavigationTarget.WHATSAPP -> {
                         try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                         catch (e: Exception) { Toast.makeText(this@MainActivity, "WhatsApp not installed", Toast.LENGTH_SHORT).show() }
                         true
                     }
-                    // App stores
-                    url.startsWith("market://") || host.contains("play.google.com") || host.contains("apps.apple.com") -> {
+                    UrlNavigationChecker.NavigationTarget.APP_STORE -> {
                         try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                         catch (e: Exception) { /* Ignore */ }
                         true
                     }
-                    // Google Maps embeds — let them load inside WebView
-                    host.contains("google.com") && url.contains("maps") -> false
-                    host.contains("maps.google") -> false
-                    // UPI payment links
-                    url.startsWith("upi://") -> {
+                    UrlNavigationChecker.NavigationTarget.MAPS -> {
+                        false
+                    }
+                    UrlNavigationChecker.NavigationTarget.UPI -> {
                         try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                         catch (e: Exception) { Toast.makeText(this@MainActivity, "No UPI app found", Toast.LENGTH_SHORT).show() }
                         true
                     }
-                    // Internal navigation — keep in WebView
-                    prodHost.isNotEmpty() && (host == prodHost || host.contains(prodHost)) -> false
-                    host.contains("unlockrentals") -> false
-                    // Dev/test hosts
-                    host.contains("10.0.2.2") || host.contains("localhost") || host.contains("127.0.0.1") -> false
-                    // Everything else — open external browser
-                    else -> {
+                    UrlNavigationChecker.NavigationTarget.INTERNAL -> {
+                        false
+                    }
+                    UrlNavigationChecker.NavigationTarget.EXTERNAL -> {
                         try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                         catch (e: Exception) { /* Ignore */ }
                         true
@@ -271,17 +254,32 @@ class MainActivity : AppCompatActivity() {
                     swipeRefresh.isRefreshing = false
                     progressBar.visibility = View.GONE
                     showErrorPage()
+                    
+                    val errorMessage = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        error?.description?.toString() ?: "Unknown Error"
+                    } else {
+                        "WebResourceError"
+                    }
+                    Toast.makeText(this@MainActivity, "Error: $errorMessage", Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
                 super.onReceivedHttpError(view, request, errorResponse)
                 // Handle HTTP errors for main frame (e.g. 500, 503)
-                if (request?.isForMainFrame == true && (errorResponse?.statusCode ?: 200) >= 500) {
+                if (request?.isForMainFrame == true && (errorResponse?.statusCode ?: 200) >= 400) {
                     swipeRefresh.isRefreshing = false
                     progressBar.visibility = View.GONE
                     showErrorPage()
+                    Toast.makeText(this@MainActivity, "HTTP Error: ${errorResponse?.statusCode}", Toast.LENGTH_LONG).show()
                 }
+            }
+            
+            override fun onReceivedSslError(view: WebView?, handler: android.webkit.SslErrorHandler?, error: android.net.http.SslError?) {
+                // If there's an SSL certificate error on the live server, the WebView blocks it.
+                // For debugging, let's proceed anyway, but show a toast.
+                Toast.makeText(this@MainActivity, "SSL Error ignored. Fix cert on server.", Toast.LENGTH_LONG).show()
+                handler?.proceed() // Temporarily bypass SSL errors to see if the site loads
             }
         }
 

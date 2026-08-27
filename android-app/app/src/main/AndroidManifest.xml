@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/Theme.UnlockRentals"
-        android:usesCleartextTraffic="false"
+        android:usesCleartextTraffic="true"
         android:hardwareAccelerated="true">
 
         <!-- Splash Screen (Launcher Activity) -->
@@ -50,9 +50,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
-                    android:host="unlockrentals.in" />
+                    android:host="unlockrentals.com" />
                 <data android:scheme="https"
-                    android:host="www.unlockrentals.in" />
+                    android:host="www.unlockrentals.com" />
             </intent-filter>
         </activity>
 

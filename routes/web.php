@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 
@@ -95,8 +96,7 @@ Route::get('/', function(Illuminate\Http\Request $request) {
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
-            ->get()
-            ->keyBy('plan_id');
+            ->get();
     }
 
     return view('welcome', compact('featuredRentals', 'feedbacks', 'userOffers'));
@@ -132,6 +132,10 @@ Route::get('/properties', [PropertyController::class, 'index'])->name('propertie
 
 // Plans browsing (public)
 Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
+
+// Blog & Real Estate Guides (public)
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Dynamic Sitemap Route
 Route::get('/sitemap.xml', function () {

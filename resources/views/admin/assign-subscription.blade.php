@@ -70,6 +70,18 @@
                     </div>
                 </div>
 
+                <div class="mb-6" id="billing-period-block">
+                    <label for="billing_period" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2">Billing Period / Type</label>
+                    <select name="billing_period" id="billing_period" required class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm text-sm focus:outline-none focus:border-[#2563EB]">
+                        <option value="monthly">Rent (Monthly)</option>
+                        <option value="yearly">Buy (Yearly)</option>
+                    </select>
+                    <p class="text-xs text-zinc-500 mt-1">If "Assign as Custom Offer" is selected, the offer will only apply to this billing period.</p>
+                    @error('billing_period')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="mb-6" id="discounted-price-block">
                     <label class="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2">Custom Discounted Price (Optional)</label>
                     <input type="number" name="discounted_price" min="0" step="0.01" class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-sm text-sm focus:outline-none focus:border-[#2563EB]" placeholder="e.g. 299">

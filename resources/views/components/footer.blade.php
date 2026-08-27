@@ -442,6 +442,12 @@
                             Premium Shops
                         </a>
                     </li>
+                    <li class="ur-footer__nav-item">
+                        <a href="{{ route('blog.index') }}" class="ur-footer__nav-link">
+                            <i class="ph ph-newspaper"></i>
+                            Blog & Guides
+                        </a>
+                    </li>
                 </ul>
             </div>
 

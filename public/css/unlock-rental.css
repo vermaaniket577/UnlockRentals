@@ -2233,3 +2233,59 @@ a { text-decoration: none; color: inherit; }
         font-size: 26px !important;
     }
 }
+
+/* =========================================
+   SMOOTH PERFORMANCE & UI ENHANCEMENTS
+   ========================================= */
+html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth GPU hardware accelerated transitions */
+.property-card, .btn, .nav-link, .modal-content, .card-hover-lift {
+    will-change: transform;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.2s ease,
+                background-color 0.2s ease;
+}
+
+/* Smooth image rendering */
+img {
+    content-visibility: auto;
+}
+
+/* Button click feedback state */
+.btn-submitting {
+    pointer-events: none !important;
+    opacity: 0.75 !important;
+    position: relative !important;
+}
+
+.btn-submitting::after {
+    content: '' !important;
+    display: inline-block !important;
+    width: 14px !important;
+    height: 14px !important;
+    margin-left: 8px !important;
+    border: 2px solid currentColor !important;
+    border-right-color: transparent !important;
+    border-radius: 50% !important;
+    animation: smoothSpin 0.6s linear infinite !important;
+    vertical-align: middle !important;
+}
+
+@keyframes smoothSpin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

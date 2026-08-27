@@ -9,6 +9,7 @@ class PrivateUserOffer extends Model
     protected $fillable = [
         'user_id',
         'plan_id',
+        'billing_period',
         'discounted_price',
         'status',
         'expires_at',

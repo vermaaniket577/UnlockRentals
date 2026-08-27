@@ -175,9 +175,10 @@
                 @php
                     $key = str_contains(strtolower($plan->name), 'gold') ? 'gold' : (str_contains(strtolower($plan->name), 'platinum') ? 'platinum' : 'silver');
                     $style = $planStyles[$key];
-                    $offer = isset($userOffers) ? $userOffers->get($plan->id) : null;
-                    $monthly = ($offer && $offer->discounted_price !== null) ? (float) $offer->discounted_price : (float) $plan->price;
-                    $yearly = round($monthly * 12 * 0.8);
+                    $monthlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'monthly')->first() : null;
+                    $yearlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'yearly')->first() : null;
+                    $monthly = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : (float) $plan->price;
+                    $yearly = ($yearlyOffer && $yearlyOffer->discounted_price !== null) ? (float) $yearlyOffer->discounted_price : round((float) $plan->price * 12 * 0.8);
                     $isRecommended = $key === 'gold' || $loop->iteration === 2;
                 @endphp
                 <article class="premium-plan {{ $isRecommended ? 'recommended' : '' }} flex flex-col p-6"

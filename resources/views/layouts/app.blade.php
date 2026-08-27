@@ -212,6 +212,16 @@
 
         window.addEventListener('online', () => showNetworkToast(true));
         window.addEventListener('offline', () => showNetworkToast(false));
+
+        // Smooth form submission & double-click protection
+        document.addEventListener('submit', (e) => {
+            const form = e.target;
+            if (form.getAttribute('data-no-smooth')) return;
+            const btn = form.querySelector('button[type="submit"], input[type="submit"]');
+            if (btn && !btn.classList.contains('btn-submitting')) {
+                btn.classList.add('btn-submitting');
+            }
+        });
     </script>
 
     @stack('scripts')

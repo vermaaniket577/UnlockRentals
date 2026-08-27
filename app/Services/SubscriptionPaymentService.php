@@ -17,13 +17,20 @@ class SubscriptionPaymentService
     /**
      * Calculate billing details with subtotal, discount, GST, and final totals.
      */
-    public function billingBreakdown(Plan $plan, float $effectivePrice, string $billingPeriod): array
+    public function billingBreakdown(Plan $plan, float $effectivePrice, string $billingPeriod, $privateOffer = null): array
     {
         $months = $billingPeriod === 'yearly' ? 12 : 1;
         $durationDays = $billingPeriod === 'yearly' ? 365 : (int) $plan->duration_days;
         $subtotal = (float) $plan->price * $months;
-        $offerSubtotal = $effectivePrice * $months;
-        $yearlyDiscount = $billingPeriod === 'yearly' ? round($offerSubtotal * 0.20, 2) : 0;
+        
+        if ($privateOffer && $privateOffer->billing_period === $billingPeriod) {
+            $offerSubtotal = (float) $privateOffer->discounted_price;
+            $yearlyDiscount = 0;
+        } else {
+            $offerSubtotal = $effectivePrice * $months;
+            $yearlyDiscount = $billingPeriod === 'yearly' ? round($offerSubtotal * 0.20, 2) : 0;
+        }
+
         $discount = max(0, $subtotal - $offerSubtotal) + $yearlyDiscount;
         $taxable = max(0, $offerSubtotal - $yearlyDiscount);
         $gstRate = (float) \App\Models\Setting::get('gst_rate', '18');

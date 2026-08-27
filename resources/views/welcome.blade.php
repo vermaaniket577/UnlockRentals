@@ -380,6 +380,10 @@
                 <i class="ph ph-buildings"></i>
                 Commercial
             </a>
+            <a href="{{ route('blog.index') }}" class="nav-link">
+                <i class="ph ph-article"></i>
+                Blog
+            </a>
         </nav>
         <div class="auth-nav" style="display: flex; align-items: center; gap: 10px;">
             @if (Route::has('login'))
@@ -481,6 +485,7 @@
         <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link">Buy</a>
         <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link">Rent</a>
         <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link">Commercial</a>
+        <a href="{{ route('blog.index') }}" class="mobile-nav-link">Blog</a>
         <div class="mobile-auth">
             @if (Route::has('login'))
                 @auth

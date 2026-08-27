@@ -39,8 +39,7 @@ class PlanController extends Controller
                 ->where(function ($q) {
                     $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
                 })
-                ->get()
-                ->keyBy('plan_id');
+                ->get();
         }
 
         $activeGateway = Setting::activePaymentGateway();
@@ -79,8 +78,8 @@ class PlanController extends Controller
         }
 
         $billingPeriod = request('billing', 'monthly') === 'yearly' ? 'yearly' : 'monthly';
-        [$effectivePrice] = $this->effectivePlanPrice($plan, $user);
-        $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod);
+        [$effectivePrice, $privateOffer] = $this->effectivePlanPrice($plan, $user, $billingPeriod);
+        $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod, $privateOffer);
 
         $activeGateway = Setting::activePaymentGateway();
         [$razorpayKeyId] = $this->razorpayCredentials($activeGateway);
@@ -118,9 +117,9 @@ class PlanController extends Controller
             'billing_period' => ['nullable', 'in:monthly,yearly'],
         ]);
 
-        [$effectivePrice] = $this->effectivePlanPrice($plan, $user);
         $billingPeriod = ($data['billing_period'] ?? 'monthly') === 'yearly' ? 'yearly' : 'monthly';
-        $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod);
+        [$effectivePrice, $privateOffer] = $this->effectivePlanPrice($plan, $user, $billingPeriod);
+        $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod, $privateOffer);
         $receipt = 'UR' . $user->id . 'P' . $plan->id . now()->format('His');
 
         $amountPaise = max(100, (int) round($billing['final'] * 100));
@@ -204,9 +203,9 @@ class PlanController extends Controller
             'auto_renew' => ['nullable', 'boolean'],
         ]);
 
-        [$effectivePrice] = $this->effectivePlanPrice($plan, $user);
         $billingPeriod = $request->input('billing_period', 'monthly') === 'yearly' ? 'yearly' : 'monthly';
-        $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod);
+        [$effectivePrice, $privateOffer] = $this->effectivePlanPrice($plan, $user, $billingPeriod);
+        $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod, $privateOffer);
         $paymentMethod = $request->input('payment_method', ($activeGateway['type'] ?? 'manual') === 'razorpay' ? 'razorpay' : 'upi');
         $invoiceId = $this->payments->generateInvoiceId();
 
@@ -508,11 +507,13 @@ class PlanController extends Controller
             ->with('payment_failed_reason', session('payment_failed_reason'));
     }
 
-    private function effectivePlanPrice(Plan $plan, $user): array
+    private function effectivePlanPrice(Plan $plan, $user, string $billingPeriod): array
     {
         $effectivePrice = $plan->price;
+
         $privateOffer = \App\Models\PrivateUserOffer::where('user_id', $user->id)
             ->where('plan_id', $plan->id)
+            ->where('billing_period', $billingPeriod)
             ->where('status', 'active')
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());

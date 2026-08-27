@@ -465,6 +465,7 @@ class AdminController extends Controller
             'user_id' => 'required|exists:users,id',
             'plan_id' => 'required|exists:plans,id',
             'assign_type' => 'required|in:custom_offer,instant',
+            'billing_period' => 'required|in:monthly,yearly',
             'discounted_price' => 'nullable|numeric|min:0',
         ]);
 
@@ -473,7 +474,7 @@ class AdminController extends Controller
 
         if ($request->assign_type === 'custom_offer') {
             \App\Models\PrivateUserOffer::updateOrCreate(
-                ['user_id' => $user->id, 'plan_id' => $plan->id],
+                ['user_id' => $user->id, 'plan_id' => $plan->id, 'billing_period' => $request->billing_period],
                 [
                     'status' => 'active', 
                     'expires_at' => now()->addDays(30),

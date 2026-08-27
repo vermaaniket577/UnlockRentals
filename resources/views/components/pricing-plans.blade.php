@@ -760,14 +760,17 @@
                             if ($isGold) $cardThemeClass = 'ur-plan-card--gold';
                             if ($isPlatinum) $cardThemeClass = 'ur-plan-card--platinum';
 
-                            $offer = isset($userOffers) ? $userOffers->get($plan->id) : null;
-                            $hasOffer = $offer && $offer->discounted_price !== null;
+                            $monthlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'monthly')->first() : null;
+                            $yearlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'yearly')->first() : null;
                             $originalPrice = (float) $plan->price;
-                            $monthlyPrice = $hasOffer ? (float) $offer->discounted_price : $originalPrice;
-                            $yearlyPrice = $monthlyPrice * 0.8;
+                            $monthlyPrice = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : $originalPrice;
+                            $yearlyPrice = ($yearlyOffer && $yearlyOffer->discounted_price !== null) ? (float) $yearlyOffer->discounted_price : round($originalPrice * 12 * 0.8);
+                            $hasOffer = ($monthlyOffer || $yearlyOffer);
                         @endphp
                         <div class="ur-plan-card {{ $cardThemeClass }}"
-                             style="--plan-accent: {{ $meta['accent'] }}; --plan-bg: {{ $meta['bg'] }}; --plan-glow: {{ $meta['glow'] }}; --plan-border: {{ $meta['border'] }}; --plan-check-bg: {{ $meta['check'] }};">
+                             style="--plan-accent: {{ $meta['accent'] }}; --plan-bg: {{ $meta['bg'] }}; --plan-glow: {{ $meta['glow'] }}; --plan-border: {{ $meta['border'] }}; --plan-check-bg: {{ $meta['check'] }};"
+                             data-has-monthly-offer="{{ $monthlyOffer ? 'true' : 'false' }}"
+                             data-has-yearly-offer="{{ $yearlyOffer ? 'true' : 'false' }}">
 
                             @if($isGold)
                                 <span class="ur-plan-card__badge"><i class="ph-bold ph-fire" style="margin-right:3px"></i> Most Popular</span>
@@ -791,12 +794,10 @@
                             <p class="ur-plan-card__desc">{{ $plan->description }}</p>
 
                             <div class="ur-plan-card__price" style="flex-wrap: wrap; align-items: center;">
-                                @if($hasOffer)
-                                    <div style="width: 100%; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                        <span style="font-size: 0.65rem; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;">Special Offer</span>
-                                        <span style="font-size: 0.875rem; text-decoration: line-through; color: #94a3b8; font-weight: 700;">₹{{ number_format($originalPrice, 0) }}</span>
-                                    </div>
-                                @endif
+                                <div class="special-offer-badge" style="width: 100%; display: {{ $hasOffer ? 'flex' : 'none' }}; align-items: center; gap: 8px; margin-bottom: 4px;" data-original-monthly="{{ number_format($originalPrice, 0) }}" data-original-yearly="{{ number_format(round($originalPrice * 12 * 0.8), 0) }}">
+                                    <span style="font-size: 0.65rem; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;">Special Offer</span>
+                                    <span class="special-offer-original-price" style="font-size: 0.875rem; text-decoration: line-through; color: #94a3b8; font-weight: 700;">₹{{ number_format($originalPrice, 0) }}</span>
+                                </div>
                                 <span class="ur-plan-card__currency">₹</span>
                                 <span class="ur-plan-card__amount"
                                       data-monthly="{{ number_format($monthlyPrice, 0) }}"
@@ -896,20 +897,41 @@
                 input.value = isYearly ? 'yearly' : 'monthly';
             });
             
-            priceAmounts.forEach(amountEl => {
-                const monthlyPrice = amountEl.getAttribute('data-monthly');
-                const yearlyPrice = amountEl.getAttribute('data-yearly');
-                const activePrice = isYearly ? yearlyPrice : monthlyPrice;
+            cards.forEach(card => {
+                const amountEl = card.querySelector('.ur-plan-card__amount');
+                const badgeEl = card.querySelector('.special-offer-badge');
                 
-                amountEl.style.transition = 'transform 0.15s, opacity 0.15s';
-                amountEl.style.transform = 'scale(0.9)';
-                amountEl.style.opacity = '0';
+                if (amountEl) {
+                    const monthlyPrice = amountEl.getAttribute('data-monthly');
+                    const yearlyPrice = amountEl.getAttribute('data-yearly');
+                    const activePrice = isYearly ? yearlyPrice : monthlyPrice;
+                    
+                    amountEl.style.transition = 'transform 0.15s, opacity 0.15s';
+                    amountEl.style.transform = 'scale(0.9)';
+                    amountEl.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        amountEl.textContent = activePrice;
+                        amountEl.style.transform = 'scale(1)';
+                        amountEl.style.opacity = '1';
+                    }, 150);
+                }
                 
-                setTimeout(() => {
-                    amountEl.textContent = activePrice;
-                    amountEl.style.transform = 'scale(1)';
-                    amountEl.style.opacity = '1';
-                }, 150);
+                if (badgeEl) {
+                    const hasMonthlyOffer = card.getAttribute('data-has-monthly-offer') === 'true';
+                    const hasYearlyOffer = card.getAttribute('data-has-yearly-offer') === 'true';
+                    const originalPriceEl = badgeEl.querySelector('.special-offer-original-price');
+                    
+                    if (isYearly && hasYearlyOffer) {
+                        badgeEl.style.display = 'flex';
+                        if (originalPriceEl) originalPriceEl.textContent = '₹' + badgeEl.getAttribute('data-original-yearly');
+                    } else if (!isYearly && hasMonthlyOffer) {
+                        badgeEl.style.display = 'flex';
+                        if (originalPriceEl) originalPriceEl.textContent = '₹' + badgeEl.getAttribute('data-original-monthly');
+                    } else {
+                        badgeEl.style.display = 'none';
+                    }
+                }
             });
 
             const periodLabels = document.querySelectorAll('.ur-plan-card__period');
