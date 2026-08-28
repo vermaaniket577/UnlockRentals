@@ -28,7 +28,8 @@
 .ur-footer__glow-2 {
     position: absolute;
     top: 50%;
-    right: -6rem;
+    right: 0;
+    transform: translateX(20%);
     width: 24rem;
     height: 24rem;
     background-color: rgba(99, 102, 241, 0.1);
@@ -250,11 +251,11 @@
 .ur-footer__contact-group { margin-bottom: 2rem; }
 
 .ur-footer__contact-label {
-    font-size: 0.625rem;
-    font-weight: 900;
-    color: #71717a;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: none;
+    letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
 }
 
@@ -422,7 +423,7 @@
 
             {{-- Column 2: Navigation --}}
             <div class="ur-footer__col">
-                <h4 class="ur-footer__heading">Directory</h4>
+                <h3 class="ur-footer__heading">Directory</h3>
                 <ul class="ur-footer__nav">
                     <li class="ur-footer__nav-item">
                         <a href="{{ route('properties.index') }}" class="ur-footer__nav-link">
@@ -443,7 +444,7 @@
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
-                        <a href="{{ route('blog.index') }}" class="ur-footer__nav-link">
+                        <a href="{{ url('/blog') }}" class="ur-footer__nav-link">
                             <i class="ph ph-newspaper"></i>
                             Blog & Guides
                         </a>
@@ -453,12 +454,12 @@
 
             {{-- Column 3: Services --}}
             <div class="ur-footer__col">
-                <h4 class="ur-footer__heading">Experience</h4>
+                <h3 class="ur-footer__heading">Experience</h3>
                 <ul class="ur-footer__nav">
                     <li class="ur-footer__nav-item">
-                        <a href="#" class="ur-footer__nav-link">
+                        <a href="{{ url('/properties') }}" class="ur-footer__nav-link">
                             <i class="ph ph-sparkle"></i>
-                            Concierge Service
+                            Verified Listings
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
@@ -468,7 +469,13 @@
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
-                        <a href="#" class="ur-footer__nav-link">
+                        <a href="{{ url('/how-it-works') }}" class="ur-footer__nav-link">
+                            <i class="ph ph-git-merge"></i>
+                            Process Flow
+                        </a>
+                    </li>
+                    <li class="ur-footer__nav-item">
+                        <a href="{{ route('plans.index') }}" class="ur-footer__nav-link">
                             <i class="ph ph-crown"></i>
                             Elite Membership
                         </a>
@@ -478,7 +485,7 @@
 
             {{-- Column 4: Contact --}}
             <div class="ur-footer__col">
-                <h4 class="ur-footer__heading">Contact</h4>
+                <h3 class="ur-footer__heading">Contact</h3>
                 <div class="ur-footer__contact-group">
                     <p class="ur-footer__contact-label">Direct Inquiry</p>
                     <a href="mailto:{{ $site_settings['site_email'] ?? 'support@unlockrentals.com' }}" class="ur-footer__contact-value" style="display: flex; align-items: center; gap: 0.75rem;">

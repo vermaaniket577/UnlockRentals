@@ -23,8 +23,8 @@
     filter: blur(80px);
     z-index: 0;
 }
-.ur-how__blob--1 { top: -10%; left: -20%; }
-.ur-how__blob--2 { bottom: -10%; right: -20%; }
+.ur-how__blob--1 { top: -10%; left: 0; transform: translateX(-20%); }
+.ur-how__blob--2 { bottom: -10%; right: 0; transform: translateX(20%); }
 
 .ur-how__grid-bg {
     position: absolute;
@@ -263,13 +263,20 @@
 </style>
 
 @php
-    $processSteps = \Illuminate\Support\Facades\Cache::remember('home_process_steps', 3600, function () {
-        return \App\Models\ProcessStep::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
-    });
+    $processSteps = collect();
+    try {
+        if (class_exists('App\Models\ProcessStep') && \Illuminate\Support\Facades\Schema::hasTable('process_steps')) {
+            $processSteps = \Illuminate\Support\Facades\Cache::remember('home_process_steps', 3600, function () {
+                return \App\Models\ProcessStep::where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->get();
+            });
+        }
+    } catch (\Throwable $e) {
+        $processSteps = collect();
+    }
 
-    if ($processSteps->isEmpty()) {
+    if (empty($processSteps) || (is_object($processSteps) && method_exists($processSteps, 'isEmpty') && $processSteps->isEmpty())) {
         $processSteps = collect([
             (object) [
                 'step_number' => '01',
@@ -328,10 +335,17 @@
                         <span class="ur-how__number">{{ $step->step_number ?? sprintf('%02d', $index + 1) }}</span>
                         <div class="ur-how__point"></div>
                     </div>
-                    <h4 class="ur-how__s-title">{{ $step->title }}</h4>
+                    <h3 class="ur-how__s-title">{{ $step->title }}</h3>
                     <p class="ur-how__s-desc">{{ $step->description }}</p>
                 </div>
             @endforeach
+        </div>
+
+        <div style="text-align: center; margin-top: 4rem;">
+            <a href="{{ url('/how-it-works') }}" class="btn-explore-premium" style="display: inline-flex; align-items: center; gap: 8px;">
+                <span>Explore Full Process Flow & FAQs</span>
+                <i class="ph-bold ph-arrow-right"></i>
+            </a>
         </div>
 
     </div>

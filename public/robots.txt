@@ -1,6 +1,22 @@
 User-agent: *
 Allow: /
+
+# Disallow private, auth, and non-content endpoints from crawling
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /inquiries/
-Sitemap: https://unlockrentals.com/sitemap.xml
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+Disallow: /property-image/
+Disallow: /chatbot/
+Disallow: /feedback
+Disallow: /api/
+Disallow: /properties/create
+Disallow: /properties/*/edit
+Disallow: /checkout/
+Disallow: /payment/
+
+# Crawl Delay & Sitemap
+Sitemap: https://www.unlockrentals.com/sitemap.xml
+

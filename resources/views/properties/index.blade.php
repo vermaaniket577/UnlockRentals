@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Rental Properties in India - Houses, Flats, PGs & Shops | UnlockRentals')
+@section('title', 'Rental Properties in India - Houses & Flats | UnlockRentals')
 @section('meta_description', 'Browse rental houses, flats, PGs, shops, and commercial spaces in India. Filter verified rental properties by location, budget, rooms, and property type.')
 
 @push('head')
@@ -102,6 +102,11 @@
                     </div>
                 @endif
             </div>
+        </div>
+
+        {{-- People Also Search For Widget --}}
+        <div class="mt-16 border-t border-stone-200/80 pt-8">
+            <x-people-also-search />
         </div>
     </div>
 </section>

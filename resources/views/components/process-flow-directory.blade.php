@@ -237,13 +237,20 @@
 </style>
 
 @php
-    $processSteps = \Illuminate\Support\Facades\Cache::remember('home_process_steps', 3600, function () {
-        return \App\Models\ProcessStep::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
-    });
+    $processSteps = collect();
+    try {
+        if (class_exists('App\Models\ProcessStep') && \Illuminate\Support\Facades\Schema::hasTable('process_steps')) {
+            $processSteps = \Illuminate\Support\Facades\Cache::remember('home_process_steps', 3600, function () {
+                return \App\Models\ProcessStep::where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->get();
+            });
+        }
+    } catch (\Throwable $e) {
+        $processSteps = collect();
+    }
 
-    if ($processSteps->isEmpty()) {
+    if (empty($processSteps) || (is_object($processSteps) && method_exists($processSteps, 'isEmpty') && $processSteps->isEmpty())) {
         $processSteps = collect([
             (object) [
                 'step_number' => '01',

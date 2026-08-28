@@ -137,13 +137,33 @@ Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
+// Process & How It Works (public)
+Route::get('/how-it-works', function () {
+    return view('how-it-works');
+})->name('how-it-works');
+Route::get('/process', function () {
+    return redirect()->route('how-it-works');
+})->name('process');
+
 // Dynamic Sitemap Route
 Route::get('/sitemap.xml', function () {
     $properties = \App\Models\Property::approved()->latest('updated_at')->get();
     $programmaticUrls = \App\Http\Controllers\SeoController::getProgrammaticUrls();
+    
+    // Curated blogs
+    $blogController = new \App\Http\Controllers\BlogController();
+    $reflection = new \ReflectionClass($blogController);
+    $method = $reflection->getMethod('getPosts');
+    $method->setAccessible(true);
+    $blogs = $method->invoke($blogController);
+
+    $baseUrl = rtrim(config('app.url', 'https://www.unlockrentals.com'), '/');
+
     return response()->view('sitemap', [
         'properties' => $properties,
-        'programmaticUrls' => $programmaticUrls
+        'programmaticUrls' => $programmaticUrls,
+        'blogs' => $blogs,
+        'baseUrl' => $baseUrl
     ])->header('Content-Type', 'text/xml');
 });
 

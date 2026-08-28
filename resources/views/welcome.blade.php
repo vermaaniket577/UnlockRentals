@@ -5,22 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="canonical" href="{{ route('home') }}">
     <meta name="robots" content="index, follow">
-    <title>UnlockRentals - Find Houses, Flats, PGs & Rental Properties in India</title>
-    <meta name="description" content="Find verified houses, flats, PGs, shops, and rental properties across India. Search by location, budget, rooms, and property type on UnlockRentals.">
+    <title>Search House Near Me for Rent & Sale - Zero Brokerage | UnlockRentals</title>
+    <meta name="description" content="Search house near me for rent, flats, 1/2/3 BHK, PGs, and commercial spaces with zero brokerage. Find 100% verified properties by direct owners in Delhi NCR, Gurgaon, Gurugram, Bengaluru, Mumbai.">
+    <meta name="keywords" content="search house near me, search house near me for rent, search house near me by owner, free search house near me, search house near delhi, search house near gurugram haryana, urgent house for sale in gurgaon, house for rent in gurgaon under 5000, unlockrentals">
+    <meta name="author" content="UnlockRentals">
+    <meta name="publisher" content="UnlockRentals">
 
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="UnlockRentals - Find Houses, Flats, PGs & Rental Properties in India">
-    <meta property="og:description" content="Find verified houses, flats, PGs, shops, and rental properties across India.">
+    <meta property="og:title" content="Search House Near Me for Rent & Sale - Zero Brokerage | UnlockRentals">
+    <meta property="og:description" content="Search house near me for rent or buy with 100% direct owner listings and zero brokerage across India.">
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
 
     {{-- Twitter --}}
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="UnlockRentals - Find Houses, Flats, PGs & Rental Properties in India">
-    <meta property="twitter:description" content="Find verified houses, flats, PGs, shops, and rental properties across India.">
+    <meta property="twitter:title" content="Search House Near Me for Rent & Sale - Zero Brokerage | UnlockRentals">
+    <meta property="twitter:description" content="Search house near me for rent or buy with 100% direct owner listings and zero brokerage across India.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
+
+    {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/icons/icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-192x192.png') }}">
+
+    {{-- Comprehensive JSON-LD Schema for Google Search & Organization Knowledge Graph --}}
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@graph": [
+            {
+                "@@type": "WebSite",
+                "@@id": "{{ route('home') }}#website",
+                "name": "UnlockRentals",
+                "url": "{{ route('home') }}",
+                "description": "Find verified houses, flats, PGs, and rental properties near you with zero brokerage.",
+                "potentialAction": {
+                    "@@type": "SearchAction",
+                    "target": {
+                        "@@type": "EntryPoint",
+                        "urlTemplate": "{{ route('properties.index') }}?search={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                }
+            },
+            {
+                "@@type": "Organization",
+                "@@id": "{{ route('home') }}#organization",
+                "name": "UnlockRentals",
+                "url": "{{ route('home') }}",
+                "logo": "{{ asset('images/logo.png') }}",
+                "image": "{{ asset('images/logo.png') }}",
+                "priceRange": "₹5,000 - ₹5,00,000",
+                "address": {
+                    "@@type": "PostalAddress",
+                    "addressCountry": "IN"
+                }
+            },
+            {
+                "@@type": "RealEstateAgent",
+                "@@id": "{{ route('home') }}#realestateagent",
+                "name": "UnlockRentals",
+                "url": "{{ route('home') }}",
+                "logo": "{{ asset('images/logo.png') }}",
+                "image": "{{ asset('images/logo.png') }}",
+                "priceRange": "₹5,000 - ₹5,00,000",
+                "areaServed": [
+                    { "@@type": "City", "name": "Delhi" },
+                    { "@@type": "City", "name": "Gurugram" },
+                    { "@@type": "City", "name": "Gurgaon" },
+                    { "@@type": "City", "name": "Noida" },
+                    { "@@type": "City", "name": "Bengaluru" },
+                    { "@@type": "City", "name": "Mumbai" }
+                ],
+                "address": {
+                    "@@type": "PostalAddress",
+                    "addressCountry": "IN"
+                }
+            },
+            {
+                "@@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@@type": "Question",
+                        "name": "How do I search house near me for rent with zero brokerage?",
+                        "acceptedAnswer": {
+                            "@@type": "Answer",
+                            "text": "On UnlockRentals, you can search houses, flats, and villas near you directly by owner. Filter by your location, price, and BHK to connect with verified property owners without paying brokerage fees."
+                        }
+                    },
+                    {
+                        "@@type": "Question",
+                        "name": "Can I search houses for rent in Gurgaon under 5000 / 10000?",
+                        "acceptedAnswer": {
+                            "@@type": "Answer",
+                            "text": "Yes, UnlockRentals provides price filter options allowing you to find affordable rental homes, 1 RK, 1 BHK, and PG accommodations in Gurgaon, Gurugram, and Delhi NCR under ₹5,000 and ₹10,000."
+                        }
+                    },
+                    {
+                        "@@type": "Question",
+                        "name": "How to find houses near me directly by owner?",
+                        "acceptedAnswer": {
+                            "@@type": "Answer",
+                            "text": "Use the By Owner filter on UnlockRentals to view 100% owner-posted property listings with direct phone and chat access."
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+    </script>
 
     <!-- Optimized Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,9 +150,10 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260611-header-fix">
 
-    <!-- Phosphor Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.0/src/bold/style.css" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/style.css">
+    <!-- Phosphor Icons (Regular, Bold, Fill) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
     <!-- PWA Configuration -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -97,6 +199,7 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 30px 40px 10px;
+            overflow: hidden;
         }
         
         .promo-slider {
@@ -122,12 +225,13 @@
             height: 100%;
             display: flex;
             position: relative;
+            overflow: hidden;
         }
 
         .promo-slide-content {
             width: 55%;
             height: 100%;
-            padding: 40px 60px;
+            padding: 40px 50px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -139,12 +243,11 @@
         .promo-badge {
             background: #ffd814;
             color: #0f1111;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
             padding: 6px 14px;
             border-radius: 100px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-bottom: 16px;
             box-shadow: 0 4px 10px rgba(255, 216, 20, 0.2);
             display: inline-block;
@@ -173,15 +276,18 @@
             background: #ffd814;
             color: #0f1111;
             font-weight: 800;
-            font-size: 13px;
-            padding: 14px 32px;
-            border-radius: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 14px;
+            padding: 12px 28px;
+            border-radius: 10px;
+            text-transform: none;
+            letter-spacing: 0.2px;
             transition: all 0.25s ease;
             box-shadow: 0 6px 20px rgba(255, 216, 20, 0.25);
             border: none;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .promo-btn:hover {
@@ -236,45 +342,46 @@
             background: linear-gradient(to right, #1e1b4b 0%, rgba(30, 27, 75, 0.9) 15%, rgba(30, 27, 75, 0.4) 50%, transparent 100%);
         }
 
-        /* Slider Controls */
+        /* Slider Controls - Standard Circular Buttons (Fix Issue 18) */
         .promo-arrow {
             position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 48px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 10;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
 
         .promo-arrow:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.4);
+            background: #2563eb;
+            border-color: #2563eb;
+            transform: translateY(-50%) scale(1.08);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
         }
 
         .promo-arrow-prev {
-            left: 0;
-            border-top-right-radius: 6px;
-            border-bottom-right-radius: 6px;
-            border-left: none;
+            left: 16px;
         }
 
         .promo-arrow-next {
-            right: 0;
-            border-top-left-radius: 6px;
-            border-bottom-left-radius: 6px;
-            border-right: none;
+            right: 16px;
         }
 
         .promo-arrow svg {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             transition: transform 0.2s ease;
         }
         
@@ -365,23 +472,27 @@
         </div>
         <nav class="main-nav">
             <a href="{{ route('properties.index') }}" class="nav-link">
-                <i class="ph ph-magnifying-glass"></i>
+                <i class="ph-bold ph-compass"></i>
                 Discover
             </a>
             <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="nav-link">
-                <i class="ph ph-house"></i>
+                <i class="ph-bold ph-shopping-bag"></i>
                 Buy
             </a>
             <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="nav-link">
-                <i class="ph ph-key"></i>
+                <i class="ph-bold ph-key"></i>
                 Rent
             </a>
             <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="nav-link">
-                <i class="ph ph-buildings"></i>
+                <i class="ph-bold ph-buildings"></i>
                 Commercial
             </a>
-            <a href="{{ route('blog.index') }}" class="nav-link">
-                <i class="ph ph-article"></i>
+            <a href="{{ url('/how-it-works') }}" class="nav-link">
+                <i class="ph-bold ph-git-merge"></i>
+                Process
+            </a>
+            <a href="{{ url('/blog') }}" class="nav-link">
+                <i class="ph-bold ph-newspaper"></i>
                 Blog
             </a>
         </nav>
@@ -401,7 +512,7 @@
                         
                         <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:220px; background:rgba(15,15,18,0.95); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:12px; box-shadow:0 20px 40px rgba(0,0,0,0.4); overflow:hidden; z-index:1000;">
                             <div style="padding:15px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                                <p style="color:rgba(255,255,255,0.5); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Account</p>
+                                <p style="color:rgba(255,255,255,0.6); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Account</p>
                                 <p style="color:#fff; font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->email }}</p>
                             </div>
                             <div style="padding:6px 0;">
@@ -481,16 +592,29 @@
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </button>
-        <a href="{{ route('properties.index') }}" class="mobile-nav-link">Discover</a>
-        <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link">Buy</a>
-        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link">Rent</a>
-        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link">Commercial</a>
-        <a href="{{ route('blog.index') }}" class="mobile-nav-link">Blog</a>
+        <a href="{{ route('properties.index') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+            <i class="ph-bold ph-compass" style="font-size:18px; color:var(--primary);"></i> Discover
+        </a>
+        <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+            <i class="ph-bold ph-shopping-bag" style="font-size:18px; color:var(--primary);"></i> Buy
+        </a>
+        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+            <i class="ph-bold ph-key" style="font-size:18px; color:var(--primary);"></i> Rent
+        </a>
+        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+            <i class="ph-bold ph-buildings" style="font-size:18px; color:var(--primary);"></i> Commercial
+        </a>
+        <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+            <i class="ph-bold ph-git-merge" style="font-size:18px; color:var(--primary);"></i> Process
+        </a>
+        <a href="{{ url('/blog') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+            <i class="ph-bold ph-newspaper" style="font-size:18px; color:var(--primary);"></i> Blog
+        </a>
         <div class="mobile-auth">
             @if (Route::has('login'))
                 @auth
                     <div style="padding:10px 16px; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <p style="color:rgba(255,255,255,0.5); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Signed in as</p>
+                        <p style="color:rgba(255,255,255,0.6); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Signed in as</p>
                         <p style="color:#fff; font-weight:600; font-size:15px;">{{ auth()->user()->name }}</p>
                     </div>
                     <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px;">
@@ -677,6 +801,10 @@
             </form>
 
             <div class="actions-wrapper actions-animate">
+                <button type="button" id="btnNearMe" onclick="searchNearMe()" class="btn-outline-blue" style="background: rgba(37,99,235,0.25); border-color: #3b82f6; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <i class="ph-fill ph-navigation-arrow" style="font-size: 16px; color: #60a5fa;"></i>
+                    <span>Search House Near Me</span>
+                </button>
                 <span class="action-text">Own a property?</span>
                 <a href="{{ route('properties.create') }}" class="btn-outline-blue">Post Property</a>
                 <a href="{{ route('properties.index') }}" class="btn-text-link">
@@ -728,10 +856,10 @@
                 <!-- Slide 1: Zero Brokerage -->
                 <div class="promo-slide slide-zero-brokerage">
                     <div class="promo-slide-content">
-                        <span class="promo-badge">SPECIAL OFFER</span>
+                        <span class="promo-badge">Special Offer</span>
                         <h2 class="promo-title">Zero Brokerage Home Rentals</h2>
                         <p class="promo-desc">Browse thousands of 100% verified flats and independent villas across India. Contact owners directly.</p>
-                        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="promo-btn">SHOP NOW</a>
+                        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="promo-btn">Explore Rentals</a>
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
@@ -742,10 +870,10 @@
                 <!-- Slide 2: Premium PG -->
                 <div class="promo-slide slide-pg-stays">
                     <div class="promo-slide-content">
-                        <span class="promo-badge">POPULAR CATEGORY</span>
+                        <span class="promo-badge">Popular Category</span>
                         <h2 class="promo-title">Premium PG & Co-Living Stays</h2>
                         <p class="promo-desc">Fully furnished, high-speed Wi-Fi, daily housekeeping, and home-style food. Perfect for students and professionals.</p>
-                        <a href="{{ route('properties.index', ['type' => 'pg-hostel']) }}" class="promo-btn">EXPLORE PG</a>
+                        <a href="{{ route('properties.index', ['type' => 'pg-hostel']) }}" class="promo-btn">Explore PG Stays</a>
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
@@ -756,10 +884,10 @@
                 <!-- Slide 3: Commercial Spaces -->
                 <div class="promo-slide slide-commercial">
                     <div class="promo-slide-content">
-                        <span class="promo-badge">BUSINESS CLASS</span>
+                        <span class="promo-badge">Business Class</span>
                         <h2 class="promo-title">Modern Commercial Spaces</h2>
                         <p class="promo-desc">Find high-footfall retail shops, showrooms, and fully managed offices. Zero brokerage, maximum growth.</p>
-                        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="promo-btn">VIEW SHOPS</a>
+                        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="promo-btn">View Commercial</a>
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
@@ -906,7 +1034,7 @@
                         <div class="author">
                             <div class="author-img" style="background-image: url('{{ $t['image'] }}')" loading="lazy"></div>
                             <div class="author-details">
-                                <h4>{{ $t['author'] }}</h4>
+                                <h3 class="author-name" style="font-size: 15px; font-weight: 700; color: var(--text-dark); margin: 0;">{{ $t['author'] }}</h3>
                                 <span>{{ $t['role'] }}</span>
                             </div>
                         </div>
@@ -916,8 +1044,14 @@
         </div>
     </section>
 
+    {{-- People Also Search For Widget --}}
+    <x-people-also-search />
+
     {{-- Resource Directory --}}
     @include('components.resource-directory')
+
+    {{-- Blog & Guides Section --}}
+    @include('components.home-blog')
 
     {{-- Property Links Bar --}}
     @include('components.property-links-bar')
@@ -940,7 +1074,7 @@
                     <img src="{{ asset('images/icons/chatbot.png') }}" alt="Bot" style="width: 24px; height: 24px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
                 </div>
                 <div class="chat-header-info">
-                    <h4>Unlock Support</h4>
+                    <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Unlock Support</div>
                     <p>Always Online</p>
                 </div>
             </div>
@@ -1239,6 +1373,37 @@
                 if(e.key === 'Enter') chatSend.click();
             });
 
+            // Geolocation 'Search House Near Me' function
+            window.searchNearMe = function() {
+                if (!navigator.geolocation) {
+                    alert('Geolocation is not supported by your browser. You can search by entering your city name.');
+                    return;
+                }
+                const btn = document.getElementById('btnNearMe');
+                if (btn) btn.innerHTML = '<i class="ph ph-circle-notch ph-spin" style="font-size:16px;"></i> Locating...';
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                const city = (data.address && (data.address.city || data.address.town || data.address.state_district || data.address.suburb)) || 'Delhi';
+                                window.location.href = "{{ route('properties.index') }}?search=" + encodeURIComponent(city);
+                            })
+                            .catch(() => {
+                                window.location.href = "{{ route('properties.index') }}";
+                            });
+                    },
+                    (error) => {
+                        if (btn) btn.innerHTML = '<i class="ph-fill ph-navigation-arrow" style="font-size:16px; color:#60a5fa;"></i> Search House Near Me';
+                        alert('Location access was denied. Please select your city from the search filters.');
+                    },
+                    { timeout: 8000 }
+                );
+            };
+
             // Feedback Logic
             const stars = document.querySelectorAll('.rating-star');
             let currentRating = 0;
@@ -1315,6 +1480,7 @@
                     alert('Something went wrong. Please try again.');
                 });
             }
+        });
     </script>
 
     @if(($site_settings['feedback_enabled'] ?? '1') == '1')

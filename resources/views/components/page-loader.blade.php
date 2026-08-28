@@ -87,7 +87,7 @@
 
         {{-- Interactive illustrative labels --}}
         <h3 class="relative z-10 text-white font-semibold text-xs tracking-[0.2em] mb-1 font-sans uppercase">UnlockRentals</h3>
-        <p id="ur-loader-status-text" class="relative z-10 text-[10px] text-zinc-400 font-mono tracking-tight h-4">Preparing secure dashboard...</p>
+        <p id="ur-loader-status-text" class="relative z-10 text-xs text-zinc-400 font-mono tracking-tight h-4">Preparing secure dashboard...</p>
     </div>
 </div>
 

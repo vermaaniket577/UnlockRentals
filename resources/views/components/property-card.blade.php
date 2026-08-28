@@ -1,7 +1,14 @@
 {{-- Property Card Component --}}
 {{-- Usage: <x-property-card :property="$property" /> --}}
 
-<div class="glass-card" id="property-card-{{ $property->id }}">
+@php
+    $propertyUrl = Route::has('properties.show') ? route('properties.show', $property) : url('/properties/' . $property->id);
+@endphp
+
+<div class="glass-card" id="property-card-{{ $property->id }}" onclick="window.location.href='{{ $propertyUrl }}'" style="cursor: pointer; position: relative;">
+    {{-- Accessible Stretched Link --}}
+    <a href="{{ $propertyUrl }}" class="property-card-overlay-link" style="position: absolute; inset: 0; z-index: 5; text-indent: -9999px;" aria-label="View {{ $property->title }}">View Property</a>
+
     {{-- Image Section --}}
     <div class="card-img-wrap">
         @if($property->primaryImage)
@@ -22,7 +29,7 @@
         @endif
 
         {{-- Top Badges --}}
-        <div class="absolute top-4 left-4 flex gap-2 z-10" style="position: absolute; top: 16px; left: 16px; display: flex; gap: 8px;">
+        <div class="absolute top-4 left-4 flex gap-2 z-10" style="position: absolute; top: 16px; left: 16px; display: flex; gap: 8px; z-index: 10;">
             <span style="background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); color: var(--primary); padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                 {{ ucfirst($property->type) }}
             </span>
@@ -34,7 +41,7 @@
         </div>
 
         {{-- Price Badge --}}
-        <div class="card-price">
+        <div class="card-price" style="z-index: 10;">
             {{ $property->formatted_price }}
         </div>
     </div>
@@ -42,7 +49,7 @@
     {{-- Content Section --}}
     <div class="card-body">
         <h3 title="{{ $property->title }}">
-            <a href="{{ route('properties.show', $property) }}">
+            <a href="{{ $propertyUrl }}" style="position: relative; z-index: 6;">
                 {{ $property->title }}
             </a>
         </h3>
@@ -73,20 +80,20 @@
             @endif
         </div>
 
-        <div class="card-footer">
-            <div class="owner-info">
+        <div class="card-footer" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(0,0,0,0.06);">
+            <div class="owner-info" style="display: flex; align-items: center; gap: 10px;">
                 @if($property->owner)
                     <div class="owner-avatar">
                         {{ strtoupper(substr($property->owner->name, 0, 1)) }}
                     </div>
                     <div style="display: flex; flex-direction: column;">
-                        <span style="font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Owner</span>
+                        <span style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Owner</span>
                         <span style="font-size: 13px; color: var(--text-dark); font-weight: 700;">{{ $property->owner->name }}</span>
                     </div>
                 @endif
             </div>
-            <a href="{{ route('properties.show', $property) }}" class="btn-text-link" style="color: var(--primary);">
-                Explore <i class="ph-bold ph-arrow-right"></i>
+            <a href="{{ $propertyUrl }}" class="btn-text-link" style="color: var(--primary); background: rgba(37,99,235,0.08); padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; position: relative; z-index: 6; text-decoration: none; transition: all 0.2s ease;">
+                View <i class="ph-bold ph-arrow-right"></i>
             </a>
         </div>
     </div>

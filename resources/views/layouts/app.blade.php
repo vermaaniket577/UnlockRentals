@@ -12,9 +12,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta name="description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
+    <meta name="description" content="@yield('meta_description', 'Search house near me for rent or buy with zero brokerage on UnlockRentals. 100% verified flats, houses, PGs, and commercial spaces by direct owners.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'search house near me, search house near me for rent, search house near me by owner, free search house near me, rental properties in india, flats for rent, houses for rent, PG accommodation, unlockrentals')">
+    <meta name="author" content="UnlockRentals">
+    <meta name="publisher" content="UnlockRentals">
     <meta name="robots" content="@yield('robots', 'index, follow')">
-    <title>@yield('title', 'UnlockRentals - Property Rental Marketplace')</title>
+    <title>@yield('title', 'Search House Near Me for Rent & Sale | UnlockRentals')</title>
 
     {{-- Performance: DNS prefetch for external resources --}}
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
@@ -36,10 +39,16 @@
     <meta property="twitter:description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
     <meta property="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
 
-    {{-- Favicon --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=1">
-    <link rel="icon" type="image/png" sizes="256x256" href="{{ asset('favicon.png') }}?v=1">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=1">
+    {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/icons/icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-192x192.png') }}">
 
 
     {{-- Premium Fonts (Optimized) --}}
@@ -47,10 +56,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 
-    {{-- Icon Systems (SRI Protected) --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.0/src/bold/style.css" integrity="sha384-nblAP2mo2pVPyMQZDw9Xy9Cwgs9lowushAYep4w5+Q9kF4Ibf3n0B/gCMVdR+Vqy" crossorigin="anonymous">
-    {{-- Full Phosphor Icons (regular, fill, etc.) for mobile nav & components --}}
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/style.css">
+    {{-- Phosphor Icon Systems (Regular, Bold, Fill) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
     {{-- Tailwind CSS for local/dev reliability without requiring Vite --}}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -108,7 +117,7 @@
 
     @stack('head')
 </head>
-<body class="min-h-screen bg-white text-zinc-800 font-sans antialiased font-light selection:bg-[#2563EB]/30 selection:text-zinc-900 dark:bg-slate-950 dark:text-slate-200">
+<body class="min-h-screen bg-white text-zinc-800 font-sans antialiased font-normal selection:bg-[#2563EB]/30 selection:text-zinc-900 dark:bg-slate-950 dark:text-slate-200 overflow-x-hidden w-full max-w-full">
 
     {{-- Premium Page Loader --}}
     @include('components.page-loader')

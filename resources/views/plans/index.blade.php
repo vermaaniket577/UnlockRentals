@@ -200,21 +200,33 @@
                         </div>
                         <p class="yearly-note mt-2 hidden text-xs font-bold text-emerald-600">Includes 20% buy savings.</p>
                     </div>
+                    @php
+                        $cleanPlanFeatures = [];
+                        $cleanPlanFeatures[] = '<strong>' . $plan->contact_limit . ' Verified Owner</strong> Direct Contacts';
+                        $cleanPlanFeatures[] = '<strong>' . $plan->duration_days . ' Days</strong> Complete Access Validity';
+                        $cleanPlanFeatures[] = 'Direct Phone & WhatsApp Access';
+                        
+                        foreach(($plan->features ?? []) as $feat) {
+                            $lower = strtolower($feat);
+                            if (str_contains($lower, 'owner detail') || str_contains($lower, 'unlock up to') || str_contains($lower, 'validity') || str_contains($lower, 'activation window')) {
+                                continue;
+                            }
+                            if (str_contains($lower, 'email support')) $cleanPlanFeatures[] = 'Standard Email Support (24h SLA)';
+                            elseif (str_contains($lower, 'priority support')) $cleanPlanFeatures[] = 'Priority Support & Fast-Track Assistance';
+                            elseif (str_contains($lower, 'dedicated manager')) $cleanPlanFeatures[] = 'Dedicated Relationship Concierge';
+                            elseif (str_contains($lower, 'advanced search')) $cleanPlanFeatures[] = 'Advanced Lifestyle & Locality Filters';
+                            elseif (str_contains($lower, 'whatsapp alerts')) $cleanPlanFeatures[] = 'Real-Time WhatsApp New Listing Alerts';
+                            elseif (str_contains($lower, 'verified badge')) $cleanPlanFeatures[] = 'Premium Verified Profile Badge';
+                            else $cleanPlanFeatures[] = $feat;
+                        }
+                    @endphp
                     <ul class="mt-7 flex-1 space-y-3">
-                        <li class="flex gap-3 text-sm text-slate-600">
-                            <span class="feature-check grid h-5 w-5 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
-                            <span><strong class="text-slate-950">{{ $plan->contact_limit }}</strong> verified owner-contact unlocks</span>
-                        </li>
-                        @foreach(($plan->features ?? []) as $feature)
-                            <li class="flex gap-3 text-sm text-slate-600">
+                        @foreach($cleanPlanFeatures as $featHtml)
+                            <li class="flex items-center gap-3 text-sm text-slate-600">
                                 <span class="feature-check grid h-5 w-5 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
-                                <span>{{ $feature }}</span>
+                                <span>{!! $featHtml !!}</span>
                             </li>
                         @endforeach
-                        <li class="flex gap-3 text-sm text-slate-600">
-                            <span class="feature-check grid h-5 w-5 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
-                            <span><span class="duration-label">{{ $plan->duration_days }} days</span> instant activation window</span>
-                        </li>
                     </ul>
                     <div class="mt-8">
                         @if(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan_id === $plan->id)

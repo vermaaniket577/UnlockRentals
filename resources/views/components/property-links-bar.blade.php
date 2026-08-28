@@ -29,21 +29,22 @@
 }
 
 .ur-links-bar__link {
-    font-size: 0.75rem;
-    font-weight: 900;
-    color: #a1a1aa;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: none;
+    letter-spacing: normal;
     text-decoration: none;
-    transition: all 0.3s;
+    transition: all 0.2s;
     position: relative;
     padding-bottom: 0.25rem;
 }
 
-.ur-links-bar__link:hover { color: #52525b; }
+.ur-links-bar__link:hover { color: #0f172a; }
 
 .ur-links-bar__link--active {
     color: #2563eb;
+    font-weight: 700;
 }
 
 .ur-links-bar__link--active::after {

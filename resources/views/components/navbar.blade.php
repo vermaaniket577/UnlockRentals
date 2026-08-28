@@ -1,47 +1,59 @@
 {{-- Navigation Bar Component --}}
 <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-stone-200/50 transition-all duration-300 dark:bg-slate-950/85 dark:border-slate-800/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 lg:h-18">
+        <div class="flex items-center justify-between h-16 lg:h-18 gap-3 xl:gap-6">
 
-            {{-- Logo --}}
-            <x-brand-logo
-                href="{{ route('home') }}"
-                id="nav-logo"
-                class="group"
-                imageClass="h-10 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
-                textClass="text-xl font-bold tracking-tight text-zinc-900"
-                accentClass="text-[#2563EB]"
-            />
-
-            {{-- Desktop Navigation --}}
-            <div class="hidden md:flex items-center gap-1">
-                <a href="{{ route('home') }}" class="nav-link px-4 py-2 rounded-sm text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all {{ request()->routeIs('home') ? 'text-zinc-900 bg-stone-50' : '' }}" id="nav-home">
-                    Home
-                </a>
-                <a href="{{ route('properties.index') }}" class="nav-link px-4 py-2 rounded-sm text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all {{ request()->routeIs('properties.*') ? 'text-zinc-900 bg-stone-50' : '' }}" id="nav-properties">
-                    Properties
-                </a>
-                <a href="{{ route('properties.index', ['type' => 'house']) }}" class="nav-link px-4 py-2 rounded-sm text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-houses">
-                    Houses
-                </a>
-                <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="nav-link px-4 py-2 rounded-sm text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all" id="nav-shops">
-                    Shops
-                </a>
-                <a href="{{ route('blog.index') }}" class="nav-link px-4 py-2 rounded-sm text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-stone-50 transition-all {{ request()->routeIs('blog.*') ? 'text-zinc-900 bg-stone-50 font-semibold' : '' }}" id="nav-blog">
-                    Blog
-                </a>
+            {{-- Left Side: Brand Logo --}}
+            <div class="flex-shrink-0">
+                <x-brand-logo
+                    href="{{ url('/') }}"
+                    id="nav-logo"
+                    class="group flex-shrink-0"
+                    imageClass="h-9 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
+                    textClass="text-lg xl:text-xl font-bold tracking-tight text-zinc-900"
+                    accentClass="text-[#2563EB]"
+                />
             </div>
 
-            {{-- Auth Actions --}}
-            <div class="flex items-center gap-3">
-                <button type="button" id="theme-toggle" class="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-200/80 bg-white/80 text-zinc-500 transition hover:text-zinc-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300" title="Toggle dark mode" aria-label="Toggle dark mode">
-                    <i class="ph-bold ph-moon" id="theme-toggle-icon"></i>
-                </button>
+            {{-- Center: Desktop Navigation Links (Responsive, Non-overlapping) --}}
+            <nav class="hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 flex-shrink">
+                <a href="{{ url('/') }}" class="nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold text-zinc-600 hover:text-blue-600 hover:bg-stone-50 transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('/') ? 'text-blue-600 bg-blue-50/50 dark:bg-blue-900/20 dark:text-blue-400' : 'dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' }}" id="nav-home">
+                    <i class="ph-bold ph-house text-sm xl:text-base text-blue-600"></i>
+                    <span>Home</span>
+                </a>
+                <a href="{{ url('/properties') }}" class="nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold text-zinc-600 hover:text-blue-600 hover:bg-stone-50 transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('properties') && !request('purpose') && !request('type') ? 'text-blue-600 bg-blue-50/50 dark:bg-blue-900/20 dark:text-blue-400' : 'dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' }}" id="nav-discover">
+                    <i class="ph-bold ph-compass text-sm xl:text-base text-blue-600"></i>
+                    <span>Discover</span>
+                </a>
+                <a href="{{ url('/properties?purpose=buy') }}" class="nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold text-zinc-600 hover:text-blue-600 hover:bg-stone-50 transition-all flex items-center gap-1.5 whitespace-nowrap {{ request('purpose') == 'buy' ? 'text-blue-600 bg-blue-50/50 dark:bg-blue-900/20 dark:text-blue-400' : 'dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' }}" id="nav-buy">
+                    <i class="ph-bold ph-shopping-bag text-sm xl:text-base text-blue-600"></i>
+                    <span>Buy</span>
+                </a>
+                <a href="{{ url('/properties?purpose=rent') }}" class="nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold text-zinc-600 hover:text-blue-600 hover:bg-stone-50 transition-all flex items-center gap-1.5 whitespace-nowrap {{ request('purpose') == 'rent' ? 'text-blue-600 bg-blue-50/50 dark:bg-blue-900/20 dark:text-blue-400' : 'dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' }}" id="nav-rent">
+                    <i class="ph-bold ph-key text-sm xl:text-base text-blue-600"></i>
+                    <span>Rent</span>
+                </a>
+                <a href="{{ url('/properties?type=commercial') }}" class="nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold text-zinc-600 hover:text-blue-600 hover:bg-stone-50 transition-all flex items-center gap-1.5 whitespace-nowrap {{ request('type') == 'commercial' || request('type') == 'shop' ? 'text-blue-600 bg-blue-50/50 dark:bg-blue-900/20 dark:text-blue-400' : 'dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' }}" id="nav-commercial">
+                    <i class="ph-bold ph-buildings text-sm xl:text-base text-blue-600"></i>
+                    <span>Commercial</span>
+                </a>
+                <a href="{{ url('/how-it-works') }}" class="nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold text-zinc-600 hover:text-blue-600 hover:bg-stone-50 transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('how-it-works') || request()->is('process') ? 'text-blue-600 bg-blue-50/50 dark:bg-blue-900/20 dark:text-blue-400' : 'dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' }}" id="nav-process">
+                    <i class="ph-bold ph-git-merge text-sm xl:text-base text-blue-600"></i>
+                    <span>Process</span>
+                </a>
+                <a href="{{ url('/blog') }}" class="nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold text-zinc-600 hover:text-blue-600 hover:bg-stone-50 transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('blog*') ? 'text-blue-600 bg-blue-50/50 dark:bg-blue-900/20 dark:text-blue-400' : 'dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800' }}" id="nav-blog">
+                    <i class="ph-bold ph-newspaper text-sm xl:text-base text-blue-600"></i>
+                    <span>Blog</span>
+                </a>
+            </nav>
+
+            {{-- Right Side: Auth Actions & Top-Right Theme Toggle --}}
+            <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
                 @guest
-                    <a href="{{ route('login') }}" class="hidden md:inline-flex px-4 py-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors" id="nav-login">
+                    <a href="{{ route('login') }}" class="hidden md:inline-flex px-3 py-1.5 text-xs xl:text-sm font-semibold text-zinc-600 hover:text-zinc-900 transition-colors whitespace-nowrap" id="nav-login">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}" class="px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold rounded-sm shadow-sm shadow-[#2563EB]/20 hover:shadow-[#2563EB]/20 transition-all" id="nav-register">
+                    <a href="{{ route('register') }}" class="px-3.5 xl:px-4.5 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-register">
                         Get Started
                     </a>
                 @else
@@ -51,9 +63,9 @@
                         $navBadgeClass = str_contains($navPlanName, 'enterprise') ? 'from-slate-900 to-teal-500' : (str_contains($navPlanName, 'platinum') ? 'from-blue-600 to-violet-600' : (str_contains($navPlanName, 'gold') ? 'from-amber-500 to-yellow-300' : 'from-slate-400 to-sky-300'));
                     @endphp
                     @if(auth()->user()->isOwner() || auth()->user()->isAdmin())
-                    <a href="{{ route('properties.create') }}" class="hidden md:inline-flex items-center gap-2 px-4 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold rounded-sm shadow-sm shadow-[#2563EB]/20 hover:shadow-[#2563EB]/20 transition-all" id="nav-add-property">
-                        <i class="ph ph-plus-circle"></i>
-                        List Property
+                    <a href="{{ route('properties.create') }}" class="hidden md:inline-flex items-center gap-1.5 px-3 xl:px-4 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-bold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-add-property">
+                        <i class="ph-bold ph-plus-circle text-sm"></i>
+                        <span>List Property</span>
                     </a>
                     @endif
 
@@ -66,9 +78,9 @@
                                     <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[premiumShine_2.6s_ease-in-out_infinite]"></span>
                                 @endif
                             </div>
-                            <span class="hidden md:inline text-sm font-medium text-zinc-700">{{ auth()->user()->name }}</span>
+                            <span class="hidden xl:inline text-xs xl:text-sm font-semibold text-zinc-700 whitespace-nowrap">{{ auth()->user()->name }}</span>
                             @if($navActivePlan)
-                                <span class="hidden md:inline-flex items-center gap-1 rounded-full bg-gradient-to-r {{ $navBadgeClass }} px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
+                                <span class="hidden 2xl:inline-flex items-center gap-1 rounded-full bg-gradient-to-r {{ $navBadgeClass }} px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-sm whitespace-nowrap">
                                     <i class="ph-bold ph-crown"></i> Pro
                                 </span>
                             @endif
@@ -166,6 +178,13 @@
                     </div>
                 @endguest
 
+                {{-- Theme Color Changer (Top-Right Corner) --}}
+                <div class="border-l border-stone-200/80 pl-2.5 ml-1 dark:border-slate-800 flex items-center">
+                    <button type="button" id="theme-toggle" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200/80 bg-white text-zinc-500 transition hover:bg-stone-100 hover:text-zinc-900 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800" title="Toggle dark/light mode" aria-label="Toggle dark/light mode">
+                        <i class="ph-bold ph-moon text-base" id="theme-toggle-icon"></i>
+                    </button>
+                </div>
+
                 {{-- Mobile Menu Button --}}
                 <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 text-zinc-500 hover:text-zinc-900" id="nav-mobile-toggle">
                     <i class="ph ph-list text-xl"></i>
@@ -181,7 +200,7 @@
             <a href="{{ route('properties.index') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Properties</a>
             <a href="{{ route('properties.index', ['type' => 'house']) }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Houses</a>
             <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Shops</a>
-            <a href="{{ route('blog.index') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Blog</a>
+            <a href="{{ url('/blog') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Blog</a>
             @guest
                 <a href="{{ route('login') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50">Sign In</a>
             @endguest

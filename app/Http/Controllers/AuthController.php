@@ -41,29 +41,66 @@ class AuthController extends Controller
     public function handleProviderCallback($provider)
     {
         try {
+            // First attempt standard state verification
             $socialUser = Socialite::driver($provider)->user();
         } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Social login failed. Please try again.');
+            // If session/CSRF state verification failed (common on HTTPS/production), fallback to stateless()
+            try {
+                $socialUser = Socialite::driver($provider)->stateless()->user();
+            } catch (\Exception $statelessException) {
+                \Illuminate\Support\Facades\Log::error("Social login failed for [$provider]: " . $e->getMessage() . " | Stateless error: " . $statelessException->getMessage());
+                
+                $errorMessage = 'Social login failed. ';
+                if (str_contains($e->getMessage(), 'invalid_client') || str_contains($statelessException->getMessage(), 'invalid_client')) {
+                    $errorMessage .= 'Invalid Client ID or Secret in server configuration. Please check your .env settings.';
+                } elseif (str_contains($e->getMessage(), 'redirect_uri_mismatch') || str_contains($statelessException->getMessage(), 'redirect_uri_mismatch')) {
+                    $errorMessage .= 'Redirect URI mismatch in Google Cloud Console. Expected: ' . url("/auth/$provider/callback");
+                } else {
+                    $errorMessage .= 'Please verify your ' . ucfirst($provider) . ' credentials or sign in with your email.';
+                }
+                
+                return redirect('/login')->with('error', $errorMessage);
+            }
         }
 
+        $email = $socialUser->getEmail();
+        if (empty($email)) {
+            return redirect('/login')->with('error', 'Unable to retrieve email from your ' . ucfirst($provider) . ' account. Please log in with email and password.');
+        }
+
+        $name = $socialUser->getName() ?: ($socialUser->getNickname() ?: explode('@', $email)[0]);
+
         // Check if user already exists
-        $user = User::where('email', $socialUser->getEmail())->first();
+        $user = User::where('email', $email)->first();
 
         if ($user) {
-            Auth::login($user);
+            if (empty($user->avatar) && $socialUser->getAvatar()) {
+                $user->avatar = $socialUser->getAvatar();
+                $user->save();
+            }
+            Auth::login($user, true);
         } else {
             // Create new user
             $user = User::create([
-                'name' => $socialUser->getName(),
-                'email' => $socialUser->getEmail(),
-                'password' => Hash::make(Str::random(24)),
+                'name' => $name,
+                'email' => $email,
+                'password' => Hash::make(Str::random(32)),
                 'role' => 'tenant', // Default role
                 'avatar' => $socialUser->getAvatar(),
             ]);
-            Auth::login($user);
+            Auth::login($user, true);
         }
 
-        return redirect()->route('home')->with('success', 'Logged in successfully via ' . ucfirst($provider));
+        if (session()->has('url.intended')) {
+            $intended = session()->pull('url.intended');
+            return redirect($intended)->with('success', 'Welcome, ' . $user->name . '!');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('home')->with('success', 'Welcome, ' . $user->name . '!');
     }
 
     /**

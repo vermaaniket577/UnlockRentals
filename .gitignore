@@ -29,3 +29,7 @@ Thumbs.db
 /db_check.php
 /scratch/
 /scratch_compiled.php
+.gradle/
+**/build/
+.dart_tool/
+

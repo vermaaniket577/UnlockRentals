@@ -1,5 +1,5 @@
 @props([
-    'href' => route('home'),
+    'href' => url('/'),
     'showText' => true,
     'imageClass' => 'h-10 w-auto',
     'textClass' => 'text-lg font-semibold tracking-tight text-zinc-900',

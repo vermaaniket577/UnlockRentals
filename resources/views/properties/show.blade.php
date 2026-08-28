@@ -177,14 +177,31 @@
                 </div>
 
                 {{-- E-commerce style Product Gallery --}}
+                {{-- E-commerce style Product Gallery with Auto-Slider & Interactive Cursor Zoom --}}
                 <div class="bg-white rounded-2xl p-4 sm:p-5 border border-zinc-200 shadow-sm" id="property-gallery">
                     @if($property->images->count() > 0)
-                        {{-- Large Interactive Main Image --}}
-                        <div class="relative h-[250px] sm:h-[400px] lg:h-[480px] rounded-xl overflow-hidden mb-4 bg-zinc-50 border border-zinc-100 group shadow-inner" id="gallery-main">
-                            <img src="{{ ($property->images->where('is_primary', true)->first() ?? $property->images->first())->imageUrl() }}"
-                                 alt="{{ $property->title }}"
-                                 class="w-full h-full object-cover sm:object-contain bg-zinc-50 group-hover:scale-[1.02] transition-transform duration-500 ease-out cursor-zoom-in"
-                                 id="gallery-main-img">
+                        {{-- Large Interactive Main Image Slider with Cursor Zoom --}}
+                        <div class="relative h-[250px] sm:h-[400px] lg:h-[480px] rounded-xl overflow-hidden mb-4 bg-zinc-50 border border-zinc-100 group shadow-inner" 
+                             id="gallery-main" 
+                             onmouseenter="pauseGalleryAutoSlide()" 
+                             onmouseleave="startGalleryAutoSlide()">
+                            
+                            {{-- Sliding Carousel Track (Slides Left, New Image from Right) --}}
+                            <div id="gallery-slider-track" class="flex h-full w-full" style="display: flex; height: 100%; width: 100%; transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform;">
+                                @foreach($property->images as $index => $image)
+                                    <div class="h-full w-full flex-shrink-0 flex items-center justify-center bg-zinc-50 overflow-hidden gallery-slide-item" 
+                                         style="flex: 0 0 100%; width: 100%; height: 100%; overflow: hidden; position: relative; cursor: zoom-in;"
+                                         onmousemove="handleGalleryZoom(event, this)" 
+                                         onmouseleave="resetGalleryZoom(this)"
+                                         onclick="openLightboxModal({{ $index }})">
+                                        <img src="{{ $image->imageUrl() }}"
+                                             alt="{{ $property->title }} - Photo {{ $index + 1 }}"
+                                             class="gallery-zoom-target w-full h-full object-cover sm:object-contain bg-zinc-50"
+                                             style="transition: transform 0.12s ease-out; transform-origin: center center; will-change: transform;"
+                                             loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                                    </div>
+                                @endforeach
+                            </div>
 
                             @if($property->is_booked)
                             <div class="absolute inset-0 bg-black/45 backdrop-blur-[1.5px] flex items-center justify-center z-10 pointer-events-none" style="position: absolute; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(1.5px); display: flex; align-items: center; justify-content: center; z-index: 10;">
@@ -194,10 +211,36 @@
                             </div>
                             @endif
 
-                            {{-- Image Overlay Badge --}}
-                            <div class="absolute bottom-4 right-4 bg-zinc-900/80 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow-md flex items-center gap-1">
+                            {{-- Navigation Arrows (Left / Right) --}}
+                            @if($property->images->count() > 1)
+                            <button type="button" 
+                                    onclick="event.stopPropagation(); prevGalleryImage()" 
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/85 text-white flex items-center justify-center backdrop-blur-sm shadow-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 z-20 cursor-pointer" 
+                                    aria-label="Previous Photo">
+                                <i class="ph-bold ph-caret-left text-lg"></i>
+                            </button>
+                            <button type="button" 
+                                    onclick="event.stopPropagation(); nextGalleryImage()" 
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/85 text-white flex items-center justify-center backdrop-blur-sm shadow-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 z-20 cursor-pointer" 
+                                    aria-label="Next Photo">
+                                <i class="ph-bold ph-caret-right text-lg"></i>
+                            </button>
+
+                            {{-- Auto-slide progress bar indicator --}}
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-black/10 z-10">
+                                <div id="gallery-progress-bar" class="h-full bg-[#2874F0] w-0 transition-all duration-100 ease-linear"></div>
+                            </div>
+                            @endif
+
+                            {{-- Hover Zoom / Lightbox Hint Badge --}}
+                            <div class="absolute top-3.5 right-3.5 bg-zinc-900/75 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-md shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center gap-1.5 z-10">
+                                <i class="ph-bold ph-magnifying-glass-plus text-xs"></i> Move mouse to zoom · Click for fullscreen
+                            </div>
+
+                            {{-- Image Overlay Counter Badge --}}
+                            <div class="absolute bottom-4 right-4 bg-zinc-900/80 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow-md flex items-center gap-1 z-10">
                                 <i class="ph-bold ph-image text-sm"></i>
-                                <span>1 of {{ $property->images->count() }} Photos</span>
+                                <span id="gallery-counter">1 of {{ $property->images->count() }} Photos</span>
                             </div>
                         </div>
 
@@ -205,7 +248,9 @@
                         @if($property->images->count() > 1)
                         <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2.5" id="gallery-thumbs">
                             @foreach($property->images as $index => $image)
-                            <button onclick="document.getElementById('gallery-main-img').src='{{ $image->imageUrl() }}'; document.querySelectorAll('.gallery-thumb').forEach(el => el.classList.remove('border-[#2874F0]', 'ring-2', 'ring-[#2874F0]/20')); this.classList.add('border-[#2874F0]', 'ring-2', 'ring-[#2874F0]/20')"
+                            <button type="button"
+                                    onclick="selectGalleryImage({{ $index }})"
+                                    data-thumb-index="{{ $index }}"
                                     class="gallery-thumb aspect-square rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-[#2874F0] ring-2 ring-[#2874F0]/20' : 'border-zinc-200' }} hover:border-[#2874F0]/60 transition-all focus:outline-none cursor-pointer group shadow-sm">
                                 <img src="{{ $image->imageUrl() }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             </button>
@@ -1028,6 +1073,33 @@
 </div>
 @endauth
 
+{{-- Fullscreen Photo Lightbox Modal --}}
+@if($property->images->count() > 0)
+<div id="gallery-lightbox" class="fixed inset-0 bg-black/95 z-[99999] hidden flex-col items-center justify-center p-4 backdrop-blur-md select-none transition-all duration-300" onclick="if(event.target === this) closeLightboxModal()">
+    {{-- Close Button --}}
+    <button type="button" onclick="closeLightboxModal()" class="absolute top-5 right-5 text-white/80 hover:text-white w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-2xl transition cursor-pointer z-20" aria-label="Close Lightbox">
+        <i class="ph-bold ph-x"></i>
+    </button>
+    {{-- Counter Badge --}}
+    <div class="absolute top-5 left-5 text-white text-xs sm:text-sm font-bold bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm z-20 flex items-center gap-1.5" id="lightbox-counter">
+        <i class="ph-bold ph-image"></i> Photo 1 of {{ $property->images->count() }}
+    </div>
+    {{-- Lightbox Image Box --}}
+    <div class="relative max-w-6xl max-h-[85vh] w-full h-full flex items-center justify-center overflow-hidden" onclick="event.stopPropagation()">
+        <img id="lightbox-img" src="" alt="{{ $property->title }}" class="max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-all duration-300">
+    </div>
+    {{-- Lightbox Prev / Next Buttons --}}
+    @if($property->images->count() > 1)
+    <button type="button" onclick="event.stopPropagation(); prevLightboxImage()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-12 h-12 rounded-full bg-white/15 hover:bg-white/30 flex items-center justify-center text-2xl transition cursor-pointer z-20" aria-label="Previous">
+        <i class="ph-bold ph-caret-left"></i>
+    </button>
+    <button type="button" onclick="event.stopPropagation(); nextLightboxImage()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-12 h-12 rounded-full bg-white/15 hover:bg-white/30 flex items-center justify-center text-2xl transition cursor-pointer z-20" aria-label="Next">
+        <i class="ph-bold ph-caret-right"></i>
+    </button>
+    @endif
+</div>
+@endif
+
 @push('scripts')
 <style>
     @keyframes modalSlideIn {
@@ -1038,22 +1110,34 @@
 <script>
     // ── Modal Open / Close ────────────────────
     function openCallAgentModal() {
-        document.getElementById('call-agent-modal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        resetModalAlert('callback-alert');
+        const modal = document.getElementById('call-agent-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            resetModalAlert('callback-alert');
+        }
     }
     function closeCallAgentModal() {
-        document.getElementById('call-agent-modal').classList.add('hidden');
-        document.body.style.overflow = '';
+        const modal = document.getElementById('call-agent-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
     }
     function openBookVisitModal() {
-        document.getElementById('book-visit-modal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        resetModalAlert('visit-alert');
+        const modal = document.getElementById('book-visit-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            resetModalAlert('visit-alert');
+        }
     }
     function closeBookVisitModal() {
-        document.getElementById('book-visit-modal').classList.add('hidden');
-        document.body.style.overflow = '';
+        const modal = document.getElementById('book-visit-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
     }
 
     // Close modals on Escape key
@@ -1061,12 +1145,14 @@
         if (e.key === 'Escape') {
             closeCallAgentModal();
             closeBookVisitModal();
+            closeLightboxModal();
         }
     });
 
     // ── Alert Helpers ─────────────────────────
     function showModalAlert(alertId, message, isSuccess) {
         const alert = document.getElementById(alertId);
+        if (!alert) return;
         alert.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'border-red-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
         if (isSuccess) {
             alert.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
@@ -1078,138 +1164,432 @@
     }
     function resetModalAlert(alertId) {
         const alert = document.getElementById(alertId);
+        if (!alert) return;
         alert.classList.add('hidden');
         alert.innerHTML = '';
     }
 
     function setButtonLoading(btn, loading) {
+        if (!btn) return;
         const text = btn.querySelector('.btn-text');
         const loader = btn.querySelector('.btn-loader');
         if (loading) {
             btn.disabled = true;
-            text.classList.add('hidden');
-            loader.classList.remove('hidden');
+            if (text) text.classList.add('hidden');
+            if (loader) loader.classList.remove('hidden');
         } else {
             btn.disabled = false;
-            text.classList.remove('hidden');
-            loader.classList.add('hidden');
+            if (text) text.classList.remove('hidden');
+            if (loader) loader.classList.add('hidden');
         }
     }
 
-    // ── Call Agent Form Submit ────────────────
-    document.getElementById('call-agent-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('callback-submit-btn');
-        const form = this;
-        const alertId = 'callback-alert';
+    // ── Call Agent Form Submit (Safe Event Listener) ────────────────
+    const callAgentFormEl = document.getElementById('call-agent-form');
+    if (callAgentFormEl) {
+        callAgentFormEl.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('callback-submit-btn');
+            const form = this;
+            const alertId = 'callback-alert';
 
-        // Client-side validation
-        const phone = document.getElementById('callback-phone').value.trim();
-        if (!phone) {
-            showModalAlert(alertId, 'Please enter your phone number.', false);
-            return;
-        }
+            // Client-side validation
+            const phoneInput = document.getElementById('callback-phone');
+            const phone = phoneInput ? phoneInput.value.trim() : '';
+            if (!phone) {
+                showModalAlert(alertId, 'Please enter your phone number.', false);
+                return;
+            }
 
-        setButtonLoading(btn, true);
-        resetModalAlert(alertId);
+            setButtonLoading(btn, true);
+            resetModalAlert(alertId);
 
-        try {
-            const formData = new FormData(form);
-            const response = await fetch("{{ route('properties.request-callback', $property) }}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: formData
-            });
+            try {
+                const formData = new FormData(form);
+                const response = await fetch("{{ route('properties.request-callback', $property) }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: formData
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (response.ok && data.success) {
-                showModalAlert(alertId, data.message, true);
-                // Disable submit after success
-                btn.disabled = true;
-                btn.querySelector('.btn-text').innerHTML = '<i class="ph-bold ph-check-circle"></i> Callback Requested';
-                btn.querySelector('.btn-text').classList.remove('hidden');
-                btn.querySelector('.btn-loader').classList.add('hidden');
-                // Auto-close after 3 seconds
-                setTimeout(() => {
-                    closeCallAgentModal();
-                    btn.disabled = false;
-                    btn.querySelector('.btn-text').innerHTML = '<i class="ph-bold ph-phone-call"></i> Request Callback';
-                }, 3000);
-            } else {
-                showModalAlert(alertId, data.message || 'Something went wrong. Please try again.', false);
+                if (response.ok && data.success) {
+                    showModalAlert(alertId, data.message, true);
+                    if (btn) {
+                        btn.disabled = true;
+                        const btnText = btn.querySelector('.btn-text');
+                        const btnLoader = btn.querySelector('.btn-loader');
+                        if (btnText) {
+                            btnText.innerHTML = '<i class="ph-bold ph-check-circle"></i> Callback Requested';
+                            btnText.classList.remove('hidden');
+                        }
+                        if (btnLoader) btnLoader.classList.add('hidden');
+                    }
+                    setTimeout(() => {
+                        closeCallAgentModal();
+                        if (btn) {
+                            btn.disabled = false;
+                            const btnText = btn.querySelector('.btn-text');
+                            if (btnText) btnText.innerHTML = '<i class="ph-bold ph-phone-call"></i> Request Callback';
+                        }
+                    }, 3000);
+                } else {
+                    showModalAlert(alertId, data.message || 'Something went wrong. Please try again.', false);
+                    setButtonLoading(btn, false);
+                }
+            } catch (error) {
+                showModalAlert(alertId, 'Network error. Please check your connection and try again.', false);
                 setButtonLoading(btn, false);
             }
-        } catch (error) {
-            showModalAlert(alertId, 'Network error. Please check your connection and try again.', false);
-            setButtonLoading(btn, false);
+        });
+    }
+
+    // ── Book Visit Form Submit (Safe Event Listener) ────────────────
+    const bookVisitFormEl = document.getElementById('book-visit-form');
+    if (bookVisitFormEl) {
+        bookVisitFormEl.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('visit-submit-btn');
+            const form = this;
+            const alertId = 'visit-alert';
+
+            // Client-side validation
+            const dateInput = document.getElementById('visit-date');
+            const phoneInput = document.getElementById('visit-phone');
+            const date = dateInput ? dateInput.value : '';
+            const phone = phoneInput ? phoneInput.value.trim() : '';
+            if (!date) {
+                showModalAlert(alertId, 'Please select a preferred date for your visit.', false);
+                return;
+            }
+            if (!phone) {
+                showModalAlert(alertId, 'Please enter your phone number.', false);
+                return;
+            }
+
+            setButtonLoading(btn, true);
+            resetModalAlert(alertId);
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch("{{ route('properties.book-visit', $property) }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showModalAlert(alertId, data.message, true);
+                    if (btn) {
+                        btn.disabled = true;
+                        const btnText = btn.querySelector('.btn-text');
+                        const btnLoader = btn.querySelector('.btn-loader');
+                        if (btnText) {
+                            btnText.innerHTML = '<i class="ph-bold ph-check-circle"></i> Visit Booked!';
+                            btnText.classList.remove('hidden');
+                        }
+                        if (btnLoader) btnLoader.classList.add('hidden');
+                    }
+                    setTimeout(() => {
+                        closeBookVisitModal();
+                        if (btn) {
+                            btn.disabled = false;
+                            const btnText = btn.querySelector('.btn-text');
+                            if (btnText) btnText.innerHTML = '<i class="ph-bold ph-calendar-check"></i> Confirm Visit Booking';
+                        }
+                        form.reset();
+                    }, 3000);
+                } else {
+                    if (data.redirect) { window.location.href = data.redirect; return; }
+                    showModalAlert(alertId, data.message || 'Something went wrong. Please try again.', false);
+                    setButtonLoading(btn, false);
+                }
+            } catch (error) {
+                showModalAlert(alertId, 'Network error. Please check your connection and try again.', false);
+                setButtonLoading(btn, false);
+            }
+        });
+    }
+
+    // ── Horizontal Slide-Left Carousel with Loop Repeat ─────────────────
+    const propertyGalleryImages = @json($property->images->map(fn($img) => $img->imageUrl())->values());
+    const totalGalleryImages = {{ $property->images->count() }};
+    let currentGalleryIndex = 0;
+    let galleryAutoSlideTimer = null;
+    const gallerySlideDuration = 3500; // 3.5 seconds
+
+    // ── Interactive Cursor Follow Loupe Zoom ─────────────────
+    function handleGalleryZoom(e, container) {
+        if (!container) return;
+        const img = container.querySelector('.gallery-zoom-target');
+        if (!img) return;
+        
+        const rect = container.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const xPercent = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        const yPercent = Math.max(0, Math.min(100, (y / rect.height) * 100));
+        
+        img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+        img.style.transform = 'scale(2.2)';
+    }
+
+    function resetGalleryZoom(container) {
+        if (!container) return;
+        const img = container.querySelector('.gallery-zoom-target');
+        if (!img) return;
+        
+        img.style.transform = 'scale(1)';
+        img.style.transformOrigin = 'center center';
+    }
+
+    function resetAllGalleryZooms() {
+        document.querySelectorAll('.gallery-zoom-target').forEach(img => {
+            img.style.transform = 'scale(1)';
+            img.style.transformOrigin = 'center center';
+        });
+    }
+
+    // ── Slide Track Animation ─────────────────
+    function updateGallerySlide(index) {
+        if (totalGalleryImages <= 1) return;
+        
+        // Loop repeat when complete
+        if (index >= totalGalleryImages) {
+            index = 0;
+        } else if (index < 0) {
+            index = totalGalleryImages - 1;
+        }
+        
+        currentGalleryIndex = index;
+        resetAllGalleryZooms();
+
+        const track = document.getElementById('gallery-slider-track');
+        const counter = document.getElementById('gallery-counter');
+        
+        // Move track left (new image enters from the right)
+        if (track) {
+            track.style.transform = `translateX(-${currentGalleryIndex * 100}%)`;
+        }
+
+        if (counter) {
+            counter.textContent = `${currentGalleryIndex + 1} of ${totalGalleryImages} Photos`;
+        }
+
+        // Highlight active thumbnail & scroll it into view
+        const thumbs = document.querySelectorAll('.gallery-thumb');
+        thumbs.forEach((thumb, idx) => {
+            if (idx === currentGalleryIndex) {
+                thumb.classList.add('border-[#2874F0]', 'ring-2', 'ring-[#2874F0]/20');
+                thumb.classList.remove('border-zinc-200');
+                thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            } else {
+                thumb.classList.remove('border-[#2874F0]', 'ring-2', 'ring-[#2874F0]/20');
+                thumb.classList.add('border-zinc-200');
+            }
+        });
+        
+        resetGalleryProgressBar();
+    }
+
+    function nextGalleryImage() {
+        updateGallerySlide(currentGalleryIndex + 1);
+        restartGalleryAutoSlide();
+    }
+
+    function prevGalleryImage() {
+        updateGallerySlide(currentGalleryIndex - 1);
+        restartGalleryAutoSlide();
+    }
+
+    function selectGalleryImage(index) {
+        updateGallerySlide(index);
+        restartGalleryAutoSlide();
+    }
+
+    function resetGalleryProgressBar() {
+        const bar = document.getElementById('gallery-progress-bar');
+        if (bar) {
+            bar.style.transition = 'none';
+            bar.style.width = '0%';
+            setTimeout(() => {
+                if (bar) {
+                    bar.style.transition = `width ${gallerySlideDuration}ms linear`;
+                    bar.style.width = '100%';
+                }
+            }, 40);
+        }
+    }
+
+    function startGalleryAutoSlide() {
+        if (totalGalleryImages <= 1) return;
+        clearInterval(galleryAutoSlideTimer);
+        resetGalleryProgressBar();
+        galleryAutoSlideTimer = setInterval(() => {
+            updateGallerySlide(currentGalleryIndex + 1);
+        }, gallerySlideDuration);
+    }
+
+    function pauseGalleryAutoSlide() {
+        clearInterval(galleryAutoSlideTimer);
+        const bar = document.getElementById('gallery-progress-bar');
+        if (bar) {
+            bar.style.width = '0%';
+            bar.style.transition = 'none';
+        }
+    }
+
+    function restartGalleryAutoSlide() {
+        pauseGalleryAutoSlide();
+        startGalleryAutoSlide();
+    }
+
+    // ── Fullscreen Lightbox Modal ─────────────────
+    let lightboxIndex = 0;
+    function openLightboxModal(index) {
+        if (!propertyGalleryImages || propertyGalleryImages.length === 0) return;
+        pauseGalleryAutoSlide();
+        lightboxIndex = (typeof index === 'number') ? index : currentGalleryIndex;
+        const modal = document.getElementById('gallery-lightbox');
+        const img = document.getElementById('lightbox-img');
+        const counter = document.getElementById('lightbox-counter');
+        
+        if (modal && img) {
+            img.src = propertyGalleryImages[lightboxIndex] || '';
+            if (counter) counter.innerHTML = `<i class="ph-bold ph-image"></i> Photo ${lightboxIndex + 1} of ${totalGalleryImages}`;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeLightboxModal() {
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+            if (totalGalleryImages > 1) {
+                updateGallerySlide(lightboxIndex);
+                startGalleryAutoSlide();
+            }
+        }
+    }
+
+    function nextLightboxImage() {
+        if (!propertyGalleryImages || propertyGalleryImages.length <= 1) return;
+        lightboxIndex = (lightboxIndex + 1) % propertyGalleryImages.length;
+        const img = document.getElementById('lightbox-img');
+        const counter = document.getElementById('lightbox-counter');
+        if (img) {
+            img.style.opacity = '0.3';
+            setTimeout(() => {
+                img.src = propertyGalleryImages[lightboxIndex];
+                img.style.opacity = '1';
+            }, 120);
+        }
+        if (counter) counter.innerHTML = `<i class="ph-bold ph-image"></i> Photo ${lightboxIndex + 1} of ${totalGalleryImages}`;
+    }
+
+    function prevLightboxImage() {
+        if (!propertyGalleryImages || propertyGalleryImages.length <= 1) return;
+        lightboxIndex = (lightboxIndex - 1 + propertyGalleryImages.length) % propertyGalleryImages.length;
+        const img = document.getElementById('lightbox-img');
+        const counter = document.getElementById('lightbox-counter');
+        if (img) {
+            img.style.opacity = '0.3';
+            setTimeout(() => {
+                img.src = propertyGalleryImages[lightboxIndex];
+                img.style.opacity = '1';
+            }, 120);
+        }
+        if (counter) counter.innerHTML = `<i class="ph-bold ph-image"></i> Photo ${lightboxIndex + 1} of ${totalGalleryImages}`;
+    }
+
+    // Keyboard support (Escape to close, Left/Right arrow keys)
+    document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal && !modal.classList.contains('hidden')) {
+            if (e.key === 'Escape') closeLightboxModal();
+            if (e.key === 'ArrowRight') nextLightboxImage();
+            if (e.key === 'ArrowLeft') prevLightboxImage();
         }
     });
 
-    // ── Book Visit Form Submit ────────────────
-    document.getElementById('book-visit-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('visit-submit-btn');
-        const form = this;
-        const alertId = 'visit-alert';
-
-        // Client-side validation
-        const date = document.getElementById('visit-date').value;
-        const phone = document.getElementById('visit-phone').value.trim();
-        if (!date) {
-            showModalAlert(alertId, 'Please select a preferred date for your visit.', false);
-            return;
-        }
-        if (!phone) {
-            showModalAlert(alertId, 'Please enter your phone number.', false);
-            return;
-        }
-
-        setButtonLoading(btn, true);
-        resetModalAlert(alertId);
-
-        try {
-            const formData = new FormData(form);
-            const response = await fetch("{{ route('properties.book-visit', $property) }}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                showModalAlert(alertId, data.message, true);
-                // Disable submit after success
-                btn.disabled = true;
-                btn.querySelector('.btn-text').innerHTML = '<i class="ph-bold ph-check-circle"></i> Visit Booked!';
-                btn.querySelector('.btn-text').classList.remove('hidden');
-                btn.querySelector('.btn-loader').classList.add('hidden');
-                // Auto-close after 3 seconds
-                setTimeout(() => {
-                    closeBookVisitModal();
-                    btn.disabled = false;
-                    btn.querySelector('.btn-text').innerHTML = '<i class="ph-bold ph-calendar-check"></i> Confirm Visit Booking';
-                    form.reset();
-                }, 3000);
-            } else {
-                if (data.redirect) { window.location.href = data.redirect; return; }
-                showModalAlert(alertId, data.message || 'Something went wrong. Please try again.', false);
-                setButtonLoading(btn, false);
+    // ── Touch Swipe Support for Mobile & Tablets ─────────────────
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const galleryMainEl = document.getElementById('gallery-main');
+    if (galleryMainEl) {
+        galleryMainEl.addEventListener('touchstart', (e) => {
+            if (e.changedTouches && e.changedTouches[0]) {
+                touchStartX = e.changedTouches[0].screenX;
             }
-        } catch (error) {
-            showModalAlert(alertId, 'Network error. Please check your connection and try again.', false);
-            setButtonLoading(btn, false);
+            pauseGalleryAutoSlide();
+        }, { passive: true });
+
+        galleryMainEl.addEventListener('touchend', (e) => {
+            if (e.changedTouches && e.changedTouches[0]) {
+                touchEndX = e.changedTouches[0].screenX;
+                const diffX = touchStartX - touchEndX;
+                if (Math.abs(diffX) > 40) {
+                    if (diffX > 0) {
+                        nextGalleryImage();
+                    } else {
+                        prevGalleryImage();
+                    }
+                } else {
+                    startGalleryAutoSlide();
+                }
+            }
+        }, { passive: true });
+    }
+
+    // Expose functions globally to window object for reliable onclick handler execution
+    window.openCallAgentModal = openCallAgentModal;
+    window.closeCallAgentModal = closeCallAgentModal;
+    window.openBookVisitModal = openBookVisitModal;
+    window.closeBookVisitModal = closeBookVisitModal;
+    window.handleGalleryZoom = handleGalleryZoom;
+    window.resetGalleryZoom = resetGalleryZoom;
+    window.updateGallerySlide = updateGallerySlide;
+    window.nextGalleryImage = nextGalleryImage;
+    window.prevGalleryImage = prevGalleryImage;
+    window.selectGalleryImage = selectGalleryImage;
+    window.pauseGalleryAutoSlide = pauseGalleryAutoSlide;
+    window.startGalleryAutoSlide = startGalleryAutoSlide;
+    window.restartGalleryAutoSlide = restartGalleryAutoSlide;
+    window.openLightboxModal = openLightboxModal;
+    window.closeLightboxModal = closeLightboxModal;
+    window.nextLightboxImage = nextLightboxImage;
+    window.prevLightboxImage = prevLightboxImage;
+
+    // Initialize auto slider on page load
+    function initGallerySlider() {
+        if (totalGalleryImages > 1) {
+            updateGallerySlide(0);
+            startGalleryAutoSlide();
         }
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initGallerySlider);
+    } else {
+        initGallerySlider();
+    }
 </script>
 @endpush
 

@@ -22,8 +22,8 @@
     pointer-events: none;
     z-index: 0;
 }
-.ur-plans__accent--1 { top: -8%; right: -6%; }
-.ur-plans__accent--2 { bottom: -8%; left: -6%; }
+.ur-plans__accent--1 { top: -8%; right: 0; transform: translateX(10%); }
+.ur-plans__accent--2 { bottom: -8%; left: 0; transform: translateX(-10%); }
 
 .ur-plans__container {
     max-width: 80rem;
@@ -86,14 +86,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 1.25rem;
     margin: -1.5rem auto 3rem;
     position: relative;
     z-index: 10;
 }
 
 .ur-plans__toggle-label {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: #64748b;
     transition: color 0.3s;
@@ -105,11 +105,12 @@
 
 .ur-plans__toggle-label.active {
     color: #0f172a;
+    font-weight: 800;
 }
 
 .ur-plans__toggle-switch {
-    width: 3.25rem;
-    height: 1.75rem;
+    width: 3.75rem;
+    height: 2.1rem;
     border-radius: 9999px;
     background: #cbd5e1;
     border: none;
@@ -124,30 +125,30 @@
 }
 
 .ur-plans__toggle-handle {
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 1.65rem;
+    height: 1.65rem;
     border-radius: 50%;
     background: #ffffff;
     position: absolute;
-    top: 0.2rem;
-    left: 0.2rem;
+    top: 0.22rem;
+    left: 0.22rem;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
 }
 
 .ur-plans__toggle-switch.active .ur-plans__toggle-handle {
-    transform: translateX(1.5rem);
+    transform: translateX(1.65rem);
 }
 
 .ur-plans__discount-badge {
     background: #10b981;
     color: #ffffff;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     font-weight: 800;
-    padding: 0.2rem 0.5rem;
+    padding: 0.25rem 0.6rem;
     border-radius: 9999px;
     letter-spacing: 0.05em;
-    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
 }
 
 /* ─── SLIDER WRAPPER & CONTAINER ────────────────── */
@@ -175,12 +176,12 @@
 .ur-plan-card {
     position: relative;
     background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 1.75rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 1.5rem;
     padding: 2.25rem;
     display: flex;
     flex-direction: column;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     overflow: hidden;
     flex: 0 0 100%;
     width: 100%;
@@ -222,7 +223,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     padding: 0;
 }
 
@@ -231,11 +232,6 @@
     color: #ffffff;
     border-color: #2563eb;
     box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
-    transform: translateY(-1px);
-}
-
-.ur-slider-btn:active {
-    transform: translateY(0);
 }
 
 .ur-slider-dots {
@@ -250,7 +246,7 @@
     border-radius: 50%;
     background: #cbd5e1;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
 }
 
 .ur-slider-dot.active {
@@ -259,147 +255,105 @@
     background: #2563eb;
 }
 
-.ur-plan-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, transparent 24%, rgba(255,255,255,0.72) 42%, transparent 58%);
-    transform: translateX(-120%);
-    transition: transform 0.8s ease;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.ur-plan-card:hover::before {
-    transform: translateX(120%);
-}
-
 /* Base Card Scale Hover */
 .ur-plan-card:hover {
-    transform: translateY(-12px) scale(1.015);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
 }
 
 /* ─── SILVER CARD THEME ────────────────── */
 .ur-plan-card--silver {
     background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.06);
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+    border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.ur-plan-card--silver:hover {
-    box-shadow: 0 30px 60px rgba(71, 85, 105, 0.1), 0 0 0 1px rgba(71, 85, 105, 0.2);
-    border-color: rgba(71, 85, 105, 0.2);
-}
-
-/* ─── GOLD CARD THEME (CREATIVE ACCENTED) ────────────────── */
+/* ─── GOLD CARD THEME (SINGLE CLEAR FOCAL POINT) ────────────────── */
 .ur-plan-card--gold {
-    background: linear-gradient(180deg, #fffdf7 0%, #ffffff 100%);
-    border: 2px solid rgba(245, 158, 11, 0.35);
-    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+    background: #ffffff;
+    border: 2.5px solid #2563eb;
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.12);
 }
 
-.ur-plan-card--gold:hover {
-    box-shadow: 0 35px 70px rgba(245, 158, 11, 0.18), 0 0 0 1px #f59e0b;
-    border-color: #f59e0b;
-}
-
-/* Gold details */
 .ur-plan-card--gold .ur-plan-card__badge {
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    background: #2563eb;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
-.ur-plan-card--gold .ur-plan-card__icon {
-    border-color: rgba(245, 158, 11, 0.3);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .ur-plan-card--gold .ur-plan-card__cta--primary {
-    background: linear-gradient(135deg, #d97706, #b45309);
+    background: #2563eb;
     border: none;
     color: #ffffff;
 }
 
 .ur-plan-card--gold .ur-plan-card__cta--primary:hover {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.3);
+    background: #1d4ed8;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
 }
 
-/* ─── PLATINUM CARD THEME (VIP MIDNIGHT DIAL) ────────────────── */
+/* ─── PLATINUM CARD THEME (HARMONIOUS PREMIUM WHITE) ────────────────── */
 .ur-plan-card--platinum {
-    background: radial-gradient(120% 120% at 50% 0%, #0d1527 0%, #070b14 100%);
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
 }
 
-.ur-plan-card--platinum::before {
-    background: linear-gradient(120deg, transparent 24%, rgba(56, 189, 248, 0.12) 42%, transparent 58%);
-}
-
-.ur-plan-card--platinum:hover {
-    box-shadow: 0 35px 70px rgba(56, 189, 248, 0.12), 0 0 0 1px rgba(56, 189, 248, 0.4);
-    border-color: rgba(56, 189, 248, 0.4);
-}
-
-/* Platinum details */
 .ur-plan-card--platinum .ur-plan-card__badge {
-    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    background: #475569;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 .ur-plan-card--platinum .ur-plan-card__name {
-    color: #ffffff;
+    color: #0f172a;
 }
 
 .ur-plan-card--platinum .ur-plan-card__desc {
-    color: #94a3b8;
+    color: #64748b;
 }
 
 .ur-plan-card--platinum .ur-plan-card__amount {
-    color: #ffffff;
+    color: #0f172a;
 }
 
 .ur-plan-card--platinum .ur-plan-card__currency {
-    color: #38bdf8;
+    color: #2563eb;
 }
 
 .ur-plan-card--platinum .ur-plan-card__period {
-    color: #475569;
+    color: #64748b;
 }
 
 .ur-plan-card--platinum .ur-plan-card__price-note {
-    color: #475569;
+    color: #64748b;
 }
 
 .ur-plan-card--platinum .ur-plan-card__price-note i {
-    color: #38bdf8;
+    color: #2563eb;
 }
 
 .ur-plan-card--platinum .ur-plan-card__divider {
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    background: #e2e8f0;
 }
 
 .ur-plan-card--platinum .ur-plan-card__features li {
-    color: #cbd5e1;
+    color: #334155;
 }
 
 .ur-plan-card--platinum .ur-plan-card__f-icon {
-    background: rgba(56, 189, 248, 0.08);
-    color: #38bdf8;
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb;
 }
 
 .ur-plan-card--platinum .ur-plan-card__cta--outline {
-    background: rgba(255, 255, 255, 0.02);
-    color: #ffffff;
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    background: #ffffff;
+    color: #0f172a;
+    border: 1.5px solid #cbd5e1;
 }
 
 .ur-plan-card--platinum .ur-plan-card__cta--outline:hover {
-    background: #38bdf8;
-    color: #030712;
-    border-color: #38bdf8;
-    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.35);
+    background: #f8fafc;
+    border-color: #2563eb;
+    color: #2563eb;
 }
 
 .ur-plan-card--platinum .ur-plan-card__icon {
@@ -454,71 +408,71 @@
 }
 
 .ur-plan-card__name {
-    font-size: 1.35rem;
-    font-weight: 900;
+    font-size: 1.4rem;
+    font-weight: 800;
     color: #0f172a;
-    margin-bottom: 0.375rem;
+    margin-bottom: 0.35rem;
     letter-spacing: -0.02em;
 }
 
 .ur-plan-card__desc {
     font-size: 0.875rem;
     color: #64748b;
-    line-height: 1.5;
-    margin-bottom: 1.5rem;
-    min-height: 2.625rem;
+    line-height: 1.55;
+    margin-bottom: 1.25rem;
+    min-height: 2.75rem;
 }
 
 .ur-plan-card__price {
     display: flex;
     align-items: baseline;
-    gap: 0.25rem;
-    margin-bottom: 0.5rem;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
 }
 
 .ur-plan-card__currency {
-    font-size: 1rem;
-    font-weight: 900;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: var(--plan-accent);
 }
 
 .ur-plan-card__amount {
-    font-size: 3rem;
-    font-weight: 950;
+    font-size: 2.75rem;
+    font-weight: 900;
     color: #0f172a;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     line-height: 1;
 }
 
 .ur-plan-card__period {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding-bottom: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: lowercase;
+    letter-spacing: 0;
+    padding-bottom: 0.25rem;
 }
 
 .ur-plan-card__price-note {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #94a3b8;
-    margin-bottom: 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
 }
 
 .ur-plan-card__price-note i {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #10b981;
 }
 
 /* ─── DIVIDER ──────────────────────────── */
 .ur-plan-card__divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.06), transparent);
-    margin-bottom: 1.5rem;
+    background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.08), transparent);
+    margin-bottom: 1.25rem;
 }
 
 /* ─── FEATURES LIST ────────────────────── */
@@ -529,21 +483,30 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.875rem;
+    gap: 0.8rem;
 }
 
 .ur-plan-card__features li {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.75rem;
     font-size: 0.8125rem;
-    color: #475569;
-    line-height: 1.5;
-    transition: transform 0.3s ease;
+    color: #334155;
+    line-height: 1.45;
+    transition: transform 0.25s ease;
+}
+
+.ur-plan-card__features li strong {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.ur-plan-card--platinum .ur-plan-card__features li strong {
+    color: #ffffff;
 }
 
 .ur-plan-card:hover .ur-plan-card__features li {
-    transform: translateX(3px);
+    transform: translateX(2px);
 }
 
 .ur-plan-card__f-icon {
@@ -567,6 +530,7 @@
 
 /* ─── CTA BUTTONS ──────────────────────── */
 .ur-plan-card__cta {
+    margin-top: auto;
     display: flex;
     width: 100%;
     align-items: center;
@@ -735,12 +699,12 @@
 
         {{-- Billing Toggle Switch --}}
         <div class="ur-plans__toggle-wrap">
-            <span class="ur-plans__toggle-label active" id="billing-monthly">Rent</span>
+            <span class="ur-plans__toggle-label active" id="billing-monthly">Rental Pass (Monthly)</span>
             <button type="button" class="ur-plans__toggle-switch" id="billing-toggle-btn" aria-label="Toggle billing period">
                 <span class="ur-plans__toggle-handle"></span>
             </button>
             <span class="ur-plans__toggle-label" id="billing-yearly">
-                Buy
+                Buyer Pass (Annual)
                 <span class="ur-plans__discount-badge">Save 20%</span>
             </span>
         </div>
@@ -790,10 +754,19 @@
                                 @endif
                             </div>
 
-                            <h3 class="ur-plan-card__name">{{ $plan->name }}</h3>
-                            <p class="ur-plan-card__desc">{{ $plan->description }}</p>
+                            @php
+                                $cleanDesc = 'Ideal for tenants looking to quickly connect with verified property owners.';
+                                if ($isGold) {
+                                    $cleanDesc = 'Most popular choice for active seekers wanting fast-track verified contacts.';
+                                } elseif ($isPlatinum) {
+                                    $cleanDesc = 'VIP comprehensive pass with dedicated relationship support & priority assistance.';
+                                }
+                            @endphp
 
-                            <div class="ur-plan-card__price" style="flex-wrap: wrap; align-items: center;">
+                            <h3 class="ur-plan-card__name">{{ $plan->name }}</h3>
+                            <p class="ur-plan-card__desc">{{ $cleanDesc }}</p>
+
+                            <div class="ur-plan-card__price" style="flex-wrap: wrap; align-items: baseline;">
                                 <div class="special-offer-badge" style="width: 100%; display: {{ $hasOffer ? 'flex' : 'none' }}; align-items: center; gap: 8px; margin-bottom: 4px;" data-original-monthly="{{ number_format($originalPrice, 0) }}" data-original-yearly="{{ number_format(round($originalPrice * 12 * 0.8), 0) }}">
                                     <span style="font-size: 0.65rem; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;">Special Offer</span>
                                     <span class="special-offer-original-price" style="font-size: 0.875rem; text-decoration: line-through; color: #94a3b8; font-weight: 700;">₹{{ number_format($originalPrice, 0) }}</span>
@@ -802,35 +775,91 @@
                                 <span class="ur-plan-card__amount"
                                       data-monthly="{{ number_format($monthlyPrice, 0) }}"
                                       data-yearly="{{ number_format($yearlyPrice, 0) }}">{{ number_format($monthlyPrice, 0) }}</span>
-                                <span class="ur-plan-card__period">/rent</span>
+                                <span class="ur-plan-card__period">/ pass</span>
                             </div>
                             <div class="ur-plan-card__price-note">
                                 <i class="ph-bold ph-seal-check"></i>
-                                <span class="price-note-text">GST inclusive · Instant activation</span>
+                                <span class="price-note-text">Zero Brokerage · GST Included · Instant Access</span>
                             </div>
 
                             <div class="ur-plan-card__divider"></div>
 
+                            @php
+                                $cleanFeatures = [];
+                                
+                                // 1. Direct Owner Unlocks
+                                $cleanFeatures[] = [
+                                    'icon' => 'ph-lock-key-open',
+                                    'html' => '<strong>' . $plan->contact_limit . ' Verified Owner</strong> Direct Contacts'
+                                ];
+                                
+                                // 2. Search Pass Validity
+                                $cleanFeatures[] = [
+                                    'icon' => 'ph-calendar-check',
+                                    'html' => '<strong>' . $plan->duration_days . ' Days</strong> Access Validity'
+                                ];
+                                
+                                // 3. Instant Contact method
+                                $cleanFeatures[] = [
+                                    'icon' => 'ph-phone-call',
+                                    'html' => 'Direct Phone & WhatsApp Access'
+                                ];
+
+                                // 4. Tiered perks
+                                if ($isSilver) {
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-envelope-simple',
+                                        'html' => 'Standard Email Support (24h turnaround)'
+                                    ];
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-shield-check',
+                                        'html' => 'Zero Brokerage Guarantee'
+                                    ];
+                                } elseif ($isGold) {
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-sliders-horizontal',
+                                        'html' => 'Advanced Neighborhood & Amenity Filters'
+                                    ];
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-headset',
+                                        'html' => 'Priority Support & Fast-Track Assistance'
+                                    ];
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-bell-ringing',
+                                        'html' => 'Real-Time New Listing Alerts'
+                                    ];
+                                } elseif ($isPlatinum) {
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-user-focus',
+                                        'html' => 'Dedicated Relationship Concierge'
+                                    ];
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-whatsapp-logo',
+                                        'html' => 'Instant WhatsApp Direct Property Alerts'
+                                    ];
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-seal-check',
+                                        'html' => 'Premium Verified Seeker Profile Badge'
+                                    ];
+                                    $cleanFeatures[] = [
+                                        'icon' => 'ph-file-text',
+                                        'html' => 'Digital Lease Agreement Assistance'
+                                    ];
+                                }
+                            @endphp
+
                             <ul class="ur-plan-card__features">
-                                <li>
-                                    <span class="ur-plan-card__f-icon"><i class="ph-bold ph-lock-key-open"></i></span>
-                                    <span><strong>{{ $plan->contact_limit }}</strong> verified owner-contact unlocks</span>
-                                </li>
-                                @foreach(($plan->features ?? []) as $feature)
+                                @foreach($cleanFeatures as $f)
                                     <li>
-                                        <span class="ur-plan-card__f-icon"><i class="ph-bold {{ getFeatureIcon($feature, $featureIcons) }}"></i></span>
-                                        <span>{{ $feature }}</span>
+                                        <span class="ur-plan-card__f-icon"><i class="ph-bold {{ $f['icon'] }}"></i></span>
+                                        <span>{!! $f['html'] !!}</span>
                                     </li>
                                 @endforeach
-                                <li>
-                                    <span class="ur-plan-card__f-icon"><i class="ph-bold ph-calendar-check"></i></span>
-                                    <span><strong>{{ $plan->duration_days }}-day</strong> activation window</span>
-                                </li>
                             </ul>
 
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="ur-plan-card__cta {{ $isGold ? 'ur-plan-card__cta--primary' : 'ur-plan-card__cta--outline' }} plan-checkout-link">
+                            <a href="{{ Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) : url('/plans') }}" class="ur-plan-card__cta {{ $isGold ? 'ur-plan-card__cta--primary' : 'ur-plan-card__cta--outline' }} plan-checkout-link">
                                 <i class="ph-bold {{ $isGold ? 'ph-crown' : ($isPlatinum ? 'ph-lightning' : 'ph-arrow-right') }}"></i>
-                                <span>Choose Plan</span>
+                                <span>{{ $isGold ? 'Get Started with Gold' : ($isPlatinum ? 'Unlock Platinum VIP' : 'Choose Silver Plan') }}</span>
                             </a>
                         </div>
                     @endforeach
@@ -939,7 +968,7 @@
                 periodEl.style.transition = 'opacity 0.15s';
                 periodEl.style.opacity = '0';
                 setTimeout(() => {
-                    periodEl.textContent = isYearly ? '/buy' : '/rent';
+                    periodEl.textContent = isYearly ? '/ annual pass' : '/ pass';
                     periodEl.style.opacity = '1';
                 }, 150);
             });
@@ -949,8 +978,8 @@
                 noteEl.style.opacity = '0';
                 setTimeout(() => {
                     noteEl.innerHTML = isYearly 
-                        ? 'Premium listings for buyers' 
-                        : 'GST inclusive · Instant activation';
+                        ? 'Save 20% · Priority Buyer Contact Pass' 
+                        : 'Zero Brokerage · GST Included · Instant Access';
                     noteEl.style.opacity = '1';
                 }, 150);
             });
