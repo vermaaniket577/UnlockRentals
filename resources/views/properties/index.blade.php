@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Rental Properties in India - Houses & Flats | UnlockRentals')
+@section('title', 'Rental Properties in India - Houses, Flats & PGs | UnlockRentals')
 @section('meta_description', 'Browse rental houses, flats, PGs, shops, and commercial spaces in India. Filter verified rental properties by location, budget, rooms, and property type.')
 
 @push('head')
@@ -28,86 +28,95 @@
 
 @section('content')
 
-<section class="min-h-screen pt-28 pb-32 bg-[#fcfcfd] relative overflow-hidden" id="properties-browse">
-    {{-- Ambient Background Elements --}}
-    <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-stone-100/40 to-transparent pointer-events-none"></div>
-    <div class="absolute -top-24 -left-24 w-96 h-96 bg-[#2563EB]/5 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute top-1/2 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+<section class="min-h-screen pt-28 sm:pt-32 pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="properties-browse">
+    {{-- Ambient Background Gradients --}}
+    <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-500/[0.04] via-indigo-500/[0.02] to-transparent pointer-events-none"></div>
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute top-1/3 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
-        {{-- Page Header --}}
-        <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div class="max-w-3xl">
-                <nav class="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">
-                    <a href="{{ route('home') }}" class="hover:text-[#2563EB] transition-colors" title="Home">Home</a>
-                    <i class="ph-bold ph-caret-right text-[8px]"></i>
-                    <span class="text-zinc-900">Properties</span>
-                </nav>
-                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-6 leading-tight">
+        {{-- Page Header & Breadcrumb --}}
+        <div class="mb-8 sm:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-200/80 dark:border-slate-800">
+            <div class="max-w-2xl">
+                <nav class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+                    <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors" title="Home">Home</a>
+                    <i class="ph-bold ph-caret-right text-[10px]"></i>
+                    <span class="text-slate-900 dark:text-slate-100 font-extrabold">Properties</span>
                     @if(request('type'))
-                        <span class="text-[#2563EB] capitalize">{{ request('type') }}s</span> for Rent
+                        <i class="ph-bold ph-caret-right text-[10px]"></i>
+                        <span class="text-blue-600 capitalize font-extrabold">{{ request('type') }}</span>
+                    @endif
+                </nav>
+                <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                    @if(request('type'))
+                        <span class="text-blue-600 capitalize">{{ request('type') }}s</span> for Rent
                     @elseif(request('search'))
-                        Results for <span class="text-[#2563EB]">"{{ request('search') }}"</span>
+                        Results for <span class="text-blue-600">"{{ request('search') }}"</span>
                     @else
-                        Rental <span class="text-[#2563EB]">Properties</span> in India
+                        Explore <span class="text-blue-600">Verified Rentals</span> in India
                     @endif
                 </h1>
-                <p class="text-zinc-500 text-base md:text-lg font-normal leading-relaxed max-w-2xl">
-                    Discover verified houses, flats, PGs, shops, and commercial rental spaces across India.
+                <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base font-normal mt-2 leading-relaxed">
+                    Browse 100% direct-owner verified houses, flats, PGs, and commercial spaces with zero brokerage.
                 </p>
             </div>
-            <div class="hidden md:flex items-center gap-4 px-6 py-4 bg-white border border-stone-200/60 rounded-2xl shadow-sm">
-                <div class="flex flex-col items-end">
-                    <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Database Status</span>
-                    <span class="text-xs font-medium text-green-500 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Live & Verified</span>
+
+            {{-- Stat Box --}}
+            <div class="flex items-center gap-3 px-5 py-3.5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-xs self-start md:self-end">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center font-bold">
+                    <i class="ph-bold ph-buildings text-xl"></i>
                 </div>
-                <div class="w-px h-8 bg-stone-100"></div>
-                <div class="flex flex-col">
-                    <span class="text-2xl font-black text-zinc-900 leading-none">{{ $properties->total() }}</span>
-                    <span class="text-[10px] font-bold text-zinc-400 uppercase mt-1">Found</span>
+                <div>
+                    <div class="text-xl font-extrabold text-slate-900 dark:text-white leading-none">{{ $properties->total() }}</div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Properties Available</div>
                 </div>
             </div>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-10 xl:gap-16">
-            {{-- Sidebar Filters --}}
-            <div class="lg:w-80 flex-shrink-0">
+        {{-- Layout: Sidebar + Grid --}}
+        <div class="flex flex-col lg:flex-row gap-8 xl:gap-10 items-start">
+            
+            {{-- Left Sidebar Filters --}}
+            <div class="w-full lg:w-80 flex-shrink-0">
                 @include('components.search-filters', ['categories' => $categories, 'locations' => $locations])
             </div>
 
-            {{-- Property Grid --}}
-            <div class="flex-1">
+            {{-- Right Property Grid --}}
+            <div class="flex-1 w-full min-w-0">
                 @if($properties->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-8">
+                    {{-- Grid Container --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
                         @foreach($properties as $property)
                             <x-property-card :property="$property" />
                         @endforeach
                     </div>
 
-                    {{-- Pagination --}}
-                    <div class="mt-16">
+                    {{-- Pagination Container --}}
+                    <div class="mt-12 pt-6 border-t border-slate-200/80 dark:border-slate-800">
                         {{ $properties->links() }}
                     </div>
                 @else
-                    <div class="text-center py-32 bg-white/50 backdrop-blur-sm border border-stone-200/60 rounded-3xl shadow-sm">
-                        <div class="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="ph ph-magnifying-glass text-4xl text-zinc-300"></i>
+                    {{-- Empty State --}}
+                    <div class="text-center py-24 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-xs p-8">
+                        <div class="w-16 h-16 bg-blue-50 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600">
+                            <i class="ph-bold ph-magnifying-glass text-3xl"></i>
                         </div>
-                        <h3 class="text-2xl font-bold text-zinc-900 mb-2">No properties found</h3>
-                        <p class="text-zinc-500 mb-8 max-w-sm mx-auto">We couldn't find any matches for your current filters. Try broadening your search criteria.</p>
-                        <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-3 px-8 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[11px] font-bold tracking-widest uppercase rounded-xl shadow-lg shadow-[#2563EB]/25 transition-all" title="Clear All Filters">
-                            <i class="ph ph-arrow-counter-clockwise text-sm"></i> Clear All Filters
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No matching properties found</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-md mx-auto">We couldn't find any rentals matching your exact filters. Try clearing some filters or changing location.</p>
+                        <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-wider uppercase rounded-xl shadow-sm transition-all" title="Reset All Filters">
+                            <i class="ph-bold ph-arrow-counter-clockwise"></i> Reset All Filters
                         </a>
                     </div>
                 @endif
             </div>
         </div>
 
-        {{-- People Also Search For Widget --}}
-        <div class="mt-16 border-t border-stone-200/80 pt-8">
+        {{-- People Also Search For Section --}}
+        <div class="mt-20 border-t border-slate-200/80 dark:border-slate-800 pt-10">
             <x-people-also-search />
         </div>
+
     </div>
 </section>
 
