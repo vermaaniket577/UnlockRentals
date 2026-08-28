@@ -755,7 +755,7 @@
         <a href="{{ route('billing.history') }}" class="sidebar-link" id="sidebar-billing" title="Billing &amp; Invoices">
             <i class="ph-bold ph-receipt"></i> Billing & Invoices
         </a>
-        <a href="{{ route('dashboard') }}#inquiries" class="sidebar-link" id="sidebar-inquiries" title="My Inquiries @if($unreadInquiries &gt; 0)  @endif">
+        <a href="{{ route('dashboard') }}#inquiries" class="sidebar-link" id="sidebar-inquiries" title="My Inquiries">
             <i class="ph-bold ph-chat-dots"></i> My Inquiries
             @if($unreadInquiries > 0)
                 <span class="sidebar-badge">{{ $unreadInquiries }}</span>

@@ -3,7 +3,7 @@
     <div class="flex items-center justify-around h-16 px-2">
         
         {{-- Home Tab --}}
-        <a href="{{ route('home') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('home') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="Home @if(request()-&gt;routeIs(&#039;home&#039;)) @endif">
+        <a href="{{ route('home') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('home') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="Home">
             <i class="ph ph-house text-xl mb-0.5"></i>
             <span class="text-[10px] font-bold tracking-tight">Home</span>
             @if(request()->routeIs('home'))
@@ -12,7 +12,7 @@
         </a>
 
         {{-- Explore Tab --}}
-        <a href="{{ route('properties.index') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('properties.index') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="UnlockRentals">
+        <a href="{{ route('properties.index') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('properties.index') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="Explore Properties">
             <i class="ph ph-compass text-xl mb-0.5"></i>
             <span class="text-[10px] font-bold tracking-tight">Explore</span>
             @if(request()->routeIs('properties.index') && !request()->has('type'))
@@ -40,7 +40,7 @@
         @endauth
 
         {{-- Dashboard Tab --}}
-        <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="Dashboard @if(request()-&gt;routeIs(&#039;dashboard&#039;)) @endif">
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="Dashboard">
             <i class="ph ph-squares-four text-xl mb-0.5"></i>
             <span class="text-[10px] font-bold tracking-tight">Dashboard</span>
             @if(request()->routeIs('dashboard'))

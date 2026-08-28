@@ -7,7 +7,7 @@
 
 <div class="glass-card" id="property-card-{{ $property->id }}" onclick="window.location.href='{{ $propertyUrl }}'" style="cursor: pointer; position: relative;">
     {{-- Accessible Stretched Link --}}
-    <a href="{{ $propertyUrl }}" class="property-card-overlay-link" style="position: absolute; inset: 0; z-index: 5; text-indent: -9999px;" aria-label="View {{ $property->title }}" title="View {{ $property-&gt;title }}">View Property</a>
+    <a href="{{ $propertyUrl }}" class="property-card-overlay-link" style="position: absolute; inset: 0; z-index: 5; text-indent: -9999px;" aria-label="View {{ $property->title }}" title="View {{ $property->title }}">View Property</a>
 
     {{-- Image Section --}}
     <div class="card-img-wrap">
