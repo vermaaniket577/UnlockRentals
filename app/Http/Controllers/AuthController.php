@@ -124,12 +124,27 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            // Redirect based on role
+            $targetUrl = $request->input('redirect') ?: session()->pull('url.intended', route('home'));
             if (auth()->user()->isAdmin()) {
-                return redirect()->route('admin.dashboard');
+                $targetUrl = route('admin.dashboard');
             }
 
-            return redirect()->intended(route('home'))->with('success', 'Welcome back, ' . auth()->user()->name . '!');
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Welcome back, ' . auth()->user()->name . '!',
+                    'redirect' => $targetUrl,
+                ]);
+            }
+
+            return redirect($targetUrl)->with('success', 'Welcome back, ' . auth()->user()->name . '!');
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The provided credentials do not match our records.',
+            ], 422);
         }
 
         return back()->withErrors([
@@ -168,7 +183,20 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('home')
+        $targetUrl = $request->input('redirect') ?: session()->pull('url.intended', route('home'));
+        if ($user->isAdmin()) {
+            $targetUrl = route('admin.dashboard');
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Welcome to UnlockRentals! Your account has been created.',
+                'redirect' => $targetUrl,
+            ]);
+        }
+
+        return redirect($targetUrl)
             ->with('success', 'Welcome to UnlockRentals! Your account has been created.');
     }
 

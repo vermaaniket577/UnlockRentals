@@ -8,7 +8,22 @@
 <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col group relative" id="property-card-{{ $property->id }}">
     
     {{-- Accessible Full Card Click Overlay Link --}}
-    <a href="{{ $propertyUrl }}" class="absolute inset-0 z-10 text-transparent" aria-label="View {{ $property->title }}" title="View {{ $property->title }}">View {{ $property->title }}</a>
+    @guest
+        <a href="{{ route('login') }}?redirect={{ urlencode($propertyUrl) }}"
+           onclick="event.preventDefault(); window.openAuthModal('login', '{{ $propertyUrl }}');"
+           class="absolute inset-0 z-10 text-transparent"
+           aria-label="View {{ $property->title }}"
+           title="Sign in to view {{ $property->title }}">
+            View {{ $property->title }}
+        </a>
+    @else
+        <a href="{{ $propertyUrl }}"
+           class="absolute inset-0 z-10 text-transparent"
+           aria-label="View {{ $property->title }}"
+           title="View {{ $property->title }}">
+            View {{ $property->title }}
+        </a>
+    @endguest
 
     {{-- Image Container --}}
     <div class="aspect-[16/10] w-full relative overflow-hidden bg-slate-100 dark:bg-slate-800">
@@ -109,9 +124,18 @@
                 @endif
             </div>
 
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all shadow-xs">
-                View <i class="ph-bold ph-arrow-right text-[11px] group-hover:translate-x-0.5 transition-transform"></i>
-            </span>
+            @guest
+                <button type="button"
+                        onclick="event.stopPropagation(); window.openAuthModal('login', '{{ $propertyUrl }}');"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-xs relative z-20"
+                        title="Sign in to view property details">
+                    View <i class="ph-bold ph-lock text-[11px]"></i>
+                </button>
+            @else
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all shadow-xs">
+                    View <i class="ph-bold ph-arrow-right text-[11px] group-hover:translate-x-0.5 transition-transform"></i>
+                </span>
+            @endguest
         </div>
     </div>
 </article>

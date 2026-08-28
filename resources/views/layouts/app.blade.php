@@ -236,6 +236,10 @@
         });
     </script>
 
+    @guest
+        <x-auth-modal />
+    @endguest
+
     @stack('scripts')
 </body>
 </html>

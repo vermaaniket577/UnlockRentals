@@ -1591,5 +1591,9 @@
             }
         });
     </script>
+
+    @guest
+        <x-auth-modal />
+    @endguest
 </body>
 </html>
