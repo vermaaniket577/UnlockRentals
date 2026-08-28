@@ -265,7 +265,7 @@
                             </div>
                         </div>
                     </div>
-                    <p class="mt-4 text-[11px] text-zinc-500 italic">Get these from your <a href="https://dashboard.razorpay.com/app/dashboard" target="_blank" class="text-[#2563EB] underline">Razorpay Dashboard</a> under Settings > API Keys.</p>
+                    <p class="mt-4 text-[11px] text-zinc-500 italic">Get these from your <a href="https://dashboard.razorpay.com/app/dashboard" target="_blank" class="text-[#2563EB] underline" title="Razorpay Dashboard">Razorpay Dashboard</a> under Settings > API Keys.</p>
                 </div>
 
                 <div class="mt-6">
@@ -529,7 +529,7 @@ UnlockRentals offers the best verified properties in India. You're in good hands
             </div>
 
             <div class="flex justify-end gap-4 mt-6">
-                <a href="{{ route('admin.dashboard') }}" class="px-6 py-3 border border-stone-200 text-zinc-500 font-medium tracking-wide rounded-sm hover:border-zinc-300 transition-all text-sm">Cancel</a>
+                <a href="{{ route('admin.dashboard') }}" class="px-6 py-3 border border-stone-200 text-zinc-500 font-medium tracking-wide rounded-sm hover:border-zinc-300 transition-all text-sm" title="Cancel">Cancel</a>
                 <button type="submit" class="px-8 py-3 bg-[#2563EB] text-white font-medium tracking-wide rounded-sm shadow-sm hover:bg-[#1D4ED8] transition-all text-sm">Save Changes</button>
             </div>
         </form>

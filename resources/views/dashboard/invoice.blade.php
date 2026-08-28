@@ -363,7 +363,7 @@
 
     <!-- Actions Bar -->
     <div class="actions-bar">
-        <a href="{{ route('billing.history') }}" class="btn btn-secondary">
+        <a href="{{ route('billing.history') }}" class="btn btn-secondary" title="Back to Billing History">
             <i class="ph-bold ph-arrow-left"></i>
             Back to Billing History
         </a>

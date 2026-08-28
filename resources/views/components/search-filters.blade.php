@@ -150,7 +150,7 @@
             <button type="submit" class="w-full py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[11px] font-bold tracking-widest uppercase rounded-xl shadow-lg shadow-[#2563EB]/25 transition-all active:scale-[0.98]" id="filter-apply">
                 Apply Filters
             </button>
-            <a href="{{ route('properties.index') }}" class="w-full text-center py-4 bg-transparent border border-stone-200 text-zinc-500 text-[11px] font-bold tracking-widest uppercase rounded-xl hover:bg-stone-50 transition-all" id="filter-reset">
+            <a href="{{ route('properties.index') }}" class="w-full text-center py-4 bg-transparent border border-stone-200 text-zinc-500 text-[11px] font-bold tracking-widest uppercase rounded-xl hover:bg-stone-50 transition-all" id="filter-reset" title="Reset All">
                 Reset All
             </a>
         </div>

@@ -277,7 +277,7 @@
                         <button type="submit" class="flex-[2] px-8 py-5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-xl shadow-xl shadow-[#2563EB]/25 hover:shadow-2xl hover:shadow-[#2563EB]/35 transition-all flex items-center justify-center gap-3" id="create-submit">
                             <i class="ph ph-paper-plane-tilt text-xl"></i> Submit for Approval
                         </button>
-                        <a href="{{ route('dashboard') }}" class="flex-1 px-8 py-5 bg-white border border-stone-200 text-zinc-500 font-bold rounded-xl hover:bg-stone-50 hover:text-zinc-900 text-center transition-all" id="create-cancel">
+                        <a href="{{ route('dashboard') }}" class="flex-1 px-8 py-5 bg-white border border-stone-200 text-zinc-500 font-bold rounded-xl hover:bg-stone-50 hover:text-zinc-900 text-center transition-all" id="create-cancel" title="Cancel">
                             Cancel
                         </a>
                     </div>

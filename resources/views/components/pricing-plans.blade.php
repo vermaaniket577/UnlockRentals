@@ -857,7 +857,7 @@
                                 @endforeach
                             </ul>
 
-                            <a href="{{ Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) : url('/plans') }}" class="ur-plan-card__cta {{ $isGold ? 'ur-plan-card__cta--primary' : 'ur-plan-card__cta--outline' }} plan-checkout-link">
+                            <a href="{{ Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) : url('/plans') }}" class="ur-plan-card__cta {{ $isGold ? 'ur-plan-card__cta--primary' : 'ur-plan-card__cta--outline' }} plan-checkout-link" title="UnlockRentals">
                                 <i class="ph-bold {{ $isGold ? 'ph-crown' : ($isPlatinum ? 'ph-lightning' : 'ph-arrow-right') }}"></i>
                                 <span>{{ $isGold ? 'Get Started with Gold' : ($isPlatinum ? 'Unlock Platinum VIP' : 'Choose Silver Plan') }}</span>
                             </a>
@@ -884,7 +884,7 @@
 
         {{-- View All Plans CTA --}}
         <div class="ur-plans__cta-wrap">
-            <a href="{{ route('plans.index') }}" class="ur-plans__cta-link">
+            <a href="{{ route('plans.index') }}" class="ur-plans__cta-link" title="View All Plans &amp; Compare">
                 <i class="ph-bold ph-squares-four"></i>
                 <span>View All Plans & Compare</span>
                 <i class="ph-bold ph-arrow-right"></i>

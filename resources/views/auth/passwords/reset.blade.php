@@ -97,7 +97,7 @@
 
         {{-- Support Info --}}
         <div class="mt-8 text-center text-xs text-gray-400">
-            Need help? Contact our <a href="#" class="text-[#2563EB] font-semibold hover:underline">Support Team</a>
+            Need help? Contact our <a href="#" class="text-[#2563EB] font-semibold hover:underline" title="Support Team">Support Team</a>
         </div>
     </div>
 </section>

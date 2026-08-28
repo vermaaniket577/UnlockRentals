@@ -144,7 +144,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all">
+                <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all" title="Start Searching Rental Homes">
                     <i class="ph-bold ph-magnifying-glass text-lg"></i>
                     <span>Start Searching Rental Homes</span>
                 </a>
@@ -253,7 +253,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all">
+                <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all" title="List Your Property Free">
                     <i class="ph-bold ph-plus-circle text-lg"></i>
                     <span>List Your Property Free</span>
                 </a>
@@ -398,10 +398,10 @@
                 Join thousands of tenants and property owners finding the perfect match with zero brokerage fees.
             </p>
             <div class="flex flex-wrap items-center justify-center gap-4">
-                <a href="{{ route('properties.index') }}" class="px-8 py-4 rounded-xl bg-white text-blue-700 font-bold hover:bg-blue-50 transition shadow-lg">
+                <a href="{{ route('properties.index') }}" class="px-8 py-4 rounded-xl bg-white text-blue-700 font-bold hover:bg-blue-50 transition shadow-lg" title="Discover Properties">
                     Discover Properties
                 </a>
-                <a href="{{ route('plans.index') }}" class="px-8 py-4 rounded-xl bg-blue-800/80 hover:bg-blue-800 text-white font-bold border border-white/20 transition">
+                <a href="{{ route('plans.index') }}" class="px-8 py-4 rounded-xl bg-blue-800/80 hover:bg-blue-800 text-white font-bold border border-white/20 transition" title="View Pricing Plans">
                     View Pricing Plans
                 </a>
             </div>

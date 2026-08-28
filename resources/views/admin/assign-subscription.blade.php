@@ -92,7 +92,7 @@
                 </div>
 
                 <div class="mt-8 flex justify-between items-center">
-                    <a href="{{ route('admin.subscriptions') }}" class="text-sm font-semibold text-zinc-500 hover:text-zinc-900">Cancel</a>
+                    <a href="{{ route('admin.subscriptions') }}" class="text-sm font-semibold text-zinc-500 hover:text-zinc-900" title="Cancel">Cancel</a>
                     <button type="submit" class="px-6 py-3 bg-[#2563EB] text-white text-sm font-bold rounded-sm hover:bg-blue-700 transition-colors shadow-sm">
                         Assign Plan
                     </button>

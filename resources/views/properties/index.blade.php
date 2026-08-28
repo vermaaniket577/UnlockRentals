@@ -40,7 +40,7 @@
         <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div class="max-w-3xl">
                 <nav class="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">
-                    <a href="{{ route('home') }}" class="hover:text-[#2563EB] transition-colors">Home</a>
+                    <a href="{{ route('home') }}" class="hover:text-[#2563EB] transition-colors" title="Home">Home</a>
                     <i class="ph-bold ph-caret-right text-[8px]"></i>
                     <span class="text-zinc-900">Properties</span>
                 </nav>
@@ -96,7 +96,7 @@
                         </div>
                         <h3 class="text-2xl font-bold text-zinc-900 mb-2">No properties found</h3>
                         <p class="text-zinc-500 mb-8 max-w-sm mx-auto">We couldn't find any matches for your current filters. Try broadening your search criteria.</p>
-                        <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-3 px-8 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[11px] font-bold tracking-widest uppercase rounded-xl shadow-lg shadow-[#2563EB]/25 transition-all">
+                        <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-3 px-8 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[11px] font-bold tracking-widest uppercase rounded-xl shadow-lg shadow-[#2563EB]/25 transition-all" title="Clear All Filters">
                             <i class="ph ph-arrow-counter-clockwise text-sm"></i> Clear All Filters
                         </a>
                     </div>

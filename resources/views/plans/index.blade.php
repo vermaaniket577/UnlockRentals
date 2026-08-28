@@ -232,7 +232,7 @@
                         @if(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan_id === $plan->id)
                             <button disabled class="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700">Current Plan</button>
                         @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price > (float) $activePlan->plan->price)
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link block w-full rounded-2xl bg-blue-600 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-blue-500/15 transition hover:-translate-y-0.5 hover:bg-blue-700">
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link block w-full rounded-2xl bg-blue-600 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-blue-500/15 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Upgrade Plan">
                                 Upgrade Plan
                             </a>
                         @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0)
@@ -240,7 +240,7 @@
                         @elseif(auth()->check() && $pendingPlan)
                             <button disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-black text-slate-400">Request Pending</button>
                         @else
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link block w-full rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-blue-700">
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link block w-full rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Choose Plan">
                                 Choose Plan
                             </a>
                         @endif
@@ -270,7 +270,7 @@
                             </li>
                         @endforeach
                     </ul>
-                    <a href="mailto:sales@unlockrentals.com?subject=UnlockRentals%20Enterprise%20Plan" class="mt-8 block w-full rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700">Contact Sales</a>
+                    <a href="mailto:sales@unlockrentals.com?subject=UnlockRentals%20Enterprise%20Plan" class="mt-8 block w-full rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700" title="Contact Sales">Contact Sales</a>
                 </article>
             @endunless
         </div>

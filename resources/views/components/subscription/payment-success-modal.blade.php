@@ -59,7 +59,7 @@
         </div>
 
         {{-- CTA Button --}}
-        <a href="{{ route('dashboard') }}" class="mt-6 flex w-full items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 text-sm font-extrabold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl" style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25);">
+        <a href="{{ route('dashboard') }}" class="mt-6 flex w-full items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 text-sm font-extrabold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl" style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25);" title="Go to Dashboard">
             <i class="ph-bold ph-squares-four text-base"></i>
             Go to Dashboard
         </a>

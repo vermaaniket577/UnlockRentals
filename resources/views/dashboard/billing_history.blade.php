@@ -219,33 +219,33 @@
         </div>
 
         <span class="sidebar-label">Main Menu</span>
-        <a href="{{ route('dashboard') }}" class="sidebar-link" id="sidebar-dashboard">
+        <a href="{{ route('dashboard') }}" class="sidebar-link" id="sidebar-dashboard" title="Dashboard">
             <i class="ph-bold ph-squares-four"></i> Dashboard
         </a>
-        <a href="{{ route('properties.index') }}" class="sidebar-link" id="sidebar-browse">
+        <a href="{{ route('properties.index') }}" class="sidebar-link" id="sidebar-browse" title="Browse Properties">
             <i class="ph-bold ph-binoculars"></i> Browse Properties
         </a>
         @if($user->isTenant())
-        <a href="{{ route('properties.index', ['type' => 'house']) }}" class="sidebar-link" id="sidebar-houses">
+        <a href="{{ route('properties.index', ['type' => 'house']) }}" class="sidebar-link" id="sidebar-houses" title="Houses for Rent">
             <i class="ph-bold ph-house"></i> Houses for Rent
         </a>
-        <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="sidebar-link" id="sidebar-shops">
+        <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="sidebar-link" id="sidebar-shops" title="Shops for Rent">
             <i class="ph-bold ph-storefront"></i> Shops for Rent
         </a>
         @else
-        <a href="{{ route('properties.create') }}" class="sidebar-link" id="sidebar-list-property">
+        <a href="{{ route('properties.create') }}" class="sidebar-link" id="sidebar-list-property" title="List New Property">
             <i class="ph-bold ph-plus-circle"></i> List New Property
         </a>
         @endif
 
         <span class="sidebar-label">Account</span>
-        <a href="{{ route('plans.index') }}" class="sidebar-link" id="sidebar-plans">
+        <a href="{{ route('plans.index') }}" class="sidebar-link" id="sidebar-plans" title="Plans &amp; Pricing">
             <i class="ph-bold ph-crown"></i> Plans & Pricing
         </a>
-        <a href="{{ route('billing.history') }}" class="sidebar-link active" id="sidebar-billing">
+        <a href="{{ route('billing.history') }}" class="sidebar-link active" id="sidebar-billing" title="Billing &amp; Invoices">
             <i class="ph-bold ph-receipt"></i> Billing & Invoices
         </a>
-        <a href="{{ route('inquiries.index') }}" class="sidebar-link" id="sidebar-inquiries">
+        <a href="{{ route('inquiries.index') }}" class="sidebar-link" id="sidebar-inquiries" title="My Inquiries">
             <i class="ph-bold ph-chat-dots"></i> My Inquiries
         </a>
     </aside>
@@ -305,7 +305,7 @@
                                     </td>
                                     <td>
                                         @if($up->status === 'approved')
-                                            <a href="{{ route('billing.invoice', $up) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-blue-700 text-xs font-extrabold uppercase tracking-wider rounded-xl transition-all shadow-sm">
+                                            <a href="{{ route('billing.invoice', $up) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-blue-700 text-xs font-extrabold uppercase tracking-wider rounded-xl transition-all shadow-sm" title="Print">
                                                 <i class="ph-bold ph-printer"></i>
                                                 Print
                                             </a>
@@ -331,7 +331,7 @@
                     </div>
                     <h3 class="text-lg font-black text-slate-900 dark:text-white" style="font-family: 'Poppins', sans-serif;">No invoices found</h3>
                     <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">You have not completed any billing payments yet. Purchase a premium subscription plan to get started.</p>
-                    <a href="{{ route('plans.index') }}" class="mt-6 inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-black rounded-2xl transition-all shadow-lg shadow-blue-500/10">
+                    <a href="{{ route('plans.index') }}" class="mt-6 inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-black rounded-2xl transition-all shadow-lg shadow-blue-500/10" title="Upgrade Plan">
                         <i class="ph-bold ph-crown"></i>
                         Upgrade Plan
                     </a>

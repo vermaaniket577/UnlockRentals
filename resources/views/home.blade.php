@@ -136,7 +136,7 @@
             @forelse($categories as $category)
             <a href="{{ route('properties.index', ['category' => $category->id]) }}"
                class="group p-6 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-[#2563EB]/50 hover:bg-[#2563EB]/10 transition-all duration-300 text-center"
-               id="category-{{ $category->slug }}">
+               id="category-{{ $category->slug }}" title="UnlockRentals">
                 <div class="w-14 h-14 bg-gradient-to-br from-[#2563EB]/10 to-[#2563EB]/10 rounded-sm flex items-center justify-center mx-auto mb-4 group-hover:from-blue-600/30 group-hover:to-indigo-600/30 transition-all">
                     <i class="ph ph-{{ $category->icon ?: 'buildings' }} text-2xl text-[#2563EB]"></i>
                 </div>
@@ -162,7 +162,7 @@
                 </div>
                 <h2 class="text-3xl lg:text-4xl font-medium text-zinc-900">Featured Properties</h2>
             </div>
-            <a href="{{ route('properties.index') }}" class="hidden md:flex items-center gap-2 text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors">
+            <a href="{{ route('properties.index') }}" class="hidden md:flex items-center gap-2 text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors" title="View All">
                 View All <i class="ph ph-arrow-right"></i>
             </a>
         </div>
@@ -187,7 +187,7 @@
                 </div>
                 <h2 class="text-3xl lg:text-4xl font-medium text-zinc-900">Latest Listings</h2>
             </div>
-            <a href="{{ route('properties.index') }}" class="hidden md:flex items-center gap-2 text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors">
+            <a href="{{ route('properties.index') }}" class="hidden md:flex items-center gap-2 text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors" title="Browse All">
                 Browse All <i class="ph ph-arrow-right"></i>
             </a>
         </div>
@@ -200,7 +200,7 @@
                     <i class="ph ph-house text-5xl text-gray-700 mb-4"></i>
                     <h3 class="text-xl font-semibold text-zinc-500 mb-2">No Properties Yet</h3>
                     <p class="text-zinc-500 mb-6">Be the first to list your property on UnlockRentals.</p>
-                    <a href="{{ route('register') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-white text-sm font-medium tracking-wide rounded-sm shadow-sm transition-all hover:bg-[#1D4ED8] hover:shadow-[#2563EB]/30">
+                    <a href="{{ route('register') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-white text-sm font-medium tracking-wide rounded-sm shadow-sm transition-all hover:bg-[#1D4ED8] hover:shadow-[#2563EB]/30" title="List a Property">
                         <i class="ph ph-plus-circle text-lg"></i> List a Property
                     </a>
                 </div>
@@ -228,10 +228,10 @@
                     Whether you're looking for a cozy house or a prime shop location, we've got you covered.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ route('properties.index') }}" class="px-8 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium tracking-wide rounded-sm shadow-sm shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 transition-all" id="cta-browse">
+                    <a href="{{ route('properties.index') }}" class="px-8 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium tracking-wide rounded-sm shadow-sm shadow-[#2563EB]/20 hover:shadow-[#2563EB]/40 transition-all" id="cta-browse" title="Browse Properties">
                         Browse Properties
                     </a>
-                    <a href="{{ route('register') }}" class="px-8 py-4 border border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB]/5 font-medium tracking-wide rounded-sm transition-all" id="cta-register">
+                    <a href="{{ route('register') }}" class="px-8 py-4 border border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB]/5 font-medium tracking-wide rounded-sm transition-all" id="cta-register" title="List Your Property">
                         List Your Property
                     </a>
                 </div>

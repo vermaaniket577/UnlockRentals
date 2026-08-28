@@ -238,7 +238,7 @@
                 <button type="submit" class="flex-1 px-8 py-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold rounded-sm shadow-sm transition-all">
                     <i class="ph ph-floppy-disk"></i> Update Property
                 </button>
-                <a href="{{ route('dashboard') }}" class="px-6 py-4 bg-stone-50 border border-stone-200/50 text-zinc-500 text-sm font-medium rounded-sm hover:bg-stone-100 transition-all">
+                <a href="{{ route('dashboard') }}" class="px-6 py-4 bg-stone-50 border border-stone-200/50 text-zinc-500 text-sm font-medium rounded-sm hover:bg-stone-100 transition-all" title="Cancel">
                     Cancel
                 </a>
             </div>

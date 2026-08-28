@@ -100,11 +100,11 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             {{-- Breadcrumb --}}
             <nav class="flex items-center gap-2 text-xs sm:text-sm text-zinc-500" id="property-breadcrumb">
-                <a href="{{ route('home') }}" class="hover:text-[#2874F0] font-medium transition-colors flex items-center gap-1">
+                <a href="{{ route('home') }}" class="hover:text-[#2874F0] font-medium transition-colors flex items-center gap-1" title="Home">
                     <i class="ph-bold ph-house-line"></i> Home
                 </a>
                 <i class="ph-bold ph-caret-right text-[10px] text-zinc-400"></i>
-                <a href="{{ route('properties.index') }}" class="hover:text-[#2874F0] font-medium transition-colors">Properties</a>
+                <a href="{{ route('properties.index') }}" class="hover:text-[#2874F0] font-medium transition-colors" title="Properties">Properties</a>
                 <i class="ph-bold ph-caret-right text-[10px] text-zinc-400"></i>
                 <span class="text-zinc-700 font-semibold truncate max-w-[200px] sm:max-w-xs">{{ $property->title }}</span>
             </nav>
@@ -119,7 +119,7 @@
                 </button>
                 <a href="https://wa.me/?text=Hi! I am interested in this property on UnlockRentals: {{ urlencode(route('properties.show', $property)) }}" 
                    target="_blank" 
-                   class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 text-xs sm:text-sm font-semibold rounded-md border border-emerald-200/60 shadow-sm transition-all cursor-pointer">
+                   class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 text-xs sm:text-sm font-semibold rounded-md border border-emerald-200/60 shadow-sm transition-all cursor-pointer" title="WhatsApp Inquiry">
                     <i class="ph-bold ph-whatsapp text-emerald-500 text-base"></i> WhatsApp Inquiry
                 </a>
             </div>
@@ -454,7 +454,7 @@
                                     </div>
                                     <p class="text-sm font-extrabold text-zinc-800 mb-1">Exact Location Locked</p>
                                     <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Subscribe to a plan to see the exact property address on the map.</p>
-                                    <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
+                                    <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Unlock Location">
                                         <i class="ph-bold ph-crown"></i> Unlock Location
                                     </a>
                                 </div>
@@ -514,15 +514,15 @@
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </button>
                             @else
-                            <a href="{{ route('plans.index') }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" id="book-visit-btn">
+                            <a href="{{ route('plans.index') }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" id="book-visit-btn" title="Book Visit">
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </a>
                             @endif
                             @else
-                            <a href="tel:{{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}" class="px-4 py-3 bg-[#2874F0]/10 hover:bg-[#2874F0]/20 text-[#2874F0] text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
+                            <a href="tel:{{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}" class="px-4 py-3 bg-[#2874F0]/10 hover:bg-[#2874F0]/20 text-[#2874F0] text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" title="Call Agent">
                                 <i class="ph-bold ph-phone-call"></i> Call Agent
                             </a>
-                            <a href="{{ route('login') }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                            <a href="{{ route('login') }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Book Visit">
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </a>
                             @endauth
@@ -564,7 +564,7 @@
                                                 $displayPhone = !empty($property->contact_phone) ? $property->contact_phone : (!empty($property->owner->phone) ? $property->owner->phone : 'Not provided');
                                             @endphp
                                             <i class="ph-bold ph-phone text-[#2874F0] text-base"></i>
-                                            <a href="tel:{{ $displayPhone !== 'Not provided' ? $displayPhone : '' }}" class="text-zinc-800 hover:text-[#2874F0] truncate flex-1">
+                                            <a href="tel:{{ $displayPhone !== 'Not provided' ? $displayPhone : '' }}" class="text-zinc-800 hover:text-[#2874F0] truncate flex-1" title="Call Support">
                                                 {{ $displayPhone }}
                                                 @if(auth()->check() && (auth()->user()->isAdmin() || auth()->id() === $property->user_id))
                                                     <span class="text-[10px] text-zinc-400 font-normal ml-1">(Property Phone: "{{ $property->contact_phone ?? 'NULL' }}", Owner Phone: "{{ $property->owner->phone ?? 'NULL' }}")</span>
@@ -573,7 +573,7 @@
                                         </div>
                                         <div class="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 bg-white p-2.5 rounded-lg border border-zinc-150 shadow-inner">
                                             <i class="ph-bold ph-envelope text-[#2874F0] text-base"></i>
-                                            <a href="mailto:{{ $property->owner->email }}" class="text-zinc-800 hover:text-[#2874F0] truncate flex-1">
+                                            <a href="mailto:{{ $property->owner->email }}" class="text-zinc-800 hover:text-[#2874F0] truncate flex-1" title="Email Support">
                                                 {{ $property->owner->email }}
                                             </a>
                                         </div>
@@ -610,7 +610,7 @@
                                                 </div>
                                                 <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Contact limit reached</p>
                                                 <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You have used all contact views in your active plan. Please upgrade your plan to unlock more contact details.</p>
-                                                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
+                                                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Upgrade Plan">
                                                     <i class="ph-bold ph-crown"></i> Upgrade Plan
                                                 </a>
                                             @else
@@ -619,7 +619,7 @@
                                                 </div>
                                                 <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Premium details locked</p>
                                                 <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Get a subscription plan to access the property owner's verified phone & email details.</p>
-                                                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
+                                                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Unlock Plans">
                                                     <i class="ph-bold ph-crown"></i> View Unlock Plans
                                                 </a>
                                             @endif
@@ -634,7 +634,7 @@
                                             <i class="ph-bold ph-user-lock text-xl"></i>
                                         </div>
                                         <p class="text-xs font-bold text-zinc-650 mb-3 leading-normal">Sign in with your verified profile to view full owner contact details.</p>
-                                        <a href="{{ route('login') }}" class="inline-flex items-center gap-1 px-6 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
+                                        <a href="{{ route('login') }}" class="inline-flex items-center gap-1 px-6 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Sign In to View">
                                             Sign In to View
                                         </a>
                                     </div>
@@ -647,7 +647,7 @@
                         @if(auth()->check())
                             @if(auth()->id() === $property->user_id || auth()->user()->isAdmin())
                             <div class="flex gap-2.5 pt-3 border-t border-zinc-150 mt-3">
-                                <a href="{{ route('properties.edit', $property) }}" class="flex-1 text-center px-4 py-2.5 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-bold rounded-xl transition-all shadow-sm">
+                                <a href="{{ route('properties.edit', $property) }}" class="flex-1 text-center px-4 py-2.5 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-bold rounded-xl transition-all shadow-sm" title="Edit Page">
                                     <i class="ph-bold ph-pencil-simple"></i> Edit Page
                                 </a>
                                 <form method="POST" action="{{ route('properties.destroy', $property) }}" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this property?')">
@@ -715,7 +715,7 @@
                         @else
                         <div class="text-center py-6">
                             <p class="text-xs font-bold text-zinc-550 mb-4 leading-normal">Please sign in with your UnlockRentals account to submit inquiries directly to the owner.</p>
-                            <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-xs font-extrabold rounded-lg shadow-md transition-all">
+                            <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Sign In Now">
                                 Sign In Now
                             </a>
                         </div>
@@ -783,7 +783,7 @@
                     <div class="p-4 flex-1 flex flex-col justify-between">
                         <div>
                             <h3 class="font-extrabold text-zinc-900 text-sm line-clamp-1 group-hover:text-[#2874F0] transition-colors leading-tight mb-1" title="{{ $similar->title }}">
-                                <a href="{{ route('properties.show', $similar) }}">
+                                <a href="{{ route('properties.show', $similar) }}" title="UnlockRentals">
                                     {{ $similar->title }}
                                 </a>
                             </h3>
@@ -820,7 +820,7 @@
                             </div>
                             @endif
 
-                            <a href="{{ route('properties.show', $similar) }}" class="px-3.5 py-1.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-[11px] font-extrabold rounded-lg shadow-md shadow-[#2874F0]/15 transition-all flex items-center gap-0.5 cursor-pointer">
+                            <a href="{{ route('properties.show', $similar) }}" class="px-3.5 py-1.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-[11px] font-extrabold rounded-lg shadow-md shadow-[#2874F0]/15 transition-all flex items-center gap-0.5 cursor-pointer" title="Explore">
                                 Explore <i class="ph-bold ph-arrow-right"></i>
                             </a>
                         </div>
@@ -842,11 +842,11 @@
     <div class="flex items-center gap-2 flex-1 max-w-[240px]">
         <a href="https://wa.me/?text=Hi! I am interested in your property on UnlockRentals: {{ urlencode(route('properties.show', $property)) }}"
            target="_blank"
-           class="flex-1 px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-xs rounded-xl border border-emerald-200/60 shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+           class="flex-1 px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-xs rounded-xl border border-emerald-200/60 shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="WA">
             <i class="ph-bold ph-whatsapp text-emerald-500 text-base"></i> WA
         </a>
         <a href="#inquiry-form-card"
-           class="flex-1 px-3.5 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#2874F0]/15 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+           class="flex-1 px-3.5 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#2874F0]/15 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Inquiry">
             <i class="ph-bold ph-envelope"></i> Inquiry
         </a>
     </div>
@@ -905,7 +905,7 @@
             <div class="px-6 pt-4 text-center">
                 <div class="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
                     <p class="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1.5">Direct Agent Number</p>
-                    <a href="tel:{{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}" class="text-xl font-black text-[#2874F0] hover:underline flex items-center justify-center gap-2">
+                    <a href="tel:{{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}" class="text-xl font-black text-[#2874F0] hover:underline flex items-center justify-center gap-2" title="Call Support">
                         <i class="ph-bold ph-phone"></i> {{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}
                     </a>
                     <p class="text-zinc-400 text-[10px] mt-1 font-semibold">Click to dial directly, or request a callback below:</p>

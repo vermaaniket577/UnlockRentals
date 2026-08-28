@@ -12,7 +12,7 @@
                 <h1 class="text-3xl font-medium text-zinc-900 mb-1">Chatbot History</h1>
                 <p class="text-zinc-500">Review all live user interactions and bot responses</p>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-[#2563EB] hover:underline flex items-center gap-2">
+            <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-[#2563EB] hover:underline flex items-center gap-2" title="Back to Dashboard">
                 <i class="ph ph-arrow-left"></i> Back to Dashboard
             </a>
         </div>

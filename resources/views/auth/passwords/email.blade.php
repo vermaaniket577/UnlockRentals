@@ -75,7 +75,7 @@
                         </button>
 
                         <div class="text-center pt-2">
-                            <a href="{{ route('login') }}" class="text-xs text-gray-400 hover:text-[#2563EB] transition-colors flex items-center justify-center gap-1.5 group">
+                            <a href="{{ route('login') }}" class="text-xs text-gray-400 hover:text-[#2563EB] transition-colors flex items-center justify-center gap-1.5 group" title="Back to Sign In">
                                 <i class="ph ph-arrow-left transition-transform group-hover:-translate-x-1"></i>
                                 Back to Sign In
                             </a>
@@ -87,7 +87,7 @@
 
         {{-- Footer Info --}}
         <div class="mt-8 text-center">
-            <p class="text-xs text-gray-400">Remember your password? <a href="{{ route('login') }}" class="text-[#2563EB] font-bold hover:underline">Sign In</a></p>
+            <p class="text-xs text-gray-400">Remember your password? <a href="{{ route('login') }}" class="text-[#2563EB] font-bold hover:underline" title="Sign In">Sign In</a></p>
         </div>
     </div>
 </section>

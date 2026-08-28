@@ -13,16 +13,16 @@
                 <p class="text-zinc-500 text-sm">Review and manage user plan purchases.</p>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('admin.subscriptions.assign') }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm bg-[#2563EB] text-white shadow-sm hover:bg-blue-700 mr-4">
+                <a href="{{ route('admin.subscriptions.assign') }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm bg-[#2563EB] text-white shadow-sm hover:bg-blue-700 mr-4" title="+ Assign Plan Manually">
                     + Assign Plan Manually
                 </a>
-                <a href="{{ route('admin.subscriptions', ['status' => 'pending']) }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm {{ request('status') === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-zinc-500' }}">
+                <a href="{{ route('admin.subscriptions', ['status' => 'pending']) }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm {{ request('status') === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-zinc-500' }}" title="Pending">
                     Pending
                 </a>
-                <a href="{{ route('admin.subscriptions', ['status' => 'approved']) }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm {{ request('status') === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-stone-100 text-zinc-500' }}">
+                <a href="{{ route('admin.subscriptions', ['status' => 'approved']) }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm {{ request('status') === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-stone-100 text-zinc-500' }}" title="Approved">
                     Approved
                 </a>
-                <a href="{{ route('admin.subscriptions') }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm {{ !request('status') ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-stone-100 text-zinc-500' }}">
+                <a href="{{ route('admin.subscriptions') }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm {{ !request('status') ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-stone-100 text-zinc-500' }}" title="All">
                     All
                 </a>
             </div>
@@ -76,7 +76,7 @@
                             @if($sub->payment_reference)
                                 <p class="text-xs font-mono font-medium text-zinc-900 bg-stone-100 px-2 py-1 rounded-sm inline-block">{{ $sub->payment_reference }}</p>
                                 @if($sub->payment_proof)
-                                    <a href="{{ asset('storage/' . $sub->payment_proof) }}" target="_blank" class="block mt-2 text-[10px] font-bold text-[#2563EB] hover:underline" onclick="event.stopPropagation()">
+                                    <a href="{{ asset('storage/' . $sub->payment_proof) }}" target="_blank" class="block mt-2 text-[10px] font-bold text-[#2563EB] hover:underline" onclick="event.stopPropagation()" title="View Screenshot (₹)">
                                         <i class="ph ph-image align-middle"></i> View Screenshot (₹{{ $sub->amount_paid }})
                                     </a>
                                 @endif
@@ -173,7 +173,7 @@
         </div>
 
         <div class="mt-4">
-            <a href="{{ route('admin.dashboard') }}" class="text-sm text-zinc-500 hover:text-[#2563EB]">← Back to Dashboard</a>
+            <a href="{{ route('admin.dashboard') }}" class="text-sm text-zinc-500 hover:text-[#2563EB]" title="← Back to Dashboard">← Back to Dashboard</a>
         </div>
     </div>
 </section>

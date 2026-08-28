@@ -12,7 +12,7 @@
                 <h1 class="text-2xl font-medium text-zinc-900 mb-1">Manage Plans</h1>
                 <p class="text-zinc-500 text-sm">Create and manage subscription plans for users.</p>
             </div>
-            <a href="{{ route('admin.plans.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#c9a050] hover:bg-[#b08d42] text-white text-sm font-semibold rounded-sm transition-all">
+            <a href="{{ route('admin.plans.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#c9a050] hover:bg-[#b08d42] text-white text-sm font-semibold rounded-sm transition-all" title="Create Plan">
                 <i class="ph ph-plus"></i> Create Plan
             </a>
         </div>
@@ -57,7 +57,7 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.plans.edit', $plan) }}" class="px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] text-xs font-semibold rounded-sm hover:bg-[#2563EB]/20 transition-all">
+                                <a href="{{ route('admin.plans.edit', $plan) }}" class="px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] text-xs font-semibold rounded-sm hover:bg-[#2563EB]/20 transition-all" title="Edit">
                                     Edit
                                 </a>
                                 <form method="POST" action="{{ route('admin.plans.destroy', $plan) }}" onsubmit="return confirm('Delete this plan?')">
@@ -79,7 +79,7 @@
         </div>
 
         <div class="mt-6">
-            <a href="{{ route('admin.dashboard') }}" class="text-sm text-zinc-500 hover:text-[#2563EB]">← Back to Dashboard</a>
+            <a href="{{ route('admin.dashboard') }}" class="text-sm text-zinc-500 hover:text-[#2563EB]" title="← Back to Dashboard">← Back to Dashboard</a>
         </div>
     </div>
 </section>

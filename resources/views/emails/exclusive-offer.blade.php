@@ -41,7 +41,7 @@
             </div>
 
             <p style="text-align: center;">
-                <a href="{{ route('login') }}" class="btn">Log In & Claim Offer</a>
+                <a href="{{ route('login') }}" class="btn" title="Log In &amp; Claim Offer">Log In & Claim Offer</a>
             </p>
 
             <p>If you have any questions, feel free to reply to this email.</p>

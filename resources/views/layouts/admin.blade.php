@@ -66,7 +66,7 @@
             
             {{-- CRM Header / Branding --}}
             <div class="p-6 border-b border-zinc-900 flex items-center justify-between">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3" title="U UnlockRentals CRM Panel">
                     <div class="w-8 h-8 bg-blue-600 rounded-sm flex items-center justify-center text-white font-bold text-lg">
                         U
                     </div>
@@ -83,15 +83,15 @@
                 {{-- Group 1: General Core --}}
                 <div class="space-y-1">
                     <span class="px-3 text-[10px] font-bold text-zinc-600 uppercase tracking-widest block mb-2">Core</span>
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Dashboard">
                         <i class="ph ph-squares-four text-lg"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="{{ route('admin.properties') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.properties*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.properties') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.properties*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Properties Review">
                         <i class="ph ph-buildings text-lg"></i>
                         <span>Properties Review</span>
                     </a>
-                    <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.users*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.users*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Users Directory">
                         <i class="ph ph-users text-lg"></i>
                         <span>Users Directory</span>
                     </a>
@@ -101,7 +101,7 @@
                 <div class="space-y-1">
                     <span class="px-3 text-[10px] font-bold text-zinc-600 uppercase tracking-widest block mb-2">CRM Leads</span>
                     
-                    <a href="{{ route('admin.feedback') }}" class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.feedback*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.feedback') }}" class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.feedback*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="UnlockRentals">
                         <div class="flex items-center gap-3">
                             <i class="ph ph-chat-centered-text text-lg"></i>
                             <span>Feedback</span>
@@ -111,7 +111,7 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.chats') }}" class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.chats*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.chats') }}" class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.chats*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="UnlockRentals">
                         <div class="flex items-center gap-3">
                             <i class="ph ph-chat-circle-dots text-lg"></i>
                             <span>Chat History</span>
@@ -121,7 +121,7 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.callbacks') }}" class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.callbacks*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.callbacks') }}" class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.callbacks*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="UnlockRentals">
                         <div class="flex items-center gap-3">
                             <i class="ph ph-phone-call text-lg"></i>
                             <span>Callback Leads</span>
@@ -131,7 +131,7 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.resets') }}" class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.resets*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.resets') }}" class="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.resets*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="UnlockRentals">
                         <div class="flex items-center gap-3">
                             <i class="ph ph-key text-lg"></i>
                             <span>Password Resets</span>
@@ -145,15 +145,15 @@
                 {{-- Group 3: Plan & Subscription --}}
                 <div class="space-y-1">
                     <span class="px-3 text-[10px] font-bold text-zinc-600 uppercase tracking-widest block mb-2">Monetization</span>
-                    <a href="{{ route('admin.plans') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.plans*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.plans') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.plans*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Manage Plans">
                         <i class="ph ph-crown text-lg"></i>
                         <span>Manage Plans</span>
                     </a>
-                    <a href="{{ route('admin.subscriptions') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.subscriptions*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.subscriptions') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.subscriptions*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Subscriptions">
                         <i class="ph ph-receipt text-lg"></i>
                         <span>Subscriptions</span>
                     </a>
-                    <a href="{{ route('admin.process-steps') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.process-steps*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.process-steps') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.process-steps*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Process Steps">
                         <i class="ph ph-git-merge text-lg"></i>
                         <span>Process Steps</span>
                     </a>
@@ -162,7 +162,7 @@
                 {{-- Group 4: Settings --}}
                 <div class="space-y-1">
                     <span class="px-3 text-[10px] font-bold text-zinc-600 uppercase tracking-widest block mb-2">System</span>
-                    <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.settings*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}">
+                    <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.settings*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Content &amp; Settings">
                         <i class="ph ph-gear text-lg"></i>
                         <span>Content & Settings</span>
                     </a>
@@ -180,7 +180,7 @@
 
         {{-- Sidebar Footer --}}
         <div class="p-4 border-t border-zinc-900 space-y-3">
-            <a href="{{ route('home') }}" class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-900 rounded-sm transition-all">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-900 rounded-sm transition-all" title="Back to Website">
                 <i class="ph ph-arrow-left"></i>
                 <span>Back to Website</span>
             </a>
@@ -215,7 +215,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <a href="{{ route('home') }}" class="text-xs bg-stone-100 hover:bg-stone-200 text-zinc-600 px-3.5 py-1.5 rounded-sm font-semibold transition-all">
+                <a href="{{ route('home') }}" class="text-xs bg-stone-100 hover:bg-stone-200 text-zinc-600 px-3.5 py-1.5 rounded-sm font-semibold transition-all" title="View Live Site">
                     View Live Site
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="inline-block">

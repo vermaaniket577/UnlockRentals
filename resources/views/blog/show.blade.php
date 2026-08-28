@@ -10,7 +10,7 @@
         
         {{-- Breadcrumb & Back --}}
         <div class="flex items-center justify-between gap-4 mb-8">
-            <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+            <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline" title="Back to All Articles">
                 <i class="ph-bold ph-arrow-left"></i> Back to All Articles
             </a>
             <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
@@ -72,7 +72,7 @@
             <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Related Articles & Guides</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 @foreach($relatedPosts as $rPost)
-                <a href="{{ route('blog.show', $rPost['slug']) }}" class="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-lg transition">
+                <a href="{{ route('blog.show', $rPost['slug']) }}" class="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-lg transition" title="UnlockRentals">
                     <div class="h-36 overflow-hidden">
                         <img src="{{ $rPost['image'] }}" alt="{{ $rPost['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>

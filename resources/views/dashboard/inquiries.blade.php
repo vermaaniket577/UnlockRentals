@@ -11,7 +11,7 @@
                 <h1 class="text-3xl font-medium text-zinc-900 mb-1">Received Inquiries</h1>
                 <p class="text-zinc-500">Messages from interested tenants</p>
             </div>
-            <a href="{{ route('dashboard') }}" class="text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors flex items-center gap-1">
+            <a href="{{ route('dashboard') }}" class="text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors flex items-center gap-1" title="Dashboard">
                 <i class="ph ph-arrow-left"></i> Dashboard
             </a>
         </div>
@@ -43,7 +43,7 @@
                         </div>
 
                         @if($inquiry->property)
-                        <a href="{{ route('properties.show', $inquiry->property) }}" class="text-xs text-[#2563EB] hover:text-[#2563EB] font-medium mb-2 inline-block">
+                        <a href="{{ route('properties.show', $inquiry->property) }}" class="text-xs text-[#2563EB] hover:text-[#2563EB] font-medium mb-2 inline-block" title="Re:">
                             Re: {{ $inquiry->property->title }}
                         </a>
                         @endif
@@ -51,11 +51,11 @@
                         <p class="text-sm text-zinc-500 leading-relaxed">{{ $inquiry->message }}</p>
 
                         <div class="mt-3 flex gap-2">
-                            <a href="mailto:{{ $inquiry->email }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] text-xs font-medium rounded-sm hover:bg-[#2563EB]/10 transition-all">
+                            <a href="mailto:{{ $inquiry->email }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] text-xs font-medium rounded-sm hover:bg-[#2563EB]/10 transition-all" title="Reply via Email">
                                 <i class="ph ph-envelope"></i> Reply via Email
                             </a>
                             @if($inquiry->phone)
-                            <a href="tel:{{ $inquiry->phone }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-sm hover:bg-emerald-500/20 transition-all">
+                            <a href="tel:{{ $inquiry->phone }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-sm hover:bg-emerald-500/20 transition-all" title="Call">
                                 <i class="ph ph-phone"></i> Call
                             </a>
                             @endif

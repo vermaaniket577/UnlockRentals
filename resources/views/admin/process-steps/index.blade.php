@@ -12,7 +12,7 @@
                 <h1 class="text-2xl font-medium text-zinc-900 mb-1">Manage Process Steps</h1>
                 <p class="text-zinc-500 text-sm">Create, edit, and order process flow steps displayed on the homepage.</p>
             </div>
-            <a href="{{ route('admin.process-steps.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#c9a050] hover:bg-[#b08d42] text-white text-sm font-semibold rounded-sm transition-all">
+            <a href="{{ route('admin.process-steps.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#c9a050] hover:bg-[#b08d42] text-white text-sm font-semibold rounded-sm transition-all" title="Add Process Step">
                 <i class="ph ph-plus"></i> Add Process Step
             </a>
         </div>
@@ -71,7 +71,7 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.process-steps.edit', $step) }}" class="px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] text-xs font-semibold rounded-sm hover:bg-[#2563EB]/20 transition-all">
+                                <a href="{{ route('admin.process-steps.edit', $step) }}" class="px-3 py-1.5 bg-[#2563EB]/10 text-[#2563EB] text-xs font-semibold rounded-sm hover:bg-[#2563EB]/20 transition-all" title="Edit">
                                     Edit
                                 </a>
                                 <form method="POST" action="{{ route('admin.process-steps.destroy', $step) }}" onsubmit="return confirm('Are you sure you want to delete this step?')">
@@ -93,7 +93,7 @@
         </div>
 
         <div class="mt-6">
-            <a href="{{ route('admin.dashboard') }}" class="text-sm text-zinc-500 hover:text-[#2563EB]">← Back to Dashboard</a>
+            <a href="{{ route('admin.dashboard') }}" class="text-sm text-zinc-500 hover:text-[#2563EB]" title="← Back to Dashboard">← Back to Dashboard</a>
         </div>
     </div>
 </section>

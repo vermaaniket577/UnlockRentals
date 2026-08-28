@@ -14,13 +14,13 @@
                 <p class="text-zinc-500">Welcome back, {{ auth()->user()->name }}!</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="#" onclick="event.preventDefault(); window.openProfileModal();" class="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-250/60 hover:bg-stone-300 text-zinc-750 text-sm font-semibold rounded-sm transition-all cursor-pointer" id="dash-profile-settings">
+                <a href="#" onclick="event.preventDefault(); window.openProfileModal();" class="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-250/60 hover:bg-stone-300 text-zinc-750 text-sm font-semibold rounded-sm transition-all cursor-pointer" id="dash-profile-settings" title="Profile Settings">
                     <i class="ph ph-user-gear"></i> Profile Settings
                 </a>
-                <a href="{{ route('billing.history') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-200/60 hover:bg-stone-200 text-zinc-700 text-sm font-semibold rounded-sm transition-all" id="dash-billing-history">
+                <a href="{{ route('billing.history') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-200/60 hover:bg-stone-200 text-zinc-700 text-sm font-semibold rounded-sm transition-all" id="dash-billing-history" title="Billing History">
                     <i class="ph ph-receipt"></i> Billing History
                 </a>
-                <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold rounded-sm shadow-sm transition-all" id="dash-add-property">
+                <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold rounded-sm shadow-sm transition-all" id="dash-add-property" title="List New Property">
                     <i class="ph ph-plus-circle"></i> List New Property
                 </a>
             </div>
@@ -53,7 +53,7 @@
                                 </p>
                             </div>
                         </div>
-                        <a href="{{ route('plans.checkout', $offer->plan) }}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-sm transition-colors whitespace-nowrap ml-4">
+                        <a href="{{ route('plans.checkout', $offer->plan) }}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-sm transition-colors whitespace-nowrap ml-4" title="Buy Now">
                             Buy Now
                         </a>
                     </div>
@@ -103,7 +103,7 @@
         <div class="bg-stone-50 border border-stone-200/50 rounded-sm overflow-hidden" id="dash-properties-table">
             <div class="px-6 py-5 border-b border-stone-200/50 flex items-center justify-between">
                 <h2 class="text-lg font-semibold text-zinc-900">My Properties</h2>
-                <a href="{{ route('inquiries.index') }}" class="text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors flex items-center gap-1">
+                <a href="{{ route('inquiries.index') }}" class="text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors flex items-center gap-1" title="View Inquiries">
                     View Inquiries <i class="ph ph-arrow-right"></i>
                 </a>
             </div>
@@ -197,7 +197,7 @@
                 <i class="ph ph-house text-5xl text-gray-700 mb-4"></i>
                 <h3 class="text-xl font-semibold text-zinc-500 mb-2">No properties yet</h3>
                 <p class="text-zinc-500 mb-6">Start by listing your first property.</p>
-                <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-white text-sm font-semibold rounded-sm transition-all">
+                <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-white text-sm font-semibold rounded-sm transition-all" title="List a Property">
                     <i class="ph ph-plus-circle"></i> List a Property
                 </a>
             </div>

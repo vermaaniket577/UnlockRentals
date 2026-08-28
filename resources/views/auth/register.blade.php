@@ -163,8 +163,8 @@
                             <input type="checkbox" required
                                    class="w-4 h-4 mt-0.5 rounded accent-[#2563EB] border-gray-300">
                             <span class="text-xs text-gray-500 leading-relaxed">
-                                I agree to the <a href="#" class="text-[#2563EB] font-semibold hover:underline">Terms of Service</a>
-                                and <a href="#" class="text-[#2563EB] font-semibold hover:underline">Privacy Policy</a>
+                                I agree to the <a href="#" class="text-[#2563EB] font-semibold hover:underline" title="Terms of Service">Terms of Service</a>
+                                and <a href="#" class="text-[#2563EB] font-semibold hover:underline" title="Privacy Policy">Privacy Policy</a>
                             </span>
                         </label>
 
@@ -185,7 +185,7 @@
         {{-- Sign in link --}}
         <p class="text-center text-sm text-gray-500 mt-6">
             Already have an account?
-            <a href="{{ route('login') }}" class="text-[#2563EB] hover:text-[#1D4ED8] font-semibold transition-colors">Sign In</a>
+            <a href="{{ route('login') }}" class="text-[#2563EB] hover:text-[#1D4ED8] font-semibold transition-colors" title="Sign In">Sign In</a>
         </p>
 
         {{-- Trust badges --}}

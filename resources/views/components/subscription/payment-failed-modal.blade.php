@@ -14,11 +14,11 @@
         <h2 id="payment-failed-title" class="mt-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">Payment Failed</h2>
         <p class="mt-3 text-sm font-semibold leading-6 text-slate-600 dark:text-slate-300">{{ $paymentFailedReason }}</p>
         <div class="mt-7 grid grid-cols-1 gap-3">
-            <a href="{{ $retryCheckoutUrl }}" class="flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-blue-700 dark:bg-blue-600">
+            <a href="{{ $retryCheckoutUrl }}" class="flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-blue-700 dark:bg-blue-600" title="Try Again">
                 <i class="ph-bold ph-arrows-clockwise"></i>
                 Try Again
             </a>
-            <a href="{{ $retryCheckoutUrl }}#payment-methods" class="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-blue-500/40">
+            <a href="{{ $retryCheckoutUrl }}#payment-methods" class="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-blue-500/40" title="Choose Another Payment Method">
                 <i class="ph-bold ph-credit-card"></i>
                 Choose Another Payment Method
             </a>

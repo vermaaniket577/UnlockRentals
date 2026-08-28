@@ -12,7 +12,7 @@
                 <h1 class="text-3xl font-medium text-zinc-900 mb-1">All Properties</h1>
                 <p class="text-zinc-500">Manage and review property listings</p>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors flex items-center gap-1">
+            <a href="{{ route('admin.dashboard') }}" class="text-sm text-[#2563EB] hover:text-[#2563EB] font-medium transition-colors flex items-center gap-1" title="Dashboard">
                 <i class="ph ph-arrow-left"></i> Dashboard
             </a>
         </div>
@@ -20,16 +20,16 @@
         {{-- Status Filters & Bypass Approval Toggle --}}
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div class="flex gap-2 flex-wrap">
-                <a href="{{ route('admin.properties') }}" class="px-4 py-2 text-sm font-medium rounded-sm transition-all {{ !request('status') ? 'bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/50' : 'bg-stone-50 text-zinc-500 border border-stone-200/50 hover:bg-stone-100' }}">
+                <a href="{{ route('admin.properties') }}" class="px-4 py-2 text-sm font-medium rounded-sm transition-all {{ !request('status') ? 'bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/50' : 'bg-stone-50 text-zinc-500 border border-stone-200/50 hover:bg-stone-100' }}" title="All">
                     All
                 </a>
-                <a href="{{ route('admin.properties', ['status' => 'pending']) }}" class="px-4 py-2 text-sm font-medium rounded-sm transition-all {{ request('status') === 'pending' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-stone-50 text-zinc-500 border border-stone-200/50 hover:bg-stone-100' }}">
+                <a href="{{ route('admin.properties', ['status' => 'pending']) }}" class="px-4 py-2 text-sm font-medium rounded-sm transition-all {{ request('status') === 'pending' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-stone-50 text-zinc-500 border border-stone-200/50 hover:bg-stone-100' }}" title="Pending">
                     Pending
                 </a>
-                <a href="{{ route('admin.properties', ['status' => 'approved']) }}" class="px-4 py-2 text-sm font-medium rounded-sm transition-all {{ request('status') === 'approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-stone-50 text-zinc-500 border border-stone-200/50 hover:bg-stone-100' }}">
+                <a href="{{ route('admin.properties', ['status' => 'approved']) }}" class="px-4 py-2 text-sm font-medium rounded-sm transition-all {{ request('status') === 'approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-stone-50 text-zinc-500 border border-stone-200/50 hover:bg-stone-100' }}" title="Approved">
                     Approved
                 </a>
-                <a href="{{ route('admin.properties', ['status' => 'rejected']) }}" class="px-4 py-2 text-sm font-medium rounded-sm transition-all {{ request('status') === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-stone-50 text-zinc-500 border border-stone-200/50 hover:bg-stone-100' }}">
+                <a href="{{ route('admin.properties', ['status' => 'rejected']) }}" class="px-4 py-2 text-sm font-medium rounded-sm transition-all {{ request('status') === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-stone-50 text-zinc-500 border border-stone-200/50 hover:bg-stone-100' }}" title="Rejected">
                     Rejected
                 </a>
             </div>
@@ -78,7 +78,7 @@
                                         </div>
                                     @endif
                                     <div>
-                                        <a href="{{ route('properties.show', $property) }}" class="text-sm font-medium text-zinc-900 hover:text-[#2563EB] transition-colors">{{ Str::limit($property->title, 30) }}</a>
+                                        <a href="{{ route('properties.show', $property) }}" class="text-sm font-medium text-zinc-900 hover:text-[#2563EB] transition-colors" title="UnlockRentals">{{ Str::limit($property->title, 30) }}</a>
                                         <p class="text-xs text-zinc-500">{{ $property->location }}</p>
                                     </div>
                                 </div>

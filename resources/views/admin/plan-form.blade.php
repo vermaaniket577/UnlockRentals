@@ -102,7 +102,7 @@
                 <button type="submit" class="px-6 py-2.5 bg-[#c9a050] hover:bg-[#b08d42] text-white text-sm font-semibold rounded-sm transition-all">
                     {{ $plan ? 'Update Plan' : 'Create Plan' }}
                 </button>
-                <a href="{{ route('admin.plans') }}" class="px-6 py-2.5 bg-stone-100 text-zinc-600 text-sm font-semibold rounded-sm hover:bg-stone-200 transition-all">
+                <a href="{{ route('admin.plans') }}" class="px-6 py-2.5 bg-stone-100 text-zinc-600 text-sm font-semibold rounded-sm hover:bg-stone-200 transition-all" title="Cancel">
                     Cancel
                 </a>
             </div>

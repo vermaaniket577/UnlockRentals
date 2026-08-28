@@ -176,7 +176,7 @@
     <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="checkout-hero mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-3xl">
-                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-blue-600">
+                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-blue-600" title="Back to plans">
                     <i class="ph-bold ph-arrow-left"></i>
                     Back to plans
                 </a>

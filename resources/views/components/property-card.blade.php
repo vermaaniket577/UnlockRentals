@@ -7,7 +7,7 @@
 
 <div class="glass-card" id="property-card-{{ $property->id }}" onclick="window.location.href='{{ $propertyUrl }}'" style="cursor: pointer; position: relative;">
     {{-- Accessible Stretched Link --}}
-    <a href="{{ $propertyUrl }}" class="property-card-overlay-link" style="position: absolute; inset: 0; z-index: 5; text-indent: -9999px;" aria-label="View {{ $property->title }}">View Property</a>
+    <a href="{{ $propertyUrl }}" class="property-card-overlay-link" style="position: absolute; inset: 0; z-index: 5; text-indent: -9999px;" aria-label="View {{ $property->title }}" title="View {{ $property-&gt;title }}">View Property</a>
 
     {{-- Image Section --}}
     <div class="card-img-wrap">
@@ -51,7 +51,7 @@
     {{-- Content Section --}}
     <div class="card-body">
         <h3 title="{{ $property->title }}">
-            <a href="{{ $propertyUrl }}" style="position: relative; z-index: 6;">
+            <a href="{{ $propertyUrl }}" style="position: relative; z-index: 6;" title="UnlockRentals">
                 {{ $property->title }}
             </a>
         </h3>
@@ -94,7 +94,7 @@
                     </div>
                 @endif
             </div>
-            <a href="{{ $propertyUrl }}" class="btn-text-link" style="color: var(--primary); background: rgba(37,99,235,0.08); padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; position: relative; z-index: 6; text-decoration: none; transition: all 0.2s ease;">
+            <a href="{{ $propertyUrl }}" class="btn-text-link" style="color: var(--primary); background: rgba(37,99,235,0.08); padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; position: relative; z-index: 6; text-decoration: none; transition: all 0.2s ease;" title="View">
                 View <i class="ph-bold ph-arrow-right"></i>
             </a>
         </div>

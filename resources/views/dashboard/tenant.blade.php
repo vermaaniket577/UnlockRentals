@@ -729,33 +729,33 @@
         </div>
 
         <span class="sidebar-label">Main Menu</span>
-        <a href="{{ route('dashboard') }}" class="sidebar-link active" id="sidebar-dashboard">
+        <a href="{{ route('dashboard') }}" class="sidebar-link active" id="sidebar-dashboard" title="Dashboard">
             <i class="ph-bold ph-squares-four"></i> Dashboard
         </a>
-        <a href="{{ route('properties.index') }}" class="sidebar-link" id="sidebar-browse">
+        <a href="{{ route('properties.index') }}" class="sidebar-link" id="sidebar-browse" title="Browse Properties">
             <i class="ph-bold ph-binoculars"></i> Browse Properties
         </a>
-        <a href="{{ route('properties.index', ['type' => 'house']) }}" class="sidebar-link" id="sidebar-houses">
+        <a href="{{ route('properties.index', ['type' => 'house']) }}" class="sidebar-link" id="sidebar-houses" title="Houses for Rent">
             <i class="ph-bold ph-house"></i> Houses for Rent
         </a>
-        <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="sidebar-link" id="sidebar-shops">
+        <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="sidebar-link" id="sidebar-shops" title="Shops for Rent">
             <i class="ph-bold ph-storefront"></i> Shops for Rent
         </a>
 
         <span class="sidebar-label">Account</span>
-        <a href="{{ route('plans.index') }}" class="sidebar-link" id="sidebar-plans">
+        <a href="{{ route('plans.index') }}" class="sidebar-link" id="sidebar-plans" title="Plans &amp; Pricing @if(!$activePlan) ! @endif">
             <i class="ph-bold ph-crown"></i> Plans & Pricing
             @if(!$activePlan)
                 <span class="sidebar-badge">!</span>
             @endif
         </a>
-        <a href="#" onclick="event.preventDefault(); window.openProfileModal();" class="sidebar-link" id="sidebar-profile">
+        <a href="#" onclick="event.preventDefault(); window.openProfileModal();" class="sidebar-link" id="sidebar-profile" title="Profile Settings">
             <i class="ph-bold ph-user-gear"></i> Profile Settings
         </a>
-        <a href="{{ route('billing.history') }}" class="sidebar-link" id="sidebar-billing">
+        <a href="{{ route('billing.history') }}" class="sidebar-link" id="sidebar-billing" title="Billing &amp; Invoices">
             <i class="ph-bold ph-receipt"></i> Billing & Invoices
         </a>
-        <a href="{{ route('dashboard') }}#inquiries" class="sidebar-link" id="sidebar-inquiries">
+        <a href="{{ route('dashboard') }}#inquiries" class="sidebar-link" id="sidebar-inquiries" title="My Inquiries @if($unreadInquiries &gt; 0)  @endif">
             <i class="ph-bold ph-chat-dots"></i> My Inquiries
             @if($unreadInquiries > 0)
                 <span class="sidebar-badge">{{ $unreadInquiries }}</span>
@@ -785,7 +785,7 @@
         <div style="margin: auto 0.75rem 1rem; padding: 1rem; background: rgba(245,158,11,0.06); border-radius:12px; border: 1px dashed rgba(245,158,11,0.4);">
             <p style="font-size:0.75rem;font-weight:600;color:#d97706;margin-bottom:0.4rem;">No Active Plan</p>
             <p style="font-size:0.7rem;color:#92400e;margin-bottom:0.6rem;">Get a plan to unlock property contacts.</p>
-            <a href="{{ route('plans.index') }}" style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.72rem;font-weight:700;color:#2563eb;text-decoration:none;">
+            <a href="{{ route('plans.index') }}" style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.72rem;font-weight:700;color:#2563eb;text-decoration:none;" title="View Plans">
                 View Plans <i class="ph ph-arrow-right" style="font-size:0.8rem;"></i>
             </a>
         </div>
@@ -810,14 +810,14 @@
             </div>
 
             <div style="display:flex;gap:0.75rem;flex-wrap:wrap;position:relative;z-index:1;">
-                <a href="{{ route('properties.index') }}" class="hero-cta-btn hero-cta-secondary" id="hero-browse">
+                <a href="{{ route('properties.index') }}" class="hero-cta-btn hero-cta-secondary" id="hero-browse" title="Browse Properties">
                     <i class="ph-bold ph-magnifying-glass"></i> Browse Properties
                 </a>
-                <a href="{{ route('plans.index') }}" class="hero-cta-btn hero-cta-primary" id="hero-plans">
+                <a href="{{ route('plans.index') }}" class="hero-cta-btn hero-cta-primary" id="hero-plans" title="View Plans">
                     <i class="ph-bold ph-crown"></i> View Plans
                 </a>
                 @if($activePlan)
-                <a href="{{ route('dashboard') }}#inquiries" class="hero-cta-btn hero-cta-primary" id="hero-inquiries">
+                <a href="{{ route('dashboard') }}#inquiries" class="hero-cta-btn hero-cta-primary" id="hero-inquiries" title="My Inquiries">
                     <i class="ph-bold ph-chat-dots"></i> My Inquiries
                 </a>
                 @endif
@@ -864,7 +864,7 @@
                         <i class="ph ph-check-circle" style="color:#10b981;"></i>
                         Active subscription
                     @else
-                        <a href="{{ route('plans.index') }}" style="color:#2563eb;font-weight:600;text-decoration:none;font-size:0.72rem;">Upgrade now →</a>
+                        <a href="{{ route('plans.index') }}" style="color:#2563eb;font-weight:600;text-decoration:none;font-size:0.72rem;" title="Upgrade now →">Upgrade now →</a>
                     @endif
                 </div>
             </div>
@@ -903,7 +903,7 @@
                                 </p>
                             </div>
                         </div>
-                        <a href="{{ route('plans.checkout', $offer->plan) }}" style="padding:0.45rem 1rem;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font-size:0.75rem;font-weight:700;border-radius:8px;text-decoration:none;white-space:nowrap;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                        <a href="{{ route('plans.checkout', $offer->plan) }}" style="padding:0.45rem 1rem;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font-size:0.75rem;font-weight:700;border-radius:8px;text-decoration:none;white-space:nowrap;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'" title="Buy Now">
                             Buy Now
                         </a>
                     </div>
@@ -917,28 +917,28 @@
         <div class="dash-section">
             <h2 class="section-title"><i class="ph-bold ph-lightning" style="color:#2563eb;"></i> Quick Actions</h2>
             <div class="quick-grid">
-                <a href="{{ route('properties.index') }}" class="quick-card" id="qc-browse">
+                <a href="{{ route('properties.index') }}" class="quick-card" id="qc-browse" title="Browse Properties Find your next home">
                     <div class="quick-icon" style="background:rgba(37,99,235,0.1);">
                         <i class="ph-bold ph-binoculars" style="color:#2563eb;"></i>
                     </div>
                     <span class="quick-label">Browse Properties</span>
                     <span class="quick-sub">Find your next home</span>
                 </a>
-                <a href="{{ route('properties.index', ['type' => 'house']) }}" class="quick-card" id="qc-houses">
+                <a href="{{ route('properties.index', ['type' => 'house']) }}" class="quick-card" id="qc-houses" title="Houses for Rent View available houses">
                     <div class="quick-icon" style="background:rgba(124,58,237,0.1);">
                         <i class="ph-bold ph-house" style="color:#7c3aed;"></i>
                     </div>
                     <span class="quick-label">Houses for Rent</span>
                     <span class="quick-sub">View available houses</span>
                 </a>
-                <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="quick-card" id="qc-shops">
+                <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="quick-card" id="qc-shops" title="Shops for Rent Browse commercial spaces">
                     <div class="quick-icon" style="background:rgba(16,185,129,0.1);">
                         <i class="ph-bold ph-storefront" style="color:#10b981;"></i>
                     </div>
                     <span class="quick-label">Shops for Rent</span>
                     <span class="quick-sub">Browse commercial spaces</span>
                 </a>
-                <a href="{{ route('plans.index') }}" class="quick-card" id="qc-plans">
+                <a href="{{ route('plans.index') }}" class="quick-card" id="qc-plans" title="View Plans Unlock more contacts">
                     <div class="quick-icon" style="background:rgba(245,158,11,0.1);">
                         <i class="ph-bold ph-crown" style="color:#d97706;"></i>
                     </div>
@@ -976,7 +976,7 @@
                         <div class="plan-progress-fill" style="width:{{ $planPct }}%;"></div>
                     </div>
                 </div>
-                <a href="{{ route('plans.index') }}" style="flex-shrink:0;padding:0.55rem 1.1rem;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3);border-radius:10px;color:#fff;font-size:0.78rem;font-weight:700;text-decoration:none;transition:all 0.2s;position:relative;z-index:1;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                <a href="{{ route('plans.index') }}" style="flex-shrink:0;padding:0.55rem 1.1rem;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3);border-radius:10px;color:#fff;font-size:0.78rem;font-weight:700;text-decoration:none;transition:all 0.2s;position:relative;z-index:1;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'" title="Upgrade">
                     Upgrade
                 </a>
             </div>
@@ -988,13 +988,13 @@
         <div class="dash-section">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
                 <h2 class="section-title" style="margin-bottom:0;"><i class="ph-bold ph-sparkle" style="color:#7c3aed;"></i> Recommended for You</h2>
-                <a href="{{ route('properties.index') }}" style="font-size:0.8rem;font-weight:600;color:#2563eb;text-decoration:none;display:flex;align-items:center;gap:0.3rem;">
+                <a href="{{ route('properties.index') }}" style="font-size:0.8rem;font-weight:600;color:#2563eb;text-decoration:none;display:flex;align-items:center;gap:0.3rem;" title="View all">
                     View all <i class="ph ph-arrow-right"></i>
                 </a>
             </div>
             <div class="rec-grid">
                 @foreach($recommendedProperties as $i => $property)
-                <a href="{{ route('properties.show', $property) }}" class="rec-card">
+                <a href="{{ route('properties.show', $property) }}" class="rec-card" title="UnlockRentals">
                     <div class="rec-img-wrap">
                         @if($property->primaryImage)
                             <img src="{{ $property->primaryImage->imageUrl() }}" alt="{{ $property->title }}" loading="lazy">
@@ -1081,7 +1081,7 @@
                             {{-- Content --}}
                             <div style="flex:1;min-width:0;">
                                 @if($inquiry->property)
-                                    <a href="{{ route('properties.show', $inquiry->property) }}" style="font-size:0.875rem;font-weight:600;color:#1e293b;text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;" onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#1e293b'">
+                                    <a href="{{ route('properties.show', $inquiry->property) }}" style="font-size:0.875rem;font-weight:600;color:#1e293b;text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;" onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#1e293b'" title="UnlockRentals">
                                         {{ $inquiry->property->title }}
                                     </a>
                                 @else
@@ -1125,10 +1125,10 @@
                             You haven't sent any inquiries yet. Browse properties and reach out to owners to get started!
                         </p>
                         <div style="display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;">
-                            <a href="{{ route('properties.index') }}" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;font-size:0.85rem;font-weight:700;border-radius:10px;text-decoration:none;box-shadow:0 4px 20px rgba(37,99,235,0.3);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(37,99,235,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(37,99,235,0.3)'" id="empty-browse-btn">
+                            <a href="{{ route('properties.index') }}" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;font-size:0.85rem;font-weight:700;border-radius:10px;text-decoration:none;box-shadow:0 4px 20px rgba(37,99,235,0.3);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 28px rgba(37,99,235,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(37,99,235,0.3)'" id="empty-browse-btn" title="Browse Properties">
                                 <i class="ph-bold ph-magnifying-glass"></i> Browse Properties
                             </a>
-                            <a href="{{ route('properties.index', ['type' => 'house']) }}" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;background:#f8fafc;border:1px solid rgba(0,0,0,0.1);color:#1e293b;font-size:0.85rem;font-weight:600;border-radius:10px;text-decoration:none;" id="empty-houses-btn">
+                            <a href="{{ route('properties.index', ['type' => 'house']) }}" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;background:#f8fafc;border:1px solid rgba(0,0,0,0.1);color:#1e293b;font-size:0.85rem;font-weight:600;border-radius:10px;text-decoration:none;" id="empty-houses-btn" title="Houses for Rent">
                                 <i class="ph-bold ph-house"></i> Houses for Rent
                             </a>
                         </div>

@@ -7,7 +7,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="mb-8">
-            <a href="{{ route('admin.subscriptions') }}" class="text-sm text-zinc-500 hover:text-[#2563EB] flex items-center gap-1 mb-4">
+            <a href="{{ route('admin.subscriptions') }}" class="text-sm text-zinc-500 hover:text-[#2563EB] flex items-center gap-1 mb-4" title="Back to Subscriptions">
                 <i class="ph ph-arrow-left"></i> Back to Subscriptions
             </a>
             
@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div>
-                    <a href="{{ route('admin.subscriptions.assign', ['user_id' => $user->id]) }}" class="px-5 py-2.5 bg-[#2563EB] text-white text-sm font-bold rounded-sm shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    <a href="{{ route('admin.subscriptions.assign', ['user_id' => $user->id]) }}" class="px-5 py-2.5 bg-[#2563EB] text-white text-sm font-bold rounded-sm shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-2" title="Provide Offer">
                         <i class="ph-bold ph-gift"></i> Provide Offer
                     </a>
                 </div>
@@ -114,7 +114,7 @@
                                             {{ $view->created_at->format('d M y, H:i') }}
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            <a href="{{ route('properties.show', $view->property) }}" target="_blank" class="text-blue-500 hover:underline text-xs">View Listing</a>
+                                            <a href="{{ route('properties.show', $view->property) }}" target="_blank" class="text-blue-500 hover:underline text-xs" title="View Listing">View Listing</a>
                                         </td>
                                     </tr>
                                 @endforeach

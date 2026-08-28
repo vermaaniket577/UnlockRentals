@@ -21,7 +21,7 @@
                     <i class="ph ph-chat-centered-text text-xl"></i>
                     <span class="font-medium">You have {{ $adminNotifications['new_feedbacks'] }} new customer feedback submissions.</span>
                 </div>
-                <a href="{{ route('admin.feedback') }}" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors flex-shrink-0">View Feedback</a>
+                <a href="{{ route('admin.feedback') }}" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors flex-shrink-0" title="View Feedback">View Feedback</a>
             </div>
             @endif
             
@@ -31,7 +31,7 @@
                     <i class="ph ph-chat-circle-dots text-xl"></i>
                     <span class="font-medium">You have {{ $adminNotifications['unread_chats'] }} unread customer chat messages.</span>
                 </div>
-                <a href="{{ route('admin.chats') }}" class="text-sm bg-amber-600 text-white px-4 py-2 rounded-sm hover:bg-amber-700 transition-colors flex-shrink-0">View Chats</a>
+                <a href="{{ route('admin.chats') }}" class="text-sm bg-amber-600 text-white px-4 py-2 rounded-sm hover:bg-amber-700 transition-colors flex-shrink-0" title="View Chats">View Chats</a>
             </div>
             @endif
 
@@ -41,7 +41,7 @@
                     <i class="ph ph-phone-call text-xl"></i>
                     <span class="font-medium">You have {{ $adminNotifications['new_callbacks'] }} new callback requests.</span>
                 </div>
-                <a href="{{ route('admin.callbacks') }}" class="text-sm bg-red-600 text-white px-4 py-2 rounded-sm hover:bg-red-700 transition-colors flex-shrink-0">View Callbacks</a>
+                <a href="{{ route('admin.callbacks') }}" class="text-sm bg-red-600 text-white px-4 py-2 rounded-sm hover:bg-red-700 transition-colors flex-shrink-0" title="View Callbacks">View Callbacks</a>
             </div>
             @endif
         </div>
@@ -49,7 +49,7 @@
 
         {{-- Stats Grid --}}
         <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <a href="{{ route('admin.users') }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-[#2563EB]/30 transition-all">
+            <a href="{{ route('admin.users') }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-[#2563EB]/30 transition-all" title="Users   owners ·  tenants">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 bg-[#2563EB]/10 rounded-sm flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="ph ph-users text-xl text-[#2563EB]"></i>
@@ -59,7 +59,7 @@
                 <p class="text-2xl font-medium text-zinc-900">{{ $stats['total_users'] }}</p>
                 <p class="text-xs text-zinc-500 mt-1">{{ $stats['total_owners'] }} owners · {{ $stats['total_tenants'] }} tenants</p>
             </a>
-            <a href="{{ route('admin.properties') }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-indigo-600/30 transition-all">
+            <a href="{{ route('admin.properties') }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-indigo-600/30 transition-all" title="Properties   approved">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 bg-indigo-600/10 rounded-sm flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="ph ph-buildings text-xl text-indigo-500"></i>
@@ -69,7 +69,7 @@
                 <p class="text-2xl font-medium text-zinc-900">{{ $stats['total_properties'] }}</p>
                 <p class="text-xs text-zinc-500 mt-1">{{ $stats['approved_properties'] }} approved</p>
             </a>
-            <a href="{{ route('admin.properties', ['status' => 'pending']) }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-amber-500/30 transition-all">
+            <a href="{{ route('admin.properties', ['status' => 'pending']) }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-amber-500/30 transition-all" title="Pending  Awaiting review">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 bg-amber-500/10 rounded-sm flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="ph ph-clock-countdown text-xl text-amber-400"></i>
@@ -79,7 +79,7 @@
                 <p class="text-2xl font-medium text-zinc-900">{{ $stats['pending_properties'] }}</p>
                 <p class="text-xs text-zinc-500 mt-1">Awaiting review</p>
             </a>
-            <a href="{{ route('admin.feedback') }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-emerald-500/30 transition-all">
+            <a href="{{ route('admin.feedback') }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-emerald-500/30 transition-all" title="Feedback   new submissions">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 bg-emerald-500/10 rounded-sm flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="ph ph-chat-centered-text text-xl text-emerald-400"></i>
@@ -89,7 +89,7 @@
                 <p class="text-2xl font-medium text-zinc-900">{{ $stats['total_feedback'] }}</p>
                 <p class="text-xs text-zinc-500 mt-1">{{ $stats['new_feedback'] }} new submissions</p>
             </a>
-            <a href="{{ route('admin.subscriptions') }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-[#c9a050]/50 transition-all">
+            <a href="{{ route('admin.subscriptions') }}" class="group bg-stone-50 border border-stone-200/50 rounded-sm p-5 hover:border-[#c9a050]/50 transition-all" title="Subscriptions   pending approvals">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-10 h-10 bg-[#c9a050]/10 rounded-sm flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="ph ph-crown text-xl text-[#c9a050]"></i>
@@ -104,7 +104,7 @@
 
         {{-- Quick Actions --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <a href="{{ route('admin.properties') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-[#2563EB]/50 transition-all flex items-center gap-4">
+            <a href="{{ route('admin.properties') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-[#2563EB]/50 transition-all flex items-center gap-4" title="Manage Properties Review &amp; approve listings">
                 <div class="w-10 h-10 bg-[#2563EB]/10 rounded-sm flex items-center justify-center group-hover:bg-[#2563EB]/10 transition-all">
                     <i class="ph ph-list-checks text-xl text-[#2563EB]"></i>
                 </div>
@@ -113,7 +113,7 @@
                     <p class="text-xs text-zinc-500">Review & approve listings</p>
                 </div>
             </a>
-            <a href="{{ route('admin.users') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-indigo-600/30 transition-all flex items-center gap-4">
+            <a href="{{ route('admin.users') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-indigo-600/30 transition-all flex items-center gap-4" title="Manage Users View all platform users">
                 <div class="w-10 h-10 bg-indigo-600/10 rounded-sm flex items-center justify-center group-hover:bg-indigo-600/20 transition-all">
                     <i class="ph ph-users-three text-xl text-indigo-500"></i>
                 </div>
@@ -122,7 +122,7 @@
                     <p class="text-xs text-zinc-500">View all platform users</p>
                 </div>
             </a>
-            <a href="{{ route('admin.plans') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-[#c9a050]/50 transition-all flex items-center gap-4">
+            <a href="{{ route('admin.plans') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-[#c9a050]/50 transition-all flex items-center gap-4" title="Manage Plans Create &amp; edit pricing plans">
                 <div class="w-10 h-10 bg-[#c9a050]/10 rounded-sm flex items-center justify-center group-hover:bg-[#c9a050]/20 transition-all">
                     <i class="ph ph-crown text-xl text-[#c9a050]"></i>
                 </div>
@@ -131,7 +131,7 @@
                     <p class="text-xs text-zinc-500">Create & edit pricing plans</p>
                 </div>
             </a>
-            <a href="{{ route('admin.subscriptions') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-emerald-500/30 transition-all flex items-center gap-4">
+            <a href="{{ route('admin.subscriptions') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-emerald-500/30 transition-all flex items-center gap-4" title="User Subscriptions  pending payments">
                 <div class="w-10 h-10 bg-emerald-500/10 rounded-sm flex items-center justify-center group-hover:bg-emerald-500/20 transition-all">
                     <i class="ph ph-receipt text-xl text-emerald-500"></i>
                 </div>
@@ -187,7 +187,7 @@
                                         <i class="ph ph-x-circle"></i> Reject
                                     </button>
                                 </form>
-                                <a href="{{ route('properties.show', $property) }}" class="inline-flex items-center gap-1 px-4 py-2 bg-stone-50 text-zinc-500 text-xs font-semibold rounded-sm hover:bg-stone-100 transition-all border border-stone-200/50">
+                                <a href="{{ route('properties.show', $property) }}" class="inline-flex items-center gap-1 px-4 py-2 bg-stone-50 text-zinc-500 text-xs font-semibold rounded-sm hover:bg-stone-100 transition-all border border-stone-200/50" title="View">
                                     <i class="ph ph-eye"></i> View
                                 </a>
                             </div>

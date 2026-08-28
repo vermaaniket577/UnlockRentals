@@ -11,7 +11,7 @@
                 <h1 class="text-3xl font-medium text-zinc-900">Callback Requests</h1>
                 <p class="text-zinc-500">Manage leads generated through the chatbot</p>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-[#2563EB] hover:underline flex items-center gap-2">
+            <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-[#2563EB] hover:underline flex items-center gap-2" title="Back to Dashboard">
                 <i class="ph ph-arrow-left"></i> Back to Dashboard
             </a>
         </div>
@@ -41,7 +41,7 @@
                             <div class="text-xs text-zinc-500">{{ $callback->user->email ?? 'Guest' }}</div>
                         </td>
                         <td class="px-6 py-4">
-                            <a href="tel:{{ $callback->phone }}" class="text-[#2563EB] hover:underline font-medium">
+                            <a href="tel:{{ $callback->phone }}" class="text-[#2563EB] hover:underline font-medium" title="Call Support">
                                 {{ $callback->phone }}
                             </a>
                         </td>

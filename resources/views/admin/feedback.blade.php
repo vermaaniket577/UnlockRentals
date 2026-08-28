@@ -12,8 +12,8 @@
                 <p class="text-zinc-500 text-sm">Review user ratings and suggestions to improve the platform.</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('admin.feedback') }}" class="px-4 py-2 bg-white border border-stone-200 text-zinc-600 text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-stone-50 transition-all">All</a>
-                <a href="{{ route('admin.feedback', ['status' => 'new']) }}" class="px-4 py-2 bg-white border border-stone-200 text-zinc-600 text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-stone-50 transition-all">New</a>
+                <a href="{{ route('admin.feedback') }}" class="px-4 py-2 bg-white border border-stone-200 text-zinc-600 text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-stone-50 transition-all" title="All">All</a>
+                <a href="{{ route('admin.feedback', ['status' => 'new']) }}" class="px-4 py-2 bg-white border border-stone-200 text-zinc-600 text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-stone-50 transition-all" title="New">New</a>
             </div>
         </div>
 

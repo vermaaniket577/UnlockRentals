@@ -17,7 +17,7 @@
         <p>You are receiving this email because we received a password reset request for your account at UnlockRentals.</p>
         <p>Please click the button below to choose a new password. This link will expire in 60 minutes.</p>
         
-        <a href="{{ route('password.reset', ['token' => $token, 'email' => $email]) }}" class="btn">Reset Password</a>
+        <a href="{{ route('password.reset', ['token' => $token, 'email' => $email]) }}" class="btn" title="Reset Password">Reset Password</a>
         
         <div class="footer">
             If you did not request a password reset, no further action is required.<br><br>

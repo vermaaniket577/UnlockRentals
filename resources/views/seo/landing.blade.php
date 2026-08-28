@@ -26,10 +26,10 @@
         
         {{-- Breadcrumb Navigation --}}
         <nav class="flex items-center gap-2.5 text-[10px] font-bold text-zinc-400 dark:text-slate-500 uppercase tracking-widest mb-6">
-            <a href="{{ url('/') }}" class="hover:text-[#2563EB] dark:hover:text-[#2563EB] transition-colors">Home</a>
+            <a href="{{ url('/') }}" class="hover:text-[#2563EB] dark:hover:text-[#2563EB] transition-colors" title="Home">Home</a>
             <i class="ph-bold ph-caret-right text-[8px]"></i>
             @if($city)
-                <a href="{{ url(Str::slug($typeDisplay . '-for-rent-in-' . $city)) }}" class="hover:text-[#2563EB] dark:hover:text-[#2563EB] transition-colors">{{ $typeDisplay }} in {{ $city }}</a>
+                <a href="{{ url(Str::slug($typeDisplay . '-for-rent-in-' . $city)) }}" class="hover:text-[#2563EB] dark:hover:text-[#2563EB] transition-colors" title="in">{{ $typeDisplay }} in {{ $city }}</a>
                 @if($locality)
                     <i class="ph-bold ph-caret-right text-[8px]"></i>
                     <span class="text-zinc-900 dark:text-slate-200 font-extrabold">{{ $locality }}</span>

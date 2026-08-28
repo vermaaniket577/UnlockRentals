@@ -37,11 +37,11 @@
 
             {{-- Categories --}}
             <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
-                <a href="{{ route('blog.index', array_filter(['search' => request('search')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ !request('category') || request('category') == 'all' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}">
+                <a href="{{ route('blog.index', array_filter(['search' => request('search')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ !request('category') || request('category') == 'all' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}" title="All">
                     All
                 </a>
                 @foreach($categories as $cat)
-                    <a href="{{ route('blog.index', array_filter(['category' => $cat, 'search' => request('search')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ request('category') == $cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}">
+                    <a href="{{ route('blog.index', array_filter(['category' => $cat, 'search' => request('search')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ request('category') == $cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}" title="UnlockRentals">
                         {{ $cat }}
                     </a>
                 @endforeach
@@ -51,7 +51,7 @@
         {{-- Featured Article (Only if on page 1 without active filter/search) --}}
         @if($featuredPost && !request('search') && (!request('category') || request('category') == 'all'))
         <div class="mb-14">
-            <a href="{{ route('blog.show', $featuredPost['slug']) }}" class="group block relative bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-lg hover:shadow-2xl transition-all duration-300">
+            <a href="{{ route('blog.show', $featuredPost['slug']) }}" class="group block relative bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-lg hover:shadow-2xl transition-all duration-300" title="Featured Guide  •  •      Read More">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
                     <div class="lg:col-span-7 h-72 sm:h-96 lg:h-auto relative overflow-hidden">
                         <img src="{{ $featuredPost['image'] }}" alt="{{ $featuredPost['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -100,7 +100,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($posts as $post)
             <article class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-                <a href="{{ route('blog.show', $post['slug']) }}" class="block relative h-48 sm:h-52 overflow-hidden">
+                <a href="{{ route('blog.show', $post['slug']) }}" class="block relative h-48 sm:h-52 overflow-hidden" title="UnlockRentals">
                     <img src="{{ $post['image'] }}" alt="{{ $post['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <span class="absolute top-3 left-3 px-3 py-1 rounded-lg text-[11px] font-bold bg-slate-900/80 backdrop-blur-md text-white">
                         {{ $post['category'] }}
@@ -114,7 +114,7 @@
                             <span>{{ $post['read_time'] }}</span>
                         </div>
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2.5 line-clamp-2">
-                            <a href="{{ route('blog.show', $post['slug']) }}">
+                            <a href="{{ route('blog.show', $post['slug']) }}" title="UnlockRentals">
                                 {{ $post['title'] }}
                             </a>
                         </h3>
@@ -130,7 +130,7 @@
                                 <p class="text-[10px] text-slate-500">{{ $post['author_role'] }}</p>
                             </div>
                         </div>
-                        <a href="{{ route('blog.show', $post['slug']) }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                        <a href="{{ route('blog.show', $post['slug']) }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" title="Read">
                             Read <i class="ph-bold ph-arrow-right text-[10px]"></i>
                         </a>
                     </div>
@@ -143,7 +143,7 @@
             <i class="ph ph-newspaper text-5xl text-slate-400 mb-3 inline-block"></i>
             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">No articles found</h3>
             <p class="text-sm text-slate-500 mb-4">Try adjusting your search query or selecting a different category.</p>
-            <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition">
+            <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition" title="Clear Filters">
                 Clear Filters
             </a>
         </div>

@@ -12,7 +12,7 @@
                 <h1 class="text-3xl font-medium text-zinc-900 mb-1">System Locations</h1>
                 <p class="text-zinc-500">Filter and view states, districts, and localities stored in the database</p>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center gap-1">
+            <a href="{{ route('admin.dashboard') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center gap-1" title="Dashboard">
                 <i class="ph ph-arrow-left"></i> Dashboard
             </a>
         </div>
