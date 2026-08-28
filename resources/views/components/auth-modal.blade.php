@@ -120,21 +120,9 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">I am a:</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg border border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold text-xs cursor-pointer">
-                            <input type="radio" name="role" value="tenant" checked class="sr-only">
-                            <i class="ph-bold ph-user text-xs"></i> Tenant
-                        </label>
-                        <label class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-semibold text-xs cursor-pointer hover:border-slate-300">
-                            <input type="radio" name="role" value="owner" class="sr-only">
-                            <i class="ph-bold ph-house-line text-xs"></i> Owner
-                        </label>
-                    </div>
-                </div>
+                <input type="hidden" name="role" value="tenant">
 
-                <button type="submit" id="ur-modal-register-submit" class="w-full py-3 bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-sm shadow-blue-500/25 hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-1">
+                <button type="submit" id="ur-modal-register-submit" class="w-full py-3 bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-sm shadow-blue-500/25 hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-2">
                     <span>Create Free Account</span>
                     <i class="ph-bold ph-check text-xs"></i>
                 </button>
