@@ -10,7 +10,9 @@
     {{-- Accessible Full Card Click Overlay Link --}}
     @guest
         <a href="{{ route('login') }}?redirect={{ urlencode($propertyUrl) }}"
-           onclick="event.preventDefault(); window.openAuthModal('login', '{{ $propertyUrl }}');"
+           onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $propertyUrl }}');"
+           data-no-loader="true"
+           data-ur-loader-skip="true"
            class="absolute inset-0 z-10 text-transparent"
            aria-label="View {{ $property->title }}"
            title="Sign in to view {{ $property->title }}">
@@ -126,7 +128,9 @@
 
             @guest
                 <button type="button"
-                        onclick="event.stopPropagation(); window.openAuthModal('login', '{{ $propertyUrl }}');"
+                        onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $propertyUrl }}');"
+                        data-no-loader="true"
+                        data-ur-loader-skip="true"
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-xs relative z-20"
                         title="Sign in to view property details">
                     View <i class="ph-bold ph-lock text-[11px]"></i>

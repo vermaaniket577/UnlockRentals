@@ -156,6 +156,11 @@
 window.authModalTargetUrl = '';
 
 window.openAuthModal = function(tab = 'login', redirectUrl = '') {
+    // Instantly hide any page loader
+    if (window.URLoader && typeof window.URLoader.hide === 'function') {
+        window.URLoader.hide();
+    }
+
     const modal = document.getElementById('ur-auth-modal');
     const card = document.getElementById('ur-auth-modal-card');
     if (!modal || !card) return;

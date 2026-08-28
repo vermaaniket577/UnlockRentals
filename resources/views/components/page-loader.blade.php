@@ -172,10 +172,21 @@
 
     window.URLoader = { show: start, hide: done };
 
-    // Trigger on all internal link clicks
+    // Trigger on internal navigation link clicks
     document.addEventListener('click', function (e) {
+        if (e.defaultPrevented) return;
+
         const link = e.target.closest('a[href]');
         if (!link) return;
+
+        // Skip links configured to skip loader or opening auth modals
+        if (link.dataset.noLoader === 'true' || 
+            link.dataset.urLoaderSkip === 'true' || 
+            link.getAttribute('data-no-loader') === 'true' ||
+            (link.getAttribute('onclick') && link.getAttribute('onclick').includes('openAuthModal'))) {
+            return;
+        }
+
         const href = link.getAttribute('href');
         if (!href || href.startsWith('#') || href.startsWith('javascript') || link.target === '_blank') return;
 
@@ -186,13 +197,13 @@
         } catch (_) { return; }
 
         start();
-    }, true);
+    }, false);
 
     // Trigger on form submits
     document.addEventListener('submit', function (e) {
-        if (e.target.dataset.urLoaderSkip === 'true') return;
+        if (e.defaultPrevented || e.target.dataset.urLoaderSkip === 'true' || e.target.id === 'ur-modal-login-form' || e.target.id === 'ur-modal-register-form') return;
         start();
-    }, true);
+    }, false);
 
     // Prefetch pages on hover for instant navigation
     const prefetched = new Set();
