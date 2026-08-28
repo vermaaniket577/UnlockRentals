@@ -351,10 +351,10 @@
                 <p class="ur-footer__cta-desc">Join India's most exclusive network of luxury rental owners and verified tenants today.</p>
             </div>
             <div class="ur-footer__cta-actions">
-                <a href="{{ route('properties.create') }}" class="ur-footer__btn ur-footer__btn--primary">
+                <a href="{{ route('properties.create') }}" class="ur-footer__btn ur-footer__btn--primary" title="Get Started Now">
                     Get Started Now
                 </a>
-                <a href="{{ route('login') }}" class="ur-footer__btn ur-footer__btn--secondary">
+                <a href="{{ route('login') }}" class="ur-footer__btn ur-footer__btn--secondary" title="Owner Login">
                     Owner Login
                 </a>
             </div>
@@ -386,14 +386,14 @@
                         ];
                     @endphp
                     @foreach($socials as $social)
-                    <a href="{{ $social['url'] }}" target="_blank" class="ur-footer__social-link">
+                    <a href="{{ $social['url'] }}" target="_blank" class="ur-footer__social-link" title="UnlockRentals">
                         {!! $social['svg'] !!}
                     </a>
                     @endforeach
                 </div>
 
                 <div class="ur-footer__apps" style="display: flex; flex-direction: column; gap: 10px;">
-                    <a href="{{ $site_settings['app_google_play_url'] ?? '#' }}" target="_blank" class="ur-store-badge" style="min-width: 150px; padding: 6px 14px; border-radius: 8px;">
+                    <a href="{{ $site_settings['app_google_play_url'] ?? '#' }}" target="_blank" class="ur-store-badge" style="min-width: 150px; padding: 6px 14px; border-radius: 8px;" title="Get it on Google Play">
                         <div class="ur-store-badge__icon" style="width: 20px; height: 20px;">
                             <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M32.5 17.5C29.6 20.3 28 24.4 28 29.5v453c0 5.1 1.6 9.2 4.5 12l1.5 1.5L257 273v-6l-223-251-1.5 1.5z" fill="#00a3ff"/>
@@ -407,7 +407,7 @@
                             <span class="ur-store-badge__title" style="font-size: 14px;">Google Play</span>
                         </div>
                     </a>
-                    <a href="{{ $site_settings['app_store_url'] ?? '#' }}" target="_blank" class="ur-store-badge" style="min-width: 150px; padding: 6px 14px; border-radius: 8px;">
+                    <a href="{{ $site_settings['app_store_url'] ?? '#' }}" target="_blank" class="ur-store-badge" style="min-width: 150px; padding: 6px 14px; border-radius: 8px;" title="Download on the App Store">
                         <div class="ur-store-badge__icon" style="width: 20px; height: 20px;">
                             <svg viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
                                 <path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-31.4-57.3-114.3-1.7-114.3-1.4 0-1.4 0 0 0zm-7.9-167.2c31.7-36.7 22.1-85 21.6-86.3-4.2.3-51.4 14.4-83.6 51.8-29.8 35.8-22.6 78.4-20.1 82.6 4.3.4 50.4-11.4 82.1-48.1z"/>
@@ -426,25 +426,25 @@
                 <h3 class="ur-footer__heading">Directory</h3>
                 <ul class="ur-footer__nav">
                     <li class="ur-footer__nav-item">
-                        <a href="{{ route('properties.index') }}" class="ur-footer__nav-link">
+                        <a href="{{ route('properties.index') }}" class="ur-footer__nav-link" title="All Properties">
                             <i class="ph ph-buildings"></i>
                             All Properties
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
-                        <a href="{{ route('properties.index', ['type' => 'house']) }}" class="ur-footer__nav-link">
+                        <a href="{{ route('properties.index', ['type' => 'house']) }}" class="ur-footer__nav-link" title="Luxury Houses">
                             <i class="ph ph-house"></i>
                             Luxury Houses
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
-                        <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="ur-footer__nav-link">
+                        <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="ur-footer__nav-link" title="Premium Shops">
                             <i class="ph ph-storefront"></i>
                             Premium Shops
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
-                        <a href="{{ url('/blog') }}" class="ur-footer__nav-link">
+                        <a href="{{ url('/blog') }}" class="ur-footer__nav-link" title="Blog &amp; Guides">
                             <i class="ph ph-newspaper"></i>
                             Blog & Guides
                         </a>
@@ -457,25 +457,25 @@
                 <h3 class="ur-footer__heading">Experience</h3>
                 <ul class="ur-footer__nav">
                     <li class="ur-footer__nav-item">
-                        <a href="{{ url('/properties') }}" class="ur-footer__nav-link">
+                        <a href="{{ url('/properties') }}" class="ur-footer__nav-link" title="Verified Listings">
                             <i class="ph ph-sparkle"></i>
                             Verified Listings
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
-                        <a href="{{ route('register') }}" class="ur-footer__nav-link">
+                        <a href="{{ route('register') }}" class="ur-footer__nav-link" title="Partner with Us">
                             <i class="ph ph-handshake"></i>
                             Partner with Us
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
-                        <a href="{{ url('/how-it-works') }}" class="ur-footer__nav-link">
+                        <a href="{{ url('/how-it-works') }}" class="ur-footer__nav-link" title="Process Flow">
                             <i class="ph ph-git-merge"></i>
                             Process Flow
                         </a>
                     </li>
                     <li class="ur-footer__nav-item">
-                        <a href="{{ route('plans.index') }}" class="ur-footer__nav-link">
+                        <a href="{{ route('plans.index') }}" class="ur-footer__nav-link" title="Elite Membership">
                             <i class="ph ph-crown"></i>
                             Elite Membership
                         </a>
@@ -488,14 +488,14 @@
                 <h3 class="ur-footer__heading">Contact</h3>
                 <div class="ur-footer__contact-group">
                     <p class="ur-footer__contact-label">Direct Inquiry</p>
-                    <a href="mailto:{{ $site_settings['site_email'] ?? 'support@unlockrentals.com' }}" class="ur-footer__contact-value" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <a href="mailto:{{ $site_settings['site_email'] ?? 'support@unlockrentals.com' }}" class="ur-footer__contact-value" style="display: flex; align-items: center; gap: 0.75rem;" title="UnlockRentals">
                         <i class="ph ph-envelope-simple" style="color: #2563eb;"></i>
                         {{ $site_settings['site_email'] ?? 'support@unlockrentals.com' }}
                     </a>
                 </div>
                 <div class="ur-footer__contact-group">
                     <p class="ur-footer__contact-label">Customer Support</p>
-                    <a href="tel:{{ $site_settings['site_phone'] ?? '+91 7974164274' }}" class="ur-footer__contact-value" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <a href="tel:{{ $site_settings['site_phone'] ?? '+91 7974164274' }}" class="ur-footer__contact-value" style="display: flex; align-items: center; gap: 0.75rem;" title="UnlockRentals">
                         <i class="ph ph-phone" style="color: #2563eb;"></i>
                         {{ $site_settings['site_phone'] ?? '+91 7974164274' }}
                     </a>
@@ -506,10 +506,10 @@
         {{-- ─── BOTTOM BAR ───────────────────────── --}}
         <div class="ur-footer__bottom">
             <div class="ur-footer__legal">
-                <a href="#" class="ur-footer__legal-link">Privacy</a>
-                <a href="#" class="ur-footer__legal-link">Terms</a>
-                <a href="#" class="ur-footer__legal-link">Cookie Policy</a>
-                <a href="#" class="ur-footer__legal-link">Security</a>
+                <a href="#" class="ur-footer__legal-link" title="Privacy">Privacy</a>
+                <a href="#" class="ur-footer__legal-link" title="Terms">Terms</a>
+                <a href="#" class="ur-footer__legal-link" title="Cookie Policy">Cookie Policy</a>
+                <a href="#" class="ur-footer__legal-link" title="Security">Security</a>
             </div>
             
             <div class="ur-footer__copyright">

@@ -7,7 +7,7 @@
     'alt' => 'UnlockRentals logo',
 ])
 
-<a href="{{ $href }}" {{ $attributes->merge(['class' => 'inline-flex items-center gap-3']) }}>
+<a href="{{ $href }}" {{ $attributes->merge(['class' => 'inline-flex items-center gap-3']) }} title="@if($showText) UnlockRentals @endif">
     <img
         src="{{ asset('images/logo.png') }}"
         alt="{{ $alt }}"

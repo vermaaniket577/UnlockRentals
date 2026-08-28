@@ -342,7 +342,7 @@
         </div>
 
         <div style="text-align: center; margin-top: 4rem;">
-            <a href="{{ url('/how-it-works') }}" class="btn-explore-premium" style="display: inline-flex; align-items: center; gap: 8px;">
+            <a href="{{ url('/how-it-works') }}" class="btn-explore-premium" style="display: inline-flex; align-items: center; gap: 8px;" title="Explore Full Process Flow &amp; FAQs">
                 <span>Explore Full Process Flow & FAQs</span>
                 <i class="ph-bold ph-arrow-right"></i>
             </a>

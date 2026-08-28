@@ -73,7 +73,7 @@
                 ];
             @endphp
             @foreach($links as $link)
-            <a href="#" class="ur-links-bar__link {{ $link['active'] ? 'ur-links-bar__link--active' : '' }}">
+            <a href="#" class="ur-links-bar__link {{ $link['active'] ? 'ur-links-bar__link--active' : '' }}" title="UnlockRentals">
                 {{ $link['label'] }}
             </a>
             @endforeach

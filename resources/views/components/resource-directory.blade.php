@@ -103,7 +103,7 @@
                         $buyTags = array_filter(array_map('trim', explode(',', $buyTagsRaw)));
                     @endphp
                     @foreach($buyTags as $tag)
-                    <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="ur-directory__tag">{{ $tag }}</a>
+                    <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="ur-directory__tag" title="UnlockRentals">{{ $tag }}</a>
                     @endforeach
                 </div>
             </div>
@@ -120,7 +120,7 @@
                         $rentTags = array_filter(array_map('trim', explode(',', $rentTagsRaw)));
                     @endphp
                     @foreach($rentTags as $tag)
-                    <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="ur-directory__tag">{{ $tag }}</a>
+                    <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="ur-directory__tag" title="UnlockRentals">{{ $tag }}</a>
                     @endforeach
                 </div>
             </div>

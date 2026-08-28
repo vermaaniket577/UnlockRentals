@@ -19,7 +19,7 @@
                 </p>
             </div>
             <div>
-                <a href="{{ url('/blog') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm font-bold shadow-sm hover:border-blue-600 hover:text-blue-600 transition-all">
+                <a href="{{ url('/blog') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white text-sm font-bold shadow-sm hover:border-blue-600 hover:text-blue-600 transition-all" title="View All Articles">
                     <span>View All Articles</span>
                     <i class="ph-bold ph-arrow-right text-xs"></i>
                 </a>
@@ -65,7 +65,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach($featuredArticles as $art)
             <article class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group">
-                <a href="{{ url('/blog/' . $art['slug']) }}" class="block relative h-52 overflow-hidden">
+                <a href="{{ url('/blog/' . $art['slug']) }}" class="block relative h-52 overflow-hidden" title="UnlockRentals">
                     <img src="{{ $art['image'] }}" alt="{{ $art['title'] }}" title="{{ $art['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-950/80 backdrop-blur-md text-white shadow-sm">
                         {{ $art['category'] }}
@@ -78,7 +78,7 @@
                             <span>{{ $art['read_time'] }}</span>
                         </div>
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2.5 line-clamp-2">
-                            <a href="{{ url('/blog/' . $art['slug']) }}">
+                            <a href="{{ url('/blog/' . $art['slug']) }}" title="UnlockRentals">
                                 {{ $art['title'] }}
                             </a>
                         </h3>
@@ -91,7 +91,7 @@
                             <img src="{{ $art['author_avatar'] }}" alt="{{ $art['author'] }}" title="{{ $art['author'] }}" class="w-8 h-8 rounded-full object-cover">
                             <span class="text-xs font-bold text-slate-900 dark:text-white">{{ $art['author'] }}</span>
                         </div>
-                        <a href="{{ url('/blog/' . $art['slug']) }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                        <a href="{{ url('/blog/' . $art['slug']) }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" title="Read Guide">
                             Read Guide <i class="ph-bold ph-arrow-right text-[10px]"></i>
                         </a>
                     </div>

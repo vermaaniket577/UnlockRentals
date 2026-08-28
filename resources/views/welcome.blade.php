@@ -465,33 +465,33 @@
 
     <header class="main-header" style="z-index: 9999;">
         <div class="logo-wrapper">
-            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;">
+            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
                 <img src="{{ asset('images/logo.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" style="width: 28px !important; height: 28px !important; flex-shrink: 0 !important; object-fit: contain !important;" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
                 <span class="logo-text" style="font-size: 18px !important; white-space: nowrap !important;">Unlock<span>Rentals</span></span>
             </a>
         </div>
         <nav class="main-nav">
-            <a href="{{ route('properties.index') }}" class="nav-link">
+            <a href="{{ route('properties.index') }}" class="nav-link" title="Discover">
                 <i class="ph-bold ph-compass"></i>
                 Discover
             </a>
-            <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="nav-link">
+            <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="nav-link" title="Buy">
                 <i class="ph-bold ph-shopping-bag"></i>
                 Buy
             </a>
-            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="nav-link">
+            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="nav-link" title="Rent">
                 <i class="ph-bold ph-key"></i>
                 Rent
             </a>
-            <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="nav-link">
+            <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="nav-link" title="Commercial">
                 <i class="ph-bold ph-buildings"></i>
                 Commercial
             </a>
-            <a href="{{ url('/how-it-works') }}" class="nav-link">
+            <a href="{{ url('/how-it-works') }}" class="nav-link" title="Process">
                 <i class="ph-bold ph-git-merge"></i>
                 Process
             </a>
-            <a href="{{ url('/blog') }}" class="nav-link">
+            <a href="{{ url('/blog') }}" class="nav-link" title="Blog">
                 <i class="ph-bold ph-newspaper"></i>
                 Blog
             </a>
@@ -499,7 +499,7 @@
         <div class="auth-nav" style="display: flex; align-items: center; gap: 10px;">
             @if (Route::has('login'))
                 @auth
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 20px; height: 44px; margin-right: 5px; display: inline-flex; align-items: center; gap: 6px;">
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 20px; height: 44px; margin-right: 5px; display: inline-flex; align-items: center; gap: 6px;" title="Post Ad">
                         <i class="ph-bold ph-plus-circle" style="font-size: 18px;"></i>
                         <span class="hidden md:inline">{{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}</span>
                         <span class="inline md:hidden">Post Ad</span>
@@ -516,15 +516,15 @@
                                 <p style="color:#fff; font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->email }}</p>
                             </div>
                             <div style="padding:6px 0;">
-                                <a href="javascript:void(0)" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;">
+                                <a href="javascript:void(0)" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;" title="View Profile">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                     View Profile
                                 </a>
-                                <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;">
+                                <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;" title="Dashboard">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                                     Dashboard
                                 </a>
-                                <a href="{{ route('plans.index') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;">
+                                <a href="{{ route('plans.index') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;" title="View Plans">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                                     View Plans
                                 </a>
@@ -560,12 +560,12 @@
                         }
                     </script>
                 @else
-                    <a href="{{ route('login') }}" class="nav-link" style="margin-right: 15px;">
+                    <a href="{{ route('login') }}" class="nav-link" style="margin-right: 15px;" title="Log in">
                         <i class="ph ph-user-circle"></i>
                         Log in
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 20px; height: 44px; display: inline-flex; align-items: center; gap: 6px;">
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 20px; height: 44px; display: inline-flex; align-items: center; gap: 6px;" title="Post Ad">
                             <i class="ph-bold ph-plus-circle" style="font-size: 18px;"></i>
                             <span class="hidden md:inline">{{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}</span>
                             <span class="inline md:hidden">Post Ad</span>
@@ -592,22 +592,22 @@
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </button>
-        <a href="{{ route('properties.index') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+        <a href="{{ route('properties.index') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Discover">
             <i class="ph-bold ph-compass" style="font-size:18px; color:var(--primary);"></i> Discover
         </a>
-        <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+        <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Buy">
             <i class="ph-bold ph-shopping-bag" style="font-size:18px; color:var(--primary);"></i> Buy
         </a>
-        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Rent">
             <i class="ph-bold ph-key" style="font-size:18px; color:var(--primary);"></i> Rent
         </a>
-        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Commercial">
             <i class="ph-bold ph-buildings" style="font-size:18px; color:var(--primary);"></i> Commercial
         </a>
-        <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+        <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Process">
             <i class="ph-bold ph-git-merge" style="font-size:18px; color:var(--primary);"></i> Process
         </a>
-        <a href="{{ url('/blog') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;">
+        <a href="{{ url('/blog') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Blog">
             <i class="ph-bold ph-newspaper" style="font-size:18px; color:var(--primary);"></i> Blog
         </a>
         <div class="mobile-auth">
@@ -617,15 +617,15 @@
                         <p style="color:rgba(255,255,255,0.6); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Signed in as</p>
                         <p style="color:#fff; font-weight:600; font-size:15px;">{{ auth()->user()->name }}</p>
                     </div>
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px;">
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px;" title="UnlockRentals">
                         <i class="ph-fill ph-megaphone-simple" style="font-size: 20px;"></i>
                         {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
                     </a>
-                    <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%;">Dashboard</a>
+                    <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%;" title="Dashboard">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="btn-ghost-sm" style="text-align:center; display:block;">Log in</a>
+                    <a href="{{ route('login') }}" class="btn-ghost-sm" style="text-align:center; display:block;" title="Log in">Log in</a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px;">
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px;" title="UnlockRentals">
                             <i class="ph-fill ph-megaphone-simple" style="font-size: 20px;"></i>
                             {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
                         </a>
@@ -806,8 +806,8 @@
                     <span>Search House Near Me</span>
                 </button>
                 <span class="action-text">Own a property?</span>
-                <a href="{{ route('properties.create') }}" class="btn-outline-blue">Post Property</a>
-                <a href="{{ route('properties.index') }}" class="btn-text-link">
+                <a href="{{ route('properties.create') }}" class="btn-outline-blue" title="Post Property">Post Property</a>
+                <a href="{{ route('properties.index') }}" class="btn-text-link" title="View Showreel">
                     <div class="play-icon">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                     </div>
@@ -859,7 +859,7 @@
                         <span class="promo-badge">Special Offer</span>
                         <h2 class="promo-title">Zero Brokerage Home Rentals</h2>
                         <p class="promo-desc">Browse thousands of 100% verified flats and independent villas across India. Contact owners directly.</p>
-                        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="promo-btn">Explore Rentals</a>
+                        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="promo-btn" title="Explore Rentals">Explore Rentals</a>
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
@@ -873,7 +873,7 @@
                         <span class="promo-badge">Popular Category</span>
                         <h2 class="promo-title">Premium PG & Co-Living Stays</h2>
                         <p class="promo-desc">Fully furnished, high-speed Wi-Fi, daily housekeeping, and home-style food. Perfect for students and professionals.</p>
-                        <a href="{{ route('properties.index', ['type' => 'pg-hostel']) }}" class="promo-btn">Explore PG Stays</a>
+                        <a href="{{ route('properties.index', ['type' => 'pg-hostel']) }}" class="promo-btn" title="Explore PG Stays">Explore PG Stays</a>
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
@@ -887,7 +887,7 @@
                         <span class="promo-badge">Business Class</span>
                         <h2 class="promo-title">Modern Commercial Spaces</h2>
                         <p class="promo-desc">Find high-footfall retail shops, showrooms, and fully managed offices. Zero brokerage, maximum growth.</p>
-                        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="promo-btn">View Commercial</a>
+                        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="promo-btn" title="View Commercial">View Commercial</a>
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
@@ -920,7 +920,7 @@
             <h2 class="section-title">
                 @if(request()->anyFilled(['state', 'district', 'locality', 'type', 'price', 'rooms', 'purpose']))
                     Search <span class="text-gradient">Results</span>
-                    <a href="{{ route('home') }}" style="font-size: 14px; color: var(--primary); font-weight: 600; text-decoration: none; margin-left: 15px; border-bottom: 1px solid var(--primary);">Clear Filters</a>
+                    <a href="{{ route('home') }}" style="font-size: 14px; color: var(--primary); font-weight: 600; text-decoration: none; margin-left: 15px; border-bottom: 1px solid var(--primary);" title="Clear Filters">Clear Filters</a>
                 @else
                     Discover <span class="text-gradient">Premium</span> Rentals
                 @endif
@@ -940,13 +940,13 @@
                     <div class="col-span-full py-16 flex flex-col items-center justify-center text-center">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         <h3 class="text-xl font-bold mt-4 text-zinc-900 dark:text-white">No properties found</h3>
-                        <p class="text-zinc-500 mt-2">Try adjusting your filters or <a href="{{ route('home') }}" style="color:var(--primary);font-weight:600;">clear all filters</a></p>
+                        <p class="text-zinc-500 mt-2">Try adjusting your filters or <a href="{{ route('home') }}" style="color:var(--primary);font-weight:600;" title="clear all filters">clear all filters</a></p>
                     </div>
                 @endforelse
             </div>
             
             <div style="text-align: center; margin-top: 50px;">
-                <a href="{{ route('properties.index') }}" class="btn-explore-premium">
+                <a href="{{ route('properties.index') }}" class="btn-explore-premium" title="Explore All Rentals">
                     <span>Explore All Rentals</span>
                     <i class="ph ph-bold ph-arrow-right"></i>
                 </a>
