@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" itemscope itemtype="https://schema.org/WebPage">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +10,9 @@
     <meta name="keywords" content="search house near me, search house near me for rent, search house near me by owner, free search house near me, search house near delhi, search house near gurugram haryana, urgent house for sale in gurgaon, house for rent in gurgaon under 5000, unlockrentals">
     <meta name="author" content="UnlockRentals">
     <meta name="publisher" content="UnlockRentals">
+
+    {{-- Legacy & Universal Image Source --}}
+    <link rel="image_src" href="{{ asset('images/logo.png') }}">
 
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">

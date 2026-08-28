@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth" itemscope itemtype="https://schema.org/WebPage">
 <head>
     <script>
         (function () {
@@ -18,6 +18,9 @@
     <meta name="publisher" content="UnlockRentals">
     <meta name="robots" content="@yield('robots', 'index, follow')">
     <title>@yield('title', 'Search House Near Me for Rent & Sale | UnlockRentals')</title>
+
+    {{-- Legacy & Universal Image Source --}}
+    <link rel="image_src" href="@yield('og_image', asset('images/logo.png'))">
 
     {{-- Performance: DNS prefetch for external resources --}}
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
