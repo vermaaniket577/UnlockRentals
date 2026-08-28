@@ -466,7 +466,7 @@
     <header class="main-header" style="z-index: 9999;">
         <div class="logo-wrapper">
             <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;">
-                <img src="{{ asset('images/logo.png') }}" alt="Unlock Rentals" class="logo-img" style="width: 28px !important; height: 28px !important; flex-shrink: 0 !important; object-fit: contain !important;" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
+                <img src="{{ asset('images/logo.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" style="width: 28px !important; height: 28px !important; flex-shrink: 0 !important; object-fit: contain !important;" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
                 <span class="logo-text" style="font-size: 18px !important; white-space: nowrap !important;">Unlock<span>Rentals</span></span>
             </a>
         </div>
@@ -639,7 +639,7 @@
         <div class="hero-bg">
             <div class="glow-orb orb-1"></div>
             <div class="glow-orb orb-2"></div>
-            <img src="{{ asset('images/hero-bg.png') }}" alt="Premium Indian City Skyline Real Estate" loading="eager" fetchpriority="high">
+            <img src="{{ asset('images/hero-bg.png') }}" alt="Premium Indian City Skyline Real Estate" title="Premium Indian City Skyline Real Estate" loading="eager" fetchpriority="high">
             <div class="overlay-gradient"></div>
         </div>
 
@@ -863,7 +863,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80" alt="Zero Brokerage Rentals">
+                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80" alt="Zero Brokerage Rentals" title="Zero Brokerage Rentals">
                     </div>
                 </div>
 
@@ -877,7 +877,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80" alt="Premium PG Stays">
+                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80" alt="Premium PG Stays" title="Premium PG Stays">
                     </div>
                 </div>
 
@@ -891,7 +891,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="Commercial Properties">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="Commercial Properties" title="Commercial Properties">
                     </div>
                 </div>
 
@@ -1071,7 +1071,7 @@
         <div class="chat-header">
             <div class="chat-header-content">
                 <div class="chat-avatar">
-                    <img src="{{ asset('images/icons/chatbot.png') }}" alt="Bot" style="width: 24px; height: 24px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
+                    <img src="{{ asset('images/icons/chatbot.png') }}" alt="Bot" title="Unlock Support Bot" style="width: 24px; height: 24px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
                 </div>
                 <div class="chat-header-info">
                     <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Unlock Support</div>
@@ -1486,7 +1486,7 @@
     @if(($site_settings['feedback_enabled'] ?? '1') == '1')
     <!-- Feedback Modal Trigger (Hidden on mobile to avoid overlapping navigation) -->
     <button class="feedback-modal-trigger hidden md:flex" onclick="openFeedbackModal()" style="position: fixed; left: 30px; bottom: 30px; width: 60px; height: 60px; background: rgba(25, 25, 30, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; color: var(--primary); font-size: 24px; cursor: pointer; z-index: 9998; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s;">
-        <img src="{{ asset('images/icons/feedback.png') }}" alt="Feedback" style="width: 32px; height: 32px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
+        <img src="{{ asset('images/icons/feedback.png') }}" alt="Feedback" title="Send Platform Feedback" style="width: 32px; height: 32px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
     </button>
 
     <!-- Feedback Modal Overlay -->

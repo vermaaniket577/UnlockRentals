@@ -325,7 +325,7 @@
                             @if(str_starts_with(trim($step->icon_svg), '<svg'))
                                 {!! $step->icon_svg !!}
                             @elseif(Str::endsWith($step->icon_svg, ['.png', '.jpg', '.jpeg', '.gif', '.svg']) || str_contains($step->icon_svg, '/'))
-                                <img class="ur-how__icon-svg" src="{{ asset($step->icon_svg) }}" alt="{{ $step->title }}" width="64" height="64">
+                                <img class="ur-how__icon-svg" src="{{ asset($step->icon_svg) }}" alt="{{ $step->title }}" title="{{ $step->title }}" width="64" height="64">
                             @elseif($step->icon_svg)
                                 <i class="{{ $step->icon_svg }}"></i>
                             @else

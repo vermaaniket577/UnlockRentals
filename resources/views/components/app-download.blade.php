@@ -316,7 +316,7 @@
                 <div class="ur-app__glow"></div>
                 <div class="ur-app__mockup-wrap">
                     {{-- Generated Mockup --}}
-                    <img src="{{ asset('unlockrental_premium_mockup_1778934329998.png') }}" alt="UnlockRentals Luxury App" class="ur-app__img">
+                    <img src="{{ asset('unlockrental_premium_mockup_1778934329998.png') }}" alt="UnlockRentals Luxury App" title="UnlockRentals Luxury App" class="ur-app__img">
                     
                     {{-- Floating Glass Cards --}}
                     <div class="ur-app__floating-card ur-app__card--1">

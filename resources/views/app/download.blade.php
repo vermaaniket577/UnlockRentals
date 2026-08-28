@@ -464,7 +464,7 @@
     <!-- Header -->
     <header class="app-dl-header">
         <a href="{{ route('home') }}" class="app-dl-logo">
-            <img src="{{ asset('images/logo.png') }}" alt="UnlockRentals" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
+            <img src="{{ asset('images/logo.png') }}" alt="UnlockRentals" title="UnlockRentals" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
             <span class="app-dl-logo__text">Unlock<span>Rentals</span></span>
         </a>
         <a href="{{ route('home') }}" class="app-dl-header__link">← Back to Website</a>
@@ -538,7 +538,7 @@
         </div>
 
         <div class="app-dl-hero__mockup">
-            <img src="{{ asset('unlockrental_premium_mockup_1778934329998.png') }}" alt="UnlockRentals App" class="app-dl-mockup-img">
+            <img src="{{ asset('unlockrental_premium_mockup_1778934329998.png') }}" alt="UnlockRentals App" title="UnlockRentals App" class="app-dl-mockup-img">
         </div>
     </section>
 

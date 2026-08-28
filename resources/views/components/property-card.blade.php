@@ -14,10 +14,12 @@
         @if($property->primaryImage)
             <img src="{{ $property->primaryImage->imageUrl() }}"
                  alt="{{ $property->title }}"
+                 title="{{ $property->title }}"
                  loading="lazy">
         @else
             <img src="{{ asset('images/luxury_sunlit.png') }}"
-                 alt="Premium Property Placeholder">
+                 alt="Premium Property - {{ $property->title }}"
+                 title="Premium Property - {{ $property->title }}">
         @endif
 
         @if($property->is_booked)
