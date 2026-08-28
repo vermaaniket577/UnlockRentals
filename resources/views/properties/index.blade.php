@@ -37,8 +37,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {{-- Page Header & Breadcrumb --}}
-        <div class="mb-8 sm:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-200/80 dark:border-slate-800">
-            <div class="max-w-2xl">
+        <div class="mb-8 sm:mb-10 pb-6 border-b border-slate-200/80 dark:border-slate-800">
+            <div class="max-w-3xl">
                 <nav class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
                     <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors" title="Home">Home</a>
                     <i class="ph-bold ph-caret-right text-[10px]"></i>
@@ -60,17 +60,6 @@
                 <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base font-normal mt-2 leading-relaxed">
                     Browse 100% direct-owner verified houses, flats, PGs, and commercial spaces with zero brokerage.
                 </p>
-            </div>
-
-            {{-- Stat Box --}}
-            <div class="flex items-center gap-3 px-5 py-3.5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-xs self-start md:self-end">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center font-bold">
-                    <i class="ph-bold ph-buildings text-xl"></i>
-                </div>
-                <div>
-                    <div class="text-xl font-extrabold text-slate-900 dark:text-white leading-none">{{ $properties->total() }}</div>
-                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Properties Available</div>
-                </div>
             </div>
         </div>
 
