@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="canonical" href="{{ route('home') }}">
     <meta name="robots" content="index, follow">
-    <title>Search House Near Me for Rent & Sale - Zero Brokerage | UnlockRentals</title>
-    <meta name="description" content="Search house near me for rent, flats, 1/2/3 BHK, PGs, and commercial spaces with zero brokerage. Find 100% verified properties by direct owners in Delhi NCR, Gurgaon, Gurugram, Bengaluru, Mumbai.">
+    <title>Search House Near Me for Rent & Sale | UnlockRentals</title>
+    <meta name="description" content="Find verified rental houses, flats, PGs & commercial spaces across India with zero brokerage. Direct owner listings in Gurgaon, Delhi NCR & more.">
     <meta name="keywords" content="search house near me, search house near me for rent, search house near me by owner, free search house near me, search house near delhi, search house near gurugram haryana, urgent house for sale in gurgaon, house for rent in gurgaon under 5000, unlockrentals">
     <meta name="author" content="UnlockRentals">
     <meta name="publisher" content="UnlockRentals">
@@ -14,15 +14,15 @@
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="Search House Near Me for Rent & Sale - Zero Brokerage | UnlockRentals">
-    <meta property="og:description" content="Search house near me for rent or buy with 100% direct owner listings and zero brokerage across India.">
+    <meta property="og:title" content="Search House Near Me for Rent & Sale | UnlockRentals">
+    <meta property="og:description" content="Find verified rental houses, flats, PGs & commercial spaces across India with zero brokerage. Direct owner listings in Gurgaon, Delhi NCR & more.">
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
 
     {{-- Twitter --}}
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="Search House Near Me for Rent & Sale - Zero Brokerage | UnlockRentals">
-    <meta property="twitter:description" content="Search house near me for rent or buy with 100% direct owner listings and zero brokerage across India.">
+    <meta property="twitter:title" content="Search House Near Me for Rent & Sale | UnlockRentals">
+    <meta property="twitter:description" content="Find verified rental houses, flats, PGs & commercial spaces across India with zero brokerage. Direct owner listings in Gurgaon, Delhi NCR & more.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
     {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}
