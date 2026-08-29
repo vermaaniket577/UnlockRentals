@@ -809,9 +809,9 @@
             <div class="pt-3 border-t border-slate-800">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full flex items-center justify-center gap-2.5 py-4 px-5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black text-base uppercase tracking-wider shadow-lg shadow-red-500/25 active:scale-[0.98] transition-all cursor-pointer">
-                        <i class="ph-bold ph-sign-out text-xl"></i>
-                        <span>Sign Out (Logout)</span>
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 font-bold text-sm transition-all cursor-pointer active:scale-[0.98]">
+                        <i class="ph-bold ph-sign-out text-base"></i>
+                        <span>Sign Out</span>
                     </button>
                 </form>
             </div>
