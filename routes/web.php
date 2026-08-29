@@ -258,6 +258,7 @@ Route::middleware('guest')->group(function () {
 
     // Social Auth
     Route::get('auth/{provider}', [AuthController::class, 'redirectToProvider'])->name('social.redirect');
+    Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
     Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->name('social.callback');
 });
 

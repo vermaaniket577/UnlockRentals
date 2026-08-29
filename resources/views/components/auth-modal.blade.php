@@ -183,10 +183,10 @@ window.openAuthModal = function(tab = 'login', redirectUrl = '') {
     const googleBtn = document.getElementById('ur-modal-google-btn');
     const fbBtn = document.getElementById('ur-modal-facebook-btn');
     if (googleBtn) {
-        googleBtn.href = "{{ url('/auth/google/redirect') }}?redirect=" + encodeURIComponent(window.authModalTargetUrl);
+        googleBtn.href = "{{ route('social.redirect', ['provider' => 'google']) }}?redirect=" + encodeURIComponent(window.authModalTargetUrl);
     }
     if (fbBtn) {
-        fbBtn.href = "{{ url('/auth/facebook/redirect') }}?redirect=" + encodeURIComponent(window.authModalTargetUrl);
+        fbBtn.href = "{{ route('social.redirect', ['provider' => 'facebook']) }}?redirect=" + encodeURIComponent(window.authModalTargetUrl);
     }
 
     window.switchAuthTab(tab);
