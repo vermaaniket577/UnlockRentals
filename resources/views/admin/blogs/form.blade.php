@@ -358,29 +358,51 @@
                         <span class="text-xs font-extrabold uppercase tracking-wider text-slate-800 flex items-center gap-2">
                             <i class="ph-bold ph-image text-blue-600 text-base"></i> Cover Image
                         </span>
-                        <span class="text-[10px] font-bold text-slate-400">16:9 ratio</span>
+                        <span class="text-[10px] font-bold text-slate-400">16:9 ratio • Max 20MB</span>
                     </div>
 
-                    {{-- Live Image Preview --}}
-                    <div class="relative rounded-xl overflow-hidden bg-slate-100 border border-slate-200 aspect-video flex items-center justify-center group shadow-2xs">
+                    @error('image')
+                        <p class="text-xs font-bold text-rose-600 bg-rose-50 p-2.5 rounded-xl border border-rose-200 flex items-center gap-1.5">
+                            <i class="ph-bold ph-warning-circle text-sm"></i> {{ $message }}
+                        </p>
+                    @enderror
+                    @error('image_url')
+                        <p class="text-xs font-bold text-rose-600 bg-rose-50 p-2.5 rounded-xl border border-rose-200 flex items-center gap-1.5">
+                            <i class="ph-bold ph-warning-circle text-sm"></i> {{ $message }}
+                        </p>
+                    @enderror
+
+                    {{-- Live Image Preview & Dropzone --}}
+                    <div onclick="document.getElementById('cover-image-file').click()"
+                         class="relative rounded-xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 hover:border-blue-500 aspect-video flex items-center justify-center group shadow-2xs cursor-pointer transition-all">
                         <img id="cover-image-preview"
                              src="{{ $blog ? $blog->cover_image_url : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80' }}"
                              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80';"
                              alt="Cover Preview"
                              class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-4 text-center backdrop-blur-xs">
+                            <i class="ph-bold ph-upload-simple text-2xl mb-1"></i>
+                            <span class="text-xs font-bold">Click or drag image to replace</span>
+                        </div>
+                    </div>
+
+                    {{-- Selected File Notification badge --}}
+                    <div id="file-chosen-status" class="hidden text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1.5">
+                        <i class="ph-bold ph-check-circle text-sm"></i>
+                        <span id="file-chosen-name" class="truncate">File chosen</span>
                     </div>
 
                     {{-- Upload file --}}
                     <div>
-                        <label class="text-xs font-bold text-slate-700 block mb-1.5">Upload Local Image</label>
+                        <label for="cover-image-file" class="text-xs font-bold text-slate-700 block mb-1.5">Upload Local Image</label>
                         <input type="file" name="image" id="cover-image-file" accept="image/*" onchange="previewImageFile(this)"
-                               class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-slate-200 rounded-xl p-1 bg-slate-50">
+                               class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-slate-200 rounded-xl p-1 bg-slate-50 cursor-pointer">
                     </div>
 
                     {{-- Or External URL --}}
                     <div>
-                        <label class="text-xs font-bold text-slate-700 block mb-1.5">Or External Image URL</label>
-                        <input type="url" name="image_url" id="cover-image-url" oninput="previewImageUrl(this.value)"
+                        <label for="cover-image-url" class="text-xs font-bold text-slate-700 block mb-1.5">Or External Image URL</label>
+                        <input type="text" name="image_url" id="cover-image-url" oninput="previewImageUrl(this.value)"
                                value="{{ old('image_url', $blog && str_starts_with($blog->image ?? '', 'http') ? $blog->image : '') }}"
                                placeholder="https://images.unsplash.com/..."
                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
@@ -393,8 +415,14 @@
                         <i class="ph-bold ph-user-circle text-blue-600 text-base"></i> Author Information
                     </span>
 
+                    @error('author_avatar')
+                        <p class="text-xs font-bold text-rose-600 bg-rose-50 p-2.5 rounded-xl border border-rose-200 flex items-center gap-1.5">
+                            <i class="ph-bold ph-warning-circle text-sm"></i> {{ $message }}
+                        </p>
+                    @enderror
+
                     <div>
-                        <label class="text-xs font-bold text-slate-700 block mb-1.5">Author Name</label>
+                        <label for="author-name-input" class="text-xs font-bold text-slate-700 block mb-1.5">Author Name</label>
                         <input type="text" name="author_name" id="author-name-input"
                                value="{{ old('author_name', $blog->author_name ?? auth()->user()->name) }}"
                                placeholder="e.g. Priya Sharma"
@@ -402,8 +430,8 @@
                     </div>
 
                     <div>
-                        <label class="text-xs font-bold text-slate-700 block mb-1.5">Author Role / Title</label>
-                        <input type="text" name="author_role"
+                        <label for="author-role-input" class="text-xs font-bold text-slate-700 block mb-1.5">Author Role / Title</label>
+                        <input type="text" name="author_role" id="author-role-input"
                                value="{{ old('author_role', $blog->author_role ?? 'Real Estate Advisor') }}"
                                placeholder="e.g. Real Estate Strategist"
                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
@@ -411,8 +439,14 @@
 
                     <div>
                         <label class="text-xs font-bold text-slate-700 block mb-1.5">Author Avatar Photo (Optional)</label>
-                        <input type="file" name="author_avatar" accept="image/*"
-                               class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 border border-slate-200 rounded-xl p-1 bg-slate-50">
+                        <div class="flex items-center gap-3">
+                            <img id="author-avatar-preview"
+                                 src="{{ $blog ? $blog->author_avatar_url : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name ?? 'Admin') . '&background=2563EB&color=fff&rounded=true&bold=true' }}"
+                                 alt="Avatar"
+                                 class="w-10 h-10 rounded-full object-cover border border-slate-200 flex-shrink-0">
+                            <input type="file" name="author_avatar" accept="image/*" onchange="previewAvatarFile(this)"
+                                   class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 border border-slate-200 rounded-xl p-1 bg-slate-50 cursor-pointer">
+                        </div>
                     </div>
                 </div>
 
@@ -577,20 +611,50 @@
         }
     }
 
-    // Image Previews
+    // Image Previews & Handling
     function previewImageFile(input) {
+        const preview = document.getElementById('cover-image-preview');
+        const statusBox = document.getElementById('file-chosen-status');
+        const nameSpan = document.getElementById('file-chosen-name');
+        const urlInput = document.getElementById('cover-image-url');
+
         if (input.files && input.files[0]) {
+            const file = input.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('cover-image-preview').src = e.target.result;
+                preview.src = e.target.result;
+                if (statusBox && nameSpan) {
+                    nameSpan.textContent = `Selected: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+                    statusBox.classList.remove('hidden');
+                }
+                if (urlInput) {
+                    urlInput.value = '';
+                }
             };
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
         }
     }
 
     function previewImageUrl(url) {
-        if (url && url.startsWith('http')) {
-            document.getElementById('cover-image-preview').src = url;
+        const preview = document.getElementById('cover-image-preview');
+        const fileInput = document.getElementById('cover-image-file');
+        const statusBox = document.getElementById('file-chosen-status');
+
+        if (url && (url.startsWith('http') || url.startsWith('//'))) {
+            preview.src = url;
+            if (fileInput) fileInput.value = '';
+            if (statusBox) statusBox.classList.add('hidden');
+        }
+    }
+
+    function previewAvatarFile(input) {
+        const preview = document.getElementById('author-avatar-preview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (preview) preview.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
         }
     }
 </script>

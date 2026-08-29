@@ -946,11 +946,11 @@ class AdminController extends Controller
             'custom_category'   => 'nullable|string|max:100',
             'excerpt'           => 'nullable|string|max:1000',
             'content'           => 'required|string',
-            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'image_url'         => 'nullable|url|max:1000',
+            'image'             => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:20480',
+            'image_url'         => 'nullable|string|max:1000',
             'author_name'       => 'nullable|string|max:150',
             'author_role'       => 'nullable|string|max:150',
-            'author_avatar'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'author_avatar'     => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:10240',
             'read_time'         => 'nullable|string|max:50',
             'is_featured'       => 'nullable|boolean',
             'is_published'      => 'nullable|boolean',
@@ -982,15 +982,40 @@ class AdminController extends Controller
 
         // Handle Cover Image
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('blogs', 'public');
+            $file = $request->file('image');
+            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs', $filename, 'public');
+
+            // Mirror directly into public directories for bulletproof access
+            try {
+                @mkdir(public_path('blogs'), 0755, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            $data['image'] = $path;
         } elseif (!empty($data['image_url'])) {
-            $data['image'] = trim($data['image_url']);
+            $url = trim($data['image_url']);
+            if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '//')) {
+                $url = 'https://' . $url;
+            }
+            $data['image'] = $url;
         }
         unset($data['image_url']);
 
         // Handle Author Avatar
         if ($request->hasFile('author_avatar')) {
-            $data['author_avatar'] = $request->file('author_avatar')->store('blogs/authors', 'public');
+            $file = $request->file('author_avatar');
+            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs/authors', $filename, 'public');
+
+            try {
+                @mkdir(public_path('blogs/authors'), 0755, true);
+                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('blogs/authors/' . $filename));
+            } catch (\Throwable $e) {}
+
+            $data['author_avatar'] = $path;
         }
 
         $data['user_id'] = auth()->id();
@@ -1042,11 +1067,11 @@ class AdminController extends Controller
             'custom_category'   => 'nullable|string|max:100',
             'excerpt'           => 'nullable|string|max:1000',
             'content'           => 'required|string',
-            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'image_url'         => 'nullable|url|max:1000',
+            'image'             => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:20480',
+            'image_url'         => 'nullable|string|max:1000',
             'author_name'       => 'nullable|string|max:150',
             'author_role'       => 'nullable|string|max:150',
-            'author_avatar'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'author_avatar'     => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:10240',
             'read_time'         => 'nullable|string|max:50',
             'is_featured'       => 'nullable|boolean',
             'is_published'      => 'nullable|boolean',
@@ -1077,10 +1102,25 @@ class AdminController extends Controller
         if ($request->hasFile('image')) {
             if ($blog->image && !str_starts_with($blog->image, 'http')) {
                 Storage::disk('public')->delete($blog->image);
+                @unlink(public_path($blog->image));
             }
-            $data['image'] = $request->file('image')->store('blogs', 'public');
+            $file = $request->file('image');
+            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs', $filename, 'public');
+
+            try {
+                @mkdir(public_path('blogs'), 0755, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            $data['image'] = $path;
         } elseif (!empty($data['image_url'])) {
-            $data['image'] = trim($data['image_url']);
+            $url = trim($data['image_url']);
+            if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '//')) {
+                $url = 'https://' . $url;
+            }
+            $data['image'] = $url;
         }
         unset($data['image_url']);
 
@@ -1088,8 +1128,19 @@ class AdminController extends Controller
         if ($request->hasFile('author_avatar')) {
             if ($blog->author_avatar && !str_starts_with($blog->author_avatar, 'http')) {
                 Storage::disk('public')->delete($blog->author_avatar);
+                @unlink(public_path($blog->author_avatar));
             }
-            $data['author_avatar'] = $request->file('author_avatar')->store('blogs/authors', 'public');
+            $file = $request->file('author_avatar');
+            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs/authors', $filename, 'public');
+
+            try {
+                @mkdir(public_path('blogs/authors'), 0755, true);
+                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('blogs/authors/' . $filename));
+            } catch (\Throwable $e) {}
+
+            $data['author_avatar'] = $path;
         }
 
         $data['is_published'] = $request->boolean('is_published');
