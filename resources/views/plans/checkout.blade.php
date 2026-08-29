@@ -40,7 +40,7 @@
         background: linear-gradient(180deg, rgba(30, 58, 138, .3), rgba(15, 23, 42, .95));
         box-shadow: 0 0 0 3px rgba(59, 130, 246, .25);
     }
-    /* Prevent mobile browser unwanted auto-zoom by ensuring minimum 16px font size on inputs */
+    /* Mobile-optimized sizing: ensure input fonts are comfortable and don't trigger browser auto-zoom */
     @media (max-width: 640px) {
         input, select, textarea {
             font-size: 16px !important;
@@ -94,33 +94,33 @@
     $isRazorpay = $activeGateway && ($activeGateway['type'] ?? 'manual') === 'razorpay';
 @endphp
 
-<section class="checkout-stage min-h-screen pt-20 pb-16 lg:pt-24 lg:pb-20" id="checkout-page">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+<section class="checkout-stage min-h-screen pt-20 pb-20 lg:pt-24 lg:pb-24" id="checkout-page">
+    <div class="mx-auto max-w-2xl lg:max-w-5xl px-4 sm:px-6 lg:px-8">
         
         {{-- Top Navigation & Header --}}
-        <div class="mb-5">
-            <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400" title="Back to plans">
-                <i class="ph-bold ph-arrow-left text-base"></i>
+        <div class="mb-6">
+            <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-2 text-sm sm:text-base font-extrabold text-slate-600 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400" title="Back to plans">
+                <i class="ph-bold ph-arrow-left text-lg"></i>
                 <span>Back to Plans</span>
             </a>
             
-            <div class="mt-2.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div class="mt-3 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <span class="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                        <i class="ph-bold ph-shield-check"></i> Secure Checkout
+                    <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                        <i class="ph-bold ph-shield-check text-base"></i> Secure Checkout
                     </span>
-                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white mt-0.5">
                         Review & Complete Payment
                     </h1>
                 </div>
                 
                 {{-- Trust Badges --}}
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400">
-                    <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-                        <i class="ph-bold ph-lock-key"></i> 256-Bit SSL
+                <div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400">
+                    <span class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1.5 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                        <i class="ph-bold ph-lock-key text-base"></i> 256-Bit SSL
                     </span>
-                    <span class="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-1 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
-                        <i class="ph-bold ph-lightning"></i> Instant Access
+                    <span class="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 px-3 py-1.5 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+                        <i class="ph-bold ph-lightning text-base"></i> Instant Access
                     </span>
                 </div>
             </div>
@@ -130,44 +130,44 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
             
             {{-- Left Column (7 cols): Plan info, contact details, payment trigger --}}
-            <div class="space-y-5 lg:col-span-7">
+            <div class="space-y-6 lg:col-span-7">
                 
                 {{-- 1. Selected Plan Banner --}}
-                <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-center gap-3.5">
-                            <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20">
-                                <i class="ph-bold ph-crown text-2xl"></i>
+                        <div class="flex items-center gap-4">
+                            <span class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25">
+                                <i class="ph-bold ph-crown text-3xl"></i>
                             </span>
                             <div>
                                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Selected Membership</span>
-                                <h2 class="text-xl font-black text-slate-900 dark:text-white">{{ $plan->name }}</h2>
-                                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+                                <h2 class="text-2xl font-black text-slate-900 dark:text-white">{{ $plan->name }}</h2>
+                                <p class="text-sm font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                                     {{ $billingPeriod === 'yearly' ? 'Annual (Buy)' : 'Monthly (Rent)' }} · {{ $billing['duration_days'] }} Days Access
                                 </p>
                             </div>
                         </div>
                         <div class="text-right">
                             <span class="text-xs font-bold text-slate-400 block">Total</span>
-                            <span class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                            <span class="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400">
                                 ₹{{ number_format($billing['final'], 2) }}
                             </span>
                         </div>
                     </div>
 
                     {{-- Plan Highlights --}}
-                    <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        <div class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
-                            <i class="ph-bold ph-check-circle text-emerald-600 dark:text-emerald-400 text-base shrink-0"></i>
-                            <span><strong>{{ $plan->contact_limit }}</strong> Direct Owner Contact Unlocks</span>
+                    <div class="mt-5 pt-5 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <div class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300">
+                            <i class="ph-bold ph-check-circle text-emerald-600 dark:text-emerald-400 text-xl shrink-0"></i>
+                            <span><strong class="text-slate-900 dark:text-white">{{ $plan->contact_limit }}</strong> Direct Owner Contact Unlocks</span>
                         </div>
-                        <div class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
-                            <i class="ph-bold ph-check-circle text-emerald-600 dark:text-emerald-400 text-base shrink-0"></i>
+                        <div class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300">
+                            <i class="ph-bold ph-check-circle text-emerald-600 dark:text-emerald-400 text-xl shrink-0"></i>
                             <span>Zero Brokerage Forever</span>
                         </div>
                         @foreach(($plan->features ?? []) as $feature)
-                            <div class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
-                                <i class="ph-bold ph-check-circle text-emerald-600 dark:text-emerald-400 text-base shrink-0"></i>
+                            <div class="flex items-center gap-2.5 text-slate-700 dark:text-slate-300">
+                                <i class="ph-bold ph-check-circle text-emerald-600 dark:text-emerald-400 text-xl shrink-0"></i>
                                 <span>{{ $feature }}</span>
                             </div>
                         @endforeach
@@ -175,55 +175,55 @@
                 </div>
 
                 {{-- 2. Account & Contact Details Card --}}
-                <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                            <i class="ph-bold ph-user-circle text-blue-600 dark:text-blue-400 text-lg"></i>
+                <div class="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2.5">
+                            <i class="ph-bold ph-user-circle text-blue-600 dark:text-blue-400 text-2xl"></i>
                             <span>Account Details</span>
                         </h3>
-                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
-                            <i class="ph-bold ph-check-circle"></i> Logged In
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs sm:text-sm font-bold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+                            <i class="ph-bold ph-check-circle text-base"></i> Logged In
                         </span>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-5">
                         {{-- Name & Email --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
-                                <div class="rounded-xl border border-slate-200 bg-slate-50/90 px-3.5 py-2.5 text-sm font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200">
+                                <label class="block text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 mb-1.5">Full Name</label>
+                                <div class="rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3 text-base font-bold text-slate-800 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200">
                                     {{ auth()->user()->name }}
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
-                                <div class="rounded-xl border border-slate-200 bg-slate-50/90 px-3.5 py-2.5 text-sm font-bold text-slate-800 truncate dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200" title="{{ auth()->user()->email }}">
+                                <label class="block text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 mb-1.5">Email Address</label>
+                                <div class="rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3 text-base font-bold text-slate-800 truncate dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200" title="{{ auth()->user()->email }}">
                                     {{ auth()->user()->email }}
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Mobile Number Input --}}
+                        {{-- Mobile Number Input (LARGE & PROMINENT) --}}
                         <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <label for="checkout_user_phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                            <div class="flex items-center justify-between mb-2">
+                                <label for="checkout_user_phone" class="block text-sm font-extrabold text-slate-800 dark:text-slate-200">
                                     Mobile Number <span class="text-red-500">*</span>
                                 </label>
                                 @if(!empty($userCleanPhone))
-                                    <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                        <i class="ph-bold ph-check-circle"></i> Synced from profile
+                                    <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
+                                        <i class="ph-bold ph-check-circle text-base"></i> Synced from profile
                                     </span>
                                 @else
-                                    <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400">
-                                        <i class="ph-bold ph-sparkle"></i> Auto-saves to your profile
+                                    <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-xs sm:text-sm font-extrabold text-blue-600 dark:text-blue-400">
+                                        <i class="ph-bold ph-sparkle text-base"></i> Auto-saves to your profile
                                     </span>
                                 @endif
                             </div>
                             
                             <div class="relative flex items-center">
-                                <div class="absolute left-3.5 flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300 select-none">
+                                <div class="absolute left-4 flex items-center gap-1.5 text-base sm:text-lg font-black text-slate-800 dark:text-slate-200 select-none">
                                     <span>🇮🇳 +91</span>
-                                    <span class="h-4 w-px bg-slate-300 dark:bg-slate-600 ml-1.5"></span>
+                                    <span class="h-6 w-px bg-slate-300 dark:bg-slate-600 ml-2"></span>
                                 </div>
                                 <input
                                     type="tel"
@@ -232,15 +232,15 @@
                                     value="{{ $userCleanPhone ?? '' }}"
                                     maxlength="10"
                                     placeholder="Enter 10-digit mobile number"
-                                    class="w-full rounded-xl border border-slate-300 bg-white pl-24 pr-11 py-3 text-base font-bold text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400"
+                                    class="w-full rounded-2xl border-2 border-slate-300 bg-white pl-28 pr-12 py-4 text-base sm:text-lg font-black tracking-wider text-slate-950 placeholder-slate-400 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-500/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400 shadow-xs"
                                     autocomplete="tel-national"
                                     inputmode="numeric"
                                 >
-                                <span id="phone_valid_icon" class="absolute right-3.5 text-emerald-500 text-xl transition-opacity duration-200 {{ !empty($userCleanPhone) ? 'opacity-100' : 'opacity-0' }}">
+                                <span id="phone_valid_icon" class="absolute right-4 text-emerald-500 text-2xl transition-opacity duration-200 {{ !empty($userCleanPhone) ? 'opacity-100' : 'opacity-0' }}">
                                     <i class="ph-bold ph-check-circle"></i>
                                 </span>
                             </div>
-                            <p id="phone_error_text" class="mt-1.5 hidden text-xs font-bold text-red-600">
+                            <p id="phone_error_text" class="mt-2 hidden text-xs sm:text-sm font-extrabold text-red-600">
                                 <i class="ph-bold ph-warning-circle"></i> Please enter a valid 10-digit Indian mobile number.
                             </p>
                         </div>
@@ -249,39 +249,43 @@
 
                 {{-- 3. Gateway / Payment Trigger --}}
                 @if($isRazorpay)
-                    <div class="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/80 via-white to-sky-50/60 p-5 shadow-sm dark:border-blue-900/60 dark:from-blue-950/30 dark:via-slate-900 dark:to-slate-900">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-2.5">
-                                <span class="grid h-9 w-9 place-items-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-500/20">
-                                    <i class="ph-bold ph-lightning-fill text-amber-300 text-lg"></i>
+                    <div class="rounded-3xl border-2 border-blue-200 bg-gradient-to-br from-blue-50/80 via-white to-sky-50/60 p-6 shadow-sm dark:border-blue-900/60 dark:from-blue-950/30 dark:via-slate-900 dark:to-slate-900">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <span class="grid h-11 w-11 place-items-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-500/25">
+                                    <i class="ph-bold ph-lightning-fill text-amber-300 text-2xl"></i>
                                 </span>
                                 <div>
-                                    <h3 class="text-sm font-black text-slate-900 dark:text-white">Direct Razorpay Gateway</h3>
-                                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">UPI (GPay, PhonePe, Paytm), Cards & NetBanking</p>
+                                    <h3 class="text-base font-black text-slate-900 dark:text-white">Direct Razorpay Gateway</h3>
+                                    <p class="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">UPI (GPay, PhonePe, Paytm), Cards & NetBanking</p>
                                 </div>
                             </div>
-                            <span class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-bold text-blue-700 dark:bg-blue-900/60 dark:text-blue-300">
+                            <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-700 dark:bg-blue-900/60 dark:text-blue-300">
                                 RBI Verified
                             </span>
                         </div>
 
-                        {{-- Payment Method Icons --}}
-                        <div class="grid grid-cols-4 gap-2 pt-2 text-center text-xs">
-                            <div class="rounded-xl border border-slate-200/80 bg-white p-2 dark:border-slate-800 dark:bg-slate-800/90">
-                                <i class="ph-bold ph-qr-code text-lg text-blue-600 dark:text-blue-400"></i>
-                                <span class="block font-bold text-slate-800 dark:text-slate-200 mt-0.5">UPI / QR</span>
+                        {{-- Payment Method Icons (LARGER PILLS) --}}
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-center">
+                            <div class="rounded-2xl border border-slate-200/90 bg-white p-3.5 dark:border-slate-800 dark:bg-slate-800/90 shadow-xs">
+                                <i class="ph-bold ph-qr-code text-2xl text-blue-600 dark:text-blue-400"></i>
+                                <span class="block font-black text-sm text-slate-800 dark:text-slate-200 mt-1">UPI / QR</span>
+                                <span class="block text-[11px] font-semibold text-slate-400">GPay, PhonePe</span>
                             </div>
-                            <div class="rounded-xl border border-slate-200/80 bg-white p-2 dark:border-slate-800 dark:bg-slate-800/90">
-                                <i class="ph-bold ph-credit-card text-lg text-blue-600 dark:text-blue-400"></i>
-                                <span class="block font-bold text-slate-800 dark:text-slate-200 mt-0.5">Cards</span>
+                            <div class="rounded-2xl border border-slate-200/90 bg-white p-3.5 dark:border-slate-800 dark:bg-slate-800/90 shadow-xs">
+                                <i class="ph-bold ph-credit-card text-2xl text-blue-600 dark:text-blue-400"></i>
+                                <span class="block font-black text-sm text-slate-800 dark:text-slate-200 mt-1">Cards</span>
+                                <span class="block text-[11px] font-semibold text-slate-400">Visa, MC, RuPay</span>
                             </div>
-                            <div class="rounded-xl border border-slate-200/80 bg-white p-2 dark:border-slate-800 dark:bg-slate-800/90">
-                                <i class="ph-bold ph-bank text-lg text-blue-600 dark:text-blue-400"></i>
-                                <span class="block font-bold text-slate-800 dark:text-slate-200 mt-0.5">NetBanking</span>
+                            <div class="rounded-2xl border border-slate-200/90 bg-white p-3.5 dark:border-slate-800 dark:bg-slate-800/90 shadow-xs">
+                                <i class="ph-bold ph-bank text-2xl text-blue-600 dark:text-blue-400"></i>
+                                <span class="block font-black text-sm text-slate-800 dark:text-slate-200 mt-1">NetBanking</span>
+                                <span class="block text-[11px] font-semibold text-slate-400">50+ Banks</span>
                             </div>
-                            <div class="rounded-xl border border-slate-200/80 bg-white p-2 dark:border-slate-800 dark:bg-slate-800/90">
-                                <i class="ph-bold ph-wallet text-lg text-blue-600 dark:text-blue-400"></i>
-                                <span class="block font-bold text-slate-800 dark:text-slate-200 mt-0.5">Wallets</span>
+                            <div class="rounded-2xl border border-slate-200/90 bg-white p-3.5 dark:border-slate-800 dark:bg-slate-800/90 shadow-xs">
+                                <i class="ph-bold ph-wallet text-2xl text-blue-600 dark:text-blue-400"></i>
+                                <span class="block font-black text-sm text-slate-800 dark:text-slate-200 mt-1">Wallets</span>
+                                <span class="block text-[11px] font-semibold text-slate-400">Paytm, Mobikwik</span>
                             </div>
                         </div>
                     </div>
@@ -296,19 +300,19 @@
                     <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
                     <input type="hidden" name="razorpay_signature" id="razorpay_signature">
 
-                    {{-- Pay Button --}}
+                    {{-- JUMBO ACTION BUTTON (EASIER TO TAP ON MOBILE) --}}
                     <button
                         type="{{ $isRazorpay ? 'button' : 'submit' }}"
                         id="pay-button"
-                        class="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 py-4 px-6 text-base font-black uppercase tracking-wider text-white shadow-xl shadow-blue-500/25 transition active:scale-[0.99] hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 py-5 px-8 text-lg sm:text-xl font-black uppercase tracking-wider text-white shadow-2xl shadow-blue-500/35 transition active:scale-[0.99] hover:shadow-blue-500/50 hover:from-blue-500 hover:to-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
                         {{ !$activeGateway ? 'disabled' : '' }}
                     >
-                        <span class="btn-text flex items-center gap-2">
-                            <i class="ph-bold ph-lightning-fill text-amber-300 text-lg"></i>
+                        <span class="btn-text flex items-center gap-2.5">
+                            <i class="ph-bold ph-lightning-fill text-amber-300 text-2xl"></i>
                             <span>Pay ₹{{ number_format($billing['final'], 2) }} · Activate Instantly</span>
                         </span>
-                        <span class="btn-loader hidden items-center gap-2">
-                            <i class="ph-bold ph-circle-notch animate-spin text-lg"></i>
+                        <span class="btn-loader hidden items-center gap-2.5">
+                            <i class="ph-bold ph-circle-notch animate-spin text-2xl"></i>
                             Connecting to Gateway...
                         </span>
                     </button>
@@ -316,19 +320,19 @@
 
                 {{-- Fallback manual verification section --}}
                 @if($isRazorpay)
-                <div id="manual-verify-section" class="hidden rounded-2xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900/60 dark:bg-slate-900">
-                    <div class="flex items-start gap-3">
-                        <i class="ph-bold ph-info text-amber-600 text-xl shrink-0 mt-0.5"></i>
-                        <div class="text-xs text-slate-700 dark:text-slate-300">
-                            <p class="font-bold text-slate-900 dark:text-white">Already completed payment?</p>
-                            <p class="mt-0.5">Enter your Razorpay Payment ID (starts with <strong>pay_</strong>) to activate instantly:</p>
-                            <div class="mt-2.5 flex gap-2">
-                                <input type="text" id="manual_razorpay_payment_id" placeholder="pay_xxxxxxxxxxxxx" class="flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-mono font-bold text-slate-900 outline-none focus:border-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-                                <button type="button" id="manual-verify-btn" class="rounded-xl bg-amber-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-amber-700">
+                <div id="manual-verify-section" class="hidden rounded-3xl border border-amber-200 bg-amber-50/70 p-5 dark:border-amber-900/60 dark:bg-slate-900">
+                    <div class="flex items-start gap-3.5">
+                        <i class="ph-bold ph-info text-amber-600 text-2xl shrink-0 mt-0.5"></i>
+                        <div class="text-sm text-slate-700 dark:text-slate-300">
+                            <p class="font-black text-base text-slate-900 dark:text-white">Already completed payment?</p>
+                            <p class="mt-1">Enter your Razorpay Payment ID (starts with <strong>pay_</strong>) to activate instantly:</p>
+                            <div class="mt-3 flex gap-2.5">
+                                <input type="text" id="manual_razorpay_payment_id" placeholder="pay_xxxxxxxxxxxxx" class="flex-1 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 outline-none focus:border-amber-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                                <button type="button" id="manual-verify-btn" class="rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-black text-white shadow hover:bg-amber-700">
                                     Verify
                                 </button>
                             </div>
-                            <p id="manual-verify-error" class="mt-1.5 hidden text-xs font-bold text-red-600"></p>
+                            <p id="manual-verify-error" class="mt-2 hidden text-xs sm:text-sm font-bold text-red-600"></p>
                         </div>
                     </div>
                 </div>
@@ -337,12 +341,12 @@
 
             {{-- Right Column (5 cols): Order Summary --}}
             <div class="lg:col-span-5">
-                <aside class="sticky top-24 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <h3 class="text-base font-black text-slate-900 dark:text-white pb-3 border-b border-slate-100 dark:border-slate-800">
+                <aside class="sticky top-24 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <h3 class="text-lg font-black text-slate-900 dark:text-white pb-3.5 border-b border-slate-100 dark:border-slate-800">
                         Order Summary
                     </h3>
 
-                    <div class="mt-4 space-y-3 text-sm">
+                    <div class="mt-5 space-y-3.5 text-base">
                         <div class="flex justify-between text-slate-600 dark:text-slate-400">
                             <span>Plan ({{ $billingPeriod === 'yearly' ? 'Buy / 365 Days' : 'Rent / ' . $billing['duration_days'] . ' Days' }})</span>
                             <span class="font-bold text-slate-900 dark:text-white">₹{{ number_format($billing['subtotal'], 2) }}</span>
@@ -351,7 +355,7 @@
                         @if($billing['discount'] > 0)
                             <div class="flex justify-between text-emerald-600 dark:text-emerald-400">
                                 <span>Discount</span>
-                                <span class="font-bold">- ₹{{ number_format($billing['discount'], 2) }}</span>
+                                <span class="font-extrabold">- ₹{{ number_format($billing['discount'], 2) }}</span>
                             </div>
                         @endif
 
@@ -362,43 +366,43 @@
                             </div>
                         @endif
 
-                        <div class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                        <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
                             <div class="flex items-baseline justify-between">
-                                <span class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">Total Payable</span>
-                                <span class="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400">
+                                <span class="text-base font-black text-slate-900 dark:text-white uppercase tracking-wider">Total Payable</span>
+                                <span class="text-3xl sm:text-4xl font-black text-blue-600 dark:text-blue-400">
                                     ₹{{ number_format($billing['final'], 2) }}
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Secondary Action --}}
+                    {{-- Secondary Action Button --}}
                     <button
                         type="button"
                         id="summary-pay-button"
-                        class="mt-5 w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-3.5 px-4 text-sm font-black text-white shadow-md transition hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700"
+                        class="mt-6 w-full flex items-center justify-center gap-2.5 rounded-2xl bg-slate-900 py-4 px-5 text-base font-black text-white shadow-lg transition hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700"
                         {{ !$activeGateway ? 'disabled' : '' }}
                     >
-                        <i class="ph-bold ph-lock-key text-base"></i>
+                        <i class="ph-bold ph-lock-key text-xl"></i>
                         <span>Proceed to Pay</span>
                     </button>
 
-                    <div class="mt-4 rounded-xl bg-emerald-50/80 p-3 text-xs font-bold text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
-                        <i class="ph-bold ph-lightning"></i> Instant activation immediately after payment.
+                    <div class="mt-5 rounded-2xl bg-emerald-50/90 p-3.5 text-xs sm:text-sm font-bold text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+                        <i class="ph-bold ph-lightning text-base"></i> Instant activation immediately after payment.
                     </div>
 
                     {{-- Guarantees --}}
-                    <div class="mt-4 grid grid-cols-3 gap-2 text-center text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                        <div class="rounded-lg bg-slate-50 p-2 dark:bg-slate-800/60">
-                            <i class="ph-bold ph-shield-check text-blue-600 dark:text-blue-400 block text-base mb-0.5"></i>
+                    <div class="mt-5 grid grid-cols-3 gap-2.5 text-center text-xs font-extrabold text-slate-500 dark:text-slate-400">
+                        <div class="rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/60">
+                            <i class="ph-bold ph-shield-check text-blue-600 dark:text-blue-400 block text-xl mb-1"></i>
                             <span>Secure</span>
                         </div>
-                        <div class="rounded-lg bg-slate-50 p-2 dark:bg-slate-800/60">
-                            <i class="ph-bold ph-receipt text-blue-600 dark:text-blue-400 block text-base mb-0.5"></i>
+                        <div class="rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/60">
+                            <i class="ph-bold ph-receipt text-blue-600 dark:text-blue-400 block text-xl mb-1"></i>
                             <span>GST Invoice</span>
                         </div>
-                        <div class="rounded-lg bg-slate-50 p-2 dark:bg-slate-800/60">
-                            <i class="ph-bold ph-sparkle text-blue-600 dark:text-blue-400 block text-base mb-0.5"></i>
+                        <div class="rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/60">
+                            <i class="ph-bold ph-sparkle text-blue-600 dark:text-blue-400 block text-xl mb-1"></i>
                             <span>Verified</span>
                         </div>
                     </div>
