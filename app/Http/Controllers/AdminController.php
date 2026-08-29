@@ -999,6 +999,32 @@ class AdminController extends Controller
             } catch (\Throwable $e) {}
 
             $data['image'] = $path;
+        } elseif ($request->filled('image_base64') && str_starts_with($request->image_base64, 'data:image/')) {
+            $base64Data = $request->image_base64;
+            @list($type, $base64Data) = explode(';', $base64Data);
+            @list(, $base64Data)      = explode(',', $base64Data);
+            $decoded = base64_decode($base64Data);
+            
+            $ext = 'jpg';
+            if (str_contains($type, 'png')) $ext = 'png';
+            elseif (str_contains($type, 'webp')) $ext = 'webp';
+
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = 'blogs/' . $filename;
+
+            Storage::disk('public')->put($path, $decoded);
+
+            try {
+                @mkdir(public_path('blogs'), 0777, true);
+                @file_put_contents(public_path('blogs/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs'), 0777, true);
+                @file_put_contents(public_path('storage/blogs/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            $data['image'] = $path;
         } elseif (!empty($data['image_url'])) {
             $url = trim($data['image_url']);
             if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '//')) {
@@ -1007,6 +1033,7 @@ class AdminController extends Controller
             $data['image'] = $url;
         }
         unset($data['image_url']);
+        unset($data['image_base64']);
 
         // Handle Author Avatar
         if ($request->hasFile('author_avatar')) {
@@ -1026,7 +1053,34 @@ class AdminController extends Controller
             } catch (\Throwable $e) {}
 
             $data['author_avatar'] = $path;
+        } elseif ($request->filled('author_avatar_base64') && str_starts_with($request->author_avatar_base64, 'data:image/')) {
+            $base64Data = $request->author_avatar_base64;
+            @list($type, $base64Data) = explode(';', $base64Data);
+            @list(, $base64Data)      = explode(',', $base64Data);
+            $decoded = base64_decode($base64Data);
+            
+            $ext = 'jpg';
+            if (str_contains($type, 'png')) $ext = 'png';
+            elseif (str_contains($type, 'webp')) $ext = 'webp';
+
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = 'blogs/authors/' . $filename;
+
+            Storage::disk('public')->put($path, $decoded);
+
+            try {
+                @mkdir(public_path('blogs/authors'), 0777, true);
+                @file_put_contents(public_path('blogs/authors/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs/authors'), 0777, true);
+                @file_put_contents(public_path('storage/blogs/authors/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            $data['author_avatar'] = $path;
         }
+        unset($data['author_avatar_base64']);
 
         $data['user_id'] = auth()->id();
         $data['is_published'] = $request->boolean('is_published');
@@ -1071,24 +1125,26 @@ class AdminController extends Controller
     public function updateBlog(Request $request, Blog $blog)
     {
         $data = $request->validate([
-            'title'             => 'required|string|max:255',
-            'slug'              => 'nullable|string|max:255|unique:blogs,slug,' . $blog->id,
-            'category'          => 'required|string|max:100',
-            'custom_category'   => 'nullable|string|max:100',
-            'excerpt'           => 'nullable|string|max:1000',
-            'content'           => 'required|string',
-            'image'             => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:20480',
-            'image_url'         => 'nullable|string|max:1000',
-            'author_name'       => 'nullable|string|max:150',
-            'author_role'       => 'nullable|string|max:150',
-            'author_avatar'     => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:10240',
-            'read_time'         => 'nullable|string|max:50',
-            'is_featured'       => 'nullable|boolean',
-            'is_published'      => 'nullable|boolean',
-            'published_at'      => 'nullable|date',
-            'meta_title'        => 'nullable|string|max:255',
-            'meta_description'  => 'nullable|string|max:1000',
-            'tags'              => 'nullable|string',
+            'title'                 => 'required|string|max:255',
+            'slug'                  => 'nullable|string|max:255|unique:blogs,slug,' . $blog->id,
+            'category'              => 'required|string|max:100',
+            'custom_category'       => 'nullable|string|max:100',
+            'excerpt'               => 'nullable|string|max:1000',
+            'content'               => 'required|string',
+            'image'                 => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:20480',
+            'image_base64'          => 'nullable|string',
+            'image_url'             => 'nullable|string|max:1000',
+            'author_name'           => 'nullable|string|max:150',
+            'author_role'           => 'nullable|string|max:150',
+            'author_avatar'         => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:10240',
+            'author_avatar_base64'  => 'nullable|string',
+            'read_time'             => 'nullable|string|max:50',
+            'is_featured'           => 'nullable|boolean',
+            'is_published'          => 'nullable|boolean',
+            'published_at'          => 'nullable|date',
+            'meta_title'            => 'nullable|string|max:255',
+            'meta_description'      => 'nullable|string|max:1000',
+            'tags'                  => 'nullable|string',
         ]);
 
         if (!empty($data['custom_category'])) {
@@ -1131,6 +1187,37 @@ class AdminController extends Controller
             } catch (\Throwable $e) {}
 
             $data['image'] = $path;
+        } elseif ($request->filled('image_base64') && str_starts_with($request->image_base64, 'data:image/')) {
+            if ($blog->image && !str_starts_with($blog->image, 'http')) {
+                Storage::disk('public')->delete($blog->image);
+                @unlink(public_path($blog->image));
+                @unlink(public_path('blogs/' . basename($blog->image)));
+            }
+            $base64Data = $request->image_base64;
+            @list($type, $base64Data) = explode(';', $base64Data);
+            @list(, $base64Data)      = explode(',', $base64Data);
+            $decoded = base64_decode($base64Data);
+            
+            $ext = 'jpg';
+            if (str_contains($type, 'png')) $ext = 'png';
+            elseif (str_contains($type, 'webp')) $ext = 'webp';
+
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = 'blogs/' . $filename;
+
+            Storage::disk('public')->put($path, $decoded);
+
+            try {
+                @mkdir(public_path('blogs'), 0777, true);
+                @file_put_contents(public_path('blogs/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs'), 0777, true);
+                @file_put_contents(public_path('storage/blogs/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            $data['image'] = $path;
         } elseif (!empty($data['image_url'])) {
             $url = trim($data['image_url']);
             if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '//')) {
@@ -1139,6 +1226,7 @@ class AdminController extends Controller
             $data['image'] = $url;
         }
         unset($data['image_url']);
+        unset($data['image_base64']);
 
         // Handle author avatar
         if ($request->hasFile('author_avatar')) {
@@ -1163,7 +1251,39 @@ class AdminController extends Controller
             } catch (\Throwable $e) {}
 
             $data['author_avatar'] = $path;
+        } elseif ($request->filled('author_avatar_base64') && str_starts_with($request->author_avatar_base64, 'data:image/')) {
+            if ($blog->author_avatar && !str_starts_with($blog->author_avatar, 'http')) {
+                Storage::disk('public')->delete($blog->author_avatar);
+                @unlink(public_path($blog->author_avatar));
+                @unlink(public_path('blogs/authors/' . basename($blog->author_avatar)));
+            }
+            $base64Data = $request->author_avatar_base64;
+            @list($type, $base64Data) = explode(';', $base64Data);
+            @list(, $base64Data)      = explode(',', $base64Data);
+            $decoded = base64_decode($base64Data);
+            
+            $ext = 'jpg';
+            if (str_contains($type, 'png')) $ext = 'png';
+            elseif (str_contains($type, 'webp')) $ext = 'webp';
+
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = 'blogs/authors/' . $filename;
+
+            Storage::disk('public')->put($path, $decoded);
+
+            try {
+                @mkdir(public_path('blogs/authors'), 0777, true);
+                @file_put_contents(public_path('blogs/authors/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs/authors'), 0777, true);
+                @file_put_contents(public_path('storage/blogs/authors/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            $data['author_avatar'] = $path;
         }
+        unset($data['author_avatar_base64']);
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');

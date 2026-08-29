@@ -358,7 +358,7 @@
                         <span class="text-xs font-extrabold uppercase tracking-wider text-slate-800 flex items-center gap-2">
                             <i class="ph-bold ph-image text-blue-600 text-base"></i> Cover Image
                         </span>
-                        <span class="text-[10px] font-bold text-slate-400">16:9 ratio • Max 20MB</span>
+                        <span class="text-[10px] font-bold text-slate-400">16:9 ratio • Auto-Optimized</span>
                     </div>
 
                     @error('image')
@@ -372,6 +372,9 @@
                         </p>
                     @enderror
 
+                    {{-- Hidden Base64 Container for Guaranteed Upload across any server limits --}}
+                    <input type="hidden" name="image_base64" id="image-base64-input">
+
                     {{-- Live Image Preview & Dropzone --}}
                     <div onclick="document.getElementById('cover-image-file').click()"
                          class="relative rounded-xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 hover:border-blue-500 aspect-video flex items-center justify-center group shadow-2xs cursor-pointer transition-all">
@@ -382,7 +385,7 @@
                              class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-4 text-center backdrop-blur-xs">
                             <i class="ph-bold ph-upload-simple text-2xl mb-1"></i>
-                            <span class="text-xs font-bold">Click or drag image to replace</span>
+                            <span class="text-xs font-bold">Click to choose image file</span>
                         </div>
                     </div>
 
@@ -403,7 +406,7 @@
                     <div>
                         <label for="cover-image-url" class="text-xs font-bold text-slate-700 block mb-1.5">Or External Image URL</label>
                         <input type="text" name="image_url" id="cover-image-url" oninput="previewImageUrl(this.value)"
-                               value="{{ old('image_url', $blog && str_starts_with($blog->image ?? '', 'http') ? $blog->image : '') }}"
+                               value="{{ old('image_url', $blog && (str_starts_with($blog->image ?? '', 'http') || str_starts_with($blog->image ?? '', '//')) ? $blog->image : '') }}"
                                placeholder="https://images.unsplash.com/..."
                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                     </div>
@@ -420,6 +423,9 @@
                             <i class="ph-bold ph-warning-circle text-sm"></i> {{ $message }}
                         </p>
                     @enderror
+
+                    {{-- Hidden Base64 Container for Avatar --}}
+                    <input type="hidden" name="author_avatar_base64" id="author-avatar-base64-input">
 
                     <div>
                         <label for="author-name-input" class="text-xs font-bold text-slate-700 block mb-1.5">Author Name</label>
@@ -611,50 +617,91 @@
         }
     }
 
+    // Helper: Client-Side Canvas Image Compressor
+    function compressImageFile(file, maxWidth, maxHeight, quality, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+                if (height > maxHeight) {
+                    width = Math.round((width * maxHeight) / height);
+                    height = maxHeight;
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Export as JPEG
+                const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                callback(dataUrl);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
     // Image Previews & Handling
     function previewImageFile(input) {
         const preview = document.getElementById('cover-image-preview');
         const statusBox = document.getElementById('file-chosen-status');
         const nameSpan = document.getElementById('file-chosen-name');
         const urlInput = document.getElementById('cover-image-url');
+        const base64Input = document.getElementById('image-base64-input');
 
         if (input.files && input.files[0]) {
             const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
+            
+            // Instantly compress and generate base64 payload
+            compressImageFile(file, 1600, 1200, 0.88, function(compressedData) {
+                preview.src = compressedData;
+                if (base64Input) {
+                    base64Input.value = compressedData;
+                }
                 if (statusBox && nameSpan) {
-                    nameSpan.textContent = `Selected: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+                    nameSpan.textContent = `Ready: ${file.name} (Optimized for Web)`;
                     statusBox.classList.remove('hidden');
                 }
                 if (urlInput) {
                     urlInput.value = '';
                 }
-            };
-            reader.readAsDataURL(file);
+            });
         }
     }
 
     function previewImageUrl(url) {
         const preview = document.getElementById('cover-image-preview');
         const fileInput = document.getElementById('cover-image-file');
+        const base64Input = document.getElementById('image-base64-input');
         const statusBox = document.getElementById('file-chosen-status');
 
         if (url && (url.startsWith('http') || url.startsWith('//'))) {
             preview.src = url;
             if (fileInput) fileInput.value = '';
+            if (base64Input) base64Input.value = '';
             if (statusBox) statusBox.classList.add('hidden');
         }
     }
 
     function previewAvatarFile(input) {
         const preview = document.getElementById('author-avatar-preview');
+        const base64Input = document.getElementById('author-avatar-base64-input');
         if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (preview) preview.src = e.target.result;
-            };
-            reader.readAsDataURL(input.files[0]);
+            const file = input.files[0];
+            compressImageFile(file, 400, 400, 0.85, function(compressedData) {
+                if (preview) preview.src = compressedData;
+                if (base64Input) base64Input.value = compressedData;
+            });
         }
     }
 </script>
