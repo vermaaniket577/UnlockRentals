@@ -150,12 +150,8 @@ Route::get('/sitemap.xml', function () {
     $properties = \App\Models\Property::approved()->latest('updated_at')->get();
     $programmaticUrls = \App\Http\Controllers\SeoController::getProgrammaticUrls();
     
-    // Curated blogs
-    $blogController = new \App\Http\Controllers\BlogController();
-    $reflection = new \ReflectionClass($blogController);
-    $method = $reflection->getMethod('getPosts');
-    $method->setAccessible(true);
-    $blogs = $method->invoke($blogController);
+    // Curated blogs from database
+    $blogs = \App\Models\Blog::published()->latest('updated_at')->get();
 
     $baseUrl = rtrim(config('app.url', 'https://www.unlockrentals.com'), '/');
 
@@ -334,6 +330,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/subscriptions/{userPlan}/update-plan', [AdminController::class, 'updateSubscriptionPlanTier'])->name('subscriptions.update-plan');
     Route::delete('/subscriptions/{userPlan}', [AdminController::class, 'destroySubscription'])->name('subscriptions.destroy');
     Route::get('/users/{user}/activity', [AdminController::class, 'userActivity'])->name('users.activity');
+
+    // Blog management
+    Route::get('/blogs', [AdminController::class, 'blogs'])->name('blogs.index');
+    Route::get('/blogs/create', [AdminController::class, 'createBlog'])->name('blogs.create');
+    Route::post('/blogs', [AdminController::class, 'storeBlog'])->name('blogs.store');
+    Route::get('/blogs/{blog}/edit', [AdminController::class, 'editBlog'])->name('blogs.edit');
+    Route::put('/blogs/{blog}', [AdminController::class, 'updateBlog'])->name('blogs.update');
+    Route::delete('/blogs/{blog}', [AdminController::class, 'destroyBlog'])->name('blogs.destroy');
+    Route::post('/blogs/{blog}/toggle-publish', [AdminController::class, 'togglePublishBlog'])->name('blogs.toggle-publish');
+    Route::post('/blogs/{blog}/toggle-featured', [AdminController::class, 'toggleFeaturedBlog'])->name('blogs.toggle-featured');
 });
 
 // Database Migration & Seeding Route (Securely triggered via key)
@@ -394,6 +400,7 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
             '2026_06_16_180000_add_contact_phone_to_properties_table.php',
             '2026_06_18_153728_add_billing_period_to_private_user_offers_table.php',
             '2026_06_19_120000_add_video_path_to_properties_table.php',
+            '2026_06_20_100000_create_blogs_table.php',
         ];
 
         // Check for leftover duplicate migration files on the server

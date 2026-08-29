@@ -41,7 +41,7 @@
                     All
                 </a>
                 @foreach($categories as $cat)
-                    <a href="{{ route('blog.index', array_filter(['category' => $cat, 'search' => request('search')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ request('category') == $cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}" title="UnlockRentals">
+                    <a href="{{ route('blog.index', array_filter(['category' => $cat, 'search' => request('search')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ request('category') == $cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}" title="Category {{ $cat }}">
                         {{ $cat }}
                     </a>
                 @endforeach
@@ -51,10 +51,10 @@
         {{-- Featured Article (Only if on page 1 without active filter/search) --}}
         @if($featuredPost && !request('search') && (!request('category') || request('category') == 'all'))
         <div class="mb-14">
-            <a href="{{ route('blog.show', $featuredPost['slug']) }}" class="group block relative bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-lg hover:shadow-2xl transition-all duration-300" title="Featured Guide  •  •      Read More">
+            <a href="{{ route('blog.show', $featuredPost->slug) }}" class="group block relative bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-lg hover:shadow-2xl transition-all duration-300" title="{{ $featuredPost->title }}">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
-                    <div class="lg:col-span-7 h-72 sm:h-96 lg:h-auto relative overflow-hidden">
-                        <img src="{{ $featuredPost['image'] }}" alt="{{ $featuredPost['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="lg:col-span-7 h-72 sm:h-96 lg:h-auto relative overflow-hidden bg-slate-100 dark:bg-slate-800">
+                        <img src="{{ $featuredPost->cover_image_url }}" alt="{{ $featuredPost->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-4 left-4">
                             <span class="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-blue-600 text-white shadow-md">
                                 Featured Guide
@@ -64,25 +64,25 @@
                     <div class="lg:col-span-5 p-6 sm:p-10 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mb-3">
-                                <span class="font-bold text-blue-600 dark:text-blue-400">{{ $featuredPost['category'] }}</span>
+                                <span class="font-bold text-blue-600 dark:text-blue-400">{{ $featuredPost->category }}</span>
                                 <span>•</span>
-                                <span>{{ $featuredPost['published_at'] }}</span>
+                                <span>{{ $featuredPost->formatted_published_date }}</span>
                                 <span>•</span>
-                                <span>{{ $featuredPost['read_time'] }}</span>
+                                <span>{{ $featuredPost->estimated_read_time }}</span>
                             </div>
                             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-4 line-clamp-2">
-                                {{ $featuredPost['title'] }}
+                                {{ $featuredPost->title }}
                             </h2>
                             <p class="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed line-clamp-3 mb-6">
-                                {{ $featuredPost['excerpt'] }}
+                                {{ $featuredPost->excerpt }}
                             </p>
                         </div>
                         <div class="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
                             <div class="flex items-center gap-3">
-                                <img src="{{ $featuredPost['author_avatar'] }}" alt="{{ $featuredPost['author'] }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+                                <img src="{{ $featuredPost->author_avatar_url }}" alt="{{ $featuredPost->author_display_name }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700">
                                 <div>
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $featuredPost['author'] }}</p>
-                                    <p class="text-xs text-slate-500">{{ $featuredPost['author_role'] }}</p>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $featuredPost->author_display_name }}</p>
+                                    <p class="text-xs text-slate-500">{{ $featuredPost->author_role_title }}</p>
                                 </div>
                             </div>
                             <span class="inline-flex items-center gap-1 text-sm font-bold text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
@@ -100,37 +100,42 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($posts as $post)
             <article class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-                <a href="{{ route('blog.show', $post['slug']) }}" class="block relative h-48 sm:h-52 overflow-hidden" title="UnlockRentals">
-                    <img src="{{ $post['image'] }}" alt="{{ $post['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <a href="{{ route('blog.show', $post->slug) }}" class="block relative h-48 sm:h-52 overflow-hidden bg-slate-100 dark:bg-slate-800" title="{{ $post->title }}">
+                    <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <span class="absolute top-3 left-3 px-3 py-1 rounded-lg text-[11px] font-bold bg-slate-900/80 backdrop-blur-md text-white">
-                        {{ $post['category'] }}
+                        {{ $post->category }}
                     </span>
+                    @if($post->is_featured)
+                    <span class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-400 text-amber-950 shadow-sm flex items-center gap-1">
+                        <i class="ph-fill ph-star"></i> Featured
+                    </span>
+                    @endif
                 </a>
                 <div class="p-6 flex-1 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2.5">
-                            <span>{{ $post['published_at'] }}</span>
+                            <span>{{ $post->formatted_published_date }}</span>
                             <span>•</span>
-                            <span>{{ $post['read_time'] }}</span>
+                            <span>{{ $post->estimated_read_time }}</span>
                         </div>
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2.5 line-clamp-2">
-                            <a href="{{ route('blog.show', $post['slug']) }}" title="UnlockRentals">
-                                {{ $post['title'] }}
+                            <a href="{{ route('blog.show', $post->slug) }}" title="{{ $post->title }}">
+                                {{ $post->title }}
                             </a>
                         </h3>
                         <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed line-clamp-3 mb-4">
-                            {{ $post['excerpt'] }}
+                            {{ $post->excerpt }}
                         </p>
                     </div>
                     <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
                         <div class="flex items-center gap-2.5">
-                            <img src="{{ $post['author_avatar'] }}" alt="{{ $post['author'] }}" class="w-8 h-8 rounded-full object-cover">
+                            <img src="{{ $post->author_avatar_url }}" alt="{{ $post->author_display_name }}" class="w-8 h-8 rounded-full object-cover">
                             <div>
-                                <p class="text-xs font-bold text-slate-900 dark:text-white">{{ $post['author'] }}</p>
-                                <p class="text-[10px] text-slate-500">{{ $post['author_role'] }}</p>
+                                <p class="text-xs font-bold text-slate-900 dark:text-white">{{ $post->author_display_name }}</p>
+                                <p class="text-[10px] text-slate-500">{{ $post->author_role_title }}</p>
                             </div>
                         </div>
-                        <a href="{{ route('blog.show', $post['slug']) }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" title="Read">
+                        <a href="{{ route('blog.show', $post->slug) }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" title="Read Article">
                             Read <i class="ph-bold ph-arrow-right text-[10px]"></i>
                         </a>
                     </div>
@@ -138,6 +143,14 @@
             </article>
             @endforeach
         </div>
+
+        {{-- Pagination --}}
+        @if($posts->hasPages())
+        <div class="mt-12 flex justify-center">
+            {{ $posts->links() }}
+        </div>
+        @endif
+
         @else
         <div class="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8">
             <i class="ph ph-newspaper text-5xl text-slate-400 mb-3 inline-block"></i>

@@ -99,6 +99,10 @@
                         <i class="ph ph-map-pin text-lg"></i>
                         <span>Locations (City/State)</span>
                     </a>
+                    <a href="{{ route('admin.blogs.index') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.blogs*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Blog Posts & Guides">
+                        <i class="ph ph-newspaper text-lg"></i>
+                        <span>Blog Posts</span>
+                    </a>
                 </div>
 
                 {{-- Group 2: CRM & Engagement --}}

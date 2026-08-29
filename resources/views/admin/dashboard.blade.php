@@ -131,13 +131,13 @@
                     <p class="text-xs text-zinc-500">Create & edit pricing plans</p>
                 </div>
             </a>
-            <a href="{{ route('admin.subscriptions') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-emerald-500/30 transition-all flex items-center gap-4" title="User Subscriptions  pending payments">
-                <div class="w-10 h-10 bg-emerald-500/10 rounded-sm flex items-center justify-center group-hover:bg-emerald-500/20 transition-all">
-                    <i class="ph ph-receipt text-xl text-emerald-500"></i>
+            <a href="{{ route('admin.blogs.index') }}" class="group p-5 bg-stone-50 border border-stone-200/50 rounded-sm hover:border-blue-500/30 transition-all flex items-center gap-4" title="Manage Blog Posts">
+                <div class="w-10 h-10 bg-blue-500/10 rounded-sm flex items-center justify-center group-hover:bg-blue-500/20 transition-all">
+                    <i class="ph ph-newspaper text-xl text-blue-600"></i>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-zinc-900">User Subscriptions</p>
-                    <p class="text-xs text-zinc-500">{{ $stats['pending_subscriptions'] }} pending payments</p>
+                    <p class="text-sm font-semibold text-zinc-900">Blog Posts</p>
+                    <p class="text-xs text-zinc-500">{{ $stats['total_blogs'] ?? 0 }} articles ({{ $stats['published_blogs'] ?? 0 }} live)</p>
                 </div>
             </a>
         </div>

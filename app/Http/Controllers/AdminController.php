@@ -10,9 +10,12 @@ use App\Models\Plan;
 use App\Models\UserPlan;
 use App\Models\Feedback;
 use App\Models\ProcessStep;
+use App\Models\Blog;
 use App\Mail\SubscriptionActivated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
@@ -37,6 +40,8 @@ class AdminController extends Controller
                 'active_subscriptions'  => UserPlan::active()->count(),
                 'total_feedback'        => Feedback::count(),
                 'new_feedback'          => Feedback::where('status', 'new')->count(),
+                'total_blogs'           => Blog::count(),
+                'published_blogs'       => Blog::where('is_published', true)->count(),
             ];
         });
 
@@ -854,5 +859,316 @@ class AdminController extends Controller
             'state_id' => $district ? $district->state_id : null,
             'district_id' => $district ? $district->id : null
         ])->with('success', "Locality '{$name}' deleted successfully.");
+    }
+
+    // ─── BLOG POST MANAGEMENT ──────────────────────
+
+    /**
+     * Display a listing of blog posts with summary KPIs & filters.
+     */
+    public function blogs(Request $request)
+    {
+        $stats = [
+            'total'     => Blog::count(),
+            'published' => Blog::where('is_published', true)->count(),
+            'draft'     => Blog::where('is_published', false)->count(),
+            'views'     => Blog::sum('views_count'),
+        ];
+
+        $query = Blog::query();
+
+        // Keyword search (title, excerpt, content, category, author)
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('excerpt', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%")
+                  ->orWhere('author_name', 'like', "%{$search}%");
+            });
+        }
+
+        // Category filter
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            if ($request->status === 'published') {
+                $query->where('is_published', true);
+            } elseif ($request->status === 'draft') {
+                $query->where('is_published', false);
+            } elseif ($request->status === 'featured') {
+                $query->where('is_featured', true);
+            }
+        }
+
+        $blogs = $query->latest('updated_at')->paginate(12)->withQueryString();
+        $categories = Blog::select('category')->distinct()->pluck('category')->filter()->values();
+
+        return view('admin.blogs.index', compact('blogs', 'stats', 'categories'));
+    }
+
+    /**
+     * Show the form for creating a new blog post.
+     */
+    public function createBlog()
+    {
+        $categories = Blog::select('category')->distinct()->pluck('category')->filter()->values();
+        if ($categories->isEmpty()) {
+            $categories = collect(['Tenant Guide', 'Owner Insights', 'Commercial Hub', 'Legal & Finance', 'Lifestyle & Tech', 'Market Trends']);
+        }
+        return view('admin.blogs.form', ['blog' => null, 'categories' => $categories]);
+    }
+
+    /**
+     * Store a newly created blog post.
+     */
+    public function storeBlog(Request $request)
+    {
+        $data = $request->validate([
+            'title'             => 'required|string|max:255',
+            'slug'              => 'nullable|string|max:255|unique:blogs,slug',
+            'category'          => 'required|string|max:100',
+            'custom_category'   => 'nullable|string|max:100',
+            'excerpt'           => 'nullable|string|max:1000',
+            'content'           => 'required|string',
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image_url'         => 'nullable|url|max:1000',
+            'author_name'       => 'nullable|string|max:150',
+            'author_role'       => 'nullable|string|max:150',
+            'author_avatar'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'read_time'         => 'nullable|string|max:50',
+            'is_featured'       => 'nullable|boolean',
+            'is_published'      => 'nullable|boolean',
+            'published_at'      => 'nullable|date',
+            'meta_title'        => 'nullable|string|max:255',
+            'meta_description'  => 'nullable|string|max:1000',
+            'tags'              => 'nullable|string',
+        ]);
+
+        // Category selection fallback
+        if (!empty($data['custom_category'])) {
+            $data['category'] = trim($data['custom_category']);
+        }
+        unset($data['custom_category']);
+
+        // Handle slug
+        if (empty($data['slug'])) {
+            $data['slug'] = Blog::generateUniqueSlug($data['title']);
+        } else {
+            $data['slug'] = Str::slug($data['slug']);
+        }
+
+        // Handle tags
+        if (!empty($data['tags'])) {
+            $data['tags'] = array_values(array_filter(array_map('trim', explode(',', $data['tags']))));
+        } else {
+            $data['tags'] = [];
+        }
+
+        // Handle Cover Image
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('blogs', 'public');
+        } elseif (!empty($data['image_url'])) {
+            $data['image'] = trim($data['image_url']);
+        }
+        unset($data['image_url']);
+
+        // Handle Author Avatar
+        if ($request->hasFile('author_avatar')) {
+            $data['author_avatar'] = $request->file('author_avatar')->store('blogs/authors', 'public');
+        }
+
+        $data['user_id'] = auth()->id();
+        $data['is_published'] = $request->boolean('is_published');
+        $data['is_featured'] = $request->boolean('is_featured');
+
+        if ($data['is_published']) {
+            $data['published_at'] = $request->filled('published_at') ? Carbon::parse($request->published_at) : now();
+        } else {
+            $data['published_at'] = $request->filled('published_at') ? Carbon::parse($request->published_at) : null;
+        }
+
+        // Auto read time if empty
+        if (empty($data['read_time'])) {
+            $wordCount = str_word_count(strip_tags($data['content']));
+            $data['read_time'] = max(1, (int) ceil($wordCount / 200)) . ' min read';
+        }
+
+        $blog = Blog::create($data);
+
+        Cache::forget('home_blogs');
+        Cache::forget('sitemap_blogs');
+
+        return redirect()->route('admin.blogs.index')
+            ->with('success', "Blog post \"{$blog->title}\" created successfully.");
+    }
+
+    /**
+     * Show the form for editing a blog post.
+     */
+    public function editBlog(Blog $blog)
+    {
+        $categories = Blog::select('category')->distinct()->pluck('category')->filter()->values();
+        if ($categories->isEmpty()) {
+            $categories = collect(['Tenant Guide', 'Owner Insights', 'Commercial Hub', 'Legal & Finance', 'Lifestyle & Tech', 'Market Trends']);
+        }
+        return view('admin.blogs.form', compact('blog', 'categories'));
+    }
+
+    /**
+     * Update an existing blog post.
+     */
+    public function updateBlog(Request $request, Blog $blog)
+    {
+        $data = $request->validate([
+            'title'             => 'required|string|max:255',
+            'slug'              => 'nullable|string|max:255|unique:blogs,slug,' . $blog->id,
+            'category'          => 'required|string|max:100',
+            'custom_category'   => 'nullable|string|max:100',
+            'excerpt'           => 'nullable|string|max:1000',
+            'content'           => 'required|string',
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image_url'         => 'nullable|url|max:1000',
+            'author_name'       => 'nullable|string|max:150',
+            'author_role'       => 'nullable|string|max:150',
+            'author_avatar'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'read_time'         => 'nullable|string|max:50',
+            'is_featured'       => 'nullable|boolean',
+            'is_published'      => 'nullable|boolean',
+            'published_at'      => 'nullable|date',
+            'meta_title'        => 'nullable|string|max:255',
+            'meta_description'  => 'nullable|string|max:1000',
+            'tags'              => 'nullable|string',
+        ]);
+
+        if (!empty($data['custom_category'])) {
+            $data['category'] = trim($data['custom_category']);
+        }
+        unset($data['custom_category']);
+
+        if (empty($data['slug'])) {
+            $data['slug'] = Blog::generateUniqueSlug($data['title'], $blog->id);
+        } else {
+            $data['slug'] = Str::slug($data['slug']);
+        }
+
+        if (!empty($data['tags'])) {
+            $data['tags'] = array_values(array_filter(array_map('trim', explode(',', $data['tags']))));
+        } else {
+            $data['tags'] = [];
+        }
+
+        // Handle cover image
+        if ($request->hasFile('image')) {
+            if ($blog->image && !str_starts_with($blog->image, 'http')) {
+                Storage::disk('public')->delete($blog->image);
+            }
+            $data['image'] = $request->file('image')->store('blogs', 'public');
+        } elseif (!empty($data['image_url'])) {
+            $data['image'] = trim($data['image_url']);
+        }
+        unset($data['image_url']);
+
+        // Handle author avatar
+        if ($request->hasFile('author_avatar')) {
+            if ($blog->author_avatar && !str_starts_with($blog->author_avatar, 'http')) {
+                Storage::disk('public')->delete($blog->author_avatar);
+            }
+            $data['author_avatar'] = $request->file('author_avatar')->store('blogs/authors', 'public');
+        }
+
+        $data['is_published'] = $request->boolean('is_published');
+        $data['is_featured'] = $request->boolean('is_featured');
+
+        if ($data['is_published'] && empty($blog->published_at)) {
+            $data['published_at'] = $request->filled('published_at') ? Carbon::parse($request->published_at) : now();
+        } elseif ($request->filled('published_at')) {
+            $data['published_at'] = Carbon::parse($request->published_at);
+        }
+
+        if (empty($data['read_time'])) {
+            $wordCount = str_word_count(strip_tags($data['content']));
+            $data['read_time'] = max(1, (int) ceil($wordCount / 200)) . ' min read';
+        }
+
+        $blog->update($data);
+
+        Cache::forget('home_blogs');
+        Cache::forget('sitemap_blogs');
+
+        return redirect()->route('admin.blogs.index')
+            ->with('success', "Blog post \"{$blog->title}\" updated successfully.");
+    }
+
+    /**
+     * Delete a blog post.
+     */
+    public function destroyBlog(Blog $blog)
+    {
+        $title = $blog->title;
+        if ($blog->image && !str_starts_with($blog->image, 'http')) {
+            Storage::disk('public')->delete($blog->image);
+        }
+        if ($blog->author_avatar && !str_starts_with($blog->author_avatar, 'http')) {
+            Storage::disk('public')->delete($blog->author_avatar);
+        }
+
+        $blog->delete();
+
+        Cache::forget('home_blogs');
+        Cache::forget('sitemap_blogs');
+
+        return redirect()->route('admin.blogs.index')
+            ->with('success', "Blog post \"{$title}\" has been deleted.");
+    }
+
+    /**
+     * Toggle published status via quick action.
+     */
+    public function togglePublishBlog(Blog $blog)
+    {
+        $blog->is_published = !$blog->is_published;
+        if ($blog->is_published && empty($blog->published_at)) {
+            $blog->published_at = now();
+        }
+        $blog->save();
+
+        Cache::forget('home_blogs');
+        Cache::forget('sitemap_blogs');
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'is_published' => $blog->is_published,
+                'status_text' => $blog->is_published ? 'Published' : 'Draft',
+            ]);
+        }
+
+        $state = $blog->is_published ? 'published' : 'saved as draft';
+        return redirect()->back()->with('success', "Blog \"{$blog->title}\" is now {$state}.");
+    }
+
+    /**
+     * Toggle featured status via quick action.
+     */
+    public function toggleFeaturedBlog(Blog $blog)
+    {
+        $blog->is_featured = !$blog->is_featured;
+        $blog->save();
+
+        Cache::forget('home_blogs');
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'is_featured' => $blog->is_featured,
+            ]);
+        }
+
+        $state = $blog->is_featured ? 'featured on blog homepage' : 'removed from featured';
+        return redirect()->back()->with('success', "Blog \"{$blog->title}\" is now {$state}.");
     }
 }
