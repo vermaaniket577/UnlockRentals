@@ -79,22 +79,22 @@
     $isRazorpay = $activeGateway && ($activeGateway['type'] ?? 'manual') === 'razorpay';
 @endphp
 
-<section class="checkout-stage min-h-screen pt-20 pb-20 sm:pt-24 sm:pb-24" id="checkout-page">
-    <div class="mx-auto max-w-xl px-4 sm:px-6">
+<section class="checkout-stage min-h-screen pt-16 pb-16 sm:pt-24 sm:pb-24 w-full" id="checkout-page">
+    <div class="mx-auto w-full max-w-2xl px-2 sm:px-6">
         
         {{-- Back Navigation --}}
-        <div class="mb-5">
-            <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-2 text-sm font-extrabold text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400" title="Back to plans">
-                <i class="ph-bold ph-arrow-left text-base"></i>
+        <div class="mb-4 sm:mb-5 px-1">
+            <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-2 text-sm sm:text-base font-extrabold text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400" title="Back to plans">
+                <i class="ph-bold ph-arrow-left text-base sm:text-lg"></i>
                 <span>Back to Plans</span>
             </a>
         </div>
 
-        {{-- Unified Professional Checkout Card --}}
-        <div class="rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none overflow-hidden">
+        {{-- Unified Professional Checkout Card (Full Screen Mobile Standard) --}}
+        <div class="w-full rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none overflow-hidden">
             
             {{-- 1. Card Header: Plan & Price Banner --}}
-            <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 p-6 sm:p-7 text-white relative overflow-hidden">
+            <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 p-5 sm:p-7 text-white relative overflow-hidden">
                 <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
                 <div class="flex items-start justify-between gap-4 relative z-10">
                     <div class="flex items-center gap-3.5">
