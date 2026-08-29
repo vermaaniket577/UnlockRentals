@@ -201,58 +201,80 @@
 .ur-why__features {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 0.875rem;
 }
 
 @media (min-width: 640px) {
-    .ur-why__features { grid-template-columns: repeat(2, 1fr); }
+    .ur-why__features { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
 }
 
 @media (min-width: 1024px) {
-    .ur-why__features { grid-template-columns: repeat(4, 1fr); }
+    .ur-why__features { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
 }
 
 .ur-why__f-card {
     background: #ffffff;
-    padding: 2rem 1.5rem;
+    padding: 1rem 1.15rem;
     border-radius: 1.25rem;
     border: 1px solid #e2e8f0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
     text-align: left;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+}
+
+@media (min-width: 1024px) {
+    .ur-why__f-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.75rem 1.35rem;
+        gap: 0;
+    }
 }
 
 .ur-why__f-card:hover {
     background: #ffffff;
     border-color: #93c5fd;
-    box-shadow: 0 16px 36px rgba(37, 99, 235, 0.08);
-    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.08);
+    transform: translateY(-2px);
 }
 
 .ur-why__f-icon {
-    width: 4rem;
-    height: 4rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
     background: #eff6ff;
     border: 1px solid #dbeafe;
     color: #2563eb;
-    border-radius: 1.125rem;
+    border-radius: 0.875rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.75rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
     transition: all 0.4s ease;
 }
 
+@media (min-width: 1024px) {
+    .ur-why__f-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        min-width: 3.5rem;
+        border-radius: 1rem;
+        margin-bottom: 1.25rem;
+    }
+}
+
 .ur-why__f-card:hover .ur-why__f-icon {
-    transform: scale(1.08);
+    transform: scale(1.06);
     background: #2563eb;
     color: #ffffff;
     border-color: #2563eb;
-    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
 }
 
 .ur-why__f-card:hover .ur-why__f-icon svg path,
@@ -262,19 +284,32 @@
     fill: #ffffff !important;
 }
 
+.ur-why__f-body {
+    flex: 1;
+    min-width: 0;
+}
+
 .ur-why__f-title {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 800;
     color: #0f172a;
-    margin-bottom: 0.75rem;
-    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.015em;
     font-family: 'Outfit', sans-serif;
+    line-height: 1.25;
+}
+
+@media (min-width: 1024px) {
+    .ur-why__f-title {
+        font-size: 1.15rem;
+        margin-bottom: 0.5rem;
+    }
 }
 
 .ur-why__f-desc {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: #64748b;
-    line-height: 1.6;
+    line-height: 1.45;
     font-weight: 400;
 }
 </style>
@@ -385,8 +420,10 @@
                 <div class="ur-why__f-icon">
                     {!! $feature['svg'] !!}
                 </div>
-                <h3 class="ur-why__f-title">{{ $feature['title'] }}</h3>
-                <p class="ur-why__f-desc">{{ $feature['desc'] }}</p>
+                <div class="ur-why__f-body">
+                    <h3 class="ur-why__f-title">{{ $feature['title'] }}</h3>
+                    <p class="ur-why__f-desc">{{ $feature['desc'] }}</p>
+                </div>
             </div>
             @endforeach
         </div>
