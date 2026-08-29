@@ -71,27 +71,55 @@
 
                     {{-- User Menu --}}
                     <div class="relative">
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative cursor-pointer" id="nav-user-menu" aria-label="User Account">
-                            <div class="w-8 h-8 {{ $navActivePlan ? 'bg-gradient-to-br ' . $navBadgeClass . ' ring-2 ring-white shadow-lg shadow-blue-500/20' : 'bg-[#2563EB]' }} rounded-full flex items-center justify-center text-white text-sm font-bold relative overflow-hidden">
+                        <script>
+                            window.toggleUserDropdown = function(e) {
+                                if (e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }
+                                var dd = document.getElementById('nav-user-dropdown');
+                                var bd = document.getElementById('nav-user-backdrop');
+                                if (!dd) return;
+                                if (dd.classList.contains('hidden')) {
+                                    dd.classList.remove('hidden');
+                                    if (bd) bd.classList.remove('hidden');
+                                } else {
+                                    dd.classList.add('hidden');
+                                    if (bd) bd.classList.add('hidden');
+                                }
+                            };
+                            window.closeUserDropdown = function() {
+                                var dd = document.getElementById('nav-user-dropdown');
+                                var bd = document.getElementById('nav-user-backdrop');
+                                if (dd) dd.classList.add('hidden');
+                                if (bd) bd.classList.add('hidden');
+                            };
+                        </script>
+
+                        {{-- Dropdown Backdrop --}}
+                        <div id="nav-user-backdrop" class="fixed inset-0 z-[9998] hidden bg-black/20 dark:bg-black/60" onclick="window.closeUserDropdown()"></div>
+
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative cursor-pointer z-[9999]" id="nav-user-menu" aria-label="User Account">
+                            <div class="w-8 h-8 {{ $navActivePlan ? 'bg-gradient-to-br ' . $navBadgeClass . ' ring-2 ring-white shadow-lg shadow-blue-500/20' : 'bg-[#2563EB]' }} rounded-full flex items-center justify-center text-white text-sm font-bold relative overflow-hidden pointer-events-none">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 @if($navActivePlan)
                                     <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[premiumShine_2.6s_ease-in-out_infinite]"></span>
                                 @endif
                             </div>
-                            <span class="hidden xl:inline text-xs xl:text-sm font-semibold text-zinc-700 dark:text-slate-200 whitespace-nowrap">{{ auth()->user()->name }}</span>
+                            <span class="hidden xl:inline text-xs xl:text-sm font-semibold text-zinc-700 dark:text-slate-200 whitespace-nowrap pointer-events-none">{{ auth()->user()->name }}</span>
                             @if($navActivePlan)
-                                <span class="hidden 2xl:inline-flex items-center gap-1 rounded-full bg-gradient-to-r {{ $navBadgeClass }} px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-sm whitespace-nowrap">
+                                <span class="hidden 2xl:inline-flex items-center gap-1 rounded-full bg-gradient-to-r {{ $navBadgeClass }} px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-sm whitespace-nowrap pointer-events-none">
                                     <i class="ph-bold ph-crown"></i> Pro
                                 </span>
                             @endif
-                            <i class="ph ph-caret-down text-xs text-zinc-500 dark:text-slate-400"></i>
+                            <i class="ph ph-caret-down text-xs text-zinc-500 dark:text-slate-400 pointer-events-none"></i>
                             @if(isset($adminNotifications) && $adminNotifications['total_unread'] > 0)
-                                <span class="absolute top-1 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                                <span class="absolute top-1 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white pointer-events-none"></span>
                             @endif
                         </button>
 
-                        {{-- Dropdown --}}
-                        <div id="nav-user-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-[9999]">
+                        {{-- Dropdown Menu --}}
+                        <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-[9999]">
                             <div class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50">
                                 <p class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                     {{ auth()->user()->name }}
@@ -114,30 +142,30 @@
                             </div>
 
                             <div class="py-1">
-                                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-dashboard" title="Dashboard">
+                                <a href="{{ route('dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-dashboard" title="Dashboard">
                                     <i class="ph-bold ph-squares-four text-base text-blue-600"></i>
                                     <span>Dashboard</span>
                                 </a>
-                                <a href="#" onclick="event.preventDefault(); window.toggleUserDropdown(); window.openProfileModal();" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-profile-settings" title="Profile Settings">
+                                <a href="#" onclick="event.preventDefault(); window.closeUserDropdown(); window.openProfileModal();" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-profile-settings" title="Profile Settings">
                                     <i class="ph-bold ph-user-gear text-base text-blue-600"></i>
                                     <span>Profile Settings</span>
                                 </a>
                                 @if(auth()->user()->isOwner())
-                                <a href="{{ route('inquiries.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-inquiries" title="Inquiries">
+                                <a href="{{ route('inquiries.index') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-inquiries" title="Inquiries">
                                     <i class="ph-bold ph-chat-dots text-base text-blue-600"></i>
                                     <span>Inquiries</span>
                                 </a>
                                 @endif
                                 @if(auth()->user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin" title="Admin Panel">
+                                <a href="{{ route('admin.dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin" title="Admin Panel">
                                     <i class="ph-bold ph-shield-check text-base text-blue-600"></i>
                                     <span>Admin Panel</span>
                                 </a>
-                                <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-settings" title="Content &amp; Settings">
+                                <a href="{{ route('admin.settings') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-settings" title="Content &amp; Settings">
                                     <i class="ph-bold ph-gear text-base text-blue-600"></i>
                                     <span>Content & Settings</span>
                                 </a>
-                                <a href="{{ route('admin.feedback') }}" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-feedback" title="Customer Feedback">
+                                <a href="{{ route('admin.feedback') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-feedback" title="Customer Feedback">
                                     <div class="flex items-center gap-3">
                                         <i class="ph-bold ph-chat-centered-text text-base text-blue-600"></i>
                                         <span>Customer Feedback</span>
@@ -146,7 +174,7 @@
                                         <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['new_feedbacks'] }}</span>
                                     @endif
                                 </a>
-                                <a href="{{ route('admin.chats') }}" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-chats" title="Chat History">
+                                <a href="{{ route('admin.chats') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-chats" title="Chat History">
                                     <div class="flex items-center gap-3">
                                         <i class="ph-bold ph-chat-circle-dots text-base text-blue-600"></i>
                                         <span>Chat History</span>
@@ -155,7 +183,7 @@
                                         <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['unread_chats'] }}</span>
                                     @endif
                                 </a>
-                                <a href="{{ route('admin.callbacks') }}" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-callbacks" title="Callback Leads">
+                                <a href="{{ route('admin.callbacks') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-callbacks" title="Callback Leads">
                                     <div class="flex items-center gap-3">
                                         <i class="ph-bold ph-phone-call text-base text-blue-600"></i>
                                         <span>Callback Leads</span>
@@ -164,22 +192,22 @@
                                         <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['new_callbacks'] }}</span>
                                     @endif
                                 </a>
-                                <a href="{{ route('admin.plans') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-plans" title="Manage Plans">
+                                <a href="{{ route('admin.plans') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-plans" title="Manage Plans">
                                     <i class="ph-bold ph-crown text-base text-blue-600"></i>
                                     <span>Manage Plans</span>
                                 </a>
-                                <a href="{{ route('admin.subscriptions') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-subscriptions" title="User Subscriptions">
+                                <a href="{{ route('admin.subscriptions') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-subscriptions" title="User Subscriptions">
                                     <i class="ph-bold ph-receipt text-base text-blue-600"></i>
                                     <span>User Subscriptions</span>
                                 </a>
                                 @endif
                             </div>
 
-                            <div class="border-t border-slate-100 dark:border-slate-800 p-1">
+                            <div class="border-t border-slate-100 dark:border-slate-800 p-2">
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer" id="nav-logout">
-                                        <i class="ph-bold ph-sign-out text-base"></i>
+                                    <button type="submit" class="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/70 text-red-600 dark:text-red-400 font-black text-sm transition-all cursor-pointer shadow-xs" id="nav-logout">
+                                        <i class="ph-bold ph-sign-out text-lg"></i>
                                         <span>Sign Out</span>
                                     </button>
                                 </form>
@@ -363,35 +391,12 @@
         });
     }
 
-    // User menu dropdown toggle handler (works seamlessly on mobile and desktop)
-    window.toggleUserDropdown = function(e) {
-        if (e) {
-            e.stopPropagation();
-        }
-        const dropdown = document.getElementById('nav-user-dropdown');
-        if (!dropdown) return;
-        
-        if (dropdown.classList.contains('hidden')) {
-            dropdown.classList.remove('hidden');
-        } else {
-            dropdown.classList.add('hidden');
-        }
-    };
-
-    // Close user dropdown on outside click or ESC
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('nav-user-dropdown');
-        const btn = document.getElementById('nav-user-menu');
-        if (dropdown && !dropdown.classList.contains('hidden')) {
-            if (!dropdown.contains(e.target) && (!btn || !btn.contains(e.target))) {
-                dropdown.classList.add('hidden');
-            }
-        }
-    });
+    // ESC key closes dropdowns and drawers
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            const dropdown = document.getElementById('nav-user-dropdown');
-            if (dropdown) dropdown.classList.add('hidden');
+            if (typeof window.closeUserDropdown === 'function') {
+                window.closeUserDropdown();
+            }
             if (typeof window.toggleMobileDrawer === 'function') {
                 window.toggleMobileDrawer(false);
             }
