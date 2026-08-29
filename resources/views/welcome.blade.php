@@ -506,6 +506,23 @@
             .btn-cta-premium-header {
                 display: none !important;
             }
+            .hero-container {
+                padding-top: calc(96px + env(safe-area-inset-top, 0px)) !important;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+            .hero-badge {
+                margin-top: 6px !important;
+                margin-bottom: 20px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-container {
+                padding-top: calc(104px + env(safe-area-inset-top, 0px)) !important;
+                padding-left: 14px !important;
+                padding-right: 14px !important;
+            }
         }
     </style>
 </head>
