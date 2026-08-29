@@ -1484,16 +1484,25 @@
                 }
             @endphp
 
-            <div class="testimonial-grid">
+            {{-- Testimonial Carousel (Horizontal Scroll on Mobile, Grid on Desktop) --}}
+            <div class="flex overflow-x-auto snap-x snap-mandatory gap-3.5 pb-3 sm:pb-0 sm:grid sm:grid-cols-3 sm:gap-6 no-scrollbar pt-2 px-1" style="-webkit-overflow-scrolling: touch;">
                 @foreach($displayTestimonials as $t)
-                    <div class="testimonial-card glass-card">
-                        <div class="stars">@for($i = 0; $i < $t['stars']; $i++)★@endfor</div>
-                        <p class="quote">{{ $t['quote'] }}</p>
-                        <div class="author">
-                            <div class="author-img" style="background-image: url('{{ $t['image'] }}')" loading="lazy"></div>
-                            <div class="author-details">
-                                <h3 class="author-name" style="font-size: 15px; font-weight: 700; color: var(--text-dark); margin: 0;">{{ $t['author'] }}</h3>
-                                <span>{{ $t['role'] }}</span>
+                    <div class="w-[270px] sm:w-auto shrink-0 snap-center p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="text-amber-400 text-sm sm:text-base mb-2 tracking-wide flex items-center">
+                                @for($i = 0; $i < $t['stars']; $i++)★@endfor
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic line-clamp-3 mb-4 leading-relaxed">
+                                {{ $t['quote'] }}
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
+                            <img src="{{ $t['image'] }}" alt="{{ $t['author'] }}" title="{{ $t['author'] }}"
+                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($t['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
+                                 class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-blue-500/20 shadow-xs">
+                            <div class="min-w-0">
+                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">{{ $t['author'] }}</h3>
+                                <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold block truncate">{{ $t['role'] }}</span>
                             </div>
                         </div>
                     </div>
