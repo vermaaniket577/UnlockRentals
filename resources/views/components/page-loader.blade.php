@@ -1,40 +1,39 @@
 {{-- ============================================================
-     UNLOCK RENTALS — INTERACTIVE ANIMATED ILLUSTRATIVE LOADER
-     A high-end, glassmorphic full-screen transition overlay
-     coupled with an interactive, animated illustrative SVG and
-     dynamic cycling text lines for ultimate perceived premium quality.
+     UNLOCK RENTALS — ELEGANT COMPACT GLASS LOADER
+     A sleek, standard-sized glassmorphic loader with official
+     brand mark, smooth ambient pulse, and zero screen obstruction.
      ============================================================ --}}
 
 <style>
-/* ── Progress Bar ────────────────────────────── */
+/* ── Top Slim Accent Progress Bar ────────────────────────────── */
 #ur-progress-bar-top {
     position: fixed;
     top: 0;
     left: 0;
     width: 0%;
-    height: 3.5px;
-    background: linear-gradient(90deg, #2563EB, #a855f7, #2563EB);
+    height: 3px;
+    background: linear-gradient(90deg, #2563eb, #60a5fa, #38bdf8, #2563eb);
     background-size: 200% 100%;
     z-index: 9999999;
     opacity: 0;
     transition: opacity 0.15s ease, width 0.3s ease;
-    animation: ur-shimmer 1.2s infinite linear;
-    box-shadow: 0 0 10px rgba(37, 99, 235, 0.6), 0 0 4px rgba(168, 85, 247, 0.4);
+    animation: ur-bar-shimmer 1.2s infinite linear;
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
 }
 
 #ur-progress-bar-top.ur-active {
     opacity: 1;
 }
 
-@keyframes ur-shimmer {
+@keyframes ur-bar-shimmer {
     0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }
 }
 
-/* Glassmorphic Loader Overlay */
+/* ── Floating Compact Glass Loader Overlay ───────────────────── */
 #ur-animated-loader {
     pointer-events: none;
-    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #ur-animated-loader.ur-loading-active {
@@ -42,50 +41,67 @@
     opacity: 1;
 }
 
-/* Pulsing particles */
-@keyframes ur-pulse-glow {
-    0%, 100% { transform: scale(1); opacity: 0.15; }
-    50% { transform: scale(1.15); opacity: 0.35; }
+/* Ambient glow & orbit keyframes */
+@keyframes ur-ambient-glow {
+    0%, 100% { transform: scale(1); opacity: 0.2; }
+    50% { transform: scale(1.18); opacity: 0.45; }
 }
-.ur-glow-back {
-    animation: ur-pulse-glow 4s ease-in-out infinite;
+
+.ur-ambient-glow-circle {
+    animation: ur-ambient-glow 3s ease-in-out infinite;
+}
+
+/* Standard Compact Card */
+.ur-loader-card {
+    width: 142px;
+    padding: 1.25rem 1rem 1.1rem;
+    border-radius: 1.5rem;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 25px rgba(37, 99, 235, 0.22);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 </style>
 
-{{-- Top Slim Progress Bar --}}
+{{-- Top Accent Progress Bar --}}
 <div id="ur-progress-bar-top"></div>
 
-{{-- Fullscreen Luxury Overlay --}}
-<div id="ur-animated-loader" class="fixed inset-0 bg-zinc-950/80 backdrop-blur-md z-[9999998] flex flex-col items-center justify-center opacity-0">
-    <div class="relative bg-zinc-900/90 border border-zinc-800 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm w-full text-center mx-4 overflow-hidden">
+{{-- Fullscreen Overlay with Compact Floating Glass Centerpiece --}}
+<div id="ur-animated-loader" class="fixed inset-0 bg-slate-950/45 backdrop-blur-[3px] z-[9999998] flex items-center justify-center opacity-0">
+    <div class="ur-loader-card">
         
-        {{-- Shimmer Background layer --}}
-        <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+        {{-- Subtle radial shimmer --}}
+        <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-indigo-500/10 pointer-events-none"></div>
         
-        {{-- Interactive Animated Illustration --}}
-        <div class="relative z-10 w-28 h-28 mb-6 flex items-center justify-center">
-            {{-- Outer glow ring --}}
-            <div class="absolute inset-0 bg-blue-500/20 rounded-full filter blur-xl ur-glow-back"></div>
+        {{-- Animated Brand Icon Container --}}
+        <div class="relative z-10 w-16 h-16 mb-2.5 flex items-center justify-center">
+            {{-- Glowing ambient back ring --}}
+            <div class="absolute inset-0 bg-blue-500/30 rounded-full filter blur-md ur-ambient-glow-circle"></div>
             
-            {{-- Dotted spinning orbits --}}
-            <div class="absolute w-24 h-24 border border-dashed border-zinc-700 rounded-full animate-[spin_12s_linear_infinite]"></div>
-            <div class="absolute w-20 h-20 border border-dashed border-blue-500/30 rounded-full animate-[spin_8s_linear_infinite_reverse]"></div>
-            <div class="absolute w-16 h-16 border-2 border-dashed border-purple-500/20 rounded-full animate-[spin_4s_linear_infinite]"></div>
+            {{-- Orbit spinner --}}
+            <div class="absolute w-14 h-14 border border-dashed border-blue-400/40 rounded-full animate-[spin_6s_linear_infinite]"></div>
             
-            {{-- Core official app launcher icon --}}
-            <div class="relative w-14 h-14 bg-white rounded-2xl p-2 flex items-center justify-center shadow-xl shadow-blue-500/30 ring-2 ring-white/30 transform transition-transform duration-300 hover:scale-110">
-                <img src="{{ asset('images/logo-icon.png') }}" alt="UnlockRentals App" title="UnlockRentals App" class="w-full h-full object-contain" onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
+            {{-- Official App Icon Card --}}
+            <div class="relative w-11 h-11 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-lg shadow-blue-600/30 ring-1 ring-white/40">
+                <img src="{{ asset('images/logo-icon.png') }}" alt="UnlockRentals" title="UnlockRentals" class="w-full h-full object-contain" onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
             </div>
         </div>
 
         {{-- Progress Line --}}
-        <div class="relative z-10 w-full bg-zinc-800 rounded-full h-1 mb-4 overflow-hidden">
-            <div id="ur-loader-progress-line" class="bg-gradient-to-r from-blue-500 to-purple-500 h-full w-0 transition-all duration-300 ease-out"></div>
+        <div class="relative z-10 w-16 bg-slate-800 rounded-full h-1 mb-2 overflow-hidden">
+            <div id="ur-loader-progress-line" class="bg-gradient-to-r from-blue-500 to-sky-400 h-full w-0 transition-all duration-200 ease-out"></div>
         </div>
 
-        {{-- Interactive illustrative labels --}}
-        <h3 class="relative z-10 text-white font-semibold text-xs tracking-[0.2em] mb-1 font-sans uppercase">UnlockRentals</h3>
-        <p id="ur-loader-status-text" class="relative z-10 text-xs text-zinc-400 font-mono tracking-tight h-4">Preparing secure dashboard...</p>
+        {{-- Clean Brand & Status Labels --}}
+        <span class="relative z-10 text-white font-extrabold text-[10.5px] tracking-[0.14em] uppercase font-sans">UnlockRentals</span>
+        <span id="ur-loader-status-text" class="relative z-10 text-[9.5px] text-slate-400 font-medium tracking-tight mt-0.5">Loading...</span>
     </div>
 </div>
 
@@ -99,28 +115,8 @@
     const textLabel = document.getElementById('ur-loader-status-text');
 
     let timer         = null;
-    let textTimer     = null;
     let fakeWidth     = 0;
     let started       = false;
-
-    const phrases = [
-        "Connecting to secure gateway...",
-        "Syncing real-estate directory...",
-        "Fetching luxury listings...",
-        "Securing active database nodes...",
-        "Generating dynamic UI layout...",
-        "Authenticating credentials...",
-        "Optimizing interface caching..."
-    ];
-
-    function cycleStatusText() {
-        let index = 0;
-        textLabel.textContent = phrases[0];
-        textTimer = setInterval(() => {
-            index = (index + 1) % phrases.length;
-            textLabel.textContent = phrases[index];
-        }, 1200);
-    }
 
     function start() {
         if (started) return;
@@ -128,44 +124,41 @@
         fakeWidth = 0;
         
         clearInterval(timer);
-        clearInterval(textTimer);
 
-        // Reset elements
-        bar.style.width  = '0%';
-        line.style.width = '0%';
-        bar.classList.add('ur-active');
-        overlay.classList.add('ur-loading-active');
+        if (bar) {
+            bar.style.width = '0%';
+            bar.classList.add('ur-active');
+        }
+        if (line) line.style.width = '0%';
+        if (overlay) overlay.classList.add('ur-loading-active');
+        if (textLabel) textLabel.textContent = "Loading...";
 
-        cycleStatusText();
-
-        // Fake incremental progress
+        // Incremental progress
         timer = setInterval(() => {
-            if (fakeWidth < 88) {
-                fakeWidth += (88 - fakeWidth) * 0.08 + 0.6;
-                bar.style.width  = fakeWidth + '%';
-                line.style.width = fakeWidth + '%';
+            if (fakeWidth < 90) {
+                fakeWidth += (90 - fakeWidth) * 0.1 + 0.8;
+                if (bar) bar.style.width = fakeWidth + '%';
+                if (line) line.style.width = fakeWidth + '%';
             }
-        }, 90);
+        }, 80);
     }
 
     function done() {
         clearInterval(timer);
-        clearInterval(textTimer);
 
-        bar.style.width  = '100%';
-        line.style.width = '100%';
-        textLabel.textContent = "Interface synchronized successfully!";
+        if (bar) bar.style.width = '100%';
+        if (line) line.style.width = '100%';
 
         setTimeout(() => {
-            bar.classList.remove('ur-active');
-            overlay.classList.remove('ur-loading-active');
+            if (bar) bar.classList.remove('ur-active');
+            if (overlay) overlay.classList.remove('ur-loading-active');
             
             setTimeout(() => {
-                bar.style.width  = '0%';
-                line.style.width = '0%';
+                if (bar) bar.style.width = '0%';
+                if (line) line.style.width = '0%';
                 started = false;
-            }, 300);
-        }, 400);
+            }, 200);
+        }, 220);
     }
 
     window.URLoader = { show: start, hide: done };
@@ -177,7 +170,6 @@
         const link = e.target.closest('a[href]');
         if (!link) return;
 
-        // Skip links configured to skip loader or opening auth modals
         if (link.dataset.noLoader === 'true' || 
             link.dataset.urLoaderSkip === 'true' || 
             link.getAttribute('data-no-loader') === 'true' ||
