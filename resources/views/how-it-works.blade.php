@@ -314,7 +314,7 @@
                     <ul class="space-y-4 text-sm text-slate-700 dark:text-slate-300">
                         <li class="flex items-start gap-3">
                             <i class="ph-bold ph-check text-emerald-600 mt-1"></i>
-                            <span><strong>Zero Brokerage Forever:</strong> Pay once for an affordable pass starting at ₹199, zero commission.</span>
+                            <span><strong>Zero Brokerage Forever:</strong> Pay once for an affordable pass starting at ₹{{ number_format(\App\Models\Plan::where('is_private', false)->orderBy('price')->value('price') ?? 199, 0) }}, zero commission.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <i class="ph-bold ph-check text-emerald-600 mt-1"></i>
