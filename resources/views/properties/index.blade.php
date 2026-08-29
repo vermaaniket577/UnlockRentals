@@ -156,11 +156,6 @@
             </div>
         </div>
 
-        {{-- People Also Search For Section --}}
-        <div class="mt-16 sm:mt-20 border-t border-slate-200/80 dark:border-slate-800 pt-8 sm:pt-10">
-            <x-people-also-search />
-        </div>
-
     </div>
 </section>
 

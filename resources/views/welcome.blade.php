@@ -1502,9 +1502,6 @@
         </div>
     </section>
 
-    {{-- People Also Search For Widget --}}
-    <x-people-also-search />
-
     {{-- Resource Directory --}}
     @include('components.resource-directory')
 
