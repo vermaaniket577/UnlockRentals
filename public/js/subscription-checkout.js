@@ -53,12 +53,20 @@ window.UnlockSubscriptionCheckout = (config) => {
 
     // Live phone input validation & formatting
     if (phoneInput) {
-        const initialDigits = extract10Digits(phoneInput.value || userPrefill.contact || '');
+        let cachedStoragePhone = '';
+        try {
+            cachedStoragePhone = localStorage.getItem('ur_user_phone') || '';
+        } catch (_) {}
+
+        const initialDigits = extract10Digits(phoneInput.value || userPrefill.contact || cachedStoragePhone || '');
         if (initialDigits) {
             phoneInput.value = initialDigits;
             if (isValidIndianMobile(initialDigits)) {
                 phoneValidIcon?.classList.remove('opacity-0');
                 phoneValidIcon?.classList.add('opacity-100');
+                try {
+                    localStorage.setItem('ur_user_phone', initialDigits);
+                } catch (_) {}
             }
         }
 
@@ -68,6 +76,10 @@ window.UnlockSubscriptionCheckout = (config) => {
             phoneInput.value = cleaned;
 
             if (isValidIndianMobile(cleaned)) {
+                try {
+                    localStorage.setItem('ur_user_phone', cleaned);
+                } catch (_) {}
+
                 phoneError?.classList.add('hidden');
                 phoneValidIcon?.classList.remove('opacity-0');
                 phoneValidIcon?.classList.add('opacity-100');
@@ -103,15 +115,32 @@ window.UnlockSubscriptionCheckout = (config) => {
         });
     }
 
-    function getValidatedContactNumber() {
-        const raw = phoneInput ? phoneInput.value : (userPrefill.contact || '');
-        const cleaned = extract10Digits(raw);
+    function resolveContactNumber() {
+        let raw = '';
+        if (phoneInput && phoneInput.value) {
+            raw = phoneInput.value;
+        } else if (userPrefill && userPrefill.contact) {
+            raw = userPrefill.contact;
+        } else {
+            try {
+                raw = localStorage.getItem('ur_user_phone') || '';
+            } catch (_) {}
+        }
 
+        const cleaned = extract10Digits(raw);
         if (isValidIndianMobile(cleaned)) {
+            if (phoneInput && !phoneInput.value) {
+                phoneInput.value = cleaned;
+                phoneValidIcon?.classList.remove('opacity-0');
+                phoneValidIcon?.classList.add('opacity-100');
+            }
+            try {
+                localStorage.setItem('ur_user_phone', cleaned);
+            } catch (_) {}
             return cleaned;
         }
 
-        return '';
+        return cleaned || '';
     }
 
     summaryPayButton?.addEventListener('click', () => payButton?.click());
@@ -268,8 +297,8 @@ window.UnlockSubscriptionCheckout = (config) => {
                 return;
             }
 
-            // Get optional clean 10-digit mobile number if available
-            const contactNumber = getValidatedContactNumber();
+            // Get clean 10-digit mobile number for Razorpay auto-fill
+            const contactNumber = resolveContactNumber();
 
             isOpeningRazorpay = true;
             paymentCompleted = false;

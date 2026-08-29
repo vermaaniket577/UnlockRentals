@@ -77,6 +77,16 @@ class PlanController extends Controller
             }
         }
 
+        if (empty($user->phone)) {
+            $fallbackPhone = request('phone') 
+                ?? session('user_phone') 
+                ?? $user->inquiries()->whereNotNull('phone')->where('phone', '!=', '')->latest()->value('phone');
+            if (!empty($fallbackPhone)) {
+                $user->phone = \App\Models\User::sanitizePhone($fallbackPhone);
+                $user->save();
+            }
+        }
+
         $billingPeriod = request('billing', 'monthly') === 'yearly' ? 'yearly' : 'monthly';
         [$effectivePrice, $privateOffer] = $this->effectivePlanPrice($plan, $user, $billingPeriod);
         $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod, $privateOffer);
