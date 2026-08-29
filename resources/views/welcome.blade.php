@@ -497,7 +497,7 @@
             .main-header {
                 padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px 14px !important;
                 gap: 8px !important;
-                min-height: 54px !important;
+                min-height: 56px !important;
                 height: auto !important;
             }
             .logo-text {
@@ -507,21 +507,31 @@
                 display: none !important;
             }
             .hero-container {
-                padding-top: calc(96px + env(safe-area-inset-top, 0px)) !important;
+                padding-top: calc(100px + env(safe-area-inset-top, 0px)) !important;
                 padding-left: 16px !important;
                 padding-right: 16px !important;
             }
             .hero-badge {
-                margin-top: 6px !important;
-                margin-bottom: 20px !important;
+                margin-top: 10px !important;
+                margin-bottom: 18px !important;
+                font-size: 10.5px !important;
+                padding: 5px 14px !important;
+                letter-spacing: 1.2px !important;
             }
         }
 
         @media (max-width: 480px) {
             .hero-container {
-                padding-top: calc(104px + env(safe-area-inset-top, 0px)) !important;
+                padding-top: calc(108px + env(safe-area-inset-top, 0px)) !important;
                 padding-left: 14px !important;
                 padding-right: 14px !important;
+            }
+            .hero-badge {
+                margin-top: 10px !important;
+                margin-bottom: 16px !important;
+                font-size: 10px !important;
+                padding: 4.5px 12px !important;
+                letter-spacing: 1px !important;
             }
         }
     </style>
