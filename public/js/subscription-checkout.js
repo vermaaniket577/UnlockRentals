@@ -107,22 +107,11 @@ window.UnlockSubscriptionCheckout = (config) => {
         const raw = phoneInput ? phoneInput.value : (userPrefill.contact || '');
         const cleaned = extract10Digits(raw);
 
-        if (!isValidIndianMobile(cleaned)) {
-            if (phoneError) {
-                phoneError.textContent = cleaned.length === 0
-                    ? 'Please enter your 10-digit mobile number to launch Razorpay checkout.'
-                    : 'Please enter a valid 10-digit mobile number (e.g. 9876543210).';
-                phoneError.classList.remove('hidden');
-            }
-            if (phoneInput) {
-                phoneInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
-                phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                phoneInput.focus();
-            }
-            return null;
+        if (isValidIndianMobile(cleaned)) {
+            return cleaned;
         }
 
-        return cleaned;
+        return '';
     }
 
     summaryPayButton?.addEventListener('click', () => payButton?.click());
@@ -279,11 +268,8 @@ window.UnlockSubscriptionCheckout = (config) => {
                 return;
             }
 
-            // Validate & get clean 10-digit mobile number
+            // Get optional clean 10-digit mobile number if available
             const contactNumber = getValidatedContactNumber();
-            if (!contactNumber) {
-                return;
-            }
 
             isOpeningRazorpay = true;
             paymentCompleted = false;
@@ -291,6 +277,13 @@ window.UnlockSubscriptionCheckout = (config) => {
 
             let order;
             try {
+                const orderPayload = {
+                    billing_period: billingPeriod,
+                };
+                if (contactNumber) {
+                    orderPayload.phone = contactNumber;
+                }
+
                 const orderResponse = await fetch(razorpayOrderUrl, {
                     method: 'POST',
                     headers: {
@@ -298,10 +291,7 @@ window.UnlockSubscriptionCheckout = (config) => {
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrfToken,
                     },
-                    body: JSON.stringify({
-                        billing_period: billingPeriod,
-                        phone: contactNumber,
-                    }),
+                    body: JSON.stringify(orderPayload),
                 });
                 order = await orderResponse.json();
                 if (!orderResponse.ok) {
@@ -318,6 +308,15 @@ window.UnlockSubscriptionCheckout = (config) => {
 
             const selectedMethod = methodInput?.value || 'razorpay';
             const logoUrl = brandLogo || (window.location.origin + '/images/logo-icon.png');
+
+            const prefillData = {
+                name: userPrefill.name || '',
+                email: userPrefill.email || '',
+                method: (selectedMethod !== 'razorpay') ? selectedMethod : undefined,
+            };
+            if (contactNumber) {
+                prefillData.contact = contactNumber;
+            }
 
             const razorpay = new Razorpay({
                 key: order.key_id,
@@ -336,12 +335,7 @@ window.UnlockSubscriptionCheckout = (config) => {
                         response.razorpay_signature
                     );
                 },
-                prefill: {
-                    name: userPrefill.name || '',
-                    email: userPrefill.email || '',
-                    contact: contactNumber,
-                    method: (selectedMethod !== 'razorpay') ? selectedMethod : undefined,
-                },
+                prefill: prefillData,
                 notes: {
                     plan_name: planName,
                     billing_period: billingPeriod,
@@ -390,18 +384,12 @@ window.UnlockSubscriptionCheckout = (config) => {
             razorpay.open();
         });
 
-        // Instant Direct Razorpay Launch: If user already has a valid phone, trigger payment automatically on page load
-        const initialContact = extract10Digits(phoneInput?.value || userPrefill.contact || '');
-        if (isValidIndianMobile(initialContact)) {
-            setTimeout(() => {
-                if (!hasDismissedModal && !paymentCompleted && !isOpeningRazorpay) {
-                    payButton?.click();
-                }
-            }, 300);
-        } else {
-            // Auto focus phone input so user can just type 10 digits and immediately enter Razorpay
-            phoneInput?.focus();
-        }
+        // Instant Direct Razorpay Launch: Trigger payment modal immediately upon page load
+        setTimeout(() => {
+            if (!hasDismissedModal && !paymentCompleted && !isOpeningRazorpay) {
+                payButton?.click();
+            }
+        }, 150);
 
     } else {
         payButton?.addEventListener('click', (event) => {
