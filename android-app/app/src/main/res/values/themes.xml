@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base App Theme — MUST use AppCompat parent for AppCompatActivity -->
+    <!-- Base App Theme -->
     <style name="Theme.UnlockRentals" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:statusBarColor">@color/primary_dark</item>
         <item name="android:navigationBarColor">@color/primary_dark</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/primary</item>
     </style>
 
-    <!-- Splash Screen Theme — shows branded screen while app initializes -->
+    <!-- Splash Starting Theme — instantaneous branded launch with zero lag -->
     <style name="Theme.UnlockRentals.Splash" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="android:statusBarColor">@color/primary_dark</item>
         <item name="android:navigationBarColor">@color/primary_dark</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
     </style>
 
 </resources>

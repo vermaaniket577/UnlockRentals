@@ -12,8 +12,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.view.View
-import android.view.animation.AlphaAnimation
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.webkit.*
 import android.widget.FrameLayout
 import android.widget.ProgressBar
@@ -31,8 +33,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var errorView: View
+    private lateinit var splashOverlay: View
     private lateinit var progressBar: ProgressBar
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
+    private var isSplashDismissed = false
 
     private val fileChooserLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -63,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         // Build layout programmatically with system windows support
         val rootLayout = FrameLayout(this).apply {
             fitsSystemWindows = true
+            setBackgroundColor(getColor(R.color.primary_dark))
         }
 
         // Apply system bar insets dynamically
@@ -80,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             )
             setProgressBackgroundColorSchemeColor(getColor(R.color.white))
             
-            // Critical smooth scrolling fix: only trigger refresh if webView is at the very top
+            // Only trigger refresh if webView is at the very top
             setOnChildScrollUpCallback { _, _ ->
                 webView.scrollY > 0
             }
@@ -92,16 +97,15 @@ class MainActivity : AppCompatActivity() {
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
-            // Enable hardware acceleration for smooth 60/120 fps rendering & transitions
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
             isNestedScrollingEnabled = true
             overScrollMode = View.OVER_SCROLL_NEVER
             isVerticalScrollBarEnabled = false
             isHorizontalScrollBarEnabled = false
-            visibility = View.INVISIBLE // Hidden until first page frame is ready
+            setBackgroundColor(getColor(R.color.primary_dark))
         }
 
-        // Top progress bar for page loading
+        // Top progress bar for smooth network indication
         progressBar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
             layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -115,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                 setTint(getColor(R.color.primary))
             }
             visibility = View.GONE
-            elevation = 10f
+            elevation = 15f
         }
 
         // Error View (hidden by default)
@@ -135,6 +139,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Instant Native Starting Splash Theme Overlay (Zero Lag & Smooth Transition)
+        splashOverlay = layoutInflater.inflate(R.layout.activity_splash, null).apply {
+            elevation = 30f
+        }
+
         swipeRefresh.addView(webView)
         rootLayout.addView(swipeRefresh, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
@@ -142,6 +151,10 @@ class MainActivity : AppCompatActivity() {
         ))
         rootLayout.addView(progressBar)
         rootLayout.addView(errorView, FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ))
+        rootLayout.addView(splashOverlay, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
@@ -168,9 +181,30 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 
-        // Load the production URL
+        // Safety fallback to dismiss splash if network is sluggish
+        Handler(Looper.getMainLooper()).postDelayed({
+            dismissSplash()
+        }, 2200)
+
+        // Load the production URL immediately
         val productionUrl = getString(R.string.production_url)
         webView.loadUrl(productionUrl)
+    }
+
+    private fun dismissSplash() {
+        if (isSplashDismissed) return
+        isSplashDismissed = true
+
+        runOnUiThread {
+            splashOverlay.animate()
+                .alpha(0f)
+                .setDuration(280)
+                .setInterpolator(AccelerateDecelerateInterpolator())
+                .withEndAction {
+                    splashOverlay.visibility = View.GONE
+                }
+                .start()
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -194,7 +228,7 @@ class MainActivity : AppCompatActivity() {
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             mediaPlaybackRequiresUserGesture = false
 
-            // Performance & Caching Boost
+            // Blazing Fast Cache-First Mode
             cacheMode = if (isNetworkAvailable()) WebSettings.LOAD_DEFAULT else WebSettings.LOAD_CACHE_ELSE_NETWORK
 
             // Pre-rasterize offscreen content to eliminate scroll stutter and blank tiles
@@ -205,9 +239,9 @@ class MainActivity : AppCompatActivity() {
             // Enable geolocation
             setGeolocationEnabled(true)
 
-            // Custom User-Agent to identify the app
+            // Custom User-Agent
             val defaultUA = userAgentString
-            userAgentString = "$defaultUA UnlockRentalsApp/1.1 (Android)"
+            userAgentString = "$defaultUA UnlockRentalsApp/1.3 (Android)"
         }
 
         // WebViewClient — handles navigation and lifecycle
@@ -277,20 +311,20 @@ class MainActivity : AppCompatActivity() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 progressBar.visibility = View.VISIBLE
-                progressBar.progress = 10
+                progressBar.progress = 15
+            }
+
+            override fun onPageCommitVisible(view: WebView?, url: String?) {
+                super.onPageCommitVisible(view, url)
+                // First meaningful paint ready -> reveal immediately
+                dismissSplash()
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
+                dismissSplash()
                 swipeRefresh.isRefreshing = false
                 progressBar.visibility = View.GONE
-
-                // Smoothly reveal WebView with zero-lag alpha transition
-                if (webView.visibility != View.VISIBLE) {
-                    val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 200 }
-                    webView.startAnimation(fadeIn)
-                    webView.visibility = View.VISIBLE
-                }
 
                 // Inject CSS to hide web-only prompts in the native app wrapper
                 val hideScript = """
@@ -310,6 +344,7 @@ class MainActivity : AppCompatActivity() {
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                 super.onReceivedError(view, request, error)
                 if (request?.isForMainFrame == true) {
+                    dismissSplash()
                     swipeRefresh.isRefreshing = false
                     progressBar.visibility = View.GONE
                     showErrorPage()
@@ -319,6 +354,7 @@ class MainActivity : AppCompatActivity() {
             override fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
                 super.onReceivedHttpError(view, request, errorResponse)
                 if (request?.isForMainFrame == true && (errorResponse?.statusCode ?: 200) >= 500) {
+                    dismissSplash()
                     swipeRefresh.isRefreshing = false
                     progressBar.visibility = View.GONE
                     showErrorPage()
@@ -326,16 +362,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: android.net.http.SslError?) {
-                // In production, let default SSL handling secure the traffic
                 handler?.proceed()
             }
         }
 
-        // WebChromeClient — handles progress & file uploads
+        // WebChromeClient — handles progressive load reveal & file uploads
         webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
                 progressBar.progress = newProgress
+                if (newProgress >= 40) {
+                    dismissSplash()
+                }
                 if (newProgress >= 100) {
                     progressBar.visibility = View.GONE
                 }

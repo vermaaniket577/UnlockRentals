@@ -1,71 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/splash_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary_dark">
+    android:background="@drawable/splash_gradient_bg">
 
-    <!-- Centered Logo & App Name -->
+    <!-- Center Brand Container -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
+        android:paddingHorizontal="32dp"
         android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="72dp"
-            android:src="@drawable/business_logo"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:contentDescription="UnlockRentals Logo"
-            android:layout_marginBottom="20dp" />
+        <!-- Logo Icon Card -->
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/splash_logo_card_bg"
+            android:elevation="12dp"
+            android:padding="10dp"
+            android:layout_marginBottom="24dp">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/business_logo"
+                android:scaleType="fitCenter"
+                android:contentDescription="UnlockRentals Brand" />
+        </FrameLayout>
+
+        <!-- Brand Name -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="UnlockRentals"
-            android:textColor="@color/white"
-            android:textSize="28sp"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.02"
+            android:letterSpacing="-0.02"
             android:layout_marginBottom="8dp" />
 
+        <!-- Tagline -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_description"
-            android:textColor="@color/gray_400"
-            android:textSize="13sp"
+            android:text="Find Your Perfect Home · Zero Brokerage"
+            android:textColor="#94A3B8"
+            android:textSize="13.5sp"
             android:textAlignment="center"
-            android:maxWidth="280dp" />
+            android:fontFamily="sans-serif"
+            android:letterSpacing="0.01"
+            android:maxWidth="300dp" />
 
     </LinearLayout>
 
-    <!-- Bottom Loading Indicator -->
+    <!-- Bottom Loading Experience -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="48dp"
         android:gravity="center"
         android:orientation="vertical">
 
         <ProgressBar
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:indeterminateTint="@color/primary_light"
-            android:layout_marginBottom="12dp" />
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:indeterminateTint="#60A5FA"
+            android:layout_marginBottom="10dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Loading your experience..."
-            android:textColor="@color/gray_500"
-            android:textSize="12sp"
-            android:fontFamily="sans-serif" />
+            android:text="Fast &amp; Secure Access"
+            android:textColor="#64748B"
+            android:textSize="11.5sp"
+            android:fontFamily="sans-serif"
+            android:letterSpacing="0.04" />
 
     </LinearLayout>
 
