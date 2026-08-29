@@ -230,6 +230,11 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        $redirect = $request->input('redirect') ?: $request->headers->get('referer');
+        if ($redirect && !str_contains($redirect, 'dashboard') && !str_contains($redirect, 'admin') && !str_contains($redirect, 'login') && !str_contains($redirect, 'register')) {
+            return redirect($redirect)->with('success', 'You have been logged out.');
+        }
+
         return redirect()->route('home')->with('success', 'You have been logged out.');
     }
 }
