@@ -390,10 +390,22 @@
                     </div>
 
                     {{-- Selected File Notification badge --}}
-                    <div id="file-chosen-status" class="hidden text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1.5">
-                        <i class="ph-bold ph-check-circle text-sm"></i>
-                        <span id="file-chosen-name" class="truncate">File chosen</span>
+                    <div id="file-chosen-status" class="hidden text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 flex items-center justify-between gap-1.5">
+                        <div class="flex items-center gap-1.5 truncate">
+                            <i class="ph-bold ph-check-circle text-sm text-emerald-600"></i>
+                            <span id="file-chosen-name" class="truncate">File chosen</span>
+                        </div>
+                        @if($blog)
+                        <button type="button" onclick="instantUploadCoverImage()" id="btn-save-image-now"
+                                class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-md transition-all flex items-center gap-1 flex-shrink-0 shadow-2xs">
+                            <i class="ph-bold ph-floppy-disk"></i>
+                            <span>Save Image Now</span>
+                        </button>
+                        @endif
                     </div>
+
+                    {{-- Live upload status toast --}}
+                    <div id="image-upload-toast" class="hidden text-xs font-bold px-3.5 py-2 rounded-xl border transition-all"></div>
 
                     {{-- Upload file --}}
                     <div>
@@ -404,7 +416,14 @@
 
                     {{-- Or External URL --}}
                     <div>
-                        <label for="cover-image-url" class="text-xs font-bold text-slate-700 block mb-1.5">Or External Image URL</label>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="cover-image-url" class="text-xs font-bold text-slate-700">Or External Image URL</label>
+                            @if($blog)
+                            <button type="button" onclick="saveExternalImageUrl()" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 transition-colors">
+                                Apply & Save URL
+                            </button>
+                            @endif
+                        </div>
                         <input type="text" name="image_url" id="cover-image-url" oninput="previewImageUrl(this.value)"
                                value="{{ old('image_url', $blog && (str_starts_with($blog->image ?? '', 'http') || str_starts_with($blog->image ?? '', '//')) ? $blog->image : '') }}"
                                placeholder="https://images.unsplash.com/..."
@@ -703,6 +722,116 @@
                 if (base64Input) base64Input.value = compressedData;
             });
         }
+    }
+
+    // Direct Instant Image Upload (AJAX)
+    function instantUploadCoverImage() {
+        @if($blog)
+        const btn = document.getElementById('btn-save-image-now');
+        const toast = document.getElementById('image-upload-toast');
+        const base64Input = document.getElementById('image-base64-input');
+        const fileInput = document.getElementById('cover-image-file');
+
+        if (!base64Input.value && (!fileInput.files || !fileInput.files[0])) {
+            alert('Please select an image file first.');
+            return;
+        }
+
+        const originalBtnText = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Saving...';
+        }
+
+        const formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        if (base64Input.value) {
+            formData.append('image_base64', base64Input.value);
+        } else if (fileInput.files[0]) {
+            formData.append('image', fileInput.files[0]);
+        }
+
+        fetch('{{ route("admin.blogs.upload-image", $blog) }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnText;
+            }
+            if (data.success) {
+                if (toast) {
+                    toast.className = 'text-xs font-bold px-3.5 py-2 rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-300 block';
+                    toast.innerHTML = '<i class="ph-bold ph-check-circle text-emerald-600 mr-1"></i> ' + data.message;
+                }
+                if (data.image_url) {
+                    document.getElementById('cover-image-preview').src = data.image_url + '?t=' + Date.now();
+                }
+            } else {
+                if (toast) {
+                    toast.className = 'text-xs font-bold px-3.5 py-2 rounded-xl border bg-rose-50 text-rose-800 border-rose-300 block';
+                    toast.innerHTML = '<i class="ph-bold ph-warning-circle text-rose-600 mr-1"></i> ' + (data.message || 'Failed to upload image.');
+                }
+            }
+        })
+        .catch(err => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnText;
+            }
+            if (toast) {
+                toast.className = 'text-xs font-bold px-3.5 py-2 rounded-xl border bg-rose-50 text-rose-800 border-rose-300 block';
+                toast.innerHTML = '<i class="ph-bold ph-warning-circle text-rose-600 mr-1"></i> Network error while saving image.';
+            }
+        });
+        @endif
+    }
+
+    function saveExternalImageUrl() {
+        @if($blog)
+        const urlInput = document.getElementById('cover-image-url');
+        const toast = document.getElementById('image-upload-toast');
+        const val = urlInput ? urlInput.value.trim() : '';
+
+        if (!val) {
+            alert('Please enter an image URL first.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('image_url', val);
+
+        fetch('{{ route("admin.blogs.upload-image", $blog) }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (toast) {
+                    toast.className = 'text-xs font-bold px-3.5 py-2 rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-300 block';
+                    toast.innerHTML = '<i class="ph-bold ph-check-circle text-emerald-600 mr-1"></i> ' + data.message;
+                }
+                if (data.image_url) {
+                    document.getElementById('cover-image-preview').src = data.image_url;
+                }
+            } else {
+                if (toast) {
+                    toast.className = 'text-xs font-bold px-3.5 py-2 rounded-xl border bg-rose-50 text-rose-800 border-rose-300 block';
+                    toast.innerHTML = '<i class="ph-bold ph-warning-circle text-rose-600 mr-1"></i> ' + (data.message || 'Failed to save URL.');
+                }
+            }
+        });
+        @endif
     }
 </script>
 @endpush

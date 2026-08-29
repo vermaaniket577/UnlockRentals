@@ -344,6 +344,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/blogs', [AdminController::class, 'storeBlog'])->name('blogs.store');
     Route::get('/blogs/{blog}/edit', [AdminController::class, 'editBlog'])->name('blogs.edit');
     Route::put('/blogs/{blog}', [AdminController::class, 'updateBlog'])->name('blogs.update');
+    Route::post('/blogs/{blog}/upload-image', [AdminController::class, 'uploadBlogImage'])->name('blogs.upload-image');
     Route::delete('/blogs/{blog}', [AdminController::class, 'destroyBlog'])->name('blogs.destroy');
     Route::post('/blogs/{blog}/toggle-publish', [AdminController::class, 'togglePublishBlog'])->name('blogs.toggle-publish');
     Route::post('/blogs/{blog}/toggle-featured', [AdminController::class, 'toggleFeaturedBlog'])->name('blogs.toggle-featured');

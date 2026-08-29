@@ -1309,6 +1309,103 @@ class AdminController extends Controller
     }
 
     /**
+     * Dedicated direct upload for blog cover image (AJAX or direct POST).
+     */
+    public function uploadBlogImage(Request $request, Blog $blog)
+    {
+        if ($request->hasFile('image')) {
+            if ($blog->image && !str_starts_with($blog->image, 'http')) {
+                Storage::disk('public')->delete($blog->image);
+                @unlink(public_path($blog->image));
+                @unlink(public_path('blogs/' . basename($blog->image)));
+            }
+            $file = $request->file('image');
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs', $filename, 'public');
+
+            try {
+                @mkdir(public_path('blogs'), 0777, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs'), 0777, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('storage/blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            $blog->update(['image' => $path]);
+            Cache::forget('home_blogs');
+            Cache::forget('sitemap_blogs');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cover image updated successfully!',
+                'image_url' => $blog->fresh()->cover_image_url
+            ]);
+        }
+
+        if ($request->filled('image_base64') && str_starts_with($request->image_base64, 'data:image/')) {
+            if ($blog->image && !str_starts_with($blog->image, 'http')) {
+                Storage::disk('public')->delete($blog->image);
+                @unlink(public_path($blog->image));
+                @unlink(public_path('blogs/' . basename($blog->image)));
+            }
+            $base64Data = $request->image_base64;
+            @list($type, $base64Data) = explode(';', $base64Data);
+            @list(, $base64Data)      = explode(',', $base64Data);
+            $decoded = base64_decode($base64Data);
+            
+            $ext = 'jpg';
+            if (str_contains($type, 'png')) $ext = 'png';
+            elseif (str_contains($type, 'webp')) $ext = 'webp';
+
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = 'blogs/' . $filename;
+
+            Storage::disk('public')->put($path, $decoded);
+
+            try {
+                @mkdir(public_path('blogs'), 0777, true);
+                @file_put_contents(public_path('blogs/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs'), 0777, true);
+                @file_put_contents(public_path('storage/blogs/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            $blog->update(['image' => $path]);
+            Cache::forget('home_blogs');
+            Cache::forget('sitemap_blogs');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cover image updated successfully!',
+                'image_url' => $blog->fresh()->cover_image_url
+            ]);
+        }
+
+        if ($request->filled('image_url')) {
+            $url = trim($request->image_url);
+            if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '//')) {
+                $url = 'https://' . $url;
+            }
+            $blog->update(['image' => $url]);
+            Cache::forget('home_blogs');
+            Cache::forget('sitemap_blogs');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cover image URL updated successfully!',
+                'image_url' => $blog->fresh()->cover_image_url
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'No image data provided.'], 422);
+    }
+
+    /**
      * Delete a blog post.
      */
     public function destroyBlog(Blog $blog)
