@@ -29,12 +29,20 @@
 
     {{-- Image Container --}}
     <div class="aspect-[16/10] w-full relative overflow-hidden bg-slate-100 dark:bg-slate-800">
-        @if($property->primaryImage)
-            <img src="{{ $property->primaryImage->imageUrl() }}"
+        @if($property->primaryImageUrl())
+            <img src="{{ $property->primaryImageUrl() }}"
                  alt="{{ $property->title }}"
                  title="{{ $property->title }}"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                  loading="lazy">
+        @elseif($property->hasVideo())
+            <div class="w-full h-full bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 flex flex-col items-center justify-center text-white relative group-hover:scale-105 transition-transform duration-500 p-4 text-center">
+                <div class="w-12 h-12 rounded-2xl bg-purple-600/40 backdrop-blur-md border border-purple-500/50 flex items-center justify-center text-purple-200 mb-2 shadow-lg group-hover:scale-110 transition-transform">
+                    <i class="ph-bold ph-play-circle text-2xl"></i>
+                </div>
+                <span class="text-xs font-extrabold uppercase tracking-wider text-purple-200">Virtual Video Tour</span>
+                <span class="text-[10px] text-purple-300/80 mt-0.5">Click to watch full video</span>
+            </div>
         @else
             <img src="{{ asset('images/luxury_sunlit.png') }}"
                  alt="Premium Property - {{ $property->title }}"
@@ -53,11 +61,25 @@
 
         {{-- Top Badges --}}
         <div class="absolute top-3 left-3 flex items-center gap-1.5 z-20 pointer-events-none">
-            <span class="bg-white/95 dark:bg-slate-950/95 text-blue-600 dark:text-blue-400 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider shadow-xs border border-white/40 dark:border-slate-800">
+            @if(($property->purpose ?? 'rent') === 'buy' || ($property->purpose ?? 'rent') === 'sell')
+                <span class="bg-emerald-600 text-white backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider shadow-xs flex items-center gap-1">
+                    <i class="ph-bold ph-tag"></i> For Sale
+                </span>
+            @else
+                <span class="bg-blue-600 text-white backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider shadow-xs flex items-center gap-1">
+                    <i class="ph-bold ph-key"></i> For Rent
+                </span>
+            @endif
+            <span class="bg-white/95 dark:bg-slate-950/95 text-slate-800 dark:text-slate-200 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider shadow-xs border border-white/40 dark:border-slate-800">
                 {{ ucfirst($property->type) }}
             </span>
+            @if($property->hasVideo())
+                <span class="bg-purple-600 text-white backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider shadow-xs flex items-center gap-1">
+                    <i class="ph-bold ph-video-camera"></i> Video Tour
+                </span>
+            @endif
             @if($property->is_featured)
-                <span class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider shadow-xs flex items-center gap-1">
+                <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider shadow-xs flex items-center gap-1">
                     <i class="ph-fill ph-star"></i> Featured
                 </span>
             @endif

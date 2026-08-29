@@ -11,6 +11,12 @@ class State extends Model
 
     public $timestamps = false;
 
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('indian_location_data'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('indian_location_data'));
+    }
+
     public function districts(): HasMany
     {
         return $this->hasMany(District::class);

@@ -706,23 +706,153 @@ class AdminController extends Controller
     }
 
     /**
-     * List and manage locations.
+     * List and manage locations (States, Cities/Districts, Localities).
      */
     public function locations()
     {
-        $states = \App\Models\State::orderBy('name')->get();
+        $totalStates = \App\Models\State::count();
+        $totalDistricts = \App\Models\District::count();
+        $totalLocalities = \App\Models\Locality::count();
+
+        $states = \App\Models\State::withCount('districts')->orderBy('name')->get();
+        $allDistricts = \App\Models\District::with('state')->orderBy('name')->get();
         
         $selectedStateId = request('state_id');
         $selectedDistrictId = request('district_id');
 
         $districts = $selectedStateId 
-            ? \App\Models\District::where('state_id', $selectedStateId)->orderBy('name')->get()
+            ? \App\Models\District::where('state_id', $selectedStateId)->withCount('localities')->orderBy('name')->get()
             : collect();
 
         $localities = $selectedDistrictId
-            ? \App\Models\Locality::where('district_id', $selectedDistrictId)->orderBy('name')->paginate(20)
+            ? \App\Models\Locality::where('district_id', $selectedDistrictId)->with('district.state')->orderBy('name')->paginate(25)
             : collect();
 
-        return view('admin.locations', compact('states', 'districts', 'localities', 'selectedStateId', 'selectedDistrictId'));
+        return view('admin.locations', compact(
+            'states', 
+            'allDistricts',
+            'districts', 
+            'localities', 
+            'selectedStateId', 
+            'selectedDistrictId',
+            'totalStates',
+            'totalDistricts',
+            'totalLocalities'
+        ));
+    }
+
+    /**
+     * Store a new state.
+     */
+    public function storeState(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:5|unique:states,code',
+            'name' => 'required|string|max:100|unique:states,name',
+        ]);
+
+        $state = \App\Models\State::create([
+            'code' => strtoupper(trim($request->code)),
+            'name' => trim($request->name),
+        ]);
+
+        Cache::forget('indian_location_data');
+
+        return redirect()->route('admin.locations', ['state_id' => $state->id])
+            ->with('success', "State '{$state->name}' ({$state->code}) created successfully.");
+    }
+
+    /**
+     * Delete a state.
+     */
+    public function destroyState(\App\Models\State $state)
+    {
+        $name = $state->name;
+        $state->delete();
+
+        Cache::forget('indian_location_data');
+
+        return redirect()->route('admin.locations')
+            ->with('success', "State '{$name}' and its cities/localities deleted successfully.");
+    }
+
+    /**
+     * Store a new district / city.
+     */
+    public function storeDistrict(Request $request)
+    {
+        $request->validate([
+            'state_id' => 'required|exists:states,id',
+            'name' => 'required|string|max:100',
+        ]);
+
+        $district = \App\Models\District::create([
+            'state_id' => $request->state_id,
+            'name' => trim($request->name),
+        ]);
+
+        Cache::forget('indian_location_data');
+
+        return redirect()->route('admin.locations', [
+            'state_id' => $district->state_id,
+            'district_id' => $district->id
+        ])->with('success', "City/District '{$district->name}' created successfully.");
+    }
+
+    /**
+     * Delete a district / city.
+     */
+    public function destroyDistrict(\App\Models\District $district)
+    {
+        $name = $district->name;
+        $stateId = $district->state_id;
+        $district->delete();
+
+        Cache::forget('indian_location_data');
+
+        return redirect()->route('admin.locations', ['state_id' => $stateId])
+            ->with('success', "City/District '{$name}' and its localities deleted successfully.");
+    }
+
+    /**
+     * Store a new locality.
+     */
+    public function storeLocality(Request $request)
+    {
+        $request->validate([
+            'district_id' => 'required|exists:districts,id',
+            'name' => 'required|string|max:100',
+        ]);
+
+        $locality = \App\Models\Locality::create([
+            'district_id' => $request->district_id,
+            'name' => trim($request->name),
+        ]);
+
+        Cache::forget('indian_location_data');
+
+        $district = \App\Models\District::find($request->district_id);
+
+        return redirect()->route('admin.locations', [
+            'state_id' => $district ? $district->state_id : null,
+            'district_id' => $district ? $district->id : null
+        ])->with('success', "Locality '{$locality->name}' added successfully.");
+    }
+
+    /**
+     * Delete a locality.
+     */
+    public function destroyLocality(\App\Models\Locality $locality)
+    {
+        $name = $locality->name;
+        $district = $locality->district;
+        $locality->delete();
+
+        Cache::forget('indian_location_data');
+
+        return redirect()->route('admin.locations', [
+            'state_id' => $district ? $district->state_id : null,
+            'district_id' => $district ? $district->id : null
+        ])->with('success', "Locality '{$name}' deleted successfully.");
     }
 }

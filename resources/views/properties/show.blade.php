@@ -134,6 +134,15 @@
                 {{-- Property Title, Badges & Header Card --}}
                 <div class="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
                     <div class="flex flex-wrap items-center gap-2 mb-3">
+                        @if(($property->purpose ?? 'rent') === 'buy' || ($property->purpose ?? 'rent') === 'sell')
+                            <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-extrabold rounded-md uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                                <i class="ph-bold ph-tag"></i> For Sale
+                            </span>
+                        @else
+                            <span class="px-3 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-md uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                                <i class="ph-bold ph-key"></i> For Rent
+                            </span>
+                        @endif
                         <span class="px-3 py-1 bg-[#2874F0]/10 text-[#2874F0] text-xs font-bold rounded-md uppercase tracking-wider">
                             {{ ucfirst($property->type) }}
                         </span>
@@ -267,6 +276,127 @@
                         </div>
                     @endif
                 </div>
+
+                {{-- Video Tour Section (if property has video) --}}
+                @if($property->hasVideo())
+                @php
+                    $allVideos = $property->allVideoUrls();
+                @endphp
+                <div class="bg-white rounded-2xl p-5 sm:p-6 border border-zinc-200 shadow-sm" id="property-video-tour">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-zinc-100">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shadow-xs">
+                                <i class="ph-bold ph-video-camera"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-zinc-900 flex items-center gap-2">
+                                    Virtual Video Tours
+                                    <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-extrabold uppercase rounded-full">
+                                        {{ count($allVideos) > 1 ? count($allVideos) . ' HD Clips' : 'HD Walkthrough' }}
+                                    </span>
+                                </h3>
+                                <p class="text-xs text-zinc-500">Real video walkthrough recorded for this property</p>
+                            </div>
+                        </div>
+
+                        {{-- Multi-Video Selector Tabs --}}
+                        @if(count($allVideos) > 1)
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($allVideos as $idx => $vUrl)
+                                <button type="button" onclick="switchPropertyVideo('{{ $vUrl }}', {{ $idx }}, this)"
+                                        class="property-video-tab px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer {{ $idx === 0 ? 'bg-purple-600 text-white shadow-xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200' }}">
+                                    <i class="ph-bold ph-play-circle mr-1"></i> Tour Clip {{ $idx + 1 }}
+                                </button>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+
+                    <div class="relative rounded-xl overflow-hidden bg-black aspect-video max-h-[460px] shadow-inner" id="video-display-container">
+                        @php
+                            $firstVideo = $allVideos[0] ?? '';
+                            $isYoutube = preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i', $firstVideo, $ytMatches);
+                            $isVimeo = preg_match('/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i', $firstVideo, $vmMatches);
+                        @endphp
+
+                        @if($isYoutube)
+                            <iframe id="main-video-iframe" class="w-full h-full" src="https://www.youtube.com/embed/{{ $ytMatches[1] }}" allowfullscreen frameborder="0"></iframe>
+                            <video id="main-video-player" controls playsinline class="w-full h-full object-contain mx-auto hidden"></video>
+                        @elseif($isVimeo)
+                            <iframe id="main-video-iframe" class="w-full h-full" src="https://player.vimeo.com/video/{{ $vmMatches[3] }}" allowfullscreen frameborder="0"></iframe>
+                            <video id="main-video-player" controls playsinline class="w-full h-full object-contain mx-auto hidden"></video>
+                        @else
+                            <iframe id="main-video-iframe" class="w-full h-full hidden" allowfullscreen frameborder="0"></iframe>
+                            <video id="main-video-player" controls playsinline preload="auto" class="w-full h-full object-contain mx-auto" src="{{ $firstVideo }}">
+                                <source src="{{ $firstVideo }}" type="video/webm">
+                                <source src="{{ $firstVideo }}" type="video/mp4">
+                                Your browser does not support HTML5 video playback.
+                            </video>
+                        @endif
+                    </div>
+
+                    {{-- All Clips Playlist Grid --}}
+                    @if(count($allVideos) > 1)
+                    <div class="mt-4 pt-3.5 border-t border-zinc-100">
+                        <p class="text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                            <i class="ph-bold ph-film-strip text-purple-600"></i> All Tour Clips ({{ count($allVideos) }})
+                        </p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                            @foreach($allVideos as $idx => $vUrl)
+                                <button type="button" onclick="switchPropertyVideo('{{ $vUrl }}', {{ $idx }}, this)"
+                                        class="property-video-tab group text-left p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2.5 {{ $idx === 0 ? 'bg-purple-50 border-purple-500 text-purple-900 ring-2 ring-purple-500/20' : 'bg-zinc-50 hover:bg-purple-50/50 border-zinc-200 hover:border-purple-300 text-zinc-700' }}">
+                                    <div class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center flex-shrink-0 text-sm shadow-xs group-hover:scale-105 transition-transform">
+                                        <i class="ph-bold ph-play"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="text-xs font-bold block truncate">Clip {{ $idx + 1 }}</span>
+                                        <span class="text-[10px] text-zinc-400 font-medium block truncate">Click to play</span>
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
+                <script>
+                function switchPropertyVideo(url, index, btn) {
+                    document.querySelectorAll('.property-video-tab').forEach(b => {
+                        b.classList.remove('bg-purple-50', 'border-purple-500', 'text-purple-900', 'ring-2', 'ring-purple-500/20', 'bg-purple-600', 'text-white');
+                        b.classList.add('bg-zinc-50', 'border-zinc-200', 'text-zinc-700');
+                    });
+                    if (btn) {
+                        btn.classList.remove('bg-zinc-50', 'border-zinc-200', 'text-zinc-700');
+                        btn.classList.add('bg-purple-50', 'border-purple-500', 'text-purple-900', 'ring-2', 'ring-purple-500/20');
+                    }
+
+                    const player = document.getElementById('main-video-player');
+                    const iframe = document.getElementById('main-video-iframe');
+
+                    const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+                    const vmMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i);
+
+                    if (ytMatch && iframe && player) {
+                        player.pause();
+                        player.classList.add('hidden');
+                        iframe.src = 'https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=1';
+                        iframe.classList.remove('hidden');
+                    } else if (vmMatch && iframe && player) {
+                        player.pause();
+                        player.classList.add('hidden');
+                        iframe.src = 'https://player.vimeo.com/video/' + vmMatch[3] + '?autoplay=1';
+                        iframe.classList.remove('hidden');
+                    } else if (player && iframe) {
+                        iframe.src = '';
+                        iframe.classList.add('hidden');
+                        player.src = url;
+                        player.load();
+                        player.classList.remove('hidden');
+                        player.play().catch(e => console.warn('Autoplay prevented:', e));
+                    }
+                }
+                </script>
+                @endif
 
                 {{-- Premium Quick Info Cards Grid --}}
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5" id="property-features">

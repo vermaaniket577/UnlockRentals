@@ -26,8 +26,14 @@ class PropertyController extends Controller
             ->with(['primaryImage', 'category', 'owner']);
 
         // Filter by type (house/shop)
-        if ($request->filled('type')) {
+        if ($request->filled('type') && $request->type !== 'all') {
             $query->ofType($request->type);
+        }
+
+        // Filter by purpose (rent vs buy/sell)
+        if ($request->filled('purpose') && $request->purpose !== 'all' && $request->purpose !== 'any') {
+            $purposeVal = ($request->purpose === 'sell') ? 'buy' : $request->purpose;
+            $query->where('purpose', $purposeVal);
         }
 
         // Filter by category
@@ -187,16 +193,20 @@ class PropertyController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Cache::remember('active_categories', 86400, fn () => Category::all());
         return view('properties.create', compact('categories'));
     }
 
     /**
-     * Store a newly created property.
+     * Store a newly created property with high performance batch insertion.
      */
     public function store(StorePropertyRequest $request)
     {
         $data = $request->validated();
+        if (isset($data['purpose']) && $data['purpose'] === 'sell') {
+            $data['purpose'] = 'buy';
+        }
+        $data['purpose'] = $data['purpose'] ?? 'rent';
         $data['user_id'] = auth()->id();
         $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
         $data['status'] = $bypassApproval ? 'approved' : 'pending';
@@ -213,29 +223,89 @@ class PropertyController extends Controller
             }
         }
 
-        // Remove images from the data array before creating
-        unset($data['images'], $data['primary_image']);
+        // Remove media fields from the data array before creating
+        unset($data['images'], $data['primary_image'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls']);
 
-        $property = Property::create($data);
+        $property = \Illuminate\Support\Facades\DB::transaction(function () use ($data, $request) {
+            $prop = Property::create($data);
 
-        // Handle image uploads — save to disk for fast serving
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('properties/' . $property->id, 'public');
+            // Handle pre-uploaded async video paths, multi-video files, and video URLs
+            $videoPaths = [];
+            if ($request->filled('uploaded_video_paths')) {
+                foreach ((array)$request->uploaded_video_paths as $uPath) {
+                    if (!empty(trim((string)$uPath))) {
+                        $videoPaths[] = trim((string)$uPath);
+                    }
+                }
+            }
+            if ($request->hasFile('videos')) {
+                foreach ($request->file('videos') as $vFile) {
+                    $videoPaths[] = $vFile->store('properties/' . $prop->id . '/videos', 'public');
+                }
+            }
+            if ($request->hasFile('video')) {
+                $videoPaths[] = $request->file('video')->store('properties/' . $prop->id . '/videos', 'public');
+            }
+            if ($request->filled('video_urls')) {
+                foreach ((array)$request->video_urls as $vUrl) {
+                    if (!empty(trim((string)$vUrl))) {
+                        $videoPaths[] = trim((string)$vUrl);
+                    }
+                }
+            }
+            if ($request->filled('video_url')) {
+                $videoPaths[] = trim((string)$request->video_url);
+            }
 
-                PropertyImage::create([
-                    'property_id' => $property->id,
-                    'path'        => $path,
-                    'image_data'  => null,
-                    'is_primary'  => ($index === (int) $request->get('primary_image', 0)),
-                    'sort_order'  => $index,
+            $videoPaths = array_values(array_unique(array_filter($videoPaths)));
+            if (!empty($videoPaths)) {
+                $prop->update([
+                    'video_path' => count($videoPaths) === 1 ? $videoPaths[0] : json_encode($videoPaths)
                 ]);
             }
-        }
+
+            // Handle image uploads — save to disk for fast serving
+            if ($request->hasFile('images')) {
+                $imagesData = [];
+                $primaryIndex = (int) $request->get('primary_image', 0);
+
+                foreach ($request->file('images') as $index => $image) {
+                    $path = $image->store('properties/' . $prop->id, 'public');
+
+                    $imagesData[] = [
+                        'property_id' => $prop->id,
+                        'path'        => $path,
+                        'image_data'  => null,
+                        'is_primary'  => ($index === $primaryIndex),
+                        'sort_order'  => $index,
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
+                    ];
+                }
+
+                if (!empty($imagesData)) {
+                    PropertyImage::insert($imagesData);
+                }
+            }
+
+            return $prop;
+        });
+
+        // Invalidate cached locations for search filters
+        Cache::forget('approved_locations');
 
         $successMsg = $bypassApproval 
             ? 'Property posted successfully! It is now live on the website.' 
             : 'Property submitted successfully! It will be visible after admin approval.';
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $successMsg,
+                'redirect_url' => route('dashboard'),
+                'property_id' => $prop->id
+            ]);
+        }
 
         return redirect()->route('dashboard')
             ->with('success', $successMsg);
@@ -249,7 +319,7 @@ class PropertyController extends Controller
         $this->authorize('update', $property);
 
         $property->load('images');
-        $categories = Category::all();
+        $categories = Cache::remember('active_categories', 86400, fn () => Category::all());
         return view('properties.edit', compact('property', 'categories'));
     }
 
@@ -261,6 +331,9 @@ class PropertyController extends Controller
         $this->authorize('update', $property);
 
         $data = $request->validated();
+        if (isset($data['purpose']) && $data['purpose'] === 'sell') {
+            $data['purpose'] = 'buy';
+        }
         $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
         $data['status'] = $bypassApproval ? 'approved' : 'pending';
 
@@ -271,50 +344,136 @@ class PropertyController extends Controller
             }
         }
 
-        // Remove images from the data array before updating
-        unset($data['images'], $data['primary_image'], $data['remove_images']);
+        // Remove media fields from the data array before updating
+        unset($data['images'], $data['primary_image'], $data['remove_images'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls'], $data['remove_video'], $data['remove_video_indexes']);
 
-        $property->update($data);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($property, $data, $request) {
+            $property->update($data);
 
-        // Handle removing selected images
-        if ($request->filled('remove_images')) {
-            $imagesToRemove = PropertyImage::whereIn('id', $request->remove_images)
-                ->where('property_id', $property->id)
-                ->get();
+            // Raw existing video list
+            $decoded = json_decode($property->video_path ?? '', true);
+            $rawExisting = is_array($decoded) ? $decoded : ($property->video_path ? [$property->video_path] : []);
 
-            foreach ($imagesToRemove as $image) {
-                Storage::disk('public')->delete($image->path);
-                $image->delete();
+            // Handle removal of specific video indexes
+            if ($request->filled('remove_video_indexes')) {
+                $indexesToRemove = (array)$request->remove_video_indexes;
+                foreach ($indexesToRemove as $idx) {
+                    if (isset($rawExisting[$idx])) {
+                        $item = $rawExisting[$idx];
+                        if (!filter_var($item, FILTER_VALIDATE_URL)) {
+                            Storage::disk('public')->delete($item);
+                        }
+                        unset($rawExisting[$idx]);
+                    }
+                }
+                $rawExisting = array_values($rawExisting);
             }
-        }
 
-        // Handle new image uploads — save to disk
-        if ($request->hasFile('images')) {
-            $maxOrder = $property->images()->max('sort_order') ?? -1;
-            foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('properties/' . $property->id, 'public');
-
-                PropertyImage::create([
-                    'property_id' => $property->id,
-                    'path'        => $path,
-                    'image_data'  => null,
-                    'is_primary'  => false,
-                    'sort_order'  => $maxOrder + $index + 1,
-                ]);
+            // Handle remove entire video
+            if ($request->filled('remove_video') && $request->remove_video) {
+                foreach ($rawExisting as $item) {
+                    if (!filter_var($item, FILTER_VALIDATE_URL)) {
+                        Storage::disk('public')->delete($item);
+                    }
+                }
+                $rawExisting = [];
             }
-        }
 
-        // Update primary image if specified
-        if ($request->filled('primary_image')) {
-            $property->images()->update(['is_primary' => false]);
-            PropertyImage::where('id', $request->primary_image)
-                ->where('property_id', $property->id)
-                ->update(['is_primary' => true]);
-        }
+            // Append pre-uploaded async video paths
+            if ($request->filled('uploaded_video_paths')) {
+                foreach ((array)$request->uploaded_video_paths as $uPath) {
+                    if (!empty(trim((string)$uPath))) {
+                        $rawExisting[] = trim((string)$uPath);
+                    }
+                }
+            }
+
+            // Append new uploaded video files
+            if ($request->hasFile('videos')) {
+                foreach ($request->file('videos') as $vFile) {
+                    $rawExisting[] = $vFile->store('properties/' . $property->id . '/videos', 'public');
+                }
+            }
+            if ($request->hasFile('video')) {
+                $rawExisting[] = $request->file('video')->store('properties/' . $property->id . '/videos', 'public');
+            }
+
+            // Append new video URLs
+            if ($request->filled('video_urls')) {
+                foreach ((array)$request->video_urls as $vUrl) {
+                    if (!empty(trim((string)$vUrl))) {
+                        $rawExisting[] = trim((string)$vUrl);
+                    }
+                }
+            }
+            if ($request->filled('video_url')) {
+                $rawExisting[] = trim((string)$request->video_url);
+            }
+
+            $rawExisting = array_values(array_unique(array_filter($rawExisting)));
+            $property->update([
+                'video_path' => empty($rawExisting) ? null : (count($rawExisting) === 1 ? $rawExisting[0] : json_encode($rawExisting))
+            ]);
+
+            // Handle removing selected images
+            if ($request->filled('remove_images')) {
+                $imagesToRemove = PropertyImage::whereIn('id', $request->remove_images)
+                    ->where('property_id', $property->id)
+                    ->get();
+
+                foreach ($imagesToRemove as $image) {
+                    Storage::disk('public')->delete($image->path);
+                    $image->delete();
+                }
+            }
+
+            // Handle new image uploads — save to disk
+            if ($request->hasFile('images')) {
+                $maxOrder = $property->images()->max('sort_order') ?? -1;
+                $newImagesData = [];
+
+                foreach ($request->file('images') as $index => $image) {
+                    $path = $image->store('properties/' . $property->id, 'public');
+
+                    $newImagesData[] = [
+                        'property_id' => $property->id,
+                        'path'        => $path,
+                        'image_data'  => null,
+                        'is_primary'  => false,
+                        'sort_order'  => $maxOrder + $index + 1,
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
+                    ];
+                }
+
+                if (!empty($newImagesData)) {
+                    PropertyImage::insert($newImagesData);
+                }
+            }
+
+            // Update primary image if specified
+            if ($request->filled('primary_image')) {
+                $property->images()->update(['is_primary' => false]);
+                PropertyImage::where('id', $request->primary_image)
+                    ->where('property_id', $property->id)
+                    ->update(['is_primary' => true]);
+            }
+        });
+
+        Cache::forget('approved_locations');
 
         $successMsg = $bypassApproval 
             ? 'Property updated successfully! Changes are live.' 
             : 'Property updated successfully! It will be reviewed by admin.';
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $successMsg,
+                'redirect_url' => route('dashboard'),
+                'property_id' => $property->id
+            ]);
+        }
 
         return redirect()->route('dashboard')
             ->with('success', $successMsg);
@@ -327,9 +486,15 @@ class PropertyController extends Controller
     {
         $this->authorize('delete', $property);
 
+        // Delete associated video
+        if ($property->video_path && !filter_var($property->video_path, FILTER_VALIDATE_URL)) {
+            Storage::disk('public')->delete($property->video_path);
+        }
+
         // Delete all associated images from storage
         foreach ($property->images as $image) {
             Storage::disk('public')->delete($image->path);
+            $image->delete();
         }
 
         // Delete the property directory
@@ -488,5 +653,30 @@ class PropertyController extends Controller
         return redirect()->back()->with('success', $property->is_booked 
             ? 'Property marked as Booked!' 
             : 'Property marked as Available!');
+    }
+
+    /**
+     * Direct high-speed async video upload endpoint.
+     */
+    public function uploadVideoDirect(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'video' => 'required|file|mimes:mp4,mov,ogg,qt,webm,m4v|max:256000',
+        ]);
+
+        $file = $request->file('video');
+        $dateFolder = date('Y/m');
+        $filename = 'clip_' . time() . '_' . \Illuminate\Support\Str::random(8) . '.' . ($file->getClientOriginalExtension() ?: 'webm');
+        $path = $file->storeAs('properties/uploads/' . $dateFolder, $filename, 'public');
+
+        return response()->json([
+            'success' => true,
+            'path' => $path,
+            'url' => route('property.video.file', ['path' => $path])
+        ]);
     }
 }

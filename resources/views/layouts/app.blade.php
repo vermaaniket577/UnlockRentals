@@ -26,6 +26,10 @@
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
+
+    {{-- Google AdSense --}}
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2772066538696984" crossorigin="anonymous"></script>
 
 
     {{-- Open Graph / Facebook --}}

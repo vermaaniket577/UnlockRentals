@@ -51,7 +51,9 @@ class PropertyPolicy
      */
     public function update(User $user, Property $property): bool
     {
-        return $user->id === $property->user_id || $user->isAdmin();
+        return (int)$user->id === (int)$property->user_id || 
+               (method_exists($user, 'isAdmin') && $user->isAdmin()) || 
+               $user->role === 'admin';
     }
 
     /**
@@ -59,6 +61,8 @@ class PropertyPolicy
      */
     public function delete(User $user, Property $property): bool
     {
-        return $user->id === $property->user_id || $user->isAdmin();
+        return (int)$user->id === (int)$property->user_id || 
+               (method_exists($user, 'isAdmin') && $user->isAdmin()) || 
+               $user->role === 'admin';
     }
 }

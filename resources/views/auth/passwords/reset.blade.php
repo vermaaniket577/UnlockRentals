@@ -1,105 +1,162 @@
 @extends('layouts.app')
 
-@section('title', 'Change Password - UnlockRentals')
+@section('title', 'Set New Password - UnlockRentals')
 @section('robots', 'noindex, nofollow')
 
 @section('content')
 
-<section class="min-h-screen flex items-center justify-center py-16 px-4" id="reset-form-section"
-         style="background: linear-gradient(135deg, #f0f4ff 0%, #e8edf8 50%, #f5f6fa 100%);">
-    <div class="w-full max-w-md">
+<section class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 relative overflow-hidden bg-slate-50 dark:bg-slate-950" id="reset-form-section">
+    {{-- Ambient Background Glows --}}
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-blue-100/60 via-indigo-50/30 to-transparent dark:from-blue-950/30 dark:via-transparent pointer-events-none blur-3xl -z-10"></div>
+    <div class="absolute -top-24 right-1/4 w-96 h-96 bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="absolute bottom-10 left-1/4 w-96 h-96 bg-indigo-400/10 dark:bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-        {{-- Card --}}
-        <div class="bg-white rounded-2xl shadow-xl shadow-blue-900/5 border border-blue-100/50 overflow-hidden">
+    <div class="w-full max-w-[440px] relative z-10">
 
-            {{-- Header Banner --}}
-            <div class="relative px-8 pt-10 pb-8 text-center"
-                 style="background: linear-gradient(135deg, #1e3a8a 0%, #2563EB 100%);">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
-                <div class="absolute bottom-0 left-0 w-24 h-24 bg-sky-400/15 rounded-full blur-2xl"></div>
-
-                <div class="relative z-10">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center bg-white/20 backdrop-blur-sm border border-white/20"
-                         style="box-shadow: 0 8px 32px rgba(37,99,235,0.3);">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    </div>
-                    <h1 class="text-2xl font-bold text-white tracking-tight">Setup New Password</h1>
-                    <p class="text-sm text-blue-200 mt-1.5">Please choose a strong password</p>
+        {{-- Top Brand Icon / Badge --}}
+        <div class="text-center mb-8">
+            <a href="{{ url('/') }}" class="inline-flex items-center gap-2.5 group transition-transform duration-200 hover:scale-[1.02]" title="UnlockRentals">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-600/25 ring-4 ring-blue-50 dark:ring-blue-900/30 transition-all duration-300 group-hover:shadow-blue-600/35">
+                    <i class="ph-bold ph-lock text-xl"></i>
                 </div>
-            </div>
-
-            {{-- Form Body --}}
-            <div class="px-8 py-8">
-                @if (session('error'))
-                    <div class="mb-4 p-4 bg-red-50 border border-red-100 rounded-xl">
-                        <p class="text-sm text-red-600 font-medium italic">
-                            <i class="ph-bold ph-warning-circle mr-1"></i> {{ session('error') }}
-                        </p>
-                    </div>
-                @endif
-
-                <form method="POST" action="{{ route('password.update') }}" id="reset-password-form">
-                    @csrf
-                    <input type="hidden" name="token" value="{{ $token }}">
-
-                    <div class="space-y-5">
-                        {{-- Email (Read-only or Pre-filled) --}}
-                        <div>
-                            <label for="email" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Current Email</label>
-                            <div class="relative">
-                                <i class="ph ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
-                                <input type="email" name="email" id="email" value="{{ $email ?? old('email') }}" required
-                                       class="w-full pl-10 pr-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-sm text-gray-500 cursor-not-allowed"
-                                       readonly>
-                            </div>
-                            @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        {{-- New Password --}}
-                        <div>
-                            <label for="password" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">New Password</label>
-                            <div class="relative">
-                                <i class="ph ph-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
-                                <input type="password" name="password" id="password" required
-                                       class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-white transition-all"
-                                       placeholder="••••••••">
-                            </div>
-                            @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        {{-- Confirm Password --}}
-                        <div>
-                            <label for="password_confirmation" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Confirm New Password</label>
-                            <div class="relative">
-                                <i class="ph ph-lock-key absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
-                                <input type="password" name="password_confirmation" id="password_confirmation" required
-                                       class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-white transition-all"
-                                       placeholder="••••••••">
-                            </div>
-                        </div>
-
-                        {{-- Submit --}}
-                        <button type="submit"
-                                class="w-full px-6 py-3.5 mt-2 rounded-xl text-sm font-bold text-white tracking-wide transition-all duration-300 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8]"
-                                style="box-shadow: 0 4px 20px rgba(37,99,235,0.3);"
-                                onmouseover="this.style.boxShadow='0 8px 32px rgba(37,99,235,0.45)'; this.style.transform='translateY(-1px)'"
-                                onmouseout="this.style.boxShadow='0 4px 20px rgba(37,99,235,0.3)'; this.style.transform='translateY(0)'">
-                            Update & Sign In
-                            <i class="ph ph-check-circle"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
+            </a>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-4">Create new password</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">Please choose a strong password to protect your account</p>
         </div>
 
-        {{-- Support Info --}}
-        <div class="mt-8 text-center text-xs text-gray-400">
-            Need help? Contact our <a href="#" class="text-[#2563EB] font-semibold hover:underline" title="Support Team">Support Team</a>
+        {{-- Main Card --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-[0_20px_50px_rgba(15,23,42,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-7 sm:p-9 transition-all duration-300">
+
+            {{-- Flash Messages --}}
+            @if (session('error'))
+                <div class="mb-5 p-3.5 bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-800 rounded-xl flex items-center gap-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300">
+                    <i class="ph-bold ph-warning-circle text-base flex-shrink-0"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            {{-- Form Body --}}
+            <form method="POST" action="{{ route('password.update') }}" id="reset-password-form" class="space-y-4">
+                @csrf
+                <input type="hidden" name="token" value="{{ $token }}">
+
+                {{-- Email Address --}}
+                <div>
+                    <label for="email" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Your Email
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="ph-bold ph-envelope text-base"></i>
+                        </div>
+                        <input type="email"
+                               name="email"
+                               id="email"
+                               value="{{ $email ?? old('email') }}"
+                               required
+                               readonly
+                               class="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 cursor-not-allowed">
+                    </div>
+                    @error('email')
+                        <p class="text-rose-600 dark:text-rose-400 text-xs font-semibold mt-1.5 flex items-center gap-1">
+                            <i class="ph-bold ph-warning text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- New Password --}}
+                <div>
+                    <label for="password" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        New Password
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="ph-bold ph-lock-key text-base"></i>
+                        </div>
+                        <input type="password"
+                               name="password"
+                               id="password"
+                               required
+                               placeholder="Min 8 characters"
+                               class="w-full pl-10 pr-11 py-2.5 sm:py-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border @error('password') border-rose-300 dark:border-rose-700 focus:ring-rose-500/10 focus:border-rose-500 @else border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 @enderror rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
+                        <button type="button"
+                                onclick="togglePassword('password', this)"
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none"
+                                aria-label="Toggle password visibility">
+                            <i class="ph-bold ph-eye eye-open text-base"></i>
+                            <i class="ph-bold ph-eye-slash eye-closed text-base hidden"></i>
+                        </button>
+                    </div>
+                    @error('password')
+                        <p class="text-rose-600 dark:text-rose-400 text-xs font-semibold mt-1.5 flex items-center gap-1">
+                            <i class="ph-bold ph-warning text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- Confirm Password --}}
+                <div>
+                    <label for="password_confirmation" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Confirm New Password
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="ph-bold ph-shield-check text-base"></i>
+                        </div>
+                        <input type="password"
+                               name="password_confirmation"
+                               id="password_confirmation"
+                               required
+                               placeholder="Repeat new password"
+                               class="w-full pl-10 pr-11 py-2.5 sm:py-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
+                        <button type="button"
+                                onclick="togglePassword('password_confirmation', this)"
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none"
+                                aria-label="Toggle password visibility">
+                            <i class="ph-bold ph-eye eye-open text-base"></i>
+                            <i class="ph-bold ph-eye-slash eye-closed text-base hidden"></i>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Submit Button --}}
+                <div class="pt-2">
+                    <button type="submit"
+                            class="w-full py-3 sm:py-3.5 px-6 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all duration-200 flex items-center justify-center gap-2">
+                        <span>Save Password & Sign In</span>
+                        <i class="ph-bold ph-check text-sm"></i>
+                    </button>
+                </div>
+            </form>
+
+            {{-- Back to Sign In Link --}}
+            <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group" title="Back to Sign In">
+                    <i class="ph-bold ph-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                    <span>Cancel and return to Sign In</span>
+                </a>
+            </div>
         </div>
     </div>
 </section>
 
 @endsection
+
+@push('scripts')
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const eyeOpen = btn.querySelector('.eye-open');
+    const eyeClosed = btn.querySelector('.eye-closed');
+    if (input.type === 'password') {
+        input.type = 'text';
+        eyeOpen.classList.add('hidden');
+        eyeClosed.classList.remove('hidden');
+    } else {
+        input.type = 'password';
+        eyeOpen.classList.remove('hidden');
+        eyeClosed.classList.add('hidden');
+    }
+}
+</script>
+@endpush

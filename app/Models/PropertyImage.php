@@ -37,7 +37,7 @@ class PropertyImage extends Model
         }
 
         if ($this->path) {
-            return asset('storage/' . $this->path);
+            return route('property.image.file', ['path' => $this->path]);
         }
 
         return asset('images/luxury_sunlit.png');

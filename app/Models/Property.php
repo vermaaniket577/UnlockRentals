@@ -19,6 +19,7 @@ class Property extends Model
         'slug',
         'description',
         'type',
+        'purpose',
         'price',
         'price_period',
         'state',
@@ -32,6 +33,7 @@ class Property extends Model
         'bathrooms',
         'area_sqft',
         'furnishing',
+        'video_path',
         'status',
         'is_featured',
         'approved_at',
@@ -179,6 +181,101 @@ class Property extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
+        if ($this->purpose === 'buy' || $this->purpose === 'sell') {
+            return '₹' . number_format($this->price, 0);
+        }
         return '₹' . number_format($this->price, 0) . '/' . $this->price_period;
+    }
+
+    /**
+     * Check if property is listed for rent.
+     */
+    public function isForRent(): bool
+    {
+        return empty($this->purpose) || $this->purpose === 'rent';
+    }
+
+    /**
+     * Check if property is listed for sale.
+     */
+    public function isForSale(): bool
+    {
+        return $this->purpose === 'buy' || $this->purpose === 'sell';
+    }
+
+    /**
+     * Check if property has one or more uploaded videos or external video tours.
+     */
+    public function hasVideo(): bool
+    {
+        return !empty($this->video_path) && count($this->allVideoUrls()) > 0;
+    }
+
+    /**
+     * Get all video URLs as an array.
+     */
+    public function allVideoUrls(): array
+    {
+        if (empty($this->video_path)) {
+            return [];
+        }
+
+        $raw = $this->video_path;
+        $items = [];
+
+        if (is_array($raw)) {
+            $items = $raw;
+        } else {
+            $decoded = json_decode($raw, true);
+            if (is_string($decoded)) {
+                $secondDecoded = json_decode($decoded, true);
+                if (is_array($secondDecoded)) {
+                    $decoded = $secondDecoded;
+                }
+            }
+            if (is_array($decoded)) {
+                $items = $decoded;
+            } elseif (str_contains($raw, ',')) {
+                $items = explode(',', $raw);
+            } else {
+                $items = [$raw];
+            }
+        }
+
+        $urls = [];
+        foreach ($items as $item) {
+            $item = trim((string)$item, " \t\n\r\0\x0B\"'[]");
+            if (empty($item)) continue;
+            if (filter_var($item, FILTER_VALIDATE_URL)) {
+                $urls[] = $item;
+            } else {
+                $urls[] = route('property.video.file', ['path' => $item]);
+            }
+        }
+        return array_values(array_unique($urls));
+    }
+
+    /**
+     * Get the primary URL for property video tour.
+     */
+    public function videoUrl(): ?string
+    {
+        $all = $this->allVideoUrls();
+        return !empty($all) ? $all[0] : null;
+    }
+
+    /**
+     * Get the primary image URL or fallback to first image.
+     */
+    public function primaryImageUrl(): ?string
+    {
+        if ($this->primaryImage) {
+            return $this->primaryImage->imageUrl();
+        }
+        $firstImage = $this->images ? $this->images->first() : null;
+        if ($firstImage) {
+            return $firstImage->imageUrl();
+        }
+        return null;
     }
 }

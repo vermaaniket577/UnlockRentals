@@ -95,6 +95,10 @@
                         <i class="ph ph-users text-lg"></i>
                         <span>Users Directory</span>
                     </a>
+                    <a href="{{ route('admin.locations') }}" class="flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-sm transition-all {{ request()->routeIs('admin.locations*') ? 'bg-zinc-900 text-white font-semibold' : 'hover:text-white hover:bg-zinc-900/50' }}" title="Manage States, Cities & Localities">
+                        <i class="ph ph-map-pin text-lg"></i>
+                        <span>Locations (City/State)</span>
+                    </a>
                 </div>
 
                 {{-- Group 2: CRM & Engagement --}}

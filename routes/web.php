@@ -68,13 +68,13 @@ Route::get('/', function(Illuminate\Http\Request $request) {
                 $query->where('bedrooms', 1);
             } elseif ($request->rooms === '2bhk') {
                 $query->where('bedrooms', 2);
-            } elseif ($request->rooms === '3bhk') {
-                $query->where('bedrooms', 3);
+            } elseif (in_array($request->rooms, ['3bhk', '3bhk-plus', '3plus', '3+'])) {
+                $query->where('bedrooms', '>=', 3);
             } elseif ($request->rooms === '4bhk-plus') {
                 $query->where('bedrooms', '>=', 4);
             }
         }
-        if ($request->filled('purpose')) {
+        if ($request->filled('purpose') && $request->purpose !== 'any') {
             $query->where('purpose', $request->purpose);
         }
 
@@ -317,6 +317,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Locations management
     Route::get('/locations', [AdminController::class, 'locations'])->name('locations');
+    Route::post('/locations/states', [AdminController::class, 'storeState'])->name('locations.states.store');
+    Route::delete('/locations/states/{state}', [AdminController::class, 'destroyState'])->name('locations.states.destroy');
+    Route::post('/locations/districts', [AdminController::class, 'storeDistrict'])->name('locations.districts.store');
+    Route::delete('/locations/districts/{district}', [AdminController::class, 'destroyDistrict'])->name('locations.districts.destroy');
+    Route::post('/locations/localities', [AdminController::class, 'storeLocality'])->name('locations.localities.store');
+    Route::delete('/locations/localities/{locality}', [AdminController::class, 'destroyLocality'])->name('locations.localities.destroy');
 
     // Subscription management
     Route::get('/subscriptions', [AdminController::class, 'subscriptions'])->name('subscriptions');
@@ -385,6 +391,9 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
             '2026_05_25_220600_create_locations_tables.php',
             '2026_06_10_184500_create_process_steps_table.php',
             '2026_06_11_110000_add_is_booked_to_properties_table.php',
+            '2026_06_16_180000_add_contact_phone_to_properties_table.php',
+            '2026_06_18_153728_add_billing_period_to_private_user_offers_table.php',
+            '2026_06_19_120000_add_video_path_to_properties_table.php',
         ];
 
         // Check for leftover duplicate migration files on the server
@@ -475,6 +484,84 @@ Route::get('/property-image-file/{path}', function ($path) {
     }
     return response()->file($fullPath);
 })->where('path', '.*')->name('property.image.file');
+
+// Dedicated video streaming route with HTTP 206 Partial Content & Range header support
+Route::get('/property-video-file/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        $publicPath = public_path('storage/' . $path);
+        if (file_exists($publicPath)) {
+            $fullPath = $publicPath;
+        } else {
+            abort(404);
+        }
+    }
+
+    $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+    $mime = match($ext) {
+        'webm' => 'video/webm',
+        'mp4'  => 'video/mp4',
+        'mov'  => 'video/quicktime',
+        'ogg'  => 'video/ogg',
+        'm4v'  => 'video/x-m4v',
+        default => 'video/webm'
+    };
+
+    return response()->file($fullPath, [
+        'Content-Type' => $mime,
+        'Accept-Ranges' => 'bytes',
+        'Cache-Control' => 'public, max-age=604800',
+    ]);
+})->where('path', '.*')->name('property.video.file');
+
+// Instant async video upload endpoint (WhatsApp/Instagram style background upload)
+Route::post('/property-video-upload', [App\Http\Controllers\PropertyController::class, 'uploadVideoDirect'])->middleware('auth')->name('property.video.upload');
+
+// Dynamic Location API routes for AJAX cascading
+Route::get('/api/locations/districts', function(\Illuminate\Http\Request $request) {
+    $stateInput = trim($request->get('state', ''));
+    if (!$stateInput) {
+        $districts = \App\Models\District::with('state')->orderBy('name')->get();
+        return response()->json($districts);
+    }
+    
+    $state = \App\Models\State::where('code', strtoupper($stateInput))
+        ->orWhere('code', $stateInput)
+        ->orWhere('name', 'like', $stateInput)
+        ->orWhere('id', is_numeric($stateInput) ? (int)$stateInput : 0)
+        ->first();
+        
+    if (!$state) {
+        return response()->json([]);
+    }
+    
+    $districts = \App\Models\District::where('state_id', $state->id)->orderBy('name')->get();
+    return response()->json($districts);
+})->name('api.locations.districts');
+
+Route::get('/api/locations/localities', function(\Illuminate\Http\Request $request) {
+    $districtInput = trim($request->get('district', ''));
+    $stateInput = trim($request->get('state', ''));
+    
+    $query = \App\Models\Locality::with(['district.state']);
+    
+    if ($districtInput) {
+        $districtName = str_replace('-', ' ', $districtInput);
+        $query->whereHas('district', function($q) use ($districtName, $districtInput) {
+            $q->where('name', 'like', $districtName)
+              ->orWhere('id', is_numeric($districtInput) ? (int)$districtInput : 0);
+        });
+    } elseif ($stateInput) {
+        $query->whereHas('district.state', function($q) use ($stateInput) {
+            $q->where('code', strtoupper($stateInput))
+              ->orWhere('name', 'like', $stateInput)
+              ->orWhere('id', is_numeric($stateInput) ? (int)$stateInput : 0);
+        });
+    }
+    
+    $localities = $query->orderBy('name')->get();
+    return response()->json($localities);
+})->name('api.locations.localities');
 
 // Dynamic Catch-All Route for Programmatic SEO Pages
 Route::get('/{seo_slug}', [\App\Http\Controllers\SeoController::class, 'handle'])->name('seo.landing');

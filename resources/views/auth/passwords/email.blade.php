@@ -5,89 +5,101 @@
 
 @section('content')
 
-<section class="min-h-screen flex items-center justify-center py-16 px-4" id="reset-password-section"
-         style="background: linear-gradient(135deg, #f0f4ff 0%, #e8edf8 50%, #f5f6fa 100%);">
-    <div class="w-full max-w-md">
+<section class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 relative overflow-hidden bg-slate-50 dark:bg-slate-950" id="reset-password-section">
+    {{-- Ambient Background Glows --}}
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-blue-100/60 via-indigo-50/30 to-transparent dark:from-blue-950/30 dark:via-transparent pointer-events-none blur-3xl -z-10"></div>
+    <div class="absolute -top-24 right-1/4 w-96 h-96 bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="absolute bottom-10 left-1/4 w-96 h-96 bg-indigo-400/10 dark:bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-        {{-- Card --}}
-        <div class="bg-white rounded-2xl shadow-xl shadow-blue-900/5 border border-blue-100/50 overflow-hidden">
+    <div class="w-full max-w-[440px] relative z-10">
 
-            {{-- Header Banner --}}
-            <div class="relative px-8 pt-10 pb-8 text-center"
-                 style="background: linear-gradient(135deg, #1e3a8a 0%, #2563EB 100%);">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
-                <div class="absolute bottom-0 left-0 w-24 h-24 bg-sky-400/15 rounded-full blur-2xl"></div>
-
-                <div class="relative z-10">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center bg-white/20 backdrop-blur-sm border border-white/20"
-                         style="box-shadow: 0 8px 32px rgba(37,99,235,0.3);">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5l2 2 3.5-3.5"></path>
-                        </svg>
-                    </div>
-                    <h1 class="text-2xl font-bold text-white tracking-tight">Forgot Password?</h1>
-                    <p class="text-sm text-blue-200 mt-1.5">Enter your email to receive a reset link</p>
+        {{-- Top Brand Icon / Badge --}}
+        <div class="text-center mb-8">
+            <a href="{{ url('/') }}" class="inline-flex items-center gap-2.5 group transition-transform duration-200 hover:scale-[1.02]" title="UnlockRentals">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-600/25 ring-4 ring-blue-50 dark:ring-blue-900/30 transition-all duration-300 group-hover:shadow-blue-600/35">
+                    <i class="ph-bold ph-key text-xl"></i>
                 </div>
-            </div>
+            </a>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-4">Forgot password?</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">No worries, we'll send you reset instructions</p>
+        </div>
+
+        {{-- Main Card --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-[0_20px_50px_rgba(15,23,42,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-7 sm:p-9 transition-all duration-300">
+
+            {{-- Flash Messages --}}
+            @if (session('success'))
+                <div class="mb-5 p-3.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800 rounded-xl flex items-center gap-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                    <i class="ph-bold ph-check-circle text-base flex-shrink-0"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-5 p-3.5 bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-800 rounded-xl flex items-center gap-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300">
+                    <i class="ph-bold ph-warning-circle text-base flex-shrink-0"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
 
             {{-- Form Body --}}
-            <div class="px-8 py-8">
-                @if (session('success'))
-                    <div class="mb-4 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                        <p class="text-sm text-emerald-600 font-medium">
-                            <i class="ph-bold ph-check-circle mr-1"></i> {{ session('success') }}
-                        </p>
-                    </div>
-                @endif
+            <form method="POST" action="{{ route('password.email') }}" id="forgot-password-form" class="space-y-4">
+                @csrf
 
-                @if (session('error'))
-                    <div class="mb-4 p-4 bg-red-50 border border-red-100 rounded-xl">
-                        <p class="text-sm text-red-600 font-medium">
-                            <i class="ph-bold ph-warning-circle mr-1"></i> {{ session('error') }}
-                        </p>
-                    </div>
-                @endif
-
-                <form method="POST" action="{{ route('password.email') }}" id="forgot-password-form">
-                    @csrf
-
-                    <div class="space-y-6">
-                        {{-- Email --}}
-                        <div>
-                            <label for="email" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email Address</label>
-                            <div class="relative">
-                                <i class="ph ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
-                                <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus
-                                       class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 focus:bg-white transition-all"
-                                       placeholder="you@example.com">
-                            </div>
-                            @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                {{-- Email Address --}}
+                <div>
+                    <label for="email" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Email Address
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="ph-bold ph-envelope text-base"></i>
                         </div>
-
-                        {{-- Submit --}}
-                        <button type="submit"
-                                class="w-full px-6 py-3.5 rounded-xl text-sm font-bold text-white tracking-wide transition-all duration-300 flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8]"
-                                style="box-shadow: 0 4px 20px rgba(37,99,235,0.3);"
-                                onmouseover="this.style.boxShadow='0 8px 32px rgba(37,99,235,0.45)'; this.style.transform='translateY(-1px)'"
-                                onmouseout="this.style.boxShadow='0 4px 20px rgba(37,99,235,0.3)'; this.style.transform='translateY(0)'">
-                            Send Reset Link
-                            <i class="ph-bold ph-arrow-right"></i>
-                        </button>
-
-                        <div class="text-center pt-2">
-                            <a href="{{ route('login') }}" class="text-xs text-gray-400 hover:text-[#2563EB] transition-colors flex items-center justify-center gap-1.5 group" title="Back to Sign In">
-                                <i class="ph ph-arrow-left transition-transform group-hover:-translate-x-1"></i>
-                                Back to Sign In
-                            </a>
-                        </div>
+                        <input type="email"
+                               name="email"
+                               id="email"
+                               value="{{ old('email') }}"
+                               required
+                               autofocus
+                               placeholder="you@example.com"
+                               class="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border @error('email') border-rose-300 dark:border-rose-700 focus:ring-rose-500/10 focus:border-rose-500 @else border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 @enderror rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
                     </div>
-                </form>
+                    @error('email')
+                        <p class="text-rose-600 dark:text-rose-400 text-xs font-semibold mt-1.5 flex items-center gap-1">
+                            <i class="ph-bold ph-warning text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                {{-- Submit Button --}}
+                <div class="pt-2">
+                    <button type="submit"
+                            class="w-full py-3 sm:py-3.5 px-6 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all duration-200 flex items-center justify-center gap-2">
+                        <span>Send Reset Instructions</span>
+                        <i class="ph-bold ph-paper-plane-tilt text-sm"></i>
+                    </button>
+                </div>
+            </form>
+
+            {{-- Back to Sign In Link --}}
+            <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group" title="Back to Sign In">
+                    <i class="ph-bold ph-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                    <span>Back to Sign In</span>
+                </a>
             </div>
         </div>
 
-        {{-- Footer Info --}}
-        <div class="mt-8 text-center">
-            <p class="text-xs text-gray-400">Remember your password? <a href="{{ route('login') }}" class="text-[#2563EB] font-bold hover:underline" title="Sign In">Sign In</a></p>
+        {{-- Trust & Security Badges --}}
+        <div class="flex items-center justify-center gap-6 mt-8">
+            <div class="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500">
+                <i class="ph-bold ph-shield-check text-sm text-emerald-500"></i>
+                <span>256-Bit SSL</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500">
+                <i class="ph-bold ph-seal-check text-sm text-blue-500"></i>
+                <span>Secure Authentication</span>
+            </div>
         </div>
     </div>
 </section>

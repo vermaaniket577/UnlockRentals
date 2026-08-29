@@ -28,6 +28,9 @@
     <meta property="twitter:description" content="Find verified rental houses, flats, PGs & commercial spaces across India with zero brokerage. Direct owner listings in Gurgaon, Delhi NCR & more.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
+    {{-- Google AdSense --}}
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2772066538696984" crossorigin="anonymous"></script>
+
     {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
@@ -151,7 +154,7 @@
     </script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260611-header-fix">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}">
 
     <!-- Phosphor Icons (Regular, Bold, Fill) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
@@ -671,38 +674,46 @@
                             <i class="ph-bold ph-map-pin" style="font-size: 20px; color: var(--primary);"></i>
                         </div>
                         <div class="filter-input-wrap">
-                            <label class="filter-label">Region / State</label>
-                            <select class="filter-input" id="state-select" name="state">
-                                <option value="">Select State</option>
-                                <option value="AP">Andhra Pradesh</option>
-                                <option value="AR">Arunachal Pradesh</option>
-                                <option value="AS">Assam</option>
-                                <option value="BR">Bihar</option>
-                                <option value="CG">Chhattisgarh</option>
-                                <option value="GA">Goa</option>
-                                <option value="GJ">Gujarat</option>
-                                <option value="HR">Haryana</option>
-                                <option value="HP">Himachal Pradesh</option>
-                                <option value="JH">Jharkhand</option>
-                                <option value="KA">Karnataka</option>
-                                <option value="KL">Kerala</option>
-                                <option value="MP">Madhya Pradesh</option>
-                                <option value="MH">Maharashtra</option>
-                                <option value="MN">Manipur</option>
-                                <option value="ML">Meghalaya</option>
-                                <option value="MZ">Mizoram</option>
-                                <option value="NL">Nagaland</option>
-                                <option value="OR">Odisha</option>
-                                <option value="PB">Punjab</option>
-                                <option value="RJ">Rajasthan</option>
-                                <option value="SK">Sikkim</option>
-                                <option value="TN">Tamil Nadu</option>
-                                <option value="TS">Telangana</option>
-                                <option value="TR">Tripura</option>
-                                <option value="UP">Uttar Pradesh</option>
-                                <option value="UK">Uttarakhand</option>
-                                <option value="WB">West Bengal</option>
-                                <option value="DL">Delhi</option>
+                            <label for="state-select" class="filter-label">Region / State</label>
+                            <select class="filter-input" id="state-select" name="state" onchange="if(window.handleLocationStateChange) window.handleLocationStateChange(this, 'city-select', 'locality-select');">
+                                <option value="">&nbsp;&nbsp;Select State</option>
+                                @php $statesList = $globalAllStates ?? $allStates ?? []; @endphp
+                                @if(!empty($statesList) && count($statesList) > 0)
+                                    @foreach($statesList as $code => $name)
+                                        <option value="{{ $code }}" {{ request('state') == $code ? 'selected' : '' }}>&nbsp;&nbsp;{{ $name }}</option>
+                                    @endforeach
+                                @else
+                                    <option value="AP">&nbsp;&nbsp;Andhra Pradesh</option>
+                                    <option value="AR">&nbsp;&nbsp;Arunachal Pradesh</option>
+                                    <option value="AS">&nbsp;&nbsp;Assam</option>
+                                    <option value="BR">&nbsp;&nbsp;Bihar</option>
+                                    <option value="CT">&nbsp;&nbsp;Chhattisgarh</option>
+                                    <option value="GA">&nbsp;&nbsp;Goa</option>
+                                    <option value="GJ">&nbsp;&nbsp;Gujarat</option>
+                                    <option value="HR">&nbsp;&nbsp;Haryana</option>
+                                    <option value="HP">&nbsp;&nbsp;Himachal Pradesh</option>
+                                    <option value="JH">&nbsp;&nbsp;Jharkhand</option>
+                                    <option value="KA">&nbsp;&nbsp;Karnataka</option>
+                                    <option value="KL">&nbsp;&nbsp;Kerala</option>
+                                    <option value="MP">&nbsp;&nbsp;Madhya Pradesh</option>
+                                    <option value="MH">&nbsp;&nbsp;Maharashtra</option>
+                                    <option value="MN">&nbsp;&nbsp;Manipur</option>
+                                    <option value="ML">&nbsp;&nbsp;Meghalaya</option>
+                                    <option value="MZ">&nbsp;&nbsp;Mizoram</option>
+                                    <option value="NL">&nbsp;&nbsp;Nagaland</option>
+                                    <option value="OR">&nbsp;&nbsp;Odisha</option>
+                                    <option value="PB">&nbsp;&nbsp;Punjab</option>
+                                    <option value="RJ">&nbsp;&nbsp;Rajasthan</option>
+                                    <option value="SK">&nbsp;&nbsp;Sikkim</option>
+                                    <option value="TN">&nbsp;&nbsp;Tamil Nadu</option>
+                                    <option value="TS">&nbsp;&nbsp;Telangana</option>
+                                    <option value="TR">&nbsp;&nbsp;Tripura</option>
+                                    <option value="UP">&nbsp;&nbsp;Uttar Pradesh</option>
+                                    <option value="UK">&nbsp;&nbsp;Uttarakhand</option>
+                                    <option value="WB">&nbsp;&nbsp;West Bengal</option>
+                                    <option value="DL">&nbsp;&nbsp;Delhi</option>
+                                    <option value="CH">&nbsp;&nbsp;Chandigarh</option>
+                                @endif
                             </select>
                         </div>
                         <div class="dropdown-chevron">
@@ -715,9 +726,34 @@
                             <i class="ph-bold ph-city" style="font-size: 20px; color: var(--primary);"></i>
                         </div>
                         <div class="filter-input-wrap">
-                            <label class="filter-label">City / District</label>
-                            <select class="filter-input" id="city-select" name="district">
-                                <option value="">Select District</option>
+                            <label for="city-select" class="filter-label">City / District</label>
+                            <select class="filter-input" id="city-select" name="district" onchange="if(window.handleLocationCityChange) window.handleLocationCityChange(this, 'locality-select', 'state-select');">
+                                <option value="">&nbsp;&nbsp;Select District</option>
+                                @php $districtsList = $globalAllDistricts ?? $allDistricts ?? []; @endphp
+                                @if(!empty($districtsList) && count($districtsList) > 0)
+                                    @foreach($districtsList as $d)
+                                        @php
+                                            $dSlug = $d['slug'] ?? strtolower(str_replace(' ', '-', $d['name']));
+                                            $isSelected = (request('district') === $dSlug || request('district') === $d['name']);
+                                        @endphp
+                                        <option value="{{ $d['name'] }}" {{ $isSelected ? 'selected' : '' }}>
+                                            &nbsp;&nbsp;{{ $d['name'] }}{{ !empty($d['state_code']) ? ' (' . $d['state_code'] . ')' : '' }}
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option value="Gurugram">&nbsp;&nbsp;Gurugram (HR)</option>
+                                    <option value="New Delhi">&nbsp;&nbsp;New Delhi (DL)</option>
+                                    <option value="South Delhi">&nbsp;&nbsp;South Delhi (DL)</option>
+                                    <option value="Noida">&nbsp;&nbsp;Noida (UP)</option>
+                                    <option value="Ghaziabad">&nbsp;&nbsp;Ghaziabad (UP)</option>
+                                    <option value="Faridabad">&nbsp;&nbsp;Faridabad (HR)</option>
+                                    <option value="Bengaluru">&nbsp;&nbsp;Bengaluru (KA)</option>
+                                    <option value="Mumbai">&nbsp;&nbsp;Mumbai (MH)</option>
+                                    <option value="Pune">&nbsp;&nbsp;Pune (MH)</option>
+                                    <option value="Hyderabad">&nbsp;&nbsp;Hyderabad (TS)</option>
+                                    <option value="Jaipur">&nbsp;&nbsp;Jaipur (RJ)</option>
+                                    <option value="Chandigarh">&nbsp;&nbsp;Chandigarh (CH)</option>
+                                @endif
                             </select>
                         </div>
                         <div class="dropdown-chevron">
@@ -730,9 +766,9 @@
                             <i class="ph-bold ph-map-trifold" style="font-size: 20px; color: var(--primary);"></i>
                         </div>
                         <div class="filter-input-wrap">
-                            <label class="filter-label">Locality / Area</label>
+                            <label for="locality-select" class="filter-label">Locality / Area</label>
                             <select class="filter-input" id="locality-select" name="locality">
-                                <option value="">Select Locality</option>
+                                <option value="">&nbsp;&nbsp;Select Locality</option>
                             </select>
                         </div>
                         <div class="dropdown-chevron">
@@ -769,16 +805,14 @@
                             </select>
                         </div>
                         
-                        <div class="config-divider"></div>
-
                         <div class="config-item">
                             <label>Layout</label>
                             <div class="pill-group">
                                 <input type="hidden" name="rooms" id="rooms-input" value="{{ request('rooms', 'any') }}">
-                                <button type="button" class="pill-btn {{ request('rooms', 'any') == 'any' ? 'active' : '' }}" onclick="setPill(this, 'any', 'rooms-input')">Any</button>
-                                <button type="button" class="pill-btn {{ request('rooms') == '1bhk' ? 'active' : '' }}" onclick="setPill(this, '1bhk', 'rooms-input')">1 BHK</button>
-                                <button type="button" class="pill-btn {{ request('rooms') == '2bhk' ? 'active' : '' }}" onclick="setPill(this, '2bhk', 'rooms-input')">2 BHK</button>
-                                <button type="button" class="pill-btn {{ request('rooms') == '3bhk-plus' ? 'active' : '' }}" onclick="setPill(this, '3bhk-plus', 'rooms-input')">3+</button>
+                                <button type="button" class="pill-btn {{ request('rooms', 'any') == 'any' ? 'active' : '' }}" data-value="any" onclick="window.setPill(this, 'any', 'rooms-input')">Any</button>
+                                <button type="button" class="pill-btn {{ request('rooms') == '1bhk' ? 'active' : '' }}" data-value="1bhk" onclick="window.setPill(this, '1bhk', 'rooms-input')">1 BHK</button>
+                                <button type="button" class="pill-btn {{ request('rooms') == '2bhk' ? 'active' : '' }}" data-value="2bhk" onclick="window.setPill(this, '2bhk', 'rooms-input')">2 BHK</button>
+                                <button type="button" class="pill-btn {{ in_array(request('rooms'), ['3bhk-plus', '3bhk', '3plus']) ? 'active' : '' }}" data-value="3bhk-plus" onclick="window.setPill(this, '3bhk-plus', 'rooms-input')">3+</button>
                             </div>
                         </div>
 
@@ -788,8 +822,8 @@
                             <label>Intent</label>
                             <div class="pill-group">
                                 <input type="hidden" name="purpose" id="purpose-input" value="{{ request('purpose', 'rent') }}">
-                                <button type="button" class="pill-btn {{ request('purpose', 'rent') == 'rent' ? 'active' : '' }}" onclick="setPill(this, 'rent', 'purpose-input')">Rent</button>
-                                <button type="button" class="pill-btn {{ request('purpose') == 'buy' ? 'active' : '' }}" onclick="setPill(this, 'buy', 'purpose-input')">Buy</button>
+                                <button type="button" class="pill-btn {{ request('purpose', 'rent') == 'rent' ? 'active' : '' }}" data-value="rent" onclick="window.setPill(this, 'rent', 'purpose-input')">Rent</button>
+                                <button type="button" class="pill-btn {{ request('purpose') == 'buy' ? 'active' : '' }}" data-value="buy" onclick="window.setPill(this, 'buy', 'purpose-input')">Buy</button>
                             </div>
                         </div>
 
@@ -1098,40 +1132,79 @@
     @endif
     
     <script>
+        // Global Pill Toggle Handler for Layout & Intent
+        window.setPill = function(btn, value, inputId) {
+            if (!btn) return;
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = value;
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            const group = btn.closest('.pill-group');
+            if (group) {
+                group.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            }
+            btn.classList.add('active');
+        };
+
+        // Global Event Delegation for Pill Buttons
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.pill-btn');
+            if (!btn) return;
+            const group = btn.closest('.pill-group');
+            if (!group) return;
+            const hiddenInput = group.querySelector('input[type="hidden"]');
+            const val = btn.getAttribute('data-value') || btn.textContent.trim().toLowerCase();
+            
+            group.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (hiddenInput) {
+                hiddenInput.value = btn.dataset.value || val;
+                hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Robust entrance animations using .from()
-            // This ensures content is visible by default (opacity 1 in CSS)
-            // and only animates if GSAP loads successfully.
-            gsap.from('.badge-animate', { opacity: 0, y: 30, duration: 1, delay: 0.2, ease: 'power3.out' });
-            gsap.from('.title-animate', { opacity: 0, y: 40, duration: 1.2, delay: 0.4, ease: 'power3.out' });
-            gsap.from('.subtitle-animate', { opacity: 0, y: 30, duration: 1, delay: 0.6, ease: 'power3.out' });
-            gsap.from('.panel-animate', { opacity: 0, y: 50, scale: 0.95, duration: 1.5, delay: 0.8, ease: 'power4.out' });
-            gsap.from('.actions-animate', { opacity: 0, y: 20, duration: 1, delay: 1.2, ease: 'power3.out' });
-            gsap.from('.indicators-animate', { opacity: 0, y: 20, duration: 1, delay: 1.4, ease: 'power3.out' });
+            // Cascading Dropdowns for Home Search (Runs First & Protected)
+            try {
+                if (typeof window.initLocationCascading === 'function') {
+                    window.initLocationCascading({
+                        stateId: 'state-select',
+                        cityId: 'city-select',
+                        localityId: 'locality-select',
+                        selectedState: "{{ request('state') }}",
+                        selectedCity: "{{ request('district') }}",
+                        selectedLocality: "{{ request('locality') }}"
+                    });
+                }
+            } catch(e) {
+                console.error('Cascading init error:', e);
+            }
+
+            // Entrance animations using GSAP
+            try {
+                if (typeof gsap !== 'undefined') {
+                    gsap.from('.badge-animate', { opacity: 0, y: 30, duration: 1, delay: 0.2, ease: 'power3.out' });
+                    gsap.from('.title-animate', { opacity: 0, y: 40, duration: 1.2, delay: 0.4, ease: 'power3.out' });
+                    gsap.from('.subtitle-animate', { opacity: 0, y: 30, duration: 1, delay: 0.6, ease: 'power3.out' });
+                    gsap.from('.panel-animate', { opacity: 0, y: 50, scale: 0.95, duration: 1.5, delay: 0.8, ease: 'power4.out' });
+                    gsap.from('.actions-animate', { opacity: 0, y: 20, duration: 1, delay: 1.2, ease: 'power3.out' });
+                    gsap.from('.indicators-animate', { opacity: 0, y: 20, duration: 1, delay: 1.4, ease: 'power3.out' });
+                }
+            } catch(e) {}
               
             // Hover effect on the glass panel
             const panel = document.querySelector('.search-glass-panel');
-            panel.addEventListener('mousemove', (e) => {
-                const rect = panel.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                panel.style.setProperty('--mouse-x', `${x}px`);
-                panel.style.setProperty('--mouse-y', `${y}px`);
-            });
-
-            // Cascading Dropdowns for Home Search
-            if (typeof window.initLocationCascading === 'function') {
-                window.initLocationCascading({
-                    stateId: 'state-select',
-                    cityId: 'city-select',
-                    localityId: 'locality-select',
-                    selectedState: "{{ request('state') }}",
-                    selectedCity: "{{ request('district') }}",
-                    selectedLocality: "{{ request('locality') }}"
+            if (panel) {
+                panel.addEventListener('mousemove', (e) => {
+                    const rect = panel.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    panel.style.setProperty('--mouse-x', `${x}px`);
+                    panel.style.setProperty('--mouse-y', `${y}px`);
                 });
-            } else {
-                console.warn('initLocationCascading not found. Cascading filters may not work.');
             }
 
             // Promo Slider Implementation
@@ -1200,17 +1273,6 @@
             }
 
         });
-
-            function setPill(btn, value, inputId) {
-                const input = document.getElementById(inputId);
-                input.value = value;
-                btn.closest('.pill-group')
-                   .querySelectorAll('.pill-btn')
-                   .forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            }
-
-
 
             // Mobile navigation toggle
             function toggleMobileNav() {

@@ -64,7 +64,7 @@ class AdminTest extends TestCase
             ]));
 
         $response->assertStatus(200);
-        $response->assertSee('System Locations');
+        $response->assertSee('Location Management');
         $response->assertSee('Delhi');
         $response->assertSee('New Delhi');
         $response->assertSee('Connaught Place');
