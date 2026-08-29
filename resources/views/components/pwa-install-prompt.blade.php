@@ -61,20 +61,34 @@
     let deferredPrompt;
     const pwaDrawer = document.getElementById('pwa-install-drawer');
 
+    function isInsideAppOrStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches 
+            || window.navigator.standalone === true 
+            || /wv|Android.*Version\/[0-9.]+|UnlockRentals/i.test(navigator.userAgent)
+            || (document.referrer && document.referrer.includes('android-app://'))
+            || window.isAndroidApp === true;
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        // Prevent default mini-infobar
         e.preventDefault();
-        // Stash the event so it can be triggered later.
+        
+        // Never show prompt inside Android App, WebView, or standalone PWA
+        if (isInsideAppOrStandalone()) {
+            return;
+        }
+
+        // Stash the event so it can be triggered later
         deferredPrompt = e;
         
-        // Check if user has previously dismissed it in this session
-        if (!sessionStorage.getItem('pwa-prompt-dismissed')) {
+        // Check if user has dismissed it
+        if (!localStorage.getItem('pwa-prompt-dismissed') && !sessionStorage.getItem('pwa-prompt-dismissed')) {
             showPwaPrompt();
         }
     });
 
     function showPwaPrompt() {
-        if (!pwaDrawer) return;
+        if (!pwaDrawer || isInsideAppOrStandalone()) return;
         pwaDrawer.classList.remove('hidden');
         setTimeout(() => {
             pwaDrawer.classList.remove('translate-y-32', 'opacity-0');
@@ -86,7 +100,10 @@
         if (!pwaDrawer) return;
         pwaDrawer.classList.remove('translate-y-0', 'opacity-100');
         pwaDrawer.classList.add('translate-y-32', 'opacity-0');
-        sessionStorage.setItem('pwa-prompt-dismissed', 'true');
+        try {
+            localStorage.setItem('pwa-prompt-dismissed', 'true');
+            sessionStorage.setItem('pwa-prompt-dismissed', 'true');
+        } catch (e) {}
         setTimeout(() => {
             pwaDrawer.classList.add('hidden');
         }, 500);
@@ -94,21 +111,16 @@
 
     async function triggerPwaInstall() {
         if (!deferredPrompt) return;
-        // Show the install prompt
         deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') {
             console.log('User accepted the install prompt');
-        } else {
-            console.log('User dismissed the install prompt');
         }
         deferredPrompt = null;
         dismissPwaPrompt();
     }
 
     window.addEventListener('appinstalled', (evt) => {
-        console.log('UnlockRentals app installed successfully');
         dismissPwaPrompt();
     });
 </script>
