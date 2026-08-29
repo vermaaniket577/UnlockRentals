@@ -363,9 +363,16 @@
         });
     }
 
-    // User dropdown toggle handler
+    // User menu / mobile profile toggle handler
     window.toggleUserDropdown = function(e) {
-        if (e) e.stopPropagation();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        if (window.innerWidth < 768) {
+            window.toggleMobileDrawer(true);
+            return;
+        }
         const dropdown = document.getElementById('nav-user-dropdown');
         if (!dropdown) return;
         dropdown.classList.toggle('hidden');
@@ -385,6 +392,7 @@
         if (e.key === 'Escape') {
             const dropdown = document.getElementById('nav-user-dropdown');
             if (dropdown) dropdown.classList.add('hidden');
+            window.toggleMobileDrawer(false);
         }
     });
 })();
