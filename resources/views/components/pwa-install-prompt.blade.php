@@ -1,18 +1,12 @@
 {{-- PWA Installation Banner Drawer --}}
-<div id="pwa-install-drawer" class="hidden fixed bottom-20 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-50 transform translate-y-32 opacity-0 transition-all duration-500 ease-out">
-    <div class="bg-gradient-to-br from-slate-900/95 to-slate-950/98 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 shadow-2xl shadow-blue-500/10">
+<div id="pwa-install-drawer" class="hidden fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-50 transform translate-y-32 opacity-0 transition-all duration-500 ease-out">
+    <div class="bg-gradient-to-br from-slate-900/98 to-slate-950/98 backdrop-blur-2xl border border-white/15 rounded-3xl p-4 sm:p-5 shadow-2xl shadow-blue-500/20 ring-1 ring-white/10">
         
         {{-- Header & Close --}}
         <div class="flex justify-between items-start gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 p-0.5 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                    <div class="w-full h-full rounded-[10px] bg-slate-900 flex items-center justify-center overflow-hidden">
-                        {{-- Custom SVG Icon inside --}}
-                        <svg viewBox="0 0 100 100" class="w-7 h-7 text-blue-500 fill-current">
-                            <path d="M50,15 L20,38 L20,85 L42,85 L42,60 L58,60 L58,85 L80,85 L80,38 Z M50,22 L73,40 L73,80 L63,80 L63,55 L37,55 L37,80 L27,80 L27,40 Z" />
-                            <circle cx="50" cy="48" r="7" class="animate-pulse" />
-                        </svg>
-                    </div>
+                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center p-1.5 shadow-lg shadow-blue-500/25 ring-1 ring-white/20 flex-shrink-0">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="UnlockRentals App" title="UnlockRentals App" class="w-full h-full object-contain" onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
                 </div>
                 <div>
                     <h3 class="text-sm font-black text-white tracking-tight">UnlockRentals App</h3>

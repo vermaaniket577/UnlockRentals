@@ -10,6 +10,10 @@ window.UnlockSubscriptionCheckout = (config) => {
     const {
         form,
         methodInput,
+        phoneInput,
+        phoneError,
+        phoneValidIcon,
+        phoneSyncBadge,
         payButton,
         summaryPayButton,
         overlay,
@@ -22,12 +26,96 @@ window.UnlockSubscriptionCheckout = (config) => {
         plansUrl,
         billingPeriod,
         planName,
-        userPrefill,
+        brandLogo,
+        userPrefill = {},
         manualPaymentLink,
     } = config;
 
     let pollingInterval = null;
     let paymentCompleted = false;
+
+    // Helper: Clean non-digits and extract 10-digit number
+    function extract10Digits(val) {
+        if (!val) return '';
+        const digits = String(val).replace(/\D/g, '');
+        if (digits.length >= 10) {
+            return digits.slice(-10);
+        }
+        return digits;
+    }
+
+    // Validate 10-digit Indian mobile number (starts with 6, 7, 8, or 9)
+    function isValidIndianMobile(digits) {
+        return /^[6-9]\d{9}$/.test(digits);
+    }
+
+    // Live phone input validation & formatting
+    if (phoneInput) {
+        // Initial state check
+        const initialDigits = extract10Digits(phoneInput.value || userPrefill.contact || '');
+        if (initialDigits) {
+            phoneInput.value = initialDigits;
+            if (isValidIndianMobile(initialDigits)) {
+                phoneValidIcon?.classList.remove('opacity-0');
+                phoneValidIcon?.classList.add('opacity-100');
+            }
+        }
+
+        phoneInput.addEventListener('input', (e) => {
+            const raw = e.target.value;
+            const cleaned = extract10Digits(raw);
+            phoneInput.value = cleaned;
+
+            if (isValidIndianMobile(cleaned)) {
+                phoneError?.classList.add('hidden');
+                phoneValidIcon?.classList.remove('opacity-0');
+                phoneValidIcon?.classList.add('opacity-100');
+                phoneInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                phoneInput.classList.add('border-emerald-500', 'focus:border-emerald-500');
+                if (phoneSyncBadge) {
+                    phoneSyncBadge.innerHTML = '<i class="ph-bold ph-check-circle"></i> Ready to pay';
+                    phoneSyncBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400';
+                }
+            } else {
+                phoneValidIcon?.classList.remove('opacity-100');
+                phoneValidIcon?.classList.add('opacity-0');
+                phoneInput.classList.remove('border-emerald-500', 'focus:border-emerald-500');
+            }
+        });
+
+        phoneInput.addEventListener('blur', () => {
+            const cleaned = extract10Digits(phoneInput.value);
+            if (cleaned.length > 0 && !isValidIndianMobile(cleaned)) {
+                phoneError?.classList.remove('hidden');
+                phoneInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+            } else {
+                phoneError?.classList.add('hidden');
+                phoneInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+            }
+        });
+    }
+
+    function getValidatedContactNumber() {
+        const raw = phoneInput ? phoneInput.value : (userPrefill.contact || '');
+        const cleaned = extract10Digits(raw);
+
+        if (!isValidIndianMobile(cleaned)) {
+            if (phoneError) {
+                phoneError.textContent = cleaned.length === 0
+                    ? 'Please enter your 10-digit mobile number before proceeding.'
+                    : 'Please enter a valid 10-digit mobile number (e.g. 9876543210).';
+                phoneError.classList.remove('hidden');
+            }
+            if (phoneInput) {
+                phoneInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                phoneInput.focus();
+            }
+            return null;
+        }
+
+        return cleaned;
+    }
 
     summaryPayButton?.addEventListener('click', () => payButton?.click());
 
@@ -99,17 +187,21 @@ window.UnlockSubscriptionCheckout = (config) => {
         paymentCompleted = true;
         stopPolling();
 
-        showLoading('Payment detected! Activating your premium plan...');
+        showLoading('Payment verified! Activating your premium plan...');
         if (progressBar) {
             progressBar.style.transition = 'width 1.5s ease';
             progressBar.style.width = '100%';
         }
 
-        document.getElementById('razorpay_payment_id').value = paymentId;
-        document.getElementById('razorpay_order_id').value = orderId || '';
-        document.getElementById('razorpay_signature').value = signature || '';
+        const payIdEl = document.getElementById('razorpay_payment_id');
+        const orderIdEl = document.getElementById('razorpay_order_id');
+        const sigEl = document.getElementById('razorpay_signature');
 
-        // Small delay so user sees the "Activating" message
+        if (payIdEl) payIdEl.value = paymentId;
+        if (orderIdEl) orderIdEl.value = orderId || '';
+        if (sigEl) sigEl.value = signature || '';
+
+        // Small delay so user sees the "Activating" celebration message
         setTimeout(() => form.submit(), 600);
     }
 
@@ -150,7 +242,6 @@ window.UnlockSubscriptionCheckout = (config) => {
                 const data = await resp.json();
 
                 if (data.status === 'paid' && data.payment_id) {
-                    // Payment detected server-side! Auto-submit.
                     submitPaymentForm(data.payment_id, orderId, '');
                 }
             } catch (_) {
@@ -181,8 +272,14 @@ window.UnlockSubscriptionCheckout = (config) => {
                 return;
             }
 
+            // 1. Validate & get clean 10-digit mobile number
+            const contactNumber = getValidatedContactNumber();
+            if (!contactNumber) {
+                return;
+            }
+
             paymentCompleted = false;
-            showLoading('Creating secure payment order...');
+            showLoading('Connecting securely to payment gateway...');
 
             let order;
             try {
@@ -193,7 +290,10 @@ window.UnlockSubscriptionCheckout = (config) => {
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrfToken,
                     },
-                    body: JSON.stringify({ billing_period: billingPeriod }),
+                    body: JSON.stringify({
+                        billing_period: billingPeriod,
+                        phone: contactNumber,
+                    }),
                 });
                 order = await orderResponse.json();
                 if (!orderResponse.ok) {
@@ -204,40 +304,59 @@ window.UnlockSubscriptionCheckout = (config) => {
                 return;
             }
 
-            // Start polling immediately — this is the key fix.
-            // Even if the Razorpay modal handler fails to fire, polling will detect the payment.
+            // Start polling immediately
             startOrderPolling(order.order_id);
 
             const selectedMethod = methodInput?.value || 'razorpay';
+            const logoUrl = brandLogo || (window.location.origin + '/images/logo-icon.png');
+
             const razorpay = new Razorpay({
                 key: order.key_id,
                 amount: order.amount,
                 currency: order.currency,
                 name: 'UnlockRentals',
-                description: `${planName} ${billingPeriod} subscription`,
+                description: `${planName} (${billingPeriod === 'yearly' ? 'Annual' : 'Monthly'} Membership)`,
+                image: logoUrl,
                 order_id: order.order_id,
                 method: razorpayMethodConfig(selectedMethod),
                 handler: function (response) {
-                    // Standard path — handler fires with signature
                     submitPaymentForm(
                         response.razorpay_payment_id,
                         response.razorpay_order_id,
                         response.razorpay_signature
                     );
                 },
-                prefill: userPrefill,
-                theme: { color: '#2563EB' },
+                prefill: {
+                    name: userPrefill.name || '',
+                    email: userPrefill.email || '',
+                    contact: contactNumber, // Clean 10-digit number bypasses Razorpay contact prompt!
+                    method: (selectedMethod !== 'razorpay') ? selectedMethod : undefined,
+                },
+                notes: {
+                    plan_name: planName,
+                    billing_period: billingPeriod,
+                },
+                theme: {
+                    color: '#2563EB',
+                    backdrop_color: 'rgba(15, 23, 42, 0.75)',
+                },
+                send_sms_hash: true,
+                retry: {
+                    enabled: true,
+                    max_count: 3,
+                },
                 modal: {
+                    confirm_close: true,
+                    animation: true,
+                    backdropclose: false,
+                    escape: true,
                     ondismiss: function () {
-                        // Don't redirect immediately — the polling might still detect the payment
                         hideLoading();
-                        // Show the manual fallback section if it exists
                         const fallback = document.getElementById('manual-verify-section');
                         if (fallback) {
                             fallback.classList.remove('hidden');
                             fallback.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
-                        // Keep polling for another 30 seconds after dismiss
                         setTimeout(() => {
                             if (!paymentCompleted) {
                                 stopPolling();
@@ -257,13 +376,6 @@ window.UnlockSubscriptionCheckout = (config) => {
             hideLoading();
             razorpay.open();
         });
-
-        // Automatically trigger the Razorpay modal on page load
-        if (payButton) {
-            setTimeout(() => {
-                payButton.click();
-            }, 300);
-        }
     } else {
         payButton?.addEventListener('click', (event) => {
             if (manualPaymentLink && form && !form.checkValidity()) {
@@ -298,7 +410,7 @@ window.UnlockSubscriptionCheckout = (config) => {
             return;
         }
 
-        // Submit via the main form without signature (triggers FLOW B on server)
         submitPaymentForm(paymentId, '', '');
     });
 };
+

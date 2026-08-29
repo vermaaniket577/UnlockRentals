@@ -140,13 +140,39 @@
                 <div class="relative">
                     <select name="sort" id="filter-sort"
                             class="w-full pl-3 pr-7 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 transition-all appearance-none cursor-pointer">
-                        <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>Newest</option>
-                        <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>Price: Low</option>
-                        <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>Price: High</option>
+                        <option value="new_to_old" {{ request('sort') === 'new_to_old' || request('sort') === 'latest' || !request('sort') ? 'selected' : '' }}>New to Old</option>
+                        <option value="old_to_new" {{ request('sort') === 'old_to_new' || request('sort') === 'oldest' ? 'selected' : '' }}>Old to New</option>
+                        <option value="unbooked" {{ request('sort') === 'unbooked' ? 'selected' : '' }}>Unbooked First</option>
+                        <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
                     </select>
                     <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                 </div>
             </div>
+        </div>
+
+        {{-- Availability & Media Filters --}}
+        <div class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800">
+            <div>
+                <label for="filter-media" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Media</label>
+                <div class="relative">
+                    <select name="media" id="filter-media"
+                            class="w-full pl-3 pr-7 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 transition-all appearance-none cursor-pointer">
+                        <option value="" {{ !request('media') ? 'selected' : '' }}>All Listings</option>
+                        <option value="images" {{ request('media') === 'images' ? 'selected' : '' }}>With Photos</option>
+                        <option value="video" {{ request('media') === 'video' ? 'selected' : '' }}>With Video Tour</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                </div>
+            </div>
+
+            <label class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-slate-50 cursor-pointer transition-all text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <input type="checkbox" name="availability" value="unbooked" {{ request('availability') === 'unbooked' || request('unbooked') ? 'checked' : '' }} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                <span class="flex items-center gap-1.5">
+                    <i class="ph-bold ph-lock-key-open text-emerald-500 text-sm"></i>
+                    Unbooked Only
+                </span>
+            </label>
         </div>
 
         {{-- Action Buttons --}}

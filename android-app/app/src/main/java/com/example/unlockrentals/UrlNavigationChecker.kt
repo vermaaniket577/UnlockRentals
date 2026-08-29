@@ -11,6 +11,7 @@ class UrlNavigationChecker(private val productionUrl: String) {
         APP_STORE,
         MAPS,
         UPI,
+        INTENT,
         INTERNAL,
         EXTERNAL
     }
@@ -34,7 +35,9 @@ class UrlNavigationChecker(private val productionUrl: String) {
             url.startsWith("whatsapp://") || host.contains("wa.me") || host.contains("api.whatsapp.com") -> NavigationTarget.WHATSAPP
             url.startsWith("market://") || host.contains("play.google.com") || host.contains("apps.apple.com") -> NavigationTarget.APP_STORE
             (host.contains("google.com") && url.contains("maps")) || host.contains("maps.google") -> NavigationTarget.MAPS
-            url.startsWith("upi://") -> NavigationTarget.UPI
+            url.startsWith("upi://") || url.startsWith("tez://") || url.startsWith("phonepe://") ||
+            url.startsWith("paytmmp://") || url.startsWith("bhim://") || url.startsWith("credpay://") -> NavigationTarget.UPI
+            url.startsWith("intent:") || url.startsWith("intent://") -> NavigationTarget.INTENT
             prodHost.isNotEmpty() && (host == prodHost || host.contains(prodHost)) -> NavigationTarget.INTERNAL
             host.contains("unlockrentals") -> NavigationTarget.INTERNAL
             host.contains("10.0.2.2") || host.contains("localhost") || host.contains("127.0.0.1") -> NavigationTarget.INTERNAL
@@ -42,3 +45,4 @@ class UrlNavigationChecker(private val productionUrl: String) {
         }
     }
 }
+

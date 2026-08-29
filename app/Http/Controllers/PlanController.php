@@ -87,7 +87,10 @@ class PlanController extends Controller
             ? $razorpayKeyId
             : null;
 
-        return view('plans.checkout', compact('plan', 'activeGateway', 'razorpayKeyId', 'effectivePrice', 'billing', 'billingPeriod'));
+        $userCleanPhone = $user->clean_phone;
+        $userFormattedPhone = $user->formatted_phone;
+
+        return view('plans.checkout', compact('plan', 'activeGateway', 'razorpayKeyId', 'effectivePrice', 'billing', 'billingPeriod', 'userCleanPhone', 'userFormattedPhone'));
     }
 
     public function createRazorpayOrder(Request $request, Plan $plan): JsonResponse
@@ -115,7 +118,20 @@ class PlanController extends Controller
 
         $data = $request->validate([
             'billing_period' => ['nullable', 'in:monthly,yearly'],
+            'phone' => ['nullable', 'string', 'max:25'],
         ]);
+
+        // Auto-sync / save phone number to profile if provided and user doesn't have it or updated it
+        if (!empty($data['phone'])) {
+            $digits = preg_replace('/[^0-9]/', '', $data['phone']);
+            if (strlen($digits) >= 10) {
+                $sanitized = \App\Models\User::sanitizePhone($data['phone']);
+                if ($user->phone !== $sanitized) {
+                    $user->phone = $sanitized;
+                    $user->save();
+                }
+            }
+        }
 
         $billingPeriod = ($data['billing_period'] ?? 'monthly') === 'yearly' ? 'yearly' : 'monthly';
         [$effectivePrice, $privateOffer] = $this->effectivePlanPrice($plan, $user, $billingPeriod);
@@ -167,6 +183,8 @@ class PlanController extends Controller
                 'key_id' => $razorpayKeyId,
                 'plan_name' => $plan->name,
                 'billing_period' => $billingPeriod,
+                'user_phone' => $user->clean_phone,
+                'user_phone_formatted' => $user->formatted_phone,
             ]);
         } catch (\Razorpay\Api\Errors\BadRequestError $e) {
             report($e);

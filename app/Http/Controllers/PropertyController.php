@@ -23,7 +23,7 @@ class PropertyController extends Controller
     public function index(Request $request)
     {
         $query = Property::approved()
-            ->with(['primaryImage', 'category', 'owner']);
+            ->with(['primaryImage', 'images', 'category', 'owner']);
 
         // Filter by type (house/shop)
         if ($request->filled('type') && $request->type !== 'all') {
@@ -116,6 +116,20 @@ class PropertyController extends Controller
             });
         }
 
+        // Availability / Unbooked Filter
+        if (($request->filled('availability') && $request->availability === 'unbooked') || $request->filled('unbooked')) {
+            $query->where('is_booked', false);
+        }
+
+        // Media Filter (with images or video)
+        if ($request->filled('media') && $request->media !== 'all') {
+            if ($request->media === 'video') {
+                $query->whereNotNull('video_path')->where('video_path', '!=', '')->where('video_path', '!=', '[]');
+            } elseif ($request->media === 'images' || $request->media === 'image') {
+                $query->whereHas('images');
+            }
+        }
+
         // Sorting
         $sortBy = $request->get('sort', 'latest');
         switch ($sortBy) {
@@ -125,9 +139,15 @@ class PropertyController extends Controller
             case 'price_high':
                 $query->orderBy('price', 'desc');
                 break;
+            case 'unbooked':
+                $query->orderBy('is_booked', 'asc')->latest();
+                break;
+            case 'old_to_new':
             case 'oldest':
                 $query->orderBy('created_at', 'asc');
                 break;
+            case 'new_to_old':
+            case 'newest':
             default:
                 $query->latest();
         }

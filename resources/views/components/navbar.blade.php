@@ -71,7 +71,7 @@
 
                     {{-- User Menu --}}
                     <div class="relative" x-data="{ open: false }">
-                        <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex items-center gap-2 px-3 py-2 rounded-sm hover:bg-stone-50 transition-all relative" id="nav-user-menu">
+                        <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative" id="nav-user-menu" aria-label="User Account">
                             <div class="w-8 h-8 {{ $navActivePlan ? 'bg-gradient-to-br ' . $navBadgeClass . ' ring-2 ring-white shadow-lg shadow-blue-500/20' : 'bg-[#2563EB]' }} rounded-full flex items-center justify-center text-white text-sm font-medium relative overflow-hidden">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 @if($navActivePlan)
@@ -186,60 +186,181 @@
                 </div>
 
                 {{-- Mobile Menu Button --}}
-                <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 text-zinc-500 hover:text-zinc-900" id="nav-mobile-toggle">
-                    <i class="ph ph-list text-xl"></i>
+                <button type="button" onclick="toggleMobileDrawer(true)" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95 cursor-pointer" id="nav-mobile-toggle" aria-label="Open Mobile Menu">
+                    <i class="ph-bold ph-list text-xl"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    {{-- Mobile Menu --}}
-    <div id="mobile-menu" class="hidden md:hidden border-t border-stone-200/50 bg-white/95 backdrop-blur-xl">
-        <div class="px-4 py-3 space-y-1">
-            <a href="{{ route('home') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50" title="Home">Home</a>
-            <a href="{{ route('properties.index') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50" title="Properties">Properties</a>
-            <a href="{{ route('properties.index', ['type' => 'house']) }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50" title="Houses">Houses</a>
-            <a href="{{ route('properties.index', ['type' => 'shop']) }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50" title="Shops">Shops</a>
-            <a href="{{ url('/blog') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50" title="Blog">Blog</a>
-            @guest
-                <a href="{{ route('login') }}" class="block px-4 py-2.5 rounded-sm text-sm text-zinc-500 hover:text-zinc-900 hover:bg-stone-50" title="Sign In">Sign In</a>
-            @endguest
+    {{-- Modern Mobile Drawer Overlay & Sheet --}}
+    <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer(false)" class="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none md:hidden"></div>
+
+    <aside id="mobile-drawer-sheet" class="fixed top-0 right-0 bottom-0 z-[101] w-80 max-w-[85vw] bg-white dark:bg-slate-950 border-l border-slate-200/80 dark:border-slate-800/80 shadow-2xl flex flex-col transition-transform duration-300 translate-x-full md:hidden">
+        {{-- Drawer Header --}}
+        <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+            <x-brand-logo
+                href="{{ url('/') }}"
+                class="group flex-shrink-0"
+                imageClass="h-8 w-auto"
+                textClass="text-base font-bold tracking-tight text-zinc-900"
+                accentClass="text-[#2563EB]"
+            />
+            <button type="button" onclick="toggleMobileDrawer(false)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors active:scale-90" aria-label="Close Mobile Menu">
+                <i class="ph-bold ph-x text-sm"></i>
+            </button>
         </div>
-    </div>
+
+        {{-- Drawer Scrollable Content --}}
+        <div class="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+            {{-- User info if logged in --}}
+            @auth
+                <div class="p-3.5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-slate-900 dark:to-slate-900/80 border border-blue-100/80 dark:border-slate-800 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-sm">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                        <p class="text-[11px] text-slate-500 capitalize">{{ auth()->user()->role }}</p>
+                    </div>
+                </div>
+            @endauth
+
+            {{-- Main Navigation Links --}}
+            <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 px-2">Discover</p>
+                <div class="space-y-1">
+                    <a href="{{ route('home') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('home') ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
+                        <i class="ph-bold ph-house text-lg text-blue-600"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="{{ route('properties.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('properties.index') && !request()->has('type') && !request()->has('purpose') ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
+                        <i class="ph-bold ph-compass text-lg text-blue-600"></i>
+                        <span>All Properties</span>
+                    </a>
+                    <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('purpose') === 'rent' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
+                        <i class="ph-bold ph-key text-lg text-blue-600"></i>
+                        <span>Properties for Rent</span>
+                    </a>
+                    <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('purpose') === 'buy' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
+                        <i class="ph-bold ph-shopping-bag text-lg text-blue-600"></i>
+                        <span>Properties for Sale</span>
+                    </a>
+                    <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('type') === 'commercial' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
+                        <i class="ph-bold ph-buildings text-lg text-blue-600"></i>
+                        <span>Commercial & Shops</span>
+                    </a>
+                    <a href="{{ url('/how-it-works') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
+                        <i class="ph-bold ph-git-merge text-lg text-blue-600"></i>
+                        <span>How It Works</span>
+                    </a>
+                    <a href="{{ url('/blog') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
+                        <i class="ph-bold ph-newspaper text-lg text-blue-600"></i>
+                        <span>Blog & Insights</span>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Quick Post Ad Banner --}}
+            <div class="pt-2">
+                @auth
+                    <a href="{{ route('properties.create') }}" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all">
+                        <i class="ph-bold ph-plus-circle text-base"></i>
+                        <span>Post Property Ad</span>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('login', '{{ route('properties.create') }}');" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all">
+                        <i class="ph-bold ph-plus-circle text-base"></i>
+                        <span>Post Property Ad</span>
+                    </a>
+                @endauth
+            </div>
+
+            {{-- Auth / Settings --}}
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1">
+                @guest
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('login');" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
+                        <i class="ph-bold ph-sign-in text-lg text-blue-600"></i>
+                        <span>Sign In</span>
+                    </a>
+                    <a href="{{ route('register') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('register');" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-900">
+                        <i class="ph-bold ph-user-plus text-lg"></i>
+                        <span>Create Account</span>
+                    </a>
+                @else
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
+                        <i class="ph-bold ph-squares-four text-lg text-blue-600"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openProfileModal();" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
+                        <i class="ph-bold ph-user-gear text-lg text-blue-600"></i>
+                        <span>Profile Settings</span>
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}" class="pt-2">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer">
+                            <i class="ph-bold ph-sign-out text-lg"></i>
+                            <span>Sign Out</span>
+                        </button>
+                    </form>
+                @endguest
+            </div>
+        </div>
+    </aside>
 </nav>
 
 {{-- Spacer for fixed nav --}}
 <div class="h-16 lg:h-18"></div>
 
-{{-- Theme toggle --}}
+{{-- Mobile Drawer Controller & Theme Toggle --}}
 <script>
 (() => {
-    const btn = document.getElementById('theme-toggle');
-    const icon = document.getElementById('theme-toggle-icon');
-    if (!btn) return;
+    // Drawer open/close handler
+    window.toggleMobileDrawer = function(open) {
+        const overlay = document.getElementById('mobile-drawer-overlay');
+        const sheet = document.getElementById('mobile-drawer-sheet');
+        if (!overlay || !sheet) return;
 
-    const syncIcon = () => {
-        const dark = document.documentElement.classList.contains('dark');
-        icon.className = dark ? 'ph-bold ph-sun' : 'ph-bold ph-moon';
+        if (open) {
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+            sheet.classList.remove('translate-x-full');
+            sheet.classList.add('translate-x-0');
+            document.body.style.overflow = 'hidden';
+        } else {
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            sheet.classList.remove('translate-x-0');
+            sheet.classList.add('translate-x-full');
+            document.body.style.overflow = '';
+        }
     };
 
-    syncIcon();
-    btn.addEventListener('click', () => {
-        const dark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('ur-theme', dark ? 'dark' : 'light');
+    // Theme toggle
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-toggle-icon');
+    if (btn) {
+        const syncIcon = () => {
+            const dark = document.documentElement.classList.contains('dark');
+            if (icon) icon.className = dark ? 'ph-bold ph-sun text-base' : 'ph-bold ph-moon text-base';
+        };
+
         syncIcon();
+        btn.addEventListener('click', () => {
+            const dark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('ur-theme', dark ? 'dark' : 'light');
+            syncIcon();
+        });
+    }
+
+    // Close user dropdown on outside click
+    document.addEventListener('click', function(e) {
+        document.querySelectorAll('#nav-user-menu').forEach(btn => {
+            const dropdown = btn.nextElementSibling;
+            if (dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
     });
 })();
-</script>
-
-{{-- Close dropdown on outside click --}}
-<script>
-document.addEventListener('click', function(e) {
-    document.querySelectorAll('#nav-user-menu').forEach(btn => {
-        const dropdown = btn.nextElementSibling;
-        if (dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
-});
 </script>

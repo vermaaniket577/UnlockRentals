@@ -1,75 +1,85 @@
-{{-- Mobile Bottom Navigation Bar --}}
-<div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-stone-200/50 dark:border-slate-800/80 shadow-[0_-8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 pb-safe-bottom" id="mobile-bottom-nav">
-    <div class="flex items-center justify-around h-16 px-2">
+{{-- Mobile Bottom Navigation Bar (Standard Native App Style) --}}
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-t border-slate-200/90 dark:border-slate-800/90 shadow-[0_-4px_25px_rgba(0,0,0,0.08)] transition-all duration-300 pb-[env(safe-area-inset-bottom,0px)]" id="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <div class="grid grid-cols-5 items-center h-16 max-w-lg mx-auto px-2">
         
         {{-- Home Tab --}}
-        <a href="{{ route('home') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('home') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="Home">
-            <i class="ph ph-house text-xl mb-0.5"></i>
-            <span class="text-[10px] font-bold tracking-tight">Home</span>
-            @if(request()->routeIs('home'))
-                <span class="w-1 h-1 bg-[#2563EB] dark:bg-blue-500 rounded-full mt-0.5"></span>
-            @endif
+        <a href="{{ route('home') }}" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 {{ request()->routeIs('home') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium' }}" title="Home" aria-label="Home">
+            <div class="relative flex items-center justify-center">
+                <i class="{{ request()->routeIs('home') ? 'ph-fill ph-house' : 'ph-bold ph-house' }} text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
+                @if(request()->routeIs('home'))
+                    <span class="absolute -bottom-1.5 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
+                @endif
+            </div>
+            <span class="text-[10px] tracking-tight mt-1">Home</span>
         </a>
 
         {{-- Explore Tab --}}
-        <a href="{{ route('properties.index') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('properties.index') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="Explore Properties">
-            <i class="ph ph-compass text-xl mb-0.5"></i>
-            <span class="text-[10px] font-bold tracking-tight">Explore</span>
-            @if(request()->routeIs('properties.index') && !request()->has('type'))
-                <span class="w-1 h-1 bg-[#2563EB] dark:bg-blue-500 rounded-full mt-0.5"></span>
-            @endif
+        <a href="{{ route('properties.index') }}" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 {{ request()->routeIs('properties.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium' }}" title="Explore Properties" aria-label="Explore">
+            <div class="relative flex items-center justify-center">
+                <i class="{{ request()->routeIs('properties.*') ? 'ph-fill ph-compass' : 'ph-bold ph-compass' }} text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
+                @if(request()->routeIs('properties.*'))
+                    <span class="absolute -bottom-1.5 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
+                @endif
+            </div>
+            <span class="text-[10px] tracking-tight mt-1">Explore</span>
         </a>
 
-        {{-- List Ad / Plus Tab (Conditional / Interactive) --}}
+        {{-- Center Elevated Action: Post Ad --}}
+        <div class="flex flex-col items-center justify-center -mt-6">
+            @auth
+                <a href="{{ route('properties.create') }}" class="group relative flex items-center justify-center w-13 h-13 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/35 border-2 border-white dark:border-slate-900 active:scale-90 transition-all duration-200" title="Post Property" aria-label="Post Property">
+                    <i class="ph-bold ph-plus text-xl transition-transform group-hover:rotate-90 duration-300"></i>
+                    <span class="sr-only">Post Property</span>
+                </a>
+            @else
+                <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login', '{{ route('properties.create') }}');" class="group relative flex items-center justify-center w-13 h-13 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/35 border-2 border-white dark:border-slate-900 active:scale-90 transition-all duration-200" title="Post Property" aria-label="Post Property">
+                    <i class="ph-bold ph-plus text-xl transition-transform group-hover:rotate-90 duration-300"></i>
+                    <span class="sr-only">Post Property</span>
+                </a>
+            @endauth
+            <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400 mt-1 tracking-tight">Post Ad</span>
+        </div>
+
+        {{-- Dashboard / Account Tab --}}
         @auth
-            @if(auth()->user()->isOwner() || auth()->user()->isAdmin() || auth()->user()->role === 'tenant')
-            <a href="{{ route('properties.create') }}" class="flex flex-col items-center justify-center -mt-5" title="Post Ad">
-                <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full text-white shadow-lg shadow-blue-500/30 transform transition active:scale-95 hover:rotate-90 duration-300">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <a href="{{ route('dashboard') }}" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 {{ request()->routeIs('dashboard*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium' }}" title="Dashboard" aria-label="Dashboard">
+                <div class="relative flex items-center justify-center">
+                    <i class="{{ request()->routeIs('dashboard*') ? 'ph-fill ph-squares-four' : 'ph-bold ph-squares-four' }} text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
+                    @if(request()->routeIs('dashboard*'))
+                        <span class="absolute -bottom-1.5 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
+                    @endif
                 </div>
-                <span class="text-[10px] font-bold tracking-tight mt-1 text-zinc-400 dark:text-slate-500">Post Ad</span>
+                <span class="text-[10px] tracking-tight mt-1">Dashboard</span>
             </a>
-            @endif
         @else
-            <a href="{{ route('login') }}" class="flex flex-col items-center justify-center -mt-5" title="Post Ad">
-                <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full text-white shadow-lg shadow-blue-500/30 transform transition active:scale-95 hover:rotate-90 duration-300">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium" title="Sign In" aria-label="Account">
+                <div class="relative flex items-center justify-center">
+                    <i class="ph-bold ph-user-circle text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
                 </div>
-                <span class="text-[10px] font-bold tracking-tight mt-1 text-zinc-400 dark:text-slate-500">Post Ad</span>
+                <span class="text-[10px] tracking-tight mt-1">Account</span>
             </a>
         @endauth
 
-        {{-- Dashboard Tab --}}
-        <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') ? 'text-[#2563EB] dark:text-blue-500 scale-105' : 'text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300' }}" title="Dashboard">
-            <i class="ph ph-squares-four text-xl mb-0.5"></i>
-            <span class="text-[10px] font-bold tracking-tight">Dashboard</span>
-            @if(request()->routeIs('dashboard'))
-                <span class="w-1 h-1 bg-[#2563EB] dark:bg-blue-500 rounded-full mt-0.5"></span>
-            @endif
-        </a>
-
-        {{-- Support Tab (Interactive Chat Toggle) --}}
-        <button onclick="handleMobileSupportClick()" class="flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 text-zinc-400 dark:text-slate-500 hover:text-zinc-700 dark:hover:text-slate-300" id="mobile-support-nav-btn">
-            <i class="ph ph-chat-circle-dots text-xl mb-0.5"></i>
-            <span class="text-[10px] font-bold tracking-tight">Support</span>
+        {{-- Support Tab (Triggers Chatbot) --}}
+        <button type="button" onclick="handleMobileSupportClick()" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium cursor-pointer" id="mobile-support-nav-btn" title="Support" aria-label="Help and Support">
+            <div class="relative flex items-center justify-center">
+                <i class="ph-bold ph-chats-circle text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
+                <span class="absolute -top-0.5 -right-1 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-950"></span>
+            </div>
+            <span class="text-[10px] tracking-tight mt-1">Support</span>
         </button>
 
     </div>
-</div>
+</nav>
 
-{{-- Dynamic padding offset for mobile screens --}}
+{{-- Safe spacing offset for mobile screens --}}
 <style>
-    @supports(padding: env(safe-area-inset-bottom)) {
-        .pb-safe-bottom {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-    }
     body {
-        padding-bottom: 4rem; /* offset for mobile bottom nav */
+        padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px)) !important;
     }
     @media (min-width: 768px) {
         body {
-            padding-bottom: 0;
+            padding-bottom: 0 !important;
         }
     }
 </style>
@@ -79,14 +89,13 @@
         const chatTrigger = document.getElementById('chatTrigger');
         const chatWindow = document.getElementById('chatWindow');
         
-        if (chatTrigger && chatWindow) {
-            if (!chatWindow.classList.contains('active')) {
-                chatWindow.classList.add('active');
-            } else {
-                chatWindow.classList.remove('active');
+        if (chatWindow) {
+            chatWindow.classList.toggle('active');
+            if (chatWindow.classList.contains('active')) {
+                const input = document.getElementById('chatInput');
+                if (input) setTimeout(() => input.focus(), 150);
             }
         } else {
-            // Redirect to home page with open-chat query param
             window.location.href = "{{ route('home') }}?open-chat=1";
         }
     }

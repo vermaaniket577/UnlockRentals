@@ -72,11 +72,9 @@
             <div class="absolute w-20 h-20 border border-dashed border-blue-500/30 rounded-full animate-[spin_8s_linear_infinite_reverse]"></div>
             <div class="absolute w-16 h-16 border-2 border-dashed border-purple-500/20 rounded-full animate-[spin_4s_linear_infinite]"></div>
             
-            {{-- Core illustrative SVG lock / key / luxury house --}}
-            <div class="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 transform transition-transform duration-300 hover:scale-110">
-                <svg class="w-6 h-6 text-white animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
+            {{-- Core official app launcher icon --}}
+            <div class="relative w-14 h-14 bg-white rounded-2xl p-2 flex items-center justify-center shadow-xl shadow-blue-500/30 ring-2 ring-white/30 transform transition-transform duration-300 hover:scale-110">
+                <img src="{{ asset('images/logo-icon.png') }}" alt="UnlockRentals App" title="UnlockRentals App" class="w-full h-full object-contain" onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
             </div>
         </div>
 

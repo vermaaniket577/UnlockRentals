@@ -178,4 +178,53 @@ class User extends Authenticatable
     {
         return $this->role === 'tenant';
     }
+
+    /**
+     * Get clean 10-digit phone number without country code or symbols for payment gateways.
+     */
+    public function getCleanPhoneAttribute(): ?string
+    {
+        if (empty($this->phone)) {
+            return null;
+        }
+
+        $digits = preg_replace('/[^0-9]/', '', (string) $this->phone);
+        if (strlen($digits) >= 10) {
+            return substr($digits, -10);
+        }
+
+        return !empty($digits) ? $digits : null;
+    }
+
+    /**
+     * Get formatted display phone number (+91 XXXXX XXXXX).
+     */
+    public function getFormattedPhoneAttribute(): ?string
+    {
+        $clean = $this->clean_phone;
+        if ($clean && strlen($clean) === 10) {
+            return '+91 ' . substr($clean, 0, 5) . ' ' . substr($clean, 5);
+        }
+
+        return $this->phone;
+    }
+
+    /**
+     * Sanitize any raw phone input string to a clean standard Indian format (+91 XXXXX XXXXX).
+     */
+    public static function sanitizePhone(?string $input): ?string
+    {
+        if (empty($input)) {
+            return null;
+        }
+
+        $digits = preg_replace('/[^0-9]/', '', $input);
+        if (strlen($digits) >= 10) {
+            $clean10 = substr($digits, -10);
+            return '+91 ' . substr($clean10, 0, 5) . ' ' . substr($clean10, 5);
+        }
+
+        return trim($input);
+    }
 }
+

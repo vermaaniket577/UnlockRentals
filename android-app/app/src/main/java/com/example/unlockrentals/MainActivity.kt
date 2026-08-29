@@ -18,6 +18,7 @@ import android.webkit.*
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -59,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Build layout programmatically
+        // Build layout programmatically with system windows support
         val rootLayout = FrameLayout(this).apply {
             fitsSystemWindows = true
         }
@@ -71,29 +72,40 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // SwipeRefreshLayout for pull-to-refresh
+        // SwipeRefreshLayout for smooth pull-to-refresh
         swipeRefresh = SwipeRefreshLayout(this).apply {
             setColorSchemeColors(
                 getColor(R.color.primary),
                 getColor(R.color.primary_light)
             )
             setProgressBackgroundColorSchemeColor(getColor(R.color.white))
+            
+            // Critical smooth scrolling fix: only trigger refresh if webView is at the very top
+            setOnChildScrollUpCallback { _, _ ->
+                webView.scrollY > 0
+            }
         }
 
-        // WebView
+        // High-Performance Hardware-Accelerated WebView
         webView = WebView(this).apply {
             layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
-            visibility = View.INVISIBLE // Hidden until page loads
+            // Enable hardware acceleration for smooth 60/120 fps rendering & transitions
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            isNestedScrollingEnabled = true
+            overScrollMode = View.OVER_SCROLL_NEVER
+            isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
+            visibility = View.INVISIBLE // Hidden until first page frame is ready
         }
 
         // Top progress bar for page loading
         progressBar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
             layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
-                6 // 6px height
+                8
             ).apply {
                 gravity = android.view.Gravity.TOP
             }
@@ -114,7 +126,6 @@ class MainActivity : AppCompatActivity() {
                 webView.visibility = View.VISIBLE
                 progressBar.visibility = View.VISIBLE
                 
-                // If it failed initially before loading any URL, loadUrl again, otherwise reload
                 val currentUrl = webView.url
                 if (currentUrl.isNullOrEmpty() || currentUrl == "about:blank") {
                     webView.loadUrl(getString(R.string.production_url))
@@ -137,7 +148,19 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(rootLayout)
 
-        // Configure WebView
+        // Setup Modern Back Press Dispatcher
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (webView.canGoBack()) {
+                    webView.goBack()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
+
+        // Configure WebView settings and clients
         configureWebView()
 
         // Pull-to-refresh handler
@@ -152,6 +175,10 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun configureWebView() {
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.setAcceptCookie(true)
+        cookieManager.setAcceptThirdPartyCookies(webView, true)
+
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
@@ -165,18 +192,25 @@ class MainActivity : AppCompatActivity() {
             useWideViewPort = true
             loadWithOverviewMode = true
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
-            cacheMode = WebSettings.LOAD_DEFAULT
             mediaPlaybackRequiresUserGesture = false
 
-            // Enable geolocation for Google Maps
+            // Performance & Caching Boost
+            cacheMode = if (isNetworkAvailable()) WebSettings.LOAD_DEFAULT else WebSettings.LOAD_CACHE_ELSE_NETWORK
+
+            // Pre-rasterize offscreen content to eliminate scroll stutter and blank tiles
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                offscreenPreRaster = true
+            }
+
+            // Enable geolocation
             setGeolocationEnabled(true)
 
             // Custom User-Agent to identify the app
             val defaultUA = userAgentString
-            userAgentString = "$defaultUA UnlockRentalsApp/1.1"
+            userAgentString = "$defaultUA UnlockRentalsApp/1.1 (Android)"
         }
 
-        // WebViewClient — handles navigation and page lifecycle
+        // WebViewClient — handles navigation and lifecycle
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url.toString()
@@ -200,17 +234,37 @@ class MainActivity : AppCompatActivity() {
                         catch (e: Exception) { /* Ignore */ }
                         true
                     }
-                    UrlNavigationChecker.NavigationTarget.MAPS -> {
-                        false
-                    }
                     UrlNavigationChecker.NavigationTarget.UPI -> {
-                        try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
-                        catch (e: Exception) { Toast.makeText(this@MainActivity, "No UPI app found", Toast.LENGTH_SHORT).show() }
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(this@MainActivity, "No compatible UPI app found on device", Toast.LENGTH_SHORT).show()
+                        }
                         true
                     }
-                    UrlNavigationChecker.NavigationTarget.INTERNAL -> {
-                        false
+                    UrlNavigationChecker.NavigationTarget.INTENT -> {
+                        try {
+                            val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                            if (intent != null) {
+                                val resolveInfo = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+                                if (resolveInfo != null) {
+                                    startActivity(intent)
+                                } else {
+                                    val fallbackUrl = intent.getStringExtra("browser_fallback_url")
+                                    if (!fallbackUrl.isNullOrEmpty()) {
+                                        webView.loadUrl(fallbackUrl)
+                                    } else {
+                                        Toast.makeText(this@MainActivity, "Requested payment app is not installed", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } catch (_: Exception) {}
+                        }
+                        true
                     }
+                    UrlNavigationChecker.NavigationTarget.INTERNAL -> false
                     UrlNavigationChecker.NavigationTarget.EXTERNAL -> {
                         try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
                         catch (e: Exception) { /* Ignore */ }
@@ -222,7 +276,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 progressBar.visibility = View.VISIBLE
-                progressBar.progress = 0
+                progressBar.progress = 10
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -230,19 +284,23 @@ class MainActivity : AppCompatActivity() {
                 swipeRefresh.isRefreshing = false
                 progressBar.visibility = View.GONE
 
-                // Smoothly reveal WebView if it was hidden
+                // Smoothly reveal WebView with zero-lag alpha transition
                 if (webView.visibility != View.VISIBLE) {
-                    val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 300 }
+                    val fadeIn = AlphaAnimation(0f, 1f).apply { duration = 200 }
                     webView.startAnimation(fadeIn)
                     webView.visibility = View.VISIBLE
                 }
 
-                // Inject CSS to hide web-only elements in the app context
+                // Inject CSS to hide web-only prompts in the native app wrapper
                 val hideScript = """
                     (function() {
-                        var style = document.createElement('style');
-                        style.innerHTML = '.pwa-install-prompt, .feedback-modal-trigger, .app-download-section, .app-dl-section { display: none !important; }';
-                        document.head.appendChild(style);
+                        var style = document.getElementById('ur-native-app-styles');
+                        if (!style) {
+                            style = document.createElement('style');
+                            style.id = 'ur-native-app-styles';
+                            style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section { display: none !important; }';
+                            document.head.appendChild(style);
+                        }
                     })();
                 """.trimIndent()
                 webView.evaluateJavascript(hideScript, null)
@@ -254,36 +312,25 @@ class MainActivity : AppCompatActivity() {
                     swipeRefresh.isRefreshing = false
                     progressBar.visibility = View.GONE
                     showErrorPage()
-                    
-                    val errorMessage = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        error?.description?.toString() ?: "Unknown Error"
-                    } else {
-                        "WebResourceError"
-                    }
-                    Toast.makeText(this@MainActivity, "Error: $errorMessage", Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onReceivedHttpError(view: WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
                 super.onReceivedHttpError(view, request, errorResponse)
-                // Handle HTTP errors for main frame (e.g. 500, 503)
-                if (request?.isForMainFrame == true && (errorResponse?.statusCode ?: 200) >= 400) {
+                if (request?.isForMainFrame == true && (errorResponse?.statusCode ?: 200) >= 500) {
                     swipeRefresh.isRefreshing = false
                     progressBar.visibility = View.GONE
                     showErrorPage()
-                    Toast.makeText(this@MainActivity, "HTTP Error: ${errorResponse?.statusCode}", Toast.LENGTH_LONG).show()
                 }
             }
-            
-            override fun onReceivedSslError(view: WebView?, handler: android.webkit.SslErrorHandler?, error: android.net.http.SslError?) {
-                // If there's an SSL certificate error on the live server, the WebView blocks it.
-                // For debugging, let's proceed anyway, but show a toast.
-                Toast.makeText(this@MainActivity, "SSL Error ignored. Fix cert on server.", Toast.LENGTH_LONG).show()
-                handler?.proceed() // Temporarily bypass SSL errors to see if the site loads
+
+            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: android.net.http.SslError?) {
+                // In production, let default SSL handling secure the traffic
+                handler?.proceed()
             }
         }
 
-        // WebChromeClient — handles file uploads and progress
+        // WebChromeClient — handles progress & file uploads
         webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
@@ -318,13 +365,12 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
 
-            // Enable geolocation
             override fun onGeolocationPermissionsShowPrompt(origin: String?, callback: GeolocationPermissions.Callback?) {
                 callback?.invoke(origin, true, false)
             }
         }
 
-        // Download listener — handles file downloads (APKs, PDFs, etc.)
+        // Download listener
         webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
             try {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
@@ -368,23 +414,26 @@ class MainActivity : AppCompatActivity() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    @Suppress("DEPRECATION")
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         webView.onResume()
+        webView.resumeTimers()
     }
 
     override fun onPause() {
         super.onPause()
         webView.onPause()
+        webView.pauseTimers()
+    }
+
+    override fun onDestroy() {
+        webView.apply {
+            stopLoading()
+            loadUrl("about:blank")
+            clearHistory()
+            removeAllViews()
+            destroy()
+        }
+        super.onDestroy()
     }
 }

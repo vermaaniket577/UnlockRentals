@@ -14,12 +14,11 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Show splash for 2 seconds, then launch main activity
+        // Show splash smoothly then launch main activity
         Handler(Looper.getMainLooper()).postDelayed({
             startActivity(Intent(this, MainActivity::class.java))
             finish()
-            // Smooth fade transition
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-        }, 2000)
+        }, 900)
     }
 }

@@ -7,13 +7,23 @@
     android:orientation="vertical"
     android:padding="48dp">
 
+    <!-- Business Logo -->
+    <ImageView
+        android:layout_width="180dp"
+        android:layout_height="60dp"
+        android:src="@drawable/business_logo"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:contentDescription="UnlockRentals Logo"
+        android:layout_marginBottom="24dp" />
+
     <!-- Offline Icon -->
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:src="@android:drawable/ic_dialog_alert"
         android:contentDescription="No connection"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="20dp" />
 
     <!-- Error Title -->
     <TextView

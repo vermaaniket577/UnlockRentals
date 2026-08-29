@@ -19,20 +19,20 @@ use App\Http\Controllers\ResetPasswordController;
 */
 
 Route::get('/', function(Illuminate\Http\Request $request) {
-    $hasFilters = $request->hasAny(['state','district','locality','type','price','rooms','purpose']);
+    $hasFilters = $request->hasAny(['state','district','locality','type','price','rooms','purpose','sort','availability','unbooked','media']);
 
     if (!$hasFilters) {
         // Cache unfiltered homepage listings for 5 minutes
         $featuredRentals = \Illuminate\Support\Facades\Cache::remember('home_featured_rentals', 300, function () {
             return \App\Models\Property::approved()
-                ->with(['primaryImage', 'owner'])
+                ->with(['primaryImage', 'owner', 'images'])
                 ->latest()
-                ->take(18)
+                ->take(24)
                 ->get();
         });
     } else {
         $query = \App\Models\Property::approved()
-            ->with(['primaryImage', 'owner']);
+            ->with(['primaryImage', 'owner', 'images']);
 
         if ($request->filled('state')) {
             $query->where('state', $request->state);
@@ -78,7 +78,43 @@ Route::get('/', function(Illuminate\Http\Request $request) {
             $query->where('purpose', $request->purpose);
         }
 
-        $featuredRentals = $query->latest()->take(18)->get();
+        // Availability / Unbooked Filter
+        if (($request->filled('availability') && $request->availability === 'unbooked') || $request->filled('unbooked')) {
+            $query->where('is_booked', false);
+        }
+
+        // Media Filter (with images or video)
+        if ($request->filled('media') && $request->media !== 'all') {
+            if ($request->media === 'video') {
+                $query->whereNotNull('video_path')->where('video_path', '!=', '')->where('video_path', '!=', '[]');
+            } elseif ($request->media === 'images' || $request->media === 'image') {
+                $query->whereHas('images');
+            }
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort', 'latest');
+        switch ($sortBy) {
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'unbooked':
+                $query->orderBy('is_booked', 'asc')->latest();
+                break;
+            case 'old_to_new':
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'new_to_old':
+            case 'newest':
+            default:
+                $query->latest();
+        }
+
+        $featuredRentals = $query->take(24)->get();
     }
 
     $feedbacks = \Illuminate\Support\Facades\Cache::remember('home_approved_feedbacks', 300, function () {

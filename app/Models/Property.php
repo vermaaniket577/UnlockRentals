@@ -269,12 +269,14 @@ class Property extends Model
      */
     public function primaryImageUrl(): ?string
     {
-        if ($this->primaryImage) {
+        if ($this->relationLoaded('primaryImage') && $this->primaryImage) {
             return $this->primaryImage->imageUrl();
         }
-        $firstImage = $this->images ? $this->images->first() : null;
-        if ($firstImage) {
-            return $firstImage->imageUrl();
+        if ($this->relationLoaded('images') && $this->images && $this->images->isNotEmpty()) {
+            return $this->images->first()->imageUrl();
+        }
+        if ($this->primaryImage) {
+            return $this->primaryImage->imageUrl();
         }
         return null;
     }

@@ -88,6 +88,41 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 }
+
+                // Handle UPI payment apps (GPay, PhonePe, Paytm, BHIM, Cred)
+                if (url.startsWith("upi:") || url.startsWith("tez:") || url.startsWith("phonepe:") ||
+                    url.startsWith("paytmmp:") || url.startsWith("bhim:") || url.startsWith("credpay:")) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intent);
+                        return true;
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, "No compatible UPI payment app found on device", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                }
+
+                // Handle Android Intent URIs from payment gateways
+                if (url.startsWith("intent:") || url.startsWith("intent://")) {
+                    try {
+                        Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+                        if (intent != null) {
+                            if (getPackageManager().resolveActivity(intent, 0) != null) {
+                                startActivity(intent);
+                            } else {
+                                String fallbackUrl = intent.getStringExtra("browser_fallback_url");
+                                if (fallbackUrl != null && !fallbackUrl.isEmpty()) {
+                                    webView.loadUrl(fallbackUrl);
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Requested payment app is not installed", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            return true;
+                        }
+                    } catch (Exception e) {
+                        // Fallback
+                    }
+                }
                 
                 return false;
             }

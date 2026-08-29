@@ -1,8 +1,8 @@
 {{-- Universal Luxury Auth / Login Required Modal --}}
-<div id="ur-auth-modal" class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none" style="display: none;" role="dialog" aria-modal="true">
+<div id="ur-auth-modal" class="fixed inset-0 z-[99999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/75 backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none pb-[env(safe-area-inset-bottom,0px)]" style="display: none;" role="dialog" aria-modal="true">
     
     {{-- Modal Card Container --}}
-    <div class="relative w-full max-w-md max-h-[92vh] flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 my-auto" id="ur-auth-modal-card">
+    <div class="relative w-full max-w-md max-h-[92vh] flex flex-col bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl border-t sm:border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 sm:my-auto" id="ur-auth-modal-card">
         
         {{-- Close Button --}}
         <button type="button" onclick="window.closeAuthModal()" class="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors" title="Close">
@@ -11,8 +11,8 @@
 
         {{-- Top Gradient Header (Fixed at top) --}}
         <div class="flex-shrink-0 pt-6 pb-4 px-6 text-center bg-gradient-to-b from-blue-500/[0.08] dark:from-blue-500/[0.15] to-transparent border-b border-slate-100 dark:border-slate-800">
-            <div class="w-11 h-11 mx-auto rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 mb-2.5">
-                <i class="ph-bold ph-lock-key-open text-xl"></i>
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-white flex items-center justify-center p-1.5 shadow-md shadow-blue-500/20 ring-1 ring-slate-900/10 dark:ring-white/20 mb-2.5">
+                <img src="{{ asset('images/logo-icon.png') }}" alt="UnlockRentals" title="UnlockRentals" class="w-full h-full object-contain" onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
             </div>
             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight" id="ur-auth-title">
                 Unlock Full Property Access

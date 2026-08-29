@@ -338,6 +338,16 @@
                             <span class="ur-app__card-status">Premium Owner</span>
                         </div>
                     </div>
+                    {{-- Floating Glass App Launcher Icon Badge --}}
+                    <div class="ur-app__floating-card ur-app__card--3 hidden sm:flex" style="top: 52%; left: -6%; animation: ur-float 6.5s ease-in-out infinite;">
+                        <div class="w-10 h-10 rounded-xl bg-white p-1 shadow-md ring-1 ring-slate-200/80 flex items-center justify-center flex-shrink-0">
+                            <img src="{{ asset('images/logo-icon.png') }}" alt="UnlockRentals App Icon" class="w-full h-full object-contain" onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
+                        </div>
+                        <div class="ur-app__card-text">
+                            <span class="ur-app__card-title">UnlockRentals</span>
+                            <span class="ur-app__card-status" style="font-size: 11px; font-weight: 700; color: #2563eb;">4.9 ★ Official App</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

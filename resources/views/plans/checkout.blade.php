@@ -223,25 +223,86 @@
                     </ul>
                 </div>
 
+                <!-- Account & Contact Information Card -->
+                <div class="checkout-card rounded-3xl border border-slate-200/70 bg-white/80 p-5 shadow-xl shadow-slate-950/5 backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/80">
+                    <div class="mb-4 flex items-center justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Contact details</p>
+                            <h2 class="mt-1 text-xl font-black text-slate-950 dark:text-white">Account & billing details</h2>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 border border-emerald-200/60 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/40">
+                            <i class="ph-bold ph-shield-check"></i> Verified Profile
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <!-- Name -->
+                        <div>
+                            <label class="mb-1.5 block text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Full Name</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="ph-bold ph-user"></i></span>
+                                <input type="text" id="checkout_user_name" value="{{ auth()->user()->name }}" readonly class="w-full rounded-2xl border border-slate-200 bg-slate-50/80 pl-11 pr-4 py-3 text-sm font-bold text-slate-800 outline-none cursor-default dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200">
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="mb-1.5 block text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Email Address</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="ph-bold ph-envelope-simple"></i></span>
+                                <input type="email" id="checkout_user_email" value="{{ auth()->user()->email }}" readonly class="w-full rounded-2xl border border-slate-200 bg-slate-50/80 pl-11 pr-4 py-3 text-sm font-bold text-slate-800 outline-none cursor-default dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200">
+                            </div>
+                        </div>
+
+                        <!-- Mobile Number with Auto-fill & Live Validation -->
+                        <div class="sm:col-span-2">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="checkout_user_phone" class="block text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Mobile Number (Auto-filled from profile)</label>
+                                @if(!empty($userCleanPhone))
+                                    <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                        <i class="ph-bold ph-check-circle"></i> Profile mobile synced
+                                    </span>
+                                @else
+                                    <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                                        <i class="ph-bold ph-sparkle"></i> Auto-saves to your profile
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="absolute left-3.5 flex items-center gap-1.5 text-sm font-black text-slate-700 select-none dark:text-slate-300">
+                                    <span class="text-base">🇮🇳</span>
+                                    <span>+91</span>
+                                    <span class="h-4 w-px bg-slate-300 dark:bg-slate-600 ml-1"></span>
+                                </div>
+                                <input type="tel" id="checkout_user_phone" name="phone" value="{{ $userCleanPhone ?? '' }}" maxlength="10" placeholder="Enter 10-digit mobile number" class="w-full rounded-2xl border border-slate-200 bg-white pl-24 pr-11 py-3.5 text-sm font-black tracking-wider text-slate-950 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400">
+                                <span id="phone_valid_icon" class="absolute right-4 text-emerald-500 text-lg transition-opacity duration-200 {{ !empty($userCleanPhone) ? 'opacity-100' : 'opacity-0' }}">
+                                    <i class="ph-bold ph-check-circle"></i>
+                                </span>
+                            </div>
+                            <p id="phone_error_text" class="mt-1.5 hidden text-xs font-bold text-red-600"><i class="ph-bold ph-warning-circle"></i> Please enter a valid 10-digit Indian mobile number to continue.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="payment-methods" class="checkout-card rounded-3xl border border-slate-200/70 bg-white/70 p-5 shadow-xl shadow-slate-950/5 backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/70">
                     <div class="mb-4 flex items-center justify-between gap-4">
                         <div>
                             <p class="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Payment methods</p>
-                            <h2 class="mt-1 text-xl font-black text-slate-950">Select a secure payment option</h2>
+                            <h2 class="mt-1 text-xl font-black text-slate-950 dark:text-white">Select a secure payment option</h2>
                         </div>
-                        <span class="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500 sm:inline-flex">Powered by {{ $activeGateway['name'] ?? 'UnlockRentals Billing' }}</span>
+                        <span class="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500 sm:inline-flex dark:bg-slate-800 dark:text-slate-400">Powered by {{ $activeGateway['name'] ?? 'UnlockRentals Billing' }}</span>
                     </div>
 
                     <div class="checkout-method-grid grid grid-cols-1 gap-4 md:grid-cols-2">
                         @foreach($methods as $method)
                             <button type="button" class="method-card rounded-2xl p-5 text-left {{ $loop->first ? 'selected' : '' }}" data-method="{{ $method['id'] }}">
                                 <div class="flex items-start gap-4">
-                                    <span class="method-icon grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-600">
+                                    <span class="method-icon grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
                                         <i class="ph-bold {{ $method['icon'] }} text-2xl"></i>
                                     </span>
                                     <span class="min-w-0">
-                                        <span class="block text-base font-black text-slate-950">{{ $method['name'] }}</span>
-                                        <span class="method-copy mt-1 block text-sm leading-5 text-slate-500">{{ $method['copy'] }}</span>
+                                        <span class="block text-base font-black text-slate-950 dark:text-white">{{ $method['name'] }}</span>
+                                        <span class="method-copy mt-1 block text-sm leading-5 text-slate-500 dark:text-slate-400">{{ $method['copy'] }}</span>
                                     </span>
                                 </div>
                             </button>
@@ -277,7 +338,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('plans.purchase.process', $plan) }}" method="POST" id="payment-form" enctype="multipart/form-data" class="checkout-submit-card rounded-3xl border border-slate-200/70 bg-white/78 p-5 shadow-xl shadow-slate-950/5 backdrop-blur-xl">
+                <form action="{{ route('plans.purchase.process', $plan) }}" method="POST" id="payment-form" enctype="multipart/form-data" class="checkout-submit-card rounded-3xl border border-slate-200/70 bg-white/78 p-5 shadow-xl shadow-slate-950/5 backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/78">
                     @csrf
                     <input type="hidden" name="billing_period" value="{{ $billingPeriod }}">
                     <input type="hidden" name="payment_method" id="payment_method" value="{{ $isRazorpay ? 'razorpay' : 'upi' }}">
@@ -288,9 +349,9 @@
                     <div class="mb-5 flex items-center justify-between gap-4">
                         <div>
                             <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Authorization</p>
-                            <h2 class="mt-1 text-lg font-black text-slate-950">{{ $isRazorpay ? 'Ready for instant activation' : 'Submit payment proof' }}</h2>
+                            <h2 class="mt-1 text-lg font-black text-slate-950 dark:text-white">{{ $isRazorpay ? 'Ready for instant activation' : 'Submit payment proof' }}</h2>
                         </div>
-                        <label class="inline-flex cursor-pointer items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-600">
+                        <label class="inline-flex cursor-pointer items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                             <input type="checkbox" name="auto_renew" value="1" class="h-4 w-4 rounded border-slate-300 text-blue-600">
                             Auto renew
                         </label>
@@ -300,17 +361,17 @@
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <label class="mb-2 block text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">{{ $activeGateway['reference_label'] ?? 'Transaction ID / UTR Number' }}</label>
-                                <input type="text" name="payment_reference" value="{{ old('payment_reference') }}" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-950 outline-none transition focus:border-blue-500 focus:bg-white" placeholder="Enter payment reference">
+                                <input type="text" name="payment_reference" value="{{ old('payment_reference') }}" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-950 outline-none transition focus:border-blue-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white" placeholder="Enter payment reference">
                                 @error('payment_reference')<p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>@enderror
                             </div>
                             <div>
                                 <label class="mb-2 block text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Amount Paid</label>
-                                <input type="number" name="amount_paid" value="{{ old('amount_paid', $billing['final']) }}" required step="0.01" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-950 outline-none transition focus:border-blue-500 focus:bg-white">
+                                <input type="number" name="amount_paid" value="{{ old('amount_paid', $billing['final']) }}" required step="0.01" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-950 outline-none transition focus:border-blue-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-white">
                                 @error('amount_paid')<p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>@enderror
                             </div>
                             <div class="md:col-span-2">
                                 <label class="mb-2 block text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Payment Screenshot</label>
-                                <input type="file" name="payment_proof" accept="image/*" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-xs file:font-black file:text-blue-700">
+                                <input type="file" name="payment_proof" accept="image/*" required class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-xs file:font-black file:text-blue-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                                 @error('payment_proof')<p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>@enderror
                             </div>
                         </div>
@@ -319,7 +380,7 @@
                     <button type="{{ $isRazorpay ? 'button' : 'submit' }}" id="pay-button" class="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-sky-500 px-6 py-3.5 text-sm font-black uppercase tracking-wider text-white shadow-2xl shadow-blue-500/20 transition hover:-translate-y-0.5 hover:shadow-blue-500/30 disabled:cursor-not-allowed disabled:opacity-60" {{ !$activeGateway ? 'disabled' : '' }}>
                         <span class="btn-text flex items-center gap-2">
                             <i class="ph-bold ph-lock-key"></i>
-                            Pay Now
+                            Pay Now & Activate Plan
                         </span>
                         <span class="btn-loader hidden items-center gap-2">
                             <i class="ph-bold ph-circle-notch animate-spin"></i>
@@ -359,23 +420,23 @@
                 @endif
             </div>
 
-            <aside class="summary-panel sticky top-24 h-max rounded-3xl p-6">
+            <aside class="summary-panel sticky top-24 h-max rounded-3xl p-6 dark:bg-slate-900/80 dark:border-slate-700/70">
                 <div class="flex items-center gap-3">
-                    <span class="grid h-12 w-12 place-items-center rounded-2xl bg-slate-950 text-white"><i class="ph-bold ph-crown text-2xl"></i></span>
+                    <span class="grid h-12 w-12 place-items-center rounded-2xl bg-slate-950 text-white dark:bg-blue-600"><i class="ph-bold ph-crown text-2xl"></i></span>
                     <div>
                         <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Live summary</p>
-                        <h2 class="text-lg font-black text-slate-950">{{ $plan->name }}</h2>
+                        <h2 class="text-lg font-black text-slate-950 dark:text-white">{{ $plan->name }}</h2>
                     </div>
                 </div>
                 <div class="summary-rows mt-6 flex flex-col gap-4 text-sm">
-                    <div class="flex justify-between gap-4"><span class="text-slate-500">Plan Option</span><strong class="text-slate-950">{{ $billingPeriod === 'yearly' ? 'Buy' : 'Rent' }} / {{ $billing['duration_days'] }} days</strong></div>
-                    <div class="flex justify-between gap-4"><span class="text-slate-500">Subtotal</span><strong class="text-slate-950">Rs. {{ number_format($billing['subtotal'], 2) }}</strong></div>
-                    <div class="flex justify-between gap-4"><span class="text-slate-500">Discount</span><strong class="text-emerald-600">- Rs. {{ number_format($billing['discount'], 2) }}</strong></div>
-                    <div class="flex justify-between gap-4"><span class="text-slate-500">GST ({{ $billing['gst_rate'] ?? (float) ($site_settings['gst_rate'] ?? 18) }}%)</span><strong class="text-slate-950">Rs. {{ number_format($billing['gst'], 2) }}</strong></div>
-                    <div class="border-t border-slate-200 pt-4">
+                    <div class="flex justify-between gap-4"><span class="text-slate-500 dark:text-slate-400">Plan Option</span><strong class="text-slate-950 dark:text-white">{{ $billingPeriod === 'yearly' ? 'Buy' : 'Rent' }} / {{ $billing['duration_days'] }} days</strong></div>
+                    <div class="flex justify-between gap-4"><span class="text-slate-500 dark:text-slate-400">Subtotal</span><strong class="text-slate-950 dark:text-white">Rs. {{ number_format($billing['subtotal'], 2) }}</strong></div>
+                    <div class="flex justify-between gap-4"><span class="text-slate-500 dark:text-slate-400">Discount</span><strong class="text-emerald-600 dark:text-emerald-400">- Rs. {{ number_format($billing['discount'], 2) }}</strong></div>
+                    <div class="flex justify-between gap-4"><span class="text-slate-500 dark:text-slate-400">GST ({{ $billing['gst_rate'] ?? (float) ($site_settings['gst_rate'] ?? 18) }}%)</span><strong class="text-slate-950 dark:text-white">Rs. {{ number_format($billing['gst'], 2) }}</strong></div>
+                    <div class="border-t border-slate-200 pt-4 dark:border-slate-700">
                         <div class="flex items-end justify-between gap-4">
                             <span class="text-xs font-black uppercase tracking-widest text-slate-400">Final amount</span>
-                            <strong class="text-3xl font-black text-slate-950">Rs. {{ number_format($billing['final'], 2) }}</strong>
+                            <strong class="text-3xl font-black text-slate-950 dark:text-white">Rs. {{ number_format($billing['final'], 2) }}</strong>
                         </div>
                     </div>
                 </div>
@@ -384,14 +445,14 @@
                     {{ $isRazorpay ? 'Pay Now' : (!empty($activeGateway['payment_link']) ? 'Open Payment Page' : 'Submit Payment') }}
                 </button>
 
-                <div class="summary-note mt-6 rounded-2xl bg-emerald-50 p-4 text-sm font-semibold leading-6 text-emerald-800">
+                <div class="summary-note mt-6 rounded-2xl bg-emerald-50 p-4 text-sm font-semibold leading-6 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border dark:border-emerald-800/40">
                     <i class="ph-bold ph-lightning"></i>
                     Instant activation after successful verified payment. Premium features unlock immediately.
                 </div>
-                <div class="summary-badges mt-5 grid grid-cols-3 gap-2 text-center text-[11px] font-black uppercase tracking-wider text-slate-500">
-                    <div class="rounded-2xl bg-slate-50 p-3"><i class="ph-bold ph-shield-check block text-lg text-blue-600"></i>Secure</div>
-                    <div class="rounded-2xl bg-slate-50 p-3"><i class="ph-bold ph-receipt block text-lg text-blue-600"></i>Invoice</div>
-                    <div class="rounded-2xl bg-slate-50 p-3"><i class="ph-bold ph-sparkle block text-lg text-blue-600"></i>Premium</div>
+                <div class="summary-badges mt-5 grid grid-cols-3 gap-2 text-center text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-800/70"><i class="ph-bold ph-shield-check block text-lg text-blue-600 dark:text-blue-400"></i>Secure</div>
+                    <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-800/70"><i class="ph-bold ph-receipt block text-lg text-blue-600 dark:text-blue-400"></i>Invoice</div>
+                    <div class="rounded-2xl bg-slate-50 p-3 dark:bg-slate-800/70"><i class="ph-bold ph-sparkle block text-lg text-blue-600 dark:text-blue-400"></i>Premium</div>
                 </div>
             </aside>
         </div>
@@ -413,6 +474,10 @@ document.addEventListener('DOMContentLoaded', () => {
     UnlockSubscriptionCheckout({
         form: document.getElementById('payment-form'),
         methodInput: document.getElementById('payment_method'),
+        phoneInput: document.getElementById('checkout_user_phone'),
+        phoneError: document.getElementById('phone_error_text'),
+        phoneValidIcon: document.getElementById('phone_valid_icon'),
+        phoneSyncBadge: document.getElementById('phone_sync_badge'),
         payButton: document.getElementById('pay-button'),
         summaryPayButton: document.getElementById('summary-pay-button'),
         overlay: document.getElementById('processing-overlay'),
@@ -426,13 +491,15 @@ document.addEventListener('DOMContentLoaded', () => {
         plansUrl: @json(route('plans.index')),
         billingPeriod: @json($billingPeriod),
         planName: @json($plan->name),
+        brandLogo: @json(asset('images/logo-icon.png')),
         userPrefill: {
             name: @json(auth()->user()->name),
             email: @json(auth()->user()->email),
-            contact: @json(!empty(trim(auth()->user()->phone ?? '')) ? auth()->user()->phone : '9876543210'),
+            contact: @json($userCleanPhone ?? ''),
         },
         manualPaymentLink: @json($activeGateway['payment_link'] ?? null),
     });
 });
 </script>
 @endpush
+

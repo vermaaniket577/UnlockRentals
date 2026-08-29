@@ -13,11 +13,13 @@
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:src="@mipmap/ic_launcher_round"
+            android:layout_width="200dp"
+            android:layout_height="72dp"
+            android:src="@drawable/business_logo"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:contentDescription="UnlockRentals Logo"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="20dp" />
 
         <TextView
             android:layout_width="wrap_content"

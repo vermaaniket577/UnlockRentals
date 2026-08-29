@@ -32,15 +32,15 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2772066538696984" crossorigin="anonymous"></script>
 
     {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
-    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon.png') }}">
-    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon.png') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/icons/icon-192x192.png') }}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/icon-192x192.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-192x192.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=3">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/icons/icon-192x192.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}?v=3">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/icon-192x192.png') }}?v=3">
+    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-192x192.png') }}?v=3">
 
     {{-- Comprehensive JSON-LD Schema for Google Search & Organization Knowledge Graph --}}
     <script type="application/ld+json">
@@ -452,14 +452,59 @@
                 width: 36px;
             }
         }
+
+        @media (max-width: 480px) {
+            .promo-slider-container {
+                padding: 14px 12px 6px !important;
+            }
+            .promo-slider {
+                height: 240px !important;
+                border-radius: 16px !important;
+            }
+            .promo-slide-content {
+                padding: 16px 18px !important;
+            }
+            .promo-badge {
+                font-size: 10px !important;
+                padding: 4px 10px !important;
+                margin-bottom: 8px !important;
+            }
+            .promo-title {
+                font-size: 1.35rem !important;
+                margin-bottom: 6px !important;
+            }
+            .promo-desc {
+                font-size: 0.8rem !important;
+                line-height: 1.4 !important;
+                margin-bottom: 14px !important;
+            }
+            .promo-btn {
+                font-size: 12px !important;
+                padding: 8px 18px !important;
+                border-radius: 8px !important;
+            }
+            .promo-arrow {
+                width: 30px !important;
+                height: 30px !important;
+            }
+            .promo-arrow svg {
+                width: 14px !important;
+                height: 14px !important;
+            }
+        }
         
         @media (max-width: 768px) {
             .main-header {
-                padding-top: 42px !important;
-                padding-bottom: 12px !important;
-                padding-left: 14px !important;
-                padding-right: 14px !important;
+                padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px 14px !important;
                 gap: 8px !important;
+                min-height: 54px !important;
+                height: auto !important;
+            }
+            .logo-text {
+                font-size: 17px !important;
+            }
+            .btn-cta-premium-header {
+                display: none !important;
             }
         }
     </style>
@@ -471,9 +516,11 @@
 
     <header class="main-header" style="z-index: 9999;">
         <div class="logo-wrapper">
-            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
-                <img src="{{ asset('images/logo.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" style="width: 28px !important; height: 28px !important; flex-shrink: 0 !important; object-fit: contain !important;" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
-                <span class="logo-text" style="font-size: 18px !important; white-space: nowrap !important;">Unlock<span>Rentals</span></span>
+            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 10px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
+                </div>
+                <span class="logo-text" style="font-size: 18px !important; font-weight: 800 !important; letter-spacing: -0.5px !important; white-space: nowrap !important; color: #ffffff !important;">Unlock<span style="color: #60a5fa !important;">Rentals</span></span>
             </a>
         </div>
         <nav class="main-nav">
@@ -502,43 +549,44 @@
                 Blog
             </a>
         </nav>
-        <div class="auth-nav" style="display: flex; align-items: center; gap: 10px;">
+        <div class="auth-nav" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
             @if (Route::has('login'))
                 @auth
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 20px; height: 44px; margin-right: 5px; display: inline-flex; align-items: center; gap: 6px;" title="Post Ad">
-                        <i class="ph-bold ph-plus-circle" style="font-size: 18px;"></i>
-                        <span class="hidden md:inline">{{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}</span>
-                        <span class="inline md:hidden">Post Ad</span>
+                    {{-- Desktop Only: Post Ad CTA (hidden on mobile to prevent overlap) --}}
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden md:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Ad">
+                        <i class="ph-bold ph-plus-circle" style="font-size: 17px;"></i>
+                        <span>{{ $site_settings['cta_button_text'] ?? 'Post Property' }}</span>
                     </a>
+
+                    {{-- Compact User Account Pill --}}
                     <div class="relative" style="position:relative; display:inline-block;">
-                        <button onclick="toggleUserDropdown(event)" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all" style="background:transparent; border:none; color:#fff; cursor:pointer;" id="userDropdownBtn">
-                            <span style="color:rgba(255,255,255,0.9); font-size:14px; font-weight:600;">{{ auth()->user()->name }}</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <button onclick="toggleUserDropdown(event)" class="flex items-center gap-1.5 py-1 px-2 rounded-full hover:bg-white/10 transition-all border border-white/15 bg-white/5" style="border:1px solid rgba(255,255,255,0.15); color:#fff; cursor:pointer;" id="userDropdownBtn" aria-label="User Account">
+                            <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg, #2563eb, #6366f1); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; box-shadow:0 2px 8px rgba(37,99,235,0.4); flex-shrink:0;">
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            </div>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </button>
                         
-                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:220px; background:rgba(15,15,18,0.95); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:12px; box-shadow:0 20px 40px rgba(0,0,0,0.4); overflow:hidden; z-index:1000;">
-                            <div style="padding:15px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                                <p style="color:rgba(255,255,255,0.6); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Account</p>
-                                <p style="color:#fff; font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->email }}</p>
+                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:220px; background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.5); overflow:hidden; z-index:1000;">
+                            <div style="padding:14px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                                <p style="color:rgba(255,255,255,0.5); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Signed in as</p>
+                                <p style="color:#fff; font-weight:700; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->name }}</p>
+                                <p style="color:rgba(255,255,255,0.6); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->email }}</p>
                             </div>
                             <div style="padding:6px 0;">
-                                <a href="javascript:void(0)" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;" title="View Profile">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    View Profile
-                                </a>
-                                <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;" title="Dashboard">
+                                <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none; transition:all 0.2s;" title="Dashboard">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                                     Dashboard
                                 </a>
-                                <a href="{{ route('plans.index') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.7); font-size:13px; text-decoration:none; transition:all 0.2s;" title="View Plans">
+                                <a href="{{ route('plans.index') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none; transition:all 0.2s;" title="Membership Plans">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                                    View Plans
+                                    Membership Plans
                                 </a>
                             </div>
-                            <div style="padding:6px 0; border-top:1px solid rgba(255,255,255,0.05);">
+                            <div style="padding:6px 0; border-top:1px solid rgba(255,255,255,0.08);">
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:10px; padding:10px 15px; color:#ff4d4d; font-size:13px; text-decoration:none; transition:all 0.2s; background:transparent; border:none; cursor:pointer; text-align:left;">
+                                    <button type="submit" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:10px; padding:10px 15px; color:#f87171; font-size:13px; text-decoration:none; transition:all 0.2s; background:transparent; border:none; cursor:pointer; text-align:left;">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                         Logout
                                     </button>
@@ -566,21 +614,20 @@
                         }
                     </script>
                 @else
-                    <a href="{{ route('login') }}" class="nav-link" style="margin-right: 15px;" title="Log in">
+                    <a href="{{ route('login') }}" class="nav-link hidden md:inline-flex" style="margin-right: 8px;" title="Log in">
                         <i class="ph ph-user-circle"></i>
                         Log in
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="white-space:nowrap; padding: 0 20px; height: 44px; display: inline-flex; align-items: center; gap: 6px;" title="Post Ad">
-                            <i class="ph-bold ph-plus-circle" style="font-size: 18px;"></i>
-                            <span class="hidden md:inline">{{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}</span>
-                            <span class="inline md:hidden">Post Ad</span>
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden md:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Ad">
+                            <i class="ph-bold ph-plus-circle" style="font-size: 17px;"></i>
+                            <span>{{ $site_settings['cta_button_text'] ?? 'Post Property' }}</span>
                         </a>
                     @endif
                 @endauth
             @endif
-            <button class="hamburger" onclick="toggleMobileNav()" aria-label="Open menu">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <button class="hamburger" onclick="toggleMobileNav()" aria-label="Open menu" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #fff; cursor: pointer; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="12" x2="21" y2="12"></line>
                     <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -952,25 +999,123 @@
     </div>
 
     <!-- Featured Rentals -->
-    <section class="premium-section featured-rentals">
+    <section class="premium-section featured-rentals" id="featured-rentals-section">
         <div class="section-container">
-            <h2 class="section-title">
-                @if(request()->anyFilled(['state', 'district', 'locality', 'type', 'price', 'rooms', 'purpose']))
-                    Search <span class="text-gradient">Results</span>
-                    <a href="{{ route('home') }}" style="font-size: 14px; color: var(--primary); font-weight: 600; text-decoration: none; margin-left: 15px; border-bottom: 1px solid var(--primary);" title="Clear Filters">Clear Filters</a>
-                @else
-                    Discover <span class="text-gradient">Premium</span> Rentals
-                @endif
-            </h2>
-            <p class="section-subtitle">
-                @if(request()->anyFilled(['state', 'district', 'locality', 'type', 'price', 'rooms', 'purpose']))
-                    Showing <strong>{{ $featuredRentals->count() }}</strong> {{ Str::plural('property', $featuredRentals->count()) }} matching your criteria.
-                @else
-                    Handpicked luxury spaces from our top-rated customers and property owners.
-                @endif
-            </p>
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="section-title text-left mb-1">
+                        @if(request()->anyFilled(['state', 'district', 'locality', 'type', 'price', 'rooms', 'purpose']))
+                            Search <span class="text-gradient">Results</span>
+                            <a href="{{ route('home') }}" style="font-size: 14px; color: var(--primary); font-weight: 600; text-decoration: none; margin-left: 15px; border-bottom: 1px solid var(--primary);" title="Clear Filters">Clear Filters</a>
+                        @else
+                            Discover <span class="text-gradient">Premium</span> Rentals
+                        @endif
+                    </h2>
+                    <p class="section-subtitle text-left m-0">
+                        @if(request()->anyFilled(['state', 'district', 'locality', 'type', 'price', 'rooms', 'purpose']))
+                            Showing <strong>{{ $featuredRentals->count() }}</strong> {{ Str::plural('property', $featuredRentals->count()) }} matching your criteria.
+                        @else
+                            Handpicked luxury spaces from our top-rated customers and property owners.
+                        @endif
+                    </p>
+                </div>
+
+                <!-- Clean Standard Custom Dropdown -->
+                <div class="flex items-center gap-2.5 flex-shrink-0 self-start md:self-auto">
+                    <div class="relative" id="featuredCustomDropdown">
+                        <button type="button" 
+                                id="featuredDropdownBtn" 
+                                onclick="toggleFeaturedDropdown(event)"
+                                class="flex items-center justify-between gap-3 px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-100 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20 transition-all min-w-[220px]">
+                            <span class="flex items-center gap-2 truncate" id="featuredSelectedDisplay">
+                                <i class="ph-bold ph-sparkle text-blue-600 text-sm" id="featuredSelectedIcon"></i>
+                                <span id="featuredSelectedLabel">Default (Featured)</span>
+                            </span>
+                            <i class="ph-bold ph-caret-down text-slate-400 text-xs transition-transform duration-200 flex-shrink-0" id="featuredDropdownChevron"></i>
+                        </button>
+
+                        <!-- Floating Clean Dropdown Menu -->
+                        <div id="featuredDropdownMenu" 
+                             class="hidden absolute right-0 top-full mt-1.5 w-60 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xl z-50 py-1.5 backdrop-blur-xl overflow-hidden">
+                            
+                            <!-- Sort Group -->
+                            <div class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                Sort Order
+                            </div>
+                            <button type="button" class="featured-menu-item active" data-value="featured" data-icon="ph-bold ph-sparkle text-blue-600" data-label="Default (Featured)" onclick="selectFeaturedOption('featured')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-sparkle text-blue-600 text-sm"></i>
+                                    <span>Default (Featured)</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark"></i>
+                            </button>
+                            <button type="button" class="featured-menu-item" data-value="new_to_old" data-icon="ph-bold ph-clock text-slate-600" data-label="New to Old" onclick="selectFeaturedOption('new_to_old')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-clock text-slate-600 dark:text-slate-300 text-sm"></i>
+                                    <span>New to Old</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark hidden"></i>
+                            </button>
+                            <button type="button" class="featured-menu-item" data-value="old_to_new" data-icon="ph-bold ph-clock-counter-clockwise text-slate-600" data-label="Old to New" onclick="selectFeaturedOption('old_to_new')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-clock-counter-clockwise text-slate-600 dark:text-slate-300 text-sm"></i>
+                                    <span>Old to New</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark hidden"></i>
+                            </button>
+                            <button type="button" class="featured-menu-item" data-value="price_low" data-icon="ph-bold ph-arrow-up-right text-emerald-600" data-label="Price: Low to High" onclick="selectFeaturedOption('price_low')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-arrow-up-right text-emerald-600 text-sm"></i>
+                                    <span>Price: Low to High</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark hidden"></i>
+                            </button>
+                            <button type="button" class="featured-menu-item" data-value="price_high" data-icon="ph-bold ph-arrow-down-right text-amber-600" data-label="Price: High to Low" onclick="selectFeaturedOption('price_high')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-arrow-down-right text-amber-600 text-sm"></i>
+                                    <span>Price: High to Low</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark hidden"></i>
+                            </button>
+
+                            <!-- Filter Group -->
+                            <div class="px-3.5 py-1 mt-1 pt-1.5 border-t border-slate-100 dark:border-slate-800 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                Filter by
+                            </div>
+                            <button type="button" class="featured-menu-item" data-value="unbooked" data-icon="ph-bold ph-lock-key-open text-emerald-500" data-label="Unbooked Only" onclick="selectFeaturedOption('unbooked')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-lock-key-open text-emerald-500 text-sm"></i>
+                                    <span>Unbooked Only</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark hidden"></i>
+                            </button>
+                            <button type="button" class="featured-menu-item" data-value="video" data-icon="ph-bold ph-video-camera text-purple-500" data-label="With Video Tour" onclick="selectFeaturedOption('video')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-video-camera text-purple-500 text-sm"></i>
+                                    <span>With Video Tour</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark hidden"></i>
+                            </button>
+                            <button type="button" class="featured-menu-item" data-value="images" data-icon="ph-bold ph-image text-blue-500" data-label="With Photos" onclick="selectFeaturedOption('images')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-image text-blue-500 text-sm"></i>
+                                    <span>With Photos</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark hidden"></i>
+                            </button>
+                            <button type="button" class="featured-menu-item" data-value="unbooked_first" data-icon="ph-bold ph-check-circle text-teal-500" data-label="Unbooked First" onclick="selectFeaturedOption('unbooked_first')">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="ph-bold ph-check-circle text-teal-500 text-sm"></i>
+                                    <span>Unbooked First</span>
+                                </span>
+                                <i class="ph-bold ph-check text-blue-600 checkmark hidden"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="featuredPropertiesGrid">
                 @forelse($featuredRentals as $property)
                     <x-property-card :property="$property" />
                 @empty
@@ -980,6 +1125,18 @@
                         <p class="text-zinc-500 mt-2">Try adjusting your filters or <a href="{{ route('home') }}" style="color:var(--primary);font-weight:600;" title="clear all filters">clear all filters</a></p>
                     </div>
                 @endforelse
+
+                {{-- Client-side Filter Empty State --}}
+                <div id="featuredEmptyFilterState" class="hidden col-span-full py-14 flex-col items-center justify-center text-center bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 p-6">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center mb-3">
+                        <i class="ph-bold ph-magnifying-glass text-2xl"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-slate-200 mb-1">No matching properties with current selection</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-4 max-w-sm">Try choosing another option from the menu to view available listings.</p>
+                    <button type="button" onclick="selectFeaturedOption('featured')" class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all">
+                        <i class="ph-bold ph-arrow-counter-clockwise"></i> Show All Properties
+                    </button>
+                </div>
             </div>
             
             <div style="text-align: center; margin-top: 50px;">
@@ -990,6 +1147,243 @@
             </div>
         </div>
     </section>
+
+    <!-- Custom Dropdown Styling & Handler Script -->
+    <style>
+        .featured-menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: left;
+        }
+        .dark .featured-menu-item {
+            color: #cbd5e1;
+        }
+        .featured-menu-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .dark .featured-menu-item:hover {
+            background: rgba(51, 65, 85, 0.6);
+            color: #f8fafc;
+        }
+        .featured-menu-item.active {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 700;
+        }
+        .dark .featured-menu-item.active {
+            background: rgba(37, 99, 235, 0.15);
+            color: #60a5fa;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const grid = document.getElementById('featuredPropertiesGrid');
+            if (!grid) return;
+
+            const dropdownBtn = document.getElementById('featuredDropdownBtn');
+            const dropdownMenu = document.getElementById('featuredDropdownMenu');
+            const dropdownChevron = document.getElementById('featuredDropdownChevron');
+            const selectedIcon = document.getElementById('featuredSelectedIcon');
+            const selectedLabel = document.getElementById('featuredSelectedLabel');
+            const cards = Array.from(grid.querySelectorAll('[data-property-card="true"]'));
+            const emptyState = document.getElementById('featuredEmptyFilterState');
+
+            window.toggleFeaturedDropdown = function(event) {
+                if (event) event.stopPropagation();
+                if (!dropdownMenu) return;
+                const isOpen = !dropdownMenu.classList.contains('hidden');
+                if (isOpen) {
+                    closeFeaturedDropdown();
+                } else {
+                    dropdownMenu.classList.remove('hidden');
+                    if (dropdownChevron) dropdownChevron.style.transform = 'rotate(180deg)';
+                }
+            };
+
+            function closeFeaturedDropdown() {
+                if (!dropdownMenu) return;
+                dropdownMenu.classList.add('hidden');
+                if (dropdownChevron) dropdownChevron.style.transform = 'rotate(0deg)';
+            }
+
+            // Close on outside click
+            document.addEventListener('click', function(e) {
+                const container = document.getElementById('featuredCustomDropdown');
+                if (container && !container.contains(e.target)) {
+                    closeFeaturedDropdown();
+                }
+            });
+
+            // Close on ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeFeaturedDropdown();
+                }
+            });
+
+            window.selectFeaturedOption = function(val) {
+                closeFeaturedDropdown();
+
+                const items = document.querySelectorAll('.featured-menu-item');
+                items.forEach(item => {
+                    const isSelected = (item.getAttribute('data-value') === val);
+                    item.classList.toggle('active', isSelected);
+                    const check = item.querySelector('.checkmark');
+                    if (check) {
+                        check.classList.toggle('hidden', !isSelected);
+                    }
+                    if (isSelected) {
+                        const iconClass = item.getAttribute('data-icon') || 'ph-bold ph-sparkle text-blue-600';
+                        const labelText = item.getAttribute('data-label') || 'Default (Featured)';
+                        if (selectedIcon) selectedIcon.className = iconClass + ' text-sm';
+                        if (selectedLabel) selectedLabel.textContent = labelText;
+                    }
+                });
+
+                applyFeaturedSortAndFilter(val);
+            };
+
+            function applyFeaturedSortAndFilter(selectedVal) {
+                let filterType = 'all';
+                let sortType = 'featured';
+
+                switch (selectedVal) {
+                    case 'new_to_old':
+                    case 'newest':
+                        filterType = 'all';
+                        sortType = 'new_to_old';
+                        break;
+                    case 'old_to_new':
+                    case 'oldest':
+                        filterType = 'all';
+                        sortType = 'old_to_new';
+                        break;
+                    case 'unbooked':
+                        filterType = 'unbooked';
+                        sortType = 'new_to_old';
+                        break;
+                    case 'price_low':
+                        filterType = 'all';
+                        sortType = 'price_low';
+                        break;
+                    case 'price_high':
+                        filterType = 'all';
+                        sortType = 'price_high';
+                        break;
+                    case 'video':
+                        filterType = 'video';
+                        sortType = 'featured';
+                        break;
+                    case 'images':
+                        filterType = 'images';
+                        sortType = 'featured';
+                        break;
+                    case 'unbooked_first':
+                        filterType = 'all';
+                        sortType = 'unbooked_first';
+                        break;
+                    case 'featured':
+                    default:
+                        filterType = 'all';
+                        sortType = 'featured';
+                        break;
+                }
+
+                // 1. Filter cards
+                let visibleCards = [];
+                cards.forEach(card => {
+                    const isBooked = card.getAttribute('data-is-booked') === '1';
+                    const hasImage = card.getAttribute('data-has-image') === '1';
+                    const hasVideo = card.getAttribute('data-has-video') === '1';
+
+                    let matches = true;
+                    if (filterType === 'unbooked' && isBooked) matches = false;
+                    if (filterType === 'images' && !hasImage) matches = false;
+                    if (filterType === 'video' && !hasVideo) matches = false;
+
+                    if (matches) {
+                        card.style.display = '';
+                        visibleCards.push(card);
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // 2. Sort cards
+                visibleCards.sort((a, b) => {
+                    const priceA = parseFloat(a.getAttribute('data-price')) || 0;
+                    const priceB = parseFloat(b.getAttribute('data-price')) || 0;
+                    const bookedA = a.getAttribute('data-is-booked') === '1' ? 1 : 0;
+                    const bookedB = b.getAttribute('data-is-booked') === '1' ? 1 : 0;
+                    const featuredA = a.getAttribute('data-is-featured') === '1' ? 1 : 0;
+                    const featuredB = b.getAttribute('data-is-featured') === '1' ? 1 : 0;
+                    const dateA = parseInt(a.getAttribute('data-created-at')) || 0;
+                    const dateB = parseInt(b.getAttribute('data-created-at')) || 0;
+
+                    switch (sortType) {
+                        case 'price_low':
+                            return priceA - priceB;
+                        case 'price_high':
+                            return priceB - priceA;
+                        case 'unbooked_first':
+                            if (bookedA !== bookedB) return bookedA - bookedB;
+                            return dateB - dateA;
+                        case 'new_to_old':
+                        case 'newest':
+                            return dateB - dateA;
+                        case 'old_to_new':
+                        case 'oldest':
+                            return dateA - dateB;
+                        case 'featured':
+                        default:
+                            if (featuredA !== featuredB) return featuredB - featuredA;
+                            return dateB - dateA;
+                    }
+                });
+
+                // 3. Re-append in sorted order
+                visibleCards.forEach(card => grid.appendChild(card));
+
+                // 4. Empty state toggle
+                if (emptyState) {
+                    if (visibleCards.length === 0 && cards.length > 0) {
+                        emptyState.classList.remove('hidden');
+                        emptyState.style.display = 'flex';
+                    } else {
+                        emptyState.classList.add('hidden');
+                        emptyState.style.display = 'none';
+                    }
+                }
+            }
+
+            // Initialize from URL params if present
+            const urlParams = new URLSearchParams(window.location.search);
+            let initialVal = 'featured';
+            if (urlParams.get('sort') === 'price_low') initialVal = 'price_low';
+            else if (urlParams.get('sort') === 'price_high') initialVal = 'price_high';
+            else if (urlParams.get('sort') === 'oldest' || urlParams.get('sort') === 'old_to_new') initialVal = 'old_to_new';
+            else if (urlParams.get('sort') === 'newest' || urlParams.get('sort') === 'new_to_old') initialVal = 'new_to_old';
+            else if (urlParams.get('unbooked') === '1' || urlParams.get('availability') === 'unbooked') initialVal = 'unbooked';
+            else if (urlParams.get('media') === 'video') initialVal = 'video';
+            else if (urlParams.get('media') === 'images' || urlParams.get('media') === 'image') initialVal = 'images';
+
+            if (initialVal !== 'featured') {
+                selectFeaturedOption(initialVal);
+            }
+        });
+    </script>
 
     {{-- Why Choose Us Section --}}
     @include('components.why-choose-us')
