@@ -94,7 +94,7 @@ window.UnlockSubscriptionCheckout = (config) => {
                 if (isRazorpay && !hasDismissedModal && !isOpeningRazorpay) {
                     setTimeout(() => {
                         payButton?.click();
-                    }, 250);
+                    }, 350);
                 }
             } else {
                 phoneValidIcon?.classList.remove('opacity-100');
@@ -427,10 +427,17 @@ window.UnlockSubscriptionCheckout = (config) => {
             razorpay.open();
         });
 
-        // Instant Direct Razorpay Launch: Trigger payment modal immediately upon page load
+        // Instant Direct Razorpay Launch: Only auto-launch if a valid phone number is already available.
+        // If no phone, focus the input field so the user can enter it first.
         setTimeout(() => {
             if (!hasDismissedModal && !paymentCompleted && !isOpeningRazorpay) {
-                payButton?.click();
+                const existingPhone = resolveContactNumber();
+                if (isValidIndianMobile(existingPhone)) {
+                    payButton?.click();
+                } else if (phoneInput) {
+                    phoneInput.focus();
+                    phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }
         }, 150);
 
