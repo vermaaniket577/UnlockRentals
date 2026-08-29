@@ -413,6 +413,25 @@
     </div>
 </section>
 
+{{-- Sticky Bottom Action Bar on Mobile (Standard App Look & Feel) --}}
+<div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/90 dark:border-slate-800 p-3.5 px-4 shadow-[0_-10px_30px_rgba(0,0,0,0.12)] lg:hidden pb-[calc(0.875rem+env(safe-area-inset-bottom,0px))]">
+    <div class="flex items-center justify-between gap-3 max-w-lg mx-auto">
+        <div>
+            <span class="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 block uppercase tracking-wider">Total Payable</span>
+            <span class="text-2xl font-black text-blue-600 dark:text-blue-400 leading-tight">₹{{ number_format($billing['final'], 2) }}</span>
+        </div>
+        <button
+            type="button"
+            id="mobile-sticky-pay-btn"
+            onclick="document.getElementById('pay-button').click()"
+            class="flex-1 max-w-[230px] flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-black text-base uppercase tracking-wider shadow-xl shadow-blue-500/35 active:scale-[0.98] transition-all cursor-pointer"
+        >
+            <i class="ph-bold ph-lightning-fill text-amber-300 text-xl"></i>
+            <span>Pay Now</span>
+        </button>
+    </div>
+</div>
+
 <x-subscription.payment-processing />
 
 @endsection
