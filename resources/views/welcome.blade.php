@@ -644,6 +644,39 @@
                                     document.body.style.overflow = '';
                                 }
                             };
+                            window.performUniversalLogout = function(e) {
+                                if (e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }
+                                var btn = e ? (e.currentTarget || e.target) : null;
+                                if (btn) {
+                                    btn.disabled = true;
+                                    btn.style.opacity = '0.6';
+                                }
+                                var tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                                var token = tokenMeta ? tokenMeta.getAttribute('content') : '{{ csrf_token() }}';
+
+                                fetch("{{ route('logout') }}", {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': token,
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({})
+                                })
+                                .then(function(res) {
+                                    return res.json().catch(function() { return { redirect: '/' }; });
+                                })
+                                .then(function(data) {
+                                    window.location.replace(data.redirect || '/');
+                                })
+                                .catch(function() {
+                                    window.location.replace('/');
+                                });
+                            };
                         </script>
 
                         {{-- Desktop Dropdown Backdrop --}}
@@ -673,9 +706,9 @@
                                 </a>
                             </div>
                             <div style="padding:6px 0; border-top:1px solid rgba(255,255,255,0.08);">
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                                     @csrf
-                                    <button type="submit" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:10px; padding:10px 15px; color:#f87171; font-size:13px; text-decoration:none; transition:all 0.2s; background:transparent; border:none; cursor:pointer; text-align:left;">
+                                    <button type="button" onclick="window.performUniversalLogout(event)" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:10px; padding:10px 15px; color:#f87171; font-size:13px; text-decoration:none; transition:all 0.2s; background:transparent; border:none; cursor:pointer; text-align:left;">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                         Logout
                                     </button>
@@ -750,11 +783,11 @@
                         {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
                     </a>
                     <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%; margin-bottom: 10px;" title="Dashboard">Dashboard</a>
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                         @csrf
-                        <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600/20 text-red-400 border border-red-500/30 font-bold text-sm hover:bg-red-600/30 transition-all cursor-pointer">
+                        <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600/20 text-red-400 border border-red-500/30 font-bold text-sm hover:bg-red-600/30 transition-all cursor-pointer">
                             <i class="ph-bold ph-sign-out text-base"></i>
-                            <span>Sign Out (Logout)</span>
+                            <span>Sign Out</span>
                         </button>
                     </form>
                 @else
@@ -807,9 +840,9 @@
             </div>
 
             <div class="pt-3 border-t border-slate-800">
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                     @csrf
-                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 font-bold text-sm transition-all cursor-pointer active:scale-[0.98]">
+                    <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 font-bold text-sm transition-all cursor-pointer active:scale-[0.98]">
                         <i class="ph-bold ph-sign-out text-base"></i>
                         <span>Sign Out</span>
                     </button>

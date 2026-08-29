@@ -231,10 +231,18 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         $redirect = $request->input('redirect') ?: $request->headers->get('referer');
-        if ($redirect && !str_contains($redirect, 'dashboard') && !str_contains($redirect, 'admin') && !str_contains($redirect, 'login') && !str_contains($redirect, 'register')) {
-            return redirect($redirect)->with('success', 'You have been logged out.');
+        if (!$redirect || str_contains($redirect, 'dashboard') || str_contains($redirect, 'admin') || str_contains($redirect, 'login') || str_contains($redirect, 'register')) {
+            $redirect = route('home');
         }
 
-        return redirect()->route('home')->with('success', 'You have been logged out.');
+        if ($request->wantsJson() || $request->ajax() || $request->header('Accept') === 'application/json') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Logged out successfully',
+                'redirect' => $redirect,
+            ]);
+        }
+
+        return redirect($redirect)->with('success', 'You have been logged out.');
     }
 }
