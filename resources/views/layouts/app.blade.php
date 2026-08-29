@@ -172,6 +172,9 @@
     {{-- PWA Install Prompt Banner --}}
     @include('components.pwa-install-prompt')
 
+    {{-- Floating AI Support Chatbot --}}
+    @include('components.chatbot')
+
     {{-- Auto-dismiss flash messages --}}
     <script>
         setTimeout(() => {

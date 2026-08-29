@@ -40,8 +40,8 @@ class AdminController extends Controller
                 'active_subscriptions'  => UserPlan::active()->count(),
                 'total_feedback'        => Feedback::count(),
                 'new_feedback'          => Feedback::where('status', 'new')->count(),
-                'total_blogs'           => Blog::count(),
-                'published_blogs'       => Blog::where('is_published', true)->count(),
+                'total_blogs'           => \Illuminate\Support\Facades\Schema::hasTable('blogs') ? Blog::count() : 0,
+                'published_blogs'       => \Illuminate\Support\Facades\Schema::hasTable('blogs') ? Blog::where('is_published', true)->count() : 0,
             ];
         });
 
@@ -868,6 +868,14 @@ class AdminController extends Controller
      */
     public function blogs(Request $request)
     {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('blogs')) {
+            $stats = ['total' => 0, 'published' => 0, 'draft' => 0, 'views' => 0];
+            $blogs = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12);
+            $categories = collect(['Tenant Guide', 'Owner Insights', 'Commercial Hub', 'Legal & Finance', 'Lifestyle & Tech', 'Market Trends']);
+            session()->flash('error', 'The blogs table has not been created in the database yet. Please run migrations by visiting /run-migrations?key=' . env('MIGRATION_KEY', 'UnlockRentalsSecureMigrateKey2026'));
+            return view('admin.blogs.index', compact('blogs', 'stats', 'categories'));
+        }
+
         $stats = [
             'total'     => Blog::count(),
             'published' => Blog::where('is_published', true)->count(),
@@ -915,6 +923,10 @@ class AdminController extends Controller
      */
     public function createBlog()
     {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('blogs')) {
+            return redirect()->route('admin.blogs.index')->with('error', 'The blogs table has not been created yet. Please run migrations first.');
+        }
+
         $categories = Blog::select('category')->distinct()->pluck('category')->filter()->values();
         if ($categories->isEmpty()) {
             $categories = collect(['Tenant Guide', 'Owner Insights', 'Commercial Hub', 'Legal & Finance', 'Lifestyle & Tech', 'Market Trends']);

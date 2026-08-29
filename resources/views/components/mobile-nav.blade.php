@@ -80,12 +80,10 @@
         const chatWindow = document.getElementById('chatWindow');
         
         if (chatTrigger && chatWindow) {
-            // We are on the homepage where chatbot is loaded
-            if (chatWindow.classList.contains('hidden') || chatWindow.style.display === 'none') {
-                chatTrigger.click();
+            if (!chatWindow.classList.contains('active')) {
+                chatWindow.classList.add('active');
             } else {
-                const closeBtn = document.getElementById('chatClose');
-                if (closeBtn) closeBtn.click();
+                chatWindow.classList.remove('active');
             }
         } else {
             // Redirect to home page with open-chat query param

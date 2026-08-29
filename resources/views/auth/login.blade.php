@@ -209,5 +209,78 @@ function togglePassword(inputId, btn) {
         eyeClosed.classList.add('hidden');
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('login-form');
+    if (!loginForm) return;
+
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('login-submit');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Signing in...`;
+
+        // Clear existing dynamic errors
+        document.querySelectorAll('.ajax-error-msg').forEach(el => el.remove());
+
+        async function submitAttempt(retryCount = 0) {
+            try {
+                const formData = new FormData(loginForm);
+                const response = await fetch(loginForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.status === 419) {
+                    if (retryCount === 0) {
+                        const tokenRes = await fetch('/csrf-token');
+                        const tokenData = await tokenRes.json();
+                        if (tokenData && tokenData.csrf_token) {
+                            const csrfInput = loginForm.querySelector('input[name="_token"]');
+                            if (csrfInput) csrfInput.value = tokenData.csrf_token;
+                            const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+                            if (metaCsrf) metaCsrf.setAttribute('content', tokenData.csrf_token);
+                            return submitAttempt(1);
+                        }
+                    }
+                    throw new Error('Your session expired. Please refresh the page.');
+                }
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    submitBtn.innerHTML = `<i class="ph-bold ph-check text-sm"></i> Redirecting...`;
+                    submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    submitBtn.classList.add('bg-emerald-600');
+                    window.location.href = data.redirect || '/';
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+
+                    let errorMsg = data.message || 'The provided credentials do not match our records.';
+                    if (data.errors) {
+                        const firstKey = Object.keys(data.errors)[0];
+                        errorMsg = data.errors[firstKey][0];
+                    }
+
+                    const errorAlert = document.createElement('div');
+                    errorAlert.className = 'ajax-error-msg mb-5 p-3.5 bg-rose-50 dark:bg-rose-900/30 border border-rose-100 dark:border-rose-800 rounded-xl flex items-center gap-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300';
+                    errorAlert.innerHTML = `<i class="ph-bold ph-warning-circle text-base flex-shrink-0"></i> <span>${errorMsg}</span>`;
+                    loginForm.parentNode.insertBefore(errorAlert, loginForm);
+                }
+            } catch (err) {
+                // Fallback to standard form submission
+                loginForm.submit();
+            }
+        }
+
+        submitAttempt();
+    });
+});
 </script>
 @endpush

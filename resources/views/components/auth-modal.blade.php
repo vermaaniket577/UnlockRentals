@@ -233,41 +233,61 @@ async function handleModalAuthSubmit(event, type) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Please wait...`;
 
-    try {
-        const formData = new FormData(form);
-        const response = await fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
+    async function doSubmit(retry = 0) {
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.status === 419 && retry === 0) {
+                const tokenRes = await fetch('/csrf-token');
+                const tokenData = await tokenRes.json();
+                if (tokenData && tokenData.csrf_token) {
+                    const tokenInputs = document.querySelectorAll('input[name="_token"]');
+                    tokenInputs.forEach(i => i.value = tokenData.csrf_token);
+                    const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+                    if (metaCsrf) metaCsrf.setAttribute('content', tokenData.csrf_token);
+                    return doSubmit(1);
+                }
             }
-        });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (response.ok && data.success) {
-            alertBox.className = 'mb-3.5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200';
-            alertBox.innerHTML = `<i class="ph-bold ph-check-circle text-emerald-600"></i> ${data.message || 'Success! Redirecting...'}`;
-            alertBox.classList.remove('hidden');
+            if (response.ok && data.success) {
+                alertBox.className = 'mb-3.5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200';
+                alertBox.innerHTML = `<i class="ph-bold ph-check-circle text-emerald-600"></i> ${data.message || 'Success! Redirecting...'}`;
+                alertBox.classList.remove('hidden');
 
-            setTimeout(() => {
-                window.location.href = data.redirect || window.authModalTargetUrl || '/';
-            }, 500);
-        } else {
-            let errorMsg = data.message || 'Authentication failed. Please check your credentials.';
-            if (data.errors) {
-                const firstKey = Object.keys(data.errors)[0];
-                errorMsg = data.errors[firstKey][0];
+                setTimeout(() => {
+                    window.location.href = data.redirect || window.authModalTargetUrl || '/';
+                }, 500);
+            } else {
+                let errorMsg = data.message || 'Authentication failed. Please check your credentials.';
+                if (data.errors) {
+                    const firstKey = Object.keys(data.errors)[0];
+                    errorMsg = data.errors[firstKey][0];
+                }
+                alertBox.className = 'mb-3.5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 bg-red-50 text-red-800 border border-red-200';
+                alertBox.innerHTML = `<i class="ph-bold ph-warning-circle text-red-600"></i> ${errorMsg}`;
+                alertBox.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             }
-            alertBox.className = 'mb-3.5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 bg-red-50 text-red-800 border border-red-200';
-            alertBox.innerHTML = `<i class="ph-bold ph-warning-circle text-red-600"></i> ${errorMsg}`;
-            alertBox.classList.remove('hidden');
+        } catch (err) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
+            alertBox.className = 'mb-3.5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 bg-red-50 text-red-800 border border-red-200';
+            alertBox.innerHTML = `<i class="ph-bold ph-warning-circle text-red-600"></i> Network or session error. Please try again.`;
+            alertBox.classList.remove('hidden');
         }
-    } catch (err) {
-        form.submit();
     }
+
+    doSubmit();
 }
 </script>

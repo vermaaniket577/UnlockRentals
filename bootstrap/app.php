@@ -12,10 +12,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'message' => 'Your session has expired. Please refresh and try again.',
+                    'csrf_token' => csrf_token(),
+                ], 419);
+            }
+            return redirect()->route('login')->with('error', 'Your session expired. Please sign in again.');
+        });
     })->create();

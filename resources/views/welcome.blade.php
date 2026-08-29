@@ -1098,38 +1098,8 @@
     </div>
 
 
-    @if(($site_settings['chatbot_enabled'] ?? '1') == '1')
-    <!-- Chatbot Overlay -->
-    <div class="chatbot-trigger" id="chatTrigger" style="overflow: hidden; padding: 0; background: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-        <video src="{{ asset('videos/chatbot.mp4') }}" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%;"></video>
-    </div>
-
-    <div class="chat-window" id="chatWindow">
-        <div class="chat-header">
-            <div class="chat-header-content">
-                <div class="chat-avatar">
-                    <img src="{{ asset('images/icons/chatbot.png') }}" alt="Bot" title="Unlock Support Bot" style="width: 24px; height: 24px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
-                </div>
-                <div class="chat-header-info">
-                    <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Unlock Support</div>
-                    <p>Always Online</p>
-                </div>
-            </div>
-            <i class="ph ph-x chat-close" id="chatClose"></i>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="msg bot">
-                {{ $site_settings['bot_welcome_message'] ?? 'Hi there! 👋 Welcome to UnlockRentals. How can I assist you with your property search today?' }}
-            </div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Write a message...">
-            <button class="chat-send-btn" id="chatSend">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #ffffff;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            </button>
-        </div>
-    </div>
-    @endif
+    {{-- Floating AI Support Chatbot --}}
+    @include('components.chatbot')
     
     <script>
         // Global Pill Toggle Handler for Layout & Intent
@@ -1290,154 +1260,6 @@
                 }
             }
 
-            // Chatbot Logic
-            const chatTrigger = document.getElementById('chatTrigger');
-            const chatWindow = document.getElementById('chatWindow');
-            const chatClose = document.getElementById('chatClose');
-            const chatSend = document.getElementById('chatSend');
-            const chatInput = document.getElementById('chatInput');
-            const chatMessages = document.getElementById('chatMessages');
-            
-            // Chat session ID
-            let chatSessionId = localStorage.getItem('ur_chat_session');
-            if (!chatSessionId) {
-                chatSessionId = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-                localStorage.setItem('ur_chat_session', chatSessionId);
-            }
-
-            // Load Chat History
-            fetch(`/chatbot/history/${chatSessionId}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.messages && data.messages.length > 0) {
-                        chatMessages.innerHTML = ''; 
-                        data.messages.forEach(msg => {
-                            const m = document.createElement('div');
-                            m.className = `msg ${msg.sender}`;
-                            m.textContent = msg.message;
-                            chatMessages.appendChild(m);
-                        });
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    } else {
-                        // Save the initial welcome message to the DB for history
-                        const welcomeText = "{{ $site_settings['bot_welcome_message'] ?? 'Hi there! 👋 Welcome to UnlockRentals. How can I assist you with your property search today?' }}";
-                        fetch("{{ route('chatbot.save') }}", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                message: welcomeText,
-                                sender: 'bot',
-                                session_id: chatSessionId
-                            })
-                        }).catch(err => console.error('Chat save error:', err));
-                    }
-                })
-                .catch(err => console.error('Chat history error:', err));
-
-            chatTrigger.addEventListener('click', () => chatWindow.classList.toggle('active'));
-            chatClose.addEventListener('click', (e) => {
-                e.stopPropagation();
-                chatWindow.classList.remove('active');
-            });
-
-            function addMessage(text, side) {
-                const msg = document.createElement('div');
-                msg.className = `msg ${side}`;
-                msg.textContent = text;
-                chatMessages.appendChild(msg);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                // Save message to database
-                fetch("{{ route('chatbot.save') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: text,
-                        sender: side,
-                        session_id: chatSessionId
-                    })
-                }).catch(err => console.error('Chat save error:', err));
-            }
-
-            let botState = 'idle';
-            let leadData = { name: '', phone: '' };
-
-            chatSend.addEventListener('click', () => {
-                const text = chatInput.value.trim();
-                if(!text) return;
-                addMessage(text, 'user');
-                chatInput.value = '';
-                
-                setTimeout(() => {
-                    if (botState === 'collecting_name') {
-                        leadData.name = text;
-                        botState = 'collecting_phone';
-                        addMessage("Thank you! And what's your contact number so an agent can call you?", 'bot');
-                        return;
-                    }
-
-                    if (botState === 'collecting_phone') {
-                        leadData.phone = text;
-                        botState = 'idle';
-                        
-                        // Submit lead
-                        fetch("{{ route('chatbot.callback') }}", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                name: leadData.name,
-                                phone: leadData.phone,
-                                session_id: chatSessionId
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            addMessage("Perfect! I've shared your details with our elite concierge team. Expect a call shortly from one of our agents. 📞", 'bot');
-                        })
-                        .catch(err => {
-                            addMessage("I'm sorry, I couldn't save your details. Please try again or call us at {{ $site_settings['site_phone'] ?? '+91 7974164274' }}.", 'bot');
-                        });
-                        return;
-                    }
-
-                    // Check for callback keywords
-                    const lowerText = text.toLowerCase();
-                    if (lowerText.includes('call') || lowerText.includes('callback') || lowerText.includes('agent') || lowerText.includes('contact')) {
-                        botState = 'collecting_name';
-                        addMessage("I'll be happy to arrange an elite concierge callback for you. Could you please share your full name?", 'bot');
-                        return;
-                    }
-
-                    const dbResponses = {!! json_encode(array_values(array_filter(array_map('trim', explode("\n", $site_settings['bot_auto_responses'] ?? "That's a great question! Let me check our premium listings for you.\nI can certainly help you with that. Would you like to see properties in a specific city?\nOne of our agents will be happy to assist you further. Shall I book a callback for you?\nUnlockRentals offers the best verified properties in India. You're in good hands!"))))) !!};
-                    
-                    const fallbackResponses = [
-                        "That's a great question! Let me check our premium listings for you.",
-                        "I can certainly help you with that. Would you like to see properties in a specific city?",
-                        "One of our agents will be happy to assist you further. Shall I book a callback for you?",
-                        "UnlockRentals offers the best verified properties in India. You're in good hands!"
-                    ];
-                    
-                    const responses = dbResponses.length > 0 ? dbResponses : fallbackResponses;
-                    addMessage(responses[Math.floor(Math.random() * responses.length)], 'bot');
-                }, 1000);
-            });
-
-            chatInput.addEventListener('keypress', (e) => {
-                if(e.key === 'Enter') chatSend.click();
-            });
-
             // Geolocation 'Search House Near Me' function
             window.searchNearMe = function() {
                 if (!navigator.geolocation) {
@@ -1545,7 +1367,6 @@
                     alert('Something went wrong. Please try again.');
                 });
             }
-        });
     </script>
 
     @if(($site_settings['feedback_enabled'] ?? '1') == '1')
@@ -1639,19 +1460,6 @@
 
         window.addEventListener('online', () => showNetworkToast(true));
         window.addEventListener('offline', () => showNetworkToast(false));
-
-        // Automatically open chatbot if open-chat is passed
-        window.addEventListener('load', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('open-chat') === '1') {
-                const chatTrigger = document.getElementById('chatTrigger');
-                if (chatTrigger) {
-                    setTimeout(() => {
-                        chatTrigger.click();
-                    }, 500);
-                }
-            }
-        });
     </script>
 
     @guest

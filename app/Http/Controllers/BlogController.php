@@ -12,6 +12,13 @@ class BlogController extends Controller
      */
     public function index(Request $request)
     {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('blogs')) {
+            $posts = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 9);
+            $categories = collect();
+            $featuredPost = null;
+            return view('blog.index', compact('posts', 'categories', 'featuredPost'));
+        }
+
         $query = Blog::published()->with('user');
 
         if ($request->filled('category') && $request->category !== 'all') {

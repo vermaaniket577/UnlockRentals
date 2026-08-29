@@ -151,7 +151,7 @@ Route::get('/sitemap.xml', function () {
     $programmaticUrls = \App\Http\Controllers\SeoController::getProgrammaticUrls();
     
     // Curated blogs from database
-    $blogs = \App\Models\Blog::published()->latest('updated_at')->get();
+    $blogs = \Illuminate\Support\Facades\Schema::hasTable('blogs') ? \App\Models\Blog::published()->latest('updated_at')->get() : collect();
 
     $baseUrl = rtrim(config('app.url', 'https://www.unlockrentals.com'), '/');
 
@@ -191,6 +191,13 @@ Route::get('/download/apk', function () {
         'Content-Type' => 'application/vnd.android.package-archive'
     ]);
 })->name('app.download.apk');
+
+// Fresh CSRF Token Endpoint for cached/stale pages
+Route::get('/csrf-token', function () {
+    return response()->json([
+        'csrf_token' => csrf_token(),
+    ])->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+})->name('csrf.token');
 
 // Offline Fallback Route
 Route::view('/offline', 'errors.offline')->name('offline');
