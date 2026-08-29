@@ -284,31 +284,77 @@
                     </div>
                 </div>
 
-                <div id="payment-methods" class="checkout-card rounded-3xl border border-slate-200/70 bg-white/70 p-5 shadow-xl shadow-slate-950/5 backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/70">
-                    <div class="mb-4 flex items-center justify-between gap-4">
-                        <div>
-                            <p class="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Payment methods</p>
-                            <h2 class="mt-1 text-xl font-black text-slate-950 dark:text-white">Select a secure payment option</h2>
-                        </div>
-                        <span class="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500 sm:inline-flex dark:bg-slate-800 dark:text-slate-400">Powered by {{ $activeGateway['name'] ?? 'UnlockRentals Billing' }}</span>
-                    </div>
-
-                    <div class="checkout-method-grid grid grid-cols-1 gap-4 md:grid-cols-2">
-                        @foreach($methods as $method)
-                            <button type="button" class="method-card rounded-2xl p-5 text-left {{ $loop->first ? 'selected' : '' }}" data-method="{{ $method['id'] }}">
-                                <div class="flex items-start gap-4">
-                                    <span class="method-icon grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
-                                        <i class="ph-bold {{ $method['icon'] }} text-2xl"></i>
-                                    </span>
-                                    <span class="min-w-0">
-                                        <span class="block text-base font-black text-slate-950 dark:text-white">{{ $method['name'] }}</span>
-                                        <span class="method-copy mt-1 block text-sm leading-5 text-slate-500 dark:text-slate-400">{{ $method['copy'] }}</span>
-                                    </span>
+                @if($isRazorpay)
+                    <div id="payment-methods" class="checkout-card rounded-3xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-sky-50/70 p-6 shadow-xl shadow-blue-500/5 backdrop-blur-xl dark:border-blue-700/50 dark:from-blue-950/40 dark:via-slate-900 dark:to-slate-900">
+                        <div class="flex items-center justify-between gap-4 mb-4">
+                            <div class="flex items-center gap-3">
+                                <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-500/25">
+                                    <i class="ph-bold ph-lightning-fill text-2xl text-amber-300"></i>
+                                </span>
+                                <div>
+                                    <span class="text-xs font-black uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">Direct Gateway</span>
+                                    <h2 class="text-xl font-black text-slate-950 dark:text-white">Instant Razorpay Checkout</h2>
                                 </div>
-                            </button>
-                        @endforeach
+                            </div>
+                            <span class="rounded-full bg-blue-100 px-3.5 py-1 text-xs font-black text-blue-700 dark:bg-blue-900/60 dark:text-blue-300">
+                                <i class="ph-bold ph-shield-check mr-1"></i> RBI Verified
+                            </span>
+                        </div>
+
+                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-5 leading-relaxed">
+                            One-tap secure payment window opens automatically with full support for UPI apps, Credit/Debit cards &amp; NetBanking.
+                        </p>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                            <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
+                                <i class="ph-bold ph-qr-code text-2xl text-blue-600 dark:text-blue-400 mb-1"></i>
+                                <p class="text-xs font-extrabold text-slate-900 dark:text-white">UPI &amp; QR</p>
+                                <p class="text-[10px] text-slate-500">PhonePe, GPay, Paytm</p>
+                            </div>
+                            <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
+                                <i class="ph-bold ph-credit-card text-2xl text-blue-600 dark:text-blue-400 mb-1"></i>
+                                <p class="text-xs font-extrabold text-slate-900 dark:text-white">Cards</p>
+                                <p class="text-[10px] text-slate-500">Visa, MC, RuPay</p>
+                            </div>
+                            <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
+                                <i class="ph-bold ph-bank text-2xl text-blue-600 dark:text-blue-400 mb-1"></i>
+                                <p class="text-xs font-extrabold text-slate-900 dark:text-white">NetBanking</p>
+                                <p class="text-[10px] text-slate-500">50+ Major Banks</p>
+                            </div>
+                            <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
+                                <i class="ph-bold ph-wallet text-2xl text-blue-600 dark:text-blue-400 mb-1"></i>
+                                <p class="text-xs font-extrabold text-slate-900 dark:text-white">Wallets</p>
+                                <p class="text-[10px] text-slate-500">Amazon, Mobikwik</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div id="payment-methods" class="checkout-card rounded-3xl border border-slate-200/70 bg-white/70 p-5 shadow-xl shadow-slate-950/5 backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/70">
+                        <div class="mb-4 flex items-center justify-between gap-4">
+                            <div>
+                                <p class="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Payment methods</p>
+                                <h2 class="mt-1 text-xl font-black text-slate-950 dark:text-white">Select a secure payment option</h2>
+                            </div>
+                            <span class="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500 sm:inline-flex dark:bg-slate-800 dark:text-slate-400">Powered by {{ $activeGateway['name'] ?? 'UnlockRentals Billing' }}</span>
+                        </div>
+
+                        <div class="checkout-method-grid grid grid-cols-1 gap-4 md:grid-cols-2">
+                            @foreach($methods as $method)
+                                <button type="button" class="method-card rounded-2xl p-5 text-left {{ $loop->first ? 'selected' : '' }}" data-method="{{ $method['id'] }}">
+                                    <div class="flex items-start gap-4">
+                                        <span class="method-icon grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
+                                            <i class="ph-bold {{ $method['icon'] }} text-2xl"></i>
+                                        </span>
+                                        <span class="min-w-0">
+                                            <span class="block text-base font-black text-slate-950 dark:text-white">{{ $method['name'] }}</span>
+                                            <span class="method-copy mt-1 block text-sm leading-5 text-slate-500 dark:text-slate-400">{{ $method['copy'] }}</span>
+                                        </span>
+                                    </div>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
                 @if(!$isRazorpay && $activeGateway)
                     <div class="rounded-3xl border border-amber-200 bg-amber-50/70 p-5">
@@ -377,14 +423,14 @@
                         </div>
                     @endif
 
-                    <button type="{{ $isRazorpay ? 'button' : 'submit' }}" id="pay-button" class="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-sky-500 px-6 py-3.5 text-sm font-black uppercase tracking-wider text-white shadow-2xl shadow-blue-500/20 transition hover:-translate-y-0.5 hover:shadow-blue-500/30 disabled:cursor-not-allowed disabled:opacity-60" {{ !$activeGateway ? 'disabled' : '' }}>
+                    <button type="{{ $isRazorpay ? 'button' : 'submit' }}" id="pay-button" class="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 px-6 py-4 text-base font-black uppercase tracking-wider text-white shadow-2xl shadow-blue-500/25 transition hover:-translate-y-0.5 hover:shadow-blue-500/35 disabled:cursor-not-allowed disabled:opacity-60" {{ !$activeGateway ? 'disabled' : '' }}>
                         <span class="btn-text flex items-center gap-2">
-                            <i class="ph-bold ph-lock-key"></i>
-                            Pay Now & Activate Plan
+                            <i class="ph-bold ph-lightning-fill text-amber-300 text-lg"></i>
+                            <span>{{ $isRazorpay ? '⚡ Pay Rs. ' . number_format($billing['final'], 2) . ' · Instant Access' : 'Pay Now & Activate Plan' }}</span>
                         </span>
                         <span class="btn-loader hidden items-center gap-2">
-                            <i class="ph-bold ph-circle-notch animate-spin"></i>
-                            Securely connecting
+                            <i class="ph-bold ph-circle-notch animate-spin text-lg"></i>
+                            Securely connecting to Razorpay...
                         </span>
                     </button>
                 </form>

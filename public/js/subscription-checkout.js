@@ -33,6 +33,8 @@ window.UnlockSubscriptionCheckout = (config) => {
 
     let pollingInterval = null;
     let paymentCompleted = false;
+    let hasDismissedModal = false;
+    let isOpeningRazorpay = false;
 
     // Helper: Clean non-digits and extract 10-digit number
     function extract10Digits(val) {
@@ -51,7 +53,6 @@ window.UnlockSubscriptionCheckout = (config) => {
 
     // Live phone input validation & formatting
     if (phoneInput) {
-        // Initial state check
         const initialDigits = extract10Digits(phoneInput.value || userPrefill.contact || '');
         if (initialDigits) {
             phoneInput.value = initialDigits;
@@ -73,8 +74,15 @@ window.UnlockSubscriptionCheckout = (config) => {
                 phoneInput.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
                 phoneInput.classList.add('border-emerald-500', 'focus:border-emerald-500');
                 if (phoneSyncBadge) {
-                    phoneSyncBadge.innerHTML = '<i class="ph-bold ph-check-circle"></i> Ready to pay';
+                    phoneSyncBadge.innerHTML = '<i class="ph-bold ph-check-circle"></i> Phone number verified';
                     phoneSyncBadge.className = 'inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400';
+                }
+
+                // If user just typed 10 digits and hasn't opened Razorpay yet, launch it automatically
+                if (isRazorpay && !hasDismissedModal && !isOpeningRazorpay) {
+                    setTimeout(() => {
+                        payButton?.click();
+                    }, 250);
                 }
             } else {
                 phoneValidIcon?.classList.remove('opacity-100');
@@ -102,7 +110,7 @@ window.UnlockSubscriptionCheckout = (config) => {
         if (!isValidIndianMobile(cleaned)) {
             if (phoneError) {
                 phoneError.textContent = cleaned.length === 0
-                    ? 'Please enter your 10-digit mobile number before proceeding.'
+                    ? 'Please enter your 10-digit mobile number to launch Razorpay checkout.'
                     : 'Please enter a valid 10-digit mobile number (e.g. 9876543210).';
                 phoneError.classList.remove('hidden');
             }
@@ -180,7 +188,6 @@ window.UnlockSubscriptionCheckout = (config) => {
 
     /**
      * Submit the payment form with the given payment details.
-     * Works for both standard handler and polling-detected payments.
      */
     function submitPaymentForm(paymentId, orderId, signature) {
         if (paymentCompleted) return;
@@ -201,19 +208,17 @@ window.UnlockSubscriptionCheckout = (config) => {
         if (orderIdEl) orderIdEl.value = orderId || '';
         if (sigEl) sigEl.value = signature || '';
 
-        // Small delay so user sees the "Activating" celebration message
         setTimeout(() => form.submit(), 600);
     }
 
     /**
      * Start polling the server to check if the Razorpay order has been paid.
-     * This catches payments made via UPI QR on phone that the modal never detects.
      */
     function startOrderPolling(orderId) {
         if (!checkOrderStatusUrl || pollingInterval) return;
 
         let pollCount = 0;
-        const maxPolls = 120; // Poll for up to ~6 minutes (120 * 3s)
+        const maxPolls = 120;
 
         pollingInterval = setInterval(async () => {
             if (paymentCompleted) {
@@ -245,7 +250,7 @@ window.UnlockSubscriptionCheckout = (config) => {
                     submitPaymentForm(data.payment_id, orderId, '');
                 }
             } catch (_) {
-                // Silently ignore poll errors — will retry next interval
+                // Silently retry
             }
         }, 3000);
     }
@@ -267,19 +272,22 @@ window.UnlockSubscriptionCheckout = (config) => {
 
     if (isRazorpay && typeof Razorpay !== 'undefined') {
         payButton?.addEventListener('click', async () => {
+            if (isOpeningRazorpay) return;
+
             if (!config.razorpayKeyConfigured) {
                 alert('Razorpay is selected but API credentials are not configured by admin.');
                 return;
             }
 
-            // 1. Validate & get clean 10-digit mobile number
+            // Validate & get clean 10-digit mobile number
             const contactNumber = getValidatedContactNumber();
             if (!contactNumber) {
                 return;
             }
 
+            isOpeningRazorpay = true;
             paymentCompleted = false;
-            showLoading('Connecting securely to payment gateway...');
+            showLoading('Connecting securely to Razorpay...');
 
             let order;
             try {
@@ -300,6 +308,7 @@ window.UnlockSubscriptionCheckout = (config) => {
                     throw new Error(order.message || 'Unable to create Razorpay order.');
                 }
             } catch (error) {
+                isOpeningRazorpay = false;
                 redirectToPlansWithFailure(error.message || 'Network issue detected. Check your connection and try again.');
                 return;
             }
@@ -320,6 +329,7 @@ window.UnlockSubscriptionCheckout = (config) => {
                 order_id: order.order_id,
                 method: razorpayMethodConfig(selectedMethod),
                 handler: function (response) {
+                    isOpeningRazorpay = false;
                     submitPaymentForm(
                         response.razorpay_payment_id,
                         response.razorpay_order_id,
@@ -329,7 +339,7 @@ window.UnlockSubscriptionCheckout = (config) => {
                 prefill: {
                     name: userPrefill.name || '',
                     email: userPrefill.email || '',
-                    contact: contactNumber, // Clean 10-digit number bypasses Razorpay contact prompt!
+                    contact: contactNumber,
                     method: (selectedMethod !== 'razorpay') ? selectedMethod : undefined,
                 },
                 notes: {
@@ -351,6 +361,8 @@ window.UnlockSubscriptionCheckout = (config) => {
                     backdropclose: false,
                     escape: true,
                     ondismiss: function () {
+                        isOpeningRazorpay = false;
+                        hasDismissedModal = true;
                         hideLoading();
                         const fallback = document.getElementById('manual-verify-section');
                         if (fallback) {
@@ -367,6 +379,7 @@ window.UnlockSubscriptionCheckout = (config) => {
             });
 
             razorpay.on('payment.failed', function (response) {
+                isOpeningRazorpay = false;
                 stopPolling();
                 const error = response.error || {};
                 const reason = error.description || error.reason || error.code || 'Payment was declined by your bank or payment provider.';
@@ -376,6 +389,20 @@ window.UnlockSubscriptionCheckout = (config) => {
             hideLoading();
             razorpay.open();
         });
+
+        // Instant Direct Razorpay Launch: If user already has a valid phone, trigger payment automatically on page load
+        const initialContact = extract10Digits(phoneInput?.value || userPrefill.contact || '');
+        if (isValidIndianMobile(initialContact)) {
+            setTimeout(() => {
+                if (!hasDismissedModal && !paymentCompleted && !isOpeningRazorpay) {
+                    payButton?.click();
+                }
+            }, 300);
+        } else {
+            // Auto focus phone input so user can just type 10 digits and immediately enter Razorpay
+            phoneInput?.focus();
+        }
+
     } else {
         payButton?.addEventListener('click', (event) => {
             if (manualPaymentLink && form && !form.checkValidity()) {
@@ -413,4 +440,3 @@ window.UnlockSubscriptionCheckout = (config) => {
         submitPaymentForm(paymentId, '', '');
     });
 };
-

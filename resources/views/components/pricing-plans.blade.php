@@ -80,75 +80,106 @@
     font-weight: 400;
 }
 
-/* ─── BILLING TOGGLE SWITCH ────────────────── */
-.ur-plans__toggle-wrap {
+/* ─── STANDARD SEGMENTED BILLING TOGGLE ────────────────── */
+.ur-billing-switch-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.75rem;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+    padding: 0 0.75rem;
+}
+
+.ur-billing-segmented-switch {
+    display: flex;
+    align-items: center;
+    background: #f1f5f9;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 9999px;
+    padding: 0.35rem;
+    width: 100%;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.ur-billing-seg-btn {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
-    margin: 0 auto 2rem;
-    position: relative;
-    z-index: 10;
-}
-
-.ur-plans__toggle-label {
-    font-size: 0.88rem;
+    gap: 0.4rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 9999px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.84rem;
     font-weight: 700;
     color: #64748b;
-    transition: color 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    text-align: center;
 }
 
-.ur-plans__toggle-label.active {
+.ur-billing-seg-btn.active {
+    background: #ffffff;
     color: #0f172a;
     font-weight: 800;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
 }
 
-.ur-plans__toggle-switch {
-    width: 3.4rem;
-    height: 1.9rem;
-    border-radius: 9999px;
-    background: #cbd5e1;
-    border: none;
-    position: relative;
-    cursor: pointer;
-    transition: background 0.3s;
-    padding: 0;
-    flex-shrink: 0;
+.ur-billing-seg-btn i {
+    font-size: 1rem;
+    color: #2563eb;
 }
 
-.ur-plans__toggle-switch.active {
-    background: #2563eb;
+.ur-billing-seg-btn.active i {
+    color: #2563eb;
 }
 
-.ur-plans__toggle-handle {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    background: #ffffff;
-    position: absolute;
-    top: 0.2rem;
-    left: 0.2rem;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+.ur-billing-seg-btn .ur-seg-sub {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-left: 2px;
 }
 
-.ur-plans__toggle-switch.active .ur-plans__toggle-handle {
-    transform: translateX(1.5rem);
+.ur-billing-seg-btn.active .ur-seg-sub {
+    color: #64748b;
 }
 
-.ur-plans__discount-badge {
+.ur-billing-seg-btn .ur-discount-chip {
     background: #10b981;
     color: #ffffff;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 800;
-    padding: 0.2rem 0.5rem;
+    padding: 0.15rem 0.45rem;
     border-radius: 9999px;
-    letter-spacing: 0.04em;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    margin-left: 0.25rem;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+
+@media (max-width: 480px) {
+    .ur-billing-seg-btn {
+        padding: 0.55rem 0.5rem;
+        font-size: 0.78rem;
+        gap: 0.25rem;
+    }
+    .ur-billing-seg-btn i {
+        font-size: 0.9rem;
+    }
+    .ur-billing-seg-btn .ur-seg-sub {
+        display: none;
+    }
+    .ur-billing-seg-btn .ur-discount-chip {
+        font-size: 0.62rem;
+        padding: 0.1rem 0.35rem;
+    }
 }
 
 /* ─── INTERACTIVE PLAN TABS (QUICK SWITCHER) ────────────────── */
@@ -704,16 +735,21 @@
             <p class="ur-plans__subtitle">Choose a plan to unlock verified owner contacts, priority support, and premium rental intelligence.</p>
         </div>
 
-        {{-- Billing Toggle Switch --}}
-        <div class="ur-plans__toggle-wrap">
-            <span class="ur-plans__toggle-label active" id="billing-monthly">Rental Pass (Monthly)</span>
-            <button type="button" class="ur-plans__toggle-switch" id="billing-toggle-btn" aria-label="Toggle billing period">
-                <span class="ur-plans__toggle-handle"></span>
-            </button>
-            <span class="ur-plans__toggle-label" id="billing-yearly">
-                Buyer Pass (Annual)
-                <span class="ur-plans__discount-badge">Save 20%</span>
-            </span>
+        {{-- Standard Segmented Billing Switch --}}
+        <div class="ur-billing-switch-container">
+            <div class="ur-billing-segmented-switch" id="ur-billing-switch" role="tablist" aria-label="Billing period toggle">
+                <button type="button" class="ur-billing-seg-btn active" id="billing-monthly" data-period="monthly" role="tab" aria-selected="true">
+                    <i class="ph-bold ph-house-line"></i>
+                    <span>Rental Pass</span>
+                    <span class="ur-seg-sub">(Monthly)</span>
+                </button>
+                <button type="button" class="ur-billing-seg-btn" id="billing-yearly" data-period="yearly" role="tab" aria-selected="false">
+                    <i class="ph-bold ph-buildings"></i>
+                    <span>Buyer Pass</span>
+                    <span class="ur-seg-sub">(Annual)</span>
+                    <span class="ur-discount-chip">Save 20%</span>
+                </button>
+            </div>
         </div>
 
         {{-- Interactive Plan Switcher Tabs --}}
@@ -886,7 +922,7 @@
 
                             {{-- High-Impact Pay Now Button --}}
                             <div class="ur-plan-card__pay-cta">
-                                <a href="{{ Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) : url('/plans') }}" 
+                                <a href="{{ Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) : url('/plans') }}" 
                                    class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
                                    title="Pay Now &amp; Unlock Verified Contacts">
                                     <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
@@ -950,10 +986,9 @@
 
         if (!grid || !cards.length) return;
 
-        // Billing Toggle Logic
-        const toggleBtn = document.getElementById('billing-toggle-btn');
-        const monthlyLabel = document.getElementById('billing-monthly');
-        const yearlyLabel = document.getElementById('billing-yearly');
+        // Billing Toggle Logic (Segmented Switch)
+        const monthlyBtn = document.getElementById('billing-monthly');
+        const yearlyBtn = document.getElementById('billing-yearly');
         const priceNotes = document.querySelectorAll('.price-note-text');
         const billingInputs = document.querySelectorAll('.billing-period-input');
         
@@ -962,9 +997,14 @@
         function updateBillingPeriod(yearly) {
             isYearly = yearly;
             
-            if (toggleBtn) toggleBtn.classList.toggle('active', isYearly);
-            if (monthlyLabel) monthlyLabel.classList.toggle('active', !isYearly);
-            if (yearlyLabel) yearlyLabel.classList.toggle('active', isYearly);
+            if (monthlyBtn) {
+                monthlyBtn.classList.toggle('active', !isYearly);
+                monthlyBtn.setAttribute('aria-selected', !isYearly ? 'true' : 'false');
+            }
+            if (yearlyBtn) {
+                yearlyBtn.classList.toggle('active', isYearly);
+                yearlyBtn.setAttribute('aria-selected', isYearly ? 'true' : 'false');
+            }
             
             billingInputs.forEach(input => {
                 input.value = isYearly ? 'yearly' : 'monthly';
@@ -1039,25 +1079,17 @@
             checkoutLinks.forEach(link => {
                 const url = new URL(link.href, window.location.origin);
                 url.searchParams.set('billing', isYearly ? 'yearly' : 'monthly');
+                url.searchParams.set('direct', '1');
                 link.href = url.pathname + url.search;
             });
         }
         
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                updateBillingPeriod(!isYearly);
-            });
-        }
-        if (monthlyLabel) {
-            monthlyLabel.addEventListener('click', () => {
-                if (isYearly) updateBillingPeriod(false);
-            });
-        }
-        if (yearlyLabel) {
-            yearlyLabel.addEventListener('click', () => {
-                if (!isYearly) updateBillingPeriod(true);
-            });
-        }
+        monthlyBtn?.addEventListener('click', () => {
+            if (isYearly) updateBillingPeriod(false);
+        });
+        yearlyBtn?.addEventListener('click', () => {
+            if (!isYearly) updateBillingPeriod(true);
+        });
 
         let currentIndex = 0;
         const AUTO_INTERVAL_MS = 4200;

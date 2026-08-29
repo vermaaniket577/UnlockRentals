@@ -126,10 +126,16 @@
 
             <div class="mt-8 flex flex-col items-center gap-3">
                 <div class="billing-toggle" id="billing-toggle" role="group" aria-label="Billing period">
-                    <button type="button" class="billing-option active" data-billing-choice="monthly">Rent</button>
-                    <button type="button" class="billing-option" data-billing-choice="yearly">Buy</button>
+                    <button type="button" class="billing-option active flex items-center justify-center gap-1.5" data-billing-choice="monthly">
+                        <i class="ph-bold ph-house-line"></i>
+                        <span>Rental Pass</span>
+                    </button>
+                    <button type="button" class="billing-option flex items-center justify-center gap-1.5" data-billing-choice="yearly">
+                        <i class="ph-bold ph-buildings"></i>
+                        <span>Buyer Pass</span>
+                    </button>
                 </div>
-                <p class="text-xs font-semibold text-emerald-600">Save 20% with buy option. GST shown at checkout.</p>
+                <p class="text-xs font-semibold text-emerald-600">Save 20% with Buyer Pass. GST included at checkout.</p>
             </div>
         </div>
 
@@ -179,60 +185,52 @@
                     $yearlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'yearly')->first() : null;
                     $monthly = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : (float) $plan->price;
                     $yearly = ($yearlyOffer && $yearlyOffer->discounted_price !== null) ? (float) $yearlyOffer->discounted_price : round((float) $plan->price * 12 * 0.8);
-                    $isRecommended = $key === 'gold' || $loop->iteration === 2;
+                    $isRecommended = $key === 'gold';
                 @endphp
-                <article class="premium-plan {{ $isRecommended ? 'recommended' : '' }} flex flex-col p-6"
+                <article class="premium-plan flex flex-col p-6 {{ $isRecommended ? 'recommended' : '' }}"
                     style="--plan-ring: {{ $style['ring'] }}; --plan-accent: {{ $style['accent'] }}; --plan-soft: {{ $style['soft'] }}; --plan-glow: {{ $style['glow'] }};"
-                    data-monthly="{{ round($monthly) }}" data-yearly="{{ $yearly }}" data-duration="{{ $plan->duration_days }}">
-                    @if($isRecommended)
-                        <div class="absolute right-4 top-4 rounded-full bg-slate-950 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">Most Popular</div>
-                    @endif
-                    <div class="plan-icon grid h-12 w-12 place-items-center rounded-2xl">
-                        <i class="ph-bold {{ $style['icon'] }} text-2xl"></i>
-                    </div>
-                    <h2 class="mt-6 text-xl font-black text-slate-950">{{ $plan->name }}</h2>
-                    <p class="mt-2 min-h-[42px] text-sm leading-6 text-slate-500">{{ $plan->description }}</p>
-                    <div class="mt-7">
-                        <div class="flex items-end gap-1">
-                            <span class="text-sm font-black text-slate-400">Rs.</span>
-                            <span class="plan-price text-5xl font-black tracking-tight text-slate-950">{{ number_format($monthly, 0) }}</span>
-                            <span class="plan-period pb-2 text-xs font-bold uppercase tracking-wider text-slate-400">/rent</span>
+                    data-monthly="{{ $monthly }}"
+                    data-yearly="{{ $yearly }}"
+                    data-duration="{{ $plan->duration_days }}">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="plan-icon grid h-12 w-12 place-items-center rounded-2xl">
+                            <i class="ph-bold {{ $style['icon'] }} text-2xl"></i>
                         </div>
-                        <p class="yearly-note mt-2 hidden text-xs font-bold text-emerald-600">Includes 20% buy savings.</p>
+                        @if($isRecommended)
+                            <span class="rounded-full bg-amber-500 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-slate-950 shadow-md">Most Popular</span>
+                        @endif
                     </div>
-                    @php
-                        $cleanPlanFeatures = [];
-                        $cleanPlanFeatures[] = '<strong>' . $plan->contact_limit . ' Verified Owner</strong> Direct Contacts';
-                        $cleanPlanFeatures[] = '<strong>' . $plan->duration_days . ' Days</strong> Complete Access Validity';
-                        $cleanPlanFeatures[] = 'Direct Phone & WhatsApp Access';
-                        
-                        foreach(($plan->features ?? []) as $feat) {
-                            $lower = strtolower($feat);
-                            if (str_contains($lower, 'owner detail') || str_contains($lower, 'unlock up to') || str_contains($lower, 'validity') || str_contains($lower, 'activation window')) {
-                                continue;
-                            }
-                            if (str_contains($lower, 'email support')) $cleanPlanFeatures[] = 'Standard Email Support (24h SLA)';
-                            elseif (str_contains($lower, 'priority support')) $cleanPlanFeatures[] = 'Priority Support & Fast-Track Assistance';
-                            elseif (str_contains($lower, 'dedicated manager')) $cleanPlanFeatures[] = 'Dedicated Relationship Concierge';
-                            elseif (str_contains($lower, 'advanced search')) $cleanPlanFeatures[] = 'Advanced Lifestyle & Locality Filters';
-                            elseif (str_contains($lower, 'whatsapp alerts')) $cleanPlanFeatures[] = 'Real-Time WhatsApp New Listing Alerts';
-                            elseif (str_contains($lower, 'verified badge')) $cleanPlanFeatures[] = 'Premium Verified Profile Badge';
-                            else $cleanPlanFeatures[] = $feat;
-                        }
-                    @endphp
-                    <ul class="mt-7 flex-1 space-y-3">
-                        @foreach($cleanPlanFeatures as $featHtml)
-                            <li class="flex items-center gap-3 text-sm text-slate-600">
-                                <span class="feature-check grid h-5 w-5 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
-                                <span>{!! $featHtml !!}</span>
-                            </li>
-                        @endforeach
+                    <h2 class="mt-5 text-xl font-black text-slate-950">{{ $plan->name }}</h2>
+                    <p class="mt-2 text-sm leading-6 text-slate-500">{{ $plan->description }}</p>
+                    <div class="mt-6 flex items-baseline gap-2">
+                        <span class="text-xs font-black uppercase text-slate-400">Rs.</span>
+                        <strong class="plan-price text-4xl font-black text-slate-950">{{ number_format($monthly, 0) }}</strong>
+                        <span class="plan-period text-sm font-bold text-slate-500">/rent</span>
+                    </div>
+                    <p class="yearly-note mt-1 hidden text-xs font-extrabold text-emerald-600">Save 20% · 365 days access</p>
+                    <div class="mt-4 flex items-center gap-2 text-xs font-extrabold text-slate-500">
+                        <i class="ph-bold ph-clock text-blue-600"></i>
+                        <span class="duration-label">{{ $plan->duration_days }} days validity</span>
+                    </div>
+                    <ul class="mt-6 flex flex-1 flex-col gap-3 text-sm font-semibold text-slate-600">
+                        <li class="flex items-center gap-3">
+                            <span class="feature-check grid h-6 w-6 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
+                            <span>{{ $plan->contact_limit }} owner-contact unlocks</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="feature-check grid h-6 w-6 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
+                            <span>Direct landlord WhatsApp / Call</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="feature-check grid h-6 w-6 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
+                            <span>Priority customer support</span>
+                        </li>
                     </ul>
                     <div class="mt-8">
                         @if(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan_id === $plan->id)
                             <button disabled class="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700">Current Plan</button>
                         @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price > (float) $activePlan->plan->price)
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-center text-sm font-black text-white shadow-xl shadow-blue-500/25 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Upgrade Plan">
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-center text-sm font-black text-white shadow-xl shadow-blue-500/25 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Upgrade Plan">
                                 <i class="ph-bold ph-lightning text-base"></i>
                                 <span>Pay Now · Upgrade Plan</span>
                             </a>
@@ -241,7 +239,7 @@
                         @elseif(auth()->check() && $pendingPlan)
                             <button disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-black text-slate-400">Request Pending</button>
                         @else
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl {{ $isRecommended ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' : 'bg-slate-950 hover:bg-slate-900 shadow-slate-950/20' }} px-5 py-3.5 text-center text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5" title="Pay Now &amp; Activate Plan">
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl {{ $isRecommended ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' : 'bg-slate-950 hover:bg-slate-900 shadow-slate-950/20' }} px-5 py-3.5 text-center text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5" title="Pay Now &amp; Activate Plan">
                                 <i class="ph-bold ph-lightning-fill text-base text-amber-300"></i>
                                 <span>Pay Now · Instant Access</span>
                             </a>
@@ -343,6 +341,7 @@
             if (checkoutLink) {
                 const url = new URL(checkoutLink.href, window.location.origin);
                 url.searchParams.set('billing', period);
+                url.searchParams.set('direct', '1');
                 checkoutLink.href = url.pathname + url.search;
             }
         });
