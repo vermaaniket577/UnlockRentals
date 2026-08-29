@@ -232,16 +232,18 @@
                         @if(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan_id === $plan->id)
                             <button disabled class="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700">Current Plan</button>
                         @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price > (float) $activePlan->plan->price)
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link block w-full rounded-2xl bg-blue-600 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-blue-500/15 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Upgrade Plan">
-                                Upgrade Plan
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-center text-sm font-black text-white shadow-xl shadow-blue-500/25 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Upgrade Plan">
+                                <i class="ph-bold ph-lightning text-base"></i>
+                                <span>Pay Now · Upgrade Plan</span>
                             </a>
                         @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0)
                             <button disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-black text-slate-400">Already Subscribed</button>
                         @elseif(auth()->check() && $pendingPlan)
                             <button disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-black text-slate-400">Request Pending</button>
                         @else
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link block w-full rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Choose Plan">
-                                Choose Plan
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl {{ $isRecommended ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' : 'bg-slate-950 hover:bg-slate-900 shadow-slate-950/20' }} px-5 py-3.5 text-center text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5" title="Pay Now &amp; Activate Plan">
+                                <i class="ph-bold ph-lightning-fill text-base text-amber-300"></i>
+                                <span>Pay Now · Instant Access</span>
                             </a>
                         @endif
                     </div>

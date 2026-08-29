@@ -7,7 +7,7 @@
 <style>
 .ur-plans {
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
-    padding: 6rem 0;
+    padding: 4.5rem 0 5rem;
     position: relative;
     overflow: hidden;
     font-family: 'Outfit', 'Inter', sans-serif;
@@ -17,7 +17,7 @@
     position: absolute;
     width: 36rem;
     height: 36rem;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
     z-index: 0;
@@ -28,7 +28,7 @@
 .ur-plans__container {
     max-width: 80rem;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 1.25rem;
     position: relative;
     z-index: 10;
 }
@@ -36,36 +36,35 @@
 .ur-plans__header {
     text-align: center;
     max-width: 42rem;
-    margin: 0 auto 4rem;
+    margin: 0 auto 2.5rem;
 }
 
 .ur-plans__eyebrow {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 800;
     color: #2563eb;
     text-transform: uppercase;
-    letter-spacing: 0.3em;
-    margin-bottom: 1rem;
+    letter-spacing: 0.25em;
+    margin-bottom: 0.75rem;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-}
-
-.ur-plans__eyebrow i {
-    font-size: 0.85rem;
+    background: rgba(37, 99, 235, 0.08);
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
 }
 
 .ur-plans__title {
-    font-size: 2.25rem;
+    font-size: 2rem;
     font-weight: 900;
     color: #0f172a;
-    letter-spacing: -0.04em;
-    line-height: 1.15;
-    margin-bottom: 1rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
 }
 
 @media (min-width: 768px) {
-    .ur-plans__title { font-size: 3rem; }
+    .ur-plans__title { font-size: 2.75rem; }
 }
 
 .ur-plans__title span {
@@ -75,9 +74,9 @@
 }
 
 .ur-plans__subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: #64748b;
-    line-height: 1.6;
+    line-height: 1.55;
     font-weight: 400;
 }
 
@@ -86,20 +85,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.25rem;
-    margin: -1.5rem auto 3rem;
+    gap: 1rem;
+    margin: 0 auto 2rem;
     position: relative;
     z-index: 10;
 }
 
 .ur-plans__toggle-label {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     font-weight: 700;
     color: #64748b;
     transition: color 0.3s;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     cursor: pointer;
 }
 
@@ -109,8 +108,8 @@
 }
 
 .ur-plans__toggle-switch {
-    width: 3.75rem;
-    height: 2.1rem;
+    width: 3.4rem;
+    height: 1.9rem;
     border-radius: 9999px;
     background: #cbd5e1;
     border: none;
@@ -118,6 +117,7 @@
     cursor: pointer;
     transition: background 0.3s;
     padding: 0;
+    flex-shrink: 0;
 }
 
 .ur-plans__toggle-switch.active {
@@ -125,43 +125,99 @@
 }
 
 .ur-plans__toggle-handle {
-    width: 1.65rem;
-    height: 1.65rem;
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
     background: #ffffff;
     position: absolute;
-    top: 0.22rem;
-    left: 0.22rem;
+    top: 0.2rem;
+    left: 0.2rem;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
 }
 
 .ur-plans__toggle-switch.active .ur-plans__toggle-handle {
-    transform: translateX(1.65rem);
+    transform: translateX(1.5rem);
 }
 
 .ur-plans__discount-badge {
     background: #10b981;
     color: #ffffff;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 800;
-    padding: 0.25rem 0.6rem;
+    padding: 0.2rem 0.5rem;
     border-radius: 9999px;
-    letter-spacing: 0.05em;
-    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+    letter-spacing: 0.04em;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
 }
 
-/* ─── SLIDER WRAPPER & CONTAINER ────────────────── */
+/* ─── INTERACTIVE PLAN TABS (QUICK SWITCHER) ────────────────── */
+.ur-plan-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 auto 1.75rem;
+    max-width: 36rem;
+    background: #f1f5f9;
+    padding: 0.35rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    position: relative;
+    z-index: 10;
+}
+
+.ur-plan-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.ur-plan-tab-btn.active {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 800;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.ur-plan-tab-btn .tab-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    background: #2563eb;
+    color: #ffffff;
+    margin-left: 2px;
+}
+
+/* ─── SLIDER WRAPPER & HORIZONTAL CAROUSEL ────────────────── */
 .ur-slider-wrapper {
     position: relative;
     width: 100%;
+    touch-action: pan-y;
 }
 
 .ur-plans__slider-container {
     overflow: hidden;
     width: 100%;
-    padding: 1.5rem 0.5rem;
-    margin: -1.5rem -0.5rem;
+    padding: 1rem 0;
+    cursor: grab;
+}
+
+.ur-plans__slider-container:active {
+    cursor: grabbing;
 }
 
 .ur-plans__grid {
@@ -177,8 +233,8 @@
     position: relative;
     background: #ffffff;
     border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: 1.5rem;
-    padding: 2.25rem;
+    border-radius: 1.75rem;
+    padding: 1.75rem 1.5rem;
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
@@ -186,6 +242,13 @@
     flex: 0 0 100%;
     width: 100%;
     box-sizing: border-box;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+@media (min-width: 640px) {
+    .ur-plan-card {
+        padding: 2rem 1.75rem;
+    }
 }
 
 @media (min-width: 768px) {
@@ -205,19 +268,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
-    margin-top: 2.5rem;
+    gap: 1.25rem;
+    margin-top: 2rem;
     position: relative;
     z-index: 15;
 }
 
 .ur-slider-btn {
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 2.6rem;
+    height: 2.6rem;
     border-radius: 50%;
     background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    border: 1.5px solid rgba(15, 23, 42, 0.1);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
     color: #0f172a;
     display: flex;
     align-items: center;
@@ -231,7 +294,8 @@
     background: #2563eb;
     color: #ffffff;
     border-color: #2563eb;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    transform: scale(1.06);
 }
 
 .ur-slider-dots {
@@ -241,174 +305,112 @@
 }
 
 .ur-slider-dot {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.55rem;
+    height: 0.55rem;
     border-radius: 50%;
     background: #cbd5e1;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .ur-slider-dot.active {
-    width: 1.25rem;
+    width: 1.5rem;
     border-radius: 9999px;
     background: #2563eb;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
 
-/* Base Card Scale Hover */
+.ur-slider-progress-wrap {
+    width: 100%;
+    max-width: 12rem;
+    height: 3px;
+    background: rgba(15, 23, 42, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+    margin: 0.75rem auto 0;
+}
+
+.ur-slider-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
+    border-radius: 9999px;
+    transition: width 0.1s linear;
+}
+
 .ur-plan-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.09);
 }
 
-/* ─── SILVER CARD THEME ────────────────── */
 .ur-plan-card--silver {
     background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    border: 1.5px solid rgba(15, 23, 42, 0.09);
 }
 
-/* ─── GOLD CARD THEME (SINGLE CLEAR FOCAL POINT) ────────────────── */
 .ur-plan-card--gold {
     background: #ffffff;
     border: 2.5px solid #2563eb;
-    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.14);
 }
 
 .ur-plan-card--gold .ur-plan-card__badge {
-    background: #2563eb;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
 }
 
-.ur-plan-card--gold .ur-plan-card__cta--primary {
-    background: #2563eb;
-    border: none;
-    color: #ffffff;
-}
-
-.ur-plan-card--gold .ur-plan-card__cta--primary:hover {
-    background: #1d4ed8;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
-}
-
-/* ─── PLATINUM CARD THEME (HARMONIOUS PREMIUM WHITE) ────────────────── */
 .ur-plan-card--platinum {
     background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+    border: 1.5px solid rgba(15, 23, 42, 0.09);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
 }
 
 .ur-plan-card--platinum .ur-plan-card__badge {
-    background: #475569;
+    background: linear-gradient(135deg, #0f172a, #334155);
     color: #ffffff;
 }
 
-.ur-plan-card--platinum .ur-plan-card__name {
-    color: #0f172a;
-}
-
-.ur-plan-card--platinum .ur-plan-card__desc {
-    color: #64748b;
-}
-
-.ur-plan-card--platinum .ur-plan-card__amount {
-    color: #0f172a;
-}
-
-.ur-plan-card--platinum .ur-plan-card__currency {
-    color: #2563eb;
-}
-
-.ur-plan-card--platinum .ur-plan-card__period {
-    color: #64748b;
-}
-
-.ur-plan-card--platinum .ur-plan-card__price-note {
-    color: #64748b;
-}
-
-.ur-plan-card--platinum .ur-plan-card__price-note i {
-    color: #2563eb;
-}
-
-.ur-plan-card--platinum .ur-plan-card__divider {
-    background: #e2e8f0;
-}
-
-.ur-plan-card--platinum .ur-plan-card__features li {
-    color: #334155;
-}
-
-.ur-plan-card--platinum .ur-plan-card__f-icon {
-    background: rgba(37, 99, 235, 0.08);
-    color: #2563eb;
-}
-
-.ur-plan-card--platinum .ur-plan-card__cta--outline {
-    background: #ffffff;
-    color: #0f172a;
-    border: 1.5px solid #cbd5e1;
-}
-
-.ur-plan-card--platinum .ur-plan-card__cta--outline:hover {
-    background: #f8fafc;
-    border-color: #2563eb;
-    color: #2563eb;
-}
-
-.ur-plan-card--platinum .ur-plan-card__icon {
-    border-color: rgba(56, 189, 248, 0.2);
-}
-
-.ur-plan-card--platinum:hover .ur-plan-card__icon {
-    background: #38bdf8;
-    color: #0d1527;
-    box-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
-}
-
-/* ─── CARD COMPONENTS ──────────────────── */
 .ur-plan-card__badge {
     position: absolute;
     top: 1.25rem;
     right: 1.25rem;
-    font-size: 0.6rem;
+    font-size: 0.62rem;
     font-weight: 800;
     color: #ffffff;
     background: #0f172a;
     padding: 0.35rem 0.75rem;
     border-radius: 9999px;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     display: inline-flex;
     align-items: center;
+    gap: 4px;
     z-index: 10;
 }
 
 .ur-plan-card__icon {
-    width: 4rem;
-    height: 4rem;
-    border-radius: 1.25rem;
+    width: 3.75rem;
+    height: 3.75rem;
+    border-radius: 1.15rem;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.75rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     background: var(--plan-bg);
     color: var(--plan-accent);
-    box-shadow: 0 12px 28px var(--plan-glow);
+    box-shadow: 0 10px 24px var(--plan-glow);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 2px solid color-mix(in srgb, var(--plan-accent) 20%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--plan-accent) 20%, transparent);
 }
 
 .ur-plan-card:hover .ur-plan-card__icon {
-    transform: scale(1.12) rotate(8deg);
-    background: var(--plan-accent);
-    color: #ffffff;
-    box-shadow: 0 18px 40px var(--plan-glow);
+    transform: scale(1.08) rotate(6deg);
 }
 
 .ur-plan-card__name {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 800;
     color: #0f172a;
     margin-bottom: 0.35rem;
@@ -416,11 +418,11 @@
 }
 
 .ur-plan-card__desc {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     color: #64748b;
-    line-height: 1.55;
-    margin-bottom: 1.25rem;
-    min-height: 2.75rem;
+    line-height: 1.5;
+    margin-bottom: 1.1rem;
+    min-height: 2.6rem;
 }
 
 .ur-plan-card__price {
@@ -431,13 +433,13 @@
 }
 
 .ur-plan-card__currency {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: var(--plan-accent);
 }
 
 .ur-plan-card__amount {
-    font-size: 2.75rem;
+    font-size: 2.6rem;
     font-weight: 900;
     color: #0f172a;
     letter-spacing: -0.04em;
@@ -445,156 +447,161 @@
 }
 
 .ur-plan-card__period {
-    font-size: 0.8125rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #64748b;
-    text-transform: lowercase;
-    letter-spacing: 0;
-    padding-bottom: 0.25rem;
 }
 
 .ur-plan-card__price-note {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #64748b;
-    margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-}
-
-.ur-plan-card__price-note i {
-    font-size: 0.9rem;
-    color: #10b981;
-}
-
-/* ─── DIVIDER ──────────────────────────── */
-.ur-plan-card__divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.08), transparent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
     margin-bottom: 1.25rem;
 }
 
-/* ─── FEATURES LIST ────────────────────── */
+.ur-plan-card__price-note i {
+    color: #10b981;
+    font-size: 0.95rem;
+}
+
+.ur-plan-card__divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin-bottom: 1.25rem;
+}
+
 .ur-plan-card__features {
     list-style: none;
     padding: 0;
-    margin: 0 0 2rem;
-    flex: 1;
+    margin: 0 0 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.7rem;
+    flex-grow: 1;
 }
 
 .ur-plan-card__features li {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.8125rem;
+    align-items: flex-start;
+    gap: 0.65rem;
+    font-size: 0.85rem;
     color: #334155;
     line-height: 1.45;
-    transition: transform 0.25s ease;
-}
-
-.ur-plan-card__features li strong {
-    color: #0f172a;
-    font-weight: 700;
-}
-
-.ur-plan-card--platinum .ur-plan-card__features li strong {
-    color: #ffffff;
-}
-
-.ur-plan-card:hover .ur-plan-card__features li {
-    transform: translateX(2px);
 }
 
 .ur-plan-card__f-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    min-width: 1.5rem;
-    background: var(--plan-check-bg, #eff6ff);
-    color: var(--plan-accent, #2563eb);
-    border-radius: 0.5rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
-    margin-top: 0.05rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    margin-top: 0.1rem;
 }
 
-.ur-plan-card:hover .ur-plan-card__f-icon {
-    transform: scale(1.1) rotate(-5deg);
-}
-
-/* ─── CTA BUTTONS ──────────────────────── */
-.ur-plan-card__cta {
-    margin-top: auto;
+/* ─── PROMINENT PAY NOW CTA BUTTON ──────────────────── */
+.ur-plan-card__pay-cta {
     display: flex;
-    width: 100%;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: auto;
+}
+
+.ur-plan-card__cta-btn {
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    text-align: center;
-    padding: 0.875rem 1.5rem;
+    width: 100%;
+    padding: 0.9rem 1.25rem;
     border-radius: 1rem;
-    font-size: 0.8125rem;
+    font-size: 0.95rem;
     font-weight: 800;
+    letter-spacing: -0.01em;
     text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: none;
     cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
 }
 
-.ur-plan-card__cta i {
-    font-size: 1rem;
-    transition: transform 0.3s ease;
+.ur-plan-card__cta-btn--primary {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff !important;
+    border: none;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.32);
 }
 
-.ur-plan-card__cta:hover i {
-    transform: translateX(4px);
-}
-
-.ur-plan-card__cta--primary {
-    background: #0f172a;
-    color: #ffffff;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
-}
-
-.ur-plan-card__cta--primary:hover {
-    background: #2563eb;
+.ur-plan-card__cta-btn--primary:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.42);
     transform: translateY(-2px);
-    box-shadow: 0 16px 40px rgba(37, 99, 235, 0.25);
 }
 
-.ur-plan-card__cta--outline {
-    background: transparent;
-    color: #0f172a;
-    border: 1.5px solid rgba(15, 23, 42, 0.12);
+.ur-plan-card__cta-btn--secondary {
+    background: #0f172a;
+    color: #ffffff !important;
+    border: none;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.2);
 }
 
-.ur-plan-card__cta--outline:hover {
-    border-color: #2563eb;
-    color: #2563eb;
-    background: #eff6ff;
+.ur-plan-card__cta-btn--secondary:hover {
+    background: #1e293b;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.3);
+    transform: translateY(-2px);
+}
+
+.ur-plan-card__cta-btn .pay-now-icon {
+    font-size: 1.15rem;
+}
+
+.ur-plan-card__cta-btn .pay-amount-pill {
+    background: rgba(255, 255, 255, 0.22);
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-left: auto;
+}
+
+.ur-plan-card__trust-note {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.ur-plan-card__trust-note i {
+    color: #10b981;
+    font-size: 0.82rem;
 }
 
 /* ─── VIEW ALL PLANS LINK ──────────────── */
 .ur-plans__cta-wrap {
     text-align: center;
-    margin-top: 3rem;
+    margin-top: 2.5rem;
 }
 
 .ur-plans__cta-link {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #2563eb;
     text-decoration: none;
-    padding: 0.75rem 2rem;
+    padding: 0.7rem 1.75rem;
     border: 1.5px solid rgba(37, 99, 235, 0.2);
     border-radius: 9999px;
     transition: all 0.3s;
@@ -709,8 +716,27 @@
             </span>
         </div>
 
+        {{-- Interactive Plan Switcher Tabs --}}
+        <div class="ur-plan-tabs" id="ur-plan-tabs">
+            @foreach($homePlans as $index => $plan)
+                @php
+                    $isGold = $index === 1 || str_contains(strtolower($plan->name), 'gold');
+                    $isPlatinum = $index === 2 || str_contains(strtolower($plan->name), 'platinum');
+                    $tabLabel = $isGold ? 'Gold Pass' : ($isPlatinum ? 'Platinum VIP' : 'Silver Pass');
+                    $tabIcon = $isGold ? 'ph-crown' : ($isPlatinum ? 'ph-lightning' : 'ph-sparkle');
+                @endphp
+                <button type="button" class="ur-plan-tab-btn @if($index === 0) active @endif" data-plan-index="{{ $index }}" aria-label="Switch to {{ $tabLabel }}">
+                    <i class="ph-bold {{ $tabIcon }}"></i>
+                    <span>{{ $tabLabel }}</span>
+                    @if($isGold)
+                        <span class="tab-badge">Popular</span>
+                    @endif
+                </button>
+            @endforeach
+        </div>
+
         {{-- Plans Slider Wrapper --}}
-        <div class="ur-slider-wrapper">
+        <div class="ur-slider-wrapper" id="ur-slider-wrapper">
             <div class="ur-plans__slider-container">
                 <div class="ur-plans__grid">
                     @foreach($homePlans as $index => $plan)
@@ -733,13 +759,14 @@
                         @endphp
                         <div class="ur-plan-card {{ $cardThemeClass }}"
                              style="--plan-accent: {{ $meta['accent'] }}; --plan-bg: {{ $meta['bg'] }}; --plan-glow: {{ $meta['glow'] }}; --plan-border: {{ $meta['border'] }}; --plan-check-bg: {{ $meta['check'] }};"
+                             data-plan-index="{{ $index }}"
                              data-has-monthly-offer="{{ $monthlyOffer ? 'true' : 'false' }}"
                              data-has-yearly-offer="{{ $yearlyOffer ? 'true' : 'false' }}">
 
                             @if($isGold)
-                                <span class="ur-plan-card__badge"><i class="ph-bold ph-fire" style="margin-right:3px"></i> Most Popular</span>
+                                <span class="ur-plan-card__badge"><i class="ph-bold ph-fire"></i> Most Popular</span>
                             @elseif($isPlatinum)
-                                <span class="ur-plan-card__badge"><i class="ph-bold ph-lightning" style="margin-right:3px"></i> VIP Choice</span>
+                                <span class="ur-plan-card__badge"><i class="ph-bold ph-lightning"></i> VIP Choice</span>
                             @endif
 
                             <div class="ur-plan-card__icon" style="position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--plan-bg);">
@@ -857,10 +884,20 @@
                                 @endforeach
                             </ul>
 
-                            <a href="{{ Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) : url('/plans') }}" class="ur-plan-card__cta {{ $isGold ? 'ur-plan-card__cta--primary' : 'ur-plan-card__cta--outline' }} plan-checkout-link" title="UnlockRentals">
-                                <i class="ph-bold {{ $isGold ? 'ph-crown' : ($isPlatinum ? 'ph-lightning' : 'ph-arrow-right') }}"></i>
-                                <span>{{ $isGold ? 'Get Started with Gold' : ($isPlatinum ? 'Unlock Platinum VIP' : 'Choose Silver Plan') }}</span>
-                            </a>
+                            {{-- High-Impact Pay Now Button --}}
+                            <div class="ur-plan-card__pay-cta">
+                                <a href="{{ Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly']) : url('/plans') }}" 
+                                   class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
+                                   title="Pay Now &amp; Unlock Verified Contacts">
+                                    <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                    <span>Pay Now · Instant Access</span>
+                                    <span class="pay-amount-pill cta-price-display" data-monthly="₹{{ number_format($monthlyPrice, 0) }}" data-yearly="₹{{ number_format($yearlyPrice, 0) }}">₹{{ number_format($monthlyPrice, 0) }}</span>
+                                </a>
+                                <div class="ur-plan-card__trust-note">
+                                    <i class="ph-bold ph-shield-check"></i>
+                                    <span>100% Secure Checkout · Instant Activation</span>
+                                </div>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -868,17 +905,22 @@
 
             {{-- Slider Navigation Controls --}}
             <div class="ur-slider-controls">
-                <button type="button" class="ur-slider-btn ur-slider-btn--prev" aria-label="Previous slide">
+                <button type="button" class="ur-slider-btn ur-slider-btn--prev" aria-label="Previous plan">
                     <i class="ph-bold ph-caret-left"></i>
                 </button>
                 <div class="ur-slider-dots">
                     @foreach($homePlans as $index => $plan)
-                        <span class="ur-slider-dot @if($index === 0) active @endif" data-index="{{ $index }}"></span>
+                        <span class="ur-slider-dot @if($index === 0) active @endif" data-index="{{ $index }}" aria-label="Go to slide {{ $index + 1 }}"></span>
                     @endforeach
                 </div>
-                <button type="button" class="ur-slider-btn ur-slider-btn--next" aria-label="Next slide">
+                <button type="button" class="ur-slider-btn ur-slider-btn--next" aria-label="Next plan">
                     <i class="ph-bold ph-caret-right"></i>
                 </button>
+            </div>
+
+            {{-- Visual Auto-Slide Progress Bar --}}
+            <div class="ur-slider-progress-wrap" title="Auto-slide active">
+                <div class="ur-slider-progress-bar" id="ur-slider-progress"></div>
             </div>
         </div>
 
@@ -898,10 +940,13 @@
     function initPricingSlider() {
         const grid = document.querySelector('.ur-plans__grid');
         const container = document.querySelector('.ur-plans__slider-container');
+        const sliderWrapper = document.getElementById('ur-slider-wrapper');
         const prevBtn = document.querySelector('.ur-slider-btn--prev');
         const nextBtn = document.querySelector('.ur-slider-btn--next');
         const dots = document.querySelectorAll('.ur-slider-dot');
+        const tabBtns = document.querySelectorAll('.ur-plan-tab-btn');
         const cards = document.querySelectorAll('.ur-plan-card');
+        const progressBar = document.getElementById('ur-slider-progress');
 
         if (!grid || !cards.length) return;
 
@@ -909,7 +954,6 @@
         const toggleBtn = document.getElementById('billing-toggle-btn');
         const monthlyLabel = document.getElementById('billing-monthly');
         const yearlyLabel = document.getElementById('billing-yearly');
-        const priceAmounts = document.querySelectorAll('.ur-plan-card__amount');
         const priceNotes = document.querySelectorAll('.price-note-text');
         const billingInputs = document.querySelectorAll('.billing-period-input');
         
@@ -929,6 +973,7 @@
             cards.forEach(card => {
                 const amountEl = card.querySelector('.ur-plan-card__amount');
                 const badgeEl = card.querySelector('.special-offer-badge');
+                const ctaPriceEl = card.querySelector('.cta-price-display');
                 
                 if (amountEl) {
                     const monthlyPrice = amountEl.getAttribute('data-monthly');
@@ -944,6 +989,12 @@
                         amountEl.style.transform = 'scale(1)';
                         amountEl.style.opacity = '1';
                     }, 150);
+                }
+
+                if (ctaPriceEl) {
+                    const monthlyText = ctaPriceEl.getAttribute('data-monthly');
+                    const yearlyText = ctaPriceEl.getAttribute('data-yearly');
+                    ctaPriceEl.textContent = isYearly ? yearlyText : monthlyText;
                 }
                 
                 if (badgeEl) {
@@ -1009,6 +1060,12 @@
         }
 
         let currentIndex = 0;
+        const AUTO_INTERVAL_MS = 4200;
+        let autoSlideTimer = null;
+        let progressTimer = null;
+        let progressStart = Date.now();
+        let isUserInteracting = false;
+        let resumeTimeout = null;
 
         function getItemsPerView() {
             if (window.innerWidth >= 1024) return 3;
@@ -1020,7 +1077,7 @@
             return Math.max(0, cards.length - getItemsPerView());
         }
 
-        function updateSlider() {
+        function updateSlider(smooth = true) {
             const itemsPerView = getItemsPerView();
             const maxIndex = getMaxIndex();
 
@@ -1035,9 +1092,10 @@
             const gap = parseFloat(window.getComputedStyle(grid).gap) || 24;
             const offset = currentIndex * (cardWidth + gap);
 
+            grid.style.transition = smooth ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : 'none';
             grid.style.transform = `translateX(-${offset}px)`;
 
-            // Enable/disable buttons
+            // Update arrow buttons
             if (prevBtn) {
                 prevBtn.disabled = currentIndex === 0;
                 prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
@@ -1056,6 +1114,11 @@
                 dot.style.display = index <= maxIndex ? 'inline-block' : 'none';
             });
 
+            // Update plan quick tabs
+            tabBtns.forEach((tab, index) => {
+                tab.classList.toggle('active', index === currentIndex);
+            });
+
             // Show controls only if there are items to slide
             const showControls = cards.length > itemsPerView;
             const controls = document.querySelector('.ur-slider-controls');
@@ -1064,37 +1127,116 @@
             }
         }
 
+        function nextSlide() {
+            const maxIndex = getMaxIndex();
+            if (currentIndex >= maxIndex) {
+                currentIndex = 0;
+            } else {
+                currentIndex++;
+            }
+            updateSlider();
+            resetProgressBar();
+        }
+
+        function prevSlide() {
+            if (currentIndex > 0) {
+                currentIndex--;
+            } else {
+                currentIndex = getMaxIndex();
+            }
+            updateSlider();
+            resetProgressBar();
+        }
+
+        function resetProgressBar() {
+            progressStart = Date.now();
+            if (progressBar) progressBar.style.width = '0%';
+        }
+
+        function startAutoSlide() {
+            stopAutoSlide();
+            resetProgressBar();
+            
+            progressTimer = setInterval(() => {
+                if (isUserInteracting) return;
+                const elapsed = Date.now() - progressStart;
+                const pct = Math.min(100, (elapsed / AUTO_INTERVAL_MS) * 100);
+                if (progressBar) progressBar.style.width = `${pct}%`;
+            }, 60);
+
+            autoSlideTimer = setInterval(() => {
+                if (!isUserInteracting) {
+                    nextSlide();
+                }
+            }, AUTO_INTERVAL_MS);
+        }
+
+        function stopAutoSlide() {
+            if (autoSlideTimer) clearInterval(autoSlideTimer);
+            if (progressTimer) clearInterval(progressTimer);
+            if (progressBar) progressBar.style.width = '0%';
+        }
+
+        function pauseAutoSlideTemporarily() {
+            isUserInteracting = true;
+            if (progressBar) progressBar.style.width = '0%';
+            clearTimeout(resumeTimeout);
+            resumeTimeout = setTimeout(() => {
+                isUserInteracting = false;
+                resetProgressBar();
+            }, 5500);
+        }
+
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateSlider();
-                }
+                pauseAutoSlideTemporarily();
+                prevSlide();
             });
         }
 
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
-                if (currentIndex < getMaxIndex()) {
-                    currentIndex++;
-                    updateSlider();
-                }
+                pauseAutoSlideTemporarily();
+                nextSlide();
             });
         }
 
         dots.forEach((dot, index) => {
             dot.addEventListener('click', () => {
+                pauseAutoSlideTemporarily();
                 currentIndex = index;
                 updateSlider();
+                resetProgressBar();
             });
         });
 
-        // Touch swipe support
+        tabBtns.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                pauseAutoSlideTemporarily();
+                currentIndex = index;
+                updateSlider();
+                resetProgressBar();
+            });
+        });
+
+        // Hover pause on desktop
+        if (sliderWrapper) {
+            sliderWrapper.addEventListener('mouseenter', () => {
+                isUserInteracting = true;
+            });
+            sliderWrapper.addEventListener('mouseleave', () => {
+                isUserInteracting = false;
+                resetProgressBar();
+            });
+        }
+
+        // Touch swipe support with rubberband & inertia
         let startX = 0;
         let currentX = 0;
         let isSwiping = false;
 
         container.addEventListener('touchstart', (e) => {
+            pauseAutoSlideTemporarily();
             startX = e.touches[0].clientX;
             isSwiping = true;
         }, { passive: true });
@@ -1108,17 +1250,11 @@
             if (!isSwiping) return;
             isSwiping = false;
             const diffX = startX - currentX;
-            if (Math.abs(diffX) > 50) {
+            if (Math.abs(diffX) > 40) {
                 if (diffX > 0) {
-                    if (currentIndex < getMaxIndex()) {
-                        currentIndex++;
-                        updateSlider();
-                    }
+                    nextSlide();
                 } else {
-                    if (currentIndex > 0) {
-                        currentIndex--;
-                        updateSlider();
-                    }
+                    prevSlide();
                 }
             }
         });
@@ -1126,19 +1262,22 @@
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(updateSlider, 100);
+            resizeTimeout = setTimeout(() => {
+                updateSlider(false);
+            }, 100);
         });
 
         document.querySelectorAll('.plan-checkout-link').forEach(link => {
             link.addEventListener('click', () => {
                 link.style.pointerEvents = 'none';
-                link.style.opacity = '0.7';
-                link.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin" style="margin-right:6px"></i> Opening secure checkout...';
+                link.style.opacity = '0.85';
+                link.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin" style="margin-right:6px"></i> Opening Secure Checkout...';
             });
         });
 
-        // Initial update
-        updateSlider();
+        // Initial setup & start auto slider
+        updateSlider(false);
+        startAutoSlide();
     }
 
     if (document.readyState === 'loading') {
