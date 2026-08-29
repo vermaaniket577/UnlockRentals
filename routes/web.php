@@ -494,10 +494,54 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
 Route::get('/property-image-file/{path}', function ($path) {
     $fullPath = storage_path('app/public/' . $path);
     if (!file_exists($fullPath)) {
-        abort(404);
+        $publicPath = public_path('storage/' . $path);
+        if (file_exists($publicPath)) {
+            $fullPath = $publicPath;
+        } else {
+            abort(404);
+        }
     }
-    return response()->file($fullPath);
+    $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+    $mime = match($ext) {
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+        'svg' => 'image/svg+xml',
+        'avif' => 'image/avif',
+        default => 'image/jpeg'
+    };
+    return response()->file($fullPath, [
+        'Content-Type' => $mime,
+        'Cache-Control' => 'public, max-age=604800',
+    ]);
 })->where('path', '.*')->name('property.image.file');
+
+// Universal storage file serving route
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        $publicPath = public_path('storage/' . $path);
+        if (file_exists($publicPath)) {
+            $fullPath = $publicPath;
+        } else {
+            abort(404);
+        }
+    }
+    $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+    $mime = match($ext) {
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+        'svg' => 'image/svg+xml',
+        'avif' => 'image/avif',
+        'pdf' => 'application/pdf',
+        default => 'image/jpeg'
+    };
+    return response()->file($fullPath, [
+        'Content-Type' => $mime,
+        'Cache-Control' => 'public, max-age=604800',
+    ]);
+})->where('path', '.*')->name('storage.file');
 
 // Dedicated video streaming route with HTTP 206 Partial Content & Range header support
 Route::get('/property-video-file/{path}', function ($path) {

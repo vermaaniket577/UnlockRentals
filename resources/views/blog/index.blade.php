@@ -54,7 +54,9 @@
             <a href="{{ route('blog.show', $featuredPost->slug) }}" class="group block relative bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-lg hover:shadow-2xl transition-all duration-300" title="{{ $featuredPost->title }}">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
                     <div class="lg:col-span-7 h-72 sm:h-96 lg:h-auto relative overflow-hidden bg-slate-100 dark:bg-slate-800">
-                        <img src="{{ $featuredPost->cover_image_url }}" alt="{{ $featuredPost->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ $featuredPost->cover_image_url }}" alt="{{ $featuredPost->title }}"
+                             onerror="this.onerror=null;this.src='{{ $featuredPost->getDefaultCoverImage() }}';"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-4 left-4">
                             <span class="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-blue-600 text-white shadow-md">
                                 Featured Guide
@@ -79,7 +81,9 @@
                         </div>
                         <div class="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
                             <div class="flex items-center gap-3">
-                                <img src="{{ $featuredPost->author_avatar_url }}" alt="{{ $featuredPost->author_display_name }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+                                <img src="{{ $featuredPost->author_avatar_url }}" alt="{{ $featuredPost->author_display_name }}"
+                                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($featuredPost->author_display_name) }}&background=2563EB&color=fff&rounded=true&bold=true';"
+                                     class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700">
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $featuredPost->author_display_name }}</p>
                                     <p class="text-xs text-slate-500">{{ $featuredPost->author_role_title }}</p>
@@ -101,7 +105,9 @@
             @foreach($posts as $post)
             <article class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
                 <a href="{{ route('blog.show', $post->slug) }}" class="block relative h-48 sm:h-52 overflow-hidden bg-slate-100 dark:bg-slate-800" title="{{ $post->title }}">
-                    <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}"
+                         onerror="this.onerror=null;this.src='{{ $post->getDefaultCoverImage() }}';"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <span class="absolute top-3 left-3 px-3 py-1 rounded-lg text-[11px] font-bold bg-slate-900/80 backdrop-blur-md text-white">
                         {{ $post->category }}
                     </span>
@@ -129,7 +135,9 @@
                     </div>
                     <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
                         <div class="flex items-center gap-2.5">
-                            <img src="{{ $post->author_avatar_url }}" alt="{{ $post->author_display_name }}" class="w-8 h-8 rounded-full object-cover">
+                            <img src="{{ $post->author_avatar_url }}" alt="{{ $post->author_display_name }}"
+                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($post->author_display_name) }}&background=2563EB&color=fff&rounded=true&bold=true';"
+                                 class="w-8 h-8 rounded-full object-cover">
                             <div>
                                 <p class="text-xs font-bold text-slate-900 dark:text-white">{{ $post->author_display_name }}</p>
                                 <p class="text-[10px] text-slate-500">{{ $post->author_role_title }}</p>

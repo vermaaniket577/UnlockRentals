@@ -66,7 +66,9 @@
             @foreach($featuredArticles as $art)
             <article class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group">
                 <a href="{{ url('/blog/' . $art['slug']) }}" class="block relative h-52 overflow-hidden" title="UnlockRentals">
-                    <img src="{{ $art['image'] }}" alt="{{ $art['title'] }}" title="{{ $art['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="{{ $art['image'] }}" alt="{{ $art['title'] }}" title="{{ $art['title'] }}"
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80';"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-950/80 backdrop-blur-md text-white shadow-sm">
                         {{ $art['category'] }}
                     </span>
@@ -88,7 +90,9 @@
                     </div>
                     <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
                         <div class="flex items-center gap-2.5">
-                            <img src="{{ $art['author_avatar'] }}" alt="{{ $art['author'] }}" title="{{ $art['author'] }}" class="w-8 h-8 rounded-full object-cover">
+                            <img src="{{ $art['author_avatar'] }}" alt="{{ $art['author'] }}" title="{{ $art['author'] }}"
+                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($art['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
+                                 class="w-8 h-8 rounded-full object-cover">
                             <span class="text-xs font-bold text-slate-900 dark:text-white">{{ $art['author'] }}</span>
                         </div>
                         <a href="{{ url('/blog/' . $art['slug']) }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" title="Read Guide">

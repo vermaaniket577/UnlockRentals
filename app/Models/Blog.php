@@ -101,7 +101,7 @@ class Blog extends Model
     public function getCoverImageUrlAttribute()
     {
         if (empty($this->image)) {
-            return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80';
+            return $this->getDefaultCoverImage();
         }
 
         if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
@@ -112,7 +112,36 @@ class Blog extends Model
             return asset($this->image);
         }
 
-        return asset('storage/' . $this->image);
+        if (file_exists(public_path('storage/' . $this->image))) {
+            return asset('storage/' . $this->image);
+        }
+
+        if (file_exists(storage_path('app/public/' . $this->image))) {
+            return url('storage/' . $this->image);
+        }
+
+        // Check if file is stored in public/images
+        if (file_exists(public_path('images/' . $this->image))) {
+            return asset('images/' . $this->image);
+        }
+
+        return $this->getDefaultCoverImage();
+    }
+
+    /**
+     * Category-tailored fallback cover image
+     */
+    public function getDefaultCoverImage(): string
+    {
+        return match ($this->category) {
+            'Tenant Guide' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80',
+            'Owner Insights' => 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
+            'Commercial Hub' => 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
+            'Legal & Finance' => 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80',
+            'Lifestyle & Tech' => 'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80',
+            'Market Trends' => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+            default => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80',
+        };
     }
 
     /**
@@ -152,7 +181,15 @@ class Blog extends Model
             if (str_starts_with($this->author_avatar, 'http://') || str_starts_with($this->author_avatar, 'https://')) {
                 return $this->author_avatar;
             }
-            return asset('storage/' . $this->author_avatar);
+            if (file_exists(public_path($this->author_avatar))) {
+                return asset($this->author_avatar);
+            }
+            if (file_exists(public_path('storage/' . $this->author_avatar))) {
+                return asset('storage/' . $this->author_avatar);
+            }
+            if (file_exists(storage_path('app/public/' . $this->author_avatar))) {
+                return url('storage/' . $this->author_avatar);
+            }
         }
 
         $name = urlencode($this->author_display_name);

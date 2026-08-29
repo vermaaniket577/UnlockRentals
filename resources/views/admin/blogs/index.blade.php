@@ -169,7 +169,9 @@
                             <td class="py-4 px-5 sm:px-6">
                                 <div class="flex items-start gap-3.5">
                                     <div class="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0 relative">
-                                        <img src="{{ $blog->cover_image_url }}" alt="{{ $blog->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        <img src="{{ $blog->cover_image_url }}" alt="{{ $blog->title }}"
+                                             onerror="this.onerror=null;this.src='{{ $blog->getDefaultCoverImage() }}';"
+                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                         @if($blog->is_featured)
                                             <span class="absolute top-1 right-1 w-4 h-4 rounded-full bg-amber-400 text-amber-950 flex items-center justify-center text-[9px] shadow-sm font-bold" title="Featured Post">
                                                 <i class="ph-fill ph-star"></i>
@@ -205,7 +207,9 @@
                             {{-- Author --}}
                             <td class="py-4 px-4 whitespace-nowrap">
                                 <div class="flex items-center gap-2.5">
-                                    <img src="{{ $blog->author_avatar_url }}" alt="{{ $blog->author_display_name }}" class="w-7 h-7 rounded-full object-cover border border-slate-200">
+                                    <img src="{{ $blog->author_avatar_url }}" alt="{{ $blog->author_display_name }}"
+                                         onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($blog->author_display_name) }}&background=2563EB&color=fff&rounded=true&bold=true';"
+                                         class="w-7 h-7 rounded-full object-cover border border-slate-200">
                                     <div>
                                         <p class="text-xs font-bold text-slate-800">{{ $blog->author_display_name }}</p>
                                         <span class="text-[10px] font-medium text-slate-400 block leading-none">{{ $blog->author_role_title }}</span>

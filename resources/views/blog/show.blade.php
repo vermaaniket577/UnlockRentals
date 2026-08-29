@@ -49,7 +49,9 @@
         {{-- Article Meta & Author Bar --}}
         <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-slate-200 dark:border-slate-800 mb-8">
             <div class="flex items-center gap-3">
-                <img src="{{ $post->author_avatar_url }}" alt="{{ $post->author_display_name }}" class="w-12 h-12 rounded-full object-cover border-2 border-blue-600 shadow-sm">
+                <img src="{{ $post->author_avatar_url }}" alt="{{ $post->author_display_name }}"
+                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($post->author_display_name) }}&background=2563EB&color=fff&rounded=true&bold=true';"
+                     class="w-12 h-12 rounded-full object-cover border-2 border-blue-600 shadow-sm">
                 <div>
                     <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $post->author_display_name }}</p>
                     <p class="text-xs text-slate-500">{{ $post->author_role_title }}</p>
@@ -65,8 +67,10 @@
         </div>
 
         {{-- Featured Hero Image --}}
-        <div class="rounded-3xl overflow-hidden mb-10 shadow-xl border border-slate-200/80 dark:border-slate-800 max-h-[480px] bg-slate-100 dark:bg-slate-800">
-            <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
+        <div class="rounded-3xl overflow-hidden mb-10 shadow-xl border border-slate-200/80 dark:border-slate-800 max-h-[480px] bg-slate-100 dark:bg-slate-800 aspect-[16/9] sm:aspect-[21/9]">
+            <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}"
+                 onerror="this.onerror=null;this.src='{{ $post->getDefaultCoverImage() }}';"
+                 class="w-full h-full object-cover">
         </div>
 
         {{-- Article Content --}}
@@ -122,7 +126,9 @@
                 @foreach($relatedPosts as $rPost)
                 <a href="{{ route('blog.show', $rPost->slug) }}" class="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-lg transition flex flex-col" title="{{ $rPost->title }}">
                     <div class="h-36 overflow-hidden bg-slate-100 dark:bg-slate-800">
-                        <img src="{{ $rPost->cover_image_url }}" alt="{{ $rPost->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ $rPost->cover_image_url }}" alt="{{ $rPost->title }}"
+                             onerror="this.onerror=null;this.src='{{ $rPost->getDefaultCoverImage() }}';"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
                     <div class="p-4 flex-1 flex flex-col justify-between">
                         <div>

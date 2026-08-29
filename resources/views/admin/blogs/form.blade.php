@@ -365,6 +365,7 @@
                     <div class="relative rounded-xl overflow-hidden bg-slate-100 border border-slate-200 aspect-video flex items-center justify-center group shadow-2xs">
                         <img id="cover-image-preview"
                              src="{{ $blog ? $blog->cover_image_url : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80' }}"
+                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80';"
                              alt="Cover Preview"
                              class="w-full h-full object-cover">
                     </div>
