@@ -130,7 +130,7 @@
             <div class="flex-1 w-full min-w-0">
                 @if($properties->count() > 0)
                     {{-- Grid Container --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-5 sm:gap-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
                         @foreach($properties as $property)
                             <x-property-card :property="$property" />
                         @endforeach

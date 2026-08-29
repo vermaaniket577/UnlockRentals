@@ -869,7 +869,7 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 @foreach($similarProperties as $similar)
                 <div class="bg-white rounded-2xl border border-zinc-200 overflow-hidden hover:border-[#2874F0]/40 hover:shadow-xl transition-all duration-300 flex flex-col group h-full">
                     {{-- Card Image --}}

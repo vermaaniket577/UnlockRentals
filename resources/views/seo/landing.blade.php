@@ -76,7 +76,7 @@
         {{-- Main Listings Grid & Recommended fallback --}}
         <div class="mb-24">
             @if($properties->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
                     @foreach($properties as $property)
                         <x-property-card :property="$property" />
                     @endforeach
@@ -103,7 +103,7 @@
                         <h3 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-slate-100 mb-8">
                             Recommended properties for you
                         </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                             @foreach($recommendations as $recProperty)
                                 <x-property-card :property="$recProperty" />
                             @endforeach
