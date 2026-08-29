@@ -4,8 +4,13 @@
 @section('robots', 'noindex, follow')
 
 @push('head')
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
 <style>
+    html, body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
     .checkout-stage {
         background:
             radial-gradient(circle at 15% 10%, rgba(37, 99, 235, .07), transparent 40%),
@@ -21,6 +26,19 @@
     @media (max-width: 640px) {
         input, select, textarea {
             font-size: 16px !important;
+        }
+    }
+    /* Enforce full-width Razorpay modal rendering on mobile devices */
+    @media (max-width: 768px) {
+        .razorpay-container,
+        .razorpay-backdrop,
+        iframe[name^="razorpay"],
+        iframe[src*="razorpay"] {
+            width: 100% !important;
+            max-width: 100vw !important;
+            min-width: 100% !important;
+            left: 0 !important;
+            right: 0 !important;
         }
     }
 </style>
