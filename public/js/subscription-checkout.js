@@ -343,8 +343,22 @@ window.UnlockSubscriptionCheckout = (config) => {
                 email: userPrefill.email || '',
                 method: (selectedMethod !== 'razorpay') ? selectedMethod : undefined,
             };
-            if (contactNumber) {
-                prefillData.contact = contactNumber;
+
+            // Razorpay expects full international format (+91XXXXXXXXXX)
+            // Use server-returned phone if available (most authoritative source)
+            const bestPhone = order.user_phone || contactNumber;
+            if (bestPhone) {
+                const digits = bestPhone.replace(/\D/g, '').slice(-10);
+                if (/^[6-9]\d{9}$/.test(digits)) {
+                    prefillData.contact = '+91' + digits;
+                    // Also update the input field if it was empty
+                    if (phoneInput && !phoneInput.value) {
+                        phoneInput.value = digits;
+                        phoneValidIcon?.classList.remove('opacity-0');
+                        phoneValidIcon?.classList.add('opacity-100');
+                    }
+                    try { localStorage.setItem('ur_user_phone', digits); } catch (_) {}
+                }
             }
 
             const razorpay = new Razorpay({

@@ -138,23 +138,25 @@
     if (!isset($billing)) {
         $months = $billingPeriod === 'yearly' ? 12 : 1;
         $durationDays = $billingPeriod === 'yearly' ? 365 : $plan->duration_days;
-        $subtotal = (float) $plan->price * $months;
-        $offerSubtotal = $effectivePrice * $months;
-        $yearlyDiscount = $billingPeriod === 'yearly' ? round($offerSubtotal * 0.20, 2) : 0;
-        $discount = max(0, $subtotal - $offerSubtotal) + $yearlyDiscount;
-        $taxable = max(0, $offerSubtotal - $yearlyDiscount);
+        $subtotalPaise = (int) round((float) $plan->price * $months * 100);
+        $offerSubtotalPaise = (int) round($effectivePrice * $months * 100);
+        $yearlyDiscountPaise = $billingPeriod === 'yearly' ? (int) round($offerSubtotalPaise * 0.20) : 0;
+        $discountPaise = max(0, $subtotalPaise - $offerSubtotalPaise) + $yearlyDiscountPaise;
+        $taxablePaise = max(0, $offerSubtotalPaise - $yearlyDiscountPaise);
         $gstRate = (float) ($site_settings['gst_rate'] ?? 18);
-        $gst = round($taxable * ($gstRate / 100), 2);
+        $gstPaise = (int) round($taxablePaise * ($gstRate / 100));
+        $finalPaise = max(100, $taxablePaise + $gstPaise);
 
         $billing = [
             'period' => $billingPeriod,
             'duration_days' => $durationDays,
-            'subtotal' => round($subtotal, 2),
-            'discount' => round($discount, 2),
-            'gst' => $gst,
+            'subtotal' => $subtotalPaise / 100,
+            'discount' => $discountPaise / 100,
+            'gst' => $gstPaise / 100,
             'gst_rate' => $gstRate,
-            'final' => max(1.00, round($taxable + $gst, 2)),
-            'yearly_savings' => $yearlyDiscount,
+            'final' => $finalPaise / 100,
+            'final_paise' => $finalPaise,
+            'yearly_savings' => $yearlyDiscountPaise / 100,
         ];
     }
 @endphp

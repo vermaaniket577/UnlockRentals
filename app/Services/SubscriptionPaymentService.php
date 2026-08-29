@@ -21,34 +21,38 @@ class SubscriptionPaymentService
     {
         $months = $billingPeriod === 'yearly' ? 12 : 1;
         $durationDays = $billingPeriod === 'yearly' ? 365 : (int) $plan->duration_days;
-        $subtotal = (float) $plan->price * $months;
+
+        // Use integer paise (1/100th of ₹) arithmetic to prevent floating-point
+        // precision loss. E.g. ₹199.00 → 19900 paise → always stays ₹199.00.
+        $subtotalPaise = (int) round((float) $plan->price * $months * 100);
         
         if ($privateOffer && $privateOffer->billing_period === $billingPeriod) {
-            $offerSubtotal = (float) $privateOffer->discounted_price;
-            $yearlyDiscount = 0;
+            $offerSubtotalPaise = (int) round((float) $privateOffer->discounted_price * 100);
+            $yearlyDiscountPaise = 0;
         } else {
-            $offerSubtotal = $effectivePrice * $months;
-            $yearlyDiscount = $billingPeriod === 'yearly' ? round($offerSubtotal * 0.20, 2) : 0;
+            $offerSubtotalPaise = (int) round($effectivePrice * $months * 100);
+            $yearlyDiscountPaise = $billingPeriod === 'yearly' ? (int) round($offerSubtotalPaise * 0.20) : 0;
         }
 
-        $discount = max(0, $subtotal - $offerSubtotal) + $yearlyDiscount;
-        $taxable = max(0, $offerSubtotal - $yearlyDiscount);
+        $discountPaise = max(0, $subtotalPaise - $offerSubtotalPaise) + $yearlyDiscountPaise;
+        $taxablePaise = max(0, $offerSubtotalPaise - $yearlyDiscountPaise);
         $gstRate = (float) \App\Models\Setting::get('gst_rate', '18');
-        $gst = round($taxable * ($gstRate / 100), 2);
+        $gstPaise = (int) round($taxablePaise * ($gstRate / 100));
 
         // Razorpay requires minimum ₹1 (100 paise). Enforce this at billing level
         // so the displayed amount always matches the Razorpay charge.
-        $final = max(1.00, round($taxable + $gst, 2));
+        $finalPaise = max(100, $taxablePaise + $gstPaise);
 
         return [
             'period' => $billingPeriod,
             'duration_days' => $durationDays,
-            'subtotal' => round($subtotal, 2),
-            'discount' => round($discount, 2),
-            'gst' => $gst,
+            'subtotal' => $subtotalPaise / 100,
+            'discount' => $discountPaise / 100,
+            'gst' => $gstPaise / 100,
             'gst_rate' => $gstRate,
-            'final' => $final,
-            'yearly_savings' => $yearlyDiscount,
+            'final' => $finalPaise / 100,
+            'final_paise' => $finalPaise,
+            'yearly_savings' => $yearlyDiscountPaise / 100,
         ];
     }
 

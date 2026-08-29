@@ -148,13 +148,15 @@ class PlanController extends Controller
         $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod, $privateOffer);
         $receipt = 'UR' . $user->id . 'P' . $plan->id . now()->format('His');
 
-        $amountPaise = max(100, (int) round($billing['final'] * 100));
+        // Use integer paise from billing to avoid floating point precision loss
+        $amountPaise = $billing['final_paise'] ?? max(100, (int) round($billing['final'] * 100));
         \Illuminate\Support\Facades\Log::info('Razorpay order creation', [
             'plan_id' => $plan->id,
             'plan_price' => $plan->price,
             'effective_price' => $effectivePrice,
             'billing_period' => $billingPeriod,
             'billing_final' => $billing['final'],
+            'billing_final_paise' => $billing['final_paise'] ?? 'N/A',
             'amount_paise' => $amountPaise,
         ]);
 
@@ -162,7 +164,7 @@ class PlanController extends Controller
             if (app()->environment('testing')) {
                 $order = [
                     'id' => 'order_test_123',
-                    'amount' => max(100, (int) round($billing['final'] * 100)),
+                    'amount' => $amountPaise,
                     'currency' => 'INR',
                 ];
             } else {
@@ -175,7 +177,7 @@ class PlanController extends Controller
 
                 $api = new Api($razorpayKeyId, $razorpayKeySecret);
                 $order = $this->createRazorpayOrderWithCurlFix($api, [
-                    'amount' => max(100, (int) round($billing['final'] * 100)),
+                    'amount' => $amountPaise,
                     'currency' => 'INR',
                     'receipt' => Str::limit($receipt, 40, ''),
                     'notes' => [
@@ -297,7 +299,7 @@ class PlanController extends Controller
 
                 // Auto-capture if payment is authorized but not yet captured
                 if (($paymentData['status'] ?? '') === 'authorized') {
-                    $expectedAmountPaise = max(100, (int) round($billing['final'] * 100));
+                    $expectedAmountPaise = $billing['final_paise'] ?? max(100, (int) round($billing['final'] * 100));
                     $paymentData = $this->captureRazorpayPaymentDirect(
                         $reference, $expectedAmountPaise, 'INR', $razorpayKeyId, $razorpayKeySecret
                     );
@@ -318,7 +320,7 @@ class PlanController extends Controller
 
                 // Validate amount matches
                 $paidAmountPaise = (int) ($paymentData['amount'] ?? 0);
-                $expectedAmountPaise = max(100, (int) round($billing['final'] * 100));
+                $expectedAmountPaise = $billing['final_paise'] ?? max(100, (int) round($billing['final'] * 100));
                 if (abs($paidAmountPaise - $expectedAmountPaise) > 100) {
                     $this->payments->logPayment($user, $billing['final'], $paymentMethod, 'failed', $reference, [
                         'invoice_id' => $invoiceId,
