@@ -603,14 +603,60 @@
 
                     {{-- Compact User Account Pill --}}
                     <div class="relative" style="position:relative; display:inline-block;">
-                        <button onclick="toggleUserDropdown(event)" class="flex items-center gap-1.5 py-1 px-2 rounded-full hover:bg-white/10 transition-all border border-white/15 bg-white/5" style="border:1px solid rgba(255,255,255,0.15); color:#fff; cursor:pointer;" id="userDropdownBtn" aria-label="User Account">
-                            <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg, #2563eb, #6366f1); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; box-shadow:0 2px 8px rgba(37,99,235,0.4); flex-shrink:0;">
+                        <script>
+                            window.toggleUserDropdown = function(e) {
+                                if (e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }
+                                if (window.innerWidth < 768) {
+                                    window.openWelcomeAccountModal();
+                                    return;
+                                }
+                                var dd = document.getElementById('userDropdown');
+                                var bd = document.getElementById('userDropdownBackdrop');
+                                if (!dd) return;
+                                if (dd.classList.contains('hidden')) {
+                                    dd.classList.remove('hidden');
+                                    if (bd) bd.classList.remove('hidden');
+                                } else {
+                                    dd.classList.add('hidden');
+                                    if (bd) bd.classList.add('hidden');
+                                }
+                            };
+                            window.closeUserDropdown = function() {
+                                var dd = document.getElementById('userDropdown');
+                                var bd = document.getElementById('userDropdownBackdrop');
+                                if (dd) dd.classList.add('hidden');
+                                if (bd) bd.classList.add('hidden');
+                            };
+                            window.openWelcomeAccountModal = function() {
+                                var modal = document.getElementById('welcome-account-modal');
+                                if (modal) {
+                                    modal.classList.remove('hidden');
+                                    document.body.style.overflow = 'hidden';
+                                }
+                            };
+                            window.closeWelcomeAccountModal = function() {
+                                var modal = document.getElementById('welcome-account-modal');
+                                if (modal) {
+                                    modal.classList.add('hidden');
+                                    document.body.style.overflow = '';
+                                }
+                            };
+                        </script>
+
+                        {{-- Desktop Dropdown Backdrop --}}
+                        <div id="userDropdownBackdrop" class="fixed inset-0 z-[9998] hidden bg-black/20" onclick="window.closeUserDropdown()"></div>
+
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-1.5 py-1 px-2 rounded-full hover:bg-white/10 transition-all border border-white/15 bg-white/5 relative z-[9999] cursor-pointer" id="userDropdownBtn" aria-label="User Account">
+                            <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg, #2563eb, #6366f1); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; box-shadow:0 2px 8px rgba(37,99,235,0.4); flex-shrink:0; pointer-events:none;">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7; flex-shrink:0;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7; flex-shrink:0; pointer-events:none;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </button>
                         
-                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:220px; background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.5); overflow:hidden; z-index:1000;">
+                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:240px; background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.5); overflow:hidden; z-index:9999;">
                             <div style="padding:14px; border-bottom:1px solid rgba(255,255,255,0.08);">
                                 <p style="color:rgba(255,255,255,0.5); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Signed in as</p>
                                 <p style="color:#fff; font-weight:700; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->name }}</p>
@@ -641,21 +687,6 @@
                     <style>
                         .dropdown-item:hover { background: rgba(255,255,255,0.08); color: #fff !important; }
                     </style>
-                    <script>
-                        function toggleUserDropdown(e) {
-                            e.stopPropagation();
-                            const dropdown = document.getElementById('userDropdown');
-                            dropdown.classList.toggle('hidden');
-                        }
-                        window.onclick = function(event) {
-                            if (!event.target.closest('#userDropdownBtn')) {
-                                const dropdown = document.getElementById('userDropdown');
-                                if (dropdown && !dropdown.classList.contains('hidden')) {
-                                    dropdown.classList.add('hidden');
-                                }
-                            }
-                        }
-                    </script>
                 @else
                     <a href="{{ route('login') }}" class="nav-link hidden md:inline-flex" style="margin-right: 8px;" title="Log in">
                         <i class="ph ph-user-circle"></i>
@@ -712,12 +743,20 @@
                     <div style="padding:10px 16px; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05);">
                         <p style="color:rgba(255,255,255,0.6); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Signed in as</p>
                         <p style="color:#fff; font-weight:600; font-size:15px;">{{ auth()->user()->name }}</p>
+                        <p style="color:rgba(255,255,255,0.5); font-size:12px;">{{ auth()->user()->email }}</p>
                     </div>
                     <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px;" title="UnlockRentals">
                         <i class="ph-fill ph-megaphone-simple" style="font-size: 20px;"></i>
                         {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
                     </a>
-                    <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%;" title="Dashboard">Dashboard</a>
+                    <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%; margin-bottom: 10px;" title="Dashboard">Dashboard</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600/20 text-red-400 border border-red-500/30 font-bold text-sm hover:bg-red-600/30 transition-all cursor-pointer">
+                            <i class="ph-bold ph-sign-out text-base"></i>
+                            <span>Sign Out (Logout)</span>
+                        </button>
+                    </form>
                 @else
                     <a href="{{ route('login') }}" class="btn-ghost-sm" style="text-align:center; display:block;" title="Log in">Log in</a>
                     @if (Route::has('register'))
@@ -730,6 +769,55 @@
             @endif
         </div>
     </nav>
+
+    {{-- Dedicated Mobile Account Bottom Sheet Modal for Welcome Page --}}
+    @auth
+    <div id="welcome-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm" onclick="if(event.target===this) window.closeWelcomeAccountModal()">
+        <div class="w-full sm:max-w-md bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-[slideUp_0.2s_ease-out]">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-base font-black text-white truncate">{{ auth()->user()->name }}</h3>
+                        <p class="text-xs text-slate-400 capitalize truncate">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeWelcomeAccountModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
+            
+            <div class="py-3 space-y-1">
+                <a href="{{ route('dashboard') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors">
+                    <i class="ph-bold ph-squares-four text-xl text-blue-500"></i>
+                    <span>My Dashboard</span>
+                </a>
+                <a href="{{ route('plans.index') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors">
+                    <i class="ph-bold ph-crown text-xl text-blue-500"></i>
+                    <span>Membership Plans</span>
+                </a>
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors">
+                        <i class="ph-bold ph-shield-check text-xl text-blue-500"></i>
+                        <span>Admin Panel</span>
+                    </a>
+                @endif
+            </div>
+
+            <div class="pt-3 border-t border-slate-800">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center justify-center gap-2.5 py-4 px-5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black text-base uppercase tracking-wider shadow-lg shadow-red-500/25 active:scale-[0.98] transition-all cursor-pointer">
+                        <i class="ph-bold ph-sign-out text-xl"></i>
+                        <span>Sign Out (Logout)</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endauth
 
     <section class="hero-section">
         <div class="hero-bg">
