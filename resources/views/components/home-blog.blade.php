@@ -61,42 +61,42 @@
             ];
         @endphp
 
-        {{-- Cards Grid --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {{-- Cards Grid (2 Columns on Mobile, 3 Columns on Desktop) --}}
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             @foreach($featuredArticles as $art)
-            <article class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group">
-                <a href="{{ url('/blog/' . $art['slug']) }}" class="block relative h-52 overflow-hidden" title="UnlockRentals">
+            <article class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+                <a href="{{ url('/blog/' . $art['slug']) }}" class="block relative h-28 sm:h-44 md:h-52 overflow-hidden" title="{{ $art['title'] }}">
                     <img src="{{ $art['image'] }}" alt="{{ $art['title'] }}" title="{{ $art['title'] }}"
                          onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80';"
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-950/80 backdrop-blur-md text-white shadow-sm">
+                    <span class="absolute top-2 left-2 sm:top-3.5 sm:left-3.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-xs font-extrabold bg-slate-950/80 backdrop-blur-md text-white shadow-sm">
                         {{ $art['category'] }}
                     </span>
                 </a>
-                <div class="p-6 flex-1 flex flex-col justify-between">
+                <div class="p-3 sm:p-5 flex-1 flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2.5">
-                            <i class="ph-bold ph-clock"></i>
+                        <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+                            <i class="ph-bold ph-clock text-[10px] sm:text-xs"></i>
                             <span>{{ $art['read_time'] }}</span>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2.5 line-clamp-2">
-                            <a href="{{ url('/blog/' . $art['slug']) }}" title="UnlockRentals">
+                        <h3 class="text-xs sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1.5 line-clamp-2 leading-snug sm:leading-normal">
+                            <a href="{{ url('/blog/' . $art['slug']) }}" title="{{ $art['title'] }}">
                                 {{ $art['title'] }}
                             </a>
                         </h3>
-                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed line-clamp-3 mb-6">
+                        <p class="hidden sm:block text-slate-600 dark:text-slate-300 text-xs sm:text-sm leading-relaxed line-clamp-2 mb-4">
                             {{ $art['excerpt'] }}
                         </p>
                     </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-                        <div class="flex items-center gap-2.5">
+                    <div class="flex items-center justify-between pt-2.5 sm:pt-4 border-t border-slate-100 dark:border-slate-800 mt-2">
+                        <div class="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
                             <img src="{{ $art['author_avatar'] }}" alt="{{ $art['author'] }}" title="{{ $art['author'] }}"
                                  onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($art['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
-                                 class="w-8 h-8 rounded-full object-cover">
-                            <span class="text-xs font-bold text-slate-900 dark:text-white">{{ $art['author'] }}</span>
+                                 class="w-5 h-5 sm:w-7 sm:h-7 rounded-full object-cover shrink-0">
+                            <span class="text-[10px] sm:text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{{ $art['author'] }}</span>
                         </div>
-                        <a href="{{ url('/blog/' . $art['slug']) }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1" title="Read Guide">
-                            Read Guide <i class="ph-bold ph-arrow-right text-[10px]"></i>
+                        <a href="{{ url('/blog/' . $art['slug']) }}" class="text-[10px] sm:text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 shrink-0 ml-1" title="Read Guide">
+                            <span class="hidden xs:inline">Read</span><span class="xs:hidden">Open</span> <i class="ph-bold ph-arrow-right text-[8px] sm:text-[10px]"></i>
                         </a>
                     </div>
                 </div>
