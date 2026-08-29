@@ -363,19 +363,19 @@
         });
     }
 
-    // User menu / mobile profile toggle handler
+    // User menu dropdown toggle handler (works seamlessly on mobile and desktop)
     window.toggleUserDropdown = function(e) {
         if (e) {
-            e.preventDefault();
             e.stopPropagation();
-        }
-        if (window.innerWidth < 768) {
-            window.toggleMobileDrawer(true);
-            return;
         }
         const dropdown = document.getElementById('nav-user-dropdown');
         if (!dropdown) return;
-        dropdown.classList.toggle('hidden');
+        
+        if (dropdown.classList.contains('hidden')) {
+            dropdown.classList.remove('hidden');
+        } else {
+            dropdown.classList.add('hidden');
+        }
     };
 
     // Close user dropdown on outside click or ESC
@@ -392,7 +392,9 @@
         if (e.key === 'Escape') {
             const dropdown = document.getElementById('nav-user-dropdown');
             if (dropdown) dropdown.classList.add('hidden');
-            window.toggleMobileDrawer(false);
+            if (typeof window.toggleMobileDrawer === 'function') {
+                window.toggleMobileDrawer(false);
+            }
         }
     });
 })();
