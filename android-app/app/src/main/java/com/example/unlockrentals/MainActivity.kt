@@ -264,6 +264,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         true
                     }
+                    UrlNavigationChecker.NavigationTarget.MAPS -> false
                     UrlNavigationChecker.NavigationTarget.INTERNAL -> false
                     UrlNavigationChecker.NavigationTarget.EXTERNAL -> {
                         try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
