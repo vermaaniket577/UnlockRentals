@@ -507,31 +507,47 @@
                 display: none !important;
             }
             .hero-container {
-                padding-top: calc(100px + env(safe-area-inset-top, 0px)) !important;
-                padding-left: 16px !important;
-                padding-right: 16px !important;
+                padding-top: calc(56px + env(safe-area-inset-top, 0px)) !important;
+                padding-bottom: 16px !important;
+                padding-left: 14px !important;
+                padding-right: 14px !important;
             }
             .hero-badge {
-                margin-top: 10px !important;
-                margin-bottom: 18px !important;
-                font-size: 10.5px !important;
-                padding: 5px 14px !important;
-                letter-spacing: 1.2px !important;
+                margin-top: 4px !important;
+                margin-bottom: 8px !important;
+                font-size: 10px !important;
+                padding: 3.5px 11px !important;
+                letter-spacing: 0.8px !important;
+            }
+            .hero-title {
+                font-size: clamp(20px, 5.5vw, 25px) !important;
+                line-height: 1.22 !important;
+                letter-spacing: -0.015em !important;
+                margin-bottom: 6px !important;
+            }
+            .hero-subtitle {
+                font-size: 11.5px !important;
+                line-height: 1.4 !important;
+                margin-bottom: 12px !important;
+                max-width: 95% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
             }
         }
 
         @media (max-width: 480px) {
             .hero-container {
-                padding-top: calc(108px + env(safe-area-inset-top, 0px)) !important;
-                padding-left: 14px !important;
-                padding-right: 14px !important;
+                padding-top: calc(56px + env(safe-area-inset-top, 0px)) !important;
+                padding-bottom: 12px !important;
+                padding-left: 10px !important;
+                padding-right: 10px !important;
             }
             .hero-badge {
-                margin-top: 10px !important;
-                margin-bottom: 16px !important;
-                font-size: 10px !important;
-                padding: 4.5px 12px !important;
-                letter-spacing: 1px !important;
+                margin-top: 2px !important;
+                margin-bottom: 6px !important;
+                font-size: 9.5px !important;
+                padding: 3px 9px !important;
+                letter-spacing: 0.6px !important;
             }
         }
     </style>
@@ -730,12 +746,12 @@
             </div>
 
             <h1 class="hero-title title-animate" style="max-width: 920px; margin-left: auto; margin-right: auto;">
-                Find Your <span style="background: linear-gradient(135deg, #93c5fd 0%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Perfect Home</span> <br>
+                Find Your <span style="background: linear-gradient(135deg, #93c5fd 0%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Perfect Home</span> <br class="hidden sm:inline">
                 Across <span style="background: linear-gradient(90deg, #dbeafe 0%, #60a5fa 40%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">India's Top Cities</span>
             </h1>
 
             <p class="hero-subtitle subtitle-animate">
-                Browse verified premium rentals, PG stays, shops & hotels. Connect directly with owners and move in seamlessly.
+                Verified rental houses, flats, PG stays & shops directly from owners.
             </p>
 
             <form class="search-glass-panel panel-animate" action="{{ route('home') }}" method="GET" data-ur-loader-msg="Searching premium properties&#8230;">
