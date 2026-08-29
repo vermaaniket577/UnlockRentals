@@ -116,27 +116,8 @@ class Blog extends Model
             return asset($img);
         }
 
-        // 3. Direct public/blogs file exists
-        if (file_exists(public_path('blogs/' . basename($img)))) {
-            return asset('blogs/' . basename($img));
-        }
-
-        // 4. Public storage folder file exists
-        if (file_exists(public_path('storage/' . $img))) {
-            return asset('storage/' . $img);
-        }
-
-        // 5. App storage public folder exists
-        if (file_exists(storage_path('app/public/' . $img))) {
-            return route('property.image.file', ['path' => $img]);
-        }
-
-        // 6. If it's a blogs path or relative path, serve via streaming route
-        if (str_starts_with($img, 'blogs/') || str_starts_with($img, 'properties/')) {
-            return route('property.image.file', ['path' => $img]);
-        }
-
-        return asset($img);
+        // 3. Universal route fallback (checks 7 server locations)
+        return route('property.image.file', ['path' => $img]);
     }
 
     /**
@@ -196,19 +177,7 @@ class Blog extends Model
             if (file_exists(public_path($avatar))) {
                 return asset($avatar);
             }
-            if (file_exists(public_path('blogs/authors/' . basename($avatar)))) {
-                return asset('blogs/authors/' . basename($avatar));
-            }
-            if (file_exists(public_path('storage/' . $avatar))) {
-                return asset('storage/' . $avatar);
-            }
-            if (file_exists(storage_path('app/public/' . $avatar))) {
-                return route('property.image.file', ['path' => $avatar]);
-            }
-            if (str_starts_with($avatar, 'blogs/')) {
-                return route('property.image.file', ['path' => $avatar]);
-            }
-            return asset($avatar);
+            return route('property.image.file', ['path' => $avatar]);
         }
 
         $name = urlencode($this->author_display_name);

@@ -491,33 +491,31 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
     }
 })->name('run-migrations');
 
-// Fallback route to serve images directly from storage/app/public without a symlink
+// Universal route to serve images directly from storage/app/public without a symlink
 Route::get('/property-image-file/{path}', function ($path) {
-    $fullPath = storage_path('app/public/' . $path);
-    if (!file_exists($fullPath)) {
-        $publicPath = public_path('storage/' . $path);
-        if (file_exists($publicPath)) {
-            $fullPath = $publicPath;
-        } else {
-            $directPublic = public_path($path);
-            if (file_exists($directPublic)) {
-                $fullPath = $directPublic;
-            } else {
-                $blogsPublic = public_path('blogs/' . basename($path));
-                if (file_exists($blogsPublic)) {
-                    $fullPath = $blogsPublic;
-                } else {
-                    $authorPublic = public_path('blogs/authors/' . basename($path));
-                    if (file_exists($authorPublic)) {
-                        $fullPath = $authorPublic;
-                    } else {
-                        abort(404);
-                    }
-                }
-            }
+    $candidates = [
+        storage_path('app/public/' . $path),
+        public_path('storage/' . $path),
+        public_path($path),
+        public_path('blogs/' . basename($path)),
+        public_path('blogs/authors/' . basename($path)),
+        storage_path('app/public/blogs/' . basename($path)),
+        storage_path('app/public/blogs/authors/' . basename($path)),
+    ];
+
+    $foundPath = null;
+    foreach ($candidates as $cand) {
+        if (file_exists($cand) && is_file($cand)) {
+            $foundPath = $cand;
+            break;
         }
     }
-    $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+
+    if (!$foundPath) {
+        return redirect('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80');
+    }
+
+    $ext = strtolower(pathinfo($foundPath, PATHINFO_EXTENSION));
     $mime = match($ext) {
         'png' => 'image/png',
         'gif' => 'image/gif',
@@ -526,7 +524,8 @@ Route::get('/property-image-file/{path}', function ($path) {
         'avif' => 'image/avif',
         default => 'image/jpeg'
     };
-    return response()->file($fullPath, [
+
+    return response()->file($foundPath, [
         'Content-Type' => $mime,
         'Cache-Control' => 'public, max-age=604800',
     ]);
@@ -534,45 +533,16 @@ Route::get('/property-image-file/{path}', function ($path) {
 
 // Universal storage file serving route
 Route::get('/storage/{path}', function ($path) {
-    $fullPath = storage_path('app/public/' . $path);
-    if (!file_exists($fullPath)) {
-        $publicPath = public_path('storage/' . $path);
-        if (file_exists($publicPath)) {
-            $fullPath = $publicPath;
-        } else {
-            $directPublic = public_path($path);
-            if (file_exists($directPublic)) {
-                $fullPath = $directPublic;
-            } else {
-                $blogsPublic = public_path('blogs/' . basename($path));
-                if (file_exists($blogsPublic)) {
-                    $fullPath = $blogsPublic;
-                } else {
-                    $authorPublic = public_path('blogs/authors/' . basename($path));
-                    if (file_exists($authorPublic)) {
-                        $fullPath = $authorPublic;
-                    } else {
-                        abort(404);
-                    }
-                }
-            }
-        }
-    }
-    $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
-    $mime = match($ext) {
-        'png' => 'image/png',
-        'gif' => 'image/gif',
-        'webp' => 'image/webp',
-        'svg' => 'image/svg+xml',
-        'avif' => 'image/avif',
-        'pdf' => 'application/pdf',
-        default => 'image/jpeg'
-    };
-    return response()->file($fullPath, [
-        'Content-Type' => $mime,
-        'Cache-Control' => 'public, max-age=604800',
-    ]);
+    return redirect()->route('property.image.file', ['path' => $path]);
 })->where('path', '.*')->name('storage.file');
+
+// Direct blogs image file route
+Route::get('/blogs/authors/{filename}', function ($filename) {
+    return redirect()->route('property.image.file', ['path' => 'blogs/authors/' . $filename]);
+});
+Route::get('/blogs/{filename}', function ($filename) {
+    return redirect()->route('property.image.file', ['path' => 'blogs/' . $filename]);
+});
 
 // Dedicated video streaming route with HTTP 206 Partial Content & Range header support
 Route::get('/property-video-file/{path}', function ($path) {
