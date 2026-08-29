@@ -21,8 +21,9 @@ class AuthController extends Controller
             return redirect('/login')->with('error', ucfirst($provider) . ' login is not configured yet. Please contact admin.');
         }
 
-        // Capture intended URL before redirecting to social provider (if not already set by middleware)
-        if (!session()->has('url.intended')) {
+        if (request()->filled('redirect')) {
+            session(['url.intended' => request('redirect')]);
+        } elseif (!session()->has('url.intended')) {
             $previous = url()->previous();
             if ($previous && 
                 !str_contains($previous, '/login') && 
@@ -91,13 +92,13 @@ class AuthController extends Controller
             Auth::login($user, true);
         }
 
-        if (session()->has('url.intended')) {
-            $intended = session()->pull('url.intended');
-            return redirect($intended)->with('success', 'Welcome, ' . $user->name . '!');
-        }
-
+        $targetUrl = session()->pull('url.intended');
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
+        }
+
+        if ($targetUrl) {
+            return redirect($targetUrl)->with('success', 'Welcome back, ' . $user->name . '!');
         }
 
         return redirect()->route('home')->with('success', 'Welcome, ' . $user->name . '!');
@@ -108,6 +109,10 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
+        if (request()->filled('redirect')) {
+            session(['url.intended' => request('redirect')]);
+        }
+
         return response()
             ->view('auth.login')
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
@@ -126,9 +131,11 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $targetUrl = $request->input('redirect') ?: session('url.intended') ?: route('home');
+            
             $request->session()->regenerate();
+            session()->forget('url.intended');
 
-            $targetUrl = $request->input('redirect') ?: session()->pull('url.intended', route('home'));
             if (auth()->user()->isAdmin()) {
                 $targetUrl = route('admin.dashboard');
             }
@@ -161,6 +168,10 @@ class AuthController extends Controller
      */
     public function showRegister()
     {
+        if (request()->filled('redirect')) {
+            session(['url.intended' => request('redirect')]);
+        }
+
         return response()
             ->view('auth.register')
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
@@ -191,7 +202,10 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        $targetUrl = $request->input('redirect') ?: session()->pull('url.intended', route('home'));
+        $targetUrl = $request->input('redirect') ?: session('url.intended') ?: route('home');
+        $request->session()->regenerate();
+        session()->forget('url.intended');
+
         if ($user->isAdmin()) {
             $targetUrl = route('admin.dashboard');
         }
@@ -199,13 +213,12 @@ class AuthController extends Controller
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Welcome to UnlockRentals! Your account has been created.',
+                'message' => 'Account created successfully!',
                 'redirect' => $targetUrl,
             ]);
         }
 
-        return redirect($targetUrl)
-            ->with('success', 'Welcome to UnlockRentals! Your account has been created.');
+        return redirect($targetUrl)->with('success', 'Account created successfully! Welcome to UnlockRentals.');
     }
 
     /**

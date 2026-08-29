@@ -922,13 +922,31 @@
 
                             {{-- High-Impact Pay Now Button --}}
                             <div class="ur-plan-card__pay-cta">
-                                <a href="{{ Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) : url('/plans') }}" 
-                                   class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
-                                   title="Pay Now &amp; Unlock Verified Contacts">
-                                    <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
-                                    <span>Pay Now · Instant Access</span>
-                                    <span class="pay-amount-pill cta-price-display" data-monthly="₹{{ number_format($monthlyPrice, 0) }}" data-yearly="₹{{ number_format($yearlyPrice, 0) }}">₹{{ number_format($monthlyPrice, 0) }}</span>
-                                </a>
+                                @php
+                                    $checkoutUrl = Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) : url('/plans');
+                                @endphp
+                                @guest
+                                    <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
+                                       onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', this.getAttribute('data-checkout-url') || '{{ $checkoutUrl }}');"
+                                       data-checkout-url="{{ $checkoutUrl }}"
+                                       data-no-loader="true"
+                                       data-ur-loader-skip="true"
+                                       class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
+                                       title="Pay Now &amp; Unlock Verified Contacts">
+                                        <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                        <span>Pay Now · Instant Access</span>
+                                        <span class="pay-amount-pill cta-price-display" data-monthly="₹{{ number_format($monthlyPrice, 0) }}" data-yearly="₹{{ number_format($yearlyPrice, 0) }}">₹{{ number_format($monthlyPrice, 0) }}</span>
+                                    </a>
+                                @else
+                                    <a href="{{ $checkoutUrl }}" 
+                                       data-checkout-url="{{ $checkoutUrl }}"
+                                       class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
+                                       title="Pay Now &amp; Unlock Verified Contacts">
+                                        <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                        <span>Pay Now · Instant Access</span>
+                                        <span class="pay-amount-pill cta-price-display" data-monthly="₹{{ number_format($monthlyPrice, 0) }}" data-yearly="₹{{ number_format($yearlyPrice, 0) }}">₹{{ number_format($monthlyPrice, 0) }}</span>
+                                    </a>
+                                @endguest
                                 <div class="ur-plan-card__trust-note">
                                     <i class="ph-bold ph-shield-check"></i>
                                     <span>100% Secure Checkout · Instant Activation</span>
@@ -1077,10 +1095,18 @@
 
             const checkoutLinks = document.querySelectorAll('.plan-checkout-link');
             checkoutLinks.forEach(link => {
-                const url = new URL(link.href, window.location.origin);
+                const rawUrl = link.getAttribute('data-checkout-url') || link.href;
+                const url = new URL(rawUrl, window.location.origin);
                 url.searchParams.set('billing', isYearly ? 'yearly' : 'monthly');
                 url.searchParams.set('direct', '1');
-                link.href = url.pathname + url.search;
+                const finalHref = url.pathname + url.search;
+                
+                link.setAttribute('data-checkout-url', finalHref);
+                if (link.hasAttribute('onclick')) {
+                    link.href = '/login?redirect=' + encodeURIComponent(finalHref);
+                } else {
+                    link.href = finalHref;
+                }
             });
         }
         

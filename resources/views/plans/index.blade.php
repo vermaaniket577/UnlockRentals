@@ -230,7 +230,7 @@
                         @if(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan_id === $plan->id)
                             <button disabled class="w-full rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700">Current Plan</button>
                         @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price > (float) $activePlan->plan->price)
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-center text-sm font-black text-white shadow-xl shadow-blue-500/25 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Upgrade Plan">
+                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" data-checkout-url="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-center text-sm font-black text-white shadow-xl shadow-blue-500/25 transition hover:-translate-y-0.5 hover:bg-blue-700" title="Upgrade Plan">
                                 <i class="ph-bold ph-lightning text-base"></i>
                                 <span>Pay Now · Upgrade Plan</span>
                             </a>
@@ -239,10 +239,24 @@
                         @elseif(auth()->check() && $pendingPlan)
                             <button disabled class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-black text-slate-400">Request Pending</button>
                         @else
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl {{ $isRecommended ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' : 'bg-slate-950 hover:bg-slate-900 shadow-slate-950/20' }} px-5 py-3.5 text-center text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5" title="Pay Now &amp; Activate Plan">
-                                <i class="ph-bold ph-lightning-fill text-base text-amber-300"></i>
-                                <span>Pay Now · Instant Access</span>
-                            </a>
+                            @guest
+                                <a href="{{ route('login', ['redirect' => route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1])]) }}"
+                                   onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', this.getAttribute('data-checkout-url') || '{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}');"
+                                   data-checkout-url="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}"
+                                   data-no-loader="true"
+                                   data-ur-loader-skip="true"
+                                   class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl {{ $isRecommended ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' : 'bg-slate-950 hover:bg-slate-900 shadow-slate-950/20' }} px-5 py-3.5 text-center text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5" title="Pay Now &amp; Activate Plan">
+                                    <i class="ph-bold ph-lightning-fill text-base text-amber-300"></i>
+                                    <span>Pay Now · Instant Access</span>
+                                </a>
+                            @else
+                                <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}"
+                                   data-checkout-url="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}"
+                                   class="choose-plan-btn plan-checkout-link flex items-center justify-center gap-2 w-full rounded-2xl {{ $isRecommended ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' : 'bg-slate-950 hover:bg-slate-900 shadow-slate-950/20' }} px-5 py-3.5 text-center text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5" title="Pay Now &amp; Activate Plan">
+                                    <i class="ph-bold ph-lightning-fill text-base text-amber-300"></i>
+                                    <span>Pay Now · Instant Access</span>
+                                </a>
+                            @endguest
                         @endif
                     </div>
                 </article>
@@ -259,16 +273,23 @@
                     <h2 class="mt-6 text-xl font-black text-slate-950">Enterprise Plan</h2>
                     <p class="mt-2 min-h-[42px] text-sm leading-6 text-slate-500">For agencies, relocation teams, and high-volume property operations.</p>
                     <div class="mt-7">
-                        <div class="text-5xl font-black tracking-tight text-slate-950">Custom</div>
-                        <p class="mt-2 text-xs font-bold text-slate-500">Dedicated billing, team seats, and SLA support.</p>
+                        <div class="flex items-end gap-1">
+                            <span class="plan-price text-4xl font-black tracking-tight text-slate-950">Custom</span>
+                        </div>
                     </div>
                     <ul class="mt-7 flex-1 space-y-3">
-                        @foreach(['Unlimited team workflows', 'Dedicated account manager', 'Bulk owner-contact operations', 'Custom invoices and renewal terms', 'Enterprise support access'] as $feature)
-                            <li class="flex gap-3 text-sm text-slate-600">
-                                <span class="feature-check grid h-5 w-5 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
-                                <span>{{ $feature }}</span>
-                            </li>
-                        @endforeach
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <span class="feature-check grid h-5 w-5 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
+                            <span>Unlimited Contact Unlocks</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <span class="feature-check grid h-5 w-5 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
+                            <span>Multi-user Team Access</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-600">
+                            <span class="feature-check grid h-5 w-5 shrink-0 place-items-center rounded-full"><i class="ph-bold ph-check text-xs"></i></span>
+                            <span>Custom Invoicing & API Integration</span>
+                        </li>
                     </ul>
                     <a href="mailto:sales@unlockrentals.com?subject=UnlockRentals%20Enterprise%20Plan" class="mt-8 block w-full rounded-2xl bg-slate-950 px-5 py-3 text-center text-sm font-black text-white shadow-xl shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-teal-700" title="Contact Sales">Contact Sales</a>
                 </article>
@@ -319,10 +340,9 @@
     const toggle = document.getElementById('billing-toggle');
     const buttons = document.querySelectorAll('[data-billing-choice]');
     const cards = document.querySelectorAll('.premium-plan');
-    const inputs = document.querySelectorAll('.billing-input');
 
     function setBilling(period) {
-        toggle.classList.toggle('yearly', period === 'yearly');
+        if (toggle) toggle.classList.toggle('yearly', period === 'yearly');
         buttons.forEach(button => button.classList.toggle('active', button.dataset.billingChoice === period));
 
         cards.forEach(card => {
@@ -339,10 +359,18 @@
             if (duration) duration.textContent = period === 'yearly' ? '365 days' : `${card.dataset.duration || 30} days`;
 
             if (checkoutLink) {
-                const url = new URL(checkoutLink.href, window.location.origin);
+                const rawUrl = checkoutLink.getAttribute('data-checkout-url') || checkoutLink.href;
+                const url = new URL(rawUrl, window.location.origin);
                 url.searchParams.set('billing', period);
                 url.searchParams.set('direct', '1');
-                checkoutLink.href = url.pathname + url.search;
+                const finalHref = url.pathname + url.search;
+                
+                checkoutLink.setAttribute('data-checkout-url', finalHref);
+                if (checkoutLink.hasAttribute('onclick')) {
+                    checkoutLink.href = '/login?redirect=' + encodeURIComponent(finalHref);
+                } else {
+                    checkoutLink.href = finalHref;
+                }
             }
         });
     }
@@ -351,9 +379,11 @@
 
     document.querySelectorAll('.plan-checkout-link').forEach(link => {
         link.addEventListener('click', () => {
-            link.style.pointerEvents = 'none';
-            link.style.opacity = '0.7';
-            link.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin" style="margin-right:6px"></i> Opening secure checkout...';
+            if (!link.hasAttribute('onclick')) {
+                link.style.pointerEvents = 'none';
+                link.style.opacity = '0.7';
+                link.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin" style="margin-right:6px"></i> Opening secure checkout...';
+            }
         });
     });
 })();

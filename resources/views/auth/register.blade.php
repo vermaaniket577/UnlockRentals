@@ -27,9 +27,16 @@
         {{-- Main Card --}}
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-[0_20px_50px_rgba(15,23,42,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-7 sm:p-9 transition-all duration-300">
 
+            @php
+                $targetRedirect = request('redirect') ?: session('url.intended') ?: old('redirect');
+            @endphp
+
             {{-- Form Body --}}
             <form method="POST" action="{{ route('register') }}" id="register-form" class="space-y-4">
                 @csrf
+                @if($targetRedirect)
+                    <input type="hidden" name="redirect" value="{{ $targetRedirect }}">
+                @endif
 
                 {{-- Role Selection (Tenant vs Owner) --}}
                 <div>
