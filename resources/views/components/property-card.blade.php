@@ -42,6 +42,7 @@
             <img src="{{ $property->primaryImageUrl() }}"
                  alt="{{ $property->title }}"
                  title="{{ $property->title }}"
+                 onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.png') }}';"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                  loading="lazy">
         @elseif($property->hasVideo())

@@ -33,11 +33,15 @@ class PropertyImage extends Model
     public function imageUrl(): string
     {
         if (!empty($this->image_data)) {
-            return route('property.image', $this->id);
+            return route('property.image', $this->id, false);
         }
 
         if ($this->path) {
-            return route('property.image.file', ['path' => $this->path]);
+            $p = ltrim($this->path, '/');
+            if (filter_var($p, FILTER_VALIDATE_URL)) {
+                return $p;
+            }
+            return route('property.image.file', ['path' => $p], false);
         }
 
         return asset('images/luxury_sunlit.png');

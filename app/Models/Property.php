@@ -249,7 +249,7 @@ class Property extends Model
             if (filter_var($item, FILTER_VALIDATE_URL)) {
                 $urls[] = $item;
             } else {
-                $urls[] = route('property.video.file', ['path' => $item]);
+                $urls[] = route('property.video.file', ['path' => ltrim($item, '/')], false);
             }
         }
         return array_values(array_unique($urls));
@@ -277,6 +277,10 @@ class Property extends Model
         }
         if ($this->primaryImage) {
             return $this->primaryImage->imageUrl();
+        }
+        $first = $this->images()->first();
+        if ($first) {
+            return $first->imageUrl();
         }
         return null;
     }
