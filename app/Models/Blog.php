@@ -104,28 +104,39 @@ class Blog extends Model
             return $this->getDefaultCoverImage();
         }
 
-        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
-            return $this->image;
+        $img = trim($this->image);
+
+        // 1. Full external URLs (http://, https://, //)
+        if (str_starts_with($img, 'http://') || str_starts_with($img, 'https://') || str_starts_with($img, '//')) {
+            return $img;
         }
 
-        if (file_exists(public_path($this->image))) {
-            return asset($this->image);
+        // 2. Direct public file exists
+        if (file_exists(public_path($img))) {
+            return asset($img);
         }
 
-        if (file_exists(public_path('storage/' . $this->image))) {
-            return asset('storage/' . $this->image);
+        // 3. Direct public/blogs file exists
+        if (file_exists(public_path('blogs/' . basename($img)))) {
+            return asset('blogs/' . basename($img));
         }
 
-        if (file_exists(storage_path('app/public/' . $this->image))) {
-            return url('storage/' . $this->image);
+        // 4. Public storage folder file exists
+        if (file_exists(public_path('storage/' . $img))) {
+            return asset('storage/' . $img);
         }
 
-        // Check if file is stored in public/images
-        if (file_exists(public_path('images/' . $this->image))) {
-            return asset('images/' . $this->image);
+        // 5. App storage public folder exists
+        if (file_exists(storage_path('app/public/' . $img))) {
+            return route('property.image.file', ['path' => $img]);
         }
 
-        return $this->getDefaultCoverImage();
+        // 6. If it's a blogs path or relative path, serve via streaming route
+        if (str_starts_with($img, 'blogs/') || str_starts_with($img, 'properties/')) {
+            return route('property.image.file', ['path' => $img]);
+        }
+
+        return asset($img);
     }
 
     /**
@@ -178,18 +189,26 @@ class Blog extends Model
     public function getAuthorAvatarUrlAttribute()
     {
         if (!empty($this->author_avatar)) {
-            if (str_starts_with($this->author_avatar, 'http://') || str_starts_with($this->author_avatar, 'https://')) {
-                return $this->author_avatar;
+            $avatar = trim($this->author_avatar);
+            if (str_starts_with($avatar, 'http://') || str_starts_with($avatar, 'https://') || str_starts_with($avatar, '//')) {
+                return $avatar;
             }
-            if (file_exists(public_path($this->author_avatar))) {
-                return asset($this->author_avatar);
+            if (file_exists(public_path($avatar))) {
+                return asset($avatar);
             }
-            if (file_exists(public_path('storage/' . $this->author_avatar))) {
-                return asset('storage/' . $this->author_avatar);
+            if (file_exists(public_path('blogs/authors/' . basename($avatar)))) {
+                return asset('blogs/authors/' . basename($avatar));
             }
-            if (file_exists(storage_path('app/public/' . $this->author_avatar))) {
-                return url('storage/' . $this->author_avatar);
+            if (file_exists(public_path('storage/' . $avatar))) {
+                return asset('storage/' . $avatar);
             }
+            if (file_exists(storage_path('app/public/' . $avatar))) {
+                return route('property.image.file', ['path' => $avatar]);
+            }
+            if (str_starts_with($avatar, 'blogs/')) {
+                return route('property.image.file', ['path' => $avatar]);
+            }
+            return asset($avatar);
         }
 
         $name = urlencode($this->author_display_name);

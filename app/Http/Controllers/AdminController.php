@@ -983,14 +983,19 @@ class AdminController extends Controller
         // Handle Cover Image
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
             $filename = time() . '_' . Str::random(12) . '.' . $ext;
             $path = $file->storeAs('blogs', $filename, 'public');
 
             // Mirror directly into public directories for bulletproof access
             try {
-                @mkdir(public_path('blogs'), 0755, true);
+                @mkdir(public_path('blogs'), 0777, true);
                 @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs'), 0777, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('storage/blogs/' . $filename));
             } catch (\Throwable $e) {}
 
             $data['image'] = $path;
@@ -1006,13 +1011,18 @@ class AdminController extends Controller
         // Handle Author Avatar
         if ($request->hasFile('author_avatar')) {
             $file = $request->file('author_avatar');
-            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
             $filename = time() . '_' . Str::random(12) . '.' . $ext;
             $path = $file->storeAs('blogs/authors', $filename, 'public');
 
             try {
-                @mkdir(public_path('blogs/authors'), 0755, true);
+                @mkdir(public_path('blogs/authors'), 0777, true);
                 @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('blogs/authors/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs/authors'), 0777, true);
+                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('storage/blogs/authors/' . $filename));
             } catch (\Throwable $e) {}
 
             $data['author_avatar'] = $path;
@@ -1103,15 +1113,21 @@ class AdminController extends Controller
             if ($blog->image && !str_starts_with($blog->image, 'http')) {
                 Storage::disk('public')->delete($blog->image);
                 @unlink(public_path($blog->image));
+                @unlink(public_path('blogs/' . basename($blog->image)));
             }
             $file = $request->file('image');
-            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
             $filename = time() . '_' . Str::random(12) . '.' . $ext;
             $path = $file->storeAs('blogs', $filename, 'public');
 
             try {
-                @mkdir(public_path('blogs'), 0755, true);
+                @mkdir(public_path('blogs'), 0777, true);
                 @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs'), 0777, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('storage/blogs/' . $filename));
             } catch (\Throwable $e) {}
 
             $data['image'] = $path;
@@ -1129,15 +1145,21 @@ class AdminController extends Controller
             if ($blog->author_avatar && !str_starts_with($blog->author_avatar, 'http')) {
                 Storage::disk('public')->delete($blog->author_avatar);
                 @unlink(public_path($blog->author_avatar));
+                @unlink(public_path('blogs/authors/' . basename($blog->author_avatar)));
             }
             $file = $request->file('author_avatar');
-            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
             $filename = time() . '_' . Str::random(12) . '.' . $ext;
             $path = $file->storeAs('blogs/authors', $filename, 'public');
 
             try {
-                @mkdir(public_path('blogs/authors'), 0755, true);
+                @mkdir(public_path('blogs/authors'), 0777, true);
                 @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('blogs/authors/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs/authors'), 0777, true);
+                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('storage/blogs/authors/' . $filename));
             } catch (\Throwable $e) {}
 
             $data['author_avatar'] = $path;

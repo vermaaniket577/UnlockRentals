@@ -498,7 +498,22 @@ Route::get('/property-image-file/{path}', function ($path) {
         if (file_exists($publicPath)) {
             $fullPath = $publicPath;
         } else {
-            abort(404);
+            $directPublic = public_path($path);
+            if (file_exists($directPublic)) {
+                $fullPath = $directPublic;
+            } else {
+                $blogsPublic = public_path('blogs/' . basename($path));
+                if (file_exists($blogsPublic)) {
+                    $fullPath = $blogsPublic;
+                } else {
+                    $authorPublic = public_path('blogs/authors/' . basename($path));
+                    if (file_exists($authorPublic)) {
+                        $fullPath = $authorPublic;
+                    } else {
+                        abort(404);
+                    }
+                }
+            }
         }
     }
     $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
@@ -524,7 +539,22 @@ Route::get('/storage/{path}', function ($path) {
         if (file_exists($publicPath)) {
             $fullPath = $publicPath;
         } else {
-            abort(404);
+            $directPublic = public_path($path);
+            if (file_exists($directPublic)) {
+                $fullPath = $directPublic;
+            } else {
+                $blogsPublic = public_path('blogs/' . basename($path));
+                if (file_exists($blogsPublic)) {
+                    $fullPath = $blogsPublic;
+                } else {
+                    $authorPublic = public_path('blogs/authors/' . basename($path));
+                    if (file_exists($authorPublic)) {
+                        $fullPath = $authorPublic;
+                    } else {
+                        abort(404);
+                    }
+                }
+            }
         }
     }
     $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
