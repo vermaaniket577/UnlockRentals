@@ -77,6 +77,10 @@
                                     e.preventDefault();
                                     e.stopPropagation();
                                 }
+                                if (window.innerWidth < 768) {
+                                    window.openUserAccountModal();
+                                    return;
+                                }
                                 var dd = document.getElementById('nav-user-dropdown');
                                 var bd = document.getElementById('nav-user-backdrop');
                                 if (!dd) return;
@@ -94,9 +98,23 @@
                                 if (dd) dd.classList.add('hidden');
                                 if (bd) bd.classList.add('hidden');
                             };
+                            window.openUserAccountModal = function() {
+                                var modal = document.getElementById('mobile-account-modal');
+                                if (modal) {
+                                    modal.classList.remove('hidden');
+                                    document.body.style.overflow = 'hidden';
+                                }
+                            };
+                            window.closeUserAccountModal = function() {
+                                var modal = document.getElementById('mobile-account-modal');
+                                if (modal) {
+                                    modal.classList.add('hidden');
+                                    document.body.style.overflow = '';
+                                }
+                            };
                         </script>
 
-                        {{-- Dropdown Backdrop --}}
+                        {{-- Dropdown Backdrop for Desktop --}}
                         <div id="nav-user-backdrop" class="fixed inset-0 z-[9998] hidden bg-black/20 dark:bg-black/60" onclick="window.closeUserDropdown()"></div>
 
                         <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative cursor-pointer z-[9999]" id="nav-user-menu" aria-label="User Account">
@@ -345,6 +363,55 @@
             </div>
         </div>
     </aside>
+
+    {{-- Dedicated Mobile Account Modal / Bottom Sheet --}}
+    @auth
+    <div id="mobile-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm" onclick="if(event.target===this) window.closeUserAccountModal()">
+        <div class="w-full sm:max-w-md bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-[slideUp_0.2s_ease-out]">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-base font-black text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeUserAccountModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
+            
+            <div class="py-3 space-y-1">
+                <a href="{{ route('dashboard') }}" onclick="window.closeUserAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    <i class="ph-bold ph-squares-four text-xl text-blue-600"></i>
+                    <span>My Dashboard</span>
+                </a>
+                <a href="#" onclick="event.preventDefault(); window.closeUserAccountModal(); window.openProfileModal();" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    <i class="ph-bold ph-user-gear text-xl text-blue-600"></i>
+                    <span>Profile Settings</span>
+                </a>
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" onclick="window.closeUserAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        <i class="ph-bold ph-shield-check text-xl text-blue-600"></i>
+                        <span>Admin Panel</span>
+                    </a>
+                @endif
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center justify-center gap-2.5 py-4 px-5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black text-base uppercase tracking-wider shadow-lg shadow-red-500/25 active:scale-[0.98] transition-all cursor-pointer">
+                        <i class="ph-bold ph-sign-out text-xl"></i>
+                        <span>Sign Out (Logout)</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endauth
 </nav>
 
 {{-- Spacer for fixed nav --}}

@@ -42,14 +42,14 @@
 
         {{-- Dashboard / Account Tab --}}
         @auth
-            <a href="{{ route('dashboard') }}" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 {{ request()->routeIs('dashboard*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium' }}" title="Dashboard" aria-label="Dashboard">
+            <a href="{{ route('dashboard') }}" onclick="if(typeof window.openUserAccountModal==='function'){event.preventDefault();window.openUserAccountModal();}" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 {{ request()->routeIs('dashboard*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium' }}" title="Account" aria-label="Account">
                 <div class="relative flex items-center justify-center">
-                    <i class="{{ request()->routeIs('dashboard*') ? 'ph-fill ph-squares-four' : 'ph-bold ph-squares-four' }} text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
+                    <i class="{{ request()->routeIs('dashboard*') ? 'ph-fill ph-user-circle' : 'ph-bold ph-user-circle' }} text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
                     @if(request()->routeIs('dashboard*'))
                         <span class="absolute -bottom-1.5 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
                     @endif
                 </div>
-                <span class="text-[10px] tracking-tight mt-1">Dashboard</span>
+                <span class="text-[10px] tracking-tight mt-1">Account</span>
             </a>
         @else
             <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium" title="Sign In" aria-label="Account">
