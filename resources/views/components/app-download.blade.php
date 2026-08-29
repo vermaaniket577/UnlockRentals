@@ -304,6 +304,18 @@
 </style>
 
 <section class="ur-app" id="app-download">
+    <script>
+        (function() {
+            var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            var ua = navigator.userAgent || navigator.vendor || window.opera || '';
+            var isAndroidApp = /wv|Android.*Version\/[0-9.]+|UnlockRentals/i.test(ua);
+            var isAndroidReferrer = document.referrer && document.referrer.startsWith('android-app://');
+            if (isStandalone || isAndroidApp || isAndroidReferrer) {
+                var el = document.getElementById('app-download');
+                if (el) el.style.display = 'none';
+            }
+        })();
+    </script>
     <div class="ur-app__bg-circles">
         <div class="ur-app__circle ur-app__circle--1"></div>
     </div>
