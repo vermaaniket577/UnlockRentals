@@ -693,5 +693,9 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
     return response()->json($localities);
 })->name('api.locations.localities');
 
+// Legal & Compliance Pages
+Route::view('/privacy-policy', 'privacy')->name('privacy');
+Route::view('/privacy', 'privacy');
+
 // Dynamic Catch-All Route for Programmatic SEO Pages
 Route::get('/{seo_slug}', [\App\Http\Controllers\SeoController::class, 'handle'])->name('seo.landing');
