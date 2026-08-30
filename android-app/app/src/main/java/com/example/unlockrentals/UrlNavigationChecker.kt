@@ -41,6 +41,8 @@ class UrlNavigationChecker(private val productionUrl: String) {
             prodHost.isNotEmpty() && (host == prodHost || host.contains(prodHost)) -> NavigationTarget.INTERNAL
             host.contains("unlockrentals") -> NavigationTarget.INTERNAL
             host.contains("10.0.2.2") || host.contains("localhost") || host.contains("127.0.0.1") -> NavigationTarget.INTERNAL
+            // Social Auth Providers - Keep directly inside app WebView
+            host.contains("accounts.google.com") || host.contains("facebook.com") || host.contains("m.facebook.com") || host.contains("appleid.apple.com") -> NavigationTarget.INTERNAL
             else -> NavigationTarget.EXTERNAL
         }
     }

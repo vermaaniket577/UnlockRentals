@@ -239,9 +239,9 @@ class MainActivity : AppCompatActivity() {
             // Enable geolocation
             setGeolocationEnabled(true)
 
-            // Custom User-Agent
-            val defaultUA = userAgentString
-            userAgentString = "$defaultUA UnlockRentalsApp/1.3 (Android)"
+            // Custom User-Agent - Cleaned of WebView markers for Google OAuth compatibility
+            val baseUA = userAgentString.replace("; wv", "").replace("Version/4.0 ", "")
+            userAgentString = "$baseUA UnlockRentalsApp/1.3 (Android)"
         }
 
         // WebViewClient — handles navigation and lifecycle

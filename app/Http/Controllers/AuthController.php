@@ -94,14 +94,17 @@ class AuthController extends Controller
 
         $targetUrl = session()->pull('url.intended');
         if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard');
+            return redirect('/admin');
         }
 
-        if ($targetUrl) {
-            return redirect($targetUrl)->with('success', 'Welcome back, ' . $user->name . '!');
+        $redirectPath = '/';
+        if ($targetUrl && !str_contains($targetUrl, '/login') && !str_contains($targetUrl, '/register') && !str_contains($targetUrl, '/auth/')) {
+            $parsed = parse_url($targetUrl, PHP_URL_PATH);
+            $query = parse_url($targetUrl, PHP_URL_QUERY);
+            $redirectPath = ($parsed ?: '/') . ($query ? '?' . $query : '');
         }
 
-        return redirect()->route('home')->with('success', 'Welcome, ' . $user->name . '!');
+        return redirect($redirectPath)->with('success', 'Welcome, ' . $user->name . '!');
     }
 
     /**
