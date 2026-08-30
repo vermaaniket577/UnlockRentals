@@ -35,7 +35,7 @@
                 <label for="profile-phone" class="block text-xs font-bold text-zinc-450 uppercase tracking-wider mb-2">Mobile Number</label>
                 <div class="relative">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400"><i class="ph ph-phone"></i></span>
-                    <input type="tel" name="phone" id="profile-phone" value="{{ auth()->user()->phone }}" required placeholder="e.g. +91 98765 43210"
+                    <input type="tel" name="phone" id="profile-phone" value="{{ auth()->user()->phone }}" required placeholder="e.g. +91 94254 55499"
                            class="w-full pl-10 pr-4 py-3.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all font-semibold">
                 </div>
                 <p class="text-[10px] text-zinc-400 mt-1.5 font-medium leading-normal">This phone number will be shared with other verified users when they unlock contact details.</p>

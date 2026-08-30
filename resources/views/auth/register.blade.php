@@ -78,7 +78,7 @@
                                    name="phone"
                                    id="register-phone"
                                    value="{{ old('phone') }}"
-                                   placeholder="+91 98765 43210"
+                                   placeholder="+91 9425455499"
                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
                         </div>
                     </div>

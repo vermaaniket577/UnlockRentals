@@ -158,7 +158,7 @@
                                 <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-phone"></i></span>
                                 <input type="tel" name="contact_phone" id="create-phone" value="{{ old('contact_phone', auth()->user()->phone ?? '') }}" required
                                        class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
-                                       placeholder="+91 98765 43210">
+                                       placeholder="+91 94254 55499">
                             </div>
                             @error('contact_phone') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                         </div>

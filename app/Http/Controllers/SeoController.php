@@ -422,7 +422,7 @@ class SeoController extends Controller
             'name' => 'UnlockRentals ' . ($city ?? 'India'),
             'description' => $description,
             'url' => $pageUrl,
-            'telephone' => '+91-98765-43210',
+            'telephone' => '+91-94254-55499',
             'logo' => asset('images/logo.png'),
             'image' => asset('images/hero-bg.jpg'),
             'address' => [

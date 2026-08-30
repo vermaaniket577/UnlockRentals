@@ -138,7 +138,7 @@
                 <div>
                     <label class="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-0.5">Phone Number (Optional)</label>
                     <input type="tel" name="phone"
-                           placeholder="+91 98765 43210"
+                           placeholder="+91 94254 55499"
                            class="ur-auth-input w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                 </div>
 
