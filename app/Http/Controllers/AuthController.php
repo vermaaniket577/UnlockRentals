@@ -94,17 +94,22 @@ class AuthController extends Controller
 
         $targetUrl = session()->pull('url.intended');
         if ($user->isAdmin()) {
-            return redirect('/admin');
+            $redirectPath = '/admin';
+        } else {
+            $redirectPath = '/';
+            if ($targetUrl && !str_contains($targetUrl, '/login') && !str_contains($targetUrl, '/register') && !str_contains($targetUrl, '/auth/')) {
+                $parsed = parse_url($targetUrl, PHP_URL_PATH);
+                $query = parse_url($targetUrl, PHP_URL_QUERY);
+                $redirectPath = ($parsed ?: '/') . ($query ? '?' . $query : '');
+            }
         }
 
-        $redirectPath = '/';
-        if ($targetUrl && !str_contains($targetUrl, '/login') && !str_contains($targetUrl, '/register') && !str_contains($targetUrl, '/auth/')) {
-            $parsed = parse_url($targetUrl, PHP_URL_PATH);
-            $query = parse_url($targetUrl, PHP_URL_QUERY);
-            $redirectPath = ($parsed ?: '/') . ($query ? '?' . $query : '');
-        }
-
-        return redirect($redirectPath)->with('success', 'Welcome, ' . $user->name . '!');
+        // Use inline JS redirect instead of HTTP 302 to stay inside Android WebView
+        // HTTP 302 with full domain URLs triggers Android intent filters and opens Chrome
+        $userName = e($user->name);
+        return response("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Welcome</title></head><body><script>window.location.replace(" . json_encode($redirectPath) . ");</script><noscript><meta http-equiv='refresh' content='0;url=" . e($redirectPath) . "'></noscript><p>Redirecting...</p></body></html>", 200)
+            ->header('Content-Type', 'text/html')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
 
     /**

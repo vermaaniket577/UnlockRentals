@@ -453,6 +453,20 @@ class MainActivity : AppCompatActivity() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // When OAuth callback returns via deep link, load the URL in the WebView
+        val data = intent.data
+        if (data != null) {
+            val url = data.toString()
+            val host = data.host ?: ""
+            if (host.contains("unlockrentals")) {
+                webView.loadUrl(url)
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         webView.onResume()
