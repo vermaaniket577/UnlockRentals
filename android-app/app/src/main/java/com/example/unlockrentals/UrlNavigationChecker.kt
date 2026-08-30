@@ -38,14 +38,12 @@ class UrlNavigationChecker(private val productionUrl: String) {
             url.startsWith("upi://") || url.startsWith("tez://") || url.startsWith("phonepe://") ||
             url.startsWith("paytmmp://") || url.startsWith("bhim://") || url.startsWith("credpay://") -> NavigationTarget.UPI
             url.startsWith("intent:") || url.startsWith("intent://") -> NavigationTarget.INTENT
+            // OAuth Launch: Open in external browser so Google never blocks with 403 disallowed_useragent
+            url.contains("/auth/google") || url.contains("/auth/facebook") ||
+            host.contains("accounts.google.com") || host.contains("facebook.com/v") || host.contains("m.facebook.com/dialog/oauth") -> NavigationTarget.EXTERNAL
             prodHost.isNotEmpty() && (host == prodHost || host.contains(prodHost)) -> NavigationTarget.INTERNAL
             host.contains("unlockrentals") -> NavigationTarget.INTERNAL
             host.contains("10.0.2.2") || host.contains("localhost") || host.contains("127.0.0.1") -> NavigationTarget.INTERNAL
-            // Social Auth Providers - Keep the entire OAuth flow inside app WebView
-            host.contains("accounts.google.com") || host.contains("googleapis.com") ||
-            host.contains("google.com") && (url.contains("/o/oauth") || url.contains("/signin") || url.contains("/AccountChooser") || url.contains("/ServiceLogin") || url.contains("/CheckCookie") || url.contains("/approval")) ||
-            host.contains("facebook.com") || host.contains("fbcdn.net") ||
-            host.contains("appleid.apple.com") -> NavigationTarget.INTERNAL
             else -> NavigationTarget.EXTERNAL
         }
     }

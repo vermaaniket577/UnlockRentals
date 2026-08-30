@@ -76,8 +76,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
+
+                // 1. Handle Custom Scheme: unlockrentals://auth/callback?token=...
+                if (url.startsWith("unlockrentals://")) {
+                    handleIncomingUri(request.getUrl());
+                    return true;
+                }
                 
-                // Handle WhatsApp, Phone calls, Email, and Maps intents
+                // 2. Handle WhatsApp, Phone calls, Email, and Maps intents
                 if (url.startsWith("tel:") || url.startsWith("whatsapp:") || url.startsWith("mailto:") || url.startsWith("geo:")) {
                     try {
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -89,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                // Handle UPI payment apps (GPay, PhonePe, Paytm, BHIM, Cred)
+                // 3. Handle UPI payment apps (GPay, PhonePe, Paytm, BHIM, Cred)
                 if (url.startsWith("upi:") || url.startsWith("tez:") || url.startsWith("phonepe:") ||
                     url.startsWith("paytmmp:") || url.startsWith("bhim:") || url.startsWith("credpay:")) {
                     try {
@@ -102,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                // Handle Android Intent URIs from payment gateways
+                // 4. Handle Android Intent URIs from payment gateways
                 if (url.startsWith("intent:") || url.startsWith("intent://")) {
                     try {
                         Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
@@ -122,6 +128,23 @@ public class MainActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         // Fallback
                     }
+                }
+
+                // 5. Open OAuth providers (Google / Facebook) in external browser to comply with Google OAuth policy and prevent 403 disallowed_useragent
+                if (url.contains("/auth/google") || url.contains("/auth/facebook") ||
+                    url.contains("accounts.google.com") || url.contains("facebook.com/v") || url.contains("m.facebook.com/dialog/oauth")) {
+                    try {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(browserIntent);
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+
+                // 6. Keep all UnlockRentals pages strictly inside the WebView
+                if (url.contains("unlockrentals.com") || url.contains("10.0.2.2") || url.contains("localhost")) {
+                    return false;
                 }
                 
                 return false;
