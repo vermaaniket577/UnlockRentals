@@ -271,6 +271,38 @@ class AdminController extends Controller
     }
 
     /**
+     * Send an admin reply to a chatbot session.
+     */
+    public function replyChat(Request $request)
+    {
+        $request->validate([
+            'session_id' => 'required|string',
+            'message' => 'required|string|max:2000',
+        ]);
+
+        $firstMsg = \App\Models\ChatbotMessage::where('session_id', $request->session_id)->first();
+        $userId = $firstMsg ? $firstMsg->user_id : null;
+
+        $msg = \App\Models\ChatbotMessage::create([
+            'user_id' => $userId,
+            'session_id' => $request->session_id,
+            'message' => trim($request->message),
+            'sender' => 'bot',
+            'is_read' => true,
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => $msg->message,
+                'time' => $msg->created_at->format('h:i A'),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Reply sent successfully.');
+    }
+
+    /**
      * List all callback requests.
      */
     public function callbacks()
