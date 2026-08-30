@@ -339,19 +339,18 @@ window.UnlockSubscriptionCheckout = (config) => {
             const logoUrl = brandLogo || (window.location.origin + '/images/logo-icon.png');
 
             const prefillData = {
-                name: userPrefill.name || '',
-                email: userPrefill.email || '',
+                name: userPrefill.name || order.user_name || '',
+                email: userPrefill.email || order.user_email || '',
                 method: (selectedMethod !== 'razorpay') ? selectedMethod : undefined,
             };
 
-            // Razorpay expects full international format (+91XXXXXXXXXX)
-            // Use server-returned phone if available (most authoritative source)
-            const bestPhone = order.user_phone || contactNumber;
+            // Prefill mobile number in Razorpay Checkout modal from server profile, userPrefill, input, or storage
+            const bestPhone = order.user_phone || (userPrefill && userPrefill.contact) || contactNumber;
             if (bestPhone) {
-                const digits = bestPhone.replace(/\D/g, '').slice(-10);
-                if (/^[6-9]\d{9}$/.test(digits)) {
-                    prefillData.contact = '+91' + digits;
-                    // Also update the input field if it was empty
+                const digits = String(bestPhone).replace(/\D/g, '').slice(-10);
+                if (digits.length === 10) {
+                    prefillData.contact = digits;
+                    // Also populate the input field on the page if it was empty
                     if (phoneInput && !phoneInput.value) {
                         phoneInput.value = digits;
                         phoneValidIcon?.classList.remove('opacity-0');

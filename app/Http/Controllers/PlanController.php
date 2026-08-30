@@ -141,6 +141,13 @@ class PlanController extends Controller
                     $user->save();
                 }
             }
+        } elseif (empty($user->phone)) {
+            $fallbackPhone = session('user_phone') 
+                ?? $user->inquiries()->whereNotNull('phone')->where('phone', '!=', '')->latest()->value('phone');
+            if (!empty($fallbackPhone)) {
+                $user->phone = \App\Models\User::sanitizePhone($fallbackPhone);
+                $user->save();
+            }
         }
 
         $billingPeriod = ($data['billing_period'] ?? 'monthly') === 'yearly' ? 'yearly' : 'monthly';
@@ -195,8 +202,10 @@ class PlanController extends Controller
                 'key_id' => $razorpayKeyId,
                 'plan_name' => $plan->name,
                 'billing_period' => $billingPeriod,
-                'user_phone' => $user->clean_phone,
-                'user_phone_formatted' => $user->formatted_phone,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'user_phone' => $user->clean_phone ?? '',
+                'user_phone_formatted' => $user->formatted_phone ?? '',
             ]);
         } catch (\Razorpay\Api\Errors\BadRequestError $e) {
             report($e);
