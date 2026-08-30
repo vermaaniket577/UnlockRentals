@@ -6,8 +6,17 @@
             if (localStorage.getItem('ur-theme') === 'dark') {
                 document.documentElement.classList.add('dark');
             }
+            var isApp = /UnlockRentals|wv|Version\/[0-9.]+/i.test(navigator.userAgent) || window.isNativeApp === true || new URLSearchParams(window.location.search).get('app') === '1';
+            if (isApp) {
+                document.documentElement.classList.add('is-mobile-app');
+            }
         })();
     </script>
+    <style>
+        .is-mobile-app .website-only-social {
+            display: none !important;
+        }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
