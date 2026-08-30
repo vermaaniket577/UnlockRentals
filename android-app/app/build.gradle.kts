@@ -14,6 +14,15 @@ android {
         versionName = "1.4.1"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("${rootDir}/unlockrentals-release.jks")
+            storePassword = "UnlockRentals@2026"
+            keyAlias = "unlockrentals"
+            keyPassword = "UnlockRentals@2026"
+        }
+    }
+
     buildTypes {
         debug {
             isDebuggable = true
@@ -21,7 +30,7 @@ android {
         }
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
