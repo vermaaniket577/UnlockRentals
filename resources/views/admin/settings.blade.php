@@ -303,8 +303,8 @@
                         <h3 class="text-sm font-bold text-slate-900">Active Payment Gateways</h3>
                         <p class="text-xs text-slate-400">Manage Razorpay, UPI QR codes, or bank transfer gateways.</p>
                     </div>
-                    <button type="button" onclick="addPaymentGateway()"
-                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 self-start sm:self-auto">
+                    <button type="button" onclick="window.addPaymentGateway()" id="btn-add-gateway"
+                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-xs self-start sm:self-auto cursor-pointer">
                         <i class="ph-bold ph-plus"></i>
                         <span>Add Gateway</span>
                     </button>
@@ -454,8 +454,9 @@
 
 @push('scripts')
 <script>
-function togglePassword(inputId, btn) {
+window.togglePassword = function(inputId, btn) {
     const input = document.getElementById(inputId);
+    if (!input) return;
     const eyeOpen = btn.querySelector('.eye-open');
     const eyeClosed = btn.querySelector('.eye-closed');
     if (input.type === 'password') {
@@ -467,10 +468,20 @@ function togglePassword(inputId, btn) {
         if (eyeOpen) eyeOpen.style.display = 'block';
         if (eyeClosed) eyeClosed.style.display = 'none';
     }
-}
+};
 
-function addPaymentGateway() {
+window.gatewayField = function(index, label, key, type, placeholder) {
+    return `
+        <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">${label}</label>
+            <input type="${type}" name="payment_gateways[${index}][${key}]" placeholder="${placeholder}" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+        </div>
+    `;
+};
+
+window.addPaymentGateway = function() {
     const container = document.getElementById('payment-gateways');
+    if (!container) return;
     const index = Date.now();
     const id = `gateway-${index}`;
 
@@ -488,13 +499,13 @@ function addPaymentGateway() {
                         <span>Enabled</span>
                     </label>
                 </div>
-                <button type="button" onclick="removePaymentGateway(this)" class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 hover:border-rose-600 px-3 py-1.5 rounded-xl transition-all shadow-xs">
+                <button type="button" onclick="window.removePaymentGateway(this)" class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 hover:border-rose-600 px-3 py-1.5 rounded-xl transition-all shadow-xs">
                     <i class="ph-bold ph-trash"></i>
                     <span>Remove</span>
                 </button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                ${gatewayField(index, 'Gateway Display Name', 'name', 'text', 'Razorpay / UPI / Bank Transfer')}
+                ${window.gatewayField(index, 'Gateway Display Name', 'name', 'text', 'Razorpay / UPI / Bank Transfer')}
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Gateway Processing Type</label>
                     <select name="payment_gateways[${index}][type]" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
@@ -503,12 +514,16 @@ function addPaymentGateway() {
                         <option value="external">External Payment Link</option>
                     </select>
                 </div>
-                ${gatewayField(index, 'Account / Merchant Name', 'account_name', 'text', 'UnlockRentals Pvt Ltd')}
-                ${gatewayField(index, 'Gateway Identifier (UPI / Acc No)', 'identifier', 'text', 'unlockrentals@upi')}
-                ${gatewayField(index, 'Payment Link (Optional)', 'payment_link', 'url', 'https://...')}
-                ${gatewayField(index, 'QR Image URL (Optional)', 'qr_url', 'url', 'https://example.com/payment-qr.png')}
-                ${gatewayField(index, 'Reference Field Prompt', 'reference_label', 'text', 'Transaction ID / UTR Number')}
-                ${gatewayField(index, 'Razorpay Key ID', 'key_id', 'text', 'rzp_test_...')}
+                ${window.gatewayField(index, 'Account / Merchant Name', 'account_name', 'text', 'UnlockRentals Pvt Ltd')}
+                ${window.gatewayField(index, 'Gateway Identifier (UPI / Acc No)', 'identifier', 'text', 'unlockrentals@upi')}
+                ${window.gatewayField(index, 'Payment Link (Optional)', 'payment_link', 'url', 'https://...')}
+                ${window.gatewayField(index, 'QR Image URL (Optional)', 'qr_url', 'url', 'https://example.com/payment-qr.png')}
+                ${window.gatewayField(index, 'Reference Field Prompt', 'reference_label', 'text', 'Transaction ID / UTR Number')}
+                ${window.gatewayField(index, 'Razorpay Key ID', 'key_id', 'text', 'rzp_test_...')}
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Razorpay Key Secret</label>
+                    <input type="password" name="payment_gateways[${index}][key_secret]" placeholder="Only needed for Razorpay" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                </div>
                 <div class="md:col-span-2">
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Checkout Instructions</label>
                     <textarea name="payment_gateways[${index}][instructions]" rows="2" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all" placeholder="Explain to users how to complete the payment and where to find the reference ID."></textarea>
@@ -516,19 +531,13 @@ function addPaymentGateway() {
             </div>
         </div>
     `);
-}
+};
 
-function gatewayField(index, label, key, type, placeholder) {
-    return `
-        <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">${label}</label>
-            <input type="${type}" name="payment_gateways[${index}][${key}]" placeholder="${placeholder}" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-        </div>
-    `;
-}
-
-function removePaymentGateway(button) {
-    button.closest('.payment-gateway-item').remove();
-}
+window.removePaymentGateway = function(button) {
+    const item = button.closest('.payment-gateway-item');
+    if (item) {
+        item.remove();
+    }
+};
 </script>
 @endpush
