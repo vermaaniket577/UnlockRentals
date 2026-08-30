@@ -230,12 +230,15 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        $redirect = $request->input('redirect') ?: $request->headers->get('referer');
-        if (!$redirect || str_contains($redirect, 'dashboard') || str_contains($redirect, 'admin') || str_contains($redirect, 'login') || str_contains($redirect, 'register')) {
-            $redirect = route('home');
+        $redirect = '/';
+        $referer = $request->headers->get('referer');
+        if ($referer && !str_contains($referer, 'dashboard') && !str_contains($referer, 'admin') && !str_contains($referer, 'login') && !str_contains($referer, 'register')) {
+            $parsed = parse_url($referer, PHP_URL_PATH);
+            $query = parse_url($referer, PHP_URL_QUERY);
+            $redirect = ($parsed ?: '/') . ($query ? '?' . $query : '');
         }
 
-        if ($request->wantsJson() || $request->ajax() || $request->header('Accept') === 'application/json') {
+        if ($request->wantsJson() || $request->ajax() || $request->header('Accept') === 'application/json' || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
                 'success' => true,
                 'message' => 'Logged out successfully',

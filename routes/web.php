@@ -268,8 +268,9 @@ Route::middleware('guest')->group(function () {
 |--------------------------------------------------------------------------
 */
 
+Route::match(['GET', 'POST'], '/logout', [AuthController::class, 'logout'])->name('logout');
+
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Inquiries - any authenticated user can send

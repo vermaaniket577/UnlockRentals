@@ -120,12 +120,12 @@
                                 var btn = e ? (e.currentTarget || e.target) : null;
                                 if (btn) {
                                     btn.disabled = true;
-                                    btn.style.opacity = '0.6';
+                                    btn.style.opacity = '0.5';
                                 }
                                 var tokenMeta = document.querySelector('meta[name="csrf-token"]');
                                 var token = tokenMeta ? tokenMeta.getAttribute('content') : '{{ csrf_token() }}';
 
-                                fetch("{{ route('logout') }}", {
+                                fetch('/logout', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
@@ -139,10 +139,19 @@
                                     return res.json().catch(function() { return { redirect: '/' }; });
                                 })
                                 .then(function(data) {
-                                    window.location.replace(data.redirect || '/');
+                                    var target = (data && data.redirect) ? data.redirect : '/';
+                                    if (window.location.pathname.indexOf('dashboard') !== -1 || window.location.pathname.indexOf('admin') !== -1) {
+                                        window.location.replace('/');
+                                    } else {
+                                        window.location.reload();
+                                    }
                                 })
                                 .catch(function() {
-                                    window.location.replace('/');
+                                    if (window.location.pathname.indexOf('dashboard') !== -1 || window.location.pathname.indexOf('admin') !== -1) {
+                                        window.location.replace('/');
+                                    } else {
+                                        window.location.reload();
+                                    }
                                 });
                             };
                         </script>
