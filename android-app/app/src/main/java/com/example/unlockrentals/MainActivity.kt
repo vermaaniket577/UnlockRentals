@@ -186,9 +186,11 @@ class MainActivity : AppCompatActivity() {
             dismissSplash()
         }, 2200)
 
-        // Load the production URL immediately
+        // Load the initial URL or process incoming auth deep link
         val productionUrl = getString(R.string.production_url)
-        webView.loadUrl(productionUrl)
+        if (!handleIncomingUri(intent?.data)) {
+            webView.loadUrl(productionUrl)
+        }
     }
 
     private fun dismissSplash() {
@@ -453,18 +455,34 @@ class MainActivity : AppCompatActivity() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
+    private fun handleIncomingUri(uri: Uri?): Boolean {
+        if (uri == null) return false
+        val scheme = uri.scheme ?: ""
+        val host = uri.host ?: ""
+
+        // Handle custom scheme: unlockrentals://auth/callback?token=XYZ
+        if (scheme == "unlockrentals" && (host == "auth" || uri.path?.contains("callback") == true)) {
+            val token = uri.getQueryParameter("token")
+            if (!token.isNullOrEmpty()) {
+                val loginUrl = "${getString(R.string.production_url)}/auth/token-login?token=$token"
+                webView.loadUrl(loginUrl)
+                return true
+            }
+        }
+
+        // Handle direct deep link / token-login HTTPS URLs
+        if (host.contains("unlockrentals")) {
+            webView.loadUrl(uri.toString())
+            return true
+        }
+
+        return false
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        // When OAuth callback returns via deep link, load the URL in the WebView
-        val data = intent.data
-        if (data != null) {
-            val url = data.toString()
-            val host = data.host ?: ""
-            if (host.contains("unlockrentals")) {
-                webView.loadUrl(url)
-            }
-        }
+        handleIncomingUri(intent.data)
     }
 
     override fun onResume() {

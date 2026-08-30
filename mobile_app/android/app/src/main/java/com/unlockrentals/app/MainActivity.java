@@ -170,8 +170,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Load the live URL
-        webView.loadUrl(APP_URL);
+        // Load the initial URL or handle incoming auth intent
+        if (!handleIncomingUri(getIntent() != null ? getIntent().getData() : null)) {
+            webView.loadUrl(APP_URL);
+        }
+    }
+
+    private boolean handleIncomingUri(Uri uri) {
+        if (uri == null) return false;
+        String scheme = uri.getScheme() != null ? uri.getScheme() : "";
+        String host = uri.getHost() != null ? uri.getHost() : "";
+
+        // Handle custom scheme: unlockrentals://auth/callback?token=XYZ
+        if ("unlockrentals".equalsIgnoreCase(scheme) && ("auth".equalsIgnoreCase(host) || (uri.getPath() != null && uri.getPath().contains("callback")))) {
+            String token = uri.getQueryParameter("token");
+            if (token != null && !token.isEmpty()) {
+                String loginUrl = APP_URL + "/auth/token-login?token=" + token;
+                webView.loadUrl(loginUrl);
+                return true;
+            }
+        }
+
+        // Handle direct deep link / token-login HTTPS URLs
+        if (host.contains("unlockrentals")) {
+            webView.loadUrl(uri.toString());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (intent != null && intent.getData() != null) {
+            handleIncomingUri(intent.getData());
+        }
     }
 
     @Override

@@ -104,12 +104,36 @@ class AuthController extends Controller
             }
         }
 
-        // Use inline JS redirect instead of HTTP 302 to stay inside Android WebView
-        // HTTP 302 with full domain URLs triggers Android intent filters and opens Chrome
-        $userName = e($user->name);
-        return response("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Welcome</title></head><body><script>window.location.replace(" . json_encode($redirectPath) . ");</script><noscript><meta http-equiv='refresh' content='0;url=" . e($redirectPath) . "'></noscript><p>Redirecting...</p></body></html>", 200)
-            ->header('Content-Type', 'text/html')
+        // Generate a secure one-time app handoff token valid for 5 minutes
+        $loginToken = Str::random(48);
+        \Illuminate\Support\Facades\Cache::put('app_auth_token_' . $loginToken, [
+            'user_id' => $user->id,
+            'redirect' => $redirectPath,
+        ], 300);
+
+        return response()
+            ->view('auth.social-callback', compact('user', 'loginToken', 'redirectPath'))
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+
+    /**
+     * Authenticate mobile application via secure one-time auth token.
+     */
+    public function loginWithToken(Request $request)
+    {
+        $token = $request->query('token');
+        if ($token && ($payload = \Illuminate\Support\Facades\Cache::pull('app_auth_token_' . $token))) {
+            $userId = is_array($payload) ? ($payload['user_id'] ?? null) : $payload;
+            $redirect = is_array($payload) ? ($payload['redirect'] ?? '/') : '/';
+
+            if ($userId && ($user = User::find($userId))) {
+                Auth::login($user, true);
+                $request->session()->regenerate();
+                return redirect($redirect)->with('success', 'Welcome, ' . $user->name . '!');
+            }
+        }
+
+        return redirect('/')->with('error', 'Session expired or invalid login token.');
     }
 
     /**

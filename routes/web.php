@@ -260,6 +260,7 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/{provider}', [AuthController::class, 'redirectToProvider'])->name('social.redirect');
     Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
     Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->name('social.callback');
+    Route::get('auth/token-login', [AuthController::class, 'loginWithToken'])->name('auth.token-login');
 });
 
 /*
