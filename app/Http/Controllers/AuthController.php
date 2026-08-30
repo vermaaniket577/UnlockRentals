@@ -92,6 +92,7 @@ class AuthController extends Controller
             Auth::login($user, true);
         }
 
+        $request = request();
         $targetUrl = session()->pull('url.intended');
         if ($user->isAdmin()) {
             $redirectPath = '/admin';
@@ -104,16 +105,23 @@ class AuthController extends Controller
             }
         }
 
-        // Generate a secure one-time app handoff token valid for 5 minutes
-        $loginToken = Str::random(48);
-        \Illuminate\Support\Facades\Cache::put('app_auth_token_' . $loginToken, [
-            'user_id' => $user->id,
-            'redirect' => $redirectPath,
-        ], 300);
+        $request->session()->regenerate();
 
-        return response()
-            ->view('auth.social-callback', compact('user', 'loginToken', 'redirectPath'))
-            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+        // If explicitly requested from the native mobile app via app parameter
+        if ($request->query('app') === '1' || session('is_mobile_app')) {
+            $loginToken = Str::random(48);
+            \Illuminate\Support\Facades\Cache::put('app_auth_token_' . $loginToken, [
+                'user_id' => $user->id,
+                'redirect' => $redirectPath,
+            ], 300);
+
+            return response()
+                ->view('auth.social-callback', compact('user', 'loginToken', 'redirectPath'))
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+        }
+
+        // Direct website redirect
+        return redirect($redirectPath)->with('success', 'Welcome, ' . $user->name . '!');
     }
 
     /**
