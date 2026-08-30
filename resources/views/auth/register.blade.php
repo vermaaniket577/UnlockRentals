@@ -38,54 +38,7 @@
                     <input type="hidden" name="redirect" value="{{ $targetRedirect }}">
                 @endif
 
-                {{-- Role Selection (Tenant vs Owner) --}}
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">
-                        I want to
-                    </label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <label class="relative group cursor-pointer">
-                            <input type="radio" name="role" value="tenant" {{ old('role', 'tenant') === 'tenant' ? 'checked' : '' }}
-                                   class="sr-only peer" id="register-role-tenant">
-                            <div class="relative p-3.5 sm:p-4 bg-slate-50/80 dark:bg-slate-800/50 border-2 border-slate-200 dark:border-slate-700 rounded-2xl text-center
-                                        peer-checked:border-blue-600 peer-checked:bg-blue-50/60 dark:peer-checked:bg-blue-950/30 dark:peer-checked:border-blue-500
-                                        hover:border-slate-300 dark:hover:border-slate-600
-                                        transition-all duration-200">
-                                <div class="w-9 h-9 mx-auto mb-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-xs">
-                                    <i class="ph-bold ph-compass text-lg text-blue-600 dark:text-blue-400"></i>
-                                </div>
-                                <p class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Find a Rental</p>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Browse as Tenant</p>
-                            </div>
-                            <div class="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-blue-600 text-white items-center justify-center hidden peer-checked:flex shadow-xs">
-                                <i class="ph-bold ph-check text-xs"></i>
-                            </div>
-                        </label>
-
-                        <label class="relative group cursor-pointer">
-                            <input type="radio" name="role" value="owner" {{ old('role') === 'owner' ? 'checked' : '' }}
-                                   class="sr-only peer" id="register-role-owner">
-                            <div class="relative p-3.5 sm:p-4 bg-slate-50/80 dark:bg-slate-800/50 border-2 border-slate-200 dark:border-slate-700 rounded-2xl text-center
-                                        peer-checked:border-blue-600 peer-checked:bg-blue-50/60 dark:peer-checked:bg-blue-950/30 dark:peer-checked:border-blue-500
-                                        hover:border-slate-300 dark:hover:border-slate-600
-                                        transition-all duration-200">
-                                <div class="w-9 h-9 mx-auto mb-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-xs">
-                                    <i class="ph-bold ph-buildings text-lg text-blue-600 dark:text-blue-400"></i>
-                                </div>
-                                <p class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">List Property</p>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Post as Owner</p>
-                            </div>
-                            <div class="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-blue-600 text-white items-center justify-center hidden peer-checked:flex shadow-xs">
-                                <i class="ph-bold ph-check text-xs"></i>
-                            </div>
-                        </label>
-                    </div>
-                    @error('role')
-                        <p class="text-rose-600 dark:text-rose-400 text-xs font-semibold mt-1.5 flex items-center gap-1">
-                            <i class="ph-bold ph-warning text-xs"></i> {{ $message }}
-                        </p>
-                    @enderror
-                </div>
+                <input type="hidden" name="role" value="tenant">
 
                 {{-- Two columns: Name + Phone --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
