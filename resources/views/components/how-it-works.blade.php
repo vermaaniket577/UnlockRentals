@@ -3,25 +3,30 @@
      ============================================================ --}}
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 .ur-how {
-    padding: 10rem 0;
+    padding: 5rem 0 4rem;
     background: #ffffff;
     position: relative;
     overflow: hidden;
     font-family: 'Outfit', 'Inter', sans-serif;
+    transition: background-color 0.3s ease;
+}
+:is(.dark .ur-how) {
+    background: #090d16;
 }
 
 /* Background elements */
 .ur-how__blob {
     position: absolute;
-    width: 50rem;
-    height: 50rem;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+    width: 35rem;
+    height: 35rem;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
     border-radius: 50%;
     filter: blur(80px);
     z-index: 0;
+    pointer-events: none;
 }
 .ur-how__blob--1 { top: -10%; left: 0; transform: translateX(-20%); }
 .ur-how__blob--2 { bottom: -10%; right: 0; transform: translateX(20%); }
@@ -29,17 +34,22 @@
 .ur-how__grid-bg {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(#e5e7eb 0.5px, transparent 0.5px);
-    background-size: 40px 40px;
-    opacity: 0.2;
+    background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
+    background-size: 32px 32px;
+    opacity: 0.35;
     mask-image: radial-gradient(circle at center, black, transparent 80%);
     z-index: 1;
+    pointer-events: none;
+}
+:is(.dark .ur-how__grid-bg) {
+    background-image: radial-gradient(#1e293b 0.5px, transparent 0.5px);
+    opacity: 0.2;
 }
 
 .ur-how__container {
-    max-width: 80rem;
+    max-width: 76rem;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 1.25rem;
     position: relative;
     z-index: 10;
 }
@@ -47,35 +57,44 @@
 /* ─── HEADER ────────────────────────────── */
 .ur-how__header {
     text-align: center;
-    max-width: 50rem;
-    margin: 0 auto 8rem;
+    max-width: 42rem;
+    margin: 0 auto 3.25rem;
 }
 
 .ur-how__badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    gap: 0.4rem;
+    padding: 0.35rem 0.85rem;
     background-color: #eff6ff;
     color: #2563eb;
+    border: 1px solid rgba(37, 99, 235, 0.12);
     border-radius: 9999px;
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    margin-bottom: 2rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.85rem;
+}
+:is(.dark .ur-how__badge) {
+    background-color: rgba(37, 99, 235, 0.15);
+    color: #60a5fa;
+    border-color: rgba(37, 99, 235, 0.3);
 }
 
 .ur-how__title {
-    font-size: 3rem;
+    font-size: 2.25rem;
     font-weight: 900;
     color: #0f172a;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+}
+:is(.dark .ur-how__title) {
+    color: #f8fafc;
 }
 
 @media (min-width: 768px) {
-    .ur-how__title { font-size: 4.5rem; }
+    .ur-how__title { font-size: 3.25rem; }
 }
 
 .ur-how__title span {
@@ -88,14 +107,19 @@
 .ur-how__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 4rem;
+    gap: 1.25rem;
     position: relative;
 }
 
+@media (min-width: 640px) {
+    .ur-how__grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+}
 @media (min-width: 1024px) {
     .ur-how__grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 3rem;
+        gap: 2rem;
     }
 }
 
@@ -103,12 +127,15 @@
 .ur-how__line {
     display: none;
     position: absolute;
-    top: 4rem;
-    left: 12%;
-    right: 12%;
+    top: 3.5rem;
+    left: 15%;
+    right: 15%;
     height: 2px;
     background: linear-gradient(to right, transparent, #e2e8f0 20%, #e2e8f0 80%, transparent);
     z-index: 0;
+}
+:is(.dark .ur-how__line) {
+    background: linear-gradient(to right, transparent, #334155 20%, #334155 80%, transparent);
 }
 
 .ur-how__line-progress {
@@ -117,12 +144,12 @@
     background: linear-gradient(90deg, #2563eb, #6366f1);
     transform-origin: left;
     transform: scaleX(0);
-    transition: transform 1.5s ease;
+    transition: transform 1.2s ease;
 }
 
 .ur-how:hover .ur-how__line-progress { transform: scaleX(1); }
 
-@media (min-width: 1024px) {
+@media (min-width: 640px) {
     .ur-how__line { display: block; }
 }
 
@@ -134,46 +161,69 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 1.5rem;
+    padding: 1.75rem 1.25rem;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+:is(.dark .ur-how__step) {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(51, 65, 85, 0.5);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+}
+
+.ur-how__step:hover {
+    transform: translateY(-6px);
+    border-color: rgba(37, 99, 235, 0.25);
+    box-shadow: 0 16px 36px -4px rgba(37, 99, 235, 0.12);
+}
+:is(.dark .ur-how__step:hover) {
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5);
 }
 
 .ur-how__icon-wrap {
     position: relative;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .ur-how__icon-box {
-    width: 8rem;
-    height: 8rem;
-    background: #ffffff;
-    border: 2px solid #e2e8f0;
-    border-radius: 2.25rem;
+    width: 4.5rem;
+    height: 4.5rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 1.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
-    box-shadow: 
-        0 8px 24px rgba(37, 99, 235, 0.08),
-        0 2px 8px rgba(0, 0, 0, 0.04);
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 0.75rem;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+:is(.dark .ur-how__icon-box) {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(71, 85, 105, 0.5);
 }
 
 .ur-how__step:hover .ur-how__icon-box {
-    transform: translateY(-10px) rotate(5deg);
-    background: #0f172a;
-    border-color: #0f172a;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+    transform: scale(1.08) rotate(3deg);
+    background: #2563eb;
+    border-color: #2563eb;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
 }
 
 .ur-how__icon-box svg {
-    width: 64px !important;
-    height: 64px !important;
-    transition: all 0.4s ease;
+    width: 36px !important;
+    height: 36px !important;
+    transition: all 0.3s ease;
     display: block;
 }
 
 .ur-how__icon-box svg path {
     fill: #2563eb;
-    transition: fill 0.4s ease;
+    transition: fill 0.3s ease;
 }
 
 .ur-how__step:hover .ur-how__icon-box svg path {
@@ -181,9 +231,9 @@
 }
 
 .ur-how__icon-box i {
-    font-size: 3.5rem;
+    font-size: 2rem;
     color: #2563eb;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
 }
 
 .ur-how__step:hover .ur-how__icon-box i {
@@ -191,74 +241,121 @@
 }
 
 .ur-how__icon-svg {
-    width: 64px !important;
-    height: 64px !important;
+    width: 36px !important;
+    height: 36px !important;
     object-fit: contain;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
     display: block;
-    mix-blend-mode: multiply;
 }
 
 .ur-how__step:hover .ur-how__icon-svg {
-    filter: invert(1) grayscale(1) brightness(200%);
-    mix-blend-mode: screen;
+    filter: brightness(0) invert(1);
     transform: scale(1.05);
 }
 
 .ur-how__number {
     position: absolute;
-    top: -0.75rem;
-    right: -0.75rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    top: -0.45rem;
+    right: -0.45rem;
+    width: 1.65rem;
+    height: 1.65rem;
     background: #2563eb;
     color: #ffffff;
-    border: 4px solid #ffffff;
+    border: 2.5px solid #ffffff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.875rem;
-    font-weight: 800;
-    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+    font-size: 0.6875rem;
+    font-weight: 900;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+}
+:is(.dark .ur-how__number) {
+    border-color: #0f172a;
 }
 
 .ur-how__s-title {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #0f172a;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
     letter-spacing: -0.02em;
+    transition: color 0.2s ease;
+}
+:is(.dark .ur-how__s-title) {
+    color: #f8fafc;
 }
 
 .ur-how__s-desc {
-    font-size: 1.125rem;
+    font-size: 0.875rem;
     color: #64748b;
-    line-height: 1.6;
+    line-height: 1.5;
     font-weight: 400;
-    max-width: 20rem;
+    max-width: 18rem;
+}
+:is(.dark .ur-how__s-desc) {
+    color: #94a3b8;
 }
 
 .ur-how__step:hover .ur-how__s-title { color: #2563eb; }
+:is(.dark .ur-how__step:hover .ur-how__s-title) { color: #60a5fa; }
 
-/* Glowing point underneath */
-.ur-how__point {
-    position: absolute;
-    bottom: -1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0.5rem;
-    height: 0.5rem;
-    background: #2563eb;
-    border-radius: 50%;
-    opacity: 0;
-    transition: all 0.3s;
-}
-
-.ur-how__step:hover .ur-how__point {
-    opacity: 1;
-    transform: translateX(-50%) translateY(10px);
-    box-shadow: 0 0 15px #2563eb;
+/* ─── MOBILE RESPONSIVE OPTIMIZATIONS ───── */
+@media (max-width: 768px) {
+    .ur-how {
+        padding: 3rem 0 2.5rem;
+    }
+    .ur-how__header {
+        margin: 0 auto 1.75rem;
+    }
+    .ur-how__badge {
+        font-size: 0.625rem;
+        padding: 0.3rem 0.75rem;
+        margin-bottom: 0.6rem;
+    }
+    .ur-how__title {
+        font-size: 1.75rem;
+        line-height: 1.2;
+    }
+    .ur-how__grid {
+        gap: 1rem;
+    }
+    .ur-how__step {
+        padding: 1.25rem 1rem;
+        border-radius: 1.25rem;
+    }
+    .ur-how__icon-wrap {
+        margin-bottom: 0.85rem;
+    }
+    .ur-how__icon-box {
+        width: 3.75rem;
+        height: 3.75rem;
+        border-radius: 1rem;
+        padding: 0.6rem;
+    }
+    .ur-how__icon-box svg, .ur-how__icon-svg {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    .ur-how__icon-box i {
+        font-size: 1.65rem;
+    }
+    .ur-how__number {
+        width: 1.45rem;
+        height: 1.45rem;
+        font-size: 0.625rem;
+        top: -0.35rem;
+        right: -0.35rem;
+    }
+    .ur-how__s-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.35rem;
+    }
+    .ur-how__s-desc {
+        font-size: 0.8125rem;
+        line-height: 1.45;
+        max-width: 100%;
+    }
 }
 </style>
 
@@ -325,7 +422,7 @@
                             @if(str_starts_with(trim($step->icon_svg), '<svg'))
                                 {!! $step->icon_svg !!}
                             @elseif(Str::endsWith($step->icon_svg, ['.png', '.jpg', '.jpeg', '.gif', '.svg']) || str_contains($step->icon_svg, '/'))
-                                <img class="ur-how__icon-svg" src="{{ asset($step->icon_svg) }}" alt="{{ $step->title }}" title="{{ $step->title }}" width="64" height="64">
+                                <img class="ur-how__icon-svg" src="{{ asset($step->icon_svg) }}" alt="{{ $step->title }}" title="{{ $step->title }}" width="36" height="36">
                             @elseif($step->icon_svg)
                                 <i class="{{ $step->icon_svg }}"></i>
                             @else
@@ -333,7 +430,6 @@
                             @endif
                         </div>
                         <span class="ur-how__number">{{ $step->step_number ?? sprintf('%02d', $index + 1) }}</span>
-                        <div class="ur-how__point"></div>
                     </div>
                     <h3 class="ur-how__s-title">{{ $step->title }}</h3>
                     <p class="ur-how__s-desc">{{ $step->description }}</p>
@@ -341,8 +437,8 @@
             @endforeach
         </div>
 
-        <div style="text-align: center; margin-top: 4rem;">
-            <a href="{{ url('/how-it-works') }}" class="btn-explore-premium" style="display: inline-flex; align-items: center; gap: 8px;" title="Explore Full Process Flow &amp; FAQs">
+        <div style="text-align: center; margin-top: 2.75rem;">
+            <a href="{{ url('/how-it-works') }}" class="btn-explore-premium" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.875rem; padding: 0.75rem 1.5rem; border-radius: 9999px;" title="Explore Full Process Flow &amp; FAQs">
                 <span>Explore Full Process Flow & FAQs</span>
                 <i class="ph-bold ph-arrow-right"></i>
             </a>
@@ -350,3 +446,4 @@
 
     </div>
 </section>
+
