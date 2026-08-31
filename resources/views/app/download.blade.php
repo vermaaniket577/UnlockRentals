@@ -507,7 +507,7 @@
 
             <div class="app-dl-stores">
                 <!-- Google Play -->
-                <a href="{{ $site_settings['app_google_play_url'] ?? '#' }}" target="_blank" class="app-dl-store-btn" id="googlePlayBtn" title="Get it on Google Play">
+                <a href="{{ (!empty($site_settings['app_google_play_url']) && $site_settings['app_google_play_url'] !== '#') ? $site_settings['app_google_play_url'] : route('app.download.apk') }}" target="_blank" class="app-dl-store-btn" id="googlePlayBtn" title="Get it on Google Play">
                     <div class="app-dl-store-btn__icon">
                         <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <path d="M32.5 17.5C29.6 20.3 28 24.4 28 29.5v453c0 5.1 1.6 9.2 4.5 12l1.5 1.5L257 273v-6l-223-251-1.5 1.5z" fill="#00a3ff"/>
@@ -523,7 +523,7 @@
                 </a>
 
                 <!-- App Store -->
-                <a href="{{ $site_settings['app_store_url'] ?? '#' }}" target="_blank" class="app-dl-store-btn" id="appStoreBtn" title="Download on the App Store">
+                <a href="{{ (!empty($site_settings['app_store_url']) && $site_settings['app_store_url'] !== '#') ? $site_settings['app_store_url'] : route('app.download') }}" target="_blank" class="app-dl-store-btn" id="appStoreBtn" title="Download on the App Store">
                     <div class="app-dl-store-btn__icon">
                         <svg viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
                             <path fill="currentColor" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-31.4-57.3-114.3-1.7-114.3-1.4 0-1.4 0 0 0zm-7.9-167.2c31.7-36.7 22.1-85 21.6-86.3-4.2.3-51.4 14.4-83.6 51.8-29.8 35.8-22.6 78.4-20.1 82.6 4.3.4 50.4-11.4 82.1-48.1z"/>
@@ -536,7 +536,7 @@
                 </a>
 
                 <!-- Indus Appstore -->
-                <a href="{{ $site_settings['app_indus_appstore_url'] ?? 'https://www.indusappstore.com' }}" target="_blank" class="app-dl-store-btn" id="indusAppstoreBtn" title="Available on Indus Appstore">
+                <a href="{{ (!empty($site_settings['app_indus_appstore_url']) && $site_settings['app_indus_appstore_url'] !== '#') ? $site_settings['app_indus_appstore_url'] : 'https://www.indusappstore.com' }}" target="_blank" class="app-dl-store-btn" id="indusAppstoreBtn" title="Available on Indus Appstore">
                     <div class="app-dl-store-btn__icon">
                         <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <defs>
