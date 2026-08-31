@@ -1630,30 +1630,135 @@
                 }
             @endphp
 
-            {{-- Testimonial Carousel (Horizontal Scroll on Mobile, Grid on Desktop) --}}
-            <div class="flex overflow-x-auto snap-x snap-mandatory gap-3.5 pb-3 sm:pb-0 sm:grid sm:grid-cols-3 sm:gap-6 no-scrollbar pt-2 px-1" style="-webkit-overflow-scrolling: touch;">
-                @foreach($displayTestimonials as $t)
-                    <div class="w-[270px] sm:w-auto shrink-0 snap-center p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="text-amber-400 text-sm sm:text-base mb-2 tracking-wide flex items-center">
-                                @for($i = 0; $i < $t['stars']; $i++)★@endfor
+            @php
+                $marqueeCards = array_merge($displayTestimonials, $displayTestimonials);
+            @endphp
+
+            <style>
+                .ur-testimonials-marquee-container {
+                    display: flex;
+                    overflow: hidden;
+                    user-select: none;
+                    gap: 1rem;
+                    position: relative;
+                    width: 100%;
+                    padding: 0.5rem 0 1rem;
+                    -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+                    mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+                }
+
+                .ur-testimonials-marquee-content {
+                    flex-shrink: 0;
+                    display: flex;
+                    align-items: stretch;
+                    gap: 1rem;
+                    min-width: 100%;
+                    animation: urMarqueeScroll 28s linear infinite;
+                    will-change: transform;
+                }
+
+                @keyframes urMarqueeScroll {
+                    0% {
+                        transform: translateX(0);
+                    }
+                    100% {
+                        transform: translateX(calc(-100% - 1rem));
+                    }
+                }
+
+                .ur-testimonials-marquee-container:hover .ur-testimonials-marquee-content,
+                .ur-testimonials-marquee-container:active .ur-testimonials-marquee-content,
+                .ur-testimonials-marquee-container.is-paused .ur-testimonials-marquee-content {
+                    animation-play-state: paused;
+                }
+
+                @media (max-width: 640px) {
+                    .ur-testimonials-marquee-container {
+                        gap: 0.75rem;
+                    }
+                    .ur-testimonials-marquee-content {
+                        gap: 0.75rem;
+                        animation-duration: 20s;
+                    }
+                    @keyframes urMarqueeScroll {
+                        0% {
+                            transform: translateX(0);
+                        }
+                        100% {
+                            transform: translateX(calc(-100% - 0.75rem));
+                        }
+                    }
+                }
+            </style>
+
+            {{-- Testimonial Marquee (Infinite Auto-Scroll Right to Left with Pause on Touch) --}}
+            <div class="ur-testimonials-marquee-container" id="testimonialsMarquee" aria-label="Customer Reviews">
+                {{-- Track 1 --}}
+                <div class="ur-testimonials-marquee-content">
+                    @foreach($marqueeCards as $t)
+                        <div class="w-[270px] sm:w-[310px] shrink-0 p-4 sm:p-5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                            <div>
+                                <div class="text-amber-400 text-sm sm:text-base mb-2 tracking-wide flex items-center">
+                                    @for($i = 0; $i < $t['stars']; $i++)★@endfor
+                                </div>
+                                <p class="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 italic line-clamp-3 mb-4 leading-relaxed">
+                                    {{ $t['quote'] }}
+                                </p>
                             </div>
-                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic line-clamp-3 mb-4 leading-relaxed">
-                                {{ $t['quote'] }}
-                            </p>
-                        </div>
-                        <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
-                            <img src="{{ $t['image'] }}" alt="{{ $t['author'] }}" title="{{ $t['author'] }}"
-                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($t['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
-                                 class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-blue-500/20 shadow-xs">
-                            <div class="min-w-0">
-                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">{{ $t['author'] }}</h3>
-                                <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold block truncate">{{ $t['role'] }}</span>
+                            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
+                                <img src="{{ $t['image'] }}" alt="{{ $t['author'] }}" title="{{ $t['author'] }}"
+                                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($t['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
+                                     class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-blue-500/20 shadow-xs">
+                                <div class="min-w-0">
+                                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">{{ $t['author'] }}</h3>
+                                    <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold block truncate">{{ $t['role'] }}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
+
+                {{-- Track 2 (Duplicate for Seamless Infinite Loop) --}}
+                <div class="ur-testimonials-marquee-content" aria-hidden="true">
+                    @foreach($marqueeCards as $t)
+                        <div class="w-[270px] sm:w-[310px] shrink-0 p-4 sm:p-5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                            <div>
+                                <div class="text-amber-400 text-sm sm:text-base mb-2 tracking-wide flex items-center">
+                                    @for($i = 0; $i < $t['stars']; $i++)★@endfor
+                                </div>
+                                <p class="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 italic line-clamp-3 mb-4 leading-relaxed">
+                                    {{ $t['quote'] }}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
+                                <img src="{{ $t['image'] }}" alt="{{ $t['author'] }}" title="{{ $t['author'] }}"
+                                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($t['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
+                                     class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-blue-500/20 shadow-xs">
+                                <div class="min-w-0">
+                                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">{{ $t['author'] }}</h3>
+                                    <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold block truncate">{{ $t['role'] }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
+
+            <script>
+                (function() {
+                    const marquee = document.getElementById('testimonialsMarquee');
+                    if (marquee) {
+                        marquee.addEventListener('touchstart', function() {
+                            marquee.classList.add('is-paused');
+                        }, { passive: true });
+                        marquee.addEventListener('touchend', function() {
+                            setTimeout(function() {
+                                marquee.classList.remove('is-paused');
+                            }, 1200);
+                        }, { passive: true });
+                    }
+                })();
+            </script>
         </div>
     </section>
 
