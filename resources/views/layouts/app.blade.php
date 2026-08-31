@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth" itemscope itemtype="https://schema.org/WebPage">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7LQ1PB17L"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-T7LQ1PB17L');
+    </script>
     <script>
         (function () {
             if (localStorage.getItem('ur-theme') === 'dark') {
