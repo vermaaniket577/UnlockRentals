@@ -181,9 +181,21 @@ Route::get('/process', function () {
     return redirect()->route('how-it-works');
 })->name('process');
 
-// Dynamic Sitemap Route
+// Interactive HTML Site Map Page (User & Crawler Hub)
+Route::get('/sitemap', function () {
+    $properties = \App\Models\Property::approved()->with('primaryImage')->latest('updated_at')->take(48)->get();
+    $blogs = \Illuminate\Support\Facades\Schema::hasTable('blogs') ? \App\Models\Blog::published()->latest('updated_at')->take(12)->get() : collect();
+    $programmaticUrls = \App\Http\Controllers\SeoController::getProgrammaticUrls();
+
+    return view('sitemap-html', compact('properties', 'blogs', 'programmaticUrls'));
+})->name('sitemap.html');
+Route::get('/site-map', function () {
+    return redirect()->route('sitemap.html');
+});
+
+// Dynamic XML Sitemap Route (Search Engine Crawler Compliant)
 Route::get('/sitemap.xml', function () {
-    $properties = \App\Models\Property::approved()->latest('updated_at')->get();
+    $properties = \App\Models\Property::approved()->with('primaryImage')->latest('updated_at')->get();
     $programmaticUrls = \App\Http\Controllers\SeoController::getProgrammaticUrls();
     
     // Curated blogs from database
@@ -196,8 +208,9 @@ Route::get('/sitemap.xml', function () {
         'programmaticUrls' => $programmaticUrls,
         'blogs' => $blogs,
         'baseUrl' => $baseUrl
-    ])->header('Content-Type', 'text/xml');
-});
+    ])->header('Content-Type', 'application/xml; charset=UTF-8')
+      ->header('Cache-Control', 'public, max-age=3600');
+})->name('sitemap.xml');
 
 // App Download Landing Page
 Route::get('/app', function () {
@@ -697,6 +710,8 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
 // Legal & Compliance Pages
 Route::view('/privacy-policy', 'privacy')->name('privacy');
 Route::view('/privacy', 'privacy');
+Route::view('/terms-and-conditions', 'terms')->name('terms');
+Route::view('/terms', 'terms');
 
 // Dynamic Catch-All Route for Programmatic SEO Pages
 Route::get('/{seo_slug}', [\App\Http\Controllers\SeoController::class, 'handle'])->name('seo.landing');

@@ -418,6 +418,34 @@
                             <span class="ur-store-badge__title" style="font-size: 14px;">App Store</span>
                         </div>
                     </a>
+                    <a href="{{ $site_settings['app_indus_appstore_url'] ?? 'https://www.indusappstore.com' }}" target="_blank" class="ur-store-badge" style="min-width: 150px; padding: 6px 14px; border-radius: 8px;" title="Available on Indus Appstore">
+                        <div class="ur-store-badge__icon" style="width: 20px; height: 20px;">
+                            <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="indusOrbGradFoot" x1="50%" y1="0%" x2="50%" y2="100%">
+                                        <stop offset="0%" stop-color="#FFB300" />
+                                        <stop offset="100%" stop-color="#FF5400" />
+                                    </linearGradient>
+                                    <linearGradient id="indusMidChevFoot" x1="50%" y1="0%" x2="50%" y2="100%">
+                                        <stop offset="0%" stop-color="#FF5400" />
+                                        <stop offset="100%" stop-color="#E8165B" />
+                                    </linearGradient>
+                                    <linearGradient id="indusBotChevFoot" x1="50%" y1="0%" x2="50%" y2="100%">
+                                        <stop offset="0%" stop-color="#E8165B" />
+                                        <stop offset="100%" stop-color="#D0006F" />
+                                    </linearGradient>
+                                </defs>
+                                <rect width="512" height="512" rx="128" fill="#051030" />
+                                <circle cx="256" cy="152" r="56" fill="url(#indusOrbGradFoot)" />
+                                <path d="M186 210 L256 256 L326 210 L326 268 L256 314 L186 268 Z" fill="url(#indusMidChevFoot)" />
+                                <path d="M186 288 L256 334 L326 288 L326 346 L256 392 L186 346 Z" fill="url(#indusBotChevFoot)" />
+                            </svg>
+                        </div>
+                        <div class="ur-store-badge__content">
+                            <span class="ur-store-badge__label" style="font-size: 8px;">Get it on</span>
+                            <span class="ur-store-badge__title" style="font-size: 14px;">Indus Appstore</span>
+                        </div>
+                    </a>
                 </div>
             </div>
 
@@ -447,6 +475,12 @@
                         <a href="{{ url('/blog') }}" class="ur-footer__nav-link" title="Blog &amp; Guides">
                             <i class="ph ph-newspaper"></i>
                             Blog & Guides
+                        </a>
+                    </li>
+                    <li class="ur-footer__nav-item">
+                        <a href="{{ url('/sitemap') }}" class="ur-footer__nav-link" title="Full Site Map">
+                            <i class="ph ph-tree-structure"></i>
+                            Site Map Directory
                         </a>
                     </li>
                 </ul>
@@ -506,10 +540,10 @@
         {{-- ─── BOTTOM BAR ───────────────────────── --}}
         <div class="ur-footer__bottom">
             <div class="ur-footer__legal">
-                <a href="#" class="ur-footer__legal-link" title="Privacy">Privacy</a>
-                <a href="#" class="ur-footer__legal-link" title="Terms">Terms</a>
-                <a href="#" class="ur-footer__legal-link" title="Cookie Policy">Cookie Policy</a>
-                <a href="#" class="ur-footer__legal-link" title="Security">Security</a>
+                <a href="{{ route('privacy') }}" class="ur-footer__legal-link" title="Privacy Policy">Privacy Policy</a>
+                <a href="{{ route('terms') }}" class="ur-footer__legal-link" title="Terms & Conditions">Terms & Conditions</a>
+                <a href="{{ url('/sitemap') }}" class="ur-footer__legal-link" title="HTML Site Map">Site Map</a>
+                <a href="{{ url('/sitemap.xml') }}" target="_blank" class="ur-footer__legal-link" title="XML Sitemap">XML Sitemap</a>
             </div>
             
             <div class="ur-footer__copyright">

@@ -15,15 +15,15 @@
     <title>Download UnlockRentals App - Android & iOS</title>
     <meta name="description" content="Download the UnlockRentals app for Android and iOS. Find verified rental properties, PG stays, and shops across India on your mobile device.">
     {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
-    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon.png') }}">
-    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon.png') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/icons/icon-192x192.png') }}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/icon-192x192.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-192x192.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20260831">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20260831">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48x48.png') }}?v=20260831">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon-96x96.png') }}?v=20260831">
+    <link rel="icon" type="image/png" sizes="144x144" href="{{ asset('favicon-144x144.png') }}?v=20260831">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192x192.png') }}?v=20260831">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('favicon-512x512.png') }}?v=20260831">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=20260831">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ asset('apple-touch-icon-precomposed.png') }}?v=20260831">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -532,6 +532,36 @@
                     <div class="app-dl-store-btn__text">
                         <span class="app-dl-store-btn__label">Download on the</span>
                         <span class="app-dl-store-btn__name">App Store</span>
+                    </div>
+                </a>
+
+                <!-- Indus Appstore -->
+                <a href="{{ $site_settings['app_indus_appstore_url'] ?? 'https://www.indusappstore.com' }}" target="_blank" class="app-dl-store-btn" id="indusAppstoreBtn" title="Available on Indus Appstore">
+                    <div class="app-dl-store-btn__icon">
+                        <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="indusOrbGradDl" x1="50%" y1="0%" x2="50%" y2="100%">
+                                    <stop offset="0%" stop-color="#FFB300" />
+                                    <stop offset="100%" stop-color="#FF5400" />
+                                </linearGradient>
+                                <linearGradient id="indusMidChevDl" x1="50%" y1="0%" x2="50%" y2="100%">
+                                    <stop offset="0%" stop-color="#FF5400" />
+                                    <stop offset="100%" stop-color="#E8165B" />
+                                </linearGradient>
+                                <linearGradient id="indusBotChevDl" x1="50%" y1="0%" x2="50%" y2="100%">
+                                    <stop offset="0%" stop-color="#E8165B" />
+                                    <stop offset="100%" stop-color="#D0006F" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="512" height="512" rx="128" fill="#051030" />
+                            <circle cx="256" cy="152" r="56" fill="url(#indusOrbGradDl)" />
+                            <path d="M186 210 L256 256 L326 210 L326 268 L256 314 L186 268 Z" fill="url(#indusMidChevDl)" />
+                            <path d="M186 288 L256 334 L326 288 L326 346 L256 392 L186 346 Z" fill="url(#indusBotChevDl)" />
+                        </svg>
+                    </div>
+                    <div class="app-dl-store-btn__text">
+                        <span class="app-dl-store-btn__label">GET IT ON</span>
+                        <span class="app-dl-store-btn__name">Indus Appstore</span>
                     </div>
                 </a>
             </div>

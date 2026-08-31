@@ -1,14 +1,39 @@
 User-agent: *
 Allow: /
+Allow: /favicon.ico
+Allow: /favicon.png
+Allow: /favicon-*.png
+Allow: /apple-touch-icon*.png
+Allow: /images/
+Allow: /css/
+Allow: /js/
+Allow: /sitemap.xml
+Allow: /sitemap
+
+# Specific directives for Google Search Bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /storage/
+Allow: /property-image/
+
+User-agent: Googlebot-Favicon
+Allow: /favicon.ico
+Allow: /favicon.png
+Allow: /favicon-*.png
+Allow: /apple-touch-icon*.png
+Allow: /images/
 
 # Disallow private, auth, and non-content endpoints from crawling
+User-agent: *
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /inquiries/
 Disallow: /login
 Disallow: /register
 Disallow: /password/
-Disallow: /property-image/
 Disallow: /chatbot/
 Disallow: /feedback
 Disallow: /api/
@@ -19,4 +44,5 @@ Disallow: /payment/
 
 # Crawl Delay & Sitemap
 Sitemap: https://www.unlockrentals.com/sitemap.xml
+
 

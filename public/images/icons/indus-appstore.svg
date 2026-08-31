@@ -1,0 +1,33 @@
+<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Top Glowing Orb Gradient (Sun Amber to Vibrant Orange) -->
+    <linearGradient id="indusOrbGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#FFB300" />
+      <stop offset="100%" stop-color="#FF5400" />
+    </linearGradient>
+
+    <!-- Middle Chevron Gradient (Orange to Coral Red) -->
+    <linearGradient id="indusMidChev" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#FF5400" />
+      <stop offset="100%" stop-color="#E8165B" />
+    </linearGradient>
+
+    <!-- Bottom Chevron Gradient (Coral Red to Magenta/Fuchsia) -->
+    <linearGradient id="indusBotChev" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#E8165B" />
+      <stop offset="100%" stop-color="#D0006F" />
+    </linearGradient>
+  </defs>
+
+  <!-- Deep Navy Rounded Container -->
+  <rect width="512" height="512" rx="128" fill="#051030" />
+
+  <!-- Top Orb / Sun -->
+  <circle cx="256" cy="152" r="56" fill="url(#indusOrbGrad)" />
+
+  <!-- Middle Chevron (Straight vertical outer walls, V-cut top and bottom) -->
+  <path d="M186 210 L256 256 L326 210 L326 268 L256 314 L186 268 Z" fill="url(#indusMidChev)" />
+
+  <!-- Bottom Chevron (Straight vertical outer walls, V-cut top and pointed bottom) -->
+  <path d="M186 288 L256 334 L326 288 L326 346 L256 392 L186 346 Z" fill="url(#indusBotChev)" />
+</svg>

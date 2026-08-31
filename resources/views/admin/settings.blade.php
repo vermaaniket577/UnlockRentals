@@ -412,15 +412,20 @@
                     <textarea name="hero_description" rows="2" class="w-full p-3.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">{{ $settings['hero_description'] ?? 'Discover thousands of verified houses, flats, PGs & commercial spaces across India. Connect directly with owners with zero brokerage.' }}</textarea>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 border-t border-slate-100 pt-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 border-t border-slate-100 pt-6">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Google Play Store URL</label>
                         <input type="url" name="app_google_play_url" value="{{ $settings['app_google_play_url'] ?? '#' }}"
                                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Indus / App Store URL</label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Apple App Store URL</label>
                         <input type="url" name="app_store_url" value="{{ $settings['app_store_url'] ?? '#' }}"
+                               class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Indus Appstore URL</label>
+                        <input type="url" name="app_indus_appstore_url" value="{{ $settings['app_indus_appstore_url'] ?? 'https://www.indusappstore.com' }}" placeholder="https://www.indusappstore.com/app/..."
                                class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                     </div>
                     <div>

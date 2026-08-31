@@ -405,6 +405,35 @@
                             <span class="ur-store-badge__title">App Store</span>
                         </div>
                     </a>
+
+                    <a href="{{ $site_settings['app_indus_appstore_url'] ?? 'https://www.indusappstore.com' }}" target="_blank" class="ur-store-badge" title="Available on Indus Appstore">
+                        <div class="ur-store-badge__icon">
+                            <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="indusOrbGrad1" x1="50%" y1="0%" x2="50%" y2="100%">
+                                        <stop offset="0%" stop-color="#FFB300" />
+                                        <stop offset="100%" stop-color="#FF5400" />
+                                    </linearGradient>
+                                    <linearGradient id="indusMidChev1" x1="50%" y1="0%" x2="50%" y2="100%">
+                                        <stop offset="0%" stop-color="#FF5400" />
+                                        <stop offset="100%" stop-color="#E8165B" />
+                                    </linearGradient>
+                                    <linearGradient id="indusBotChev1" x1="50%" y1="0%" x2="50%" y2="100%">
+                                        <stop offset="0%" stop-color="#E8165B" />
+                                        <stop offset="100%" stop-color="#D0006F" />
+                                    </linearGradient>
+                                </defs>
+                                <rect width="512" height="512" rx="128" fill="#051030" />
+                                <circle cx="256" cy="152" r="56" fill="url(#indusOrbGrad1)" />
+                                <path d="M186 210 L256 256 L326 210 L326 268 L256 314 L186 268 Z" fill="url(#indusMidChev1)" />
+                                <path d="M186 288 L256 334 L326 288 L326 346 L256 392 L186 346 Z" fill="url(#indusBotChev1)" />
+                            </svg>
+                        </div>
+                        <div class="ur-store-badge__content">
+                            <span class="ur-store-badge__label">Get it on</span>
+                            <span class="ur-store-badge__title">Indus Appstore</span>
+                        </div>
+                    </a>
                 </div>
 
                 @if(($site_settings['app_apk_download_url'] ?? '') !== '' && ($site_settings['app_apk_download_url'] ?? '') !== '#')

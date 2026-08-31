@@ -7,7 +7,7 @@
     'alt' => 'UnlockRentals logo',
 ])
 
-<a href="{{ $href }}" {{ $attributes->merge(['class' => 'inline-flex items-center gap-2.5 group']) }} title="@if($showText) UnlockRentals @endif">
+<a href="{{ $href }}" {{ $attributes->merge(['class' => 'inline-flex items-center gap-2.5 group']) }} title="{{ $showText ? 'UnlockRentals' : '' }}">
     <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-sm shadow-blue-950/20 ring-1 ring-slate-900/10 dark:ring-white/25 flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
         <img
             src="{{ asset('images/logo-icon.png') }}"
