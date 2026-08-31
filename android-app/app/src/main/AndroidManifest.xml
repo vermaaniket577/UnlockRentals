@@ -12,6 +12,74 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- Package visibility queries for Android 11+ (API 30+) for UPI Payment Apps -->
+    <queries>
+        <!-- UPI Schemes -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="upi" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="tez" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="phonepe" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="paytmmp" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="paytm" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="bhim" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="credpay" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="gpay" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="ppe" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="mobikwik" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="amazonpay" />
+        </intent>
+
+        <!-- Popular UPI App Packages for Intent Resolution -->
+        <package android:name="com.google.android.apps.nbu.paisa.user" /> <!-- Google Pay -->
+        <package android:name="com.phonepe.app" /> <!-- PhonePe -->
+        <package android:name="net.one97.paytm" /> <!-- Paytm -->
+        <package android:name="in.org.npci.upiapp" /> <!-- BHIM -->
+        <package android:name="com.dreamplug.androidapp" /> <!-- CRED -->
+        <package android:name="com.whatsapp" /> <!-- WhatsApp Pay -->
+        <package android:name="com.amazon.mShop.android.shopping" /> <!-- Amazon Pay -->
+        <package android:name="in.amazon.mShop.android.shopping" /> <!-- Amazon Pay India -->
+        <package android:name="com.csam.icici.bank.imobile" /> <!-- iMobile Pay -->
+        <package android:name="com.msf.kbank.mobile" /> <!-- Kotak 811 -->
+        <package android:name="com.axis.mobile" /> <!-- Axis Mobile -->
+        <package android:name="com.sbi.upi" /> <!-- BHIM SBI Pay -->
+        <package android:name="com.sbi.lotusintouch" /> <!-- YONO SBI -->
+        <package android:name="com.hdfcbank.payzapp" /> <!-- PayZapp -->
+        <package android:name="com.mobikwik_new" /> <!-- MobiKwik -->
+        <package android:name="com.freecharge.android" /> <!-- FreeCharge -->
+        <package android:name="com.navi.personal.loan.finance" /> <!-- Navi -->
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

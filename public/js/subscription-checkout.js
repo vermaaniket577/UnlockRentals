@@ -274,18 +274,8 @@ window.UnlockSubscriptionCheckout = (config) => {
     }
 
     function razorpayMethodConfig(selectedMethod) {
-        const all = { netbanking: true, card: true, upi: true, wallet: true };
-        const map = {
-            upi: { upi: true },
-            phonepe: { upi: true },
-            paytm: { upi: true, wallet: true },
-            card: { card: true },
-            netbanking: { netbanking: true },
-            wallet: { wallet: true },
-            qr: { upi: true },
-            razorpay: all,
-        };
-        return map[selectedMethod] || all;
+        // Ensure all gateway-enabled methods (UPI, Cards, NetBanking, Wallets) remain accessible
+        return { netbanking: true, card: true, upi: true, wallet: true };
     }
 
     if (isRazorpay && typeof Razorpay !== 'undefined') {

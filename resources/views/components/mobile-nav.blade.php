@@ -61,7 +61,7 @@
         @endauth
 
         {{-- Support Tab (Triggers Chatbot) --}}
-        <button type="button" onclick="handleMobileSupportClick()" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium cursor-pointer" id="mobile-support-nav-btn" title="Support" aria-label="Help and Support">
+        <button type="button" onclick="handleMobileSupportClick(event)" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium cursor-pointer" id="mobile-support-nav-btn" data-chat-trigger="true" title="Support" aria-label="Help and Support">
             <div class="relative flex items-center justify-center">
                 <i class="ph-bold ph-chats-circle text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
                 <span class="absolute -top-0.5 -right-1 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-950"></span>
@@ -85,18 +85,21 @@
 </style>
 
 <script>
-    function handleMobileSupportClick() {
-        const chatTrigger = document.getElementById('chatTrigger');
-        const chatWindow = document.getElementById('chatWindow');
-        
-        if (chatWindow) {
-            chatWindow.classList.toggle('active');
-            if (chatWindow.classList.contains('active')) {
-                const input = document.getElementById('chatInput');
-                if (input) setTimeout(() => input.focus(), 150);
-            }
+    function handleMobileSupportClick(event) {
+        if (event && event.stopPropagation) event.stopPropagation();
+        if (typeof window.toggleSupportChat === 'function') {
+            window.toggleSupportChat(event);
         } else {
-            window.location.href = "{{ route('home') }}?open-chat=1";
+            const chatWindow = document.getElementById('chatWindow');
+            if (chatWindow) {
+                chatWindow.classList.toggle('active');
+                if (chatWindow.classList.contains('active')) {
+                    const input = document.getElementById('chatInput');
+                    if (input) setTimeout(() => input.focus(), 180);
+                }
+            } else {
+                window.location.href = "{{ route('home') }}?open-chat=1";
+            }
         }
     }
 </script>

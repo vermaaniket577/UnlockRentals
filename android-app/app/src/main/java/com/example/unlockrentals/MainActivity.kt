@@ -272,7 +272,9 @@ class MainActivity : AppCompatActivity() {
                     }
                     UrlNavigationChecker.NavigationTarget.UPI -> {
                         try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
                             startActivity(intent)
                         } catch (e: Exception) {
                             Toast.makeText(this@MainActivity, "No compatible UPI app found on device", Toast.LENGTH_SHORT).show()
@@ -287,11 +289,20 @@ class MainActivity : AppCompatActivity() {
                                 if (resolveInfo != null) {
                                     startActivity(intent)
                                 } else {
-                                    val fallbackUrl = intent.getStringExtra("browser_fallback_url")
-                                    if (!fallbackUrl.isNullOrEmpty()) {
-                                        webView.loadUrl(fallbackUrl)
+                                    val targetPackage = intent.`package`
+                                    val launchIntent = if (!targetPackage.isNullOrEmpty()) {
+                                        packageManager.getLaunchIntentForPackage(targetPackage)
+                                    } else null
+
+                                    if (launchIntent != null) {
+                                        startActivity(intent)
                                     } else {
-                                        Toast.makeText(this@MainActivity, "Requested payment app is not installed", Toast.LENGTH_SHORT).show()
+                                        val fallbackUrl = intent.getStringExtra("browser_fallback_url")
+                                        if (!fallbackUrl.isNullOrEmpty()) {
+                                            webView.loadUrl(fallbackUrl)
+                                        } else {
+                                            Toast.makeText(this@MainActivity, "Requested payment app is not installed", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                 }
                             }

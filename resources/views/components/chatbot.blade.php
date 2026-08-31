@@ -1,10 +1,13 @@
 @if(($site_settings['chatbot_enabled'] ?? '1') == '1')
+<!-- Chatbot Backdrop Overlay for Mobile -->
+<div class="chat-backdrop" id="chatBackdrop" onclick="window.closeSupportChat(event)"></div>
+
 <!-- Chatbot Overlay Button & Window -->
-<div class="chatbot-trigger" id="chatTrigger" style="overflow: hidden; padding: 0; background: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" title="Open Chat Support" role="button" aria-label="Open Chatbot">
+<div class="chatbot-trigger" id="chatTrigger" onclick="window.toggleSupportChat(event)" style="overflow: hidden; padding: 0; background: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" title="Open Chat Support" role="button" aria-label="Open Chatbot">
     <video src="{{ asset('videos/chatbot.mp4') }}" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%;"></video>
 </div>
 
-<div class="chat-window" id="chatWindow" aria-live="polite">
+<div class="chat-window" id="chatWindow" aria-live="polite" role="dialog" aria-modal="true" aria-label="Unlock Support Chat">
     <div class="chat-header">
         <div class="chat-header-content">
             <div class="chat-avatar">
@@ -15,7 +18,9 @@
                 <p>Always Online</p>
             </div>
         </div>
-        <i class="ph ph-x chat-close" id="chatClose" title="Close Chat" role="button" aria-label="Close Chat"></i>
+        <button type="button" class="chat-close" id="chatClose" onclick="window.closeSupportChat(event)" title="Close Chat" aria-label="Close Chat">
+            <i class="ph ph-x text-lg"></i>
+        </button>
     </div>
     <div class="chat-messages" id="chatMessages">
         <div class="msg bot">
@@ -24,7 +29,7 @@
     </div>
     <div class="chat-input-area">
         <input type="text" class="chat-input" id="chatInput" placeholder="Write a message..." autocomplete="off">
-        <button class="chat-send-btn" id="chatSend" title="Send Message" aria-label="Send Message">
+        <button class="chat-send-btn" id="chatSend" title="Send Message" aria-label="Send Message" type="button">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #ffffff;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
         </button>
     </div>
@@ -32,15 +37,58 @@
 
 <script>
     (function() {
+        // Global Support Chat Control
+        window.openSupportChat = function(e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            const chatWindow = document.getElementById('chatWindow');
+            const chatBackdrop = document.getElementById('chatBackdrop');
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chatMessages');
+
+            if (chatWindow) {
+                chatWindow.classList.add('active');
+                if (chatBackdrop) chatBackdrop.classList.add('active');
+                if (chatMessages) {
+                    setTimeout(() => {
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 50);
+                }
+                if (chatInput) {
+                    setTimeout(() => {
+                        chatInput.focus();
+                    }, 180);
+                }
+            } else {
+                window.location.href = "{{ route('home') }}?open-chat=1";
+            }
+        };
+
+        window.closeSupportChat = function(e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            const chatWindow = document.getElementById('chatWindow');
+            const chatBackdrop = document.getElementById('chatBackdrop');
+            if (chatWindow) chatWindow.classList.remove('active');
+            if (chatBackdrop) chatBackdrop.classList.remove('active');
+        };
+
+        window.toggleSupportChat = function(e) {
+            if (e && e.stopPropagation) e.stopPropagation();
+            const chatWindow = document.getElementById('chatWindow');
+            if (chatWindow && chatWindow.classList.contains('active')) {
+                window.closeSupportChat(e);
+            } else {
+                window.openSupportChat(e);
+            }
+        };
+
         function initChatbot() {
             const chatTrigger = document.getElementById('chatTrigger');
             const chatWindow = document.getElementById('chatWindow');
-            const chatClose = document.getElementById('chatClose');
             const chatSend = document.getElementById('chatSend');
             const chatInput = document.getElementById('chatInput');
             const chatMessages = document.getElementById('chatMessages');
             
-            if (!chatTrigger || !chatWindow) return;
+            if (!chatWindow) return;
 
             // Chat session ID
             let chatSessionId = localStorage.getItem('ur_chat_session');
@@ -49,28 +97,22 @@
                 localStorage.setItem('ur_chat_session', chatSessionId);
             }
 
-            // Toggle chat window open/close
-            chatTrigger.addEventListener('click', function(e) {
-                e.stopPropagation();
-                chatWindow.classList.toggle('active');
-                if (chatWindow.classList.contains('active') && chatInput) {
-                    setTimeout(() => chatInput.focus(), 150);
+            // Close on clicking outside on desktop
+            document.addEventListener('click', function(e) {
+                if (chatWindow && chatWindow.classList.contains('active')) {
+                    if (chatWindow.contains(e.target) || 
+                        (chatTrigger && chatTrigger.contains(e.target)) || 
+                        (e.target.closest && e.target.closest('#mobile-support-nav-btn, [data-chat-trigger]'))) {
+                        return;
+                    }
+                    window.closeSupportChat();
                 }
             });
 
-            if (chatClose) {
-                chatClose.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    chatWindow.classList.remove('active');
-                });
-            }
-
-            // Close on clicking outside on desktop
-            document.addEventListener('click', function(e) {
-                if (chatWindow.classList.contains('active')) {
-                    if (!chatWindow.contains(e.target) && !chatTrigger.contains(e.target)) {
-                        chatWindow.classList.remove('active');
-                    }
+            // Close on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && chatWindow && chatWindow.classList.contains('active')) {
+                    window.closeSupportChat();
                 }
             });
 
@@ -215,7 +257,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('open-chat') === '1') {
                 setTimeout(() => {
-                    chatWindow.classList.add('active');
+                    window.openSupportChat();
                 }, 400);
             }
         }

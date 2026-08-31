@@ -36,7 +36,9 @@ class UrlNavigationChecker(private val productionUrl: String) {
             url.startsWith("market://") || host.contains("play.google.com") || host.contains("apps.apple.com") -> NavigationTarget.APP_STORE
             (host.contains("google.com") && url.contains("maps")) || host.contains("maps.google") -> NavigationTarget.MAPS
             url.startsWith("upi://") || url.startsWith("tez://") || url.startsWith("phonepe://") ||
-            url.startsWith("paytmmp://") || url.startsWith("bhim://") || url.startsWith("credpay://") -> NavigationTarget.UPI
+            url.startsWith("paytmmp://") || url.startsWith("paytm://") || url.startsWith("bhim://") ||
+            url.startsWith("credpay://") || url.startsWith("gpay://") || url.startsWith("ppe://") ||
+            url.startsWith("mobikwik://") || url.startsWith("amazonpay://") -> NavigationTarget.UPI
             url.startsWith("intent:") || url.startsWith("intent://") -> NavigationTarget.INTENT
             // OAuth Launch: Open in external browser so Google never blocks with 403 disallowed_useragent
             url.contains("/auth/google") || url.contains("/auth/facebook") ||
