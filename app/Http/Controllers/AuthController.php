@@ -229,15 +229,27 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Password::min(8)],
             'role' => 'nullable|in:tenant,owner',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'required|string|max:20',
         ]);
+
+        // Verify phone was OTP-verified in this session
+        $normalizedPhone = preg_replace('/[^0-9]/', '', $validated['phone']);
+        $normalizedPhone = strlen($normalizedPhone) >= 10 ? substr($normalizedPhone, -10) : $normalizedPhone;
+        $sessionPhone = session('otp_verified_phone');
+
+        $phoneVerifiedAt = null;
+        if ($sessionPhone && $sessionPhone === $normalizedPhone) {
+            $phoneVerifiedAt = now();
+            session()->forget('otp_verified_phone');
+        }
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'] ?? 'tenant',
-            'phone' => $validated['phone'] ?? null,
+            'phone' => $validated['phone'],
+            'phone_verified_at' => $phoneVerifiedAt,
         ]);
 
         Auth::login($user);

@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'role',
         'phone',
+        'phone_verified_at',
         'avatar',
     ];
 
@@ -47,6 +48,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -156,6 +158,35 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user's phone is verified.
+     */
+    public function isPhoneVerified(): bool
+    {
+        return !empty($this->phone_verified_at);
+    }
+
+    /**
+     * Scope: find user by phone number (last 10 digits).
+     */
+    public function scopeByPhone($query, ?string $phone)
+    {
+        if (empty($phone)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $clean = preg_replace('/[^0-9]/', '', $phone);
+        if (strlen($clean) >= 10) {
+            $last10 = substr($clean, -10);
+            return $query->where(function ($q) use ($last10) {
+                $q->where('phone', 'LIKE', '%' . $last10)
+                  ->orWhereRaw("REPLACE(REPLACE(REPLACE(REPLACE(phone, ' ', ''), '+', ''), '-', ''), '(', '') LIKE ?", ['%' . $last10]);
+            });
+        }
+
+        return $query->where('phone', $phone);
+    }
+
+    /**
      * Check if user is an admin.
      */
     public function isAdmin(): bool
@@ -218,13 +249,13 @@ class User extends Authenticatable
             return null;
         }
 
-        $digits = preg_replace('/[^0-9]/', '', $input);
+        $digits = preg_replace('/[^0-9]/', '', (string) $input);
         if (strlen($digits) >= 10) {
             $clean10 = substr($digits, -10);
             return '+91 ' . substr($clean10, 0, 5) . ' ' . substr($clean10, 5);
         }
 
-        return trim($input);
+        return trim((string) $input);
     }
 }
 

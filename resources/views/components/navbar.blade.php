@@ -50,10 +50,17 @@
             {{-- Right Side: Auth Actions & Top-Right Theme Toggle --}}
             <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
                 @guest
-                    <a href="{{ route('login') }}" class="hidden md:inline-flex px-3 py-1.5 text-xs xl:text-sm font-semibold text-zinc-600 hover:text-zinc-900 transition-colors whitespace-nowrap" id="nav-login" title="Sign In">
+                    {{-- Mobile Top Login Button --}}
+                    <a href="{{ route('login') }}" class="md:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" id="nav-mobile-top-login" title="Login">
+                        <i class="ph-bold ph-sign-in text-sm"></i>
+                        <span>Login</span>
+                    </a>
+
+                    {{-- Desktop Sign In & Get Started --}}
+                    <a href="{{ route('login') }}" class="hidden md:inline-flex px-3 py-1.5 text-xs xl:text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap" id="nav-login" title="Sign In">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}" class="px-3.5 xl:px-4.5 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-register" title="Get Started">
+                    <a href="{{ route('register') }}" class="hidden sm:inline-flex px-3.5 xl:px-4.5 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-register" title="Get Started">
                         Get Started
                     </a>
                 @else

@@ -14,9 +14,11 @@ class MigrateImagesToStorage extends Command
 
     public function handle(): int
     {
-        $images = PropertyImage::whereNotNull('image_data')
-            ->whereNull('path')
-            ->orWhere('path', '')
+        $images = PropertyImage::withoutGlobalScope('withoutBlob')
+            ->whereNotNull('image_data')
+            ->where(function ($q) {
+                $q->whereNull('path')->orWhere('path', '');
+            })
             ->get();
 
         if ($images->isEmpty()) {

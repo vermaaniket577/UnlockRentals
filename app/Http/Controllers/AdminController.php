@@ -114,21 +114,55 @@ class AdminController extends Controller
     }
 
     /**
-     * Show all users.
+     * Show all users with search, filters, relation counts, and stats.
      */
     public function users(Request $request)
     {
         $query = User::query();
 
+        // Search by Name, Email, or Phone
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('phone', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Role filter
         if ($request->filled('role')) {
             $query->where('role', $request->role);
         }
 
-        $users = $query->withCount('properties')
-            ->latest()
-            ->paginate(15);
+        // Phone Verification Status filter
+        if ($request->filled('status')) {
+            if ($request->status === 'verified') {
+                $query->whereNotNull('phone_verified_at');
+            } elseif ($request->status === 'unverified') {
+                $query->whereNull('phone_verified_at');
+            }
+        }
 
-        return view('admin.users', compact('users'));
+        // KPI Stats
+        $stats = [
+            'total'      => User::count(),
+            'owners'     => User::where('role', 'owner')->count(),
+            'tenants'    => User::where('role', 'tenant')->count(),
+            'admins'     => User::where('role', 'admin')->count(),
+            'verified'   => User::whereNotNull('phone_verified_at')->count(),
+            'unverified' => User::whereNull('phone_verified_at')->count(),
+        ];
+
+        $users = $query->withCount(['properties', 'inquiries'])
+            ->with(['userPlans' => function ($q) {
+                $q->active()->with('plan');
+            }])
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.users', compact('users', 'stats'));
     }
 
     /**
@@ -155,7 +189,7 @@ class AdminController extends Controller
         $data = $request->except('_token', 'payment_gateways', 'active_payment_gateway_id');
         
         // Handle checkboxes (if they aren't in request, they should be '0')
-        $checkboxes = ['chatbot_enabled', 'feedback_enabled', 'bypass_property_approval'];
+        $checkboxes = ['chatbot_enabled', 'feedback_enabled', 'bypass_property_approval', 'otp_mandatory_register', 'otp_phone_login_enabled'];
         foreach($checkboxes as $box) {
             if(!$request->has($box)) $data[$box] = '0';
         }

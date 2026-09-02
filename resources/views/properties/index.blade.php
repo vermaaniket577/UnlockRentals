@@ -28,13 +28,49 @@
 
 @section('content')
 
-<section class="min-h-screen pt-24 sm:pt-32 pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="properties-browse">
+<section class="min-h-screen pt-20 sm:pt-24 pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="properties-browse">
     {{-- Ambient Background Gradients --}}
     <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-500/[0.04] via-indigo-500/[0.02] to-transparent pointer-events-none"></div>
     <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
     <div class="absolute top-1/3 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        {{-- Centered Top Search Bar --}}
+        <div class="mb-6 sm:mb-8 flex justify-center w-full">
+            <div class="w-full max-w-2xl">
+                <form action="{{ route('properties.index') }}" method="GET" class="relative flex items-center p-1.5 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl sm:rounded-full shadow-md hover:shadow-lg transition-all">
+                    @if(request('type'))
+                        <input type="hidden" name="type" value="{{ request('type') }}">
+                    @endif
+                    @if(request('purpose'))
+                        <input type="hidden" name="purpose" value="{{ request('purpose') }}">
+                    @endif
+                    
+                    {{-- Search Input --}}
+                    <div class="relative flex-1 flex items-center">
+                        <i class="ph-bold ph-magnifying-glass absolute left-4 text-blue-600 text-lg pointer-events-none"></i>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                               placeholder="Search by city, locality, society, BHK, or keyword..."
+                               class="w-full pl-11 pr-3 py-2.5 sm:py-3 bg-transparent text-sm sm:text-base font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none border-0">
+                    </div>
+
+                    {{-- Action Buttons --}}
+                    <div class="flex items-center gap-1.5 flex-shrink-0 pr-1">
+                        @if(request('search'))
+                            <a href="{{ route('properties.index', request()->except('search')) }}" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold transition-colors" title="Clear Search">
+                                <i class="ph-bold ph-x-circle text-base"></i>
+                            </a>
+                        @endif
+                        <button type="submit"
+                                class="px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl sm:rounded-full shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="ph-bold ph-magnifying-glass text-sm hidden sm:inline"></i>
+                            <span>Search</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         {{-- Page Header & Breadcrumb --}}
         <div class="mb-5 sm:mb-8 pb-4 sm:pb-6 border-b border-slate-200/80 dark:border-slate-800">
@@ -61,6 +97,7 @@
                     Direct-owner verified houses, flats, PGs, and commercial spaces with zero brokerage.
                 </p>
             </div>
+        </div>
 
             {{-- Quick Category Pills (Horizontal Scroll on Mobile) --}}
             <div class="mt-4 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none flex items-center gap-2 py-1">
@@ -114,7 +151,7 @@
                 </button>
             </div>
             <div class="flex-1 overflow-y-auto p-4">
-                @include('components.search-filters', ['categories' => $categories, 'locations' => $locations])
+                @include('components.search-filters', ['categories' => $categories, 'locations' => $locations, 'idPrefix' => 'mobile-'])
             </div>
         </div>
 
@@ -123,7 +160,7 @@
             
             {{-- Left Sidebar Filters (Desktop Only) --}}
             <div class="hidden lg:block w-80 flex-shrink-0">
-                @include('components.search-filters', ['categories' => $categories, 'locations' => $locations])
+                @include('components.search-filters', ['categories' => $categories, 'locations' => $locations, 'idPrefix' => 'desktop-'])
             </div>
 
             {{-- Right Property Grid --}}

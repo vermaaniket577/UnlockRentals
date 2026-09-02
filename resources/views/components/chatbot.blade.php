@@ -116,8 +116,12 @@
                 }
             });
 
-            // Load Chat History
-            if (chatMessages) {
+            let historyLoaded = false;
+
+            window.loadChatHistory = function() {
+                if (historyLoaded || !chatMessages) return;
+                historyLoaded = true;
+
                 fetch(`/chatbot/history/${chatSessionId}`)
                     .then(res => res.json())
                     .then(data => {
@@ -130,26 +134,17 @@
                                 chatMessages.appendChild(m);
                             });
                             chatMessages.scrollTop = chatMessages.scrollHeight;
-                        } else {
-                            // Save the initial welcome message to the DB for history
-                            const welcomeText = "{{ $site_settings['bot_welcome_message'] ?? 'Hi there! 👋 Welcome to UnlockRentals. How can I assist you with your property search today?' }}";
-                            fetch("{{ route('chatbot.save') }}", {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                                    'Accept': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    message: welcomeText,
-                                    sender: 'bot',
-                                    session_id: chatSessionId
-                                })
-                            }).catch(err => console.error('Chat save error:', err));
                         }
                     })
                     .catch(err => console.error('Chat history error:', err));
-            }
+            };
+
+            // Hook loadChatHistory into openSupportChat
+            const originalOpen = window.openSupportChat;
+            window.openSupportChat = function(e) {
+                window.loadChatHistory();
+                if (originalOpen) originalOpen(e);
+            };
 
             function addMessage(text, side) {
                 if (!chatMessages) return;

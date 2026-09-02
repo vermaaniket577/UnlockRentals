@@ -78,110 +78,200 @@
                 {{-- Divider --}}
                 <div class="relative flex items-center justify-center my-6">
                     <div class="border-t border-slate-200 dark:border-slate-800 w-full"></div>
-                    <span class="bg-white dark:bg-slate-900 px-3 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider absolute">or continue with email</span>
+                    <span class="bg-white dark:bg-slate-900 px-3 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider absolute">or continue with</span>
                 </div>
             </div>
             @endif
 
-            {{-- Form Body --}}
-            <form method="POST" action="{{ route('login') }}" id="login-form" class="space-y-4">
-                @csrf
-                @if($targetRedirect)
-                    <input type="hidden" name="redirect" value="{{ $targetRedirect }}">
-                @endif
+            {{-- EMAIL LOGIN PANEL (Default) --}}
+            <div id="login-panel-email">
+                <form method="POST" action="{{ route('login') }}" id="login-form" class="space-y-4">
+                    @csrf
+                    @if($targetRedirect)
+                        <input type="hidden" name="redirect" value="{{ $targetRedirect }}">
+                    @endif
 
-                {{-- Email Address --}}
-                <div>
-                    <label for="login-email" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                        Email Address
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <i class="ph-bold ph-envelope text-base"></i>
-                        </div>
-                        <input type="email"
-                               name="email"
-                               id="login-email"
-                               value="{{ old('email') }}"
-                               required
-                               autofocus
-                               placeholder="you@example.com"
-                               class="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border @error('email') border-rose-300 dark:border-rose-700 focus:ring-rose-500/10 focus:border-rose-500 @else border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 @enderror rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
-                    </div>
-                    @error('email')
-                        <p class="text-rose-600 dark:text-rose-400 text-xs font-semibold mt-1.5 flex items-center gap-1">
-                            <i class="ph-bold ph-warning text-xs"></i> {{ $message }}
-                        </p>
-                    @enderror
-                </div>
-
-                {{-- Password --}}
-                <div>
-                    <div class="flex items-center justify-between mb-1.5">
-                        <label for="login-password" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                            Password
+                    {{-- Email Address --}}
+                    <div>
+                        <label for="login-email" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            Email Address
                         </label>
-                        <a href="{{ route('password.request') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors" title="Forgot Password?">
-                            Forgot password?
-                        </a>
-                    </div>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <i class="ph-bold ph-lock-key text-base"></i>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="ph-bold ph-envelope text-base"></i>
+                            </div>
+                            <input type="email"
+                                   name="email"
+                                   id="login-email"
+                                   value="{{ old('email') }}"
+                                   required
+                                   autofocus
+                                   placeholder="you@example.com"
+                                   class="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border @error('email') border-rose-300 dark:border-rose-700 focus:ring-rose-500/10 focus:border-rose-500 @else border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 @enderror rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
                         </div>
-                        <input type="password"
-                               name="password"
-                               id="login-password"
-                               required
-                               placeholder="••••••••"
-                               class="w-full pl-10 pr-11 py-2.5 sm:py-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border @error('password') border-rose-300 dark:border-rose-700 focus:ring-rose-500/10 focus:border-rose-500 @else border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 @enderror rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
-                        <button type="button"
-                                onclick="togglePassword('login-password', this)"
-                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none"
-                                aria-label="Toggle password visibility">
-                            <i class="ph-bold ph-eye eye-open text-base"></i>
-                            <i class="ph-bold ph-eye-slash eye-closed text-base hidden"></i>
+                        @error('email')
+                            <p class="text-rose-600 dark:text-rose-400 text-xs font-semibold mt-1.5 flex items-center gap-1">
+                                <i class="ph-bold ph-warning text-xs"></i> {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
+                    {{-- Password --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="login-password" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                Password
+                            </label>
+                            <a href="{{ route('password.request') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors" title="Forgot Password?">
+                                Forgot password?
+                            </a>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="ph-bold ph-lock-key text-base"></i>
+                            </div>
+                            <input type="password"
+                                   name="password"
+                                   id="login-password"
+                                   required
+                                   placeholder="••••••••"
+                                   class="w-full pl-10 pr-11 py-2.5 sm:py-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border @error('password') border-rose-300 dark:border-rose-700 focus:ring-rose-500/10 focus:border-rose-500 @else border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 @enderror rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
+                            <button type="button"
+                                    onclick="togglePassword('login-password', this)"
+                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none"
+                                    aria-label="Toggle password visibility">
+                                <i class="ph-bold ph-eye eye-open text-base"></i>
+                                <i class="ph-bold ph-eye-slash eye-closed text-base hidden"></i>
+                            </button>
+                        </div>
+                        @error('password')
+                            <p class="text-rose-600 dark:text-rose-400 text-xs font-semibold mt-1.5 flex items-center gap-1">
+                                <i class="ph-bold ph-warning text-xs"></i> {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
+                    {{-- Remember Me Checkbox --}}
+                    <div class="flex items-center pt-1">
+                        <label class="flex items-center gap-2.5 cursor-pointer select-none group" for="login-remember">
+                            <input type="checkbox"
+                                   name="remember"
+                                   id="login-remember"
+                                   class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500/20 accent-blue-600 cursor-pointer">
+                            <span class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">
+                                Remember me on this device
+                            </span>
+                        </label>
+                    </div>
+
+                    {{-- Submit Button --}}
+                    <div class="pt-2">
+                        <button type="submit"
+                                id="login-submit"
+                                class="w-full py-3 sm:py-3.5 px-6 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all duration-200 flex items-center justify-center gap-2">
+                            <span>Sign In</span>
+                            <i class="ph-bold ph-arrow-right text-sm"></i>
                         </button>
                     </div>
-                    @error('password')
-                        <p class="text-rose-600 dark:text-rose-400 text-xs font-semibold mt-1.5 flex items-center gap-1">
-                            <i class="ph-bold ph-warning text-xs"></i> {{ $message }}
-                        </p>
-                    @enderror
-                </div>
 
-                {{-- Remember Me Checkbox --}}
-                <div class="flex items-center pt-1">
-                    <label class="flex items-center gap-2.5 cursor-pointer select-none group" for="login-remember">
-                        <input type="checkbox"
-                               name="remember"
-                               id="login-remember"
-                               class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500/20 accent-blue-600 cursor-pointer">
-                        <span class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">
-                            Remember me on this device
-                        </span>
-                    </label>
-                </div>
+                    {{-- Divider & Switch to Phone OTP Button --}}
+                    <div class="pt-2">
+                        <div class="relative flex items-center justify-center my-3">
+                            <div class="border-t border-slate-200/80 dark:border-slate-800 w-full"></div>
+                            <span class="bg-white dark:bg-slate-900 px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider absolute">or</span>
+                        </div>
 
-                {{-- Submit Button --}}
-                <div class="pt-2">
-                    <button type="submit"
-                            id="login-submit"
-                            class="w-full py-3 sm:py-3.5 px-6 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all duration-200 flex items-center justify-center gap-2">
-                        <span>Sign In</span>
-                        <i class="ph-bold ph-arrow-right text-sm"></i>
-                    </button>
-                </div>
-            </form>
+                        <button type="button"
+                                id="btn-show-otp-login"
+                                class="w-full py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 shadow-xs group">
+                            <i class="ph-bold ph-whatsapp-logo text-emerald-600 dark:text-emerald-400 text-base group-hover:scale-110 transition-transform"></i>
+                            <span>Login with Phone OTP</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
 
-            {{-- Bottom Register Link --}}
-            <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
-                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                    Don't have an account?
-                    <a href="{{ route('register') }}" class="font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors" title="Create an account">
-                        Create one free
-                    </a>
-                </p>
+            {{-- PHONE OTP LOGIN PANEL --}}
+            <div id="login-panel-phone" class="hidden">
+                <div class="space-y-4">
+                    <div class="text-left mb-2">
+                        <h2 class="text-base font-extrabold text-slate-900 dark:text-white">Sign in with Mobile OTP</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">We will send a 4-digit verification code to your phone</p>
+                    </div>
+
+                    {{-- Phone Number --}}
+                    <div>
+                        <label for="login-phone" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            Mobile Number
+                        </label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="ph-bold ph-phone text-base"></i>
+                                </div>
+                                <input type="tel"
+                                       id="login-phone"
+                                       placeholder="+91 98765 43210"
+                                       class="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-slate-50/70 dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-850 border border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600/10 rounded-xl text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-4 transition-all duration-200 shadow-xs">
+                            </div>
+                            <button type="button"
+                                    id="login-otp-send-btn"
+                                    class="flex-shrink-0 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] shadow-md shadow-emerald-600/25 transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap">
+                                <i class="ph-bold ph-paper-plane-tilt text-sm"></i>
+                                <span>Send OTP</span>
+                            </button>
+                        </div>
+                        <div id="login-otp-status" class="otp-status text-xs font-semibold mt-1.5 hidden"></div>
+                    </div>
+
+                    {{-- OTP Input Area (Clean Standard Size) --}}
+                    <div class="otp-input-area hidden">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">Enter 4-digit OTP</label>
+                        <div id="login-otp-digits" class="flex justify-center gap-2.5 sm:gap-3.5 mb-4">
+                            <input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" class="otp-digit w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl sm:text-3xl font-extrabold bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white shadow-xs" autofocus>
+                            <input type="text" inputmode="numeric" maxlength="1" class="otp-digit w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl sm:text-3xl font-extrabold bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white shadow-xs" autocomplete="off">
+                            <input type="text" inputmode="numeric" maxlength="1" class="otp-digit w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl sm:text-3xl font-extrabold bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white shadow-xs" autocomplete="off">
+                            <input type="text" inputmode="numeric" maxlength="1" class="otp-digit w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl sm:text-3xl font-extrabold bg-slate-50 dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white shadow-xs" autocomplete="off">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button type="button" id="login-otp-verify-btn" class="flex-1 py-3 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2">
+                                <i class="ph-bold ph-sign-in text-sm"></i> Login with OTP
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-3 mt-2">
+                            <button type="button" id="login-otp-resend-btn" class="hidden px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-1">
+                                <i class="ph-bold ph-arrow-clockwise text-xs"></i> Resend
+                            </button>
+                            <span id="login-otp-countdown" class="hidden text-xs font-mono text-slate-500 dark:text-slate-400"></span>
+                        </div>
+                    </div>
+
+                    {{-- Switch back to Email Login --}}
+                    <div class="pt-2">
+                        <div class="relative flex items-center justify-center my-3">
+                            <div class="border-t border-slate-200/80 dark:border-slate-800 w-full"></div>
+                            <span class="bg-white dark:bg-slate-900 px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider absolute">or</span>
+                        </div>
+
+                        <button type="button"
+                                id="btn-show-email-login"
+                                class="w-full py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 shadow-xs group">
+                            <i class="ph-bold ph-envelope text-blue-600 dark:text-blue-400 text-base group-hover:scale-110 transition-transform"></i>
+                            <span>Login with Email & Password</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+                {{-- Register Link --}}
+                <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 text-center">
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                        Don't have an account?
+                        <a href="{{ route('register') }}" class="font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors" title="Create an account">
+                            Create one free
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -295,4 +385,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+<script src="{{ asset('js/otp-verification.js') }}"></script>
+<script>
+// Login Method Smooth Switching (Standard button toggle)
+document.addEventListener('DOMContentLoaded', function() {
+    const emailPanel = document.getElementById('login-panel-email');
+    const phonePanel = document.getElementById('login-panel-phone');
+    const btnShowOtp = document.getElementById('btn-show-otp-login');
+    const btnShowEmail = document.getElementById('btn-show-email-login');
+
+    if (btnShowOtp && btnShowEmail) {
+        btnShowOtp.addEventListener('click', function() {
+            emailPanel.classList.add('hidden');
+            phonePanel.classList.remove('hidden');
+            const phoneInput = document.getElementById('login-phone');
+            if (phoneInput) phoneInput.focus();
+        });
+
+        btnShowEmail.addEventListener('click', function() {
+            phonePanel.classList.add('hidden');
+            emailPanel.classList.remove('hidden');
+            const emailInput = document.getElementById('login-email');
+            if (emailInput) emailInput.focus();
+        });
+    }
+
+    // Initialize Phone OTP Login
+    OtpVerification.init({
+        phoneInputId:   'login-phone',
+        purpose:        'login',
+        otpContainerId: 'login-otp-digits',
+        sendBtnId:      'login-otp-send-btn',
+        verifyBtnId:    'login-otp-verify-btn',
+        resendBtnId:    'login-otp-resend-btn',
+        statusId:       'login-otp-status',
+        countdownId:    'login-otp-countdown',
+    });
+});
+</script>
+<style>
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+.animate-shake { animation: shake 0.4s ease-in-out; }
+</style>
 @endpush

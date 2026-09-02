@@ -893,7 +893,7 @@
                 Verified rental houses, flats, PG stays & shops directly from owners.
             </p>
 
-            <form class="search-glass-panel panel-animate" action="{{ route('home') }}" method="GET" data-ur-loader-msg="Searching premium properties&#8230;">
+            <form class="search-glass-panel panel-animate" action="{{ route('properties.index') }}" method="GET" data-ur-loader-msg="Searching premium properties&#8230;" onsubmit="handleHeroSearchSubmit(this)">
 
                 <!-- ─ Row 1: Primary Filters ─ -->
                 <div class="search-filters-row">
@@ -1789,6 +1789,22 @@
     @include('components.chatbot')
     
     <script>
+        // Clean empty / default parameters on hero search submit so the URL stays clean
+        window.handleHeroSearchSubmit = function(form) {
+            if (!form) return true;
+            const elements = form.querySelectorAll('input, select');
+            elements.forEach(el => {
+                const val = (el.value || '').trim();
+                if (!val || val === 'all' || val === 'any') {
+                    el.disabled = true;
+                }
+            });
+            setTimeout(() => {
+                elements.forEach(el => el.disabled = false);
+            }, 1000);
+            return true;
+        };
+
         // Global Pill Toggle Handler for Layout & Intent
         window.setPill = function(btn, value, inputId) {
             if (!btn) return;

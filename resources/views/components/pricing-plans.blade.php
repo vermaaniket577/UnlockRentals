@@ -2,8 +2,6 @@
      UNLOCK RENTALS — PRICING PLANS (HOMEPAGE PREVIEW)
      ============================================================ --}}
 
-<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js" defer></script>
-
 <style>
 .ur-plans {
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);

@@ -11,6 +11,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\OtpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,14 +26,14 @@ Route::get('/', function(Illuminate\Http\Request $request) {
         // Cache unfiltered homepage listings for 5 minutes
         $featuredRentals = \Illuminate\Support\Facades\Cache::remember('home_featured_rentals', 300, function () {
             return \App\Models\Property::approved()
-                ->with(['primaryImage', 'owner', 'images'])
+                ->with(['primaryImage', 'owner'])
                 ->latest()
                 ->take(24)
                 ->get();
         });
     } else {
         $query = \App\Models\Property::approved()
-            ->with(['primaryImage', 'owner', 'images']);
+            ->with(['primaryImage', 'owner']);
 
         if ($request->filled('state')) {
             $query->where('state', $request->state);
@@ -140,7 +141,7 @@ Route::get('/', function(Illuminate\Http\Request $request) {
 
 // Serve a property image directly from binary DB data
 Route::get('/property-image/{id}', function ($id) {
-    $image = \App\Models\PropertyImage::findOrFail($id);
+    $image = \App\Models\PropertyImage::withoutGlobalScope('withoutBlob')->findOrFail($id);
 
     if (empty($image->image_data)) {
         abort(404);
@@ -297,6 +298,11 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
     Route::get('auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->name('social.callback');
     Route::get('auth/token-login', [AuthController::class, 'loginWithToken'])->name('auth.token-login');
+
+    // OTP Verification Routes
+    Route::post('/otp/send', [OtpController::class, 'send'])->name('otp.send')->middleware('throttle:10,1');
+    Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify')->middleware('throttle:15,1');
+    Route::post('/otp/login', [OtpController::class, 'loginWithOtp'])->name('otp.login')->middleware('throttle:10,1');
 });
 
 /*

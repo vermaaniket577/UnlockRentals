@@ -38,6 +38,9 @@
         <a href="#section-auth" class="px-4 py-2 bg-white hover:bg-blue-50 hover:text-blue-600 text-slate-700 rounded-xl border border-slate-200 shadow-2xs transition-all shrink-0 flex items-center gap-1.5">
             <i class="ph-bold ph-fingerprint text-emerald-600"></i> Social Login (OAuth)
         </a>
+        <a href="#section-otp" class="px-4 py-2 bg-white hover:bg-emerald-50 hover:text-emerald-600 text-slate-700 rounded-xl border border-slate-200 shadow-2xs transition-all shrink-0 flex items-center gap-1.5">
+            <i class="ph-bold ph-whatsapp-logo text-emerald-600"></i> WhatsApp & OTP
+        </a>
         <a href="#section-mail" class="px-4 py-2 bg-white hover:bg-blue-50 hover:text-blue-600 text-slate-700 rounded-xl border border-slate-200 shadow-2xs transition-all shrink-0 flex items-center gap-1.5">
             <i class="ph-bold ph-envelope-simple text-purple-600"></i> SMTP Mail Server
         </a>
@@ -218,7 +221,232 @@
             </div>
         </div>
 
-        {{-- 4. SMTP Mail Server Configuration --}}
+        {{-- 4. Mobile Number OTP & WhatsApp / SMS Verification --}}
+        <div id="section-otp" class="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs">
+            <div class="flex items-center justify-between pb-5 mb-6 border-b border-slate-100 flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+                        <i class="ph-bold ph-whatsapp-logo"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-extrabold text-slate-900">Mobile OTP & WhatsApp Verification</h2>
+                        <p class="text-xs text-slate-400">Configure delivery channels for phone verification during registration and phone-based OTP login.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    @php
+                        $currentChannel = $settings['otp_channel'] ?? config('otp.channel', 'log');
+                    @endphp
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold {{ $currentChannel === 'whatsapp' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($currentChannel === 'sms' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200') }}">
+                        <span class="w-2 h-2 rounded-full {{ $currentChannel === 'whatsapp' ? 'bg-emerald-500' : ($currentChannel === 'sms' ? 'bg-blue-500' : 'bg-amber-500 animate-pulse') }}"></span>
+                        Active: {{ strtoupper($currentChannel) }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                {{-- Channel Selection & Global OTP Rules --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 p-5 bg-slate-50/60 rounded-2xl border border-slate-200/80">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            OTP Delivery Channel <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="otp_channel" id="otp_channel_select"
+                                class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                            <option value="notification" {{ ($settings['otp_channel'] ?? config('otp.channel', 'log')) === 'notification' ? 'selected' : '' }}>
+                                🔔 Push Notification (Web & Mobile Push)
+                            </option>
+                            <option value="whatsapp" {{ ($settings['otp_channel'] ?? config('otp.channel', 'log')) === 'whatsapp' ? 'selected' : '' }}>
+                                🟢 WhatsApp Cloud API (Meta)
+                            </option>
+                            <option value="sms" {{ ($settings['otp_channel'] ?? config('otp.channel', 'log')) === 'sms' ? 'selected' : '' }}>
+                                🔵 SMS Gateway (2Factor / MSG91)
+                            </option>
+                            <option value="log" {{ ($settings['otp_channel'] ?? config('otp.channel', 'log')) === 'log' ? 'selected' : '' }}>
+                                🟡 Local Log / Development (Free Test Mode)
+                            </option>
+                        </select>
+                        <p class="text-[11px] text-slate-400 mt-1">Select where OTPs get sent when requested by users.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">OTP Validity (Minutes)</label>
+                        <input type="number" name="otp_expiry_minutes" min="1" max="60"
+                               value="{{ $settings['otp_expiry_minutes'] ?? config('otp.expiry_minutes', 10) }}"
+                               class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                        <p class="text-[11px] text-slate-400 mt-1">Default is 10 minutes.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Resend Cooldown (Seconds)</label>
+                        <input type="number" name="otp_resend_seconds" min="15" max="300"
+                               value="{{ $settings['otp_resend_seconds'] ?? config('otp.resend_seconds', 60) }}"
+                               class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                        <p class="text-[11px] text-slate-400 mt-1">Countdown timer before user can click resend.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Max Failed Attempts</label>
+                        <input type="number" name="otp_max_attempts" min="1" max="10"
+                               value="{{ $settings['otp_max_attempts'] ?? config('otp.max_attempts', 3) }}"
+                               class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                        <p class="text-[11px] text-slate-400 mt-1">Locks OTP after N invalid tries.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Max OTPs / Hour</label>
+                        <input type="number" name="otp_max_per_hour" min="5" max="100"
+                               value="{{ $settings['otp_max_per_hour'] ?? config('otp.max_per_hour', 15) }}"
+                               class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                        <p class="text-[11px] text-slate-400 mt-1">Hourly rate limit per phone number.</p>
+                    </div>
+                </div>
+
+                {{-- WhatsApp Cloud API Settings Card --}}
+                <div class="p-5 bg-emerald-50/40 rounded-2xl border border-emerald-200/80 space-y-4">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="ph-bold ph-whatsapp-logo text-xl text-emerald-600"></i>
+                            <h3 class="text-xs sm:text-sm font-bold text-slate-900">Meta WhatsApp Cloud API Configuration</h3>
+                        </div>
+                        <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800 hover:underline">
+                            <span>Open Meta Developer Console</span>
+                            <i class="ph-bold ph-arrow-square-out"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="lg:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                WhatsApp Access Token (Permanent / System User Token)
+                            </label>
+                            <div class="relative">
+                                <input type="password" name="whatsapp_token" id="whatsapp_token_input"
+                                       value="{{ $settings['whatsapp_token'] ?? config('otp.whatsapp.token') }}"
+                                       placeholder="EAAxxxxxxxxxxxxxxxxxxxx..."
+                                       class="w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10 font-mono transition-all">
+                                <button type="button" onclick="togglePassword('whatsapp_token_input', this)"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-600 p-1">
+                                    <i class="ph-bold ph-eye text-base eye-open"></i>
+                                    <i class="ph-bold ph-eye-slash text-base eye-closed" style="display:none"></i>
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-1">Permanent access token from Meta Business Manager > System Users.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                Phone Number ID
+                            </label>
+                            <input type="text" name="whatsapp_phone_number_id"
+                                   value="{{ $settings['whatsapp_phone_number_id'] ?? config('otp.whatsapp.phone_number_id') }}"
+                                   placeholder="e.g. 109823471829384"
+                                   class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10 font-mono transition-all">
+                            <p class="text-[11px] text-slate-400 mt-1">Found under WhatsApp > API Setup in Meta Console.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                Message Template Name
+                            </label>
+                            <input type="text" name="whatsapp_otp_template_name"
+                                   value="{{ $settings['whatsapp_otp_template_name'] ?? config('otp.whatsapp.template_name', 'otp_verification') }}"
+                                   placeholder="otp_verification"
+                                   class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10 font-mono transition-all">
+                            <p class="text-[11px] text-slate-400 mt-1">Approved WhatsApp template name containing 1 body parameter (code).</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                WhatsApp Business Account ID (WABA ID)
+                            </label>
+                            <input type="text" name="whatsapp_business_account_id"
+                                   value="{{ $settings['whatsapp_business_account_id'] ?? '' }}"
+                                   placeholder="e.g. 108273948572019"
+                                   class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10 font-mono transition-all">
+                            <p class="text-[11px] text-slate-400 mt-1">Your WABA Account ID (optional reference).</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- SMS Gateway Fallback Settings Card --}}
+                <div class="p-5 bg-blue-50/40 rounded-2xl border border-blue-200/80 space-y-4">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="ph-bold ph-chat-circle-text text-xl text-blue-600"></i>
+                            <h3 class="text-xs sm:text-sm font-bold text-slate-900">SMS Gateway Configuration (Alternative / Fallback)</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">SMS Provider</label>
+                            <select name="sms_provider"
+                                    class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                <option value="2factor" {{ ($settings['sms_provider'] ?? config('otp.sms.provider', '2factor')) === '2factor' ? 'selected' : '' }}>2Factor.in (India SMS)</option>
+                                <option value="msg91" {{ ($settings['sms_provider'] ?? config('otp.sms.provider', '2factor')) === 'msg91' ? 'selected' : '' }}>MSG91 (Global / India)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">SMS API Key</label>
+                            <div class="relative">
+                                <input type="password" name="sms_api_key" id="sms_api_key_input"
+                                       value="{{ $settings['sms_api_key'] ?? config('otp.sms.api_key') }}"
+                                       placeholder="Enter your SMS API Key"
+                                       class="w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 font-mono transition-all">
+                                <button type="button" onclick="togglePassword('sms_api_key_input', this)"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 p-1">
+                                    <i class="ph-bold ph-eye text-base eye-open"></i>
+                                    <i class="ph-bold ph-eye-slash text-base eye-closed" style="display:none"></i>
+                                </button>
+                            </div>
+                        </div>
+                {{-- Push Notification & FCM Settings Card --}}
+                <div class="p-5 bg-purple-50/40 rounded-2xl border border-purple-200/80 space-y-4">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="ph-bold ph-bell-ringing text-xl text-purple-600"></i>
+                            <h3 class="text-xs sm:text-sm font-bold text-slate-900">Push Notification & FCM Configuration (Mobile & Web Push)</h3>
+                        </div>
+                        <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 hover:text-purple-800 hover:underline">
+                            <span>Open Firebase Console</span>
+                            <i class="ph-bold ph-arrow-square-out"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Firebase Server Key (FCM Legacy / Cloud Messaging)</label>
+                            <div class="relative">
+                                <input type="password" name="fcm_server_key" id="fcm_server_key_input"
+                                       value="{{ $settings['fcm_server_key'] ?? config('otp.fcm.server_key') }}"
+                                       placeholder="AAAAxxxxxxxx:APA91b..."
+                                       class="w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-600/10 font-mono transition-all">
+                                <button type="button" onclick="togglePassword('fcm_server_key_input', this)"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-purple-600 p-1">
+                                    <i class="ph-bold ph-eye text-base eye-open"></i>
+                                    <i class="ph-bold ph-eye-slash text-base eye-closed" style="display:none"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Firebase Project ID</label>
+                            <input type="text" name="fcm_project_id"
+                                   value="{{ $settings['fcm_project_id'] ?? config('otp.fcm.project_id') }}"
+                                   placeholder="e.g. unlockrentals-app"
+                                   class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-600/10 font-mono transition-all">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- 5. SMTP Mail Server Configuration --}}
         <div id="section-mail" class="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs">
             <div class="flex items-center gap-3 pb-5 mb-6 border-b border-slate-100">
                 <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl flex-shrink-0 shadow-xs">

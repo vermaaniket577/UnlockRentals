@@ -58,7 +58,11 @@ class PropertyController extends Controller
         // Smart Search Home Page Filters:
         if ($request->filled('district')) {
             $districtName = str_replace('-', ' ', $request->district);
-            $query->where('location', 'like', '%' . $districtName . '%');
+            $query->where(function ($q) use ($districtName) {
+                $q->where('location', 'like', '%' . $districtName . '%')
+                  ->orWhere('locality', 'like', '%' . $districtName . '%')
+                  ->orWhere('address', 'like', '%' . $districtName . '%');
+            });
         }
 
         // Filter by locality / area
@@ -90,8 +94,8 @@ class PropertyController extends Controller
                 $query->where('bedrooms', 1);
             } elseif ($request->rooms === '2bhk') {
                 $query->where('bedrooms', 2);
-            } elseif ($request->rooms === '3bhk') {
-                $query->where('bedrooms', 3);
+            } elseif (in_array($request->rooms, ['3bhk', '3bhk-plus', '3plus', '3+'])) {
+                $query->where('bedrooms', '>=', 3);
             } elseif ($request->rooms === '4bhk-plus') {
                 $query->where('bedrooms', '>=', 4);
             }
