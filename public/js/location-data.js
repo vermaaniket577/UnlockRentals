@@ -43,6 +43,22 @@
     };
 
     const _standardLocalities = {
+        "surat": [
+            "Adajan", "Adajan Gam", "Althan", "Amroli", "Ankleshwar Road", "Athwa", "Athwa Gate", "Athwalines",
+            "Bamroli", "Bardoli Road", "Begampura", "Bhagal", "Bhatpore", "Bhatar", "Bhestan", "Bhesan",
+            "Bhimrad", "Bombay Market", "Canal Road", "Chalthan", "Chhaprabhatha", "Chowk Bazar", "City Light",
+            "Dabholi", "Dindoli", "Dumas", "Dumas Road", "Fulpada", "Ghod Dod Road", "Godadara", "Gopipura",
+            "Gothan", "Hajira", "Hazira Road", "Ichhapore", "Jahangirpura", "Jakatnaka", "Kadodara",
+            "Kadodara Road", "Kailash Nagar", "Kalyan", "Kansad", "Kapodra", "Karanj", "Katargam", "Khatodara",
+            "Khodiyar Nagar", "Kim", "Kosad", "Kumbharia", "L P Savani Road", "Lal Darwaja", "Limbayat",
+            "Magdalla", "Mahidharpura", "Majura Gate", "Mota Varachha", "Motived", "Nanpura", "Navagam",
+            "New City Light", "Olpad", "Pal", "Palanpur", "Palanpur Patia", "Pandesara", "Pandesara GIDC",
+            "Parvat Patiya", "Piplod", "Puna", "Puna Gam", "Rander", "Ring Road", "Sachin", "Sachin GIDC",
+            "Sagrampura", "Salabatpura", "Saniya Hemad", "Sarthana", "Sayan", "Simada", "Singanpor",
+            "Surat Railway Station Area", "Tadwadi", "Udhana", "Udhana Darwaja", "Udhna", "Umarwada", "Umra",
+            "Un", "Uttran", "Varachha", "Varachha Road", "Vareli", "Ved Darwaja", "Ved Road", "Vesu",
+            "Vesu Canal Road", "Vesu Main Road", "VIP Road", "Yogi Chowk", "Zampa Bazar"
+        ],
         "ranchi": [
             "Airport Road", "Albert Ekka Chowk", "Anandpur", "Argora", "Argora Housing Colony", "Ashok Nagar", "Ashok Vihar", "Bahu Bazar", "Bariatu", "Bariatu Housing Colony",
             "Bariatu Road", "Bero", "Birsa Chowk", "Booty", "Booty More", "Boreya", "Chanho", "Church Road", "Chutia", "Circular Road",
