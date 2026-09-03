@@ -45,7 +45,6 @@
             @endif
 
             @php
-                $targetRedirect = request('redirect') ?: session('url.intended') ?: old('redirect');
                 $isMobileApp = str_contains(request()->header('User-Agent', ''), 'UnlockRentals') || request()->has('app');
             @endphp
 
@@ -53,7 +52,7 @@
             @if(!$isMobileApp)
             <div class="website-only-social">
                 <div class="grid grid-cols-2 gap-3 mb-6">
-                    <a href="{{ route('social.redirect', array_filter(['provider' => 'google', 'redirect' => $targetRedirect])) }}"
+                    <a href="{{ route('social.redirect', ['provider' => 'google']) }}"
                        class="flex items-center justify-center gap-2.5 px-4 py-2.5 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 transition-all duration-200 active:scale-[0.99] shadow-xs"
                        title="Sign in with Google">
                         <svg width="18" height="18" viewBox="0 0 24 24">
@@ -65,7 +64,7 @@
                         <span>Google</span>
                     </a>
 
-                    <a href="{{ route('social.redirect', array_filter(['provider' => 'facebook', 'redirect' => $targetRedirect])) }}"
+                    <a href="{{ route('social.redirect', ['provider' => 'facebook']) }}"
                        class="flex items-center justify-center gap-2.5 px-4 py-2.5 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 transition-all duration-200 active:scale-[0.99] shadow-xs"
                        title="Sign in with Facebook">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
@@ -87,9 +86,6 @@
             <div id="login-panel-email">
                 <form method="POST" action="{{ route('login') }}" id="login-form" class="space-y-4">
                     @csrf
-                    @if($targetRedirect)
-                        <input type="hidden" name="redirect" value="{{ $targetRedirect }}">
-                    @endif
 
                     {{-- Email Address --}}
                     <div>

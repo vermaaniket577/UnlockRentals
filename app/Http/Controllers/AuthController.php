@@ -21,18 +21,6 @@ class AuthController extends Controller
             return redirect('/login')->with('error', ucfirst($provider) . ' login is not configured yet. Please contact admin.');
         }
 
-        if (request()->filled('redirect')) {
-            session(['url.intended' => request('redirect')]);
-        } elseif (!session()->has('url.intended')) {
-            $previous = url()->previous();
-            if ($previous && 
-                !str_contains($previous, '/login') && 
-                !str_contains($previous, '/register') && 
-                !str_contains($previous, '/auth/')) {
-                session(['url.intended' => $previous]);
-            }
-        }
-
         return Socialite::driver($provider)->redirect();
     }
 
@@ -93,19 +81,10 @@ class AuthController extends Controller
         }
 
         $request = request();
-        $targetUrl = session()->pull('url.intended');
-        if ($user->isAdmin()) {
-            $redirectPath = '/admin';
-        } else {
-            $redirectPath = '/';
-            if ($targetUrl && !str_contains($targetUrl, '/login') && !str_contains($targetUrl, '/register') && !str_contains($targetUrl, '/auth/')) {
-                $parsed = parse_url($targetUrl, PHP_URL_PATH);
-                $query = parse_url($targetUrl, PHP_URL_QUERY);
-                $redirectPath = ($parsed ?: '/') . ($query ? '?' . $query : '');
-            }
-        }
+        $redirectPath = $user->isAdmin() ? '/admin' : '/';
 
         $request->session()->regenerate();
+        session()->forget('url.intended');
 
         // If explicitly requested from the native mobile app via app parameter
         if ($request->query('app') === '1' || session('is_mobile_app')) {
@@ -132,12 +111,13 @@ class AuthController extends Controller
         $token = $request->query('token');
         if ($token && ($payload = \Illuminate\Support\Facades\Cache::pull('app_auth_token_' . $token))) {
             $userId = is_array($payload) ? ($payload['user_id'] ?? null) : $payload;
-            $redirect = is_array($payload) ? ($payload['redirect'] ?? '/') : '/';
 
             if ($userId && ($user = User::find($userId))) {
                 Auth::login($user, true);
                 $request->session()->regenerate();
-                return redirect($redirect)->with('success', 'Welcome, ' . $user->name . '!');
+                session()->forget('url.intended');
+                $target = $user->isAdmin() ? route('admin.dashboard') : route('home');
+                return redirect($target)->with('success', 'Welcome, ' . $user->name . '!');
             }
         }
 
@@ -149,9 +129,7 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        if (request()->filled('redirect')) {
-            session(['url.intended' => request('redirect')]);
-        }
+        session()->forget('url.intended');
 
         return response()
             ->view('auth.login')
@@ -171,14 +149,10 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $targetUrl = $request->input('redirect') ?: session('url.intended') ?: route('home');
-            
             $request->session()->regenerate();
             session()->forget('url.intended');
 
-            if (auth()->user()->isAdmin()) {
-                $targetUrl = route('admin.dashboard');
-            }
+            $targetUrl = auth()->user()->isAdmin() ? route('admin.dashboard') : route('home');
 
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
@@ -208,9 +182,7 @@ class AuthController extends Controller
      */
     public function showRegister()
     {
-        if (request()->filled('redirect')) {
-            session(['url.intended' => request('redirect')]);
-        }
+        session()->forget('url.intended');
 
         return response()
             ->view('auth.register')
@@ -254,13 +226,10 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        $targetUrl = $request->input('redirect') ?: session('url.intended') ?: route('home');
         $request->session()->regenerate();
         session()->forget('url.intended');
 
-        if ($user->isAdmin()) {
-            $targetUrl = route('admin.dashboard');
-        }
+        $targetUrl = $user->isAdmin() ? route('admin.dashboard') : route('home');
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([

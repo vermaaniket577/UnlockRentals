@@ -27,10 +27,6 @@
         {{-- Main Card --}}
         <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-[0_20px_50px_rgba(15,23,42,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-7 sm:p-9 transition-all duration-300">
 
-            @php
-                $targetRedirect = request('redirect') ?: session('url.intended') ?: old('redirect');
-            @endphp
-
             {{-- Client Error Banner Container --}}
             <div id="register-error-banner" class="hidden mb-5 p-3.5 bg-rose-50 dark:bg-rose-900/30 border border-rose-100 dark:border-rose-800 rounded-xl flex items-center gap-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300">
                 <i class="ph-bold ph-warning-circle text-base flex-shrink-0"></i>
@@ -40,9 +36,6 @@
             {{-- Form Body --}}
             <form method="POST" action="{{ route('register') }}" id="register-form" class="space-y-4">
                 @csrf
-                @if($targetRedirect)
-                    <input type="hidden" name="redirect" value="{{ $targetRedirect }}">
-                @endif
 
                 <input type="hidden" name="role" value="tenant">
                 <input type="hidden" name="phone_verified" id="reg-phone-verified-input" value="0">

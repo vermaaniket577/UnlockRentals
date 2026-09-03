@@ -177,7 +177,6 @@ class PropertyController extends Controller
     {
         // Require authentication to access full property details and features
         if (!auth()->check()) {
-            session(['url.intended' => route('properties.show', $property)]);
             return redirect()->route('login')->with('info', 'Please sign in to view complete property details and contact verified owners.');
         }
 

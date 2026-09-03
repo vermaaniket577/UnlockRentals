@@ -139,8 +139,9 @@ class OtpController extends Controller
         // Login the user
         Auth::login($user, true);
         $request->session()->regenerate();
+        session()->forget('url.intended');
 
-        $redirect = $user->isAdmin() ? route('admin.dashboard') : (session()->pull('url.intended') ?: route('home'));
+        $redirect = $user->isAdmin() ? route('admin.dashboard') : route('home');
 
         return response()->json([
             'success'  => true,
