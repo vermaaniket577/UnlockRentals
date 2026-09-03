@@ -79,163 +79,169 @@
     $isRazorpay = $activeGateway && ($activeGateway['type'] ?? 'manual') === 'razorpay';
 @endphp
 
-<section class="checkout-stage min-h-screen pt-16 pb-16 sm:pt-24 sm:pb-24 w-full" id="checkout-page">
-    <div class="mx-auto w-full max-w-2xl px-2 sm:px-6">
+<section class="checkout-stage min-h-screen py-6 sm:py-10 w-full" id="checkout-page">
+    <div class="mx-auto w-full max-w-5xl px-3 sm:px-6 lg:px-8">
         
         {{-- Back Navigation --}}
-        <div class="mb-4 sm:mb-5 px-1">
-            <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-2 text-sm sm:text-base font-extrabold text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400" title="Back to plans">
-                <i class="ph-bold ph-arrow-left text-base sm:text-lg"></i>
+        <div class="mb-4 px-1 flex items-center justify-between">
+            <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400" title="Back to plans">
+                <i class="ph-bold ph-arrow-left text-base"></i>
                 <span>Back to Plans</span>
             </a>
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 dark:text-slate-500">
+                <i class="ph-bold ph-lock-key text-emerald-500"></i>
+                <span>256-Bit Encrypted Checkout</span>
+            </span>
         </div>
 
-        {{-- Unified Professional Checkout Card (Full Screen Mobile Standard) --}}
-        <div class="w-full rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none overflow-hidden">
+        {{-- Unified Horizontal Modern Checkout Layout --}}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch">
             
-            {{-- 1. Card Header: Plan & Price Banner --}}
-            <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 p-5 sm:p-7 text-white relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-                <div class="flex items-start justify-between gap-4 relative z-10">
-                    <div class="flex items-center gap-3.5">
-                        <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white/20 backdrop-blur-md text-white shadow-inner">
-                            <i class="ph-bold ph-crown text-2xl"></i>
-                        </span>
-                        <div>
-                            <span class="text-[11px] font-black uppercase tracking-wider text-blue-200">Selected Plan</span>
-                            <h1 class="text-2xl font-black tracking-tight text-white leading-tight">{{ $plan->name }}</h1>
-                            <p class="text-xs font-bold text-blue-100 mt-0.5">
-                                {{ $billingPeriod === 'yearly' ? 'Annual (Buy)' : 'Monthly (Rent)' }} · {{ $billing['duration_days'] }} Days Access
-                            </p>
+            {{-- LEFT COLUMN: Plan Summary Card --}}
+            <div class="lg:col-span-5 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-3xl p-5 sm:p-6 text-white flex flex-col justify-between relative overflow-hidden shadow-xl shadow-blue-600/15 border border-blue-500/30">
+                <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <div class="relative z-10">
+                    {{-- Header with icon & badge --}}
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/20 backdrop-blur-md text-white shadow-inner">
+                                <i class="ph-bold ph-crown text-2xl"></i>
+                            </span>
+                            <div>
+                                <span class="text-[10px] font-black uppercase tracking-wider text-blue-200 block">Selected Plan</span>
+                                <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white leading-tight">{{ $plan->name }}</h1>
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-[11px] font-bold text-blue-200 block uppercase tracking-wider">Amount</span>
-                        <span class="text-2xl sm:text-3xl font-black text-white leading-tight">
-                            ₹{{ number_format($billing['final'], 2) }}
+                        <span class="px-2.5 py-1 bg-white/15 backdrop-blur-sm text-[11px] font-bold rounded-xl text-blue-100 border border-white/20 shrink-0">
+                            {{ $billing['duration_days'] }} Days
                         </span>
+                    </div>
+
+                    {{-- Main Price Display --}}
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 mb-5 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-200 block">Total Payable</span>
+                            <span class="text-2xl sm:text-3xl font-black text-white leading-none">
+                                ₹{{ number_format($billing['final'], 2) }}
+                            </span>
+                        </div>
+                        <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-[11px] font-bold rounded-lg border border-emerald-400/30">
+                            {{ $plan->purpose === 'buy' || $billingPeriod === 'yearly' ? 'Annual Pass' : 'Rental Pass' }}
+                        </span>
+                    </div>
+
+                    {{-- Compact Plan Highlights list --}}
+                    <div class="space-y-2.5 text-xs font-semibold text-blue-50">
+                        <div class="flex items-center gap-2.5">
+                            <i class="ph-bold ph-check-circle text-emerald-300 text-base shrink-0"></i>
+                            <span><strong>{{ $plan->contact_limit }}</strong> Direct Owner Contact Unlocks</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <i class="ph-bold ph-check-circle text-emerald-300 text-base shrink-0"></i>
+                            <span>Zero Brokerage & Verified Listings</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <i class="ph-bold ph-check-circle text-emerald-300 text-base shrink-0"></i>
+                            <span>Direct WhatsApp & Call Connect</span>
+                        </div>
+                        @foreach(array_slice($plan->features ?? [], 0, 1) as $feature)
+                            <div class="flex items-center gap-2.5">
+                                <i class="ph-bold ph-check-circle text-emerald-300 text-base shrink-0"></i>
+                                <span>{{ $feature }}</span>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
-                {{-- Plan Benefits list --}}
-                <div class="mt-4 pt-4 border-t border-white/20 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-blue-50">
-                    <div class="flex items-center gap-2">
-                        <i class="ph-bold ph-check-circle text-emerald-300 text-base shrink-0"></i>
-                        <span><strong>{{ $plan->contact_limit }}</strong> Direct Owner Contact Unlocks</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="ph-bold ph-check-circle text-emerald-300 text-base shrink-0"></i>
-                        <span>Zero Brokerage Forever</span>
-                    </div>
-                    @foreach(array_slice($plan->features ?? [], 0, 2) as $feature)
-                        <div class="flex items-center gap-2">
-                            <i class="ph-bold ph-check-circle text-emerald-300 text-base shrink-0"></i>
-                            <span>{{ $feature }}</span>
-                        </div>
-                    @endforeach
+                {{-- Safe Guarantee Pill at bottom of left card --}}
+                <div class="relative z-10 mt-6 pt-4 border-t border-white/15 flex items-center justify-between text-[11px] text-blue-200 font-medium">
+                    <span class="flex items-center gap-1.5"><i class="ph-bold ph-shield-check text-emerald-300"></i> RBI Verified</span>
+                    <span class="flex items-center gap-1.5"><i class="ph-bold ph-lightning text-amber-300"></i> Instant Activation</span>
                 </div>
             </div>
 
-            {{-- 2. Form Body --}}
-            <div class="p-6 sm:p-7 space-y-6">
+            {{-- RIGHT COLUMN: Compact Checkout Form & Payment Actions --}}
+            <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col justify-between space-y-4">
                 
-                {{-- User Profile Pill --}}
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                            Account Details
-                        </label>
-                        <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                            <i class="ph-bold ph-check-circle"></i> Logged In
-                        </span>
-                    </div>
-                    <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 flex items-center justify-between gap-3 dark:border-slate-800 dark:bg-slate-850">
+                {{-- 1. Account Details & Phone Input (Clean Horizontal Row) --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {{-- User Profile Pill --}}
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-850 flex items-center justify-between gap-2.5">
                         <div class="min-w-0">
-                            <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Account (Logged In)</span>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ auth()->user()->email }}</p>
                         </div>
-                        <span class="h-8 w-8 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-black text-xs flex items-center justify-center shrink-0">
+                        <span class="h-7 w-7 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-black text-xs flex items-center justify-center shrink-0">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </span>
                     </div>
-                </div>
 
-                {{-- Mobile Number Input --}}
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <label for="checkout_user_phone" class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                            Mobile Number <span class="text-red-500">*</span>
-                        </label>
-                        @if(!empty($userCleanPhone))
-                            <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
-                                <i class="ph-bold ph-check-circle"></i> Synced from profile
+                    {{-- Mobile Number Input --}}
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-850 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="checkout_user_phone" class="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                                Mobile No <span class="text-red-500">*</span>
+                            </label>
+                            @if(!empty($userCleanPhone))
+                                <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                                    <i class="ph-bold ph-check-circle"></i> Synced
+                                </span>
+                            @else
+                                <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                    Auto-saves
+                                </span>
+                            @endif
+                        </div>
+                        
+                        <div class="relative flex items-center">
+                            <span class="absolute left-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 select-none">
+                                🇮🇳 +91
                             </span>
-                        @else
-                            <span id="phone_sync_badge" class="inline-flex items-center gap-1 text-xs font-extrabold text-blue-600 dark:text-blue-400">
-                                <i class="ph-bold ph-sparkle"></i> Auto-saves to profile
+                            <input
+                                type="tel"
+                                id="checkout_user_phone"
+                                name="phone"
+                                value="{{ $userCleanPhone ?? '' }}"
+                                maxlength="10"
+                                placeholder="10-digit number"
+                                class="w-full rounded-xl border border-slate-300 bg-white pl-16 pr-7 py-1.5 text-xs sm:text-sm font-bold text-slate-950 placeholder-slate-400 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                                autocomplete="tel-national"
+                                inputmode="numeric"
+                            >
+                            <span id="phone_valid_icon" class="absolute right-2 text-emerald-500 text-sm transition-opacity duration-200 {{ !empty($userCleanPhone) ? 'opacity-100' : 'opacity-0' }}">
+                                <i class="ph-bold ph-check-circle"></i>
                             </span>
-                        @endif
-                    </div>
-                    
-                    <div class="relative flex items-center">
-                        <div class="absolute left-4 flex items-center gap-1.5 text-base font-black text-slate-800 dark:text-slate-200 select-none">
-                            <span>🇮🇳 +91</span>
-                            <span class="h-6 w-px bg-slate-300 dark:bg-slate-700 ml-2"></span>
-                        </div>
-                        <input
-                            type="tel"
-                            id="checkout_user_phone"
-                            name="phone"
-                            value="{{ $userCleanPhone ?? '' }}"
-                            maxlength="10"
-                            placeholder="Enter 10-digit mobile number"
-                            class="w-full rounded-2xl border-2 border-slate-300 bg-white pl-28 pr-12 py-3.5 sm:py-4 text-base sm:text-lg font-black tracking-wider text-slate-950 placeholder-slate-400 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-500/15 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-blue-400 shadow-xs"
-                            autocomplete="tel-national"
-                            inputmode="numeric"
-                        >
-                        <span id="phone_valid_icon" class="absolute right-4 text-emerald-500 text-2xl transition-opacity duration-200 {{ !empty($userCleanPhone) ? 'opacity-100' : 'opacity-0' }}">
-                            <i class="ph-bold ph-check-circle"></i>
-                        </span>
-                    </div>
-                    <p id="phone_error_text" class="mt-2 hidden text-xs sm:text-sm font-extrabold text-red-600">
-                        <i class="ph-bold ph-warning-circle"></i> Please enter a valid 10-digit Indian mobile number.
-                    </p>
-                </div>
-
-                {{-- Payment Methods Summary (Clean Trust Strip) --}}
-                <div class="rounded-2xl border border-slate-200/90 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-850">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                            <i class="ph-bold ph-shield-check text-blue-600 text-base"></i> Supported Payment Methods
-                        </span>
-                        <span class="text-[10px] font-black uppercase tracking-wider bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 px-2.5 py-0.5 rounded-full">
-                            RBI Verified
-                        </span>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2 text-center text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                        <div class="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/80 dark:border-slate-700">
-                            <i class="ph-bold ph-qr-code text-blue-600 text-lg block mb-0.5"></i>
-                            <span>UPI / QR</span>
-                        </div>
-                        <div class="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/80 dark:border-slate-700">
-                            <i class="ph-bold ph-credit-card text-blue-600 text-lg block mb-0.5"></i>
-                            <span>Cards</span>
-                        </div>
-                        <div class="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/80 dark:border-slate-700">
-                            <i class="ph-bold ph-bank text-blue-600 text-lg block mb-0.5"></i>
-                            <span>NetBanking</span>
-                        </div>
-                        <div class="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/80 dark:border-slate-700">
-                            <i class="ph-bold ph-wallet text-blue-600 text-lg block mb-0.5"></i>
-                            <span>Wallets</span>
                         </div>
                     </div>
                 </div>
+                <p id="phone_error_text" class="hidden text-xs font-bold text-red-600 -mt-2">
+                    <i class="ph-bold ph-warning-circle"></i> Please enter a valid 10-digit Indian mobile number.
+                </p>
 
-                {{-- Price Breakdown & Total --}}
-                <div class="space-y-2 pt-2 text-sm">
-                    <div class="flex justify-between text-slate-500 dark:text-slate-400">
-                        <span>Plan Price ({{ $billingPeriod === 'yearly' ? '365 Days' : $billing['duration_days'] . ' Days' }})</span>
+                {{-- 2. Supported Payment Methods (Compact Horizontal Chips) --}}
+                <div class="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-850 flex items-center justify-between flex-wrap gap-2">
+                    <span class="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                        <i class="ph-bold ph-shield-check text-blue-600 text-sm"></i> Payment Modes:
+                    </span>
+                    <div class="flex items-center gap-2 text-[11px] font-bold text-slate-700 dark:text-slate-300 flex-wrap">
+                        <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded-lg border border-slate-200/80 dark:border-slate-700 inline-flex items-center gap-1">
+                            <i class="ph-bold ph-qr-code text-blue-600"></i> UPI / QR
+                        </span>
+                        <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded-lg border border-slate-200/80 dark:border-slate-700 inline-flex items-center gap-1">
+                            <i class="ph-bold ph-credit-card text-blue-600"></i> Cards
+                        </span>
+                        <span class="px-2 py-0.5 bg-white dark:bg-slate-800 rounded-lg border border-slate-200/80 dark:border-slate-700 inline-flex items-center gap-1">
+                            <i class="ph-bold ph-bank text-blue-600"></i> NetBanking
+                        </span>
+                    </div>
+                </div>
+
+                {{-- 3. Price Breakdown (Compact Clean Text) --}}
+                <div class="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 space-y-1.5 text-xs dark:border-slate-800 dark:bg-slate-850">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
+                        <span>Plan Price ({{ $billing['duration_days'] }} Days)</span>
                         <span class="font-bold text-slate-800 dark:text-slate-200">₹{{ number_format($billing['subtotal'], 2) }}</span>
                     </div>
 
@@ -247,21 +253,21 @@
                     @endif
 
                     @if($billing['gst'] > 0)
-                        <div class="flex justify-between text-slate-500 dark:text-slate-400">
+                        <div class="flex justify-between text-slate-600 dark:text-slate-400">
                             <span>GST ({{ $billing['gst_rate'] }}%)</span>
                             <span class="font-bold text-slate-800 dark:text-slate-200">₹{{ number_format($billing['gst'], 2) }}</span>
                         </div>
                     @endif
 
-                    <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-baseline justify-between">
-                        <span class="text-base font-black text-slate-900 dark:text-white uppercase tracking-wider">Total Amount</span>
-                        <span class="text-3xl font-black text-blue-600 dark:text-blue-400">
+                    <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">Total Amount</span>
+                        <span class="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400">
                             ₹{{ number_format($billing['final'], 2) }}
                         </span>
                     </div>
                 </div>
 
-                {{-- The SINGLE Master Action Button --}}
+                {{-- 4. Single Master Action Button --}}
                 <form action="{{ route('plans.purchase.process', $plan) }}" method="POST" id="payment-form">
                     @csrf
                     <input type="hidden" name="billing_period" value="{{ $billingPeriod }}">
@@ -273,34 +279,25 @@
                     <button
                         type="{{ $isRazorpay ? 'button' : 'submit' }}"
                         id="pay-button"
-                        class="w-full flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 py-4 sm:py-5 px-6 text-lg sm:text-xl font-black uppercase tracking-wider text-white shadow-xl shadow-blue-500/30 transition active:scale-[0.98] hover:shadow-blue-500/45 hover:from-blue-500 hover:to-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer mt-3"
+                        class="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 py-3.5 sm:py-4 px-5 text-base sm:text-lg font-black uppercase tracking-wider text-white shadow-lg shadow-blue-500/25 transition active:scale-[0.98] hover:shadow-blue-500/40 hover:from-blue-500 hover:to-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                         {{ !$activeGateway ? 'disabled' : '' }}
                     >
-                        <span class="btn-text flex items-center gap-2.5">
-                            <i class="ph-bold ph-lightning-fill text-amber-300 text-2xl"></i>
+                        <span class="btn-text flex items-center gap-2">
+                            <i class="ph-bold ph-lightning-fill text-amber-300 text-xl"></i>
                             <span>Pay ₹{{ number_format($billing['final'], 2) }} · Activate Now</span>
                         </span>
-                        <span class="btn-loader hidden items-center gap-2.5">
-                            <i class="ph-bold ph-circle-notch animate-spin text-2xl"></i>
-                            <span>Connecting to Gateway...</span>
+                        <span class="btn-loader hidden items-center gap-2">
+                            <i class="ph-bold ph-circle-notch animate-spin text-xl"></i>
+                            <span>Connecting Gateway...</span>
                         </span>
                     </button>
                 </form>
 
-                {{-- Trust Footers --}}
-                <div class="grid grid-cols-3 gap-2 pt-2 text-center text-[11px] font-extrabold text-slate-500 dark:text-slate-400">
-                    <div class="flex items-center justify-center gap-1.5">
-                        <i class="ph-bold ph-shield-check text-blue-600 text-base"></i>
-                        <span>256-Bit SSL</span>
-                    </div>
-                    <div class="flex items-center justify-center gap-1.5">
-                        <i class="ph-bold ph-lightning text-amber-500 text-base"></i>
-                        <span>Instant Unlocks</span>
-                    </div>
-                    <div class="flex items-center justify-center gap-1.5">
-                        <i class="ph-bold ph-receipt text-emerald-600 text-base"></i>
-                        <span>GST Invoice</span>
-                    </div>
+                {{-- 5. Trust Badges in Single Horizontal Line --}}
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 dark:text-slate-500 pt-1 px-1">
+                    <span class="flex items-center gap-1"><i class="ph-bold ph-shield-check text-blue-600"></i> 256-Bit SSL</span>
+                    <span class="flex items-center gap-1"><i class="ph-bold ph-lightning text-amber-500"></i> Instant Activation</span>
+                    <span class="flex items-center gap-1"><i class="ph-bold ph-receipt text-emerald-600"></i> Tax Invoice</span>
                 </div>
 
             </div>
