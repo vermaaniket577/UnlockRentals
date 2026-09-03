@@ -19,28 +19,22 @@ class SubscriptionPaymentService
      */
     public function billingBreakdown(Plan $plan, float $effectivePrice, string $billingPeriod, $privateOffer = null): array
     {
-        $isPlanAlreadyAnnual = (int) $plan->duration_days >= 365 || $plan->purpose === 'buy';
-        $months = ($billingPeriod === 'yearly' && !$isPlanAlreadyAnnual) ? 12 : 1;
-        $durationDays = $billingPeriod === 'yearly' ? 365 : (int) $plan->duration_days;
+        $durationDays = (int) $plan->duration_days;
 
         // Use integer paise (1/100th of ₹) arithmetic to prevent floating-point
         // precision loss. E.g. ₹199.00 → 19900 paise → always stays ₹199.00.
-        $subtotalPaise = (int) round((float) $plan->price * $months * 100);
-        $annualDiscountRate = (float) \App\Models\Setting::get('annual_discount_percentage', '20');
+        $subtotalPaise = (int) round((float) $plan->price * 100);
         
-        if ($privateOffer && $privateOffer->billing_period === $billingPeriod) {
+        if ($privateOffer) {
             $offerSubtotalPaise = (int) round((float) $privateOffer->discounted_price * 100);
-            $yearlyDiscountPaise = 0;
+            $discountPaise = max(0, $subtotalPaise - $offerSubtotalPaise);
         } else {
-            $offerSubtotalPaise = (int) round($effectivePrice * $months * 100);
-            $yearlyDiscountPaise = ($billingPeriod === 'yearly' && !$isPlanAlreadyAnnual) 
-                ? (int) round($offerSubtotalPaise * ($annualDiscountRate / 100)) 
-                : 0;
+            $offerSubtotalPaise = (int) round((float) $effectivePrice * 100);
+            $discountPaise = max(0, $subtotalPaise - $offerSubtotalPaise);
         }
 
-        $discountPaise = max(0, $subtotalPaise - $offerSubtotalPaise) + $yearlyDiscountPaise;
-        $taxablePaise = max(0, $offerSubtotalPaise - $yearlyDiscountPaise);
-        $gstRate = (float) \App\Models\Setting::get('gst_rate', '18');
+        $taxablePaise = $offerSubtotalPaise;
+        $gstRate = (float) \App\Models\Setting::get('gst_rate', '0');
         $gstPaise = (int) round($taxablePaise * ($gstRate / 100));
 
         // Razorpay requires minimum ₹1 (100 paise). Enforce this at billing level
@@ -56,7 +50,7 @@ class SubscriptionPaymentService
             'gst_rate' => $gstRate,
             'final' => $finalPaise / 100,
             'final_paise' => $finalPaise,
-            'yearly_savings' => $yearlyDiscountPaise / 100,
+            'yearly_savings' => 0,
         ];
     }
 
