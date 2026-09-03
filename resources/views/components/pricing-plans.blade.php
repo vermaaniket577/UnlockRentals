@@ -656,68 +656,26 @@
 </style>
 
 @php
-    $homePlans = \Illuminate\Support\Facades\Cache::remember('home_plans_preview', 300, function () {
-        return \App\Models\Plan::active()
-            ->where('is_private', false)
-            ->orderBy('sort_order')
-            ->take(3)
-            ->get();
-    });
+    $rentPlans = \App\Models\Plan::active()
+        ->where('is_private', false)
+        ->whereIn('purpose', ['rent', 'both', null])
+        ->orderBy('sort_order')
+        ->take(3)
+        ->get();
 
-    $planMeta = [
-        0 => [
-            'icon'   => 'ph-sparkle',
-            'accent' => '#475569', 'bg' => '#f1f5f9',
-            'glow'   => 'rgba(71,85,105,.12)', 'border' => 'rgba(71,85,105,.2)', 'check' => '#f1f5f9',
-        ],
-        1 => [
-            'icon'   => 'ph-crown',
-            'accent' => '#d97706', 'bg' => '#fffbeb',
-            'glow'   => 'rgba(217,119,6,.15)', 'border' => 'rgba(217,119,6,.3)', 'check' => '#fffbeb',
-        ],
-        2 => [
-            'icon'   => 'ph-lightning',
-            'accent' => '#2563eb', 'bg' => '#eff6ff',
-            'glow'   => 'rgba(37,99,235,.15)', 'border' => 'rgba(37,99,235,.3)', 'check' => '#eff6ff',
-        ],
-    ];
+    $buyPlans = \App\Models\Plan::active()
+        ->where('is_private', false)
+        ->whereIn('purpose', ['buy', 'sale'])
+        ->orderBy('sort_order')
+        ->take(3)
+        ->get();
 
-    // Map feature keywords to Phosphor icons
-    $featureIcons = [
-        'unlock'    => 'ph-lock-key-open',
-        'contact'   => 'ph-address-book',
-        'support'   => 'ph-headset',
-        'priority'  => 'ph-rocket-launch',
-        'email'     => 'ph-envelope-simple',
-        'search'    => 'ph-magnifying-glass',
-        'filter'    => 'ph-funnel',
-        'badge'     => 'ph-medal',
-        'verified'  => 'ph-seal-check',
-        'whatsapp'  => 'ph-whatsapp-logo',
-        'alert'     => 'ph-bell-ringing',
-        'analytics' => 'ph-chart-line-up',
-        'premium'   => 'ph-star',
-        'manager'   => 'ph-user-circle-gear',
-        'dedicated' => 'ph-user-focus',
-        'advanced'  => 'ph-sliders-horizontal',
-        'validity'  => 'ph-calendar-check',
-        'days'      => 'ph-calendar-check',
-        'period'    => 'ph-calendar-check',
-        'instant'   => 'ph-lightning',
-    ];
-
-    if (!function_exists('getFeatureIcon')) {
-        function getFeatureIcon($feature, $featureIcons) {
-            $lower = strtolower($feature);
-            foreach ($featureIcons as $keyword => $icon) {
-                if (str_contains($lower, $keyword)) return $icon;
-            }
-            return 'ph-check-circle';
-        }
+    if ($buyPlans->isEmpty()) {
+        $buyPlans = $rentPlans;
     }
 @endphp
 
-@if($homePlans->count())
+@if($rentPlans->count())
 <section class="ur-plans" id="pricing-plans">
     <div class="ur-plans__accent ur-plans__accent--1"></div>
     <div class="ur-plans__accent ur-plans__accent--2"></div>
@@ -727,10 +685,10 @@
         <div class="ur-plans__header">
             <span class="ur-plans__eyebrow">
                 <i class="ph-bold ph-shield-check"></i>
-                Premium Plans
+                Zero Brokerage Plans
             </span>
-            <h2 class="ur-plans__title">Unlock <span>Premium Access</span></h2>
-            <p class="ur-plans__subtitle">Choose a plan to unlock verified owner contacts, priority support, and premium rental intelligence.</p>
+            <h2 class="ur-plans__title">Unlock <span>Direct Owner Contacts</span></h2>
+            <p class="ur-plans__subtitle">Choose a plan to unlock verified owner contacts, WhatsApp chat, and private visit scheduling.</p>
         </div>
 
         {{-- Standard Segmented Billing Switch --}}
@@ -750,52 +708,24 @@
             </div>
         </div>
 
-        {{-- Interactive Plan Switcher Tabs --}}
-        <div class="ur-plan-tabs" id="ur-plan-tabs">
-            @foreach($homePlans as $index => $plan)
-                @php
-                    $isGold = $index === 1 || str_contains(strtolower($plan->name), 'gold');
-                    $isPlatinum = $index === 2 || str_contains(strtolower($plan->name), 'platinum');
-                    $tabLabel = $isGold ? 'Gold Pass' : ($isPlatinum ? 'Platinum VIP' : 'Silver Pass');
-                    $tabIcon = $isGold ? 'ph-crown' : ($isPlatinum ? 'ph-lightning' : 'ph-sparkle');
-                @endphp
-                <button type="button" class="ur-plan-tab-btn @if($index === 0) active @endif" data-plan-index="{{ $index }}" aria-label="Switch to {{ $tabLabel }}">
-                    <i class="ph-bold {{ $tabIcon }}"></i>
-                    <span>{{ $tabLabel }}</span>
-                    @if($isGold)
-                        <span class="tab-badge">Popular</span>
-                    @endif
-                </button>
-            @endforeach
-        </div>
-
-        {{-- Plans Slider Wrapper --}}
-        <div class="ur-slider-wrapper" id="ur-slider-wrapper">
+        {{-- 1. Rental Plans Slider Wrapper --}}
+        <div class="ur-slider-wrapper" id="ur-rental-slider-wrapper">
             <div class="ur-plans__slider-container">
                 <div class="ur-plans__grid">
-                    @foreach($homePlans as $index => $plan)
+                    @foreach($rentPlans as $index => $plan)
                         @php
-                            $meta = $planMeta[$index] ?? $planMeta[0];
-                            $isGold = $index === 1 || str_contains(strtolower($plan->name), 'gold');
-                            $isPlatinum = $index === 2 || str_contains(strtolower($plan->name), 'platinum');
+                            $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
+                            $isPlatinum = str_contains(strtolower($plan->name), 'plat') || str_contains(strtolower($plan->name), 'diamond');
                             $isSilver = !$isGold && !$isPlatinum;
                             
-                            $cardThemeClass = 'ur-plan-card--silver';
-                            if ($isGold) $cardThemeClass = 'ur-plan-card--gold';
-                            if ($isPlatinum) $cardThemeClass = 'ur-plan-card--platinum';
+                            $cardThemeClass = $isGold ? 'ur-plan-card--gold' : ($isPlatinum ? 'ur-plan-card--platinum' : 'ur-plan-card--silver');
 
                             $monthlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'monthly')->first() : null;
-                            $yearlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'yearly')->first() : null;
                             $originalPrice = (float) $plan->price;
-                            $monthlyPrice = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : $originalPrice;
-                            $yearlyPrice = ($yearlyOffer && $yearlyOffer->discounted_price !== null) ? (float) $yearlyOffer->discounted_price : round($originalPrice * 12 * 0.8);
-                            $hasOffer = ($monthlyOffer || $yearlyOffer);
+                            $price = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : $originalPrice;
+                            $planUid = 'home_rent_' . $plan->id;
                         @endphp
-                        <div class="ur-plan-card {{ $cardThemeClass }}"
-                             style="--plan-accent: {{ $meta['accent'] }}; --plan-bg: {{ $meta['bg'] }}; --plan-glow: {{ $meta['glow'] }}; --plan-border: {{ $meta['border'] }}; --plan-check-bg: {{ $meta['check'] }};"
-                             data-plan-index="{{ $index }}"
-                             data-has-monthly-offer="{{ $monthlyOffer ? 'true' : 'false' }}"
-                             data-has-yearly-offer="{{ $yearlyOffer ? 'true' : 'false' }}">
+                        <div class="ur-plan-card {{ $cardThemeClass }}" data-plan-index="{{ $index }}">
 
                             @if($isGold)
                                 <span class="ur-plan-card__badge"><i class="ph-bold ph-fire"></i> Most Popular</span>
@@ -803,146 +733,136 @@
                                 <span class="ur-plan-card__badge"><i class="ph-bold ph-lightning"></i> VIP Choice</span>
                             @endif
 
-                            <div class="ur-plan-card__icon" style="position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; background: var(--plan-bg);">
-                                @if($isSilver)
-                                    <lottie-player src="{{ asset('lottie/sparkles.json') }}" background="transparent" speed="1.2" style="width: 2.75rem; height: 2.75rem;" loop autoplay></lottie-player>
+                            {{-- High-Definition Vector SVG Icon --}}
+                            <div class="ur-plan-card__icon" style="position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                @if($plan->image_path)
+                                    <img src="{{ asset('storage/' . $plan->image_path) }}" alt="{{ $plan->name }}" style="width: 2.25rem; height: 2.25rem; object-fit: contain;">
                                 @elseif($isGold)
-                                    <lottie-player src="{{ asset('lottie/crown.json') }}" background="transparent" speed="1.0" style="width: 2.75rem; height: 2.75rem;" loop autoplay></lottie-player>
+                                    {{-- Luxury 3D Imperial Gold Crown --}}
+                                    <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="goldG_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#FDE047"/>
+                                                <stop offset="45%" stop-color="#F59E0B"/>
+                                                <stop offset="100%" stop-color="#D97706"/>
+                                            </linearGradient>
+                                            <linearGradient id="goldB_{{ $planUid }}" x1="8" y1="34" x2="40" y2="38" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#FFFBEB"/>
+                                                <stop offset="100%" stop-color="#FDE68A"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldG_{{ $planUid }})"/>
+                                        <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
+                                        <rect x="8" y="35" width="32" height="4" rx="2" fill="url(#goldB_{{ $planUid }})"/>
+                                        <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
+                                        <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                        <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                        <circle cx="16" cy="37" r="1.5" fill="#EF4444"/>
+                                        <circle cx="24" cy="37" r="2" fill="#10B981"/>
+                                        <circle cx="32" cy="37" r="1.5" fill="#EF4444"/>
+                                    </svg>
                                 @elseif($isPlatinum)
-                                    <lottie-player src="{{ asset('lottie/lightning.json') }}" background="transparent" speed="1.0" style="width: 2.75rem; height: 2.75rem;" loop autoplay></lottie-player>
+                                    {{-- Brilliant Cut Royal Sapphire Diamond --}}
+                                    <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="platG1_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#60A5FA"/>
+                                                <stop offset="50%" stop-color="#3B82F6"/>
+                                                <stop offset="100%" stop-color="#1D4ED8"/>
+                                            </linearGradient>
+                                            <linearGradient id="platFacet_{{ $planUid }}" x1="14" y1="10" x2="34" y2="20" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#EFF6FF"/>
+                                                <stop offset="100%" stop-color="#BFDBFE"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <polygon points="14,10 34,10 42,20 6,20" fill="url(#platG1_{{ $planUid }})"/>
+                                        <polygon points="18,10 30,10 33,20 15,20" fill="url(#platFacet_{{ $planUid }})"/>
+                                        <polygon points="6,20 42,20 24,42" fill="url(#platG1_{{ $planUid }})"/>
+                                        <polygon points="15,20 33,20 24,42" fill="#93C5FD" fill-opacity="0.9"/>
+                                        <path d="M37 7L38.5 11.5L43 13L38.5 14.5L37 19L35.5 14.5L31 13L35.5 11.5L37 7Z" fill="#FFFFFF"/>
+                                    </svg>
                                 @else
-                                    <i class="ph-bold {{ $meta['icon'] }}"></i>
+                                    {{-- High-End Metallic Silver Shield --}}
+                                    <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="silvG_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#CBD5E1"/>
+                                                <stop offset="40%" stop-color="#64748B"/>
+                                                <stop offset="100%" stop-color="#334155"/>
+                                            </linearGradient>
+                                            <linearGradient id="silvShine_{{ $planUid }}" x1="12" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#F8FAFC" stop-opacity="0.9"/>
+                                                <stop offset="100%" stop-color="#94A3B8" stop-opacity="0.3"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvG_{{ $planUid }})"/>
+                                        <path d="M24 7L11 12V21.5C11 30.2 16.5 38.3 24 40C31.5 38.3 37 30.2 37 21.5V12L24 7Z" fill="url(#silvShine_{{ $planUid }})"/>
+                                        <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
+                                    </svg>
                                 @endif
                             </div>
 
-                            @php
-                                $cleanDesc = 'Ideal for tenants looking to quickly connect with verified property owners.';
-                                if ($isGold) {
-                                    $cleanDesc = 'Most popular choice for active seekers wanting fast-track verified contacts.';
-                                } elseif ($isPlatinum) {
-                                    $cleanDesc = 'VIP comprehensive pass with dedicated relationship support & priority assistance.';
-                                }
-                            @endphp
-
                             <h3 class="ur-plan-card__name">{{ $plan->name }}</h3>
-                            <p class="ur-plan-card__desc">{{ $cleanDesc }}</p>
+                            <p class="ur-plan-card__desc">{{ $plan->description ?? 'Direct owner contact access for verified rental listings.' }}</p>
 
                             <div class="ur-plan-card__price" style="flex-wrap: wrap; align-items: baseline;">
-                                <div class="special-offer-badge" style="width: 100%; display: {{ $hasOffer ? 'flex' : 'none' }}; align-items: center; gap: 8px; margin-bottom: 4px;" data-original-monthly="{{ number_format($originalPrice, 0) }}" data-original-yearly="{{ number_format(round($originalPrice * 12 * 0.8), 0) }}">
-                                    <span style="font-size: 0.65rem; font-weight: 800; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;">Special Offer</span>
-                                    <span class="special-offer-original-price" style="font-size: 0.875rem; text-decoration: line-through; color: #94a3b8; font-weight: 700;">₹{{ number_format($originalPrice, 0) }}</span>
-                                </div>
                                 <span class="ur-plan-card__currency">₹</span>
-                                <span class="ur-plan-card__amount"
-                                      data-monthly="{{ number_format($monthlyPrice, 0) }}"
-                                      data-yearly="{{ number_format($yearlyPrice, 0) }}">{{ number_format($monthlyPrice, 0) }}</span>
-                                <span class="ur-plan-card__period">/ pass</span>
+                                <span class="ur-plan-card__amount">{{ number_format($price, 0) }}</span>
+                                <span class="ur-plan-card__period">/ rent pass</span>
                             </div>
                             <div class="ur-plan-card__price-note">
-                                <i class="ph-bold ph-seal-check"></i>
-                                <span class="price-note-text">Zero Brokerage · GST Included · Instant Access</span>
+                                <i class="ph-bold ph-calendar-check"></i>
+                                <span class="price-note-text">{{ $plan->duration_days }} Days Validity · Zero Brokerage</span>
                             </div>
 
                             <div class="ur-plan-card__divider"></div>
 
-                            @php
-                                $cleanFeatures = [];
-                                
-                                // 1. Direct Owner Unlocks
-                                $cleanFeatures[] = [
-                                    'icon' => 'ph-lock-key-open',
-                                    'html' => '<strong>' . $plan->contact_limit . ' Verified Owner</strong> Direct Contacts'
-                                ];
-                                
-                                // 2. Search Pass Validity
-                                $cleanFeatures[] = [
-                                    'icon' => 'ph-calendar-check',
-                                    'html' => '<strong>' . $plan->duration_days . ' Days</strong> Access Validity'
-                                ];
-                                
-                                // 3. Instant Contact method
-                                $cleanFeatures[] = [
-                                    'icon' => 'ph-phone-call',
-                                    'html' => 'Direct Phone & WhatsApp Access'
-                                ];
-
-                                // 4. Tiered perks
-                                if ($isSilver) {
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-envelope-simple',
-                                        'html' => 'Standard Email Support (24h turnaround)'
-                                    ];
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-shield-check',
-                                        'html' => 'Zero Brokerage Guarantee'
-                                    ];
-                                } elseif ($isGold) {
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-sliders-horizontal',
-                                        'html' => 'Advanced Neighborhood & Amenity Filters'
-                                    ];
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-headset',
-                                        'html' => 'Priority Support & Fast-Track Assistance'
-                                    ];
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-bell-ringing',
-                                        'html' => 'Real-Time New Listing Alerts'
-                                    ];
-                                } elseif ($isPlatinum) {
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-user-focus',
-                                        'html' => 'Dedicated Relationship Concierge'
-                                    ];
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-whatsapp-logo',
-                                        'html' => 'Instant WhatsApp Direct Property Alerts'
-                                    ];
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-seal-check',
-                                        'html' => 'Premium Verified Seeker Profile Badge'
-                                    ];
-                                    $cleanFeatures[] = [
-                                        'icon' => 'ph-file-text',
-                                        'html' => 'Digital Lease Agreement Assistance'
-                                    ];
-                                }
-                            @endphp
-
                             <ul class="ur-plan-card__features">
-                                @foreach($cleanFeatures as $f)
-                                    <li>
-                                        <span class="ur-plan-card__f-icon"><i class="ph-bold {{ $f['icon'] }}"></i></span>
-                                        <span>{!! $f['html'] !!}</span>
-                                    </li>
-                                @endforeach
+                                <li>
+                                    <span class="ur-plan-card__f-icon"><i class="ph-bold ph-lock-key-open"></i></span>
+                                    <span><strong>{{ $plan->contact_limit }} Verified Owner</strong> Direct Contacts</span>
+                                </li>
+                                <li>
+                                    <span class="ur-plan-card__f-icon"><i class="ph-bold ph-phone-call"></i></span>
+                                    <span>Direct Phone & WhatsApp Unlock</span>
+                                </li>
+                                <li>
+                                    <span class="ur-plan-card__f-icon"><i class="ph-bold ph-shield-check"></i></span>
+                                    <span>Zero Brokerage Guaranteed</span>
+                                </li>
+                                @if($plan->features && is_array($plan->features))
+                                    @foreach(array_slice($plan->features, 0, 3) as $feature)
+                                        @if(!empty(trim($feature)))
+                                            <li>
+                                                <span class="ur-plan-card__f-icon"><i class="ph-bold ph-check-circle"></i></span>
+                                                <span>{{ $feature }}</span>
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                @endif
                             </ul>
 
                             {{-- High-Impact Pay Now Button --}}
                             <div class="ur-plan-card__pay-cta">
                                 @php
-                                    $checkoutUrl = Route::has('plans.checkout') ? route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) : url('/plans');
+                                    $checkoutUrl = route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]);
                                 @endphp
                                 @guest
                                     <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
-                                       onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', this.getAttribute('data-checkout-url') || '{{ $checkoutUrl }}');"
-                                       data-checkout-url="{{ $checkoutUrl }}"
-                                       data-no-loader="true"
-                                       data-ur-loader-skip="true"
+                                       onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $checkoutUrl }}');"
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
                                        title="Pay Now &amp; Unlock Verified Contacts">
                                         <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
-                                        <span>Pay Now · Instant Access</span>
-                                        <span class="pay-amount-pill cta-price-display" data-monthly="₹{{ number_format($monthlyPrice, 0) }}" data-yearly="₹{{ number_format($yearlyPrice, 0) }}">₹{{ number_format($monthlyPrice, 0) }}</span>
+                                        <span>Unlock Contacts</span>
+                                        <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
                                 @else
                                     <a href="{{ $checkoutUrl }}" 
-                                       data-checkout-url="{{ $checkoutUrl }}"
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
                                        title="Pay Now &amp; Unlock Verified Contacts">
                                         <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
-                                        <span>Pay Now · Instant Access</span>
-                                        <span class="pay-amount-pill cta-price-display" data-monthly="₹{{ number_format($monthlyPrice, 0) }}" data-yearly="₹{{ number_format($yearlyPrice, 0) }}">₹{{ number_format($monthlyPrice, 0) }}</span>
+                                        <span>Unlock Contacts</span>
+                                        <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
                                 @endguest
                                 <div class="ur-plan-card__trust-note">
@@ -954,25 +874,171 @@
                     @endforeach
                 </div>
             </div>
+        </div>
 
-            {{-- Slider Navigation Controls --}}
-            <div class="ur-slider-controls">
-                <button type="button" class="ur-slider-btn ur-slider-btn--prev" aria-label="Previous plan">
-                    <i class="ph-bold ph-caret-left"></i>
-                </button>
-                <div class="ur-slider-dots">
-                    @foreach($homePlans as $index => $plan)
-                        <span class="ur-slider-dot @if($index === 0) active @endif" data-index="{{ $index }}" aria-label="Go to slide {{ $index + 1 }}"></span>
+        {{-- 2. Buyer Plans Slider Wrapper (Shown when Buyer Pass selected) --}}
+        <div class="ur-slider-wrapper" id="ur-buyer-slider-wrapper" style="display: none;">
+            <div class="ur-plans__slider-container">
+                <div class="ur-plans__grid">
+                    @foreach($buyPlans as $index => $plan)
+                        @php
+                            $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
+                            $isPlatinum = str_contains(strtolower($plan->name), 'plat') || str_contains(strtolower($plan->name), 'diamond');
+                            $isSilver = !$isGold && !$isPlatinum;
+                            
+                            $cardThemeClass = $isGold ? 'ur-plan-card--gold' : ($isPlatinum ? 'ur-plan-card--platinum' : 'ur-plan-card--silver');
+
+                            $price = (float) $plan->price;
+                            $planUid = 'home_buy_' . $plan->id;
+                        @endphp
+                        <div class="ur-plan-card {{ $cardThemeClass }}" data-plan-index="{{ $index }}">
+
+                            @if($isGold)
+                                <span class="ur-plan-card__badge"><i class="ph-bold ph-fire"></i> Most Popular</span>
+                            @elseif($isPlatinum)
+                                <span class="ur-plan-card__badge"><i class="ph-bold ph-lightning"></i> VIP Choice</span>
+                            @endif
+
+                            {{-- High-Definition Vector SVG Icon --}}
+                            <div class="ur-plan-card__icon" style="position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                @if($plan->image_path)
+                                    <img src="{{ asset('storage/' . $plan->image_path) }}" alt="{{ $plan->name }}" style="width: 2.25rem; height: 2.25rem; object-fit: contain;">
+                                @elseif($isGold)
+                                    {{-- Luxury 3D Imperial Gold Crown --}}
+                                    <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="goldG_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#FDE047"/>
+                                                <stop offset="45%" stop-color="#F59E0B"/>
+                                                <stop offset="100%" stop-color="#D97706"/>
+                                            </linearGradient>
+                                            <linearGradient id="goldB_{{ $planUid }}" x1="8" y1="34" x2="40" y2="38" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#FFFBEB"/>
+                                                <stop offset="100%" stop-color="#FDE68A"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldG_{{ $planUid }})"/>
+                                        <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
+                                        <rect x="8" y="35" width="32" height="4" rx="2" fill="url(#goldB_{{ $planUid }})"/>
+                                        <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
+                                        <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                        <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                        <circle cx="16" cy="37" r="1.5" fill="#EF4444"/>
+                                        <circle cx="24" cy="37" r="2" fill="#10B981"/>
+                                        <circle cx="32" cy="37" r="1.5" fill="#EF4444"/>
+                                    </svg>
+                                @elseif($isPlatinum)
+                                    {{-- Brilliant Cut Royal Sapphire Diamond --}}
+                                    <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="platG1_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#60A5FA"/>
+                                                <stop offset="50%" stop-color="#3B82F6"/>
+                                                <stop offset="100%" stop-color="#1D4ED8"/>
+                                            </linearGradient>
+                                            <linearGradient id="platFacet_{{ $planUid }}" x1="14" y1="10" x2="34" y2="20" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#EFF6FF"/>
+                                                <stop offset="100%" stop-color="#BFDBFE"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <polygon points="14,10 34,10 42,20 6,20" fill="url(#platG1_{{ $planUid }})"/>
+                                        <polygon points="18,10 30,10 33,20 15,20" fill="url(#platFacet_{{ $planUid }})"/>
+                                        <polygon points="6,20 42,20 24,42" fill="url(#platG1_{{ $planUid }})"/>
+                                        <polygon points="15,20 33,20 24,42" fill="#93C5FD" fill-opacity="0.9"/>
+                                        <path d="M37 7L38.5 11.5L43 13L38.5 14.5L37 19L35.5 14.5L31 13L35.5 11.5L37 7Z" fill="#FFFFFF"/>
+                                    </svg>
+                                @else
+                                    {{-- High-End Metallic Silver Shield --}}
+                                    <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="silvG_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#CBD5E1"/>
+                                                <stop offset="40%" stop-color="#64748B"/>
+                                                <stop offset="100%" stop-color="#334155"/>
+                                            </linearGradient>
+                                            <linearGradient id="silvShine_{{ $planUid }}" x1="12" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                                                <stop offset="0%" stop-color="#F8FAFC" stop-opacity="0.9"/>
+                                                <stop offset="100%" stop-color="#94A3B8" stop-opacity="0.3"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvG_{{ $planUid }})"/>
+                                        <path d="M24 7L11 12V21.5C11 30.2 16.5 38.3 24 40C31.5 38.3 37 30.2 37 21.5V12L24 7Z" fill="url(#silvShine_{{ $planUid }})"/>
+                                        <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
+                                    </svg>
+                                @endif
+                            </div>
+
+                            <h3 class="ur-plan-card__name">{{ $plan->name }}</h3>
+                            <p class="ur-plan-card__desc">{{ $plan->description ?? 'Direct owner contact access for verified property purchases.' }}</p>
+
+                            <div class="ur-plan-card__price" style="flex-wrap: wrap; align-items: baseline;">
+                                <span class="ur-plan-card__currency">₹</span>
+                                <span class="ur-plan-card__amount">{{ number_format($price, 0) }}</span>
+                                <span class="ur-plan-card__period">/ annual pass</span>
+                            </div>
+                            <div class="ur-plan-card__price-note">
+                                <i class="ph-bold ph-shield-check"></i>
+                                <span class="price-note-text">{{ $plan->duration_days }} Days Priority Buyer Access</span>
+                            </div>
+
+                            <div class="ur-plan-card__divider"></div>
+
+                            <ul class="ur-plan-card__features">
+                                <li>
+                                    <span class="ur-plan-card__f-icon"><i class="ph-bold ph-lock-key-open"></i></span>
+                                    <span><strong>{{ $plan->contact_limit }} Verified Seller</strong> Direct Contacts</span>
+                                </li>
+                                <li>
+                                    <span class="ur-plan-card__f-icon"><i class="ph-bold ph-phone-call"></i></span>
+                                    <span>Direct Phone & WhatsApp Unlock</span>
+                                </li>
+                                <li>
+                                    <span class="ur-plan-card__f-icon"><i class="ph-bold ph-shield-check"></i></span>
+                                    <span>Zero Brokerage Guaranteed</span>
+                                </li>
+                                @if($plan->features && is_array($plan->features))
+                                    @foreach(array_slice($plan->features, 0, 3) as $feature)
+                                        @if(!empty(trim($feature)))
+                                            <li>
+                                                <span class="ur-plan-card__f-icon"><i class="ph-bold ph-check-circle"></i></span>
+                                                <span>{{ $feature }}</span>
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                @endif
+                            </ul>
+
+                            {{-- High-Impact Pay Now Button --}}
+                            <div class="ur-plan-card__pay-cta">
+                                @php
+                                    $checkoutUrl = route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]);
+                                @endphp
+                                @guest
+                                    <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
+                                       onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $checkoutUrl }}');"
+                                       class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
+                                       title="Pay Now &amp; Unlock Verified Contacts">
+                                        <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                        <span>Unlock Buyer Pass</span>
+                                        <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
+                                    </a>
+                                @else
+                                    <a href="{{ $checkoutUrl }}" 
+                                       class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
+                                       title="Pay Now &amp; Unlock Verified Contacts">
+                                        <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                        <span>Unlock Buyer Pass</span>
+                                        <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
+                                    </a>
+                                @endguest
+                                <div class="ur-plan-card__trust-note">
+                                    <i class="ph-bold ph-shield-check"></i>
+                                    <span>100% Secure Checkout · Instant Activation</span>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
                 </div>
-                <button type="button" class="ur-slider-btn ur-slider-btn--next" aria-label="Next plan">
-                    <i class="ph-bold ph-caret-right"></i>
-                </button>
-            </div>
-
-            {{-- Visual Auto-Slide Progress Bar --}}
-            <div class="ur-slider-progress-wrap" title="Auto-slide active">
-                <div class="ur-slider-progress-bar" id="ur-slider-progress"></div>
             </div>
         </div>
 
@@ -1005,8 +1071,8 @@
         // Billing Toggle Logic (Segmented Switch)
         const monthlyBtn = document.getElementById('billing-monthly');
         const yearlyBtn = document.getElementById('billing-yearly');
-        const priceNotes = document.querySelectorAll('.price-note-text');
-        const billingInputs = document.querySelectorAll('.billing-period-input');
+        const rentalWrapper = document.getElementById('ur-rental-slider-wrapper');
+        const buyerWrapper = document.getElementById('ur-buyer-slider-wrapper');
         
         let isYearly = false;
         
@@ -1022,90 +1088,10 @@
                 yearlyBtn.setAttribute('aria-selected', isYearly ? 'true' : 'false');
             }
             
-            billingInputs.forEach(input => {
-                input.value = isYearly ? 'yearly' : 'monthly';
-            });
-            
-            cards.forEach(card => {
-                const amountEl = card.querySelector('.ur-plan-card__amount');
-                const badgeEl = card.querySelector('.special-offer-badge');
-                const ctaPriceEl = card.querySelector('.cta-price-display');
-                
-                if (amountEl) {
-                    const monthlyPrice = amountEl.getAttribute('data-monthly');
-                    const yearlyPrice = amountEl.getAttribute('data-yearly');
-                    const activePrice = isYearly ? yearlyPrice : monthlyPrice;
-                    
-                    amountEl.style.transition = 'transform 0.15s, opacity 0.15s';
-                    amountEl.style.transform = 'scale(0.9)';
-                    amountEl.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        amountEl.textContent = activePrice;
-                        amountEl.style.transform = 'scale(1)';
-                        amountEl.style.opacity = '1';
-                    }, 150);
-                }
-
-                if (ctaPriceEl) {
-                    const monthlyText = ctaPriceEl.getAttribute('data-monthly');
-                    const yearlyText = ctaPriceEl.getAttribute('data-yearly');
-                    ctaPriceEl.textContent = isYearly ? yearlyText : monthlyText;
-                }
-                
-                if (badgeEl) {
-                    const hasMonthlyOffer = card.getAttribute('data-has-monthly-offer') === 'true';
-                    const hasYearlyOffer = card.getAttribute('data-has-yearly-offer') === 'true';
-                    const originalPriceEl = badgeEl.querySelector('.special-offer-original-price');
-                    
-                    if (isYearly && hasYearlyOffer) {
-                        badgeEl.style.display = 'flex';
-                        if (originalPriceEl) originalPriceEl.textContent = '₹' + badgeEl.getAttribute('data-original-yearly');
-                    } else if (!isYearly && hasMonthlyOffer) {
-                        badgeEl.style.display = 'flex';
-                        if (originalPriceEl) originalPriceEl.textContent = '₹' + badgeEl.getAttribute('data-original-monthly');
-                    } else {
-                        badgeEl.style.display = 'none';
-                    }
-                }
-            });
-
-            const periodLabels = document.querySelectorAll('.ur-plan-card__period');
-            periodLabels.forEach(periodEl => {
-                periodEl.style.transition = 'opacity 0.15s';
-                periodEl.style.opacity = '0';
-                setTimeout(() => {
-                    periodEl.textContent = isYearly ? '/ annual pass' : '/ pass';
-                    periodEl.style.opacity = '1';
-                }, 150);
-            });
-            
-            priceNotes.forEach(noteEl => {
-                noteEl.style.transition = 'opacity 0.15s';
-                noteEl.style.opacity = '0';
-                setTimeout(() => {
-                    noteEl.innerHTML = isYearly 
-                        ? 'Save 20% · Priority Buyer Contact Pass' 
-                        : 'Zero Brokerage · GST Included · Instant Access';
-                    noteEl.style.opacity = '1';
-                }, 150);
-            });
-
-            const checkoutLinks = document.querySelectorAll('.plan-checkout-link');
-            checkoutLinks.forEach(link => {
-                const rawUrl = link.getAttribute('data-checkout-url') || link.href;
-                const url = new URL(rawUrl, window.location.origin);
-                url.searchParams.set('billing', isYearly ? 'yearly' : 'monthly');
-                url.searchParams.set('direct', '1');
-                const finalHref = url.pathname + url.search;
-                
-                link.setAttribute('data-checkout-url', finalHref);
-                if (link.hasAttribute('onclick')) {
-                    link.href = '/login?redirect=' + encodeURIComponent(finalHref);
-                } else {
-                    link.href = finalHref;
-                }
-            });
+            if (rentalWrapper && buyerWrapper) {
+                rentalWrapper.style.display = isYearly ? 'none' : 'block';
+                buyerWrapper.style.display = isYearly ? 'block' : 'none';
+            }
         }
         
         monthlyBtn?.addEventListener('click', () => {
