@@ -115,6 +115,7 @@
     const textLabel = document.getElementById('ur-loader-status-text');
 
     let timer         = null;
+    let autoDismissTimer = null;
     let fakeWidth     = 0;
     let started       = false;
 
@@ -124,6 +125,7 @@
         fakeWidth = 0;
         
         clearInterval(timer);
+        clearTimeout(autoDismissTimer);
 
         if (bar) {
             bar.style.width = '0%';
@@ -141,10 +143,14 @@
                 if (line) line.style.width = fakeWidth + '%';
             }
         }, 80);
+
+        // Safety auto-dismiss: never keep the loader stuck if page navigation doesn't unload (e.g. file downloads)
+        autoDismissTimer = setTimeout(done, 3000);
     }
 
     function done() {
         clearInterval(timer);
+        clearTimeout(autoDismissTimer);
 
         if (bar) bar.style.width = '100%';
         if (line) line.style.width = '100%';
@@ -163,6 +169,11 @@
 
     window.URLoader = { show: start, hide: done };
 
+    // Dismiss overlay on click in case of edge cases
+    if (overlay) {
+        overlay.addEventListener('click', done);
+    }
+
     // Trigger on internal navigation link clicks
     document.addEventListener('click', function (e) {
         if (e.defaultPrevented) return;
@@ -170,7 +181,14 @@
         const link = e.target.closest('a[href]');
         if (!link) return;
 
-        if (link.dataset.noLoader === 'true' || 
+        // Skip loader on download links, files, modals, and special triggers
+        if (link.hasAttribute('download') || 
+            link.getAttribute('download') !== null ||
+            link.href.includes('/download/') ||
+            link.href.endsWith('.apk') ||
+            link.href.endsWith('.pdf') ||
+            link.href.endsWith('.zip') ||
+            link.dataset.noLoader === 'true' || 
             link.dataset.urLoaderSkip === 'true' || 
             link.getAttribute('data-no-loader') === 'true' ||
             (link.getAttribute('onclick') && link.getAttribute('onclick').includes('openAuthModal'))) {
@@ -178,7 +196,7 @@
         }
 
         const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript') || link.target === '_blank') return;
+        if (!href || href.startsWith('#') || href.startsWith('javascript') || href.startsWith('tel:') || href.startsWith('mailto:') || link.target === '_blank') return;
 
         try {
             const url = new URL(href, window.location.origin);
@@ -216,8 +234,9 @@
         } catch (_) {}
     }, { passive: true });
 
-    // Hide on page load
+    // Hide on page load & back/forward navigation
     window.addEventListener('pageshow', done);
+    window.addEventListener('focus', done);
     if (document.readyState === 'complete') { done(); }
     else { window.addEventListener('load', done); }
 })();
