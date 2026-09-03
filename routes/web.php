@@ -227,6 +227,31 @@ Route::get('/sitemap.xml', function () {
       ->header('Cache-Control', 'public, max-age=3600');
 })->name('sitemap.xml');
 
+// LLMs.txt routes (Standard for LLM/AI crawlers and knowledge discovery)
+Route::get('/llms.txt', function () {
+    $filePath = public_path('llms.txt');
+    if (file_exists($filePath)) {
+        return response(file_get_contents($filePath), 200)
+            ->header('Content-Type', 'text/markdown; charset=UTF-8')
+            ->header('Cache-Control', 'public, max-age=3600');
+    }
+    abort(404);
+})->name('llms.txt');
+
+Route::get('/.well-known/llms.txt', function () {
+    return redirect()->route('llms.txt');
+});
+
+Route::get('/llms-full.txt', function () {
+    $filePath = public_path('llms-full.txt');
+    if (file_exists($filePath)) {
+        return response(file_get_contents($filePath), 200)
+            ->header('Content-Type', 'text/markdown; charset=UTF-8')
+            ->header('Cache-Control', 'public, max-age=3600');
+    }
+    abort(404);
+})->name('llms.full.txt');
+
 // App Download Landing Page
 Route::get('/app', function () {
     return view('app.download');

@@ -10,6 +10,7 @@ class Plan extends Model
     protected $fillable = [
         'name',
         'description',
+        'purpose',
         'price',
         'duration_days',
         'contact_limit',
@@ -52,6 +53,22 @@ class Plan extends Model
     public function scopePublic($query)
     {
         return $query->active()->where('is_private', false);
+    }
+
+    /**
+     * Scope to get rental plans.
+     */
+    public function scopeRent($query)
+    {
+        return $query->whereIn('purpose', ['rent', 'both', null]);
+    }
+
+    /**
+     * Scope to get buyer plans.
+     */
+    public function scopeBuy($query)
+    {
+        return $query->whereIn('purpose', ['buy', 'sale', 'both']);
     }
 
     /**

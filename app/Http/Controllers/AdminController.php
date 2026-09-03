@@ -397,12 +397,17 @@ class AdminController extends Controller
     // ─── PLAN MANAGEMENT ────────────────────────
 
     /**
-     * List all plans.
+     * List all plans with optional purpose filter.
      */
-    public function plans()
+    public function plans(Request $request)
     {
-        $plans = Plan::orderBy('sort_order')->get();
-        return view('admin.plans', compact('plans'));
+        $query = Plan::query();
+        if ($request->filled('purpose') && in_array($request->purpose, ['rent', 'buy'])) {
+            $query->whereIn('purpose', [$request->purpose, 'both']);
+        }
+        $plans = $query->orderBy('sort_order')->get();
+        $selectedPurpose = $request->input('purpose', 'all');
+        return view('admin.plans', compact('plans', 'selectedPurpose'));
     }
 
     /**
@@ -421,6 +426,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'purpose' => 'required|string|in:rent,buy,both',
             'price' => 'required|numeric|min:0',
             'duration_days' => 'required|integer|min:1',
             'contact_limit' => 'required|integer|min:1',
@@ -463,6 +469,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'purpose' => 'required|string|in:rent,buy,both',
             'price' => 'required|numeric|min:0',
             'duration_days' => 'required|integer|min:1',
             'contact_limit' => 'required|integer|min:1',

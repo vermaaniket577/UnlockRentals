@@ -34,6 +34,17 @@ class SeoController extends Controller
         $gender = $params['gender'] ?? null;
         $budget = $params['budget'] ?? null;
         $type = $params['type'] ?? 'property';
+        $isNearMe = $params['is_near_me'] ?? false;
+
+        // Dynamic query-time overrides for near-me landing pages
+        if ($request->filled('district')) {
+            $city = ucwords(str_replace('-', ' ', $request->district));
+        } elseif ($request->filled('city')) {
+            $city = ucwords(str_replace('-', ' ', $request->city));
+        }
+        if ($request->filled('locality')) {
+            $locality = ucwords(str_replace('-', ' ', $request->locality));
+        }
 
         // Map type slug to display name
         $typeDisplay = 'Property';
@@ -56,8 +67,12 @@ class SeoController extends Controller
         if ($type === 'room') {
             $query->where(function ($q) {
                 $q->where('bedrooms', 1)
+                  ->orWhere('bedrooms', 0)
                   ->orWhere('title', 'like', '%room%')
-                  ->orWhere('description', 'like', '%room%');
+                  ->orWhere('title', 'like', '%1rk%')
+                  ->orWhere('title', 'like', '%1 rk%')
+                  ->orWhere('description', 'like', '%room%')
+                  ->orWhere('description', 'like', '%1rk%');
             });
         } elseif ($type === 'pg') {
             $query->where(function ($q) {
@@ -168,11 +183,11 @@ class SeoController extends Controller
         }
 
         // Construct SEO tags and titles dynamically
-        $seoTitleStr = $this->buildSeoTitle($typeDisplay, $city, $locality, $landmark, $gender, $budget);
-        $metaDescription = $this->buildMetaDescription($typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties->total());
+        $seoTitleStr = $this->buildSeoTitle($typeDisplay, $city, $locality, $landmark, $gender, $budget, $isNearMe);
+        $metaDescription = $this->buildMetaDescription($typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties->total(), $isNearMe);
 
         // Generate JSON-LD Schemas
-        $schemas = $this->generateSchemas($seo_slug, $seoTitleStr, $metaDescription, $typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties);
+        $schemas = $this->generateSchemas($seo_slug, $seoTitleStr, $metaDescription, $typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties, $isNearMe);
 
         return view('seo.landing', [
             'properties' => $properties,
@@ -188,6 +203,7 @@ class SeoController extends Controller
             'typeDisplay' => $typeDisplay,
             'gender' => $gender,
             'budget' => $budget,
+            'isNearMe' => $isNearMe,
             'schemas' => $schemas,
         ]);
     }
@@ -197,6 +213,57 @@ class SeoController extends Controller
      */
     protected function parseSlug($slug)
     {
+        $cleanSlug = strtolower(trim($slug));
+
+        // Pattern 0: High-Priority "Near Me" / "Near My Location" Slugs
+        $nearMeMap = [
+            'room-near-my-location' => 'room',
+            'rooms-near-my-location' => 'room',
+            'room-for-rent-near-me' => 'room',
+            'rooms-for-rent-near-me' => 'room',
+            'room-near-me' => 'room',
+            'rooms-near-me' => 'room',
+            'single-room-for-rent-near-me' => 'room',
+            'single-room-near-me' => 'room',
+            '1rk-near-my-location' => 'room',
+            '1rk-room-near-me' => 'room',
+            'pg-near-me' => 'pg',
+            'pg-near-my-location' => 'pg',
+            'hostel-near-me' => 'pg',
+            'flat-for-rent-near-me' => 'flat',
+            'flats-for-rent-near-me' => 'flat',
+            'flats-near-my-location' => 'flat',
+            'apartment-for-rent-near-me' => 'apartment',
+            'apartments-near-my-location' => 'apartment',
+            'house-for-rent-near-me' => 'house',
+            'houses-near-my-location' => 'house',
+            'houses-near-me' => 'house',
+        ];
+
+        if (isset($nearMeMap[$cleanSlug])) {
+            return [
+                'type' => $nearMeMap[$cleanSlug],
+                'is_near_me' => true,
+            ];
+        }
+
+        // Pattern 0b: Regex for arbitrary "type-for-rent-near-me" or "type-near-my-location"
+        if (preg_match('/^(single-room|room|rooms|pg|flat|flats|house|houses|apartment|apartments)-(near-my-location|for-rent-near-me|near-me|for-rent-near-my-location)$/i', $cleanSlug, $matches)) {
+            $rawType = strtolower($matches[1]);
+            $type = match($rawType) {
+                'single-room', 'room', 'rooms' => 'room',
+                'pg' => 'pg',
+                'flat', 'flats', 'apartment', 'apartments' => 'flat',
+                'house', 'houses' => 'house',
+                default => 'room'
+            };
+
+            return [
+                'type' => $type,
+                'is_near_me' => true,
+            ];
+        }
+
         // Pattern 4: pg-for-(boys|girls|students|professionals)-in-([a-z0-9\-]+)
         if (preg_match('/^pg-for-(boys|girls|students|professionals)-in-([a-z0-9\-]+)$/i', $slug, $matches)) {
             return [
@@ -208,9 +275,13 @@ class SeoController extends Controller
 
         // Pattern 5: pg-near-([a-z0-9\-]+)
         if (preg_match('/^pg-near-([a-z0-9\-]+)$/i', $slug, $matches)) {
+            $loc = $matches[1];
+            if ($loc === 'me' || $loc === 'my-location') {
+                return ['type' => 'pg', 'is_near_me' => true];
+            }
             return [
                 'type' => 'pg',
-                'landmark_slug' => $matches[1],
+                'landmark_slug' => $loc,
             ];
         }
 
@@ -229,6 +300,21 @@ class SeoController extends Controller
                 'type' => $type,
                 'budget' => $budget,
                 'location_slug' => $remaining,
+            ];
+        }
+
+        // Pattern 6: (room|pg|flat|house|apartment)-for-rent-near-([a-z0-9\-]+)
+        if (preg_match('/^(room|pg|flat|house|apartment)-for-rent-near-([a-z0-9\-]+)$/i', $slug, $matches)) {
+            $type = strtolower($matches[1]);
+            $remaining = $matches[2];
+
+            if ($remaining === 'me' || $remaining === 'my-location') {
+                return ['type' => $type, 'is_near_me' => true];
+            }
+
+            return [
+                'type' => $type,
+                'landmark_slug' => $remaining,
             ];
         }
 
@@ -314,8 +400,21 @@ class SeoController extends Controller
     /**
      * Build SEO Optimized Page Title.
      */
-    protected function buildSeoTitle($typeDisplay, $city, $locality, $landmark, $gender, $budget)
+    protected function buildSeoTitle($typeDisplay, $city, $locality, $landmark, $gender, $budget, $isNearMe = false)
     {
+        if ($isNearMe && !$city && !$locality && !$landmark) {
+            if ($typeDisplay === 'Room') {
+                return 'Room Near My Location | Rooms For Rent Near Me (Zero Brokerage) - UnlockRentals';
+            } elseif ($typeDisplay === 'PG & Co-Living') {
+                return 'PG Near My Location | Screened PG & Co-Living Near Me - UnlockRentals';
+            } elseif ($typeDisplay === 'Flat' || $typeDisplay === 'Apartment') {
+                return 'Flats For Rent Near My Location | 1BHK, 2BHK Near Me - UnlockRentals';
+            } elseif ($typeDisplay === 'House') {
+                return 'House For Rent Near My Location | Verified Homes Near Me - UnlockRentals';
+            }
+            return 'Rental Properties Near My Location | Zero Brokerage - UnlockRentals';
+        }
+
         $parts = [];
 
         if ($gender) {
@@ -327,7 +426,9 @@ class SeoController extends Controller
 
         $parts[] = 'for Rent';
 
-        if ($locality && $city) {
+        if ($isNearMe) {
+            $parts[] = 'Near My Location';
+        } elseif ($locality && $city) {
             $parts[] = 'in ' . $locality . ', ' . $city;
         } elseif ($city) {
             $parts[] = 'in ' . $city;
@@ -345,10 +446,16 @@ class SeoController extends Controller
     /**
      * Build dynamic Meta Description.
      */
-    protected function buildMetaDescription($typeDisplay, $city, $locality, $landmark, $gender, $budget, $total)
+    protected function buildMetaDescription($typeDisplay, $city, $locality, $landmark, $gender, $budget, $total, $isNearMe = false)
     {
+        if ($isNearMe && !$city && !$locality && !$landmark) {
+            return "Searching for " . strtolower($typeDisplay) . " near your location? Find 100% verified single rooms, 1RK, 1BHK flats & PGs for rent near you with zero brokerage. Direct owner contact, transparent pricing & instant visit booking.";
+        }
+
         $locationStr = '';
-        if ($locality && $city) {
+        if ($isNearMe) {
+            $locationStr = "near your location";
+        } elseif ($locality && $city) {
             $locationStr = "in $locality, $city";
         } elseif ($city) {
             $locationStr = "in $city";
@@ -366,7 +473,7 @@ class SeoController extends Controller
     /**
      * Generate JSON-LD Schema structures.
      */
-    protected function generateSchemas($slug, $title, $description, $typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties)
+    protected function generateSchemas($slug, $title, $description, $typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties, $isNearMe = false)
     {
         $baseUrl = url('/');
         $pageUrl = url($slug);
@@ -404,18 +511,15 @@ class SeoController extends Controller
                 'item' => $pageUrl,
             ];
         } else {
-            // Add budget/gender level to breadcrumbs if no locality
-            if ($budget || $gender || $landmark) {
-                $breadcrumbs['itemListElement'][] = [
-                    '@type' => 'ListItem',
-                    'position' => $currentPos++,
-                    'name' => $title,
-                    'item' => $pageUrl,
-                ];
-            }
+            $breadcrumbs['itemListElement'][] = [
+                '@type' => 'ListItem',
+                'position' => $currentPos++,
+                'name' => $isNearMe ? "$typeDisplay Near My Location" : $title,
+                'item' => $pageUrl,
+            ];
         }
 
-        // 2. LocalBusiness Schema
+        // 2. LocalBusiness / RealEstateAgent Schema
         $localBusiness = [
             '@context' => 'https://schema.org',
             '@type' => 'RealEstateAgent',
@@ -434,42 +538,52 @@ class SeoController extends Controller
             'priceRange' => '₹₹'
         ];
 
-        // 3. FAQ Schema
+        // 3. FAQ Schema with High-Intent "Near Me" Q&A
         $minPrice = $properties->isNotEmpty() ? $properties->min('price') : 3000;
         $maxPrice = $properties->isNotEmpty() ? $properties->max('price') : 25000;
         $avgPrice = $properties->isNotEmpty() ? round($properties->avg('price')) : 8000;
 
-        $locationName = $locality ?? $city ?? $landmark ?? 'this location';
+        $locationName = $isNearMe ? 'your location' : ($locality ?? $city ?? $landmark ?? 'this location');
+
+        $faqsList = [
+            [
+                '@type' => 'Question',
+                'name' => "How do I find a $typeDisplay near my location with zero brokerage?",
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => "On UnlockRentals, you can search and discover verified " . Str::plural(strtolower($typeDisplay)) . " near your current location directly by owners. Use our interactive location filter to view 100% genuine listings without paying any broker commission."
+                ]
+            ],
+            [
+                '@type' => 'Question',
+                'name' => "What is the average rent for $typeDisplay in $locationName?",
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => "The average rent of verified " . Str::plural(strtolower($typeDisplay)) . " in $locationName is approximately ₹" . number_format($avgPrice) . " per month, with budget options starting from ₹" . number_format($minPrice) . " and premium units up to ₹" . number_format($maxPrice) . "."
+                ]
+            ],
+            [
+                '@type' => 'Question',
+                'name' => "Can I schedule a visit to inspect rooms near my location before booking?",
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => "Yes! You can use our 'Book a Visit' feature on any listing to schedule a private walkthrough at a convenient time slot directly with the property owner."
+                ]
+            ],
+            [
+                '@type' => 'Question',
+                'name' => "What security amenities are provided in PGs and flats near my location?",
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => "Properties listed on UnlockRentals typically include essential security amenities such as 24/7 CCTV surveillance, gated community security, power backup, and digital biometric access."
+                ]
+            ]
+        ];
 
         $faqs = [
             '@context' => 'https://schema.org',
             '@type' => 'FAQPage',
-            'mainEntity' => [
-                [
-                    '@type' => 'Question',
-                    'name' => "What is the average rent for $typeDisplay in $locationName?",
-                    'acceptedAnswer' => [
-                        '@type' => 'Answer',
-                        'text' => "The average rent of verified " . Str::plural(strtolower($typeDisplay)) . " in $locationName is approximately ₹" . number_format($avgPrice) . " per month, with options starting as low as ₹" . number_format($minPrice) . " and luxury units up to ₹" . number_format($maxPrice) . "."
-                    ]
-                ],
-                [
-                    '@type' => 'Question',
-                    'name' => "Are there budget-friendly rental options available in $locationName?",
-                    'acceptedAnswer' => [
-                        '@type' => 'Answer',
-                        'text' => "Yes, there are several budget-friendly options available. You can filter by price limit or check listings under ₹" . number_format($budget ?? 10000) . " on our platform."
-                    ]
-                ],
-                [
-                    '@type' => 'Question',
-                    'name' => "What security amenities are provided in PGs and flats listed in $locationName?",
-                    'acceptedAnswer' => [
-                        '@type' => 'Answer',
-                        'text' => "Most rental properties listed on UnlockRentals in $locationName come with security amenities such as 24/7 CCTV surveillance, security guards at gate, gated community access, power backup, and intercom facilities."
-                    ]
-                ]
-            ]
+            'mainEntity' => $faqsList
         ];
 
         return [
@@ -484,7 +598,21 @@ class SeoController extends Controller
      */
     public static function getProgrammaticUrls()
     {
-        $urls = [];
+        $urls = [
+            // High-Intent "Near Me" and "Near My Location" URLs
+            '/room-near-my-location',
+            '/rooms-near-my-location',
+            '/room-for-rent-near-me',
+            '/rooms-for-rent-near-me',
+            '/single-room-for-rent-near-me',
+            '/1rk-near-my-location',
+            '/pg-near-my-location',
+            '/pg-near-me',
+            '/flat-for-rent-near-me',
+            '/flats-near-my-location',
+            '/house-for-rent-near-me',
+            '/houses-near-my-location',
+        ];
 
         // Get unique cities
         $cities = Property::approved()

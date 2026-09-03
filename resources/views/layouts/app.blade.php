@@ -30,12 +30,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta name="description" content="@yield('meta_description', 'Search house near me for rent or buy with zero brokerage on UnlockRentals. 100% verified flats, houses, PGs, and commercial spaces by direct owners.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'search house near me, search house near me for rent, search house near me by owner, free search house near me, rental properties in india, flats for rent, houses for rent, PG accommodation, unlockrentals')">
+    <meta name="description" content="@yield('meta_description', 'Search room near my location, single rooms for rent, 1RK, 1BHK flats, PGs & houses with zero brokerage on UnlockRentals. 100% verified properties by direct owners.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'room near my location, room for rent near me, rooms near me, single room for rent near me, rent room near me, room near my current location, 1bhk room near me, pg near my location, pg near me, flats for rent near me, search house near me, search house near me for rent, search house near me by owner, rental properties in india, unlockrentals')">
     <meta name="author" content="UnlockRentals">
     <meta name="publisher" content="UnlockRentals">
     <meta name="robots" content="@yield('robots', 'index, follow')">
-    <title>@yield('title', 'Search House Near Me for Rent & Sale | UnlockRentals')</title>
+    <title>@yield('title', 'Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals')</title>
 
     {{-- Legacy & Universal Image Source --}}
     <link rel="image_src" href="@yield('og_image', asset('images/logo.png'))">
@@ -53,15 +53,15 @@
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', 'UnlockRentals - Property Rental Marketplace')">
-    <meta property="og:description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
+    <meta property="og:title" content="@yield('title', 'Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals')">
+    <meta property="og:description" content="@yield('meta_description', 'Search room near my location, single rooms for rent, 1RK, 1BHK flats, PGs & houses with zero brokerage on UnlockRentals.')">
     <meta property="og:image" content="@yield('og_image', asset('images/logo.png'))">
 
     {{-- Twitter --}}
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="@yield('title', 'UnlockRentals - Property Rental Marketplace')">
-    <meta property="twitter:description" content="@yield('meta_description', 'UnlockRentals - Find your perfect house or shop for rent. Browse thousands of rental properties with advanced search filters.')">
+    <meta property="twitter:title" content="@yield('title', 'Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals')">
+    <meta property="twitter:description" content="@yield('meta_description', 'Search room near my location, single rooms for rent, 1RK, 1BHK flats, PGs & houses with zero brokerage on UnlockRentals.')">
     <meta property="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
 
     {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}

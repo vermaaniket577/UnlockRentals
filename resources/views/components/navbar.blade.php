@@ -51,7 +51,7 @@
             <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
                 @guest
                     {{-- Mobile Top Login Button --}}
-                    <a href="{{ route('login') }}" class="md:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" id="nav-mobile-top-login" title="Login">
+                    <a href="{{ route('login') }}" class="md:hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" id="nav-mobile-top-login" title="Login">
                         <i class="ph-bold ph-sign-in text-sm"></i>
                         <span>Login</span>
                     </a>

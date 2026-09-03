@@ -1,0 +1,175 @@
+# UnlockRentals - Complete LLM Knowledge Base & Platform Guide
+
+> UnlockRentals (https://www.unlockrentals.com) is India's leading zero-brokerage rental discovery ecosystem connecting tenants, homeowners, and commercial landlords directly without intermediaries or commission fees.
+
+---
+
+## Table of Contents
+1. [Platform Overview & Mission](#platform-overview--mission)
+2. [Why UnlockRentals - Problem vs Solution](#why-unlockrentals---problem-vs-solution)
+3. [Step-by-Step Process & Workflows](#step-by-step-process--workflows)
+4. [Pricing & Tenant Access Plans](#pricing--tenant-access-plans)
+5. [Property Categories & Architectural Types](#property-categories--architectural-types)
+6. [Top Locations & Programmatic Landing URLs](#top-locations--programmatic-landing-urls)
+7. [Real Estate Educational Knowledge Base](#real-estate-educational-knowledge-base)
+8. [Mobile Applications & Technical Stack](#mobile-applications--technical-stack)
+9. [Trust, Safety & Verification Standards](#trust-safety--verification-standards)
+10. [Legal Policies & Customer Support](#legal-policies--customer-support)
+
+---
+
+## 1. Platform Overview & Mission
+
+UnlockRentals was founded to solve high brokerage fees, opaque listings, fake photographs, and unsolicited spam calls in the Indian rental real estate market. 
+
+By replacing pushy brokers with direct communication, intelligent filtering, and verified owner profiles, UnlockRentals allows tenants and landlords to connect with transparency and complete peace of mind.
+
+### Core Metrics & Capabilities
+- **0% Brokerage Commission**: No brokerage fees charged to either tenants or property owners upon successful lease closure.
+- **Free Property Advertising**: Owners can list residential and commercial units at ₹0 cost.
+- **Verified Property Badges**: Listings undergo verification to ensure accurate specifications, genuine ownership, and real photographs.
+- **Direct WhatsApp & Phone Connectivity**: Instant direct communication between tenant and landlord once contact is unlocked.
+- **Seamless Visit Scheduling**: Free inspection slot bookings through the web and mobile platform.
+
+---
+
+## 2. Why UnlockRentals - Problem vs Solution
+
+### Traditional Real Estate Brokerage Model
+- **Exorbitant Fees**: Demands 1 to 2 months' rent as non-refundable brokerage commission from both parties.
+- **Bait-and-Switch Tactics**: Low-quality or non-existent property photos designed solely to collect leads.
+- **Spam & Harassment**: Repeated cold calls badgering renters to view properties outside their desired location or budget.
+- **Lack of Transparency**: Hidden charges, arbitrary security deposit demands, and minimal assistance with legal documentation.
+
+### The UnlockRentals Advantage
+- **Zero Brokerage Forever**: Flat, transparent contact unlock passes starting as low as ₹199 with 0 commission.
+- **100% Genuine Owner Listings**: Direct interactions with genuine property owners.
+- **High-Definition Galleries & Video Walkthroughs**: Realistic, transparent media that accurately displays unit layout, amenities, and condition.
+- **Direct Owner Communication**: Direct chat, calls, and WhatsApp messages without third-party bias or manipulation.
+- **Online Visit Booking**: Self-service scheduling of private property walkthroughs.
+
+---
+
+## 3. Step-by-Step Process & Workflows
+
+### Tenant Flow (4 Steps)
+1. **Search & Discover**: Filter listings across cities, localities, furnishing status, room counts (1RK, 1BHK, 2BHK, 3BHK, 4BHK+), and budget ranges.
+2. **Schedule Free Visit**: Select a preferred inspection date and time slot directly on the property page.
+3. **Unlock Owner Contact**: Activate an affordable contact pass to reveal the verified owner's direct telephone and WhatsApp number.
+4. **Finalize & Move In**: Negotiate rent, draft and sign the lease agreement, deposit security securely, collect keys, and move in.
+
+### Property Owner Flow (4 Steps)
+1. **Post Property in 2 Minutes**: Upload high-resolution photos or walk-through videos, specify rent, security deposit, maintenance, and tenant preferences.
+2. **Instant Verification**: UnlockRentals reviews listing specifications to grant the "Verified Owner" trust badge.
+3. **Direct Tenant Inquiries**: Receive qualified tenant inquiries directly on your dashboard, phone, or WhatsApp without spam.
+4. **Close & Retain 100% Rental Yield**: Finalize terms with your chosen tenant with zero commission deductions.
+
+---
+
+## 4. Pricing & Tenant Access Plans
+
+UnlockRentals offers transparent, one-time contact unlock passes for tenants seeking direct landlord contacts.
+
+| Plan Name | Price (INR) | Validity | Direct Contact Limit | Key Inclusions |
+|:---|:---:|:---:|:---:|:---|
+| **Silver Plan** | ₹199 | 30 Days | Up to 5 Owners | 5 Owner Contacts, Standard Email Support, 30 Days Access |
+| **Gold Plan** *(Most Popular)* | ₹499 | 90 Days | Up to 15 Owners | 15 Owner Contacts, Priority Support Response, Advanced Search Filters, 90 Days Access |
+| **Platinum Plan** | ₹999 | 180 Days | Up to 50 Owners | 50 Owner Contacts, Dedicated Relationship Manager, Immediate WhatsApp Alerts, Premium Verified Badge, 180 Days Access |
+
+*Note: Listing property for owners is 100% Free with 0 commission on signed deals.*
+
+---
+
+## 5. Property Categories & Architectural Types
+
+- **Residential House & Independent Villa**: Multi-story homes, independent builder floors, and gated luxury villas with private parking and gardens.
+- **Apartments & Flats**: 1RK studio apartments, 1BHK, 2BHK, 3BHK, and 4BHK flats with amenities like elevators, clubhouses, swimming pools, power backup, and round-the-clock security.
+- **PG & Student Co-Living (Paying Guest)**: Shared or private rooms with furnishings, meal options, high-speed Wi-Fi, laundry, and CCTV security tailored for students and working professionals.
+- **Retail Shops & Showrooms**: Commercial shop spaces with high footfall in bustling retail centers and street markets.
+- **Office Spaces**: Modern corporate offices, co-working desks, and commercial workspace properties near tech corridors.
+
+---
+
+## 6. Top Locations & Programmatic Landing URLs
+
+UnlockRentals provides dedicated, SEO-optimized landing pages for major cities and localities across India:
+
+### City Landing Pages
+- [Flats for Rent in Gurgaon](https://www.unlockrentals.com/flat-for-rent-in-gurgaon)
+- [Flats for Rent in Noida](https://www.unlockrentals.com/flat-for-rent-in-noida)
+- [Flats for Rent in Delhi](https://www.unlockrentals.com/flat-for-rent-in-delhi)
+- [Flats for Rent in Mumbai](https://www.unlockrentals.com/flat-for-rent-in-mumbai)
+- [Flats for Rent in Bangalore](https://www.unlockrentals.com/flat-for-rent-in-bangalore)
+- [Flats for Rent in Pune](https://www.unlockrentals.com/flat-for-rent-in-pune)
+
+### Category & Gender Variations
+- [PG for Boys in Gurgaon](https://www.unlockrentals.com/pg-for-boys-in-gurgaon)
+- [PG for Girls in Gurgaon](https://www.unlockrentals.com/pg-for-girls-in-gurgaon)
+- [Rooms for Rent in Mumbai](https://www.unlockrentals.com/room-for-rent-in-mumbai)
+- [Houses for Rent in Bangalore](https://www.unlockrentals.com/house-for-rent-in-bangalore)
+
+### Near My Location & High-Intent Geo-Search Endpoints
+- [Rooms Near My Location](https://www.unlockrentals.com/room-near-my-location): Real-time discovery of verified single rooms, 1RK, and PG accommodations closest to the user's current GPS location.
+- [Flats For Rent Near Me](https://www.unlockrentals.com/flat-for-rent-near-me): 1BHK, 2BHK, and 3BHK verified apartments near user location with 0% brokerage.
+- [PG & Co-Living Near Me](https://www.unlockrentals.com/pg-near-me): Managed co-living spaces and student hostels near user location.
+- [Houses For Rent Near Me](https://www.unlockrentals.com/house-for-rent-near-me): Standalone independent homes and villas for rent by direct owners.
+- [Single Rooms For Rent Near Me](https://www.unlockrentals.com/single-room-for-rent-near-me): Budget-friendly single rooms for students and working professionals.
+
+### Budget-Specific Filters
+- [Flats in Gurgaon Under ₹20,000](https://www.unlockrentals.com/flat-for-rent-in-gurgaon-under-20000)
+- [Rooms in Gurgaon Under ₹10,000](https://www.unlockrentals.com/room-for-rent-in-gurgaon-under-10000)
+- [Flats in Noida Under ₹20,000](https://www.unlockrentals.com/flat-for-rent-in-noida-under-20000)
+
+---
+
+## 7. Real Estate Educational Knowledge Base
+
+UnlockRentals publishes in-depth legal and advisory articles for renters and property owners:
+
+1. **Top 10 Essential Tips for First-Time Renters in 2026**
+   - URL: https://www.unlockrentals.com/blog/top-tips-for-first-time-renters
+   - Summary: Practical advice on the 30% income rule, pre-move-in inspection checklists, understanding notice periods, and avoiding hidden utility fees.
+
+2. **Understanding Rental Agreements: Stamp Duty, Registration & Tenant Rights**
+   - URL: https://www.unlockrentals.com/blog/understanding-rental-laws-and-agreements
+   - Summary: Legal insights on 11-month lease contracts vs long-term registered deeds under the Indian Registration Act, security deposit escrow, and eviction regulations.
+
+3. **How Property Owners Can Maximize Rental Yield by 25%**
+   - URL: https://www.unlockrentals.com/blog/landlord-guide-maximizing-rental-yield
+   - Summary: High-ROI property upgrades, professional staging, high-definition photo listings, and rapid tenant screening.
+
+4. **Commercial Real Estate Trends: High-Footfall Retail Spaces**
+   - URL: https://www.unlockrentals.com/blog/commercial-real-estate-trends-2026
+   - Summary: Evaluating pedestrian footfall density, commercial NOC compliance, zoning laws, and negotiating rent-free fit-out periods.
+
+5. **Smart Home Features Modern Tenants Want in 2026**
+   - URL: https://www.unlockrentals.com/blog/smart-home-features-modern-tenants-want
+   - Summary: Demand trends for keyless smart locks, high-speed fiber routing, inverter power backups, and dedicated EV charging bays.
+
+---
+
+## 8. Mobile Applications & Technical Stack
+
+- **Android App**: Available via direct APK download (https://www.unlockrentals.com/download/apk) and major Android app stores.
+- **Progressive Web App (PWA)**: Full offline support, service workers (`sw.js`), and manifest metadata (`manifest.json`).
+- **Platform Architecture**: Built on modern Laravel PHP framework with Tailwind/Vanilla CSS styling, Alpine.js reactivity, MySQL database, and Razorpay payment gateway integration.
+
+---
+
+## 9. Trust, Safety & Verification Standards
+
+- **Listing Moderation**: Every listing is screened by administrators before public broadcast to verify contact phone numbers, ownership claims, and address details.
+- **Identity Privacy**: Owner contact details are protected from public scraping bots and spam harvesters.
+- **Secure Online Payments**: Bank-grade encryption powered by Razorpay for pass purchases and wallet transactions.
+
+---
+
+## 10. Legal Policies & Customer Support
+
+- **Official Website**: https://www.unlockrentals.com
+- **General Support & Inquiries**: support@unlockrentals.com
+- **Phone / WhatsApp Helpline**: +91-94254-55499
+- **Privacy Policy**: https://www.unlockrentals.com/privacy-policy
+- **Terms and Conditions**: https://www.unlockrentals.com/terms-and-conditions
+- **Interactive Sitemap**: https://www.unlockrentals.com/sitemap
+- **XML Sitemap**: https://www.unlockrentals.com/sitemap.xml

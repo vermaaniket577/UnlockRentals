@@ -76,6 +76,20 @@
         <priority>0.9</priority>
     </url>
 
+    {{-- LLM Context Endpoints --}}
+    <url>
+        <loc>{{ $baseUrl }}/llms.txt</loc>
+        <lastmod>{{ now()->tz('UTC')->toAtomString() }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>{{ $baseUrl }}/llms-full.txt</loc>
+        <lastmod>{{ now()->tz('UTC')->toAtomString() }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
     {{-- Legal Pages --}}
     <url>
         <loc>{{ $baseUrl }}/privacy-policy</loc>

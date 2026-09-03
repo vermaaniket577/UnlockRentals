@@ -14,9 +14,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="canonical" href="{{ route('home') }}">
     <meta name="robots" content="index, follow">
-    <title>Search House Near Me for Rent & Sale | UnlockRentals</title>
-    <meta name="description" content="Find verified rental houses, flats, PGs & commercial spaces across India with zero brokerage. Direct owner listings in Gurgaon, Delhi NCR & more.">
-    <meta name="keywords" content="search house near me, search house near me for rent, search house near me by owner, free search house near me, search house near delhi, search house near gurugram haryana, urgent house for sale in gurgaon, house for rent in gurgaon under 5000, unlockrentals">
+    <title>Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals</title>
+    <meta name="description" content="Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK flats, PGs & houses for rent near you directly from owners across India.">
+    <meta name="keywords" content="room near my location, room for rent near me, rooms near me, single room for rent near me, rent room near me, room near my current location, pg near my location, pg near me, flat for rent near me, flats near me, house for rent near me, search house near me, search house near me for rent, search house near me by owner, unlockrentals">
     <meta name="author" content="UnlockRentals">
     <meta name="publisher" content="UnlockRentals">
 
@@ -26,15 +26,15 @@
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="Search House Near Me for Rent & Sale | UnlockRentals">
-    <meta property="og:description" content="Find verified rental houses, flats, PGs & commercial spaces across India with zero brokerage. Direct owner listings in Gurgaon, Delhi NCR & more.">
+    <meta property="og:title" content="Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals">
+    <meta property="og:description" content="Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK flats, PGs & houses for rent near you directly from owners across India.">
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
 
     {{-- Twitter --}}
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="Search House Near Me for Rent & Sale | UnlockRentals">
-    <meta property="twitter:description" content="Find verified rental houses, flats, PGs & commercial spaces across India with zero brokerage. Direct owner listings in Gurgaon, Delhi NCR & more.">
+    <meta property="twitter:title" content="Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals">
+    <meta property="twitter:description" content="Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK flats, PGs & houses for rent near you directly from owners across India.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
     {{-- Google AdSense --}}
@@ -110,26 +110,34 @@
                 "mainEntity": [
                     {
                         "@@type": "Question",
-                        "name": "How do I search house near me for rent with zero brokerage?",
+                        "name": "How do I search room near my location for rent with zero brokerage?",
                         "acceptedAnswer": {
                             "@@type": "Answer",
-                            "text": "On UnlockRentals, you can search houses, flats, and villas near you directly by owner. Filter by your location, price, and BHK to connect with verified property owners without paying brokerage fees."
+                            "text": "On UnlockRentals, you can search single rooms, 1RK, 1BHK flats, PGs, and houses near your current location directly by owner. Filter by your location, price, and room type to connect with verified property owners without paying brokerage fees."
                         }
                     },
                     {
                         "@@type": "Question",
-                        "name": "Can I search houses for rent in Gurgaon under 5000 / 10000?",
+                        "name": "What is the average rent for a single room near my location?",
                         "acceptedAnswer": {
                             "@@type": "Answer",
-                            "text": "Yes, UnlockRentals provides price filter options allowing you to find affordable rental homes, 1 RK, 1 BHK, and PG accommodations in Gurgaon, Gurugram, and Delhi NCR under ₹5,000 and ₹10,000."
+                            "text": "Single rooms and 1RK units near your location typically start around ₹3,000 to ₹8,000 per month for budget rooms and ₹10,000 to ₹20,000 for fully furnished studio rooms in gated societies."
                         }
                     },
                     {
                         "@@type": "Question",
-                        "name": "How to find houses near me directly by owner?",
+                        "name": "Can I search houses and rooms for rent in Gurgaon, Delhi NCR under 5000 / 10000?",
                         "acceptedAnswer": {
                             "@@type": "Answer",
-                            "text": "Use the By Owner filter on UnlockRentals to view 100% owner-posted property listings with direct phone and chat access."
+                            "text": "Yes, UnlockRentals provides price filter options allowing you to find affordable rental homes, single rooms, 1RK, 1BHK, and PG accommodations in Gurgaon, Delhi NCR, Mumbai, and Bangalore under ₹5,000 and ₹10,000."
+                        }
+                    },
+                    {
+                        "@@type": "Question",
+                        "name": "How to find rooms and flats near me directly by owner?",
+                        "acceptedAnswer": {
+                            "@@type": "Answer",
+                            "text": "Use the UnlockRentals direct owner filter to view 100% owner-posted property listings with direct WhatsApp, phone contact, and instant visit booking."
                         }
                     }
                 ]
@@ -739,6 +747,13 @@
                         .dropdown-item:hover { background: rgba(255,255,255,0.08); color: #fff !important; }
                     </style>
                 @else
+                    {{-- Mobile Top Login Button (Visible on Mobile Screens & Mobile App) --}}
+                    <a href="{{ route('login') }}" class="inline-flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" style="text-decoration:none;" id="welcome-mobile-top-login" title="Login">
+                        <i class="ph-bold ph-sign-in" style="font-size: 14px;"></i>
+                        <span>Login</span>
+                    </a>
+
+                    {{-- Desktop Sign In & Post Free Advertise --}}
                     <a href="{{ route('login') }}" class="nav-link hidden md:inline-flex" style="margin-right: 8px;" title="Log in">
                         <i class="ph ph-user-circle"></i>
                         Log in
@@ -890,8 +905,28 @@
             </h1>
 
             <p class="hero-subtitle subtitle-animate">
-                Verified rental houses, flats, PG stays & shops directly from owners.
+                Verified rooms, flats, PG stays & houses for rent near your location directly from owners.
             </p>
+
+            {{-- Quick SEO Shortcuts / Near Me Badges --}}
+            <div class="flex items-center justify-center flex-wrap gap-2 mb-4 px-2">
+                <a href="{{ url('/room-near-my-location') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-600/40 hover:bg-blue-600 text-blue-100 hover:text-white text-xs font-bold border border-blue-400/40 transition shadow-sm" title="Rooms Near My Location">
+                    <i class="ph-bold ph-map-pin text-sm text-blue-300"></i>
+                    <span>📍 Rooms Near My Location</span>
+                </a>
+                <a href="{{ url('/flat-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-semibold border border-white/15 transition shadow-sm" title="Flats Near Me">
+                    <i class="ph-bold ph-buildings text-sm text-sky-300"></i>
+                    <span>Flats Near Me</span>
+                </a>
+                <a href="{{ url('/pg-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-semibold border border-white/15 transition shadow-sm" title="PG Near Me">
+                    <i class="ph-bold ph-bed text-sm text-amber-300"></i>
+                    <span>PG Near Me</span>
+                </a>
+                <a href="{{ url('/house-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-semibold border border-white/15 transition shadow-sm" title="House For Rent Near Me">
+                    <i class="ph-bold ph-house text-sm text-emerald-300"></i>
+                    <span>House Near Me</span>
+                </a>
+            </div>
 
             <form class="search-glass-panel panel-animate" action="{{ route('properties.index') }}" method="GET" data-ur-loader-msg="Searching premium properties&#8230;" onsubmit="handleHeroSearchSubmit(this)">
 

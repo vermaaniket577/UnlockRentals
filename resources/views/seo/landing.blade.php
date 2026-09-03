@@ -28,7 +28,9 @@
         <nav class="flex items-center gap-2.5 text-[10px] font-bold text-zinc-400 dark:text-slate-500 uppercase tracking-widest mb-6">
             <a href="{{ url('/') }}" class="hover:text-[#2563EB] dark:hover:text-[#2563EB] transition-colors" title="Home">Home</a>
             <i class="ph-bold ph-caret-right text-[8px]"></i>
-            @if($city)
+            @if(!empty($isNearMe))
+                <span class="text-zinc-900 dark:text-slate-200 font-extrabold">{{ $typeDisplay }} Near My Location</span>
+            @elseif($city)
                 <a href="{{ url(Str::slug($typeDisplay . '-for-rent-in-' . $city)) }}" class="hover:text-[#2563EB] dark:hover:text-[#2563EB] transition-colors" title="in">{{ $typeDisplay }} in {{ $city }}</a>
                 @if($locality)
                     <i class="ph-bold ph-caret-right text-[8px]"></i>
@@ -44,14 +46,63 @@
             <div class="max-w-4xl">
                 <div class="inline-flex items-center gap-2 px-3 py-1 bg-[#2563EB]/10 text-[#2563EB] text-xs font-bold rounded-full mb-4">
                     <span class="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse"></span>
-                    Verified Rental Listings
+                    Verified Direct Owner Listings · 0% Brokerage
                 </div>
                 <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-slate-100 mb-4 leading-[1.15]">
                     {!! str_replace($typeDisplay, '<span class="text-[#2563EB]">' . $typeDisplay . '</span>', str_replace(' | UnlockRentals', '', $meta_title)) !!}
                 </h1>
-                <p class="text-zinc-500 dark:text-slate-400 text-base md:text-lg font-light leading-relaxed max-w-2xl">
-                    Find and book commission-free {{ strtolower($typeDisplay) }} options. Fully verified properties with direct contact details.
+                <p class="text-zinc-500 dark:text-slate-400 text-base md:text-lg font-light leading-relaxed max-w-2xl mb-4">
+                    Find and book commission-free {{ strtolower($typeDisplay) }} options near you. 100% verified properties with direct phone & WhatsApp contact details.
                 </p>
+
+                @if(!empty($isNearMe))
+                    {{-- Interactive Live Location Filter Bar for Near-Me Searches --}}
+                    <div class="inline-flex flex-wrap items-center gap-3 pt-2" id="geo-location-widget">
+                        <button type="button" onclick="detectUserGeoLocation()" id="detect-geo-btn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md hover:bg-blue-700 transition cursor-pointer">
+                            <i class="ph-bold ph-crosshair text-sm"></i>
+                            <span id="geo-btn-text">📍 Use My Live Location</span>
+                        </button>
+                        <a href="{{ route('properties.index', ['type' => $type === 'room' ? 'house' : $type]) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 transition">
+                            <i class="ph-bold ph-sliders-horizontal text-sm text-blue-600"></i>
+                            <span>Filter by Budget & Amenities</span>
+                        </a>
+                    </div>
+
+                    <script>
+                        function detectUserGeoLocation() {
+                            const btn = document.getElementById('detect-geo-btn');
+                            const btnText = document.getElementById('geo-btn-text');
+                            if (!navigator.geolocation) {
+                                alert('Geolocation is not supported by your browser.');
+                                return;
+                            }
+                            btnText.innerText = 'Detecting location...';
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                const lat = position.coords.latitude;
+                                const lng = position.coords.longitude;
+                                // Fetch reverse geocoding from free Nominatim API
+                                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        const city = data.address.city || data.address.state_district || data.address.county || data.address.state || '';
+                                        const locality = data.address.suburb || data.address.neighbourhood || data.address.residential || '';
+                                        btnText.innerText = '📍 ' + (locality || city || 'Location detected');
+                                        if (city || locality) {
+                                            const params = new URLSearchParams(window.location.search);
+                                            if (city) params.set('city', city);
+                                            if (locality) params.set('locality', locality);
+                                            window.location.search = params.toString();
+                                        }
+                                    })
+                                    .catch(() => {
+                                        btnText.innerText = '📍 Location detected';
+                                    });
+                            }, function(err) {
+                                btnText.innerText = '📍 Location permission required';
+                            });
+                        }
+                    </script>
+                @endif
             </div>
             
             {{-- Quick stats block --}}

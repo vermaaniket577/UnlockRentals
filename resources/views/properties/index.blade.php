@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Rental Properties in India - Houses, Flats & PGs | UnlockRentals')
-@section('meta_description', 'Browse rental houses, flats, PGs, shops, and commercial spaces in India. Filter verified rental properties by location, budget, rooms, and property type.')
+@section('title', 'Rooms & Flats Near My Location | Rental Properties in India - UnlockRentals')
+@section('meta_description', 'Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK, 2BHK flats, houses, PGs & commercial spaces across India.')
+@section('meta_keywords', 'room near my location, room for rent near me, rooms near me, single room for rent near me, rent room near me, pg near my location, flats for rent near me, search house near me, rental properties in india, unlockrentals')
 
 @push('head')
 <script type="application/ld+json">

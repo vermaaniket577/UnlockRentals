@@ -1,0 +1,59 @@
+# UnlockRentals
+
+> UnlockRentals (https://www.unlockrentals.com) is India's direct, zero-brokerage real estate and rental platform connecting tenants and property owners directly. Browse verified residential flats, apartments, independent houses, luxury villas, student PGs, co-living spaces, and commercial retail shops across major Indian cities without paying broker commission fees.
+
+UnlockRentals eliminates expensive middleman brokerage fees (typically 1–2 months of rent). Property owners list their properties for 100% free with priority verification, while tenants browse genuine listings, schedule in-person visits, and unlock verified landlord contact details (Phone & WhatsApp) via affordable access passes.
+
+## Main Navigation & Core Services
+
+- [Browse All Rental Properties](https://www.unlockrentals.com/properties): Search and filter verified rental listings by state, city, locality, property type, price range, bedrooms (1RK, 1BHK, 2BHK, 3BHK+), furnishing status, and video walk-throughs.
+- [Post Free Property Listing](https://www.unlockrentals.com/post-free-advertise): Free property listing for landlords, homeowners, and commercial space owners. Direct tenant inquiries with 0% brokerage deducted.
+- [How It Works & Rental Workflow](https://www.unlockrentals.com/how-it-works): Comprehensive step-by-step rental guide for tenants and landlords highlighting the zero-commission direct model.
+- [Pricing & Subscription Plans](https://www.unlockrentals.com/plans): Transparent, low-cost contact unlock passes for tenants (Silver, Gold, and Platinum) to contact genuine landlords directly.
+- [Real Estate Blog & Guides](https://www.unlockrentals.com/blog): In-depth articles covering rental agreements, legal tenant rights, security deposit norms, landlord rental yield optimization, and smart home trends.
+- [Mobile Applications](https://www.unlockrentals.com/app): Download the UnlockRentals Android application (Direct APK & App Stores) for instant push notifications and direct chat.
+- [HTML Site Map Directory](https://www.unlockrentals.com/sitemap): Complete directory of all locations, property categories, blog posts, and programmatic city landing pages.
+- [XML Sitemap](https://www.unlockrentals.com/sitemap.xml): Machine-readable XML sitemap for search engines and web crawlers.
+
+## Property Categories & Types
+
+- [Residential Flats & Apartments](https://www.unlockrentals.com/properties?type=apartment): Modern studio, 1BHK, 2BHK, 3BHK, and penthouse apartments in gated societies with lift, power backup, and 24/7 security.
+- [Independent Houses & Villas](https://www.unlockrentals.com/properties?type=house): Spacious standalone family homes, luxury villas, and independent builder floors with private parking and terrace space.
+- [PG & Co-Living Spaces](https://www.unlockrentals.com/properties?type=pg-hostel): Budget-friendly hostels and managed co-living accommodations with Wi-Fi, food, housekeeping, and biometric access.
+- [Commercial Shops & Retail](https://www.unlockrentals.com/properties?type=shop): High-footfall retail spaces, corner showrooms, and commercial shop units in prime business clusters.
+- [Office Spaces](https://www.unlockrentals.com/properties?type=office): Fully furnished and bare-shell professional office spaces near major tech parks and metro stations.
+
+## Top City & Location Hubs
+
+- [Flats & Houses for Rent in Gurgaon](https://www.unlockrentals.com/flat-for-rent-in-gurgaon): Rental properties across Cyber City, Golf Course Road, Sohna Road, Sector 57, Sector 48, and DLF Phases.
+- [Flats & Houses for Rent in Noida](https://www.unlockrentals.com/flat-for-rent-in-noida): High-rise apartments and homes in Sector 62, Sector 137, Noida Expressway, and Sector 76.
+- [Flats & Houses for Rent in Delhi](https://www.unlockrentals.com/flat-for-rent-in-delhi): Verified rental flats and builder floors in South Delhi, Saket, Hauz Khas, Dwarka, and Rohini.
+- [Flats & Houses for Rent in Mumbai](https://www.unlockrentals.com/flat-for-rent-in-mumbai): Rental apartments and sea-view homes in Bandra, Andheri West, Powai, Juhu, Borivali, and Navi Mumbai.
+- [Flats & Houses for Rent in Bangalore](https://www.unlockrentals.com/flat-for-rent-in-bangalore): Tech corridor rentals near Whitefield, Koramangala, HSR Layout, Electronic City, and Indiranagar.
+- [Flats & Houses for Rent in Pune](https://www.unlockrentals.com/flat-for-rent-in-pune): Rentals in IT hubs such as Hinjewadi, Wakad, Baner, Kharadi, and Viman Nagar.
+
+## Targeted Rental Searches & Near-Me Discovery
+
+- [Rooms Near My Location](https://www.unlockrentals.com/room-near-my-location): Direct search for verified single rooms, 1RK, and PG accommodations closest to the user's current GPS location.
+- [Flats For Rent Near Me](https://www.unlockrentals.com/flat-for-rent-near-me): Verified 1BHK, 2BHK, and 3BHK flats near user location with 0% brokerage.
+- [PG & Co-Living Near Me](https://www.unlockrentals.com/pg-near-me): Screened PG stays and student hostels with Wi-Fi, food, and security.
+- [Houses For Rent Near Me](https://www.unlockrentals.com/house-for-rent-near-me): Standalone independent homes and villas for rent by direct owners.
+- [PG for Boys](https://www.unlockrentals.com/pg-for-boys-in-gurgaon): Screened hostels and PG options tailored for male students and young working professionals.
+- [PG for Girls](https://www.unlockrentals.com/pg-for-girls-in-gurgaon): Safe, verified female accommodations with 24/7 CCTV surveillance, warden, and strict security protocols.
+- [Flats Under ₹20,000](https://www.unlockrentals.com/flat-for-rent-in-gurgaon-under-20000): Affordable rental homes for cost-conscious renters and small families.
+- [Rooms Under ₹10,000](https://www.unlockrentals.com/room-for-rent-in-gurgaon-under-10000): Budget single-room and studio listings near colleges, universities, and commercial zones.
+
+## Key Platform Features
+
+- **Zero Brokerage Guaranteed**: Direct owner-to-tenant transactions saving thousands of rupees in agent commissions.
+- **100% Genuine & Screened Listings**: Mandatory listing review process and "Verified Owner" trust badge to eliminate spam or bait-and-switch listings.
+- **Direct Phone & WhatsApp Unlock**: Connect with landlords instantly without third-party interference.
+- **Online Property Visit Booking**: Schedule inspection slots directly with landlords based on mutual availability.
+- **High-Resolution Photo Galleries & Video Tours**: Accurate representations of room dimensions, fittings, and neighborhood ambience.
+- **Transparent Pricing**: Clear rent breakdown including maintenance fees, security deposit amounts, and lock-in period conditions.
+
+## Optional & Extended Resources
+
+- [Full LLM Context Documentation](https://www.unlockrentals.com/llms-full.txt): Comprehensive platform documentation, pricing tiers, legal guides, and full operational details.
+- [Privacy Policy](https://www.unlockrentals.com/privacy-policy): User data protection, personal information security, and cookie policies.
+- [Terms & Conditions](https://www.unlockrentals.com/terms-and-conditions): Terms of service, listing guidelines, and usage terms.

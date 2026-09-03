@@ -21,21 +21,31 @@
         @endif
 
         <form method="POST" action="{{ $plan ? route('admin.plans.update', $plan) : route('admin.plans.store') }}"
-              class="bg-stone-50 border border-stone-200/50 rounded-sm p-6 space-y-5" enctype="multipart/form-data">
+              class="bg-white border border-stone-200 rounded-2xl shadow-sm p-6 sm:p-8 space-y-5" enctype="multipart/form-data">
             @csrf
             @if($plan) @method('PUT') @endif
 
-            <div>
-                <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Plan Name *</label>
-                <input type="text" name="name" value="{{ old('name', $plan->name ?? '') }}" required
-                       class="w-full px-4 py-2.5 border border-stone-200 rounded-sm text-sm text-zinc-900 focus:outline-none focus:border-[#c9a050]"
-                       placeholder="e.g. Basic, Premium, Gold">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Plan Name *</label>
+                    <input type="text" name="name" value="{{ old('name', $plan->name ?? '') }}" required
+                           class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600"
+                           placeholder="e.g. Silver Plan, Gold Buyer Pass">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Plan Purpose / Target *</label>
+                    <select name="purpose" required class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600 bg-white">
+                        <option value="rent" {{ old('purpose', $plan->purpose ?? 'rent') === 'rent' ? 'selected' : '' }}>🏠 Rental Plan (For Tenants)</option>
+                        <option value="buy" {{ old('purpose', $plan->purpose ?? 'rent') === 'buy' ? 'selected' : '' }}>🏢 Buyer Pass (For Property Buyers / Investors)</option>
+                        <option value="both" {{ old('purpose', $plan->purpose ?? 'rent') === 'both' ? 'selected' : '' }}>🌟 Both (General)</option>
+                    </select>
+                </div>
             </div>
 
             <div>
                 <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Description</label>
-                <textarea name="description" rows="3"
-                          class="w-full px-4 py-2.5 border border-stone-200 rounded-sm text-sm text-zinc-900 focus:outline-none focus:border-[#c9a050] resize-none"
+                <textarea name="description" rows="2"
+                          class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600 resize-none"
                           placeholder="Brief description of what this plan offers">{{ old('description', $plan->description ?? '') }}</textarea>
             </div>
 
@@ -43,37 +53,37 @@
                 <div>
                     <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Price (₹) *</label>
                     <input type="number" name="price" value="{{ old('price', $plan->price ?? '') }}" required min="0" step="0.01"
-                           class="w-full px-4 py-2.5 border border-stone-200 rounded-sm text-sm text-zinc-900 focus:outline-none focus:border-[#c9a050]"
+                           class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600"
                            placeholder="499">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Duration (days) *</label>
                     <input type="number" name="duration_days" value="{{ old('duration_days', $plan->duration_days ?? 30) }}" required min="1"
-                           class="w-full px-4 py-2.5 border border-stone-200 rounded-sm text-sm text-zinc-900 focus:outline-none focus:border-[#c9a050]"
+                           class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600"
                            placeholder="30">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Contact Limit *</label>
                     <input type="number" name="contact_limit" value="{{ old('contact_limit', $plan->contact_limit ?? 10) }}" required min="1"
-                           class="w-full px-4 py-2.5 border border-stone-200 rounded-sm text-sm text-zinc-900 focus:outline-none focus:border-[#c9a050]"
+                           class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600"
                            placeholder="10">
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Features (one per line)</label>
-                <textarea name="features" rows="4"
-                          class="w-full px-4 py-2.5 border border-stone-200 rounded-sm text-sm text-zinc-900 focus:outline-none focus:border-[#c9a050] resize-none"
-                          placeholder="Priority support&#10;Verified badge&#10;Direct messaging">{{ old('features', $plan && $plan->features ? implode("\n", $plan->features) : '') }}</textarea>
+                <textarea name="features" rows="5"
+                          class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600 resize-none"
+                          placeholder="Unlock up to 15 owner details&#10;Direct WhatsApp & Call connect&#10;Priority customer support">{{ old('features', $plan && $plan->features ? implode("\n", $plan->features) : '') }}</textarea>
             </div>
 
             <div>
                 <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Offer Banner Image (Optional)</label>
                 <input type="file" name="image" accept="image/*"
-                       class="w-full px-4 py-2 border border-stone-200 rounded-sm text-sm text-zinc-900 focus:outline-none focus:border-[#c9a050] file:mr-4 file:py-1.5 file:px-4 file:rounded-sm file:border-0 file:text-xs file:font-semibold file:bg-stone-200 file:text-zinc-700 hover:file:bg-stone-300">
+                       class="w-full px-4 py-2 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600 file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100">
                 @if($plan && $plan->image_path)
                     <div class="mt-2">
-                        <img src="{{ asset('storage/' . $plan->image_path) }}" alt="Plan Image" class="h-16 rounded-sm border border-stone-200">
+                        <img src="{{ asset('storage/' . $plan->image_path) }}" alt="Plan Image" class="h-16 rounded-xl border border-stone-200">
                     </div>
                 @endif
             </div>
@@ -82,12 +92,12 @@
                 <div>
                     <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Sort Order</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', $plan->sort_order ?? 0) }}"
-                           class="w-full px-4 py-2.5 border border-stone-200 rounded-sm text-sm text-zinc-900 focus:outline-none focus:border-[#c9a050]">
+                           class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600">
                 </div>
                 <div class="flex flex-col gap-3 justify-end">
                     <label class="flex items-center gap-3 cursor-pointer">
                         <input type="checkbox" name="is_active" value="1" {{ old('is_active', $plan->is_active ?? true) ? 'checked' : '' }}
-                               class="w-4 h-4 accent-[#c9a050]">
+                               class="w-4 h-4 accent-blue-600">
                         <span class="text-sm font-semibold text-zinc-700">Active (visible to users)</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer">
@@ -99,10 +109,10 @@
             </div>
 
             <div class="flex items-center gap-3 pt-4 border-t border-stone-200">
-                <button type="submit" class="px-6 py-2.5 bg-[#c9a050] hover:bg-[#b08d42] text-white text-sm font-semibold rounded-sm transition-all">
+                <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all cursor-pointer">
                     {{ $plan ? 'Update Plan' : 'Create Plan' }}
                 </button>
-                <a href="{{ route('admin.plans') }}" class="px-6 py-2.5 bg-stone-100 text-zinc-600 text-sm font-semibold rounded-sm hover:bg-stone-200 transition-all" title="Cancel">
+                <a href="{{ route('admin.plans') }}" class="px-6 py-2.5 bg-stone-100 text-zinc-600 text-sm font-semibold rounded-xl hover:bg-stone-200 transition-all" title="Cancel">
                     Cancel
                 </a>
             </div>

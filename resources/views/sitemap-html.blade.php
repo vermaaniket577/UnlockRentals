@@ -20,9 +20,17 @@
             <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400">
                 Explore our full registry of rental properties, city guides, subscription plans, and resources. Fast, zero-brokerage access across India.
             </p>
-            <div class="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <div class="mt-4 inline-flex items-center justify-center flex-wrap gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
                 <a href="{{ url('/sitemap.xml') }}" target="_blank" class="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:underline font-bold">
-                    <i class="ph-bold ph-code text-sm"></i> View Raw XML Sitemap for Search Engines
+                    <i class="ph-bold ph-code text-sm"></i> Raw XML Sitemap
+                </a>
+                <span class="text-slate-300 dark:text-slate-700">•</span>
+                <a href="{{ url('/llms.txt') }}" target="_blank" class="inline-flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-bold">
+                    <i class="ph-bold ph-robot text-sm"></i> /llms.txt (AI Knowledge Base)
+                </a>
+                <span class="text-slate-300 dark:text-slate-700">•</span>
+                <a href="{{ url('/llms-full.txt') }}" target="_blank" class="inline-flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 hover:underline font-bold">
+                    <i class="ph-bold ph-file-text text-sm"></i> /llms-full.txt (Full AI Context)
                 </a>
             </div>
         </div>
