@@ -298,7 +298,8 @@ $serveApkResponse = function () {
         }
     }
 
-    abort(404, 'APK package is currently being updated. Please check back shortly.');
+    // If no local file is found on the server disk, fallback seamlessly to GitHub repository release
+    return redirect()->away('https://github.com/vermaaniket577/UnlockRentals/raw/main/public/downloads/UnlockRentals.apk');
 };
 
 Route::get('/download/apk', $serveApkResponse)->name('app.download.apk');
