@@ -205,6 +205,21 @@
                     $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
                     $monthlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'monthly')->first() : null;
                     $price = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : (float) $plan->price;
+
+                    $nameLower = strtolower($plan->name);
+                    if (str_contains($nameLower, 'gold')) {
+                        $badgeStyle = 'bg-amber-50 dark:bg-amber-950/60 border-amber-200/90 dark:border-amber-800/80 text-amber-500 shadow-sm shadow-amber-500/10';
+                        $iconTag = '<i class="ph-duotone ph-crown text-2xl text-amber-500"></i>';
+                    } elseif (str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond')) {
+                        $badgeStyle = 'bg-blue-50 dark:bg-blue-950/60 border-blue-200/90 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 shadow-sm shadow-blue-500/10';
+                        $iconTag = '<i class="ph-duotone ph-sketch-logo text-2xl text-blue-600 dark:text-blue-400"></i>';
+                    } elseif (str_contains($nameLower, 'enter') || str_contains($nameLower, 'corp') || str_contains($nameLower, 'inst')) {
+                        $badgeStyle = 'bg-teal-50 dark:bg-teal-950/60 border-teal-200/90 dark:border-teal-800/80 text-teal-600 dark:text-teal-400 shadow-sm shadow-teal-500/10';
+                        $iconTag = '<i class="ph-duotone ph-buildings text-2xl text-teal-500"></i>';
+                    } else {
+                        $badgeStyle = 'bg-slate-100 dark:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-xs';
+                        $iconTag = '<i class="ph-duotone ph-shield-star text-2xl text-slate-700 dark:text-slate-300"></i>';
+                    }
                 @endphp
 
                 <article class="plan-card {{ $isGold ? 'popular' : '' }}">
@@ -213,6 +228,15 @@
                             ★ Most Popular
                         </div>
                     @endif
+
+                    {{-- Standard Plan Icon Badge --}}
+                    <div class="w-14 h-14 rounded-2xl border flex items-center justify-center {{ $badgeStyle }} mb-4 flex-shrink-0">
+                        @if($plan->image_path)
+                            <img src="{{ asset('storage/' . $plan->image_path) }}" alt="{{ $plan->name }}" class="w-8 h-8 object-contain">
+                        @else
+                            {!! $iconTag !!}
+                        @endif
+                    </div>
 
                     <div class="flex items-start justify-between gap-3 mb-4">
                         <div>
@@ -300,6 +324,11 @@
             {{-- Enterprise Card --}}
             @unless($hasEnterprise)
                 <article class="plan-card bg-slate-900 text-white dark:bg-slate-900 border-slate-800">
+                    {{-- Enterprise Icon Badge --}}
+                    <div class="w-14 h-14 rounded-2xl border border-teal-800 bg-teal-950/80 flex items-center justify-center text-teal-400 mb-4 shadow-sm">
+                        <i class="ph-duotone ph-buildings text-2xl text-teal-400"></i>
+                    </div>
+
                     <div class="mb-4">
                         <span class="px-2.5 py-0.5 rounded-md bg-teal-950 text-teal-400 text-[10px] font-black uppercase tracking-wider">Corporate</span>
                         <h2 class="text-xl font-extrabold text-white mt-1">Enterprise Plan</h2>
@@ -347,6 +376,21 @@
                 @php
                     $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
                     $price = (float) $plan->price;
+
+                    $nameLower = strtolower($plan->name);
+                    if (str_contains($nameLower, 'gold')) {
+                        $badgeStyle = 'bg-amber-50 dark:bg-amber-950/60 border-amber-200/90 dark:border-amber-800/80 text-amber-500 shadow-sm shadow-amber-500/10';
+                        $iconTag = '<i class="ph-duotone ph-crown text-2xl text-amber-500"></i>';
+                    } elseif (str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond')) {
+                        $badgeStyle = 'bg-blue-50 dark:bg-blue-950/60 border-blue-200/90 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 shadow-sm shadow-blue-500/10';
+                        $iconTag = '<i class="ph-duotone ph-sketch-logo text-2xl text-blue-600 dark:text-blue-400"></i>';
+                    } elseif (str_contains($nameLower, 'enter') || str_contains($nameLower, 'corp') || str_contains($nameLower, 'inst')) {
+                        $badgeStyle = 'bg-teal-50 dark:bg-teal-950/60 border-teal-200/90 dark:border-teal-800/80 text-teal-600 dark:text-teal-400 shadow-sm shadow-teal-500/10';
+                        $iconTag = '<i class="ph-duotone ph-buildings text-2xl text-teal-500"></i>';
+                    } else {
+                        $badgeStyle = 'bg-slate-100 dark:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-xs';
+                        $iconTag = '<i class="ph-duotone ph-shield-star text-2xl text-slate-700 dark:text-slate-300"></i>';
+                    }
                 @endphp
 
                 <article class="plan-card {{ $isGold ? 'popular' : '' }}">
@@ -355,6 +399,15 @@
                             ★ VIP Buyer Choice
                         </div>
                     @endif
+
+                    {{-- Standard Plan Icon Badge --}}
+                    <div class="w-14 h-14 rounded-2xl border flex items-center justify-center {{ $badgeStyle }} mb-4 flex-shrink-0">
+                        @if($plan->image_path)
+                            <img src="{{ asset('storage/' . $plan->image_path) }}" alt="{{ $plan->name }}" class="w-8 h-8 object-contain">
+                        @else
+                            {!! $iconTag !!}
+                        @endif
+                    </div>
 
                     <div class="flex items-start justify-between gap-3 mb-4">
                         <div>
@@ -446,6 +499,11 @@
             {{-- Enterprise Card --}}
             @unless($hasEnterprise)
                 <article class="plan-card bg-slate-900 text-white dark:bg-slate-900 border-slate-800">
+                    {{-- Enterprise Icon Badge --}}
+                    <div class="w-14 h-14 rounded-2xl border border-teal-800 bg-teal-950/80 flex items-center justify-center text-teal-400 mb-4 shadow-sm">
+                        <i class="ph-duotone ph-buildings text-2xl text-teal-400"></i>
+                    </div>
+
                     <div class="mb-4">
                         <span class="px-2.5 py-0.5 rounded-md bg-teal-950 text-teal-400 text-[10px] font-black uppercase tracking-wider">Investor Desk</span>
                         <h2 class="text-xl font-extrabold text-white mt-1">Institutional Buyer</h2>
