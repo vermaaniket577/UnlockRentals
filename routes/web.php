@@ -159,6 +159,11 @@ Route::get('/property-image/{id}', function ($id) {
         ->header('Cache-Control', 'public, max-age=604800, immutable');
 })->name('property.image');
 
+// Public CSRF Token Refresh Endpoint
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+})->name('csrf.token');
+
 Route::post('/feedback', [\App\Http\Controllers\SupportController::class, 'storeFeedback'])->name('feedback.store');
 Route::post('/chatbot/save', [\App\Http\Controllers\SupportController::class, 'saveChatMessage'])->name('chatbot.save');
 Route::get('/chatbot/history/{session_id}', [\App\Http\Controllers\SupportController::class, 'getChatHistory'])->name('chatbot.history');

@@ -22,9 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
-            if ($request->wantsJson() || $request->ajax()) {
+            if ($request->wantsJson() || $request->ajax() || $request->is('otp/*') || $request->is('login') || $request->is('register') || $request->is('api/*')) {
                 return response()->json([
-                    'message' => 'Your session has expired. Please refresh and try again.',
+                    'success' => false,
+                    'message' => 'CSRF token renewed. Please try again.',
                     'csrf_token' => csrf_token(),
                 ], 419);
             }

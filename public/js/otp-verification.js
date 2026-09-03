@@ -81,25 +81,74 @@ window.OtpVerification = (function () {
         }
     }
 
+    /* ── Robust CSRF Auto-Refresh Fetch ─────────── */
+
+    async function getFreshCsrfToken() {
+        try {
+            const res = await fetch('/csrf-token');
+            const data = await res.json();
+            if (data && data.csrf_token) {
+                const meta = document.querySelector('meta[name="csrf-token"]');
+                if (meta) meta.setAttribute('content', data.csrf_token);
+                document.querySelectorAll('input[name="_token"]').forEach(input => input.value = data.csrf_token);
+                return data.csrf_token;
+            }
+        } catch (e) {}
+        return getCSRFToken();
+    }
+
+    async function safeFetchWithCsrf(url, body) {
+        let token = getCSRFToken();
+        if (!token) {
+            token = await getFreshCsrfToken();
+        }
+
+        let response;
+        try {
+            response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify(body),
+            });
+        } catch (netErr) {
+            throw netErr;
+        }
+
+        // If CSRF token mismatch (419), renew token and auto-retry once seamlessly
+        if (response.status === 419) {
+            const newToken = await getFreshCsrfToken();
+            response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': newToken,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify(body),
+            });
+        }
+
+        return response;
+    }
+
     /* ── API Calls ────────────────────────────────── */
 
-    function sendOtp(phone, purpose, btn, otpContainer, resendBtn, statusEl, countdownEl) {
+    async function sendOtp(phone, purpose, btn, otpContainer, resendBtn, statusEl, countdownEl) {
         setLoading(btn, true, 'Sending...');
         showStatus(statusEl, '', '');
 
-        fetch('/otp/send', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCSRFToken(),
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ phone: phone, purpose: purpose }),
-        })
-        .then(r => r.json())
-        .then(data => {
+        try {
+            const response = await safeFetchWithCsrf('/otp/send', { phone: phone, purpose: purpose });
+            const data = await response.json();
+
             setLoading(btn, false);
-            if (data.success) {
+            if (response.ok && data.success) {
                 showStatus(statusEl, data.message, 'success');
 
                 // Show OTP input area first so DOM elements are available
@@ -118,31 +167,23 @@ window.OtpVerification = (function () {
                 btn.classList.add('hidden');
                 startCountdown(resendBtn, countdownEl, data.resend_after || 60);
             } else {
-                showStatus(statusEl, data.message, 'error');
+                showStatus(statusEl, data.message || 'Unable to send OTP. Please try again.', 'error');
             }
-        })
-        .catch(err => {
+        } catch (err) {
             setLoading(btn, false);
-            showStatus(statusEl, 'Network error. Please try again.', 'error');
-        });
+            showStatus(statusEl, 'Connection error. Please try again.', 'error');
+        }
     }
 
-    function verifyOtp(phone, otp, purpose, btn, statusEl, submitBtn, verifiedFlag, phoneInput, sendBtn, onVerified) {
+    async function verifyOtp(phone, otp, purpose, btn, statusEl, submitBtn, verifiedFlag, phoneInput, sendBtn, onVerified) {
         setLoading(btn, true, 'Verifying...');
 
-        fetch('/otp/verify', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCSRFToken(),
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ phone: phone, otp: otp, purpose: purpose }),
-        })
-        .then(r => r.json())
-        .then(data => {
+        try {
+            const response = await safeFetchWithCsrf('/otp/verify', { phone: phone, otp: otp, purpose: purpose });
+            const data = await response.json();
+
             setLoading(btn, false);
-            if (data.verified) {
+            if (response.ok && data.verified) {
                 showStatus(statusEl, '✓ ' + data.message, 'success');
                 // Enable form submission
                 if (submitBtn) {
@@ -162,7 +203,7 @@ window.OtpVerification = (function () {
 
                 if (onVerified) onVerified(phone);
             } else {
-                showStatus(statusEl, data.message, 'error');
+                showStatus(statusEl, data.message || 'Invalid or expired OTP.', 'error');
                 // Shake the OTP inputs
                 const digitInputs = btn.closest('.otp-input-area').querySelectorAll('.otp-digit');
                 digitInputs.forEach(d => {
@@ -170,28 +211,20 @@ window.OtpVerification = (function () {
                     setTimeout(() => d.classList.remove('animate-shake'), 500);
                 });
             }
-        })
-        .catch(err => {
+        } catch (err) {
             setLoading(btn, false);
-            showStatus(statusEl, 'Network error. Please try again.', 'error');
-        });
+            showStatus(statusEl, 'Connection error. Please try again.', 'error');
+        }
     }
 
-    function loginWithOtp(phone, otp, btn, statusEl, onLoginSuccess) {
+    async function loginWithOtp(phone, otp, btn, statusEl, onLoginSuccess) {
         setLoading(btn, true, 'Logging in...');
 
-        fetch('/otp/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getCSRFToken(),
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ phone: phone, otp: otp }),
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
+        try {
+            const response = await safeFetchWithCsrf('/otp/login', { phone: phone, otp: otp });
+            const data = await response.json();
+
+            if (response.ok && data.success) {
                 setLoading(btn, true, 'Redirecting...');
                 showStatus(statusEl, '✓ ' + data.message, 'success');
                 if (onLoginSuccess) {
@@ -201,13 +234,12 @@ window.OtpVerification = (function () {
                 }
             } else {
                 setLoading(btn, false);
-                showStatus(statusEl, data.message, 'error');
+                showStatus(statusEl, data.message || 'Unable to log in. Please try again.', 'error');
             }
-        })
-        .catch(err => {
+        } catch (err) {
             setLoading(btn, false);
-            showStatus(statusEl, 'Network error. Please try again.', 'error');
-        });
+            showStatus(statusEl, 'Connection error. Please try again.', 'error');
+        }
     }
 
     /* ── Digit Input Auto-Advance ─────────────────── */
