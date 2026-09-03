@@ -55,9 +55,22 @@ window.OtpVerification = (function () {
             verifyBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 const phone = phoneInput.value.trim();
-                const otp = getOtpValue(otpContainer);
-                const expectedLen = otpContainer ? otpContainer.querySelectorAll('.otp-digit').length : 4;
-                if (otp.length !== expectedLen) {
+                let otp = getOtpValue(otpContainer);
+                const digitCount = otpContainer ? otpContainer.querySelectorAll('.otp-digit').length : 4;
+                const expectedLen = digitCount || 4;
+
+                // If getOtpValue is incomplete, check all active inputs on screen
+                if (!otp || otp.length < expectedLen) {
+                    const activeDigits = Array.from(document.querySelectorAll('.otp-digit')).filter(el => {
+                        const area = el.closest('.otp-input-area') || el.closest('#otp-verify-modal');
+                        return (!area || !area.classList.contains('hidden')) && el.value.trim() !== '';
+                    });
+                    if (activeDigits.length >= expectedLen) {
+                        otp = activeDigits.slice(0, expectedLen).map(d => d.value.trim()).join('');
+                    }
+                }
+
+                if (!otp || otp.length < expectedLen) {
                     showStatus(statusEl, `Please enter the complete ${expectedLen}-digit OTP.`, 'error');
                     return;
                 }

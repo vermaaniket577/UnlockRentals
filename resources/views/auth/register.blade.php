@@ -287,7 +287,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/otp-verification.js') }}"></script>
+<script src="{{ asset('js/otp-verification.js') }}?v={{ filemtime(public_path('js/otp-verification.js')) }}"></script>
 <script>
 function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);

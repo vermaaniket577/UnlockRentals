@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
-<script src="{{ asset('js/otp-verification.js') }}"></script>
+<script src="{{ asset('js/otp-verification.js') }}?v={{ filemtime(public_path('js/otp-verification.js')) }}"></script>
 <script>
 // Login Method Smooth Switching (Standard button toggle)
 document.addEventListener('DOMContentLoaded', function() {
