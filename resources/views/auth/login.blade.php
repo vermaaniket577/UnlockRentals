@@ -199,7 +199,7 @@
                 <div class="space-y-4">
                     <div class="text-left mb-2">
                         <h2 class="text-base font-extrabold text-slate-900 dark:text-white">Sign in with Mobile OTP</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">We will send a 4-digit verification code to your phone</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">We will send a verification code to your phone <span class="block text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5"><i class="ph-bold ph-shield-check"></i> Admin accounts must sign in using Email & Password</span></p>
                     </div>
 
                     {{-- Phone Number --}}

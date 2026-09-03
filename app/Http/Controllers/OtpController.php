@@ -30,13 +30,20 @@ class OtpController extends Controller
         $phone   = $request->input('phone');
         $purpose = $request->input('purpose');
 
-        // For login purpose: ensure user with this phone exists
+        // For login purpose: ensure user with this phone exists and is not admin
         if ($purpose === 'login') {
             $user = User::byPhone($phone)->first();
             if (!$user) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No account found with this phone number. Please register first.',
+                ], 422);
+            }
+
+            if ($user->isAdmin()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Admin accounts cannot log in with mobile number. Please sign in using your Email and Password.',
                 ], 422);
             }
         }
@@ -131,6 +138,13 @@ class OtpController extends Controller
             ], 422);
         }
 
+        if ($user->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Admin accounts cannot log in with mobile number. Please sign in using your Email and Password.',
+            ], 422);
+        }
+
         // Mark phone as verified if not already
         if (!$user->isPhoneVerified()) {
             $user->update(['phone_verified_at' => now()]);
@@ -141,7 +155,7 @@ class OtpController extends Controller
         $request->session()->regenerate();
         session()->forget('url.intended');
 
-        $redirect = $user->isAdmin() ? route('admin.dashboard') : route('home');
+        $redirect = route('home');
 
         return response()->json([
             'success'  => true,
