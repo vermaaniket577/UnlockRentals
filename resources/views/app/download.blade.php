@@ -567,13 +567,16 @@
             </div>
 
             <!-- Direct APK Download -->
-            @if(($site_settings['app_apk_download_url'] ?? '') !== '' && ($site_settings['app_apk_download_url'] ?? '') !== '#')
-            <a href="{{ $site_settings['app_apk_download_url'] }}" class="app-dl-apk-btn" download title="Download APK Directly">
+            @php
+                $apkDownloadUrl = (!empty($site_settings['app_apk_download_url']) && $site_settings['app_apk_download_url'] !== '#') 
+                    ? $site_settings['app_apk_download_url'] 
+                    : route('app.download.apk');
+            @endphp
+            <a href="{{ $apkDownloadUrl }}" class="app-dl-apk-btn" title="Download APK Directly">
                 <i class="ph-bold ph-android-logo"></i>
                 Download APK Directly
                 <i class="ph ph-download-simple"></i>
             </a>
-            @endif
         </div>
 
         <div class="app-dl-hero__mockup">

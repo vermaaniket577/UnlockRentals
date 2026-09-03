@@ -257,38 +257,34 @@ Route::get('/app', function () {
     return view('app.download');
 })->name('app.download');
 
-// Direct APK Download (Loop-Protected & Self-Healing)
-Route::get('/download/apk', function () {
+// Direct APK Download (Loop-Protected & Self-Healing with Multi-Location Candidate Fallbacks)
+$serveApkResponse = function () {
     $apkSetting = \App\Models\Setting::where('key', 'app_apk_download_url')->value('value');
     
-    // Check if external non-local URL (different domain and not a loop)
+    // Check if external non-local URL (e.g. GitHub Release, Google Drive, S3)
     if ($apkSetting && str_starts_with($apkSetting, 'http')) {
         $parsed = parse_url($apkSetting);
         $currentHost = request()->getHost();
         $isSameHost = !isset($parsed['host']) || $parsed['host'] === $currentHost || str_contains($parsed['host'], 'unlockrentals.com');
-        $path = $parsed['path'] ?? '';
 
-        // If it points back to /download/apk, prevent infinite redirect loop
-        if ($isSameHost && (trim($path, '/') === 'download/apk' || trim($path, '/') === 'download/apk/')) {
-            $apkSetting = null;
-        } elseif (!$isSameHost) {
-            // Truly external hosting (e.g. GitHub Releases, Google Drive, S3, Firebase)
-            return redirect($apkSetting);
-        } else {
-            $apkSetting = $path;
+        if (!$isSameHost && !str_contains($apkSetting, '/download/apk')) {
+            return redirect()->away($apkSetting);
         }
     }
 
-    // Candidate locations for the APK package
+    // Comprehensive search across all possible production & local deployment locations
     $candidates = array_filter([
-        $apkSetting ? public_path(ltrim($apkSetting, '/')) : null,
-        $apkSetting ? base_path(ltrim($apkSetting, '/')) : null,
         public_path('downloads/UnlockRentals.apk'),
+        public_path('UnlockRentals.apk'),
+        base_path('UnlockRentals-app.apk'),
+        base_path('public/downloads/UnlockRentals.apk'),
+        base_path('public/UnlockRentals.apk'),
+        storage_path('app/public/UnlockRentals.apk'),
         public_path('downloads/UnlockRentals-v4.apk'),
         public_path('downloads/UnlockRentals-v3.apk'),
         public_path('downloads/UnlockRentals-v2.apk'),
-        base_path('UnlockRentals-app.apk'),
-        public_path('UnlockRentals.apk'),
+        base_path('release_builds/UnlockRentals-release.apk'),
+        base_path('android-app/app/build/outputs/apk/release/app-release.apk'),
     ]);
 
     foreach ($candidates as $filePath) {
@@ -296,13 +292,23 @@ Route::get('/download/apk', function () {
             return response()->download($filePath, 'UnlockRentals.apk', [
                 'Content-Type' => 'application/vnd.android.package-archive',
                 'Content-Disposition' => 'attachment; filename="UnlockRentals.apk"',
+                'Content-Length' => filesize($filePath),
                 'Cache-Control' => 'no-cache, must-revalidate',
             ]);
         }
     }
 
     abort(404, 'APK package is currently being updated. Please check back shortly.');
-})->name('app.download.apk');
+};
+
+Route::get('/download/apk', $serveApkResponse)->name('app.download.apk');
+Route::get('/UnlockRentals.apk', $serveApkResponse);
+Route::get('/downloads/{filename}', function ($filename) use ($serveApkResponse) {
+    if (str_ends_with(strtolower($filename), '.apk')) {
+        return $serveApkResponse();
+    }
+    abort(404);
+})->where('filename', '.*');
 
 // Fresh CSRF Token Endpoint for cached/stale pages
 Route::get('/csrf-token', function () {
