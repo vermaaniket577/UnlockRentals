@@ -282,6 +282,8 @@
         <x-auth-modal />
     @endguest
 
+    @include('components.idle-logout')
+
     @stack('scripts')
 </body>
 </html>

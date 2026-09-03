@@ -313,6 +313,8 @@
         </main>
     </div>
 
+    @include('components.idle-logout')
+
     @stack('scripts')
 </body>
 </html>

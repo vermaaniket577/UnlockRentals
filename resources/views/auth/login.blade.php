@@ -44,6 +44,13 @@
                 </div>
             @endif
 
+            @if (request('inactivity'))
+                <div class="mb-5 p-3.5 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center gap-2.5 text-xs font-semibold text-amber-700 dark:text-amber-300">
+                    <i class="ph-bold ph-hourglass-medium text-base flex-shrink-0"></i>
+                    <span>You were logged out due to inactivity for your security. Please sign in again.</span>
+                </div>
+            @endif
+
             @php
                 $isMobileApp = str_contains(request()->header('User-Agent', ''), 'UnlockRentals') || request()->has('app');
             @endphp

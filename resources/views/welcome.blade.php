@@ -2168,5 +2168,7 @@
     @guest
         <x-auth-modal />
     @endguest
+
+    @include('components.idle-logout')
 </body>
 </html>
