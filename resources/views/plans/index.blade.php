@@ -205,21 +205,8 @@
                     $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
                     $monthlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'monthly')->first() : null;
                     $price = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : (float) $plan->price;
-
                     $nameLower = strtolower($plan->name);
-                    if (str_contains($nameLower, 'gold')) {
-                        $badgeStyle = 'bg-amber-50 dark:bg-amber-950/60 border-amber-200/90 dark:border-amber-800/80 text-amber-500 shadow-sm shadow-amber-500/10';
-                        $iconTag = '<i class="ph-duotone ph-crown text-2xl text-amber-500"></i>';
-                    } elseif (str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond')) {
-                        $badgeStyle = 'bg-blue-50 dark:bg-blue-950/60 border-blue-200/90 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 shadow-sm shadow-blue-500/10';
-                        $iconTag = '<i class="ph-duotone ph-sketch-logo text-2xl text-blue-600 dark:text-blue-400"></i>';
-                    } elseif (str_contains($nameLower, 'enter') || str_contains($nameLower, 'corp') || str_contains($nameLower, 'inst')) {
-                        $badgeStyle = 'bg-teal-50 dark:bg-teal-950/60 border-teal-200/90 dark:border-teal-800/80 text-teal-600 dark:text-teal-400 shadow-sm shadow-teal-500/10';
-                        $iconTag = '<i class="ph-duotone ph-buildings text-2xl text-teal-500"></i>';
-                    } else {
-                        $badgeStyle = 'bg-slate-100 dark:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-xs';
-                        $iconTag = '<i class="ph-duotone ph-shield-star text-2xl text-slate-700 dark:text-slate-300"></i>';
-                    }
+                    $planUid = 'rent_' . $plan->id;
                 @endphp
 
                 <article class="plan-card {{ $isGold ? 'popular' : '' }}">
@@ -229,12 +216,72 @@
                         </div>
                     @endif
 
-                    {{-- Standard Plan Icon Badge --}}
-                    <div class="w-14 h-14 rounded-2xl border flex items-center justify-center {{ $badgeStyle }} mb-4 flex-shrink-0">
+                    {{-- Standard Plan Icon Badge with High-Definition Vector SVGs --}}
+                    <div class="w-14 h-14 rounded-2xl border flex items-center justify-center mb-4 flex-shrink-0 {{ str_contains($nameLower, 'gold') ? 'bg-amber-50/80 dark:bg-amber-950/50 border-amber-200/80 dark:border-amber-800/80 shadow-md shadow-amber-500/10' : (str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond') ? 'bg-blue-50/80 dark:bg-blue-950/50 border-blue-200/80 dark:border-blue-800/80 shadow-md shadow-blue-500/10' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-sm') }}">
                         @if($plan->image_path)
                             <img src="{{ asset('storage/' . $plan->image_path) }}" alt="{{ $plan->name }}" class="w-8 h-8 object-contain">
+                        @elseif(str_contains($nameLower, 'gold'))
+                            {{-- Luxury 3D Imperial Gold Crown --}}
+                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="goldG_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#FDE047"/>
+                                        <stop offset="45%" stop-color="#F59E0B"/>
+                                        <stop offset="100%" stop-color="#D97706"/>
+                                    </linearGradient>
+                                    <linearGradient id="goldB_{{ $planUid }}" x1="8" y1="34" x2="40" y2="38" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#FFFBEB"/>
+                                        <stop offset="100%" stop-color="#FDE68A"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldG_{{ $planUid }})"/>
+                                <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
+                                <rect x="8" y="35" width="32" height="4" rx="2" fill="url(#goldB_{{ $planUid }})"/>
+                                <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
+                                <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                <circle cx="16" cy="37" r="1.5" fill="#EF4444"/>
+                                <circle cx="24" cy="37" r="2" fill="#10B981"/>
+                                <circle cx="32" cy="37" r="1.5" fill="#EF4444"/>
+                            </svg>
+                        @elseif(str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond'))
+                            {{-- Brilliant Cut Royal Sapphire Diamond --}}
+                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="platG1_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#60A5FA"/>
+                                        <stop offset="50%" stop-color="#3B82F6"/>
+                                        <stop offset="100%" stop-color="#1D4ED8"/>
+                                    </linearGradient>
+                                    <linearGradient id="platFacet_{{ $planUid }}" x1="14" y1="10" x2="34" y2="20" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#EFF6FF"/>
+                                        <stop offset="100%" stop-color="#BFDBFE"/>
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="14,10 34,10 42,20 6,20" fill="url(#platG1_{{ $planUid }})"/>
+                                <polygon points="18,10 30,10 33,20 15,20" fill="url(#platFacet_{{ $planUid }})"/>
+                                <polygon points="6,20 42,20 24,42" fill="url(#platG1_{{ $planUid }})"/>
+                                <polygon points="15,20 33,20 24,42" fill="#93C5FD" fill-opacity="0.9"/>
+                                <path d="M37 7L38.5 11.5L43 13L38.5 14.5L37 19L35.5 14.5L31 13L35.5 11.5L37 7Z" fill="#FFFFFF"/>
+                            </svg>
                         @else
-                            {!! $iconTag !!}
+                            {{-- High-End Metallic Silver Shield --}}
+                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="silvG_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#CBD5E1"/>
+                                        <stop offset="40%" stop-color="#64748B"/>
+                                        <stop offset="100%" stop-color="#334155"/>
+                                    </linearGradient>
+                                    <linearGradient id="silvShine_{{ $planUid }}" x1="12" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#F8FAFC" stop-opacity="0.9"/>
+                                        <stop offset="100%" stop-color="#94A3B8" stop-opacity="0.3"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvG_{{ $planUid }})"/>
+                                <path d="M24 7L11 12V21.5C11 30.2 16.5 38.3 24 40C31.5 38.3 37 30.2 37 21.5V12L24 7Z" fill="url(#silvShine_{{ $planUid }})"/>
+                                <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
+                            </svg>
                         @endif
                     </div>
 
@@ -324,9 +371,34 @@
             {{-- Enterprise Card --}}
             @unless($hasEnterprise)
                 <article class="plan-card bg-slate-900 text-white dark:bg-slate-900 border-slate-800">
-                    {{-- Enterprise Icon Badge --}}
-                    <div class="w-14 h-14 rounded-2xl border border-teal-800 bg-teal-950/80 flex items-center justify-center text-teal-400 mb-4 shadow-sm">
-                        <i class="ph-duotone ph-buildings text-2xl text-teal-400"></i>
+                    {{-- Enterprise Skyline Vector SVG Icon --}}
+                    <div class="w-14 h-14 rounded-2xl border border-teal-700/80 bg-teal-950/90 flex items-center justify-center mb-4 shadow-md shadow-teal-500/10">
+                        <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="entT1" x1="14" y1="6" x2="34" y2="42" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#5EEAD4"/>
+                                    <stop offset="50%" stop-color="#0D9488"/>
+                                    <stop offset="100%" stop-color="#115E59"/>
+                                </linearGradient>
+                                <linearGradient id="entT2" x1="6" y1="16" x2="22" y2="42" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#2DD4BF"/>
+                                    <stop offset="100%" stop-color="#0F766E"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M6 18L18 12V42H6V18Z" fill="url(#entT2)"/>
+                            <path d="M18 8L32 4V42H18V8Z" fill="url(#entT1)"/>
+                            <path d="M32 16L42 20V42H32V16Z" fill="url(#entT2)"/>
+                            <rect x="21" y="10" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="26" y="10" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="21" y="17" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="26" y="17" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="21" y="24" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="26" y="24" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="9" y="22" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
+                            <rect x="9" y="28" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
+                            <rect x="35" y="24" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
+                            <rect x="35" y="30" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
+                        </svg>
                     </div>
 
                     <div class="mb-4">
@@ -376,21 +448,8 @@
                 @php
                     $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
                     $price = (float) $plan->price;
-
                     $nameLower = strtolower($plan->name);
-                    if (str_contains($nameLower, 'gold')) {
-                        $badgeStyle = 'bg-amber-50 dark:bg-amber-950/60 border-amber-200/90 dark:border-amber-800/80 text-amber-500 shadow-sm shadow-amber-500/10';
-                        $iconTag = '<i class="ph-duotone ph-crown text-2xl text-amber-500"></i>';
-                    } elseif (str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond')) {
-                        $badgeStyle = 'bg-blue-50 dark:bg-blue-950/60 border-blue-200/90 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 shadow-sm shadow-blue-500/10';
-                        $iconTag = '<i class="ph-duotone ph-sketch-logo text-2xl text-blue-600 dark:text-blue-400"></i>';
-                    } elseif (str_contains($nameLower, 'enter') || str_contains($nameLower, 'corp') || str_contains($nameLower, 'inst')) {
-                        $badgeStyle = 'bg-teal-50 dark:bg-teal-950/60 border-teal-200/90 dark:border-teal-800/80 text-teal-600 dark:text-teal-400 shadow-sm shadow-teal-500/10';
-                        $iconTag = '<i class="ph-duotone ph-buildings text-2xl text-teal-500"></i>';
-                    } else {
-                        $badgeStyle = 'bg-slate-100 dark:bg-slate-800 border-slate-200/90 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-xs';
-                        $iconTag = '<i class="ph-duotone ph-shield-star text-2xl text-slate-700 dark:text-slate-300"></i>';
-                    }
+                    $planUid = 'buy_' . $plan->id;
                 @endphp
 
                 <article class="plan-card {{ $isGold ? 'popular' : '' }}">
@@ -400,12 +459,72 @@
                         </div>
                     @endif
 
-                    {{-- Standard Plan Icon Badge --}}
-                    <div class="w-14 h-14 rounded-2xl border flex items-center justify-center {{ $badgeStyle }} mb-4 flex-shrink-0">
+                    {{-- Standard Plan Icon Badge with High-Definition Vector SVGs --}}
+                    <div class="w-14 h-14 rounded-2xl border flex items-center justify-center mb-4 flex-shrink-0 {{ str_contains($nameLower, 'gold') ? 'bg-amber-50/80 dark:bg-amber-950/50 border-amber-200/80 dark:border-amber-800/80 shadow-md shadow-amber-500/10' : (str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond') ? 'bg-blue-50/80 dark:bg-blue-950/50 border-blue-200/80 dark:border-blue-800/80 shadow-md shadow-blue-500/10' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-sm') }}">
                         @if($plan->image_path)
                             <img src="{{ asset('storage/' . $plan->image_path) }}" alt="{{ $plan->name }}" class="w-8 h-8 object-contain">
+                        @elseif(str_contains($nameLower, 'gold'))
+                            {{-- Luxury 3D Imperial Gold Crown --}}
+                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="goldG_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#FDE047"/>
+                                        <stop offset="45%" stop-color="#F59E0B"/>
+                                        <stop offset="100%" stop-color="#D97706"/>
+                                    </linearGradient>
+                                    <linearGradient id="goldB_{{ $planUid }}" x1="8" y1="34" x2="40" y2="38" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#FFFBEB"/>
+                                        <stop offset="100%" stop-color="#FDE68A"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldG_{{ $planUid }})"/>
+                                <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
+                                <rect x="8" y="35" width="32" height="4" rx="2" fill="url(#goldB_{{ $planUid }})"/>
+                                <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
+                                <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                <circle cx="16" cy="37" r="1.5" fill="#EF4444"/>
+                                <circle cx="24" cy="37" r="2" fill="#10B981"/>
+                                <circle cx="32" cy="37" r="1.5" fill="#EF4444"/>
+                            </svg>
+                        @elseif(str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond'))
+                            {{-- Brilliant Cut Royal Sapphire Diamond --}}
+                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="platG1_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#60A5FA"/>
+                                        <stop offset="50%" stop-color="#3B82F6"/>
+                                        <stop offset="100%" stop-color="#1D4ED8"/>
+                                    </linearGradient>
+                                    <linearGradient id="platFacet_{{ $planUid }}" x1="14" y1="10" x2="34" y2="20" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#EFF6FF"/>
+                                        <stop offset="100%" stop-color="#BFDBFE"/>
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="14,10 34,10 42,20 6,20" fill="url(#platG1_{{ $planUid }})"/>
+                                <polygon points="18,10 30,10 33,20 15,20" fill="url(#platFacet_{{ $planUid }})"/>
+                                <polygon points="6,20 42,20 24,42" fill="url(#platG1_{{ $planUid }})"/>
+                                <polygon points="15,20 33,20 24,42" fill="#93C5FD" fill-opacity="0.9"/>
+                                <path d="M37 7L38.5 11.5L43 13L38.5 14.5L37 19L35.5 14.5L31 13L35.5 11.5L37 7Z" fill="#FFFFFF"/>
+                            </svg>
                         @else
-                            {!! $iconTag !!}
+                            {{-- High-End Metallic Silver Shield --}}
+                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="silvG_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#CBD5E1"/>
+                                        <stop offset="40%" stop-color="#64748B"/>
+                                        <stop offset="100%" stop-color="#334155"/>
+                                    </linearGradient>
+                                    <linearGradient id="silvShine_{{ $planUid }}" x1="12" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#F8FAFC" stop-opacity="0.9"/>
+                                        <stop offset="100%" stop-color="#94A3B8" stop-opacity="0.3"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvG_{{ $planUid }})"/>
+                                <path d="M24 7L11 12V21.5C11 30.2 16.5 38.3 24 40C31.5 38.3 37 30.2 37 21.5V12L24 7Z" fill="url(#silvShine_{{ $planUid }})"/>
+                                <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
+                            </svg>
                         @endif
                     </div>
 
@@ -499,9 +618,34 @@
             {{-- Enterprise Card --}}
             @unless($hasEnterprise)
                 <article class="plan-card bg-slate-900 text-white dark:bg-slate-900 border-slate-800">
-                    {{-- Enterprise Icon Badge --}}
-                    <div class="w-14 h-14 rounded-2xl border border-teal-800 bg-teal-950/80 flex items-center justify-center text-teal-400 mb-4 shadow-sm">
-                        <i class="ph-duotone ph-buildings text-2xl text-teal-400"></i>
+                    {{-- Enterprise Skyline Vector SVG Icon --}}
+                    <div class="w-14 h-14 rounded-2xl border border-teal-700/80 bg-teal-950/90 flex items-center justify-center mb-4 shadow-md shadow-teal-500/10">
+                        <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="entT1_buy" x1="14" y1="6" x2="34" y2="42" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#5EEAD4"/>
+                                    <stop offset="50%" stop-color="#0D9488"/>
+                                    <stop offset="100%" stop-color="#115E59"/>
+                                </linearGradient>
+                                <linearGradient id="entT2_buy" x1="6" y1="16" x2="22" y2="42" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#2DD4BF"/>
+                                    <stop offset="100%" stop-color="#0F766E"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M6 18L18 12V42H6V18Z" fill="url(#entT2_buy)"/>
+                            <path d="M18 8L32 4V42H18V8Z" fill="url(#entT1_buy)"/>
+                            <path d="M32 16L42 20V42H32V16Z" fill="url(#entT2_buy)"/>
+                            <rect x="21" y="10" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="26" y="10" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="21" y="17" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="26" y="17" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="21" y="24" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="26" y="24" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
+                            <rect x="9" y="22" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
+                            <rect x="9" y="28" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
+                            <rect x="35" y="24" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
+                            <rect x="35" y="30" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
+                        </svg>
                     </div>
 
                     <div class="mb-4">
