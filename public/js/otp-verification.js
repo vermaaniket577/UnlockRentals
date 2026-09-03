@@ -563,52 +563,78 @@ window.OtpVerification = (function () {
         if (!otp) return;
         const cleanOtp = String(otp).replace(/[^0-9]/g, '');
         if (!cleanOtp) return;
+        const chars = cleanOtp.split('');
 
-        // 1. Check for visible/active OTP inputs (modal or login panel)
-        let digits = Array.from(document.querySelectorAll('.otp-digit')).filter(el => {
-            return el.offsetParent !== null && !el.disabled;
+        // 1. Gather all possible OTP digit containers on the page
+        const containers = [];
+        const loginContainer = document.getElementById('login-otp-digits');
+        const modalContainer = document.getElementById('modal-otp-digits');
+
+        if (loginContainer) containers.push(loginContainer);
+        if (modalContainer) containers.push(modalContainer);
+
+        // Also add any other containers with .otp-digit elements
+        document.querySelectorAll('.otp-input-area').forEach(area => {
+            const group = area.querySelector('[id*="otp-digits"]') || area;
+            if (group && !containers.includes(group)) {
+                containers.push(group);
+            }
         });
 
-        // Fallback to all otp-digit elements if offsetParent filter returned empty
-        if (digits.length === 0) {
-            digits = Array.from(document.querySelectorAll('.otp-digit'));
+        // Fallback: if no container elements found, wrap all .otp-digit elements
+        if (containers.length === 0) {
+            const allDigits = Array.from(document.querySelectorAll('.otp-digit'));
+            if (allDigits.length > 0) {
+                containers.push({ querySelectorAll: () => allDigits });
+            }
         }
 
-        if (digits.length > 0) {
-            const chars = cleanOtp.slice(0, digits.length).split('');
-            chars.forEach((ch, idx) => {
-                if (digits[idx]) {
-                    digits[idx].value = ch;
-                    // Trigger input event after all values are set
-                    digits[idx].classList.add('ring-4', 'ring-emerald-500/30', 'border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
-                    setTimeout(() => {
-                        digits[idx].classList.remove('ring-4', 'ring-emerald-500/30', 'border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
-                    }, 1500);
-                }
-            });
+        let filledAny = false;
 
-            // Focus the last digit
-            if (digits[chars.length - 1]) {
-                digits[chars.length - 1].focus();
-            }
+        // 2. Fill digits in all matching containers
+        containers.forEach(container => {
+            const digitInputs = Array.from(container.querySelectorAll('.otp-digit'));
+            if (digitInputs.length > 0) {
+                chars.slice(0, digitInputs.length).forEach((ch, idx) => {
+                    const input = digitInputs[idx];
+                    if (input) {
+                        input.value = ch;
+                        input.setAttribute('value', ch);
+                        try {
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                            input.dispatchEvent(new Event('change', { bubbles: true }));
+                        } catch (e) {}
 
-            // Dispatch input event so validation listeners catch the completed digits
-            digits.forEach(d => {
-                try { d.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
-            });
-
-            // If auto-submit requested and full code is populated, trigger submit after a brief visual delay
-            if (autoSubmit && chars.length === digits.length) {
-                setTimeout(() => {
-                    const btnVerifyModal = document.getElementById('btn-verify-and-register');
-                    const btnLoginOtp = document.getElementById('login-otp-verify-btn');
-                    if (btnVerifyModal && !btnVerifyModal.disabled && btnVerifyModal.offsetParent !== null) {
-                        btnVerifyModal.click();
-                    } else if (btnLoginOtp && !btnLoginOtp.disabled && btnLoginOtp.offsetParent !== null) {
-                        btnLoginOtp.click();
+                        input.classList.add('ring-4', 'ring-emerald-500/30', 'border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
+                        setTimeout(() => {
+                            input.classList.remove('ring-4', 'ring-emerald-500/30', 'border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
+                        }, 1800);
+                        filledAny = true;
                     }
-                }, 350);
+                });
+
+                // Focus the last digit of this container
+                const lastFilled = digitInputs[Math.min(chars.length - 1, digitInputs.length - 1)];
+                if (lastFilled && lastFilled.offsetParent !== null) {
+                    try { lastFilled.focus(); } catch (e) {}
+                }
             }
+        });
+
+        // 3. Trigger auto-submit if requested
+        if (autoSubmit && filledAny && chars.length >= 4) {
+            setTimeout(() => {
+                const btnLoginOtp = document.getElementById('login-otp-verify-btn');
+                const btnVerifyModal = document.getElementById('btn-verify-and-register');
+
+                if (btnLoginOtp && !btnLoginOtp.disabled && btnLoginOtp.offsetParent !== null) {
+                    btnLoginOtp.click();
+                } else if (btnVerifyModal && !btnVerifyModal.disabled && btnVerifyModal.offsetParent !== null) {
+                    btnVerifyModal.click();
+                } else if (btnLoginOtp && !btnLoginOtp.disabled) {
+                    btnLoginOtp.click();
+                }
+            }, 350);
         }
     }
 
