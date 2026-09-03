@@ -253,7 +253,7 @@
     display: flex;
     flex-wrap: nowrap;
     gap: 1.5rem;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     align-items: stretch;
     width: 100%;
 }
@@ -277,18 +277,31 @@
 @media (min-width: 640px) {
     .ur-plan-card {
         padding: 2rem 1.75rem;
-    }
-}
-
-@media (min-width: 768px) {
-    .ur-plan-card {
-        flex: 0 0 calc(50% - 0.75rem);
+        flex: 0 0 85%;
     }
 }
 
 @media (min-width: 1024px) {
+    .ur-plans__slider-container {
+        overflow: visible;
+        cursor: default;
+    }
+    .ur-plans__grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 1.5rem !important;
+        transform: none !important;
+        transition: none !important;
+        width: 100% !important;
+    }
     .ur-plan-card {
-        flex: 0 0 calc(33.333% - 1rem);
+        flex: none !important;
+        width: 100% !important;
+    }
+    .ur-slider-controls,
+    .ur-slider-progress-wrap,
+    .ur-plan-tabs {
+        display: none !important;
     }
 }
 
@@ -1101,213 +1114,79 @@
             if (!isYearly) updateBillingPeriod(true);
         });
 
-        let currentIndex = 0;
-        const AUTO_INTERVAL_MS = 4200;
-        let autoSlideTimer = null;
-        let progressTimer = null;
-        let progressStart = Date.now();
-        let isUserInteracting = false;
-        let resumeTimeout = null;
-
-        function getItemsPerView() {
-            if (window.innerWidth >= 1024) return 3;
-            if (window.innerWidth >= 768) return 2;
-            return 1;
-        }
-
-        function getMaxIndex() {
-            return Math.max(0, cards.length - getItemsPerView());
-        }
-
-        function updateSlider(smooth = true) {
-            const itemsPerView = getItemsPerView();
-            const maxIndex = getMaxIndex();
-
-            if (currentIndex > maxIndex) {
-                currentIndex = maxIndex;
-            }
-            if (currentIndex < 0) {
-                currentIndex = 0;
-            }
-
-            const cardWidth = cards[0].offsetWidth;
-            const gap = parseFloat(window.getComputedStyle(grid).gap) || 24;
-            const offset = currentIndex * (cardWidth + gap);
-
-            grid.style.transition = smooth ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : 'none';
-            grid.style.transform = `translateX(-${offset}px)`;
-
-            // Update arrow buttons
-            if (prevBtn) {
-                prevBtn.disabled = currentIndex === 0;
-                prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
-                prevBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
-            }
-            if (nextBtn) {
-                nextBtn.disabled = currentIndex === maxIndex;
-                nextBtn.style.opacity = currentIndex === maxIndex ? '0.3' : '1';
-                nextBtn.style.pointerEvents = currentIndex === maxIndex ? 'none' : 'auto';
-            }
-
-            // Update dots
-            dots.forEach((dot, index) => {
-                const isActive = index === currentIndex;
-                dot.classList.toggle('active', isActive);
-                dot.style.display = index <= maxIndex ? 'inline-block' : 'none';
-            });
-
-            // Update plan quick tabs
-            tabBtns.forEach((tab, index) => {
-                tab.classList.toggle('active', index === currentIndex);
-            });
-
-            // Show controls only if there are items to slide
-            const showControls = cards.length > itemsPerView;
-            const controls = document.querySelector('.ur-slider-controls');
-            if (controls) {
-                controls.style.display = showControls ? 'flex' : 'none';
-            }
-        }
-
-        function nextSlide() {
-            const maxIndex = getMaxIndex();
-            if (currentIndex >= maxIndex) {
-                currentIndex = 0;
-            } else {
-                currentIndex++;
-            }
-            updateSlider();
-            resetProgressBar();
-        }
-
-        function prevSlide() {
-            if (currentIndex > 0) {
-                currentIndex--;
-            } else {
-                currentIndex = getMaxIndex();
-            }
-            updateSlider();
-            resetProgressBar();
-        }
-
-        function resetProgressBar() {
-            progressStart = Date.now();
-            if (progressBar) progressBar.style.width = '0%';
-        }
-
-        function startAutoSlide() {
-            stopAutoSlide();
-            resetProgressBar();
+        // Setup Mobile-Only Swipe & Slider
+        function setupMobileSlider(wrapper) {
+            if (!wrapper) return;
+            const currentGrid = wrapper.querySelector('.ur-plans__grid');
+            const currentContainer = wrapper.querySelector('.ur-plans__slider-container');
+            const currentCards = wrapper.querySelectorAll('.ur-plan-card');
             
-            progressTimer = setInterval(() => {
-                if (isUserInteracting) return;
-                const elapsed = Date.now() - progressStart;
-                const pct = Math.min(100, (elapsed / AUTO_INTERVAL_MS) * 100);
-                if (progressBar) progressBar.style.width = `${pct}%`;
-            }, 60);
+            if (!currentGrid || !currentContainer || !currentCards.length) return;
 
-            autoSlideTimer = setInterval(() => {
-                if (!isUserInteracting) {
-                    nextSlide();
-                }
-            }, AUTO_INTERVAL_MS);
-        }
+            let currentIndex = 0;
 
-        function stopAutoSlide() {
-            if (autoSlideTimer) clearInterval(autoSlideTimer);
-            if (progressTimer) clearInterval(progressTimer);
-            if (progressBar) progressBar.style.width = '0%';
-        }
-
-        function pauseAutoSlideTemporarily() {
-            isUserInteracting = true;
-            if (progressBar) progressBar.style.width = '0%';
-            clearTimeout(resumeTimeout);
-            resumeTimeout = setTimeout(() => {
-                isUserInteracting = false;
-                resetProgressBar();
-            }, 5500);
-        }
-
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                pauseAutoSlideTemporarily();
-                prevSlide();
-            });
-        }
-
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                pauseAutoSlideTemporarily();
-                nextSlide();
-            });
-        }
-
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                pauseAutoSlideTemporarily();
-                currentIndex = index;
-                updateSlider();
-                resetProgressBar();
-            });
-        });
-
-        tabBtns.forEach((tab, index) => {
-            tab.addEventListener('click', () => {
-                pauseAutoSlideTemporarily();
-                currentIndex = index;
-                updateSlider();
-                resetProgressBar();
-            });
-        });
-
-        // Hover pause on desktop
-        if (sliderWrapper) {
-            sliderWrapper.addEventListener('mouseenter', () => {
-                isUserInteracting = true;
-            });
-            sliderWrapper.addEventListener('mouseleave', () => {
-                isUserInteracting = false;
-                resetProgressBar();
-            });
-        }
-
-        // Touch swipe support with rubberband & inertia
-        let startX = 0;
-        let currentX = 0;
-        let isSwiping = false;
-
-        container.addEventListener('touchstart', (e) => {
-            pauseAutoSlideTemporarily();
-            startX = e.touches[0].clientX;
-            isSwiping = true;
-        }, { passive: true });
-
-        container.addEventListener('touchmove', (e) => {
-            if (!isSwiping) return;
-            currentX = e.touches[0].clientX;
-        }, { passive: true });
-
-        container.addEventListener('touchend', () => {
-            if (!isSwiping) return;
-            isSwiping = false;
-            const diffX = startX - currentX;
-            if (Math.abs(diffX) > 40) {
-                if (diffX > 0) {
-                    nextSlide();
-                } else {
-                    prevSlide();
-                }
+            function isDesktop() {
+                return window.innerWidth >= 1024;
             }
-        });
 
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
+            function updateSlider(smooth = true) {
+                if (isDesktop()) {
+                    currentGrid.style.transform = 'none';
+                    currentGrid.style.transition = 'none';
+                    return;
+                }
+
+                const maxIndex = currentCards.length - 1;
+                if (currentIndex > maxIndex) currentIndex = maxIndex;
+                if (currentIndex < 0) currentIndex = 0;
+
+                const cardWidth = currentCards[0].offsetWidth;
+                const gap = parseFloat(window.getComputedStyle(currentGrid).gap) || 20;
+                const offset = currentIndex * (cardWidth + gap);
+
+                currentGrid.style.transition = smooth ? 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)' : 'none';
+                currentGrid.style.transform = `translateX(-${offset}px)`;
+            }
+
+            // Mobile Touch Swipe Handling
+            let startX = 0;
+            let currentX = 0;
+            let isSwiping = false;
+
+            currentContainer.addEventListener('touchstart', (e) => {
+                if (isDesktop()) return;
+                startX = e.touches[0].clientX;
+                isSwiping = true;
+            }, { passive: true });
+
+            currentContainer.addEventListener('touchmove', (e) => {
+                if (!isSwiping || isDesktop()) return;
+                currentX = e.touches[0].clientX;
+            }, { passive: true });
+
+            currentContainer.addEventListener('touchend', () => {
+                if (!isSwiping || isDesktop()) return;
+                isSwiping = false;
+                const diffX = startX - currentX;
+                if (Math.abs(diffX) > 40) {
+                    if (diffX > 0 && currentIndex < currentCards.length - 1) {
+                        currentIndex++;
+                    } else if (diffX < 0 && currentIndex > 0) {
+                        currentIndex--;
+                    }
+                    updateSlider(true);
+                }
+            });
+
+            window.addEventListener('resize', () => {
                 updateSlider(false);
-            }, 100);
-        });
+            });
+
+            updateSlider(false);
+        }
+
+        setupMobileSlider(rentalWrapper);
+        setupMobileSlider(buyerWrapper);
 
         document.querySelectorAll('.plan-checkout-link').forEach(link => {
             link.addEventListener('click', () => {
@@ -1316,10 +1195,6 @@
                 link.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin" style="margin-right:6px"></i> Opening Secure Checkout...';
             });
         });
-
-        // Initial setup & start auto slider
-        updateSlider(false);
-        startAutoSlide();
     }
 
     if (document.readyState === 'loading') {
