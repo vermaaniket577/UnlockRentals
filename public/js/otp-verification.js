@@ -178,9 +178,32 @@ window.OtpVerification = (function () {
 
                 // Hide send button, start countdown
                 btn.classList.add('hidden');
-                startCountdown(resendBtn, countdownEl, data.resend_after || 60);
+                startCountdown(resendBtn, countdownEl, Math.ceil(data.resend_after || 60));
+            } else if (data.existing_otp) {
+                showStatus(statusEl, data.message, 'info');
+
+                if (otpContainer) {
+                    const area = otpContainer.closest('.otp-input-area');
+                    if (area) area.classList.remove('hidden');
+                    focusFirstDigit(otpContainer);
+                }
+
+                if (data.notification) {
+                    triggerPushNotification(data.notification);
+                }
+
+                btn.classList.add('hidden');
+                startCountdown(resendBtn, countdownEl, Math.ceil(data.resend_after || 60));
             } else {
                 showStatus(statusEl, data.message || 'Unable to send OTP. Please try again.', 'error');
+                if (data.resend_after) {
+                    if (otpContainer) {
+                        const area = otpContainer.closest('.otp-input-area');
+                        if (area) area.classList.remove('hidden');
+                    }
+                    btn.classList.add('hidden');
+                    startCountdown(resendBtn, countdownEl, Math.ceil(data.resend_after));
+                }
             }
         } catch (err) {
             setLoading(btn, false);

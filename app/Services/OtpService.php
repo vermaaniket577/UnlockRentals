@@ -25,16 +25,32 @@ class OtpService
         // Rate limiting: check if a recent OTP was sent (within resend window)
         $recent = OtpVerification::forPhone($phone)
             ->forPurpose($purpose)
+            ->pending()
             ->where('created_at', '>', now()->subSeconds($resendSeconds))
+            ->latest()
             ->first();
 
         if ($recent) {
-            $waitSeconds = $resendSeconds - now()->diffInSeconds($recent->created_at);
-            return [
+            $waitSeconds = max(1, (int) ceil($resendSeconds - abs(now()->diffInSeconds($recent->created_at))));
+            $channel = Setting::get('otp_channel', config('otp.channel', 'log'));
+            
+            $res = [
                 'success'      => false,
-                'message'      => "Please wait {$waitSeconds} seconds before requesting another OTP.",
-                'resend_after' => max(0, $waitSeconds),
+                'message'      => "An active OTP code was already sent. Please enter it below or wait {$waitSeconds}s to request a new code.",
+                'resend_after' => $waitSeconds,
+                'existing_otp' => true,
             ];
+
+            if ($channel === 'notification' || $channel === 'log') {
+                $res['notification'] = [
+                    'title' => 'UnlockRentals Security Code',
+                    'body'  => "{$recent->otp} is your UnlockRentals verification code.",
+                    'otp'   => $recent->otp,
+                    'icon'  => '/favicon.ico',
+                ];
+            }
+
+            return $res;
         }
 
         // Rate limiting: max OTPs per phone per hour (configurable, default 15)
