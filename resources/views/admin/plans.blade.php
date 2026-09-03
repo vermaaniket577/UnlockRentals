@@ -109,6 +109,51 @@
             </table>
         </div>
 
+        {{-- Tax & Pricing Rules Settings (Directly Configurable on Plans Page) --}}
+        <div class="mt-8 bg-white border border-stone-200 rounded-3xl p-6 sm:p-8 shadow-xs">
+            <div class="flex items-center gap-3 pb-5 mb-6 border-b border-stone-100">
+                <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+                    <i class="ph-bold ph-credit-card"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-extrabold text-zinc-900">Tax & Pricing Gateways</h2>
+                    <p class="text-xs text-zinc-400">Configure dynamic GST taxation rates and global annual discount rules for plan checkouts.</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ route('admin.plans.tax-settings.update') }}">
+                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1.5">GST Rate Percentage (%)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 font-bold">%</span>
+                            <input type="number" name="gst_rate" min="0" max="100" step="0.01" value="{{ $gstRate ?? '0' }}"
+                                   class="w-full pl-9 pr-3.5 py-2.5 bg-stone-50 focus:bg-white border border-stone-200 rounded-xl text-xs sm:text-sm font-semibold text-zinc-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                        </div>
+                        <p class="text-[11px] text-zinc-400 mt-1">Calculated automatically on invoice breakdown during plan checkout (Set to 0 if GST is included or disabled).</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1.5">Annual / Yearly Discount (%)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 font-bold">%</span>
+                            <input type="number" name="annual_discount_percentage" min="0" max="100" step="1" value="{{ $annualDiscount ?? '0' }}"
+                                   class="w-full pl-9 pr-3.5 py-2.5 bg-stone-50 focus:bg-white border border-stone-200 rounded-xl text-xs sm:text-sm font-semibold text-zinc-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                        </div>
+                        <p class="text-[11px] text-zinc-400 mt-1">Global discount percentage for 365-day annual passes (Default is 0% or 20%).</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end">
+                    <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm cursor-pointer">
+                        <i class="ph-bold ph-floppy-disk"></i>
+                        <span>Save Tax & Pricing Settings</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
         <div class="mt-6">
             <a href="{{ route('admin.dashboard') }}" class="text-sm font-semibold text-zinc-500 hover:text-blue-600" title="← Back to Dashboard">← Back to Dashboard</a>
         </div>

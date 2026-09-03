@@ -407,7 +407,26 @@ class AdminController extends Controller
         }
         $plans = $query->orderBy('sort_order')->get();
         $selectedPurpose = $request->input('purpose', 'all');
-        return view('admin.plans', compact('plans', 'selectedPurpose'));
+        $gstRate = Setting::get('gst_rate', '0');
+        $annualDiscount = Setting::get('annual_discount_percentage', '0');
+
+        return view('admin.plans', compact('plans', 'selectedPurpose', 'gstRate', 'annualDiscount'));
+    }
+
+    /**
+     * Update Tax & Pricing Rules directly from the Plans page.
+     */
+    public function updateTaxSettings(Request $request)
+    {
+        $data = $request->validate([
+            'gst_rate' => 'nullable|numeric|min:0|max:100',
+            'annual_discount_percentage' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        Setting::set('gst_rate', (string) ($data['gst_rate'] ?? '0'));
+        Setting::set('annual_discount_percentage', (string) ($data['annual_discount_percentage'] ?? '0'));
+
+        return redirect()->route('admin.plans')->with('success', 'Tax & Pricing rules (GST & Discount) updated successfully.');
     }
 
     /**
