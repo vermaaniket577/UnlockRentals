@@ -24,12 +24,24 @@
         <priority>0.95</priority>
     </url>
 
-    {{-- Post Property (Free) --}}
+    {{-- Post Free Advertise --}}
+    <url>
+        <loc>{{ $baseUrl }}/post-free-advertise</loc>
+        <lastmod>{{ now()->tz('UTC')->toAtomString() }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
+    <url>
+        <loc>{{ $baseUrl }}/post-free-property</loc>
+        <lastmod>{{ now()->tz('UTC')->toAtomString() }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
     <url>
         <loc>{{ $baseUrl }}/properties/create</loc>
         <lastmod>{{ now()->tz('UTC')->toAtomString() }}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.85</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
     </url>
 
     {{-- Membership Plans --}}

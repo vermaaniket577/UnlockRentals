@@ -220,22 +220,8 @@
                             </div>
                             @endif
 
-                            {{-- Navigation Arrows (Left / Right) --}}
-                            @if($property->images->count() > 1)
-                            <button type="button" 
-                                    onclick="event.stopPropagation(); prevGalleryImage()" 
-                                    class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/85 text-white flex items-center justify-center backdrop-blur-sm shadow-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 z-20 cursor-pointer" 
-                                    aria-label="Previous Photo">
-                                <i class="ph-bold ph-caret-left text-lg"></i>
-                            </button>
-                            <button type="button" 
-                                    onclick="event.stopPropagation(); nextGalleryImage()" 
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/85 text-white flex items-center justify-center backdrop-blur-sm shadow-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 z-20 cursor-pointer" 
-                                    aria-label="Next Photo">
-                                <i class="ph-bold ph-caret-right text-lg"></i>
-                            </button>
-
                             {{-- Auto-slide progress bar indicator --}}
+                            @if($property->images->count() > 1)
                             <div class="absolute bottom-0 left-0 right-0 h-1 bg-black/10 z-10">
                                 <div id="gallery-progress-bar" class="h-full bg-[#2874F0] w-0 transition-all duration-100 ease-linear"></div>
                             </div>

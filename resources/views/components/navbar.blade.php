@@ -70,9 +70,9 @@
                         $navBadgeClass = str_contains($navPlanName, 'enterprise') ? 'from-slate-900 to-teal-500' : (str_contains($navPlanName, 'platinum') ? 'from-blue-600 to-violet-600' : (str_contains($navPlanName, 'gold') ? 'from-amber-500 to-yellow-300' : 'from-slate-400 to-sky-300'));
                     @endphp
                     @if(auth()->user()->isOwner() || auth()->user()->isAdmin())
-                    <a href="{{ route('properties.create') }}" class="hidden md:inline-flex items-center gap-1.5 px-3 xl:px-4 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-bold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-add-property" title="List Property">
+                    <a href="{{ route('properties.create') }}" class="hidden md:inline-flex items-center gap-1.5 px-3 xl:px-4 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-bold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-add-property" title="Post Free Advertise">
                         <i class="ph-bold ph-plus-circle text-sm"></i>
-                        <span>List Property</span>
+                        <span>Post Free Advertise</span>
                     </a>
                     @endif
 
@@ -369,14 +369,14 @@
             {{-- Quick Post Ad Banner --}}
             <div class="pt-2">
                 @auth
-                    <a href="{{ route('properties.create') }}" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all">
+                    <a href="{{ route('properties.create') }}" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" title="Post Free Advertise">
                         <i class="ph-bold ph-plus-circle text-base"></i>
-                        <span>Post Property Ad</span>
+                        <span>Post Free Advertise</span>
                     </a>
                 @else
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('login', '{{ route('properties.create') }}');" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('login', '{{ route('properties.create') }}');" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" title="Post Free Advertise">
                         <i class="ph-bold ph-plus-circle text-base"></i>
-                        <span>Post Property Ad</span>
+                        <span>Post Free Advertise</span>
                     </a>
                 @endauth
             </div>

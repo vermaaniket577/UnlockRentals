@@ -169,8 +169,17 @@ Route::post('/chatbot/save', [\App\Http\Controllers\SupportController::class, 's
 Route::get('/chatbot/history/{session_id}', [\App\Http\Controllers\SupportController::class, 'getChatHistory'])->name('chatbot.history');
 Route::post('/chatbot/callback', [\App\Http\Controllers\SupportController::class, 'requestCallback'])->name('chatbot.callback');
 
-// Property browsing (public)
+// Property browsing & Post Free Advertise (public)
 Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
+Route::get('/post-free-advertise', function () {
+    return redirect()->route('properties.create');
+})->name('post-free-advertise');
+Route::get('/post-free-property', function () {
+    return redirect()->route('properties.create');
+})->name('post-free-property');
+Route::get('/post-property-advertise', function () {
+    return redirect()->route('properties.create');
+});
 
 // Plans browsing (public)
 Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');

@@ -605,9 +605,9 @@
             @if (Route::has('login'))
                 @auth
                     {{-- Desktop Only: Post Ad CTA (hidden on mobile to prevent overlap) --}}
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden md:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Ad">
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden md:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Free Advertise">
                         <i class="ph-bold ph-plus-circle" style="font-size: 17px;"></i>
-                        <span>{{ $site_settings['cta_button_text'] ?? 'Post Property' }}</span>
+                        <span>Post Free Advertise</span>
                     </a>
 
                     {{-- Compact User Account Pill --}}
@@ -744,9 +744,9 @@
                         Log in
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden md:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Ad">
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden md:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Free Advertise">
                             <i class="ph-bold ph-plus-circle" style="font-size: 17px;"></i>
-                            <span>{{ $site_settings['cta_button_text'] ?? 'Post Property' }}</span>
+                            <span>Post Free Advertise</span>
                         </a>
                     @endif
                 @endauth
@@ -796,9 +796,9 @@
                         <p style="color:#fff; font-weight:600; font-size:15px;">{{ auth()->user()->name }}</p>
                         <p style="color:rgba(255,255,255,0.5); font-size:12px;">{{ auth()->user()->email }}</p>
                     </div>
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px;" title="UnlockRentals">
-                        <i class="ph-fill ph-megaphone-simple" style="font-size: 20px;"></i>
-                        {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px;" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle" style="font-size: 20px;"></i>
+                        Post Free Advertise
                     </a>
                     <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%; margin-bottom: 10px;" title="Dashboard">Dashboard</a>
                     <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
@@ -811,9 +811,9 @@
                 @else
                     <a href="{{ route('login') }}" class="btn-ghost-sm" style="text-align:center; display:block;" title="Log in">Log in</a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px;" title="UnlockRentals">
-                            <i class="ph-fill ph-megaphone-simple" style="font-size: 20px;"></i>
-                            {{ $site_settings['cta_button_text'] ?? 'Post Your Property Advertise' }}
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px;" title="Post Free Advertise">
+                            <i class="ph-bold ph-plus-circle" style="font-size: 20px;"></i>
+                            Post Free Advertise
                         </a>
                     @endif
                 @endauth
@@ -1072,7 +1072,7 @@
                     <span>Search House Near Me</span>
                 </button>
                 <span class="action-text">Own a property?</span>
-                <a href="{{ route('properties.create') }}" class="btn-outline-blue" title="Post Property">Post Property</a>
+                <a href="{{ route('properties.create') }}" class="btn-outline-blue" title="Post Free Advertise">Post Free Advertise</a>
                 <a href="{{ route('properties.index') }}" class="btn-text-link" title="View Showreel">
                     <div class="play-icon">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>

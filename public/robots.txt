@@ -1,5 +1,11 @@
 User-agent: *
 Allow: /
+Allow: /post-free-advertise
+Allow: /post-free-property
+Allow: /properties
+Allow: /property/
+Allow: /blog
+Allow: /how-it-works
 Allow: /favicon.ico
 Allow: /favicon.png
 Allow: /favicon-*.png
