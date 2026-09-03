@@ -19,19 +19,23 @@ class SubscriptionPaymentService
      */
     public function billingBreakdown(Plan $plan, float $effectivePrice, string $billingPeriod, $privateOffer = null): array
     {
-        $months = $billingPeriod === 'yearly' ? 12 : 1;
+        $isPlanAlreadyAnnual = (int) $plan->duration_days >= 365 || $plan->purpose === 'buy';
+        $months = ($billingPeriod === 'yearly' && !$isPlanAlreadyAnnual) ? 12 : 1;
         $durationDays = $billingPeriod === 'yearly' ? 365 : (int) $plan->duration_days;
 
         // Use integer paise (1/100th of ₹) arithmetic to prevent floating-point
         // precision loss. E.g. ₹199.00 → 19900 paise → always stays ₹199.00.
         $subtotalPaise = (int) round((float) $plan->price * $months * 100);
+        $annualDiscountRate = (float) \App\Models\Setting::get('annual_discount_percentage', '20');
         
         if ($privateOffer && $privateOffer->billing_period === $billingPeriod) {
             $offerSubtotalPaise = (int) round((float) $privateOffer->discounted_price * 100);
             $yearlyDiscountPaise = 0;
         } else {
             $offerSubtotalPaise = (int) round($effectivePrice * $months * 100);
-            $yearlyDiscountPaise = $billingPeriod === 'yearly' ? (int) round($offerSubtotalPaise * 0.20) : 0;
+            $yearlyDiscountPaise = ($billingPeriod === 'yearly' && !$isPlanAlreadyAnnual) 
+                ? (int) round($offerSubtotalPaise * ($annualDiscountRate / 100)) 
+                : 0;
         }
 
         $discountPaise = max(0, $subtotalPaise - $offerSubtotalPaise) + $yearlyDiscountPaise;

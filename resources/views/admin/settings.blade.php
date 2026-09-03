@@ -523,6 +523,16 @@
                     </div>
                     <p class="text-[11px] text-slate-400 mt-1">Calculated automatically on invoice breakdown during plan checkout (Default is 18%).</p>
                 </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Annual / Yearly Discount (%)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-bold">%</span>
+                        <input type="number" name="annual_discount_percentage" min="0" max="100" step="1" value="{{ $settings['annual_discount_percentage'] ?? '20' }}"
+                               class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Global discount automatically applied when purchasing 365-day annual passes (Default is 20%).</p>
+                </div>
             </div>
 
             <div class="border-t border-slate-100 pt-6">
