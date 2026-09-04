@@ -81,6 +81,17 @@ class UserPlan extends Model
     }
 
     /**
+     * Check if this user plan is eligible and has quota to unlock the specified property.
+     */
+    public function canUnlockProperty(Property $property): bool
+    {
+        return $this->isActive()
+            && $this->hasContactsRemaining()
+            && $this->plan
+            && $this->plan->canUnlock($property);
+    }
+
+    /**
      * Get remaining contact views.
      */
     public function getRemainingContactsAttribute(): int

@@ -159,18 +159,25 @@
 
         {{-- Active/Pending Subscriptions banner --}}
         @auth
-            @if($activePlan)
-                <div class="max-w-3xl mx-auto mt-8 p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-emerald-500/50 shadow-lg shadow-emerald-500/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0">
-                            <i class="ph-bold ph-check-circle"></i>
+            @php
+                $userActivePlans = collect([$activeRentPlan ?? null, $activeBuyPlan ?? null])->filter()->unique('id');
+            @endphp
+            @if($userActivePlans->isNotEmpty())
+                <div class="max-w-3xl mx-auto mt-8 space-y-3">
+                    @foreach($userActivePlans as $curPlan)
+                        <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-emerald-500/50 shadow-lg shadow-emerald-500/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0">
+                                    <i class="ph-bold ph-check-circle"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-sm font-bold text-slate-900 dark:text-white">Active Plan: {{ $curPlan->plan->name ?? 'Premium' }} ({{ $curPlan->plan && $curPlan->plan->isBuyPlan() ? 'Buyer Pass' : 'Rental Plan' }})</h2>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ $curPlan->remaining_contacts }} contact unlocks remaining · Valid until {{ $curPlan->expires_at->format('M d, Y') }}</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider">Active</span>
                         </div>
-                        <div>
-                            <h2 class="text-sm font-bold text-slate-900 dark:text-white">Active Plan: {{ $activePlan->plan->name ?? 'Premium' }}</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">{{ $activePlan->remaining_contacts }} contact unlocks remaining · Valid until {{ $activePlan->expires_at->format('M d, Y') }}</p>
-                        </div>
-                    </div>
-                    <span class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider">Active</span>
+                    @endforeach
                 </div>
             @elseif($pendingPlan)
                 <div class="max-w-3xl mx-auto mt-8 p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-amber-500/50 shadow-lg shadow-amber-500/10 flex items-center gap-3.5 text-left">
@@ -331,20 +338,20 @@
                     </ul>
 
                     <div class="mt-auto">
-                        @if(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan_id === $plan->id)
+                        @if(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0 && $activeRentPlan->plan_id === $plan->id)
                             <button disabled class="w-full py-3.5 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold text-sm text-center cursor-default">
                                 ✓ Current Active Plan
                             </button>
-                        @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price > (float) $activePlan->plan->price)
+                        @elseif(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0 && $activeRentPlan->plan && (float) $plan->price > (float) $activeRentPlan->plan->price)
                             <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" title="Upgrade Plan">
                                 <i class="ph-bold ph-lightning"></i>
                                 <span>Upgrade Plan</span>
                             </a>
-                        @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0)
+                        @elseif(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0)
                             <button disabled class="w-full py-3.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold text-sm text-center cursor-not-allowed">
                                 Already Subscribed
                             </button>
-                        @elseif(auth()->check() && $pendingPlan)
+                        @elseif(auth()->check() && $pendingPlan && $pendingPlan->plan && $pendingPlan->plan->isRentPlan())
                             <button disabled class="w-full py-3.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-bold text-sm text-center cursor-default">
                                 Verification Pending
                             </button>
@@ -578,20 +585,20 @@
                     </ul>
 
                     <div class="mt-auto">
-                        @if(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan_id === $plan->id)
+                        @if(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0 && $activeBuyPlan->plan_id === $plan->id)
                             <button disabled class="w-full py-3.5 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold text-sm text-center cursor-default">
                                 ✓ Current Active Plan
                             </button>
-                        @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price > (float) $activePlan->plan->price)
+                        @elseif(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0 && $activeBuyPlan->plan && (float) $plan->price > (float) $activeBuyPlan->plan->price)
                             <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}" class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" title="Upgrade Plan">
                                 <i class="ph-bold ph-lightning"></i>
                                 <span>Upgrade Plan</span>
                             </a>
-                        @elseif(auth()->check() && $activePlan && $activePlan->remaining_contacts > 0)
+                        @elseif(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0)
                             <button disabled class="w-full py-3.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold text-sm text-center cursor-not-allowed">
                                 Already Subscribed
                             </button>
-                        @elseif(auth()->check() && $pendingPlan)
+                        @elseif(auth()->check() && $pendingPlan && $pendingPlan->plan && $pendingPlan->plan->isBuyPlan())
                             <button disabled class="w-full py-3.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-bold text-sm text-center cursor-default">
                                 Verification Pending
                             </button>

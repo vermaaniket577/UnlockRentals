@@ -87,18 +87,66 @@ class User extends Authenticatable
 
     /**
      * Get the user's current active plan subscription.
+     * Optionally filtered by purpose ('rent', 'buy'/'sale').
      */
-    public function activePlan(): ?UserPlan
+    public function activePlan(?string $purpose = null): ?UserPlan
     {
-        return $this->userPlans()
+        $query = $this->userPlans()
             ->active()
-            ->with('plan')
-            ->latest('approved_at')
-            ->first();
+            ->with('plan');
+
+        if ($purpose !== null) {
+            $purposes = match ($purpose) {
+                'rent' => ['rent', 'both', null],
+                'buy', 'sale' => ['buy', 'sale', 'both'],
+                default => [$purpose, 'both'],
+            };
+
+            $query->whereHas('plan', function ($q) use ($purposes) {
+                if (in_array(null, $purposes, true)) {
+                    $nonNull = array_filter($purposes, fn($p) => $p !== null);
+                    $q->whereIn('purpose', $nonNull)->orWhereNull('purpose');
+                } else {
+                    $q->whereIn('purpose', $purposes);
+                }
+            });
+        }
+
+        return $query->latest('approved_at')->first();
     }
 
     /**
-     * Check if this user has an active plan.
+     * Get the user's current active rental plan.
+     */
+    public function activeRentPlan(): ?UserPlan
+    {
+        return $this->activePlan('rent');
+    }
+
+    /**
+     * Get the user's current active buyer plan.
+     */
+    public function activeBuyPlan(): ?UserPlan
+    {
+        return $this->activePlan('buy');
+    }
+
+    /**
+     * Get the user's active plan that is eligible for a specific property.
+     * Rental properties require a Rent (or Both) plan.
+     * Seller / Sale properties require a Buyer (or Both) plan.
+     */
+    public function activePlanForProperty(Property $property): ?UserPlan
+    {
+        if ($property->isForSale()) {
+            return $this->activeBuyPlan();
+        }
+
+        return $this->activeRentPlan();
+    }
+
+    /**
+     * Check if this user has an active plan (general).
      */
     public function hasActivePlan(): bool
     {
@@ -106,8 +154,34 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user can view a property's owner contact.
+     * Check if user has an active plan eligible for a specific property.
+     */
+    public function hasActivePlanForProperty(Property $property): bool
+    {
+        return $this->activePlanForProperty($property) !== null;
+    }
+
+    /**
+     * Check if user has an active rental plan.
+     */
+    public function hasActiveRentPlan(): bool
+    {
+        return $this->activeRentPlan() !== null;
+    }
+
+    /**
+     * Check if user has an active buyer pass.
+     */
+    public function hasActiveBuyPlan(): bool
+    {
+        return $this->activeBuyPlan() !== null;
+    }
+
+    /**
+     * Check if user can view a property's owner/seller contact.
      * Admins and the property owner themselves can always view.
+     * Paid users can view ONLY if their active plan matches the property purpose
+     * (Rent plan for rental posts, Buyer pass for seller posts) and has views remaining.
      */
     public function canViewContact(Property $property): bool
     {
@@ -120,8 +194,8 @@ class User extends Authenticatable
         // Already viewed this contact? Free re-view
         if ($this->hasViewedContact($property)) return true;
 
-        // Has active plan with remaining contacts?
-        $plan = $this->activePlan();
+        // Has active plan matching this property purpose with remaining contacts?
+        $plan = $this->activePlanForProperty($property);
         return $plan && $plan->hasContactsRemaining();
     }
 
@@ -136,15 +210,15 @@ class User extends Authenticatable
     }
 
     /**
-     * Unlock a property's owner contact (deducts from plan).
-     * Returns true if successful, false if no plan or limit reached.
+     * Unlock a property's owner/seller contact (deducts from the matching plan).
+     * Returns true if successful, false if no matching plan or limit reached.
      */
     public function viewContact(Property $property): bool
     {
         // Already unlocked? No need to deduct again
         if ($this->hasViewedContact($property)) return true;
 
-        $plan = $this->activePlan();
+        $plan = $this->activePlanForProperty($property);
         if (!$plan || !$plan->hasContactsRemaining()) return false;
 
         ContactView::create([

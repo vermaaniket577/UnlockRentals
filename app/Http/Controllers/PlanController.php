@@ -27,14 +27,17 @@ class PlanController extends Controller
     public function index()
     {
         $plans = Plan::public()->get();
-        $activePlan = auth()->check() ? auth()->user()->activePlan() : null;
-        $pendingPlan = auth()->check()
-            ? auth()->user()->userPlans()->pending()->with('plan')->latest()->first()
+        $user = auth()->user();
+        $activePlan = $user ? $user->activePlan() : null;
+        $activeRentPlan = $user ? $user->activeRentPlan() : null;
+        $activeBuyPlan = $user ? $user->activeBuyPlan() : null;
+        $pendingPlan = $user
+            ? $user->userPlans()->pending()->with('plan')->latest()->first()
             : null;
 
         $userOffers = collect();
-        if (auth()->check()) {
-            $userOffers = \App\Models\PrivateUserOffer::where('user_id', auth()->id())
+        if ($user) {
+            $userOffers = \App\Models\PrivateUserOffer::where('user_id', $user->id)
                 ->where('status', 'active')
                 ->where(function ($q) {
                     $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
@@ -48,18 +51,18 @@ class PlanController extends Controller
             ? $razorpayKeyId
             : null;
 
-        return view('plans.index', compact('plans', 'activePlan', 'pendingPlan', 'userOffers', 'activeGateway', 'razorpayKeyId'));
+        return view('plans.index', compact('plans', 'activePlan', 'activeRentPlan', 'activeBuyPlan', 'pendingPlan', 'userOffers', 'activeGateway', 'razorpayKeyId'));
     }
 
     public function purchase(Plan $plan)
     {
         $user = auth()->user();
+        $targetCategory = $plan->isBuyPlan() ? 'buy' : 'rent';
+        $categoryName = $plan->isBuyPlan() ? 'Buyer Pass' : 'Rental Plan';
 
-        if ($user->hasActivePlan()) {
-            $activePlan = $user->activePlan();
-            if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
-                return redirect()->back()->with('error', 'You already have an active plan of this tier or higher with remaining contact views. You can only upgrade to a higher plan.');
-            }
+        $activePlan = $user->activePlan($targetCategory);
+        if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
+            return redirect()->back()->with('error', "You already have an active {$categoryName} of this tier or higher with remaining contact views. You can only upgrade to a higher plan.");
         }
 
         $billing = request('billing_period', 'monthly') === 'yearly' ? 'yearly' : 'monthly';
@@ -70,11 +73,13 @@ class PlanController extends Controller
     public function checkout(Plan $plan)
     {
         $user = auth()->user();
-        if ($user->hasActivePlan()) {
-            $activePlan = $user->activePlan();
-            if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
-                return redirect()->route('plans.index')->with('error', 'You already have an active plan of this tier or higher with remaining contact views. You can only upgrade to a higher plan.');
-            }
+        $targetCategory = $plan->isBuyPlan() ? 'buy' : 'rent';
+        $categoryName = $plan->isBuyPlan() ? 'Buyer Pass' : 'Rental Plan';
+
+        $activePlan = $user->activePlan($targetCategory);
+        if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
+            return redirect()->route('plans.index', ['billing' => $plan->isBuyPlan() ? 'yearly' : 'monthly'])
+                ->with('error', "You already have an active {$categoryName} of this tier or higher with remaining contact views. You can only upgrade to a higher plan.");
         }
 
         if (empty($user->phone)) {
@@ -106,12 +111,12 @@ class PlanController extends Controller
     public function createRazorpayOrder(Request $request, Plan $plan): JsonResponse
     {
         $user = auth()->user();
+        $targetCategory = $plan->isBuyPlan() ? 'buy' : 'rent';
+        $categoryName = $plan->isBuyPlan() ? 'Buyer Pass' : 'Rental Plan';
 
-        if ($user->hasActivePlan()) {
-            $activePlan = $user->activePlan();
-            if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
-                return response()->json(['message' => 'You already have an active plan of this tier or higher with remaining contact views. You can only upgrade to a higher plan.'], 409);
-            }
+        $activePlan = $user->activePlan($targetCategory);
+        if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
+            return response()->json(['message' => "You already have an active {$categoryName} of this tier or higher with remaining contact views. You can only upgrade to a higher plan."], 409);
         }
 
         $activeGateway = Setting::activePaymentGateway();
@@ -454,8 +459,12 @@ class PlanController extends Controller
         $user = auth()->user();
 
         if (!$user->canViewContact($property)) {
-            return redirect()->route('plans.index')
-                ->with('error', 'You need an active plan to view owner contacts. Please purchase a plan.');
+            $isSale = $property->isForSale();
+            $planType = $isSale ? 'Buyer Pass' : 'Rental Plan';
+            $billing = $isSale ? 'yearly' : 'monthly';
+
+            return redirect()->route('plans.index', ['billing' => $billing])
+                ->with('error', "You need an active {$planType} to unlock contact details for this " . ($isSale ? 'seller' : 'rental') . " post. Please choose a suitable plan.");
         }
 
         $user->viewContact($property);

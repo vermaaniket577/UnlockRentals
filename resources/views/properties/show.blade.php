@@ -11,7 +11,7 @@
         $isOwnerOrAdmin = $user->id === $property->user_id || $user->isAdmin();
         $hasViewed = $user->hasViewedContact($property);
         $canView = $user->canViewContact($property);
-        $activePlan = $user->activePlan();
+        $activePlan = $user->activePlanForProperty($property);
     }
 @endphp
 
@@ -625,12 +625,12 @@
                             <button onclick="openCallAgentModal()" class="px-4 py-3 bg-[#2874F0]/10 hover:bg-[#2874F0]/20 text-[#2874F0] text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" id="call-agent-btn">
                                 <i class="ph-bold ph-phone-call"></i> Call Agent
                             </button>
-                            @if(auth()->user()->hasActivePlan())
+                            @if(auth()->user()->hasActivePlanForProperty($property))
                             <button onclick="openBookVisitModal()" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer" id="book-visit-btn">
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </button>
                             @else
-                            <a href="{{ route('plans.index') }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" id="book-visit-btn" title="Book Visit">
+                            <a href="{{ route('plans.index', ['billing' => $property->isForSale() ? 'yearly' : 'monthly']) }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" id="book-visit-btn" title="Book Visit">
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </a>
                             @endif
@@ -669,7 +669,10 @@
                                     $canView = auth()->user()->canViewContact($property);
                                     $hasViewed = auth()->user()->hasViewedContact($property);
                                     $isOwnerOrAdmin = auth()->id() === $property->user_id || auth()->user()->isAdmin();
-                                    $activePlan = auth()->user()->activePlan();
+                                    $activePlan = auth()->user()->activePlanForProperty($property);
+                                    $isSale = $property->isForSale();
+                                    $hasRentPlan = auth()->user()->hasActiveRentPlan();
+                                    $hasBuyPlan = auth()->user()->hasActiveBuyPlan();
                                 @endphp
 
                                 @if($isOwnerOrAdmin || $hasViewed)
@@ -703,40 +706,62 @@
                                         @endif
                                     </div>
                                 @elseif($canView)
-                                    {{-- Has plan with remaining contacts — show unlock button --}}
+                                    {{-- Has matching plan with remaining contacts — show unlock button --}}
                                     <div class="pt-4 border-t border-zinc-200 mt-4">
                                         <div class="text-center mb-3 bg-amber-50/50 p-3 rounded-lg border border-amber-100">
                                             <p class="text-xs font-bold text-zinc-700 mb-0.5">Contact details are locked</p>
-                                            <p class="text-[11px] text-zinc-500 font-medium">{{ $activePlan->remaining_contacts }} contact views remaining in your active plan</p>
+                                            <p class="text-[11px] text-zinc-500 font-medium">{{ $activePlan->remaining_contacts }} contact views remaining in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}</p>
                                         </div>
                                         <form method="POST" action="{{ route('properties.unlock-contact', $property) }}">
                                             @csrf
                                             <button type="submit" class="w-full px-4 py-3 bg-[#c9a050] hover:bg-[#b08d42] text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-[#c9a050]/20 flex items-center justify-center gap-1.5 cursor-pointer">
-                                                <i class="ph-bold ph-lock-key-open"></i> Unlock Owner Contact
+                                                <i class="ph-bold ph-lock-key-open"></i> Unlock {{ $isSale ? 'Seller' : 'Owner' }} Contact
                                             </button>
                                         </form>
                                     </div>
                                 @else
-                                    {{-- No active plan or plan views exhausted — prompt to buy/upgrade --}}
+                                    {{-- Cannot view: determine precise reason --}}
                                     <div class="pt-4 border-t border-zinc-200 mt-4">
                                         <div class="text-center p-4 bg-amber-50/50 border border-amber-200 rounded-xl">
-                                            @if(auth()->check() && auth()->user()->hasActivePlan())
+                                            @if($isSale && $hasRentPlan && !$hasBuyPlan)
+                                                {{-- User has Rent plan, but this is a Seller (Sale) post --}}
+                                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
+                                                    <i class="ph-bold ph-buildings text-xl"></i>
+                                                </div>
+                                                <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Buyer Pass Required</p>
+                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You currently hold an active Rental Plan. Rental plans only unlock rent posts. To view verified seller contact details for this property, please purchase a Buyer Pass.</p>
+                                                <a href="{{ route('plans.index', ['billing' => 'yearly']) }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Buyer Passes">
+                                                    <i class="ph-bold ph-buildings"></i> View Buyer Passes
+                                                </a>
+                                            @elseif(!$isSale && $hasBuyPlan && !$hasRentPlan)
+                                                {{-- User has Buyer pass, but this is a Rent post --}}
+                                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
+                                                    <i class="ph-bold ph-house text-xl"></i>
+                                                </div>
+                                                <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Rental Plan Required</p>
+                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You currently hold an active Buyer Pass. Buyer passes only unlock sale posts. To view verified owner contact details for this rental listing, please purchase a Rental Plan.</p>
+                                                <a href="{{ route('plans.index', ['billing' => 'monthly']) }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Rental Plans">
+                                                    <i class="ph-bold ph-house"></i> View Rental Plans
+                                                </a>
+                                            @elseif($activePlan && $activePlan->remaining_contacts <= 0)
+                                                {{-- Contact views exhausted on matching plan --}}
                                                 <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
                                                     <i class="ph-bold ph-lock-key text-xl"></i>
                                                 </div>
                                                 <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Contact limit reached</p>
-                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You have used all contact views in your active plan. Please upgrade your plan to unlock more contact details.</p>
-                                                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Upgrade Plan">
+                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You have used all contact views in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}. Please upgrade your plan to unlock more contact details.</p>
+                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly']) }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Upgrade Plan">
                                                     <i class="ph-bold ph-crown"></i> Upgrade Plan
                                                 </a>
                                             @else
+                                                {{-- No active plan --}}
                                                 <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
                                                     <i class="ph-bold ph-lock-key text-xl"></i>
                                                 </div>
                                                 <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Premium details locked</p>
-                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Get a subscription plan to access the property owner's verified phone & email details.</p>
-                                                <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Unlock Plans">
-                                                    <i class="ph-bold ph-crown"></i> View Unlock Plans
+                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Get a {{ $isSale ? 'Buyer Pass' : 'Rental Plan' }} to access the verified {{ $isSale ? 'seller\'s' : 'owner\'s' }} phone & email details.</p>
+                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly']) }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Unlock Plans">
+                                                    <i class="ph-bold ph-crown"></i> View {{ $isSale ? 'Buyer Passes' : 'Rental Plans' }}
                                                 </a>
                                             @endif
                                         </div>

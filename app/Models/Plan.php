@@ -72,6 +72,34 @@ class Plan extends Model
     }
 
     /**
+     * Check if plan applies to rental properties.
+     */
+    public function isRentPlan(): bool
+    {
+        return in_array($this->purpose, ['rent', 'both', null]);
+    }
+
+    /**
+     * Check if plan applies to properties for sale/buy.
+     */
+    public function isBuyPlan(): bool
+    {
+        return in_array($this->purpose, ['buy', 'sale', 'both']);
+    }
+
+    /**
+     * Check if this plan can unlock the specified property.
+     */
+    public function canUnlock(Property $property): bool
+    {
+        if ($property->isForSale()) {
+            return $this->isBuyPlan();
+        }
+
+        return $this->isRentPlan();
+    }
+
+    /**
      * Get formatted price.
      */
     public function getFormattedPriceAttribute(): string

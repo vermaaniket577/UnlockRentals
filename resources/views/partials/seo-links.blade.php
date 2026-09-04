@@ -108,6 +108,29 @@
                     </a>
                 @endforeach
             </div>
+
+            <div class="mt-6 pt-6 border-t border-stone-100 dark:border-slate-800/80">
+                <h4 class="text-xs font-bold text-zinc-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+                    For Property Owners & Tenants
+                </h4>
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <a href="{{ url('/list-property-for-rent') }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                        List Property Free
+                    </a>
+                    <span class="text-zinc-300 dark:text-slate-700">•</span>
+                    <a href="{{ url('/post-rental-ad') }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                        Post Rental Ad
+                    </a>
+                    <span class="text-zinc-300 dark:text-slate-700">•</span>
+                    <a href="{{ url('/how-to-find-house-for-rent') }}" class="text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400">
+                        Renting Guide
+                    </a>
+                    <span class="text-zinc-300 dark:text-slate-700">•</span>
+                    <a href="{{ url('/rental-agreement-guide') }}" class="text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400">
+                        Agreement Guide
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

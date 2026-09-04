@@ -187,10 +187,10 @@ class PropertyController extends Controller
             }
         }
 
-        // Automatically unlock contact for paid users with remaining contact views
+        // Automatically unlock contact for paid users with remaining contact views for this property type
         if (auth()->check()) {
             $user = auth()->user();
-            if ($user->hasActivePlan() && !$user->hasViewedContact($property)) {
+            if ($user->canViewContact($property) && !$user->hasViewedContact($property)) {
                 $user->viewContact($property);
             }
         }

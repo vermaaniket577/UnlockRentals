@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use App\Models\Category;
+use App\Services\SeoKeywordService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -14,6 +15,43 @@ class SeoController extends Controller
      */
     public function handle(Request $request, $seo_slug)
     {
+        // 1. Check if slug matches curated SEO keywords dataset
+        $keywordItem = SeoKeywordService::findBySlug($seo_slug);
+
+        if ($keywordItem) {
+            $recommendedPage = $keywordItem['recommended_page'] ?? 'Category / Landing Page';
+            $metaTitle = $keywordItem['seo_title'];
+            $metaDescription = $keywordItem['meta_description'];
+
+            // Branch A: Owner Listing Page
+            if ($recommendedPage === 'Owner Listing Page') {
+                $schemas = $this->generateOwnerSchemas($seo_slug, $metaTitle, $metaDescription);
+                return view('seo.owner-landing', [
+                    'keywordItem' => $keywordItem,
+                    'meta_title' => $metaTitle,
+                    'meta_description' => $metaDescription,
+                    'schemas' => $schemas,
+                ]);
+            }
+
+            // Branch B: Rental Guide / Blog Page
+            if ($recommendedPage === 'Blog / Guide') {
+                $schemas = $this->generateGuideSchemas($seo_slug, $metaTitle, $metaDescription, $keywordItem['keyword']);
+                $recommendations = Property::approved()->with(['primaryImage', 'category', 'owner'])->latest()->limit(4)->get();
+                return view('seo.guide', [
+                    'keywordItem' => $keywordItem,
+                    'meta_title' => $metaTitle,
+                    'meta_description' => $metaDescription,
+                    'recommendations' => $recommendations,
+                    'schemas' => $schemas,
+                ]);
+            }
+
+            // Branch C: Category, City, Locality, and Commercial Landing Pages
+            return $this->handleCuratedLandingPage($request, $keywordItem);
+        }
+
+        // 2. Fallback to existing dynamic regex pattern matching
         $params = $this->parseSlug($seo_slug);
 
         if (!$params) {
@@ -164,7 +202,7 @@ class SeoController extends Controller
         $recommendations = collect();
         if ($properties->isEmpty()) {
             $recommendations = Property::approved()
-                ->with(['primaryImage', 'category'])
+                ->with(['primaryImage', 'category', 'owner'])
                 ->when($city, function ($q) use ($city) {
                     $q->where('location', 'like', '%' . $city . '%');
                 })
@@ -175,7 +213,7 @@ class SeoController extends Controller
             // If still empty, get any featured or latest properties
             if ($recommendations->isEmpty()) {
                 $recommendations = Property::approved()
-                    ->with(['primaryImage', 'category'])
+                    ->with(['primaryImage', 'category', 'owner'])
                     ->latest()
                     ->limit(4)
                     ->get();
@@ -594,12 +632,329 @@ class SeoController extends Controller
     }
 
     /**
+     * Handle curated category, city, locality, and commercial pages from seo_keywords.xlsx.
+     */
+    protected function handleCuratedLandingPage(Request $request, array $keywordItem)
+    {
+        $city = !empty($keywordItem['city']) ? $keywordItem['city'] : null;
+        $locality = !empty($keywordItem['locality']) ? $keywordItem['locality'] : null;
+        $landmark = null;
+        $category = $keywordItem['category'] ?? '';
+        $keyword = strtolower($keywordItem['keyword'] ?? '');
+        $seoSlug = ltrim($keywordItem['url_slug'] ?? '', '/');
+        $metaTitle = $keywordItem['seo_title'];
+        $metaDescription = $keywordItem['meta_description'];
+        $isNearMe = str_contains($keyword, 'near me') || str_contains($seoSlug, 'near-me') || str_contains($seoSlug, 'near-my-location');
+
+        // Dynamic query-time overrides
+        if ($request->filled('district')) {
+            $city = ucwords(str_replace('-', ' ', $request->district));
+        } elseif ($request->filled('city')) {
+            $city = ucwords(str_replace('-', ' ', $request->city));
+        }
+        if ($request->filled('locality')) {
+            $locality = ucwords(str_replace('-', ' ', $request->locality));
+        }
+
+        // Determine type display and filter logic
+        $type = 'property';
+        $typeDisplay = 'Property';
+        $budget = null;
+        $gender = null;
+
+        if (str_contains($keyword, 'house') || str_contains($keyword, 'home') || str_contains($keyword, 'villa')) {
+            $type = 'house';
+            $typeDisplay = 'House';
+        } elseif (str_contains($keyword, 'pg') || str_contains($keyword, 'hostel') || str_contains($keyword, 'co-living')) {
+            $type = 'pg';
+            $typeDisplay = 'PG & Co-Living';
+        } elseif (str_contains($keyword, 'room') || str_contains($keyword, '1rk')) {
+            $type = 'room';
+            $typeDisplay = 'Room';
+        } elseif (str_contains($keyword, 'flat') || str_contains($keyword, 'apartment') || str_contains($keyword, 'bhk')) {
+            $type = 'flat';
+            $typeDisplay = 'Flat';
+        } elseif (str_contains($keyword, 'commercial') || str_contains($keyword, 'office') || str_contains($keyword, 'shop') || str_contains($keyword, 'warehouse')) {
+            $type = 'commercial';
+            $typeDisplay = 'Commercial';
+        }
+
+        // Check gender
+        if (str_contains($keyword, 'boys') || str_contains($keyword, 'male') || str_contains($keyword, 'gents')) {
+            $gender = 'boys';
+        } elseif (str_contains($keyword, 'girls') || str_contains($keyword, 'female') || str_contains($keyword, 'ladies')) {
+            $gender = 'girls';
+        }
+
+        // Check budget in keyword (e.g. under 5000, under 10000, under 20000)
+        if (preg_match('/under\s*(\d+)/i', $keyword, $bMatch)) {
+            $budget = (int)$bMatch[1];
+        }
+
+        // Build database query
+        $query = Property::approved()->with(['primaryImage', 'category', 'owner']);
+
+        // Type filtering
+        if ($type === 'room') {
+            $query->where(function ($q) {
+                $q->where('bedrooms', 1)
+                  ->orWhere('bedrooms', 0)
+                  ->orWhere('title', 'like', '%room%')
+                  ->orWhere('title', 'like', '%1rk%')
+                  ->orWhere('description', 'like', '%room%');
+            });
+        } elseif ($type === 'pg') {
+            $query->where(function ($q) {
+                $q->where('type', 'pg-hostel')
+                  ->orWhere('title', 'like', '%pg%')
+                  ->orWhere('title', 'like', '%hostel%')
+                  ->orWhere('description', 'like', '%pg%');
+            });
+        } elseif ($type === 'flat') {
+            $query->where(function ($q) {
+                $q->whereHas('category', function ($catQ) {
+                    $catQ->where('name', 'like', '%flat%')
+                         ->orWhere('name', 'like', '%apartment%');
+                })->orWhere('title', 'like', '%flat%')
+                  ->orWhere('title', 'like', '%apartment%')
+                  ->orWhere('description', 'like', '%flat%')
+                  ->orWhere('description', 'like', '%apartment%');
+            });
+        } elseif ($type === 'house') {
+            $query->where(function ($q) {
+                $q->where('type', 'house')
+                  ->orWhereHas('category', function ($catQ) {
+                      $catQ->where('name', 'like', '%house%')
+                           ->orWhere('name', 'like', '%villa%');
+                  })->orWhere('title', 'like', '%house%')
+                    ->orWhere('title', 'like', '%villa%');
+            });
+        } elseif ($type === 'commercial') {
+            $query->where(function ($q) {
+                $q->where('type', 'commercial')
+                  ->orWhere('title', 'like', '%commercial%')
+                  ->orWhere('title', 'like', '%office%')
+                  ->orWhere('title', 'like', '%shop%')
+                  ->orWhere('description', 'like', '%commercial%');
+            });
+        }
+
+        // Bedroom category filters
+        if ($category === '1 BHK Rental' || str_contains($keyword, '1 bhk') || str_contains($keyword, '1bhk')) {
+            $query->where('bedrooms', 1);
+        } elseif ($category === '2 BHK Rental' || str_contains($keyword, '2 bhk') || str_contains($keyword, '2bhk')) {
+            $query->where('bedrooms', 2);
+        } elseif ($category === 'Large Homes & Villas' || str_contains($keyword, '3 bhk') || str_contains($keyword, '4 bhk')) {
+            $query->where('bedrooms', '>=', 3);
+        }
+
+        // Furnishing filter
+        if (str_contains($keyword, 'furnished')) {
+            $query->where(function ($q) {
+                $q->where('title', 'like', '%furnished%')
+                  ->orWhere('description', 'like', '%furnished%');
+            });
+        }
+
+        // Location / Locality filtering
+        if ($city) {
+            $query->where(function ($q) use ($city) {
+                $q->where('location', 'like', '%' . $city . '%')
+                  ->orWhere('address', 'like', '%' . $city . '%');
+            });
+        }
+
+        if ($locality) {
+            $query->where(function ($q) use ($locality) {
+                $q->where('locality', 'like', '%' . $locality . '%')
+                  ->orWhere('location', 'like', '%' . $locality . '%')
+                  ->orWhere('address', 'like', '%' . $locality . '%');
+            });
+        }
+
+        // Budget filtering
+        if ($budget) {
+            $query->where('price', '<=', $budget);
+        }
+
+        // Gender filtering
+        if ($gender) {
+            $query->where(function ($q) use ($gender) {
+                $q->where('title', 'like', '%' . $gender . '%')
+                  ->orWhere('description', 'like', '%' . $gender . '%');
+            });
+        }
+
+        $properties = $query->latest()->paginate(9)->withQueryString();
+
+        // Fallback recommendations if zero properties found
+        $recommendations = collect();
+        if ($properties->isEmpty()) {
+            $recommendations = Property::approved()
+                ->with(['primaryImage', 'category', 'owner'])
+                ->when($city, function ($q) use ($city) {
+                    $q->where('location', 'like', '%' . $city . '%');
+                })
+                ->latest()
+                ->limit(4)
+                ->get();
+
+            if ($recommendations->isEmpty()) {
+                $recommendations = Property::approved()
+                    ->with(['primaryImage', 'category', 'owner'])
+                    ->latest()
+                    ->limit(4)
+                    ->get();
+            }
+        }
+
+        $schemas = $this->generateSchemas($seoSlug, $metaTitle, $metaDescription, $typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties, $isNearMe);
+
+        return view('seo.landing', [
+            'properties' => $properties,
+            'recommendations' => $recommendations,
+            'meta_title' => $metaTitle,
+            'meta_description' => $metaDescription,
+            'h1_title' => $metaTitle,
+            'seo_slug' => $seoSlug,
+            'city' => $city,
+            'locality' => $locality,
+            'landmark' => $landmark,
+            'type' => $type,
+            'typeDisplay' => $typeDisplay,
+            'gender' => $gender,
+            'budget' => $budget,
+            'isNearMe' => $isNearMe,
+            'schemas' => $schemas,
+            'keywordItem' => $keywordItem,
+        ]);
+    }
+
+    /**
+     * Generate Schema for Owner Listing Landing Pages.
+     */
+    protected function generateOwnerSchemas($slug, $title, $description)
+    {
+        $pageUrl = url($slug);
+        $breadcrumbs = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'List Property', 'item' => $pageUrl],
+            ]
+        ];
+
+        $localBusiness = [
+            '@context' => 'https://schema.org',
+            '@type' => 'RealEstateAgent',
+            'name' => 'UnlockRentals Property Listing Portal',
+            'description' => $description,
+            'url' => $pageUrl,
+            'telephone' => '+91-94254-55499',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressCountry' => 'IN',
+            ],
+            'priceRange' => '₹0'
+        ];
+
+        $faqs = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => [
+                [
+                    '@type' => 'Question',
+                    'name' => 'Is it free to list my rental property on UnlockRentals?',
+                    'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Yes, listing your property is 100% free with zero brokerage. Direct owner contact is provided to verified tenants.']
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'How quickly will I get tenant inquiries?',
+                    'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Most landlords receive verified tenant calls and WhatsApp inquiries within 24-48 hours.']
+                ]
+            ]
+        ];
+
+        return [
+            'breadcrumbs' => json_encode($breadcrumbs, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+            'localBusiness' => json_encode($localBusiness, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+            'faqs' => json_encode($faqs, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ];
+    }
+
+    /**
+     * Generate Schema for Rental Guide / Blog Landing Pages.
+     */
+    protected function generateGuideSchemas($slug, $title, $description, $keyword)
+    {
+        $pageUrl = url($slug);
+        $breadcrumbs = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Rental Guides', 'item' => url('/blog')],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => $keyword, 'item' => $pageUrl],
+            ]
+        ];
+
+        $faqs = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => [
+                [
+                    '@type' => 'Question',
+                    'name' => 'How do I find a rental property without paying brokerage?',
+                    'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Search on UnlockRentals to view 100% direct owner rental houses, flats, and rooms with zero broker fees.']
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'What documents are required for rental agreement verification?',
+                    'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Aadhaar Card, PAN Card, permanent address proof, and passport size photographs of both tenant and owner.']
+                ]
+            ]
+        ];
+
+        $article = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => str_replace(' | UnlockRentals', '', $title),
+            'description' => $description,
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $pageUrl,
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'UnlockRentals',
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('images/logo.png'),
+                ],
+            ],
+            'datePublished' => '2026-01-01T00:00:00+05:30',
+            'dateModified' => now()->toIso8601String(),
+        ];
+
+        return [
+            'breadcrumbs' => json_encode($breadcrumbs, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+            'faqs' => json_encode($faqs, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+            'article' => json_encode($article, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        ];
+    }
+
+    /**
      * Get list of all programmatic page URLs.
      */
     public static function getProgrammaticUrls()
     {
-        $urls = [
-            // High-Intent "Near Me" and "Near My Location" URLs
+        // 1. Get all 1020 curated slugs
+        $curatedSlugs = SeoKeywordService::getAllSlugs();
+        $urls = array_map(fn($s) => '/' . ltrim($s, '/'), $curatedSlugs);
+
+        // 2. High-Intent "Near Me" and dynamic URLs
+        $urls = array_merge($urls, [
             '/room-near-my-location',
             '/rooms-near-my-location',
             '/room-for-rent-near-me',
@@ -612,71 +967,7 @@ class SeoController extends Controller
             '/flats-near-my-location',
             '/house-for-rent-near-me',
             '/houses-near-my-location',
-        ];
-
-        // Get unique cities
-        $cities = Property::approved()
-            ->whereNotNull('location')
-            ->distinct()
-            ->pluck('location')
-            ->toArray();
-
-        // Clean up city names
-        $cleanCities = [];
-        foreach ($cities as $city) {
-            if (str_contains($city, ',')) {
-                $parts = explode(',', $city);
-                $cleanCity = trim(end($parts));
-            } else {
-                $cleanCity = trim($city);
-            }
-            $cleanCities[] = strtolower($cleanCity);
-        }
-
-        // Add standard target cities
-        $cleanCities = array_merge($cleanCities, ['gurgaon', 'noida', 'delhi', 'mumbai', 'bangalore']);
-        $cleanCities = array_unique(array_filter($cleanCities));
-
-        // Get unique localities
-        $localitiesData = Property::approved()
-            ->whereNotNull('locality')
-            ->where('locality', '!=', '')
-            ->get(['locality', 'location']);
-
-        $types = ['flat', 'room', 'pg', 'house'];
-
-        foreach ($cleanCities as $city) {
-            $citySlug = Str::slug($city);
-            if (empty($citySlug)) continue;
-
-            foreach ($types as $type) {
-                $urls[] = "/{$type}-for-rent-in-{$citySlug}";
-            }
-
-            // Add budget variations
-            $urls[] = "/flat-for-rent-in-{$citySlug}-under-20000";
-            $urls[] = "/room-for-rent-in-{$citySlug}-under-10000";
-
-            // Add gender variations
-            $urls[] = "/pg-for-boys-in-{$citySlug}";
-            $urls[] = "/pg-for-girls-in-{$citySlug}";
-        }
-
-        foreach ($localitiesData as $loc) {
-            $city = $loc->location;
-            if (str_contains($city, ',')) {
-                $parts = explode(',', $city);
-                $city = trim(end($parts));
-            }
-            $citySlug = Str::slug($city);
-            $locSlug = Str::slug($loc->locality);
-
-            if (empty($citySlug) || empty($locSlug)) continue;
-
-            $urls[] = "/flat-for-rent-in-{$locSlug}-{$citySlug}";
-            $urls[] = "/room-for-rent-in-{$locSlug}-{$citySlug}";
-            $urls[] = "/pg-for-rent-in-{$locSlug}-{$citySlug}";
-        }
+        ]);
 
         return array_values(array_unique($urls));
     }
