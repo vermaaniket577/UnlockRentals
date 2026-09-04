@@ -570,7 +570,7 @@
                                     </div>
                                     <p class="text-sm font-extrabold text-zinc-800 mb-1">Exact Location Locked</p>
                                     <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Subscribe to a plan to see the exact property address on the map.</p>
-                                    <a href="{{ route('plans.index') }}" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Unlock Location">
+                                    <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Unlock Location">
                                         <i class="ph-bold ph-crown"></i> Unlock Location
                                     </a>
                                 </div>
@@ -630,7 +630,7 @@
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </button>
                             @else
-                            <a href="{{ route('plans.index', ['billing' => $property->isForSale() ? 'yearly' : 'monthly']) }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" id="book-visit-btn" title="Book Visit">
+                            <a href="{{ route('plans.index', ['billing' => $property->isForSale() ? 'yearly' : 'monthly', 'purpose' => $property->isForSale() ? 'buy' : 'rent']) }}#billing-toggle" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" id="book-visit-btn" title="Book Visit">
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </a>
                             @endif
@@ -730,7 +730,7 @@
                                                 </div>
                                                 <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Buyer Pass Required</p>
                                                 <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You currently hold an active Rental Plan. Rental plans only unlock rent posts. To view verified seller contact details for this property, please purchase a Buyer Pass.</p>
-                                                <a href="{{ route('plans.index', ['billing' => 'yearly']) }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Buyer Passes">
+                                                <a href="{{ route('plans.index', ['billing' => 'yearly', 'purpose' => 'buy']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Buyer Passes">
                                                     <i class="ph-bold ph-buildings"></i> View Buyer Passes
                                                 </a>
                                             @elseif(!$isSale && $hasBuyPlan && !$hasRentPlan)
@@ -740,7 +740,7 @@
                                                 </div>
                                                 <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Rental Plan Required</p>
                                                 <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You currently hold an active Buyer Pass. Buyer passes only unlock sale posts. To view verified owner contact details for this rental listing, please purchase a Rental Plan.</p>
-                                                <a href="{{ route('plans.index', ['billing' => 'monthly']) }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Rental Plans">
+                                                <a href="{{ route('plans.index', ['billing' => 'monthly', 'purpose' => 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Rental Plans">
                                                     <i class="ph-bold ph-house"></i> View Rental Plans
                                                 </a>
                                             @elseif($activePlan && $activePlan->remaining_contacts <= 0)
@@ -750,7 +750,7 @@
                                                 </div>
                                                 <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Contact limit reached</p>
                                                 <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You have used all contact views in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}. Please upgrade your plan to unlock more contact details.</p>
-                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly']) }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Upgrade Plan">
+                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Upgrade Plan">
                                                     <i class="ph-bold ph-crown"></i> Upgrade Plan
                                                 </a>
                                             @else
@@ -760,7 +760,7 @@
                                                 </div>
                                                 <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Premium details locked</p>
                                                 <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Get a {{ $isSale ? 'Buyer Pass' : 'Rental Plan' }} to access the verified {{ $isSale ? 'seller\'s' : 'owner\'s' }} phone & email details.</p>
-                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly']) }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Unlock Plans">
+                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Unlock Plans">
                                                     <i class="ph-bold ph-crown"></i> View {{ $isSale ? 'Buyer Passes' : 'Rental Plans' }}
                                                 </a>
                                             @endif

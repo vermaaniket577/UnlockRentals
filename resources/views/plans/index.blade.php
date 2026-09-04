@@ -132,13 +132,19 @@
             </p>
 
             {{-- Interactive Pass Switcher (Rental Pass vs Buyer Pass) --}}
+            @php
+                $requestedBilling = request('billing');
+                $requestedPurpose = request('purpose');
+                $initialBilling = ($requestedBilling === 'yearly' || in_array($requestedPurpose, ['buy', 'sale'])) ? 'yearly' : 'monthly';
+                $isYearly = ($initialBilling === 'yearly');
+            @endphp
             <div class="mt-8 flex flex-col items-center gap-3">
                 <div class="billing-toggle-wrapper" id="billing-toggle" role="group" aria-label="Plan category selector">
-                    <button type="button" class="billing-btn active" data-billing-choice="monthly">
+                    <button type="button" class="billing-btn {{ $isYearly ? '' : 'active' }}" data-billing-choice="monthly">
                         <i class="ph-bold ph-house-line text-sm"></i>
                         <span>Rental Pass</span>
                     </button>
-                    <button type="button" class="billing-btn" data-billing-choice="yearly">
+                    <button type="button" class="billing-btn {{ $isYearly ? 'active' : '' }}" data-billing-choice="yearly">
                         <i class="ph-bold ph-buildings text-sm"></i>
                         <span>Buyer Pass</span>
                         <span class="px-1.5 py-0.5 text-[10px] font-black uppercase rounded-full bg-amber-400 text-slate-950 ml-1">Save 20%</span>
@@ -206,7 +212,7 @@
         @endphp
 
         {{-- 1. Rental Plans Grid --}}
-        <div id="rental-plans-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        <div id="rental-plans-grid" class="{{ $isYearly ? 'hidden ' : '' }}grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             @foreach($rentPlans as $plan)
                 @php
                     $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
@@ -450,7 +456,7 @@
         </div>
 
         {{-- 2. Buyer Plans Grid (Hidden by default, shown when Buyer Pass selected) --}}
-        <div id="buyer-plans-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        <div id="buyer-plans-grid" class="{{ $isYearly ? '' : 'hidden ' }}grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             @foreach($buyPlans as $plan)
                 @php
                     $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
@@ -811,7 +817,7 @@
     const rentalGrid = document.getElementById('rental-plans-grid');
     const buyerGrid = document.getElementById('buyer-plans-grid');
 
-    function setBilling(period) {
+    function setBilling(period, updateUrl = false) {
         buttons.forEach(button => {
             if (button.dataset.billingChoice === period) {
                 button.classList.add('active');
@@ -827,11 +833,51 @@
             if (rentalGrid) rentalGrid.classList.remove('hidden');
             if (buyerGrid) buyerGrid.classList.add('hidden');
         }
+
+        if (updateUrl && window.history.replaceState) {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('billing', period);
+            if (period === 'yearly') {
+                currentUrl.searchParams.set('purpose', 'buy');
+            } else {
+                currentUrl.searchParams.set('purpose', 'rent');
+            }
+            window.history.replaceState({}, '', currentUrl.toString());
+        }
     }
 
     buttons.forEach(button => {
-        button.addEventListener('click', () => setBilling(button.dataset.billingChoice));
+        button.addEventListener('click', () => setBilling(button.dataset.billingChoice, true));
     });
+
+    // Check query params & hash on load
+    const urlParams = new URLSearchParams(window.location.search);
+    const billingParam = urlParams.get('billing');
+    const purposeParam = urlParams.get('purpose');
+    const hash = window.location.hash.toLowerCase();
+
+    let targetBilling = '{{ $initialBilling }}';
+    if (billingParam === 'yearly' || billingParam === 'monthly') {
+        targetBilling = billingParam;
+    } else if (purposeParam === 'buy' || purposeParam === 'sale' || hash.includes('buyer') || hash.includes('yearly')) {
+        targetBilling = 'yearly';
+    } else if (purposeParam === 'rent' || hash.includes('rental') || hash.includes('monthly')) {
+        targetBilling = 'monthly';
+    }
+
+    if (targetBilling) {
+        setBilling(targetBilling, false);
+    }
+
+    // Smooth scroll to toggle/plans if specific billing was requested
+    if (billingParam || purposeParam || hash.includes('buyer') || hash.includes('rental') || hash.includes('billing')) {
+        setTimeout(() => {
+            const target = document.getElementById('billing-toggle') || document.getElementById(targetBilling === 'yearly' ? 'buyer-plans-grid' : 'rental-plans-grid');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 150);
+    }
 
     document.querySelectorAll('.plan-checkout-link').forEach(link => {
         link.addEventListener('click', () => {
