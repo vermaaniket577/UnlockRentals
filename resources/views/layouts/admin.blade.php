@@ -2,13 +2,13 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7LQ1PB17L"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ2TX883V4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-T7LQ1PB17L');
+      gtag('config', 'G-RJ2TX883V4');
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
