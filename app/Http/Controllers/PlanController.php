@@ -469,8 +469,8 @@ class PlanController extends Controller
 
         $user->viewContact($property);
 
-        return redirect()->route('properties.show', $property)
-            ->with('success', 'Contact details unlocked!');
+        return redirect()->to(route('properties.show', $property) . '#property-price-card')
+            ->with('success', 'Contact details unlocked successfully!');
     }
 
     private function processManualPayment(

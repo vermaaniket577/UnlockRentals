@@ -187,14 +187,6 @@ class PropertyController extends Controller
             }
         }
 
-        // Automatically unlock contact for paid users with remaining contact views for this property type
-        if (auth()->check()) {
-            $user = auth()->user();
-            if ($user->canViewContact($property) && !$user->hasViewedContact($property)) {
-                $user->viewContact($property);
-            }
-        }
-
         $property->load(['images', 'category', 'owner']);
 
         $similarProperties = Property::approved()

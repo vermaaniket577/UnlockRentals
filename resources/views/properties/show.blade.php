@@ -1,10 +1,13 @@
 @extends('layouts.app')
 
 @php
+    $isSale = $property->isForSale();
     $isOwnerOrAdmin = false;
     $hasViewed = false;
     $canView = false;
     $activePlan = null;
+    $hasRentPlan = false;
+    $hasBuyPlan = false;
     
     if (auth()->check()) {
         $user = auth()->user();
@@ -12,6 +15,8 @@
         $hasViewed = $user->hasViewedContact($property);
         $canView = $user->canViewContact($property);
         $activePlan = $user->activePlanForProperty($property);
+        $hasRentPlan = $user->hasActiveRentPlan();
+        $hasBuyPlan = $user->hasActiveBuyPlan();
     }
 @endphp
 
@@ -707,15 +712,37 @@
                                     </div>
                                 @elseif($canView)
                                     {{-- Has matching plan with remaining contacts — show unlock button --}}
-                                    <div class="pt-4 border-t border-zinc-200 mt-4">
-                                        <div class="text-center mb-3 bg-amber-50/50 p-3 rounded-lg border border-amber-100">
-                                            <p class="text-xs font-bold text-zinc-700 mb-0.5">Contact details are locked</p>
-                                            <p class="text-[11px] text-zinc-500 font-medium">{{ $activePlan->remaining_contacts }} contact views remaining in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}</p>
+                                    <div class="space-y-3 pt-4 border-t border-zinc-200 mt-4">
+                                        <div class="flex items-center justify-between p-2.5 rounded-lg border border-dashed border-zinc-200 bg-zinc-50/80 text-zinc-400">
+                                            <div class="flex items-center gap-2.5 text-sm font-semibold">
+                                                <i class="ph-bold ph-phone text-zinc-400 text-base"></i>
+                                                <span class="tracking-widest font-mono text-xs">+91 ••••• •••••</span>
+                                            </div>
+                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                <i class="ph-bold ph-lock text-[10px]"></i> Locked
+                                            </span>
                                         </div>
+                                        <div class="flex items-center justify-between p-2.5 rounded-lg border border-dashed border-zinc-200 bg-zinc-50/80 text-zinc-400">
+                                            <div class="flex items-center gap-2.5 text-sm font-semibold">
+                                                <i class="ph-bold ph-envelope text-zinc-400 text-base"></i>
+                                                <span class="tracking-widest font-mono text-xs">•••••••@•••••.com</span>
+                                            </div>
+                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                                <i class="ph-bold ph-lock text-[10px]"></i> Locked
+                                            </span>
+                                        </div>
+
+                                        <div class="text-center p-3 bg-blue-50/70 rounded-xl border border-blue-100">
+                                            <p class="text-xs font-bold text-zinc-800 mb-0.5">Contact details locked</p>
+                                            <p class="text-[11px] text-zinc-500 font-medium">You have <strong class="text-blue-700 font-extrabold">{{ $activePlan->remaining_contacts }}</strong> contact {{ Str::plural('view', $activePlan->remaining_contacts) }} remaining in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}.</p>
+                                        </div>
+
                                         <form method="POST" action="{{ route('properties.unlock-contact', $property) }}">
                                             @csrf
-                                            <button type="submit" class="w-full px-4 py-3 bg-[#c9a050] hover:bg-[#b08d42] text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-[#c9a050]/20 flex items-center justify-center gap-1.5 cursor-pointer">
-                                                <i class="ph-bold ph-lock-key-open"></i> Unlock {{ $isSale ? 'Seller' : 'Owner' }} Contact
+                                            <button type="submit" class="w-full px-4 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 active:scale-[0.99] text-white text-sm font-extrabold rounded-xl transition-all shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer" title="Unlock Contact Details">
+                                                <i class="ph-bold ph-lock-key-open text-base"></i>
+                                                <span>Unlock {{ $isSale ? 'Seller' : 'Owner' }} Contact</span>
+                                                <span class="text-[10px] uppercase font-black bg-white/20 px-1.5 py-0.5 rounded-full ml-1">1 View</span>
                                             </button>
                                         </form>
                                     </div>
