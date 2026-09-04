@@ -592,6 +592,8 @@ class AdminController extends Controller
             ]);
         }
 
+        $durationDays = (int) ($plan->duration_days ?: 30);
+
         $userPlan = UserPlan::create([
             'user_id' => $user->id,
             'plan_id' => $plan->id,
@@ -599,7 +601,7 @@ class AdminController extends Controller
             'payment_reference' => 'MANUAL_ASSIGNMENT_' . strtoupper(\Illuminate\Support\Str::random(6)),
             'amount_paid' => 0,
             'approved_at' => now(),
-            'expires_at' => now()->addDays($plan->duration_days),
+            'expires_at' => now()->addDays($durationDays),
             'admin_note' => 'Manually assigned by admin.',
         ]);
 
@@ -613,10 +615,12 @@ class AdminController extends Controller
      */
     public function approveSubscription(UserPlan $userPlan)
     {
+        $durationDays = (int) ($userPlan->plan->duration_days ?: 30);
+
         $userPlan->update([
             'status' => 'approved',
             'approved_at' => now(),
-            'expires_at' => now()->addDays($userPlan->plan->duration_days),
+            'expires_at' => now()->addDays($durationDays),
         ]);
 
         \Illuminate\Support\Facades\Mail::to($userPlan->user->email)->send(new SubscriptionActivated($userPlan));

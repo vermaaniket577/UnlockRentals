@@ -26,6 +26,8 @@ class Plan extends Model
         return [
             'features' => 'array',
             'price' => 'decimal:2',
+            'duration_days' => 'integer',
+            'contact_limit' => 'integer',
             'is_active' => 'boolean',
             'is_private' => 'boolean',
         ];
