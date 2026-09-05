@@ -63,7 +63,8 @@ class LocationSeeder extends Seeder
             'RJ' => ['Ajmer', 'Alwar', 'Banswara', 'Baran', 'Barmer', 'Bharatpur', 'Bhilwara', 'Bikaner', 'Bundi', 'Chittorgarh', 'Churu', 'Dausa', 'Dholpur', 'Dungarpur', 'Hanumangarh', 'Jaipur', 'Jaisalmer', 'Jalore', 'Jhalawar', 'Jhunjhunu', 'Jodhpur', 'Karauli', 'Kota', 'Nagaur', 'Pali', 'Pratapgarh', 'Rajsamand', 'Sawai Madhopur', 'Sikar', 'Sirohi', 'Sri Ganganagar', 'Tonk', 'Udaipur'],
             'WB' => ['Alipurduar', 'Bankura', 'Birbhum', 'Cooch Behar', 'Dakshin Dinajpur', 'Darjeeling', 'Hooghly', 'Howrah', 'Jalpaiguri', 'Jhargram', 'Kalimpong', 'Kolkata', 'Malda', 'Murshidabad', 'Nadia', 'North 24 Parganas', 'Paschim Bardhaman', 'Paschim Medinipur', 'Purba Bardhaman', 'Purba Medinipur', 'Purulia', 'South 24 Parganas', 'Uttar Dinajpur'],
             'OR' => ['Angul', 'Boudh', 'Bhadrak', 'Balasore', 'Bargarh', 'Balangir', 'Cuttack', 'Deogarh', 'Dhenkanal', 'Ganjam', 'Gajapati', 'Jharsuguda', 'Jajpur', 'Jagatsinghpur', 'Khordha', 'Kendujhar', 'Kalahandi', 'Kandhamal', 'Koraput', 'Kendrapara', 'Malkangiri', 'Mayurbhanj', 'Nabarangpur', 'Nuapada', 'Nayagarh', 'Puri', 'Rayagada', 'Sambalpur', 'Subarnapur', 'Sundargarh'],
-            'MZ' => ['Aizawl', 'Lunglei', 'Champhai', 'Kolasib', 'Lawngtlai', 'Mamit', 'Saiha (Siaha)', 'Serchhip', 'Hnahthial', 'Khawzawl', 'Saitual']
+            'MZ' => ['Aizawl', 'Lunglei', 'Champhai', 'Kolasib', 'Lawngtlai', 'Mamit', 'Saiha (Siaha)', 'Serchhip', 'Hnahthial', 'Khawzawl', 'Saitual'],
+            'AN' => ['Nicobar', 'North and Middle Andaman', 'South Andaman']
         ];
 
         $localities = [
@@ -188,7 +189,22 @@ class LocationSeeder extends Seeder
             'serchhip' => ['Serchhip', 'Thenzawl', 'North Vanlaiphai', 'East Lungdar', 'Chhiahtlang'],
             'hnahthial' => ['Hnahthial Town', 'South Vanlaiphai', 'Pangzawl', 'Thingsai'],
             'khawzawl' => ['Khawzawl Town', 'Biate', 'Sialhawk', 'Khawhai'],
-            'saitual' => ['Saitual Town', 'Ngopa', 'Phullen', 'Keifang']
+            'saitual' => ['Saitual Town', 'Ngopa', 'Phullen', 'Keifang'],
+            'south-andaman' => [
+                'Port Blair', 'Aberdeen Bazaar', 'Garacharma', 'Bathu Basti', 'Shadipur', 'Dollygunj',
+                'Junglighat', 'Haddo', 'Phoenix Bay', 'Dairy Farm', 'Austinabad', 'Prothrapur',
+                'School Line', 'Minnie Bay', 'Delanipur', 'Bambooflat', 'Corbyns Cove',
+                'Havelock Island (Swaraj Dweep)', 'Neil Island (Shaheed Dweep)', 'Chidiyatapu',
+                'Wandoor', 'Ferrargunj', 'Little Andaman (Hut Bay)'
+            ],
+            'north-and-middle-andaman' => [
+                'Mayabunder', 'Diglipur', 'Rangat', 'Subhash Gram', 'Aerial Bay', 'Kalipur',
+                'Baratang Island', 'Kadamtala', 'Bakultala', 'Nimbutala', 'Billiground', 'Rampur'
+            ],
+            'nicobar' => [
+                'Car Nicobar', 'Malacca', 'Sawai', 'Mus', 'Tamaloo', 'Campbell Bay (Great Nicobar)',
+                'Nancowry', 'Kamorta', 'Katchal Island'
+            ]
         ];
 
         $statesData = [];
