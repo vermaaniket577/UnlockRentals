@@ -223,121 +223,169 @@ return [
         'name' => 'Chhattisgarh',
         'districts' => [
             'Raipur' => [
-                'Pandri', 'Civil Lines Raipur', 'Devendra Nagar', 'Shankar Nagar', 'Telibandha', 'VIP Road Raipur',
-                'Samta Colony', 'Choubey Colony', 'Tatibandh', 'GE Road Raipur', 'Gudhiyari', 'Fafadih',
-                'Mowa', 'Khamardih', 'Saddu', 'Amlidih', 'Bhatagaon', 'Kota Raipur',
-                'DDU Nagar', 'Sunder Nagar', 'Tagore Nagar', 'Nava Raipur (Atal Nagar Sector 1 to 40)', 'Abhanpur', 'Arang',
-                'Tilda Newra', 'Mandir Hasaud'
+                'Pandri', 'Civil Lines Raipur', 'Devendra Nagar', 'Shankar Nagar', 'Telibandha', 'VIP Road',
+                'VIP Road Raipur', 'Samta Colony', 'Choubey Colony', 'Tatibandh', 'GE Road', 'GE Road Raipur',
+                'Gudhiyari', 'Fafadih', 'Mowa', 'Khamardih', 'Saddu', 'Amlidih',
+                'Bhatagaon', 'Kota Raipur', 'DDU Nagar', 'Sunder Nagar', 'Tagore Nagar', 'Katora Talab',
+                'Byron Bazar', 'Shailendra Nagar', 'Baijnathpara', 'Gol Bazar', 'Malviya Road', 'Jai Stambh Chowk',
+                'Pandri Cloth Market', 'Urla Industrial Area', 'Siltara Industrial Area', 'Bhanpuri', 'Sarona', 'Rawabhata',
+                'Nava Raipur (Atal Nagar)', 'Capitol Complex', 'Purkhauti Muktangan', 'Jungle Safari area', 'IIIT Raipur area', 'IIM Raipur area',
+                'Central Park Nava Raipur', 'Abhanpur', 'Arang', 'Tilda Newra', 'Mandir Hasaud', 'Kharora',
+                'Gobra Nawapara', 'Dharsiwa', 'Birgaon', 'Mana Camp (Airport Area)'
             ],
             'Bilaspur' => [
-                'Civil Lines Bilaspur', 'Vyapar Vihar', 'Link Road Bilaspur', 'Sarkanda', 'Rajendra Nagar Bilaspur', 'Mangla',
-                'Nehru Nagar Bilaspur', 'Tifra', 'Sirgitti Industrial Area', 'Torwa', 'Koni', 'Dayalband',
-                'Jarhabhatha', 'Subhash Nagar Bilaspur', 'Ratanpur', 'Kota (Bilaspur)', 'Bilha', 'Takhatpur',
-                'Masturi'
+                'Civil Lines Bilaspur', 'Vyapar Vihar', 'Link Road', 'Link Road Bilaspur', 'Sarkanda', 'Rajendra Nagar Bilaspur',
+                'Mangla', 'Nehru Nagar Bilaspur', 'Tifra', 'Sirgitti Industrial Area', 'Torwa', 'Koni',
+                'Dayalband', 'Jarhabhatha', 'Subhash Nagar Bilaspur', 'Telipara', 'Old Bus Stand', 'New Bus Stand Bodri',
+                'High Court Area (Bodri)', 'Seepat Road', 'Uslapur', 'Chakarbhata', 'Hemu Nagar', 'Magarpara',
+                'Kududand', 'Ratanpur (Maa Mahamaya)', 'Kota (Bilaspur)', 'Takhatpur', 'Bilha', 'Masturi',
+                'Seepat (NTPC Area)', 'Mallhar (Ancient Heritage)', 'Sakri', 'Chakarbhata Camp'
             ],
             'Durg' => [
-                'Bhilai Steel City', 'Sector 1 to 10 Bhilai', 'Nehru Nagar Bhilai', 'Smriti Nagar', 'Supela', 'Power House Bhilai',
-                'Vaishali Nagar Bhilai', 'Junwani', 'Kohka', 'Durg City', 'Padmanabhpur', 'Adarsh Nagar Durg',
-                'Ganjpara', 'Mohan Nagar Durg', 'Patan (Durg)', 'Dhamdha', 'Kumhari', 'Bhilai 3'
+                'Bhilai Steel City', 'Sector 1 Bhilai', 'Sector 2 Bhilai', 'Sector 3 Bhilai', 'Sector 4 Bhilai', 'Sector 5 Bhilai',
+                'Sector 6 Bhilai', 'Sector 7 Bhilai', 'Sector 8 Bhilai', 'Sector 9 Bhilai', 'Sector 10 Bhilai', 'Nehru Nagar (East & West)',
+                'Smriti Nagar', 'Supela', 'Power House', 'Power House Bhilai', 'Vaishali Nagar Bhilai', 'Junwani',
+                'Kohka', 'Radhika Nagar', 'Surya Treasure Island Mall area', 'Civic Centre', 'Khursipar', 'Charoda',
+                'Bhilai 3', 'Jamul Industrial Area', 'Kumhari', 'Kailash Nagar', 'Pragati Nagar', 'Priyadarshini Nagar',
+                'Risali', 'Durg City', 'Padmanabhpur', 'Adarsh Nagar Durg', 'Ganjpara', 'Mohan Nagar Durg',
+                'Titurdih', 'Deepak Nagar', 'Station Road Durg', 'Kasaridih', 'Borsi', 'Borsi Extension',
+                'Potia Kala', 'Utai Road', 'Pulgaon', 'Patan (Durg)', 'Dhamdha', 'Utai',
+                'Ahiwara', 'Borai Industrial Area'
             ],
             'Korba' => [
-                'Korba City', 'TP Nagar Korba', 'NTPC Township Korba', 'Balco Township', 'CSEB Colony', 'Kusmunda',
-                'Gevra Project Area', 'Dipka', 'Darri', 'Katghora', 'Pali (Korba)', 'Kartala',
-                'Hardibazar'
+                'Korba City', 'TP Nagar Korba', 'Transport Nagar', 'Kosabadi', 'CSEB Colony', 'Balco Township',
+                'NTPC Township (Jamnipali)', 'Kusmunda', 'Gevra Project Area', 'Dipka', 'Darri', 'Risdi',
+                'Manikpur', 'Rampur Korba', 'Rajgamar', 'Budhwari', 'Niharika', 'Banki Mongra',
+                'Pali Road', 'Chhuri', 'Katghora', 'Pali (Korba)', 'Kartala', 'Hardibazar',
+                'Pondi Uproda', 'Kudmura', 'Bango Dam area', 'Chaiturgarh area'
             ],
             'Rajnandgaon' => [
-                'Rajnandgaon Town', 'Basantpur', 'Lakhmi Nagar', 'Kaurinbhatha', 'Dongargarh (Maa Bamleshwari)', 'Dongargaon',
-                'Chhuikhadan Border', 'Khairagarh Border', 'Ambagarh Chowki Border'
+                'Rajnandgaon Town', 'Civil Lines Rajnandgaon', 'Basantpur', 'Lakhmi Nagar', 'Kaurinbhatha', 'Ganj Line',
+                'Cinema Line', 'Nandai', 'Ramnagar Rajnandgaon', 'Shankar Nagar', 'Chikhali', 'Pendri',
+                'Tedesara Industrial Area', 'Motipur', 'Bajrangpur', 'Dongargarh (Maa Bamleshwari)', 'Dongargaon', 'Chhuria',
+                'Somni', 'Ghumka', 'Mohara', 'Baghera'
             ],
             'Raigarh' => [
-                'Raigarh City', 'Boirdad', 'Kirodimal Nagar', 'Dhimrapur', 'Jindal Industrial Area', 'Kharsia',
-                'Gharghoda', 'Lailunga', 'Sarangarh Border', 'Tamnar', 'Pussore', 'Baramkela'
+                'Raigarh City', 'Boirdad', 'Kirodimal Nagar', 'Dhimrapur', 'Jindal Industrial Area', 'Chakradhar Nagar',
+                'Station Road Raigarh', 'Sanjay Complex', 'Gauri Shankar Temple area', 'Rambhata', 'Darogapara', 'Kotwali Road',
+                'Jagatpur', 'Chandmari', 'Kabir Chowk', 'Kharsia', 'Gharghoda', 'Lailunga',
+                'Tamnar', 'Pussore', 'Dharamjaigarh', 'Kapu', 'Chhal'
             ],
             'Bastar' => [
-                'Jagdalpur City', 'Dharampura', 'Bodhbhat', 'Geedam Road', 'Chitrakote Falls Area', 'Tirathgarh Area',
-                'Bastanar', 'Tokapal', 'Lohandiguda', 'Bakawand'
+                'Jagdalpur City', 'Dharampura', 'Bodhbhat', 'Geedam Road', 'Chitrakote Road', 'Tirathgarh Road',
+                'Sanjay Market', 'Motitalab', 'Kumbharkot', 'Sirhasar Chowk', 'Balaji Ward', 'Pratapganj',
+                'Naya Munda', 'Adawal', 'Asna', 'Hatkachora', 'Nagarnar (Steel Plant Area)', 'Bastar Town',
+                'Tokapal', 'Lohandiguda', 'Bakawand', 'Darbha', 'Bastanar', 'Chitrakote',
+                'Kanger Valley National Park area'
             ],
             'Surguja' => [
-                'Ambikapur City', 'Ring Road Ambikapur', 'Gandhi Chowk Ambikapur', 'Banaras Road', 'Mainpat (Hill Station)', 'Sitapur',
-                'Lundra', 'Lakhanpur', 'Udaypur (Dharampur)'
+                'Ambikapur City', 'Ring Road Ambikapur', 'Gandhi Chowk Ambikapur', 'Banaras Road', 'Bilaspur Road', 'Ramanujganj Road',
+                'Sadar Road Ambikapur', 'Brahma Road', 'Kedarpur', 'Ghari Chowk', 'Godhanpur', 'Namnakala',
+                'Mahamaya Mandir area', 'Mission Chowk', 'Chopra Colony', 'Mainpat (Hill Station)', 'Tiger Point', 'Tibetan Camp Mainpat',
+                'Sitapur', 'Lundra', 'Lakhanpur', 'Udaipur (Surguja)', 'Batauli', 'Darima (Airport Area)',
+                'Raghunathpur'
             ],
             'Balod' => [
-                'Balod Town', 'Dalli Rajhara (Iron Ore Town)', 'Gunderdehi', 'Dondi Luhara', 'Gurur'
+                'Balod Town', 'Dalli Rajhara (Mining Township)', 'Gunderdehi', 'Dondi Luhara', 'Gurur', 'Dondi',
+                'Sanod', 'Kusumkasa', 'Arjunda', 'Sikosa', 'Lohara'
             ],
             'Baloda Bazar' => [
-                'Baloda Bazar Town', 'Bhatapara (Railway Junction)', 'Kasdol', 'Simga', 'Palari', 'Lawon'
+                'Baloda Bazar Town', 'Bhatapara (Railway Junction)', 'Kasdol', 'Simga', 'Palari', 'Lawon',
+                'Giraudpuri (Satnami Pilgrimage)', 'Suhela', 'Sonakhan', 'Bhatgaon (Baloda Bazar)', 'Rawan (Cement Zone)'
             ],
             'Balrampur' => [
-                'Balrampur Town (CG)', 'Ramanujganj', 'Samri', 'Kusmi', 'Rajpur (Balrampur)', 'Wadrafnagar'
+                'Balrampur Town (CG)', 'Ramanujganj', 'Kusmi', 'Samri', 'Rajpur (Balrampur)', 'Wadrafnagar',
+                'Shankargarh', 'Tatapani (Hot Springs)', 'Raghunathnagar', 'Dhorpur'
             ],
             'Bemetara' => [
-                'Bemetara Town', 'Saja', 'Berla', 'Nawagarh', 'Thanakhamria'
+                'Bemetara Town', 'Saja', 'Berla', 'Nawagarh (Bemetara)', 'Thanakhamria', 'Deokar',
+                'Khandwa (Bemetara)', 'Parpodi', 'Sambalpur (Bemetara)'
             ],
             'Bijapur' => [
-                'Bijapur Town (CG)', 'Bhopalpatnam', 'Awapalli', 'Bhairamgarh', 'Usur'
+                'Bijapur Town (CG)', 'Bhopalpatnam', 'Awapalli', 'Bhairamgarh', 'Usur', 'Gangaloor',
+                'Kutru', 'Modakpal', 'Madded', 'Basaguda', 'Bedre'
             ],
             'Dantewada' => [
-                'Dantewada Town (Danteshwari Temple)', 'Kirandul (NMDC)', 'Bacheli (NMDC)', 'Geedam', 'Katekalyan', 'Kuakonda'
+                'Dantewada Town (Maa Danteshwari Temple)', 'Kirandul (NMDC Mining Complex)', 'Bacheli (NMDC Area)', 'Geedam', 'Katekalyan', 'Kuakonda',
+                'Barsur (Twin Ganesha Temple Area)', 'Bhansi', 'Kamalur', 'Palnar'
             ],
             'Dhamtari' => [
-                'Dhamtari Town', 'Kurud', 'Nagari (Sihawa)', 'Magarlod', 'Gangrel Dam Area'
+                'Dhamtari City', 'Ratnabandh', 'Rudri (Civil Hub)', 'Sihawa Road', 'Raipur Road Dhamtari', 'Danitola',
+                'Itwari Bazar', 'Gangrel Dam (Ravishankar Sagar) Area', 'Kurud', 'Nagari', 'Sihawa (Mahanadi Origin)', 'Magarlod',
+                'Bhakhara', 'Megha', 'Gujra'
             ],
             'Gariaband' => [
-                'Gariaband Town', 'Rajim (Triveni Sangam)', 'Chhura', 'Mainpur', 'Deobhog'
+                'Gariaband Town', 'Rajim (Triveni Sangam Pilgrimage)', 'Chhura', 'Mainpur', 'Deobhog', 'Fingeshwar',
+                'Rasela', 'Kholagarh', 'Ghatarani Temple Area', 'Jatmayi Temple Area', 'Bindranawagarh'
             ],
             'Gaurela-Pendra-Marwahi' => [
-                'Gaurela', 'Pendra Road', 'Marwahi'
+                'Gaurela Town', 'Pendra Road (Railway Hub)', 'Pendra Town', 'Marwahi', 'Semra', 'Kotmi',
+                'Kabir Chabutra (Amarkantak Border)', 'Dhanpur'
             ],
             'Janjgir-Champa' => [
-                'Janjgir Town', 'Champa (Silk City)', 'Naila', 'Akaltara', 'Sakti Border', 'Pamgarh',
-                'Nawagarh (Janjgir)', 'Dabhra', 'Malkharoda'
+                'Janjgir Town', 'Champa (Kosa Silk Hub)', 'Naila (Railway Station Area)', 'Akaltara', 'Pamgarh', 'Nawagarh (Janjgir)',
+                'Baloda (Janjgir)', 'Shivrinarayan (Triveni Sangam)', 'Kharod (Laxmaneshwar Temple)', 'Rahod', 'Banari'
             ],
             'Jashpur' => [
-                'Jashpur Nagar', 'Kunkuri', 'Patthalgaon', 'Bagicha', 'Duldula', 'Farsabahar',
-                'Kansabel', 'Manora'
+                'Jashpur Nagar', 'Kunkuri (Cathedral Area)', 'Pathalgaon', 'Bagicha', 'Duldula', 'Farsabahar',
+                'Kansabel', 'Manora', 'Sanna', 'Kotba', 'Lodh Falls Area', 'Kailash Gufa Area'
+            ],
+            'Kabirdham' => [
+                'Kawardha Town', 'Bhoramdeo Temple Area', 'Bodla', 'Pandariya', 'Sahaspur Lohara', 'Rengakhar',
+                'Chilphi (Ghat Valley)', 'Pipariya (Kawardha)', 'Dasrangpur', 'Pandatarai'
             ],
             'Kanker' => [
                 'Kanker Town', 'Charama', 'Narharpur', 'Antagarh', 'Bhanupratappur', 'Pakhanjore',
-                'Koyalibeda'
-            ],
-            'Kawardha' => [
-                'Kawardha (Kabirdham)', 'Bhoramdeo Temple Area', 'Bodla', 'Pandariya', 'Sahaspur Lohara'
-            ],
-            'Kondagaon' => [
-                'Kondagaon Town', 'Keshkal (Ghat Area)', 'Makdi', 'Pharasgaon', 'Bade Rajpur'
-            ],
-            'Koriya' => [
-                'Baikunthpur', 'Chirmiri Border', 'Sonhat', 'Manendragarh Border'
-            ],
-            'Mahasamund' => [
-                'Mahasamund Town', 'Sirpur (Heritage Area)', 'Saraipali', 'Basna', 'Pithora', 'Bagbahra'
-            ],
-            'Mungeli' => [
-                'Mungeli Town', 'Lormi', 'Pathariya'
-            ],
-            'Narayanpur' => [
-                'Narayanpur Town', 'Orchha (Abujhmad)'
-            ],
-            'Sukma' => [
-                'Sukma Town', 'Konta', 'Dornapal', 'Chintagufa'
-            ],
-            'Surajpur' => [
-                'Surajpur Town', 'Bhaiyathan', 'Pratappur (Surajpur)', 'Oudgi', 'Ramanujnagar', 'Premnagar'
+                'Koyalibeda', 'Kanker Palace Area', 'Gadiya Mountain Area', 'Dudhawa Dam Area', 'Sambalpur (Kanker)'
             ],
             'Khairagarh-Chhuikhadan-Gandai' => [
-                'Khairagarh (Music University)', 'Chhuikhadan', 'Gandai'
+                'Khairagarh (Music University)', 'Chhuikhadan', 'Gandai', 'Salhewara', 'Bakarkatta', 'Jalbandha',
+                'Khamaria', 'Dongargarh Road'
+            ],
+            'Kondagaon' => [
+                'Kondagaon Town (Bell Metal Craft Hub)', 'Keshkal (Keshkal Ghat Valley)', 'Makdi', 'Pharasgaon', 'Bade Rajpur', 'Dahikonga',
+                'Mardapal', 'Vishrampuri', 'Golawand'
+            ],
+            'Koriya' => [
+                'Baikunthpur (District HQ)', 'Sonhat', 'Patna (Koriya)', 'Charcha Colliery', 'Gurughasidas National Park Area', 'Amritdhara Falls Area',
+                'Nagar (Koriya)', 'Pondi'
+            ],
+            'Mahasamund' => [
+                'Mahasamund Town', 'Sirpur (World Heritage Archaeological Site)', 'Saraipali', 'Basna', 'Pithora', 'Bagbahra',
+                'Komakhan', 'Tumgaon', 'Birkoni Industrial Area', 'Jhalap', 'Patewa', 'Singhora Border'
             ],
             'Manendragarh-Chirmiri-Bharatpur' => [
-                'Manendragarh', 'Chirmiri (Coal City)', 'Bharatpur (Janakpur)', 'Khadgawan', 'Ledri'
+                'Manendragarh', 'Chirmiri (Haldibadi, Godaripara)', 'Domanhill', 'Kurasia Colliery', 'Bharatpur (Janakpur)', 'Khadgawan',
+                'Ledri', 'Jhagrakhand', 'Kelhari', 'Kotadol', 'Ramgarh (MCB)'
             ],
             'Mohla-Manpur-Ambagarh Chowki' => [
-                'Mohla', 'Manpur', 'Ambagarh Chowki'
+                'Mohla', 'Manpur', 'Ambagarh Chowki', 'Koracha', 'Chilhati', 'Vasadi',
+                'Bandha', 'Aundhi', 'Gotatola'
+            ],
+            'Mungeli' => [
+                'Mungeli Town', 'Lormi', 'Pathariya', 'Setganga', 'Achanakmar Tiger Reserve Area', 'Jarhagaon',
+                'Madku Dweep Area', 'Kunda'
+            ],
+            'Narayanpur' => [
+                'Narayanpur Town', 'Orchha (Abujhmad Heartland)', 'Chhotedongar', 'Dhaodai', 'Benur', 'Dhanora',
+                'Kurushnar', 'Irakbhat', 'Bakulwahi', 'Sonpur (Narayanpur)', 'Garhbengal', 'Ghotul Area',
+                'Abujhmar Hills', 'Tadoki Road', 'Badedongar Road'
             ],
             'Sakti' => [
-                'Sakti Town', 'Malkharoda', 'Dabhra', 'Jaijaipur'
+                'Sakti Town', 'Malkharoda', 'Dabhra', 'Jaijaipur', 'Chandrapur (Maa Chandrahasini Temple)', 'Hasaud',
+                'Adbhar', 'Baradwar', 'Pothia'
             ],
             'Sarangarh-Bilaigarh' => [
-                'Sarangarh', 'Bilaigarh', 'Baramkela'
+                'Sarangarh', 'Bilaigarh', 'Baramkela', 'Bhatgaon (Bilaigarh)', 'Sarsiwa', 'Timarlaga',
+                'Godam', 'Hardi', 'Dongripali', 'Gomarda Wildlife Sanctuary Area'
+            ],
+            'Sukma' => [
+                'Sukma Town', 'Konta (Triveni Border Hub)', 'Dornapal', 'Chintagufa', 'Tongpal', 'Errabor',
+                'Kukanar', 'Bheji', 'Injeram', 'Polampalli', 'Chintalnar'
+            ],
+            'Surajpur' => [
+                'Surajpur Town', 'Bhaiyathan', 'Pratappur (Surajpur)', 'Oudgi', 'Ramanujnagar', 'Premnagar',
+                'Bishrampur (Coal Mining Area)', 'Shivpur (Kudarghat / Maa Mahamaya)', 'Chandarpur', 'Telgaon', 'Tamor Pingla Wildlife Sanctuary Area'
             ],
         ],
     ],
