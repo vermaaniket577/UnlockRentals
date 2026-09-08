@@ -740,47 +740,52 @@ Route::post('/property-video-upload', [App\Http\Controllers\PropertyController::
 // Dynamic Location API routes for AJAX cascading
 Route::get('/api/locations/districts', function(\Illuminate\Http\Request $request) {
     $stateInput = trim($request->get('state', ''));
+    $locationData = \App\Providers\AppServiceProvider::getLocationData();
+
     if (!$stateInput) {
-        $districts = \App\Models\District::with('state')->orderBy('name')->get();
-        return response()->json($districts);
+        return response()->json($locationData['allDistricts'] ?? []);
     }
-    
-    $state = \App\Models\State::where('code', strtoupper($stateInput))
-        ->orWhere('code', $stateInput)
-        ->orWhere('name', 'like', $stateInput)
-        ->orWhere('id', is_numeric($stateInput) ? (int)$stateInput : 0)
-        ->first();
-        
-    if (!$state) {
-        return response()->json([]);
-    }
-    
-    $districts = \App\Models\District::where('state_id', $state->id)->orderBy('name')->get();
-    return response()->json($districts);
+
+    $districts = $locationData['districts'][$stateInput] 
+        ?? $locationData['districts'][strtoupper($stateInput)] 
+        ?? $locationData['districts'][strtolower($stateInput)] 
+        ?? [];
+
+    $formatted = array_map(function($d) use ($stateInput) {
+        return ['name' => $d, 'state' => $stateInput];
+    }, $districts);
+
+    return response()->json($formatted);
 })->name('api.locations.districts');
 
 Route::get('/api/locations/localities', function(\Illuminate\Http\Request $request) {
     $districtInput = trim($request->get('district', ''));
     $stateInput = trim($request->get('state', ''));
-    
-    $query = \App\Models\Locality::with(['district.state']);
-    
+    $locationData = \App\Providers\AppServiceProvider::getLocationData();
+
+    $localities = [];
     if ($districtInput) {
-        $districtName = str_replace('-', ' ', $districtInput);
-        $query->whereHas('district', function($q) use ($districtName, $districtInput) {
-            $q->where('name', 'like', $districtName)
-              ->orWhere('id', is_numeric($districtInput) ? (int)$districtInput : 0);
-        });
+        $cleanName = trim(preg_replace('/ \([A-Za-z]+\)$/', '', $districtInput));
+        $dSlug = str_replace(' ', '-', strtolower($cleanName));
+        $dNameLower = strtolower($cleanName);
+
+        $localities = $locationData['localities'][$dSlug] 
+            ?? $locationData['localities'][$dNameLower] 
+            ?? $locationData['localities'][$cleanName]
+            ?? $locationData['localities'][$districtInput]
+            ?? [];
     } elseif ($stateInput) {
-        $query->whereHas('district.state', function($q) use ($stateInput) {
-            $q->where('code', strtoupper($stateInput))
-              ->orWhere('name', 'like', $stateInput)
-              ->orWhere('id', is_numeric($stateInput) ? (int)$stateInput : 0);
-        });
+        $localities = $locationData['localitiesByState'][$stateInput] 
+            ?? $locationData['localitiesByState'][strtoupper($stateInput)] 
+            ?? $locationData['localitiesByState'][strtolower($stateInput)]
+            ?? [];
     }
-    
-    $localities = $query->orderBy('name')->get();
-    return response()->json($localities);
+
+    $formatted = array_map(function($loc) {
+        return ['name' => $loc];
+    }, $localities);
+
+    return response()->json($formatted);
 })->name('api.locations.localities');
 
 // Legal & Compliance Pages

@@ -367,11 +367,21 @@
         }
     });
 
+    const _combinedLocalities = Object.assign({}, _standardLocalities);
+    if (_dbData.localities && typeof _dbData.localities === 'object') {
+        for (const [key, val] of Object.entries(_dbData.localities)) {
+            _combinedLocalities[key] = val;
+            _combinedLocalities[key.toLowerCase()] = val;
+            _combinedLocalities[key.replace(/\s+/g, '-').toLowerCase()] = val;
+            _combinedLocalities[key.replace(/-/g, ' ').toLowerCase()] = val;
+        }
+    }
+
     window.IndianLocationData = {
         states: _allStates,
         districts: _districtsMap,
         allDistricts: _dbData.allDistricts || [],
-        localities: Object.assign({}, _dbData.localities || {}, _standardLocalities),
+        localities: _combinedLocalities,
         localitiesByState: Object.assign({}, _dbData.localitiesByState || {})
     };
 

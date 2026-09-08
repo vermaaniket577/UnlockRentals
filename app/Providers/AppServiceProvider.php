@@ -121,42 +121,120 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        // Share database-backed location data globally with in-memory memoization
+        // Share comprehensive location data globally with in-memory memoization
         View::composer(['welcome', 'layouts.app', 'properties.*', 'admin.*', 'components.navbar', 'components.location-script'], function ($view) {
-            static $memoizedLocationData = null;
+            $locationData = self::getLocationData();
+            $view->with('locationData', $locationData);
+            $view->with('globalAllDistricts', $locationData['allDistricts'] ?? []);
+            $view->with('globalAllStates', $locationData['states'] ?? []);
+        });
+    }
 
-            if ($memoizedLocationData === null) {
-                $memoizedLocationData = Cache::remember('indian_location_data', 1800, function () {
-                    if (!Schema::hasTable('states')) {
-                        return [
-                            'states' => [],
-                            'districts' => [],
-                            'allDistricts' => [],
-                            'districtToState' => [],
-                            'localities' => [],
-                            'localitiesByState' => [],
-                        ];
+    /**
+     * Get comprehensive location data merged from local dataset files and database.
+     */
+    public static function getLocationData(): array
+    {
+        static $memoized = null;
+        if ($memoized !== null) {
+            return $memoized;
+        }
+
+        $loader = function () {
+            $dir = database_path('data/locations');
+            $files = ['central_east.php', 'north.php', 'northeast_islands.php', 'south.php', 'west.php'];
+
+            $rawDataset = [];
+            foreach ($files as $file) {
+                $path = $dir . '/' . $file;
+                if (file_exists($path)) {
+                    $data = require $path;
+                    foreach ($data as $code => $info) {
+                        $rawDataset[$code] = $info;
                     }
+                }
+            }
 
-                    $states = \App\Models\State::orderBy('name')->get();
-                    $districts = \App\Models\District::with('state')->orderBy('name')->get();
-                    $localities = \App\Models\Locality::with('district.state')->orderBy('name')->get();
+            $statesMap = [];
+            $districtsMap = [];
+            $allDistricts = [];
+            $districtToStateMap = [];
+            $localitiesMap = [];
+            $localitiesByStateMap = [];
 
-                    $statesMap = [];
-                    foreach ($states as $s) {
+            // 1. Populate from dataset files
+            foreach ($rawDataset as $code => $info) {
+                $stateName = $info['name'];
+                $statesMap[$code] = $stateName;
+
+                if (!isset($districtsMap[$code])) {
+                    $districtsMap[$code] = [];
+                }
+
+                if (isset($info['districts'])) {
+                    foreach ($info['districts'] as $distName => $locs) {
+                        $distTrimmed = trim($distName);
+                        if (!in_array($distTrimmed, $districtsMap[$code])) {
+                            $districtsMap[$code][] = $distTrimmed;
+                        }
+
+                        $dSlug = str_replace(' ', '-', strtolower($distTrimmed));
+                        $dNameLower = strtolower($distTrimmed);
+
+                        $districtToStateMap[$dSlug] = $code;
+                        $districtToStateMap[$dNameLower] = $code;
+                        $districtToStateMap[$distTrimmed] = $code;
+
+                        $allDistricts[] = [
+                            'name' => $distTrimmed,
+                            'slug' => $dSlug,
+                            'state_code' => $code,
+                            'state_name' => $stateName,
+                        ];
+
+                        $cleanLocs = [];
+                        $seenLocs = [];
+                        foreach ($locs as $loc) {
+                            $lTrim = trim($loc);
+                            $lKey = strtolower($lTrim);
+                            if ($lTrim !== '' && !isset($seenLocs[$lKey])) {
+                                $seenLocs[$lKey] = true;
+                                $cleanLocs[] = $lTrim;
+                            }
+                        }
+
+                        $localitiesMap[$dSlug] = $cleanLocs;
+                        $localitiesMap[$dNameLower] = $cleanLocs;
+                        $localitiesMap[$distTrimmed] = $cleanLocs;
+
+                        if (!isset($localitiesByStateMap[$code])) {
+                            $localitiesByStateMap[$code] = [];
+                        }
+                        foreach ($cleanLocs as $cl) {
+                            if (!in_array($cl, $localitiesByStateMap[$code])) {
+                                $localitiesByStateMap[$code][] = $cl;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Merge with Database records if available
+            try {
+                if (Schema::hasTable('states') && Schema::hasTable('districts') && Schema::hasTable('localities')) {
+                    $dbStates = \App\Models\State::orderBy('name')->get();
+                    $dbDistricts = \App\Models\District::with('state')->orderBy('name')->get();
+                    $dbLocalities = \App\Models\Locality::with('district.state')->orderBy('name')->get();
+
+                    foreach ($dbStates as $s) {
                         $statesMap[$s->code] = $s->name;
                     }
 
-                    $districtsMap = [];
-                    $allDistricts = [];
-                    $districtToStateMap = [];
-
-                    foreach ($districts as $d) {
+                    foreach ($dbDistricts as $d) {
                         $dSlug = str_replace(' ', '-', strtolower($d->name));
                         $stateCode = $d->state ? $d->state->code : '';
-                        $stateName = $d->state ? $d->state->name : '';
 
-                        if ($d->state) {
+                        if ($stateCode) {
                             if (!isset($districtsMap[$stateCode])) {
                                 $districtsMap[$stateCode] = [];
                             }
@@ -164,35 +242,18 @@ class AppServiceProvider extends ServiceProvider
                                 $districtsMap[$stateCode][] = $d->name;
                             }
 
-                            $districtsMap[strtoupper($stateCode)] = $districtsMap[$stateCode];
-                            $districtsMap[strtolower($stateCode)] = $districtsMap[$stateCode];
-                            $districtsMap[$stateName] = $districtsMap[$stateCode];
-                            $districtsMap[strtolower($stateName)] = $districtsMap[$stateCode];
-                            $districtsMap[(string)$d->state->id] = $districtsMap[$stateCode];
-
                             $districtToStateMap[$dSlug] = $stateCode;
                             $districtToStateMap[strtolower($d->name)] = $stateCode;
                             $districtToStateMap[$d->name] = $stateCode;
                         }
-
-                        $allDistricts[] = [
-                            'name' => $d->name,
-                            'slug' => $dSlug,
-                            'state_code' => $stateCode,
-                            'state_name' => $stateName,
-                        ];
                     }
 
-                    $localitiesMap = [];
-                    $localitiesByStateMap = [];
-
-                    foreach ($localities as $l) {
+                    foreach ($dbLocalities as $l) {
                         if ($l->district) {
                             $dSlug = str_replace(' ', '-', strtolower($l->district->name));
                             $dNameLower = strtolower($l->district->name);
                             $dName = $l->district->name;
 
-                            // Map by District
                             if (!isset($localitiesMap[$dSlug])) $localitiesMap[$dSlug] = [];
                             if (!in_array($l->name, $localitiesMap[$dSlug])) {
                                 $localitiesMap[$dSlug][] = $l->name;
@@ -201,37 +262,53 @@ class AppServiceProvider extends ServiceProvider
                             $localitiesMap[$dName] = $localitiesMap[$dSlug];
                             $localitiesMap[(string)$l->district->id] = $localitiesMap[$dSlug];
 
-                            // Map by State
                             if ($l->district->state) {
                                 $sCode = $l->district->state->code;
-                                $sName = $l->district->state->name;
-
                                 if (!isset($localitiesByStateMap[$sCode])) $localitiesByStateMap[$sCode] = [];
                                 if (!in_array($l->name, $localitiesByStateMap[$sCode])) {
                                     $localitiesByStateMap[$sCode][] = $l->name;
                                 }
-                                $localitiesByStateMap[strtoupper($sCode)] = $localitiesByStateMap[$sCode];
-                                $localitiesByStateMap[strtolower($sCode)] = $localitiesByStateMap[$sCode];
-                                $localitiesByStateMap[$sName] = $localitiesByStateMap[$sCode];
-                                $localitiesByStateMap[strtolower($sName)] = $localitiesByStateMap[$sCode];
                             }
                         }
                     }
-
-                    return [
-                        'states' => $statesMap,
-                        'districts' => $districtsMap,
-                        'allDistricts' => $allDistricts,
-                        'districtToState' => $districtToStateMap,
-                        'localities' => $localitiesMap,
-                        'localitiesByState' => $localitiesByStateMap,
-                    ];
-                });
+                }
+            } catch (\Throwable $e) {
+                // Ignore DB error, file dataset is already loaded
             }
 
-            $view->with('locationData', $memoizedLocationData);
-            $view->with('globalAllDistricts', $memoizedLocationData['allDistricts'] ?? []);
-            $view->with('globalAllStates', $memoizedLocationData['states'] ?? []);
-        });
+            // 3. Build aliases
+            foreach ($statesMap as $code => $stateName) {
+                if (isset($districtsMap[$code])) {
+                    $districtsMap[strtoupper($code)] = $districtsMap[$code];
+                    $districtsMap[strtolower($code)] = $districtsMap[$code];
+                    $districtsMap[$stateName] = $districtsMap[$code];
+                    $districtsMap[strtolower($stateName)] = $districtsMap[$code];
+                }
+
+                if (isset($localitiesByStateMap[$code])) {
+                    $localitiesByStateMap[strtoupper($code)] = $localitiesByStateMap[$code];
+                    $localitiesByStateMap[strtolower($code)] = $localitiesByStateMap[$code];
+                    $localitiesByStateMap[$stateName] = $localitiesByStateMap[$code];
+                    $localitiesByStateMap[strtolower($stateName)] = $localitiesByStateMap[$code];
+                }
+            }
+
+            return [
+                'states' => $statesMap,
+                'districts' => $districtsMap,
+                'allDistricts' => $allDistricts,
+                'districtToState' => $districtToStateMap,
+                'localities' => $localitiesMap,
+                'localitiesByState' => $localitiesByStateMap,
+            ];
+        };
+
+        try {
+            $memoized = Cache::remember('indian_location_data', 1800, $loader);
+        } catch (\Throwable $e) {
+            $memoized = $loader();
+        }
+
+        return $memoized;
     }
 }
