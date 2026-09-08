@@ -25,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Schema::defaultStringLength(191);
+
         // Redirect authenticated users to home instead of dashboard for guest routes
         \Illuminate\Auth\Middleware\RedirectIfAuthenticated::redirectUsing(function ($request) {
             return route('home');
