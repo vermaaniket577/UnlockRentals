@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -14,6 +15,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.webkit.*
@@ -115,9 +117,10 @@ class MainActivity : AppCompatActivity() {
             }
             isIndeterminate = false
             max = 100
-            progressDrawable = resources.getDrawable(android.R.drawable.progress_horizontal, theme).mutate().apply {
-                setTint(getColor(R.color.primary))
-            }
+            progressTintList = ColorStateList.valueOf(getColor(R.color.primary))
+            try {
+                progressDrawable?.mutate()?.setTint(getColor(R.color.primary))
+            } catch (_: Exception) {}
             visibility = View.GONE
             elevation = 15f
         }
@@ -173,8 +176,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Configure WebView settings and clients
-        configureWebView()
+        // Configure WebView settings and clients defensively
+        try {
+            configureWebView()
+        } catch (e: Exception) {
+            Log.e("UnlockRentals", "Error configuring WebView", e)
+            showErrorPage()
+        }
 
         // Pull-to-refresh handler
         swipeRefresh.setOnRefreshListener {
@@ -242,8 +250,13 @@ class MainActivity : AppCompatActivity() {
             setGeolocationEnabled(true)
 
             // Custom User-Agent - Cleaned of WebView markers for Google OAuth compatibility
-            val baseUA = userAgentString.replace("; wv", "").replace("Version/4.0 ", "")
-            userAgentString = "$baseUA UnlockRentalsApp/1.3 (Android)"
+            val rawUA = try {
+                userAgentString ?: WebSettings.getDefaultUserAgent(this@MainActivity)
+            } catch (_: Exception) {
+                ""
+            }
+            val baseUA = (rawUA ?: "").replace("; wv", "").replace("Version/4.0 ", "")
+            userAgentString = if (baseUA.isNotBlank()) "$baseUA UnlockRentalsApp/1.4 (Android)" else "UnlockRentalsApp/1.4 (Android)"
         }
 
         // WebViewClient — handles navigation and lifecycle
@@ -498,23 +511,31 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        webView.onResume()
-        webView.resumeTimers()
+        if (::webView.isInitialized) {
+            webView.onResume()
+            webView.resumeTimers()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        webView.onPause()
-        webView.pauseTimers()
+        if (::webView.isInitialized) {
+            webView.onPause()
+            webView.pauseTimers()
+        }
     }
 
     override fun onDestroy() {
-        webView.apply {
-            stopLoading()
-            loadUrl("about:blank")
-            clearHistory()
-            removeAllViews()
-            destroy()
+        if (::webView.isInitialized) {
+            try {
+                webView.apply {
+                    stopLoading()
+                    loadUrl("about:blank")
+                    clearHistory()
+                    removeAllViews()
+                    destroy()
+                }
+            } catch (_: Exception) {}
         }
         super.onDestroy()
     }

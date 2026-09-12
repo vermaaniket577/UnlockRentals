@@ -3,9 +3,9 @@
     <!-- Dark luxury starting background -->
     <item android:drawable="@color/primary_dark" />
 
-    <!-- Centered high-resolution launcher icon -->
+    <!-- Centered high-resolution launcher icon (safe bitmap drawable for windowBackground) -->
     <item
-        android:drawable="@mipmap/ic_launcher"
+        android:drawable="@drawable/ic_launcher_foreground"
         android:gravity="center"
         android:width="88dp"
         android:height="88dp" />
