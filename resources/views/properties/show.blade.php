@@ -595,34 +595,75 @@
                 <div class="lg:sticky lg:top-24 space-y-6">
 
                     {{-- Premium Pricing & Core Financials --}}
-                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden group">
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden group" style="padding: 1.5rem !important;">
                         {{-- Flipkart-style blue subtle stripe --}}
                         <div class="absolute top-0 left-0 w-full h-[5px] bg-[#2874F0]"></div>
 
-                        <div class="mb-4">
-                            <p class="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Rental Pricing</p>
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
-                                    ₹{{ number_format($property->price, 0) }}
-                                </span>
-                                <span class="text-zinc-550 text-sm font-bold">/ {{ $property->price_period }}</span>
-                            </div>
+                        <div class="mb-4 pt-1">
+                            @if($property->isForSale())
+                                <p class="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Sale Price</p>
+                                <div class="flex items-baseline gap-2 flex-wrap">
+                                    <span class="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
+                                        ₹{{ number_format($property->price, 0) }}
+                                    </span>
+                                    @if($property->price >= 10000000)
+                                        <span class="text-sm font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                                            (₹{{ rtrim(rtrim(number_format($property->price / 10000000, 2), '0'), '.') }} Cr)
+                                        </span>
+                                    @elseif($property->price >= 100000)
+                                        <span class="text-sm font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                                            (₹{{ rtrim(rtrim(number_format($property->price / 100000, 2), '0'), '.') }} Lac)
+                                        </span>
+                                    @endif
+                                </div>
+                            @else
+                                <p class="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Rental Pricing</p>
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
+                                        ₹{{ number_format($property->price, 0) }}
+                                    </span>
+                                    <span class="text-zinc-550 text-sm font-bold">/ {{ $property->price_period ?: 'month' }}</span>
+                                </div>
+                            @endif
                         </div>
 
                         {{-- Additional Financial breakdowns --}}
                         <div class="border-y border-zinc-100 py-3.5 mb-5 space-y-2.5 text-xs text-zinc-650 font-medium">
-                            <div class="flex items-center justify-between">
-                                <span>Security Deposit:</span>
-                                <span class="font-extrabold text-zinc-800">₹{{ number_format($property->price * 2, 0) }} (Refundable)</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span>Brokerage Fee:</span>
-                                <span class="font-extrabold text-emerald-600 flex items-center gap-0.5"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span>EMI Starting:</span>
-                                <span class="font-semibold text-zinc-700">₹{{ number_format($property->price * 0.15, 0) }}/mo</span>
-                            </div>
+                            @if($property->isForSale())
+                                @php
+                                    $loanAmount = $property->price * 0.8;
+                                    $monthlyRate = (8.5 / 12) / 100;
+                                    $tenureMonths = 20 * 12;
+                                    $estEmi = ($loanAmount > 0)
+                                        ? ($loanAmount * $monthlyRate * pow(1 + $monthlyRate, $tenureMonths)) / (pow(1 + $monthlyRate, $tenureMonths) - 1)
+                                        : 0;
+                                @endphp
+                                <div class="flex items-center justify-between">
+                                    <span>Est. Home Loan EMI:</span>
+                                    <span class="font-extrabold text-zinc-800">₹{{ number_format($estEmi, 0) }}/mo*</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Brokerage Fee:</span>
+                                    <span class="font-extrabold text-emerald-600 flex items-center gap-0.5"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Stamp Duty & Reg:</span>
+                                    <span class="font-semibold text-zinc-700">Estimated ~5% - 7%</span>
+                                </div>
+                            @else
+                                <div class="flex items-center justify-between">
+                                    <span>Security Deposit:</span>
+                                    <span class="font-extrabold text-zinc-800">₹{{ number_format($property->price * 2, 0) }} (Refundable)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Brokerage Fee:</span>
+                                    <span class="font-extrabold text-emerald-600 flex items-center gap-0.5"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>EMI Starting:</span>
+                                    <span class="font-semibold text-zinc-700">₹{{ number_format($property->price * 0.15, 0) }}/mo</span>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
@@ -651,9 +692,9 @@
                     </div>
 
                     {{-- Sticky Contact Card (Gated by Plan) --}}
-                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm relative overflow-hidden" id="property-price-card">
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm relative overflow-hidden" id="property-price-card" style="padding: 1.5rem !important;">
                         <div class="absolute top-0 left-0 w-full h-[5px] bg-amber-500"></div>
-                        <h3 class="text-zinc-900 font-extrabold text-base mb-4 flex items-center gap-2">
+                        <h3 class="text-zinc-900 font-extrabold text-base mb-4 flex items-center gap-2 pt-1">
                             <i class="ph-bold ph-user-circle text-amber-500 text-lg"></i> Owner Contact Info
                         </h3>
 
@@ -831,9 +872,9 @@
                     </div>
 
                     {{-- Elegant Inquiry Form Card --}}
-                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm relative overflow-hidden" id="inquiry-form-card">
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm relative overflow-hidden" id="inquiry-form-card" style="padding: 1.5rem !important;">
                         <div class="absolute top-0 left-0 w-full h-[5px] bg-[#2874F0]"></div>
-                        <h3 class="text-zinc-900 font-extrabold text-base mb-4 flex items-center gap-2">
+                        <h3 class="text-zinc-900 font-extrabold text-base mb-4 flex items-center gap-2 pt-1">
                             <i class="ph-bold ph-envelope-simple-open text-[#2874F0] text-lg"></i>
                             Send Inquiry
                         </h3>
@@ -845,26 +886,30 @@
 
                             <div class="space-y-3.5">
                                 <div class="relative">
-                                    <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base"></i>
+                                    <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base pointer-events-none z-10"></i>
                                     <input type="text" name="name" value="{{ auth()->user()->name }}"
-                                           class="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
+                                           class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
+                                           style="padding-left: 2.85rem !important; padding-right: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; height: 2.85rem !important;"
                                            placeholder="Your Full Name" required id="inquiry-name">
                                 </div>
                                 <div class="relative">
-                                    <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base"></i>
+                                    <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base pointer-events-none z-10"></i>
                                     <input type="email" name="email" value="{{ auth()->user()->email }}"
-                                           class="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
+                                           class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
+                                           style="padding-left: 2.85rem !important; padding-right: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; height: 2.85rem !important;"
                                            placeholder="Your Email Address" required id="inquiry-email">
                                 </div>
                                 <div class="relative">
-                                    <i class="ph-bold ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base"></i>
+                                    <i class="ph-bold ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base pointer-events-none z-10"></i>
                                     <input type="tel" name="phone" value="{{ auth()->user()->phone }}"
-                                           class="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
+                                           class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
+                                           style="padding-left: 2.85rem !important; padding-right: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; height: 2.85rem !important;"
                                            placeholder="Phone Number (optional)" id="inquiry-phone">
                                 </div>
                                 <div class="relative">
                                     <textarea name="message" rows="4"
-                                              class="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all resize-none font-medium"
+                                              class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all resize-none font-medium"
+                                              style="padding: 0.85rem 1rem !important;"
                                               placeholder="I'm interested in this property..." required id="inquiry-message">I'm interested in "{{ $property->title }}". Please share more details.</textarea>
                                 </div>
                                 <button type="submit" class="w-full px-6 py-3.5 bg-gradient-to-r from-[#2874F0] to-[#1A5FDF] hover:brightness-105 text-white text-sm font-extrabold rounded-xl shadow-lg shadow-[#2874F0]/20 hover:shadow-[#2874F0]/30 transition-all flex items-center justify-center gap-2 cursor-pointer" id="inquiry-submit">

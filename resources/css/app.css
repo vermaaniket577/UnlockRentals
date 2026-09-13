@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../../resources/views/**/*.blade.php';
-@source '../../resources/js/**/*.js';
+@source "../views";
+@source "../js";
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views";
+@source "../../app";
 
 @theme {
   --color-primary: #2563EB;

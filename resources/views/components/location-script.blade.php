@@ -1,11 +1,4 @@
 <script>
-    window._dbLocationData = {!! json_encode($locationData ?? [
-        'states' => (object)[],
-        'districts' => (object)[],
-        'allDistricts' => [],
-        'districtToState' => (object)[],
-        'localities' => (object)[],
-        'localitiesByState' => (object)[]
-    ]) !!};
+    window._dbLocationData = window._dbLocationData || {};
 </script>
-<script src="{{ asset('js/location-data.js') }}?v={{ file_exists(public_path('js/location-data.js')) ? filemtime(public_path('js/location-data.js')) : time() }}"></script>
+<script defer src="{{ asset('js/location-data.js') }}?v={{ file_exists(public_path('js/location-data.js')) ? filemtime(public_path('js/location-data.js')) : time() }}"></script>

@@ -1,14 +1,33 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth" itemscope itemtype="https://schema.org/WebPage">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ2TX883V4"></script>
+    <!-- Google tag (gtag.js) Non-Blocking -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
       gtag('js', new Date());
-
       gtag('config', 'G-RJ2TX883V4');
+
+      (function() {
+          var gtagLoaded = false;
+          function loadGtag() {
+              if (gtagLoaded) return;
+              gtagLoaded = true;
+              var s = document.createElement('script');
+              s.async = true;
+              s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RJ2TX883V4';
+              document.head.appendChild(s);
+          }
+          if ('requestIdleCallback' in window) {
+              requestIdleCallback(function() { setTimeout(loadGtag, 1500); });
+          } else {
+              setTimeout(loadGtag, 2000);
+          }
+          ['scroll', 'mousemove', 'touchstart', 'click', 'keydown'].forEach(function(e) {
+              window.addEventListener(e, loadGtag, { once: true, passive: true });
+          });
+      })();
     </script>
     <script>
         (function () {
@@ -46,8 +65,29 @@
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    {{-- Google AdSense --}}
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2772066538696984" crossorigin="anonymous"></script>
+    {{-- High-Performance Deferred Google AdSense (Zero Blocking on Initial Page Load) --}}
+    <script>
+        (function() {
+            var adsLoaded = false;
+            function loadAdSense() {
+                if (adsLoaded) return;
+                adsLoaded = true;
+                var script = document.createElement('script');
+                script.async = true;
+                script.crossOrigin = 'anonymous';
+                script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2772066538696984';
+                document.head.appendChild(script);
+            }
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(function() { setTimeout(loadAdSense, 2000); });
+            } else {
+                setTimeout(loadAdSense, 2500);
+            }
+            ['scroll', 'mousemove', 'touchstart', 'click', 'keydown'].forEach(function(evt) {
+                window.addEventListener(evt, loadAdSense, { once: true, passive: true });
+            });
+        })();
+    </script>
 
 
     {{-- Open Graph / Facebook --}}
@@ -93,36 +133,33 @@
     </script>
 
 
-    {{-- Premium Fonts (Optimized) --}}
+    {{-- Premium Fonts (Non-blocking Optimized) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    </noscript>
 
-    {{-- Phosphor Icon Systems (Regular, Bold, Fill, Duotone) --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+    {{-- Phosphor Icon Systems (Non-blocking Regular, Bold, Fill, Duotone) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+    </noscript>
 
-    {{-- Tailwind CSS for local/dev reliability without requiring Vite --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#2563EB',
-                        'zinc-850': '#121214',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    {{-- Precompiled High-Performance Tailwind CSS (Zero Runtime JS Overhead) --}}
+    @if(file_exists(public_path('build/manifest.json')))
+        @vite(['resources/css/app.css'])
+    @else
+        <link rel="stylesheet" href="{{ asset('css/tailwind-build.css') }}?v={{ file_exists(public_path('css/tailwind-build.css')) ? filemtime(public_path('css/tailwind-build.css')) : time() }}">
+    @endif
 
     {{-- Premium UnlockRentals Styles --}}
     <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260611-header-fix">

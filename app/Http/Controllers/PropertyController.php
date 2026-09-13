@@ -656,6 +656,9 @@ class PropertyController extends Controller
     {
         // Enforce owner / admin permission
         if (auth()->id() != $property->user_id && !auth()->user()->isAdmin()) {
+            if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['success' => false, 'message' => 'Unauthorized action.'], 403);
+            }
             abort(403, 'Unauthorized action.');
         }
 
@@ -665,9 +668,19 @@ class PropertyController extends Controller
         // Clear homepage cache to update watermark instantly
         \Illuminate\Support\Facades\Cache::forget('home_featured_rentals');
 
-        return redirect()->back()->with('success', $property->is_booked 
+        $message = $property->is_booked 
             ? 'Property marked as Booked!' 
-            : 'Property marked as Available!');
+            : 'Property marked as Available!';
+
+        if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'success' => true,
+                'is_booked' => (bool) $property->is_booked,
+                'message' => $message,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 
     /**

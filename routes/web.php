@@ -140,7 +140,12 @@ Route::get('/', function(Illuminate\Http\Request $request) {
 })->name('home');
 
 // Serve a property image directly from binary DB data
-Route::get('/property-image/{id}', function ($id) {
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+])->get('/property-image/{id}', function ($id) {
     $image = \App\Models\PropertyImage::withoutGlobalScope('withoutBlob')->findOrFail($id);
 
     if (empty($image->image_data)) {
@@ -156,7 +161,8 @@ Route::get('/property-image/{id}', function ($id) {
 
     return response($image->image_data, 200)
         ->header('Content-Type', $mimeType)
-        ->header('Cache-Control', 'public, max-age=604800, immutable');
+        ->header('Cache-Control', 'public, max-age=31536000, immutable')
+        ->header('Access-Control-Allow-Origin', '*');
 })->name('property.image');
 
 // Public CSRF Token Refresh Endpoint
@@ -621,7 +627,12 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
 })->name('run-migrations');
 
 // Universal route to serve images directly from storage/app/public without a symlink
-Route::get('/property-image-file/{path}', function ($path) {
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+])->get('/property-image-file/{path}', function ($path) {
     $cleanPath = ltrim($path, '/');
     $basename = basename($cleanPath);
 
@@ -649,11 +660,15 @@ Route::get('/property-image-file/{path}', function ($path) {
     }
 
     if (!$foundPath) {
-        $defaultFallback = public_path('images/luxury_sunlit.png');
+        $defaultFallback = public_path('images/luxury_sunlit.webp');
+        if (!file_exists($defaultFallback)) {
+            $defaultFallback = public_path('images/luxury_sunlit.png');
+        }
         if (file_exists($defaultFallback)) {
             return response()->file($defaultFallback, [
-                'Content-Type' => 'image/png',
-                'Cache-Control' => 'public, max-age=604800',
+                'Content-Type' => str_ends_with($defaultFallback, '.webp') ? 'image/webp' : 'image/png',
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+                'Access-Control-Allow-Origin' => '*',
             ]);
         }
         return redirect('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80');
@@ -671,7 +686,7 @@ Route::get('/property-image-file/{path}', function ($path) {
 
     return response()->file($foundPath, [
         'Content-Type' => $mime,
-        'Cache-Control' => 'public, max-age=604800',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
         'Access-Control-Allow-Origin' => '*',
     ]);
 })->where('path', '.*')->name('property.image.file');

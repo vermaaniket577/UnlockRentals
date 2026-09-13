@@ -181,10 +181,20 @@ class Property extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
+        if (empty($this->price) || (float)$this->price <= 0) {
+            return 'Price on Request';
+        }
         if ($this->purpose === 'buy' || $this->purpose === 'sell') {
+            if ($this->price >= 10000000) {
+                return '₹' . rtrim(rtrim(number_format($this->price / 10000000, 2), '0'), '.') . ' Cr';
+            } elseif ($this->price >= 100000) {
+                return '₹' . rtrim(rtrim(number_format($this->price / 100000, 2), '0'), '.') . ' Lac';
+            }
             return '₹' . number_format($this->price, 0);
         }
-        return '₹' . number_format($this->price, 0) . '/' . $this->price_period;
+        $period = $this->price_period ?: 'mo';
+        if ($period === 'month') $period = 'mo';
+        return '₹' . number_format($this->price, 0) . '/' . $period;
     }
 
     /**

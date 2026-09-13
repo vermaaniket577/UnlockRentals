@@ -1,14 +1,33 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" itemscope itemtype="https://schema.org/WebPage">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ2TX883V4"></script>
+    <!-- Google tag (gtag.js) Non-Blocking -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
       gtag('js', new Date());
-
       gtag('config', 'G-RJ2TX883V4');
+
+      (function() {
+          var gtagLoaded = false;
+          function loadGtag() {
+              if (gtagLoaded) return;
+              gtagLoaded = true;
+              var s = document.createElement('script');
+              s.async = true;
+              s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RJ2TX883V4';
+              document.head.appendChild(s);
+          }
+          if ('requestIdleCallback' in window) {
+              requestIdleCallback(function() { setTimeout(loadGtag, 1500); });
+          } else {
+              setTimeout(loadGtag, 2000);
+          }
+          ['scroll', 'mousemove', 'touchstart', 'click', 'keydown'].forEach(function(e) {
+              window.addEventListener(e, loadGtag, { once: true, passive: true });
+          });
+      })();
     </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,8 +56,29 @@
     <meta property="twitter:description" content="Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK flats, PGs & houses for rent near you directly from owners across India.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
-    {{-- Google AdSense --}}
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2772066538696984" crossorigin="anonymous"></script>
+    {{-- High-Performance Deferred Google AdSense (Zero Blocking on Initial Page Load) --}}
+    <script>
+        (function() {
+            var adsLoaded = false;
+            function loadAdSense() {
+                if (adsLoaded) return;
+                adsLoaded = true;
+                var script = document.createElement('script');
+                script.async = true;
+                script.crossOrigin = 'anonymous';
+                script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2772066538696984';
+                document.head.appendChild(script);
+            }
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(function() { setTimeout(loadAdSense, 2000); });
+            } else {
+                setTimeout(loadAdSense, 2500);
+            }
+            ['scroll', 'mousemove', 'touchstart', 'click', 'keydown'].forEach(function(evt) {
+                window.addEventListener(evt, loadAdSense, { once: true, passive: true });
+            });
+        })();
+    </script>
 
     {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20260831">
@@ -146,37 +186,37 @@
     }
     </script>
 
-    <!-- Optimized Fonts -->
+    <!-- Optimized Non-Blocking Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700;800&family=Playfair+Display:wght@700;900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    </noscript>
 
-    <!-- Tailwind CSS (CDN) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#2563EB',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                        outfit: ['Outfit', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Precompiled High-Performance Tailwind CSS (Zero Runtime JS Overhead) -->
+    @if(file_exists(public_path('build/manifest.json')))
+        @vite(['resources/css/app.css'])
+    @else
+        <link rel="stylesheet" href="{{ asset('css/tailwind-build.css') }}?v={{ file_exists(public_path('css/tailwind-build.css')) ? filemtime(public_path('css/tailwind-build.css')) : time() }}">
+    @endif
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}">
 
-    <!-- Phosphor Icons (Regular, Bold, Fill) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <!-- Non-Blocking Phosphor Icons (Regular, Bold, Fill) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    </noscript>
+
+    {{-- Preload Largest Contentful Paint (LCP) Image --}}
+    <link rel="preload" as="image" href="{{ asset('images/hero-bg.webp') }}" type="image/webp" fetchpriority="high">
 
     <!-- PWA Configuration -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -209,11 +249,7 @@
         "sameAs": []
     }
     </script>
-    <!-- GSAP for animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-    <!-- Location Data Script -->
-    @include('components.location-script')
 
     <!-- Custom Styles for Homepage Banner Slider -->
     <style>
@@ -578,7 +614,7 @@
         <div class="logo-wrapper">
             <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 10px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
                 <div style="width: 36px; height: 36px; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
-                    <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="36" height="36" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
                 </div>
                 <span class="logo-text" style="font-size: 18px !important; font-weight: 800 !important; letter-spacing: -0.5px !important; white-space: nowrap !important; color: #ffffff !important;">Unlock<span style="color: #60a5fa !important;">Rentals</span></span>
             </a>
@@ -889,7 +925,17 @@
         <div class="hero-bg">
             <div class="glow-orb orb-1"></div>
             <div class="glow-orb orb-2"></div>
-            <img src="{{ asset('images/hero-bg.png') }}" alt="Premium Indian City Skyline Real Estate" title="Premium Indian City Skyline Real Estate" loading="eager" fetchpriority="high">
+            <picture>
+                <source srcset="{{ asset('images/hero-bg.webp') }}" type="image/webp">
+                <img src="{{ asset('images/hero-bg.png') }}" 
+                     alt="Premium Indian City Skyline Real Estate" 
+                     title="Premium Indian City Skyline Real Estate" 
+                     width="1024" 
+                     height="1024" 
+                     loading="eager" 
+                     fetchpriority="high" 
+                     decoding="async">
+            </picture>
             <div class="overlay-gradient"></div>
         </div>
 
@@ -992,32 +1038,22 @@
                         <div class="filter-input-wrap">
                             <label for="city-select" class="filter-label">City / District</label>
                             <select class="filter-input" id="city-select" name="district" onchange="if(window.handleLocationCityChange) window.handleLocationCityChange(this, 'locality-select', 'state-select');">
-                                <option value="">&nbsp;&nbsp;Select District</option>
-                                @php $districtsList = $globalAllDistricts ?? $allDistricts ?? []; @endphp
-                                @if(!empty($districtsList) && count($districtsList) > 0)
-                                    @foreach($districtsList as $d)
-                                        @php
-                                            $dSlug = $d['slug'] ?? strtolower(str_replace(' ', '-', $d['name']));
-                                            $isSelected = (request('district') === $dSlug || request('district') === $d['name']);
-                                        @endphp
-                                        <option value="{{ $d['name'] }}" {{ $isSelected ? 'selected' : '' }}>
-                                            &nbsp;&nbsp;{{ $d['name'] }}{{ !empty($d['state_code']) ? ' (' . $d['state_code'] . ')' : '' }}
-                                        </option>
-                                    @endforeach
-                                @else
-                                    <option value="Gurugram">&nbsp;&nbsp;Gurugram (HR)</option>
-                                    <option value="New Delhi">&nbsp;&nbsp;New Delhi (DL)</option>
-                                    <option value="South Delhi">&nbsp;&nbsp;South Delhi (DL)</option>
-                                    <option value="Noida">&nbsp;&nbsp;Noida (UP)</option>
-                                    <option value="Ghaziabad">&nbsp;&nbsp;Ghaziabad (UP)</option>
-                                    <option value="Faridabad">&nbsp;&nbsp;Faridabad (HR)</option>
-                                    <option value="Bengaluru">&nbsp;&nbsp;Bengaluru (KA)</option>
-                                    <option value="Mumbai">&nbsp;&nbsp;Mumbai (MH)</option>
-                                    <option value="Pune">&nbsp;&nbsp;Pune (MH)</option>
-                                    <option value="Hyderabad">&nbsp;&nbsp;Hyderabad (TS)</option>
-                                    <option value="Jaipur">&nbsp;&nbsp;Jaipur (RJ)</option>
-                                    <option value="Chandigarh">&nbsp;&nbsp;Chandigarh (CH)</option>
-                                @endif
+                                <option value="">&nbsp;&nbsp;All Cities / Districts</option>
+                                <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>&nbsp;&nbsp;Gurugram (HR)</option>
+                                <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>&nbsp;&nbsp;New Delhi (DL)</option>
+                                <option value="South Delhi" {{ request('district') == 'South Delhi' ? 'selected' : '' }}>&nbsp;&nbsp;South Delhi (DL)</option>
+                                <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>&nbsp;&nbsp;Noida (UP)</option>
+                                <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>&nbsp;&nbsp;Ghaziabad (UP)</option>
+                                <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>&nbsp;&nbsp;Faridabad (HR)</option>
+                                <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>&nbsp;&nbsp;Bengaluru (KA)</option>
+                                <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>&nbsp;&nbsp;Mumbai (MH)</option>
+                                <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>&nbsp;&nbsp;Pune (MH)</option>
+                                <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>&nbsp;&nbsp;Hyderabad (TS)</option>
+                                <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>&nbsp;&nbsp;Jaipur (RJ)</option>
+                                <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>&nbsp;&nbsp;Chandigarh (CH)</option>
+                                <option value="Kolkata" {{ request('district') == 'Kolkata' ? 'selected' : '' }}>&nbsp;&nbsp;Kolkata (WB)</option>
+                                <option value="Chennai" {{ request('district') == 'Chennai' ? 'selected' : '' }}>&nbsp;&nbsp;Chennai (TN)</option>
+                                <option value="Ahmedabad" {{ request('district') == 'Ahmedabad' ? 'selected' : '' }}>&nbsp;&nbsp;Ahmedabad (GJ)</option>
                             </select>
                         </div>
                         <div class="dropdown-chevron">
@@ -1164,7 +1200,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80" alt="Zero Brokerage Rentals" title="Zero Brokerage Rentals">
+                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80" alt="Zero Brokerage Rentals" title="Zero Brokerage Rentals" width="600" height="330" loading="lazy" decoding="async">
                     </div>
                 </div>
 
@@ -1178,7 +1214,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80" alt="Premium PG Stays" title="Premium PG Stays">
+                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80" alt="Premium PG Stays" title="Premium PG Stays" width="600" height="330" loading="lazy" decoding="async">
                     </div>
                 </div>
 
@@ -1192,7 +1228,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="Commercial Properties" title="Commercial Properties">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="Commercial Properties" title="Commercial Properties" width="600" height="330" loading="lazy" decoding="async">
                     </div>
                 </div>
 
@@ -1332,7 +1368,7 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6" id="featuredPropertiesGrid">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="featuredPropertiesGrid">
                 @forelse($featuredRentals as $property)
                     <x-property-card :property="$property" />
                 @empty
@@ -1751,6 +1787,7 @@
                             </div>
                             <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
                                 <img src="{{ $t['image'] }}" alt="{{ $t['author'] }}" title="{{ $t['author'] }}"
+                                     width="36" height="36" loading="lazy" decoding="async"
                                      onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($t['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
                                      class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-blue-500/20 shadow-xs">
                                 <div class="min-w-0">
@@ -1776,6 +1813,7 @@
                             </div>
                             <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
                                 <img src="{{ $t['image'] }}" alt="{{ $t['author'] }}" title="{{ $t['author'] }}"
+                                     width="36" height="36" loading="lazy" decoding="async"
                                      onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($t['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
                                      class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-blue-500/20 shadow-xs">
                                 <div class="min-w-0">
@@ -1890,18 +1928,6 @@
                 console.error('Cascading init error:', e);
             }
 
-            // Entrance animations using GSAP
-            try {
-                if (typeof gsap !== 'undefined') {
-                    gsap.from('.badge-animate', { opacity: 0, y: 30, duration: 1, delay: 0.2, ease: 'power3.out' });
-                    gsap.from('.title-animate', { opacity: 0, y: 40, duration: 1.2, delay: 0.4, ease: 'power3.out' });
-                    gsap.from('.subtitle-animate', { opacity: 0, y: 30, duration: 1, delay: 0.6, ease: 'power3.out' });
-                    gsap.from('.panel-animate', { opacity: 0, y: 50, scale: 0.95, duration: 1.5, delay: 0.8, ease: 'power4.out' });
-                    gsap.from('.actions-animate', { opacity: 0, y: 20, duration: 1, delay: 1.2, ease: 'power3.out' });
-                    gsap.from('.indicators-animate', { opacity: 0, y: 20, duration: 1, delay: 1.4, ease: 'power3.out' });
-                }
-            } catch(e) {}
-              
             // Hover effect on the glass panel
             const panel = document.querySelector('.search-glass-panel');
             if (panel) {
@@ -2110,7 +2136,7 @@
     @if(($site_settings['feedback_enabled'] ?? '1') == '1')
     <!-- Feedback Modal Trigger (Hidden on mobile to avoid overlapping navigation) -->
     <button class="feedback-modal-trigger hidden md:flex" onclick="openFeedbackModal()" style="position: fixed; left: 30px; bottom: 30px; width: 60px; height: 60px; background: rgba(25, 25, 30, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; color: var(--primary); font-size: 24px; cursor: pointer; z-index: 9998; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s;">
-        <img src="{{ asset('images/icons/feedback.png') }}" alt="Feedback" title="Send Platform Feedback" style="width: 32px; height: 32px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
+        <img src="{{ asset('images/icons/feedback.png') }}" alt="Feedback" title="Send Platform Feedback" width="32" height="32" loading="lazy" decoding="async" style="width: 32px; height: 32px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
     </button>
 
     <!-- Feedback Modal Overlay -->
@@ -2205,5 +2231,8 @@
     @endguest
 
     @include('components.idle-logout')
+
+    <!-- Deferred Non-Critical Scripts -->
+    @include('components.location-script')
 </body>
 </html>

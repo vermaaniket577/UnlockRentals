@@ -3,7 +3,7 @@
      ============================================================ --}}
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
+/* Font Outfit already loaded non-blocking in layout head */
 
 .ur-app {
     padding: 8rem 0;
@@ -328,7 +328,17 @@
                 <div class="ur-app__glow"></div>
                 <div class="ur-app__mockup-wrap">
                     {{-- Generated Mockup --}}
-                    <img src="{{ asset('unlockrental_premium_mockup_1778934329998.png') }}" alt="UnlockRentals Luxury App" title="UnlockRentals Luxury App" class="ur-app__img">
+                    <picture>
+                        <source srcset="{{ asset('unlockrental_premium_mockup_1778934329998.webp') }}" type="image/webp">
+                        <img src="{{ asset('unlockrental_premium_mockup_1778934329998.png') }}" 
+                             alt="UnlockRentals Luxury App" 
+                             title="UnlockRentals Luxury App" 
+                             width="512" 
+                             height="512" 
+                             loading="lazy" 
+                             decoding="async" 
+                             class="ur-app__img">
+                    </picture>
                     
                     {{-- Floating Glass Cards --}}
                     <div class="ur-app__floating-card ur-app__card--1">

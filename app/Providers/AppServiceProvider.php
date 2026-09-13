@@ -121,12 +121,22 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        // Share comprehensive location data globally with in-memory memoization
-        View::composer(['welcome', 'layouts.app', 'properties.*', 'admin.*', 'components.navbar', 'components.location-script'], function ($view) {
-            $locationData = self::getLocationData();
-            $view->with('locationData', $locationData);
-            $view->with('globalAllDistricts', $locationData['allDistricts'] ?? []);
-            $view->with('globalAllStates', $locationData['states'] ?? []);
+        // Share states list globally without heavy location dataset overhead
+        View::composer(['welcome', 'layouts.app', 'properties.*', 'admin.*', 'components.navbar'], function ($view) {
+            static $states = null;
+            if ($states === null) {
+                $states = [
+                    'AP' => 'Andhra Pradesh', 'AR' => 'Arunachal Pradesh', 'AS' => 'Assam', 'BR' => 'Bihar',
+                    'CT' => 'Chhattisgarh', 'GA' => 'Goa', 'GJ' => 'Gujarat', 'HR' => 'Haryana',
+                    'HP' => 'Himachal Pradesh', 'JH' => 'Jharkhand', 'KA' => 'Karnataka', 'KL' => 'Kerala',
+                    'MP' => 'Madhya Pradesh', 'MH' => 'Maharashtra', 'MN' => 'Manipur', 'ML' => 'Meghalaya',
+                    'MZ' => 'Mizoram', 'NL' => 'Nagaland', 'OR' => 'Odisha', 'PB' => 'Punjab',
+                    'RJ' => 'Rajasthan', 'SK' => 'Sikkim', 'TN' => 'Tamil Nadu', 'TS' => 'Telangana',
+                    'TR' => 'Tripura', 'UP' => 'Uttar Pradesh', 'UK' => 'Uttarakhand', 'WB' => 'West Bengal',
+                    'DL' => 'Delhi', 'LA' => 'Ladakh', 'CH' => 'Chandigarh', 'JK' => 'Jammu and Kashmir'
+                ];
+            }
+            $view->with('globalAllStates', $states);
         });
     }
 

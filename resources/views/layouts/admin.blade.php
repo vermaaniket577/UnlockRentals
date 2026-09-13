@@ -38,40 +38,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
-    {{-- Tailwind CSS CDN --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#2563EB',
-                        brand: {
-                            50: '#EFF6FF',
-                            100: '#DBEAFE',
-                            500: '#3B82F6',
-                            600: '#2563EB',
-                            700: '#1D4ED8',
-                            900: '#1E3A8A',
-                        },
-                        slate: {
-                            750: '#243247',
-                            850: '#152032',
-                            950: '#0B111E',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-                        'card': '0 0 0 1px rgba(226, 232, 240, 0.8), 0 1px 3px 0 rgba(0, 0, 0, 0.05)',
-                        'card-hover': '0 0 0 1px rgba(37, 99, 235, 0.2), 0 12px 28px -4px rgba(37, 99, 235, 0.08)',
-                    }
-                }
-            }
-        }
-    </script>
+    {{-- Precompiled Tailwind CSS --}}
+    @if(file_exists(public_path('build/manifest.json')))
+        @vite(['resources/css/app.css'])
+    @else
+        <link rel="stylesheet" href="{{ asset('css/tailwind-build.css') }}?v={{ file_exists(public_path('css/tailwind-build.css')) ? filemtime(public_path('css/tailwind-build.css')) : time() }}">
+    @endif
     
     {{-- Custom App Styles --}}
     <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260830-admin-clean">

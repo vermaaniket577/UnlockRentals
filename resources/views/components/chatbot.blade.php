@@ -4,14 +4,14 @@
 
 <!-- Chatbot Overlay Button & Window -->
 <div class="chatbot-trigger" id="chatTrigger" onclick="window.toggleSupportChat(event)" style="overflow: hidden; padding: 0; background: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" title="Open Chat Support" role="button" aria-label="Open Chatbot">
-    <video src="{{ asset('videos/chatbot.mp4') }}" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%;"></video>
+    <video src="{{ asset('videos/chatbot.mp4') }}" autoplay loop muted playsinline preload="metadata" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%;"></video>
 </div>
 
 <div class="chat-window" id="chatWindow" aria-live="polite" role="dialog" aria-modal="true" aria-label="Unlock Support Chat">
     <div class="chat-header">
         <div class="chat-header-content">
             <div class="chat-avatar">
-                <img src="{{ asset('images/icons/chatbot.png') }}" alt="Bot" title="Unlock Support Bot" style="width: 24px; height: 24px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
+                <img src="{{ asset('images/icons/chatbot.png') }}" alt="Bot" title="Unlock Support Bot" width="24" height="24" loading="lazy" decoding="async" style="width: 24px; height: 24px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
             </div>
             <div class="chat-header-info">
                 <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Unlock Support</div>

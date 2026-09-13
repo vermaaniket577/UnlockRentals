@@ -303,16 +303,22 @@
 
                             {{-- Booked / Availability Toggle Column --}}
                             <td class="px-6 py-4.5 whitespace-nowrap">
-                                <form method="POST" action="{{ route('properties.toggle-booked', $property) }}" class="inline-flex items-center gap-2.5">
-                                    @csrf
-                                    <label class="relative inline-flex items-center cursor-pointer group" title="{{ $property->is_booked ? 'Click to mark as Available' : 'Click to mark as Booked' }}">
-                                        <input type="checkbox" name="is_booked" class="sr-only peer" onchange="this.form.submit()" {{ $property->is_booked ? 'checked' : '' }}>
-                                        <div class="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 dark:after:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 shadow-inner"></div>
+                                <div class="inline-flex items-center gap-2.5">
+                                    <label class="booked-toggle-label" title="{{ $property->is_booked ? 'Status: Booked (Click to mark Available)' : 'Status: Available (Click to mark Booked)' }}">
+                                        <input type="checkbox" 
+                                               class="booked-toggle-input" 
+                                               data-property-id="{{ $property->id }}"
+                                               data-toggle-url="{{ route('properties.toggle-booked', $property) }}"
+                                               onchange="handleBookedToggle(this)"
+                                               {{ $property->is_booked ? 'checked' : '' }}>
+                                        <div class="booked-toggle-track">
+                                            <div class="booked-toggle-knob"></div>
+                                        </div>
                                     </label>
-                                    <span class="text-xs font-bold px-2 py-0.5 rounded-md border {{ $property->is_booked ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60' }}">
+                                    <span class="booked-status-badge text-xs font-bold px-2 py-0.5 rounded-md border {{ $property->is_booked ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60' }}">
                                         {{ $property->is_booked ? 'Booked' : 'Available' }}
                                     </span>
-                                </form>
+                                </div>
                             </td>
 
                             {{-- Actions Column --}}
@@ -397,6 +403,91 @@ function filterPropertiesTable() {
             row.style.display = 'none';
         }
     });
+}
+
+async function handleBookedToggle(input) {
+    const label = input.closest('.booked-toggle-label');
+    const url = input.dataset.toggleUrl;
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+    const newState = input.checked;
+
+    if (label) label.classList.add('is-loading');
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({})
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            input.checked = Boolean(data.is_booked);
+            if (label) {
+                label.title = data.is_booked 
+                    ? 'Status: Booked (Click to mark Available)' 
+                    : 'Status: Available (Click to mark Booked)';
+            }
+            const badge = label?.parentElement?.querySelector('.booked-status-badge');
+            if (badge) {
+                if (data.is_booked) {
+                    badge.className = 'booked-status-badge text-xs font-bold px-2 py-0.5 rounded-md border bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60';
+                    badge.textContent = 'Booked';
+                } else {
+                    badge.className = 'booked-status-badge text-xs font-bold px-2 py-0.5 rounded-md border bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60';
+                    badge.textContent = 'Available';
+                }
+            }
+            showOwnerToast(data.message || (data.is_booked ? 'Property marked as Booked' : 'Property marked as Available'), 'success');
+        } else {
+            throw new Error(data.message || 'Failed to update property status');
+        }
+    } catch (err) {
+        console.error('Toggle error:', err);
+        input.checked = !newState;
+        showOwnerToast(err.message || 'Failed to update status. Please try again.', 'error');
+    } finally {
+        if (label) label.classList.remove('is-loading');
+    }
+}
+
+function showOwnerToast(message, type = 'success') {
+    let container = document.getElementById('owner-ajax-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'owner-ajax-toast-container';
+        container.className = 'fixed bottom-6 right-6 z-[9999] flex flex-col gap-2 pointer-events-none';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-xl border text-sm font-bold flex items-center gap-2.5 transition-all duration-300 transform translate-y-3 opacity-0 ${
+        type === 'success' 
+            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-700 dark:border-slate-200 shadow-slate-900/30' 
+            : 'bg-rose-600 text-white border-rose-500 shadow-rose-600/30'
+    }`;
+    toast.innerHTML = `
+        <i class="ph-bold ${type === 'success' ? 'ph-check-circle text-emerald-400 dark:text-emerald-600' : 'ph-warning-circle text-white'} text-lg"></i>
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-3', 'opacity-0');
+    });
+
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+    }, 2800);
 }
 </script>
 
