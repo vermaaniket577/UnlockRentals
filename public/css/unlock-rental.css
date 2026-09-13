@@ -1109,6 +1109,17 @@ a { text-decoration: none; color: inherit; }
     .main-nav { display: none !important; }
     .hamburger { display: flex !important; }
     .mobile-nav { display: block; }
+    #welcome-mobile-top-login,
+    #welcome-mobile-top-login *,
+    #welcome-mobile-top-login i,
+    #welcome-mobile-top-login span,
+    #nav-mobile-top-login,
+    #nav-mobile-top-login *,
+    #nav-mobile-top-login i,
+    #nav-mobile-top-login span {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+    }
 
     .hero-container { max-width: 100%; padding: 0 24px; padding-top: 100px; }
 

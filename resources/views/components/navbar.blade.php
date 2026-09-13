@@ -51,9 +51,9 @@
             <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
                 @guest
                     {{-- Mobile Top Login Button --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="lg:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap cursor-pointer" id="nav-mobile-top-login" title="Login">
-                        <i class="ph-bold ph-sign-in text-sm"></i>
-                        <span>Login</span>
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="lg:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="text-decoration: none; color: #ffffff !important;" id="nav-mobile-top-login" title="Login">
+                        <i class="ph-bold ph-sign-in text-sm" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Login</span>
                     </a>
 
                     {{-- Desktop Sign In & Get Started --}}
@@ -544,7 +544,12 @@ html.dark #main-nav .ur-nav-link.active-nav-link {
 #main-nav #nav-add-property,
 #main-nav #nav-add-property *,
 #main-nav #nav-register,
-#main-nav #nav-register * {
+#main-nav #nav-register *,
+#nav-mobile-top-login,
+#nav-mobile-top-login *,
+#nav-mobile-top-login i,
+#nav-mobile-top-login span {
     color: #ffffff !important;
+    fill: #ffffff !important;
 }
 </style>

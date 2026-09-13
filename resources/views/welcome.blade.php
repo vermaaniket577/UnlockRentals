@@ -604,6 +604,13 @@
                 display: inline-flex !important;
                 padding: 6px 12px !important;
                 font-size: 11.5px !important;
+                color: #ffffff !important;
+            }
+            #welcome-mobile-top-login *,
+            #welcome-mobile-top-login i,
+            #welcome-mobile-top-login span {
+                color: #ffffff !important;
+                fill: #ffffff !important;
             }
             .btn-cta-premium-header {
                 display: none !important;
@@ -833,9 +840,9 @@
                     </style>
                 @else
                     {{-- Mobile Top Login Button (Visible on Mobile & Tablet Screens < 1024px) --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="inline-flex lg:hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="text-decoration:none;" id="welcome-mobile-top-login" title="Login">
-                        <i class="ph-bold ph-sign-in" style="font-size: 14px;"></i>
-                        <span>Login</span>
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="inline-flex lg:hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="text-decoration:none; color: #ffffff !important;" id="welcome-mobile-top-login" title="Login">
+                        <i class="ph-bold ph-sign-in" style="font-size: 14px; color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Login</span>
                     </a>
 
                     {{-- Desktop Sign In & Post Free Advertise --}}
