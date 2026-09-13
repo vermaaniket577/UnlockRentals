@@ -44,7 +44,7 @@
     $hasFixedPrice = (float)$property->price > 0;
 @endphp
 
-<article class="property-rental-card group relative flex flex-col h-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+<article class="property-rental-card group relative flex flex-col h-auto sm:h-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
     id="property-card-{{ $property->id }}"
     data-property-card="true"
     data-property-id="{{ $property->id }}"
@@ -77,14 +77,14 @@
         </a>
     @endguest
 
-    {{-- A. Property Image Section (Responsive Aspect Ratio: 16:10 on mobile, 16:9 on sm+) --}}
-    <div class="relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+    {{-- A. Property Image Section (Responsive Aspect Ratio: 4:3 on mobile 2-col, 16:9 on sm+) --}}
+    <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
         @if($property->primaryImageUrl())
             <img src="{{ $property->primaryImageUrl() }}"
                  alt="{{ $cleanTitle }}"
                  title="{{ $cleanTitle }}"
                  width="480"
-                 height="270"
+                 height="360"
                  onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.webp') }}';"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                  loading="lazy"
@@ -95,7 +95,7 @@
                      alt="{{ $cleanTitle }}"
                      title="{{ $cleanTitle }}"
                      width="480"
-                     height="270"
+                     height="360"
                      class="w-full h-full object-cover filter brightness-[0.55] group-hover:scale-105 transition-transform duration-500 ease-out"
                      loading="lazy"
                      decoding="async">
@@ -111,7 +111,7 @@
                  alt="Premium Property - {{ $cleanTitle }}"
                  title="Premium Property - {{ $cleanTitle }}"
                  width="480"
-                 height="270"
+                 height="360"
                  loading="lazy"
                  decoding="async"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
@@ -165,28 +165,28 @@
         </div>
     </div>
 
-    {{-- B & C. Information & Action Body (Uniform Padding & Spacing) --}}
-    <div class="p-2.5 sm:p-4 md:p-5 flex flex-col flex-1 justify-between gap-1.5 sm:gap-3 bg-white dark:bg-slate-900">
+    {{-- B & C. Information & Action Body (Snug, Balanced Spacing Without Giant Gaps) --}}
+    <div class="p-2 sm:p-4 flex flex-col flex-1 gap-1 sm:gap-2.5 bg-white dark:bg-slate-900">
         <div class="flex flex-col min-w-0">
-            {{-- Property Title (Allows up to 2 lines with fixed min-height for uniform alignment) --}}
-            <h3 class="text-xs sm:text-[15px] md:text-base font-bold text-slate-900 dark:text-white line-clamp-2 min-h-[2rem] sm:min-h-[2.6rem] md:min-h-[2.85rem] leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title="{{ $cleanTitle }}">
+            {{-- Property Title (Line-clamp-1 on mobile 2-col, line-clamp-2 on sm+ for clean alignment) --}}
+            <h3 class="text-xs sm:text-[15px] md:text-base font-bold text-slate-900 dark:text-white line-clamp-1 sm:line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title="{{ $cleanTitle }}">
                 {{ $cleanTitle }}
             </h3>
 
             {{-- Location --}}
-            <div class="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 sm:mt-1">
+            <div class="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                 <i class="ph-bold ph-map-pin text-blue-600 text-[10px] sm:text-xs shrink-0"></i>
                 <span class="truncate capitalize">{{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}</span>
             </div>
 
-            {{-- Property Details / Specs Row (Consistent Height & Clean Separators) --}}
-            <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 mt-1.5 sm:mt-3 pt-1.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800 min-h-[1.4rem] sm:min-h-[2.25rem] flex-wrap overflow-hidden">
+            {{-- Property Details / Specs Row (Single Clean Line on Mobile, Full on sm+) --}}
+            <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 mt-1 sm:mt-2.5 pt-1 sm:pt-2.5 border-t border-slate-100 dark:border-slate-800 flex-wrap overflow-hidden">
                 @if(count($specs) > 0)
                     @foreach($specs as $index => $spec)
                         @if($index > 0)
-                            <span class="text-slate-300 dark:text-slate-700 select-none text-[10px]">·</span>
+                            <span class="text-slate-300 dark:text-slate-700 select-none text-[10px] {{ $index >= 2 ? 'hidden sm:inline' : '' }}">·</span>
                         @endif
-                        <span class="inline-flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
+                        <span class="inline-flex items-center gap-0.5 sm:gap-1 whitespace-nowrap {{ $index >= 2 ? 'hidden sm:inline-flex' : '' }}">
                             <i class="ph-bold {{ $spec['icon'] }} text-slate-400 text-[10px] sm:text-xs"></i>
                             <span class="font-medium text-slate-600 dark:text-slate-300 text-[9px] sm:text-[11px] md:text-xs">{{ $spec['label'] }}</span>
                         </span>
@@ -197,8 +197,8 @@
             </div>
         </div>
 
-        {{-- C. Price and Action Section (Consistently Aligned Across All Cards) --}}
-        <div class="flex items-center justify-between pt-2 sm:pt-3 mt-auto border-t border-slate-100 dark:border-slate-800 gap-1">
+        {{-- C. Price and Action Section (Neatly Anchored at Base) --}}
+        <div class="flex items-center justify-between pt-1.5 sm:pt-3 mt-auto border-t border-slate-100 dark:border-slate-800 gap-1">
             {{-- Prominent Price Display --}}
             <div class="flex flex-col min-w-0 flex-1">
                 @if($hasFixedPrice)

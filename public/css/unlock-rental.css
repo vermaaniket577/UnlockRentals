@@ -2449,9 +2449,18 @@ a, button, input, select, textarea, [role="button"] {
 }
 
 /* Off-screen GPU render optimization for property lists */
-.property-rental-card {
-    content-visibility: auto;
-    contain-intrinsic-size: 380px;
+@media (min-width: 641px) {
+    .property-rental-card {
+        content-visibility: auto;
+        contain-intrinsic-size: 380px;
+    }
+}
+@media (max-width: 640px) {
+    .property-rental-card {
+        content-visibility: visible !important;
+        contain-intrinsic-size: auto none !important;
+        height: auto !important;
+    }
 }
 
 @keyframes smoothSpin {
