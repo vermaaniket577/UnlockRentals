@@ -51,16 +51,16 @@
             <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
                 @guest
                     {{-- Mobile Top Login Button --}}
-                    <a href="{{ route('login') }}" class="md:hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" id="nav-mobile-top-login" title="Login">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="md:hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" id="nav-mobile-top-login" title="Login">
                         <i class="ph-bold ph-sign-in text-sm"></i>
                         <span>Login</span>
                     </a>
 
                     {{-- Desktop Sign In & Get Started --}}
-                    <a href="{{ route('login') }}" class="hidden md:inline-flex px-3 py-1.5 text-xs xl:text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap" id="nav-login" title="Sign In">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden md:inline-flex px-3 py-1.5 text-xs xl:text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap" id="nav-login" title="Sign In">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}" class="hidden sm:inline-flex px-3.5 xl:px-4.5 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-register" title="Get Started">
+                    <a href="{{ route('register') }}" onclick="event.preventDefault(); window.openAuthModal('register');" class="hidden sm:inline-flex px-3.5 xl:px-4.5 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-register" title="Get Started">
                         Get Started
                     </a>
                 @else

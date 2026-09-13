@@ -784,13 +784,13 @@
                     </style>
                 @else
                     {{-- Mobile Top Login Button (Visible on Mobile Screens & Mobile App) --}}
-                    <a href="{{ route('login') }}" class="inline-flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" style="text-decoration:none;" id="welcome-mobile-top-login" title="Login">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="inline-flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" style="text-decoration:none;" id="welcome-mobile-top-login" title="Login">
                         <i class="ph-bold ph-sign-in" style="font-size: 14px;"></i>
                         <span>Login</span>
                     </a>
 
                     {{-- Desktop Sign In & Post Free Advertise --}}
-                    <a href="{{ route('login') }}" class="nav-link hidden md:inline-flex" style="margin-right: 8px;" title="Log in">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden md:inline-flex" style="margin-right: 8px;" title="Log in">
                         <i class="ph ph-user-circle"></i>
                         Log in
                     </a>
@@ -860,7 +860,7 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn-ghost-sm" style="text-align:center; display:block;" title="Log in">Log in</a>
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileNav(); window.openAuthModal('login');" class="btn-ghost-sm" style="text-align:center; display:block;" title="Log in">Log in</a>
                     @if (Route::has('register'))
                         <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px;" title="Post Free Advertise">
                             <i class="ph-bold ph-plus-circle" style="font-size: 20px;"></i>
