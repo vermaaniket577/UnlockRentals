@@ -120,13 +120,14 @@
         {{-- Subtle Vignette Gradient for Badge Contrast --}}
         <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
 
-        {{-- Diagonal BOOKED Corner Ribbon (Responsive Size) --}}
+        {{-- Diagonal BOOKED Corner Ribbon (45° Angle Crossing Image Corner) --}}
         @if($property->is_booked)
-            <div class="absolute top-0 right-0 w-20 h-20 sm:w-28 sm:h-28 overflow-hidden pointer-events-none z-30">
-                <div class="absolute top-[14px] -right-[26px] w-[110px] sm:top-[22px] sm:-right-[32px] sm:w-[145px] transform rotate-45 bg-gradient-to-r from-rose-600 to-red-600 text-white text-[8px] sm:text-[10px] font-black uppercase tracking-wider py-0.5 sm:py-1.5 shadow-md text-center flex items-center justify-center gap-1 border-y border-white/25 select-none"
-                     style="background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%); color: #ffffff; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(0,0,0,0.15);">
-                    <i class="ph-bold ph-lock-key text-[9px] sm:text-xs"></i>
-                    <span>Booked</span>
+            <div class="ur-booked-ribbon-wrap absolute top-0 right-0 pointer-events-none z-30 overflow-hidden"
+                 style="position: absolute; top: 0; right: 0; width: 92px; height: 92px; overflow: hidden; pointer-events: none; z-index: 30;">
+                <div class="ur-booked-ribbon"
+                     style="position: absolute; top: 16px; right: -28px; width: 122px; transform: rotate(45deg); -webkit-transform: rotate(45deg); transform-origin: center center; -webkit-transform-origin: center center; background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%); color: #ffffff; font-size: 9px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; padding: 3.5px 0; line-height: 1; box-shadow: 0 4px 12px rgba(0,0,0,0.35); border-top: 1px solid rgba(255,255,255,0.4); border-bottom: 1px solid rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 3px; user-select: none; white-space: nowrap;">
+                    <i class="ph-bold ph-lock-key" style="font-size: 10px; color: #ffffff; line-height: 1;"></i>
+                    <span style="color: #ffffff; font-weight: 900; letter-spacing: 0.12em; line-height: 1;">Booked</span>
                 </div>
             </div>
         @endif
@@ -238,3 +239,79 @@
         </div>
     </div>
 </article>
+
+@once
+<style>
+/* ─── BOOKED CORNER RIBBON (DIAGONAL 45° SASH CROSSING CORNER) ─── */
+.ur-booked-ribbon-wrap {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 92px !important;
+    height: 92px !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 30 !important;
+}
+
+.ur-booked-ribbon {
+    position: absolute !important;
+    top: 16px !important;
+    right: -28px !important;
+    width: 122px !important;
+    background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%) !important;
+    color: #ffffff !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    padding: 3.5px 0 !important;
+    line-height: 1 !important;
+    transform: rotate(45deg) !important;
+    -webkit-transform: rotate(45deg) !important;
+    transform-origin: center center !important;
+    -webkit-transform-origin: center center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    user-select: none !important;
+    white-space: nowrap !important;
+}
+
+.ur-booked-ribbon i {
+    font-size: 10px !important;
+    color: #ffffff !important;
+    line-height: 1 !important;
+}
+
+.ur-booked-ribbon span {
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0.12em !important;
+}
+
+@media (min-width: 640px) {
+    .ur-booked-ribbon-wrap {
+        width: 115px !important;
+        height: 115px !important;
+    }
+    .ur-booked-ribbon {
+        top: 22px !important;
+        right: -32px !important;
+        width: 150px !important;
+        font-size: 10.5px !important;
+        padding: 5px 0 !important;
+        gap: 4px !important;
+    }
+    .ur-booked-ribbon i {
+        font-size: 12px !important;
+    }
+}
+</style>
+@endonce

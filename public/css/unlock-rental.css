@@ -2556,3 +2556,78 @@ a, button, input, select, textarea, [role="button"] {
     pointer-events: none;
 }
 
+/* =========================================
+   DIAGONAL BOOKED CORNER RIBBON (45° SASH)
+   ========================================= */
+.ur-booked-ribbon-wrap {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 92px !important;
+    height: 92px !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    z-index: 30 !important;
+}
+
+.ur-booked-ribbon {
+    position: absolute !important;
+    top: 16px !important;
+    right: -28px !important;
+    width: 122px !important;
+    background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%) !important;
+    color: #ffffff !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    padding: 3.5px 0 !important;
+    line-height: 1 !important;
+    transform: rotate(45deg) !important;
+    -webkit-transform: rotate(45deg) !important;
+    transform-origin: center center !important;
+    -webkit-transform-origin: center center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    user-select: none !important;
+    white-space: nowrap !important;
+}
+
+.ur-booked-ribbon i {
+    font-size: 10px !important;
+    color: #ffffff !important;
+    line-height: 1 !important;
+}
+
+.ur-booked-ribbon span {
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0.12em !important;
+}
+
+@media (min-width: 640px) {
+    .ur-booked-ribbon-wrap {
+        width: 115px !important;
+        height: 115px !important;
+    }
+    .ur-booked-ribbon {
+        top: 22px !important;
+        right: -32px !important;
+        width: 150px !important;
+        font-size: 10.5px !important;
+        padding: 5px 0 !important;
+        gap: 4px !important;
+    }
+    .ur-booked-ribbon i {
+        font-size: 12px !important;
+    }
+}
+
+
