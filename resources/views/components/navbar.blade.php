@@ -51,16 +51,16 @@
             <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
                 @guest
                     {{-- Mobile Top Login Button --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="md:hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" id="nav-mobile-top-login" title="Login">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="lg:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap cursor-pointer" id="nav-mobile-top-login" title="Login">
                         <i class="ph-bold ph-sign-in text-sm"></i>
                         <span>Login</span>
                     </a>
 
                     {{-- Desktop Sign In & Get Started --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden md:inline-flex px-3 py-1.5 text-xs xl:text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap" id="nav-login" title="Sign In">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex px-3 py-1.5 text-xs xl:text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer" id="nav-login" title="Sign In">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}" onclick="event.preventDefault(); window.openAuthModal('register');" class="hidden sm:inline-flex px-3.5 xl:px-4.5 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap" id="nav-register" title="Get Started">
+                    <a href="{{ route('register') }}" onclick="event.preventDefault(); window.openAuthModal('register');" class="hidden lg:inline-flex px-3.5 xl:px-4.5 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap cursor-pointer" id="nav-register" title="Get Started">
                         Get Started
                     </a>
                 @else
@@ -70,7 +70,7 @@
                         $navBadgeClass = str_contains($navPlanName, 'enterprise') ? 'from-slate-900 to-teal-500' : (str_contains($navPlanName, 'platinum') ? 'from-blue-600 to-violet-600' : (str_contains($navPlanName, 'gold') ? 'from-amber-500 to-yellow-300' : 'from-slate-400 to-sky-300'));
                     @endphp
                     @if(auth()->user()->isOwner() || auth()->user()->isAdmin())
-                    <a href="{{ route('properties.create') }}" class="hidden md:inline-flex items-center gap-1.5 px-3.5 xl:px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-bold rounded-xl shadow-sm shadow-[#2563EB]/25 transition-all whitespace-nowrap active:scale-95" style="color: #ffffff !important;" id="nav-add-property" title="Post Free Advertise">
+                    <a href="{{ route('properties.create') }}" class="hidden lg:inline-flex items-center gap-1.5 px-3.5 xl:px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-bold rounded-xl shadow-sm shadow-[#2563EB]/25 transition-all whitespace-nowrap active:scale-95" style="color: #ffffff !important;" id="nav-add-property" title="Post Free Advertise">
                         <i class="ph-bold ph-plus-circle text-sm xl:text-base" style="color: #ffffff !important;"></i>
                         <span style="color: #ffffff !important;">Post Free Advertise</span>
                     </a>
@@ -291,7 +291,7 @@
                 </div>
 
                 {{-- Mobile Menu Button --}}
-                <button type="button" onclick="toggleMobileDrawer(true)" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95 cursor-pointer" id="nav-mobile-toggle" aria-label="Open Mobile Menu">
+                <button type="button" onclick="toggleMobileDrawer(true)" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95 cursor-pointer" id="nav-mobile-toggle" aria-label="Open Mobile Menu">
                     <i class="ph-bold ph-list text-xl"></i>
                 </button>
             </div>
@@ -299,9 +299,9 @@
     </div>
 
     {{-- Modern Mobile Drawer Overlay & Sheet --}}
-    <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer(false)" class="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none md:hidden"></div>
+    <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer(false)" class="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none lg:hidden"></div>
 
-    <aside id="mobile-drawer-sheet" class="fixed top-0 right-0 bottom-0 z-[101] w-80 max-w-[85vw] bg-white dark:bg-slate-950 border-l border-slate-200/80 dark:border-slate-800/80 shadow-2xl flex flex-col transition-transform duration-300 translate-x-full md:hidden">
+    <aside id="mobile-drawer-sheet" class="fixed top-0 right-0 bottom-0 z-[101] w-80 max-w-[85vw] bg-white dark:bg-slate-950 border-l border-slate-200/80 dark:border-slate-800/80 shadow-2xl flex flex-col transition-transform duration-300 translate-x-full lg:hidden">
         {{-- Drawer Header --}}
         <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
             <x-brand-logo

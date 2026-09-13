@@ -546,15 +546,64 @@
             }
         }
         
+        @media (max-width: 1023px) {
+            .main-header .main-nav,
+            .main-nav {
+                display: none !important;
+            }
+            .main-header .hamburger {
+                display: inline-flex !important;
+            }
+            .btn-cta-premium-header {
+                display: none !important;
+            }
+        }
+        @media (min-width: 1024px) {
+            .main-header .main-nav {
+                display: flex !important;
+            }
+            .main-header .hamburger {
+                display: none !important;
+            }
+            #welcome-mobile-top-login {
+                display: none !important;
+            }
+        }
         @media (max-width: 768px) {
             .main-header {
-                padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px 14px !important;
+                padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px 12px !important;
                 gap: 8px !important;
-                min-height: 56px !important;
+                min-height: 52px !important;
                 height: auto !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                left: 0 !important;
+                right: 0 !important;
+            }
+            .main-header .main-nav,
+            .main-nav {
+                display: none !important;
+            }
+            .logo-wrapper {
+                flex-shrink: 0 !important;
             }
             .logo-text {
-                font-size: 17px !important;
+                font-size: 16px !important;
+            }
+            .auth-nav {
+                margin-left: auto !important;
+                flex-shrink: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 6px !important;
+            }
+            #welcome-mobile-top-login {
+                display: inline-flex !important;
+                padding: 6px 12px !important;
+                font-size: 11.5px !important;
             }
             .btn-cta-premium-header {
                 display: none !important;
@@ -610,16 +659,16 @@
     {{-- Premium Page Loader --}}
     @include('components.page-loader')
 
-    <header class="main-header" style="z-index: 9999;">
-        <div class="logo-wrapper">
-            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 10px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
-                <div style="width: 36px; height: 36px; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
-                    <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="36" height="36" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
+    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <div class="logo-wrapper" style="flex-shrink: 0;">
+            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
+                <div style="width: 34px; height: 34px; border-radius: 9px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="34" height="34" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
                 </div>
-                <span class="logo-text" style="font-size: 18px !important; font-weight: 800 !important; letter-spacing: -0.5px !important; white-space: nowrap !important; color: #ffffff !important;">Unlock<span style="color: #60a5fa !important;">Rentals</span></span>
+                <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important; color: #ffffff !important;">Unlock<span style="color: #60a5fa !important;">Rentals</span></span>
             </a>
         </div>
-        <nav class="main-nav">
+        <nav class="main-nav hidden lg:flex">
             <a href="{{ route('properties.index') }}" class="nav-link" title="Discover">
                 <i class="ph-bold ph-compass"></i>
                 Discover
@@ -645,11 +694,11 @@
                 Blog
             </a>
         </nav>
-        <div class="auth-nav" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+        <div class="auth-nav" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto;">
             @if (Route::has('login'))
                 @auth
                     {{-- Desktop Only: Post Ad CTA (hidden on mobile to prevent overlap) --}}
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden md:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Free Advertise">
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Free Advertise">
                         <i class="ph-bold ph-plus-circle" style="font-size: 17px;"></i>
                         <span>Post Free Advertise</span>
                     </a>
@@ -783,26 +832,26 @@
                         .dropdown-item:hover { background: rgba(255,255,255,0.08); color: #fff !important; }
                     </style>
                 @else
-                    {{-- Mobile Top Login Button (Visible on Mobile Screens & Mobile App) --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="inline-flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap" style="text-decoration:none;" id="welcome-mobile-top-login" title="Login">
+                    {{-- Mobile Top Login Button (Visible on Mobile & Tablet Screens < 1024px) --}}
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="inline-flex lg:hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="text-decoration:none;" id="welcome-mobile-top-login" title="Login">
                         <i class="ph-bold ph-sign-in" style="font-size: 14px;"></i>
                         <span>Login</span>
                     </a>
 
                     {{-- Desktop Sign In & Post Free Advertise --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden md:inline-flex" style="margin-right: 8px;" title="Log in">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden lg:inline-flex" style="margin-right: 8px; cursor: pointer;" title="Log in">
                         <i class="ph ph-user-circle"></i>
                         Log in
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden md:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Free Advertise">
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Free Advertise">
                             <i class="ph-bold ph-plus-circle" style="font-size: 17px;"></i>
                             <span>Post Free Advertise</span>
                         </a>
                     @endif
                 @endauth
             @endif
-            <button class="hamburger" onclick="toggleMobileNav()" aria-label="Open menu" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #fff; cursor: pointer; flex-shrink: 0;">
+            <button class="hamburger inline-flex lg:hidden" onclick="toggleMobileNav()" aria-label="Open menu" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #fff; cursor: pointer; flex-shrink: 0;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="12" x2="21" y2="12"></line>

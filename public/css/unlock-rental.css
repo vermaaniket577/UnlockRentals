@@ -1104,9 +1104,10 @@ a { text-decoration: none; color: inherit; }
 
 /* ─── TABLET (≤ 1024px) ──────────────── */
 @media (max-width: 1024px) {
-    .main-header { padding: 16px 24px; }
-    .main-nav { display: none; }
-    .hamburger { display: block; }
+    .main-header { padding: 14px 20px; }
+    .main-header .main-nav,
+    .main-nav { display: none !important; }
+    .hamburger { display: flex !important; }
     .mobile-nav { display: block; }
 
     .hero-container { max-width: 100%; padding: 0 24px; padding-top: 100px; }
@@ -1923,6 +1924,15 @@ a { text-decoration: none; color: inherit; }
     .main-header {
         padding: 10px 12px !important;
         gap: 8px;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        box-sizing: border-box !important;
+    }
+
+    .main-header .main-nav,
+    .main-nav {
+        display: none !important;
     }
 
     .logo-text {
@@ -2124,6 +2134,15 @@ a { text-decoration: none; color: inherit; }
         width: 100% !important;
         padding: 10px 12px !important;
         gap: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        box-sizing: border-box !important;
+    }
+
+    .main-header .main-nav,
+    .main-nav {
+        display: none !important;
     }
 
     .logo-wrapper,
