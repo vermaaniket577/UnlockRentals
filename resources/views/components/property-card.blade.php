@@ -44,7 +44,7 @@
     $hasFixedPrice = (float)$property->price > 0;
 @endphp
 
-<article class="property-rental-card group relative flex flex-col h-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+<article class="property-rental-card group relative flex flex-col h-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
     id="property-card-{{ $property->id }}"
     data-property-card="true"
     data-property-id="{{ $property->id }}"
@@ -77,8 +77,8 @@
         </a>
     @endguest
 
-    {{-- A. Property Image Section (Standard 16:9 Aspect Ratio) --}}
-    <div class="relative w-full aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+    {{-- A. Property Image Section (Responsive Aspect Ratio: 16:10 on mobile, 16:9 on sm+) --}}
+    <div class="relative w-full aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
         @if($property->primaryImageUrl())
             <img src="{{ $property->primaryImageUrl() }}"
                  alt="{{ $cleanTitle }}"
@@ -100,10 +100,10 @@
                      loading="lazy"
                      decoding="async">
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-white pointer-events-none">
-                    <div class="w-11 h-11 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform mb-1">
-                        <i class="ph-fill ph-play text-lg ml-0.5 text-white"></i>
+                    <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform mb-1">
+                        <i class="ph-fill ph-play text-sm sm:text-lg ml-0.5 text-white"></i>
                     </div>
-                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-white drop-shadow">Video Tour</span>
+                    <span class="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-wider text-white drop-shadow">Video Tour</span>
                 </div>
             </div>
         @else
@@ -120,36 +120,36 @@
         {{-- Subtle Vignette Gradient for Badge Contrast --}}
         <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none"></div>
 
-        {{-- Diagonal BOOKED Corner Ribbon --}}
+        {{-- Diagonal BOOKED Corner Ribbon (Responsive Size) --}}
         @if($property->is_booked)
-            <div class="absolute top-0 right-0 w-28 h-28 overflow-hidden pointer-events-none z-30" style="position: absolute; top: 0; right: 0; width: 110px; height: 110px; overflow: hidden; pointer-events: none; z-index: 30;">
-                <div class="absolute top-[22px] -right-[32px] w-[145px] transform rotate-45 bg-gradient-to-r from-rose-600 to-red-600 text-white text-[10px] font-black uppercase tracking-widest py-1.5 shadow-md text-center flex items-center justify-center gap-1 border-y border-white/25 select-none"
-                     style="position: absolute; top: 22px; right: -32px; width: 145px; transform: rotate(45deg); background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%); color: #ffffff; font-size: 10px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; padding: 5px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <i class="ph-bold ph-lock-key text-xs"></i>
+            <div class="absolute top-0 right-0 w-20 h-20 sm:w-28 sm:h-28 overflow-hidden pointer-events-none z-30">
+                <div class="absolute top-[14px] -right-[26px] w-[110px] sm:top-[22px] sm:-right-[32px] sm:w-[145px] transform rotate-45 bg-gradient-to-r from-rose-600 to-red-600 text-white text-[8px] sm:text-[10px] font-black uppercase tracking-wider py-0.5 sm:py-1.5 shadow-md text-center flex items-center justify-center gap-1 border-y border-white/25 select-none"
+                     style="background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%); color: #ffffff; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.3); border-bottom: 1px solid rgba(0,0,0,0.15);">
+                    <i class="ph-bold ph-lock-key text-[9px] sm:text-xs"></i>
                     <span>Booked</span>
                 </div>
             </div>
         @endif
 
         {{-- Top Badges Row --}}
-        <div class="absolute top-3 left-3 right-3 flex items-center justify-between gap-1.5 z-20 pointer-events-none">
+        <div class="absolute top-1.5 left-1.5 right-1.5 sm:top-2.5 sm:left-2.5 sm:right-2.5 flex items-center justify-between gap-1 z-20 pointer-events-none">
             {{-- Top Left: RENT / SALE & Property Type & FEATURED (when booked) --}}
-            <div class="flex items-center gap-1.5 flex-wrap">
+            <div class="flex items-center gap-1 flex-wrap">
                 @if($isSale)
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-emerald-600/95 text-white shadow-sm backdrop-blur-md">
-                        <i class="ph-bold ph-tag text-[10px]"></i> For Sale
+                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-emerald-600/95 text-white shadow-xs sm:shadow-sm backdrop-blur-md">
+                        <i class="ph-bold ph-tag text-[8px] sm:text-[10px]"></i> <span class="hidden xs:inline sm:inline">For </span>Sale
                     </span>
                 @else
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-blue-600/95 text-white shadow-sm backdrop-blur-md">
-                        <i class="ph-bold ph-key text-[10px]"></i> Rent
+                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-blue-600/95 text-white shadow-xs sm:shadow-sm backdrop-blur-md">
+                        <i class="ph-bold ph-key text-[8px] sm:text-[10px]"></i> Rent
                     </span>
                 @endif
-                <span class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-bold capitalize bg-slate-950/70 text-white/95 border border-white/15 shadow-sm backdrop-blur-md">
+                <span class="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-bold capitalize bg-slate-950/70 text-white/95 border border-white/15 shadow-xs sm:shadow-sm backdrop-blur-md truncate max-w-[80px] sm:max-w-none">
                     {{ ucfirst($property->type) }}
                 </span>
                 @if($property->is_booked && $property->is_featured)
-                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-amber-500 text-slate-950 shadow-sm backdrop-blur-md">
-                        <i class="ph-fill ph-star text-[10px]"></i> Featured
+                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-amber-500 text-slate-950 shadow-xs sm:shadow-sm backdrop-blur-md">
+                        <i class="ph-fill ph-star text-[8px] sm:text-[10px]"></i> <span class="hidden sm:inline">Featured</span>
                     </span>
                 @endif
             </div>
@@ -157,8 +157,8 @@
             {{-- Top Right: FEATURED (when unbooked) --}}
             <div class="flex items-center gap-1">
                 @if(!$property->is_booked && $property->is_featured)
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-amber-500 text-slate-950 shadow-sm backdrop-blur-md">
-                        <i class="ph-fill ph-star text-[10px]"></i> Featured
+                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-amber-500 text-slate-950 shadow-xs sm:shadow-sm backdrop-blur-md">
+                        <i class="ph-fill ph-star text-[8px] sm:text-[10px]"></i> <span class="hidden sm:inline">Featured</span>
                     </span>
                 @endif
             </div>
@@ -166,52 +166,52 @@
     </div>
 
     {{-- B & C. Information & Action Body (Uniform Padding & Spacing) --}}
-    <div class="p-4 sm:p-5 flex flex-col flex-1 justify-between gap-3 bg-white dark:bg-slate-900">
-        <div class="flex flex-col">
+    <div class="p-2.5 sm:p-4 md:p-5 flex flex-col flex-1 justify-between gap-1.5 sm:gap-3 bg-white dark:bg-slate-900">
+        <div class="flex flex-col min-w-0">
             {{-- Property Title (Allows up to 2 lines with fixed min-height for uniform alignment) --}}
-            <h3 class="text-[15px] sm:text-base font-bold text-slate-900 dark:text-white line-clamp-2 min-h-[2.6rem] sm:min-h-[2.85rem] leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title="{{ $cleanTitle }}">
+            <h3 class="text-xs sm:text-[15px] md:text-base font-bold text-slate-900 dark:text-white line-clamp-2 min-h-[2rem] sm:min-h-[2.6rem] md:min-h-[2.85rem] leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title="{{ $cleanTitle }}">
                 {{ $cleanTitle }}
             </h3>
 
             {{-- Location --}}
-            <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
-                <i class="ph-bold ph-map-pin text-blue-600 text-xs shrink-0"></i>
+            <div class="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 sm:mt-1">
+                <i class="ph-bold ph-map-pin text-blue-600 text-[10px] sm:text-xs shrink-0"></i>
                 <span class="truncate capitalize">{{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}</span>
             </div>
 
             {{-- Property Details / Specs Row (Consistent Height & Clean Separators) --}}
-            <div class="flex items-center gap-2 sm:gap-2.5 text-xs text-slate-600 dark:text-slate-300 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 min-h-[2.25rem] flex-wrap">
+            <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 mt-1.5 sm:mt-3 pt-1.5 sm:pt-3 border-t border-slate-100 dark:border-slate-800 min-h-[1.4rem] sm:min-h-[2.25rem] flex-wrap overflow-hidden">
                 @if(count($specs) > 0)
                     @foreach($specs as $index => $spec)
                         @if($index > 0)
-                            <span class="text-slate-300 dark:text-slate-700 select-none">·</span>
+                            <span class="text-slate-300 dark:text-slate-700 select-none text-[10px]">·</span>
                         @endif
-                        <span class="inline-flex items-center gap-1 whitespace-nowrap">
-                            <i class="ph-bold {{ $spec['icon'] }} text-slate-400 text-xs"></i>
-                            <span class="font-medium text-slate-600 dark:text-slate-300 text-[11px] sm:text-xs">{{ $spec['label'] }}</span>
+                        <span class="inline-flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
+                            <i class="ph-bold {{ $spec['icon'] }} text-slate-400 text-[10px] sm:text-xs"></i>
+                            <span class="font-medium text-slate-600 dark:text-slate-300 text-[9px] sm:text-[11px] md:text-xs">{{ $spec['label'] }}</span>
                         </span>
                     @endforeach
                 @else
-                    <span class="text-[11px] sm:text-xs text-slate-400 italic">Ready to Move</span>
+                    <span class="text-[9px] sm:text-[11px] md:text-xs text-slate-400 italic">Ready to Move</span>
                 @endif
             </div>
         </div>
 
         {{-- C. Price and Action Section (Consistently Aligned Across All Cards) --}}
-        <div class="flex items-center justify-between pt-3 mt-auto border-t border-slate-100 dark:border-slate-800 gap-2">
+        <div class="flex items-center justify-between pt-2 sm:pt-3 mt-auto border-t border-slate-100 dark:border-slate-800 gap-1">
             {{-- Prominent Price Display --}}
             <div class="flex flex-col min-w-0 flex-1">
                 @if($hasFixedPrice)
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-1">
-                        {{ $isSale ? 'Price' : 'Monthly Rent' }}
+                    <span class="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5 sm:mb-1">
+                        {{ $isSale ? 'Price' : 'Rent' }}
                     </span>
-                    <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-none truncate">
+                    <span class="text-xs sm:text-base md:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-none truncate">
                         {{ $property->formatted_price }}
                     </span>
                 @else
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-1">Pricing</span>
-                    <span class="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 tracking-tight leading-none truncate">
-                        Price on Request
+                    <span class="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5 sm:mb-1">Pricing</span>
+                    <span class="text-[10px] sm:text-xs md:text-sm font-bold text-blue-600 dark:text-blue-400 tracking-tight leading-none truncate">
+                        On Request
                     </span>
                 @endif
             </div>
@@ -222,15 +222,17 @@
                         onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $propertyUrl }}');"
                         data-no-loader="true"
                         data-ur-loader-skip="true"
-                        class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all relative z-20 shrink-0 cursor-pointer active:scale-95"
+                        class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl shadow-xs hover:shadow transition-all relative z-20 shrink-0 cursor-pointer active:scale-95"
                         title="Sign in to view details">
-                    <span>View Details</span>
-                    <i class="ph-bold ph-lock text-xs"></i>
+                    <span class="hidden sm:inline">View Details</span>
+                    <span class="sm:hidden">View</span>
+                    <i class="ph-bold ph-lock text-[9px] sm:text-xs"></i>
                 </button>
             @else
-                <span class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-blue-600 group-hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all shrink-0">
-                    <span>View Details</span>
-                    <i class="ph-bold ph-arrow-right text-xs group-hover:translate-x-0.5 transition-transform"></i>
+                <span class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-blue-600 group-hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl shadow-xs hover:shadow transition-all shrink-0">
+                    <span class="hidden sm:inline">View Details</span>
+                    <span class="sm:hidden">View</span>
+                    <i class="ph-bold ph-arrow-right text-[9px] sm:text-xs group-hover:translate-x-0.5 transition-transform"></i>
                 </span>
             @endguest
         </div>
