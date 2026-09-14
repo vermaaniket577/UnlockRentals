@@ -1116,7 +1116,16 @@ a { text-decoration: none; color: inherit; }
     #nav-mobile-top-login,
     #nav-mobile-top-login *,
     #nav-mobile-top-login i,
-    #nav-mobile-top-login span {
+    #nav-mobile-top-login span,
+    .mobile-post-ad-btn,
+    .mobile-post-ad-btn *,
+    .mobile-post-ad-btn i,
+    #mobile-post-ad-btn,
+    #mobile-post-ad-btn *,
+    #mobile-post-ad-btn i,
+    #mobile-post-ad-btn-guest,
+    #mobile-post-ad-btn-guest *,
+    #mobile-post-ad-btn-guest i {
         color: #ffffff !important;
         fill: #ffffff !important;
     }

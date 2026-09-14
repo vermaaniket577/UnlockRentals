@@ -903,9 +903,9 @@
                         <p style="color:#fff; font-weight:600; font-size:15px;">{{ auth()->user()->name }}</p>
                         <p style="color:rgba(255,255,255,0.5); font-size:12px;">{{ auth()->user()->email }}</p>
                     </div>
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px;" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle" style="font-size: 20px;"></i>
-                        Post Free Advertise
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px; color: #ffffff !important;" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle" style="font-size: 20px; color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Post Free Advertise</span>
                     </a>
                     <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%; margin-bottom: 10px;" title="Dashboard">Dashboard</a>
                     <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
@@ -918,9 +918,9 @@
                 @else
                     <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileNav(); window.openAuthModal('login');" class="btn-ghost-sm" style="text-align:center; display:block;" title="Log in">Log in</a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px;" title="Post Free Advertise">
-                            <i class="ph-bold ph-plus-circle" style="font-size: 20px;"></i>
-                            Post Free Advertise
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; color: #ffffff !important;" title="Post Free Advertise">
+                            <i class="ph-bold ph-plus-circle" style="font-size: 20px; color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">Post Free Advertise</span>
                         </a>
                     @endif
                 @endauth

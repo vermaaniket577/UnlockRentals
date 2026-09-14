@@ -369,14 +369,14 @@
             {{-- Quick Post Ad Banner --}}
             <div class="pt-2">
                 @auth
-                    <a href="{{ route('properties.create') }}" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle text-base"></i>
-                        <span>Post Free Advertise</span>
+                    <a href="{{ route('properties.create') }}" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" style="color: #ffffff !important;" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle text-base" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Post Free Advertise</span>
                     </a>
                 @else
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('login', '{{ route('properties.create') }}');" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle text-base"></i>
-                        <span>Post Free Advertise</span>
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('login', '{{ route('properties.create') }}');" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" style="color: #ffffff !important;" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle text-base" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Post Free Advertise</span>
                     </a>
                 @endauth
             </div>

@@ -27,13 +27,13 @@
         {{-- Center Elevated Action: Post Ad --}}
         <div class="flex flex-col items-center justify-center -mt-6">
             @auth
-                <a href="{{ route('properties.create') }}" class="group relative flex items-center justify-center w-13 h-13 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/35 border-2 border-white dark:border-slate-900 active:scale-90 transition-all duration-200" title="Post Property" aria-label="Post Property">
-                    <i class="ph-bold ph-plus text-xl transition-transform group-hover:rotate-90 duration-300"></i>
+                <a href="{{ route('properties.create') }}" class="group relative flex items-center justify-center w-13 h-13 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/35 border-2 border-white dark:border-slate-900 active:scale-90 transition-all duration-200 mobile-post-ad-btn" style="color: #ffffff !important;" title="Post Property" aria-label="Post Property" id="mobile-post-ad-btn">
+                    <i class="ph-bold ph-plus text-xl transition-transform group-hover:rotate-90 duration-300" style="color: #ffffff !important; fill: #ffffff !important;"></i>
                     <span class="sr-only">Post Property</span>
                 </a>
             @else
-                <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login', '{{ route('properties.create') }}');" class="group relative flex items-center justify-center w-13 h-13 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/35 border-2 border-white dark:border-slate-900 active:scale-90 transition-all duration-200" title="Post Property" aria-label="Post Property">
-                    <i class="ph-bold ph-plus text-xl transition-transform group-hover:rotate-90 duration-300"></i>
+                <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login', '{{ route('properties.create') }}');" class="group relative flex items-center justify-center w-13 h-13 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/35 border-2 border-white dark:border-slate-900 active:scale-90 transition-all duration-200 mobile-post-ad-btn" style="color: #ffffff !important;" title="Post Property" aria-label="Post Property" id="mobile-post-ad-btn-guest">
+                    <i class="ph-bold ph-plus text-xl transition-transform group-hover:rotate-90 duration-300" style="color: #ffffff !important; fill: #ffffff !important;"></i>
                     <span class="sr-only">Post Property</span>
                 </a>
             @endauth
@@ -81,6 +81,18 @@
         body {
             padding-bottom: 0 !important;
         }
+    }
+    .mobile-post-ad-btn,
+    .mobile-post-ad-btn *,
+    .mobile-post-ad-btn i,
+    #mobile-post-ad-btn,
+    #mobile-post-ad-btn *,
+    #mobile-post-ad-btn i,
+    #mobile-post-ad-btn-guest,
+    #mobile-post-ad-btn-guest *,
+    #mobile-post-ad-btn-guest i {
+        color: #ffffff !important;
+        fill: #ffffff !important;
     }
 </style>
 
