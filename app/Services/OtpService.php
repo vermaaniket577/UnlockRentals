@@ -41,14 +41,13 @@ class OtpService
                 'existing_otp' => true,
             ];
 
-            if ($channel === 'notification' || $channel === 'log') {
-                $res['notification'] = [
-                    'title' => 'UnlockRentals Security Code',
-                    'body'  => "{$recent->otp} is your UnlockRentals verification code.",
-                    'otp'   => $recent->otp,
-                    'icon'  => '/favicon.ico',
-                ];
-            }
+            // Attach push notification payload for browser/in-app push delivery & auto-fill
+            $res['notification'] = [
+                'title' => 'UnlockRentals Security Code',
+                'body'  => "{$recent->otp} is your UnlockRentals verification code.",
+                'otp'   => $recent->otp,
+                'icon'  => '/favicon.ico',
+            ];
 
             return $res;
         }
@@ -104,15 +103,13 @@ class OtpService
             'resend_after' => $resendSeconds,
         ];
 
-        // Attach notification payload for browser push notification / mobile in-app notification
-        if ($channel === 'notification' || $channel === 'log') {
-            $response['notification'] = [
-                'title' => 'UnlockRentals Security Code',
-                'body'  => "{$otp} is your UnlockRentals verification code. Valid for {$expiryMinutes} minutes. Never share this code.",
-                'otp'   => $otp,
-                'icon'  => '/favicon.ico',
-            ];
-        }
+        // Attach notification payload for browser push notification / mobile in-app notification & autofill
+        $response['notification'] = [
+            'title' => 'UnlockRentals Security Code',
+            'body'  => "{$otp} is your UnlockRentals verification code. Valid for {$expiryMinutes} minutes. Never share this code.",
+            'otp'   => $otp,
+            'icon'  => '/favicon.ico',
+        ];
 
         return $response;
     }

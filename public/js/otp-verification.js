@@ -416,36 +416,107 @@ window.OtpVerification = (function () {
         }
     }
 
+    /* ── Push Notification & Sound Chime ────────── */
+
+    function playNotificationChime() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+            const now = ctx.currentTime;
+
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(587.33, now); // D5
+            osc1.frequency.exponentialRampToValueAtTime(880.00, now + 0.08); // A5
+
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(1174.66, now + 0.08); // D6
+
+            gain.gain.setValueAtTime(0.01, now);
+            gain.gain.linearRampToValueAtTime(0.2, now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc1.start(now);
+            osc2.start(now + 0.08);
+            osc1.stop(now + 0.45);
+            osc2.stop(now + 0.45);
+        } catch (e) {
+            // AudioContext not allowed before user interaction
+        }
+    }
+
     function triggerPushNotification(n) {
         if (!n) return;
 
-        // Auto-fill the OTP into the input boxes and automatically hit the submit button!
-        if (n.otp) {
-            autofillOtp(n.otp, true);
+        // Play audio chime and haptic feedback
+        playNotificationChime();
+        if (navigator.vibrate) {
+            try { navigator.vibrate([80, 50, 80]); } catch (e) {}
         }
 
-        // 1. Browser Native Push Notification
-        if ('Notification' in window) {
+        // 1. Browser Native Push Notification (via Service Worker or Notification API)
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(reg => {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    reg.showNotification(n.title || 'UnlockRentals Security Code', {
+                        body: n.body || `${n.otp} is your UnlockRentals verification code.`,
+                        icon: n.icon || '/favicon.ico',
+                        badge: '/favicon.ico',
+                        vibrate: [100, 50, 100],
+                        tag: 'unlockrentals-otp-verify',
+                        renotify: true,
+                        requireInteraction: true,
+                        data: {
+                            otp: n.otp,
+                            url: window.location.href
+                        },
+                        actions: [
+                            { action: 'autofill', title: '⚡ Auto-Fill & Submit' },
+                            { action: 'dismiss', title: 'Dismiss' }
+                        ]
+                    }).catch(() => {});
+                } else if ('Notification' in window && Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(perm => {
+                        if (perm === 'granted') {
+                            reg.showNotification(n.title || 'UnlockRentals Security Code', {
+                                body: n.body || `${n.otp} is your UnlockRentals verification code.`,
+                                icon: n.icon || '/favicon.ico',
+                                badge: '/favicon.ico',
+                                tag: 'unlockrentals-otp-verify'
+                            }).catch(() => {});
+                        }
+                    });
+                }
+            });
+        } else if ('Notification' in window) {
             if (Notification.permission === 'granted') {
                 try {
-                    new Notification(n.title, {
-                        body: n.body,
+                    new Notification(n.title || 'UnlockRentals Security Code', {
+                        body: n.body || `${n.otp} is your UnlockRentals verification code.`,
                         icon: n.icon || '/favicon.ico',
-                        tag: 'unlockrentals-otp',
+                        tag: 'unlockrentals-otp-verify',
                         requireInteraction: true
                     });
-                } catch (e) {
-                    console.log('Native notification error:', e);
-                }
+                } catch (e) {}
             } else if (Notification.permission !== 'denied') {
                 Notification.requestPermission().then(perm => {
                     if (perm === 'granted') {
                         try {
-                            new Notification(n.title, {
-                                body: n.body,
+                            new Notification(n.title || 'UnlockRentals Security Code', {
+                                body: n.body || `${n.otp} is your UnlockRentals verification code.`,
                                 icon: n.icon || '/favicon.ico',
-                                tag: 'unlockrentals-otp',
-                                requireInteraction: true
+                                tag: 'unlockrentals-otp-verify'
                             });
                         } catch (e) {}
                     }
@@ -453,19 +524,19 @@ window.OtpVerification = (function () {
             }
         }
 
-        // 2. High-visibility Mobile Optimized In-App Push Banner with Extra Large OTP
+        // 2. High-visibility in-app push notification banner toast
         showPushToast(n.title, n.body, n.otp);
 
-        // 3. WebOTP API for Android / Mobile browsers auto-capture
+        // 3. Auto-fill the OTP into active inputs and automatically submit!
+        if (n.otp) {
+            autofillOtp(n.otp, true);
+        }
+
+        // 4. WebOTP API for Android / Mobile browsers native SMS interception
         listenWebOtp();
     }
 
     function showPushToast(title, body, otp) {
-        // Haptic feedback on mobile if supported
-        if (navigator.vibrate) {
-            try { navigator.vibrate([60, 100, 60]); } catch (e) {}
-        }
-
         let toast = document.getElementById('ur-push-otp-toast');
         if (!toast) {
             toast = document.createElement('div');
@@ -512,9 +583,9 @@ window.OtpVerification = (function () {
                         <div>
                             <div style="display:flex;align-items:center;gap:6px;">
                                 <span style="font-size:13px;font-weight:800;color:#f8fafc;letter-spacing:0.02em;">UnlockRentals</span>
-                                <span style="background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:0.05em;">Security</span>
+                                <span style="background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:0.05em;">Security Code</span>
                             </div>
-                            <div style="font-size:11px;font-weight:600;color:#94a3b8;">Authentication Service &bull; Just now</div>
+                            <div style="font-size:11px;font-weight:600;color:#94a3b8;">Push Notification &bull; Just now</div>
                         </div>
                     </div>
                     <button type="button" onclick="this.closest('#ur-push-otp-toast').remove()" style="background:rgba(255,255,255,0.08);border:none;color:#94a3b8;cursor:pointer;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">✕</button>
@@ -535,7 +606,7 @@ window.OtpVerification = (function () {
                 <!-- Professional Security Advice -->
                 <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:5px;">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <span>Never share this code with anyone. Valid for 10 mins.</span>
+                    <span>Auto-filling code into inputs... Never share this code.</span>
                 </div>
 
                 <!-- Action Buttons: Copy Code & Auto-Fill -->
@@ -595,86 +666,179 @@ window.OtpVerification = (function () {
         }).catch(() => {});
     }
 
+    /* ── Comprehensive Auto-Fill & Auto-Submit ───── */
+
     function autofillOtp(otp, autoSubmit = false) {
         if (!otp) return;
         const cleanOtp = String(otp).replace(/[^0-9]/g, '');
         if (!cleanOtp) return;
         const chars = cleanOtp.split('');
 
-        // 1. Gather all possible OTP digit containers on the page
-        const containers = [];
-        const loginContainer = document.getElementById('login-otp-digits');
-        const modalContainer = document.getElementById('modal-otp-digits');
-
-        if (loginContainer) containers.push(loginContainer);
-        if (modalContainer) containers.push(modalContainer);
-
-        // Also add any other containers with .otp-digit elements
-        document.querySelectorAll('.otp-input-area').forEach(area => {
-            const group = area.querySelector('[id*="otp-digits"]') || area;
-            if (group && !containers.includes(group)) {
-                containers.push(group);
+        // 1. Identify all target groups across Auth Modal, Login Page, and Register Page
+        const targetGroups = [
+            {
+                id: 'modal-login',
+                container: document.getElementById('modal-login-otp-digits'),
+                inputSelector: '.modal-otp-digit',
+                section: document.getElementById('modal-login-otp-section'),
+                btn: document.getElementById('modal-login-verify-btn'),
+                submitFn: () => {
+                    if (typeof window.modalVerifyLoginOtp === 'function') {
+                        window.modalVerifyLoginOtp();
+                    } else {
+                        const b = document.getElementById('modal-login-verify-btn');
+                        if (b) b.click();
+                    }
+                }
+            },
+            {
+                id: 'modal-reg',
+                container: document.getElementById('modal-reg-otp-digits'),
+                inputSelector: '.modal-otp-digit-reg',
+                section: document.getElementById('modal-reg-otp-section'),
+                btn: document.getElementById('modal-reg-phone-submit'),
+                submitFn: () => {
+                    if (typeof window.modalSubmitRegisterWithMobile === 'function') {
+                        window.modalSubmitRegisterWithMobile();
+                    } else {
+                        const b = document.getElementById('modal-reg-phone-submit');
+                        if (b) b.click();
+                    }
+                }
+            },
+            {
+                id: 'login-page',
+                container: document.getElementById('login-otp-digits'),
+                inputSelector: '.otp-digit',
+                section: document.querySelector('#login-panel-phone .otp-input-area'),
+                btn: document.getElementById('login-otp-verify-btn'),
+                submitFn: () => {
+                    const b = document.getElementById('login-otp-verify-btn');
+                    if (b) b.click();
+                }
+            },
+            {
+                id: 'register-modal',
+                container: document.getElementById('modal-otp-digits'),
+                inputSelector: '.otp-digit',
+                section: document.getElementById('otp-verify-modal'),
+                btn: document.getElementById('btn-verify-and-register'),
+                submitFn: () => {
+                    const b = document.getElementById('btn-verify-and-register');
+                    if (b) b.click();
+                }
             }
+        ];
+
+        // Also check any generic .otp-input-area containers
+        document.querySelectorAll('.otp-input-area').forEach((area, i) => {
+            const container = area.querySelector('[id*="otp-digits"]') || area;
+            const btn = area.querySelector('button[id*="verify"]') || area.querySelector('button[type="button"]');
+            targetGroups.push({
+                id: 'generic-' + i,
+                container: container,
+                inputSelector: '.otp-digit, input[inputmode="numeric"]',
+                section: area,
+                btn: btn,
+                submitFn: () => { if (btn) btn.click(); }
+            });
         });
 
-        // Fallback: if no container elements found, wrap all .otp-digit elements
-        if (containers.length === 0) {
-            const allDigits = Array.from(document.querySelectorAll('.otp-digit'));
-            if (allDigits.length > 0) {
-                containers.push({ querySelectorAll: () => allDigits });
+        // 2. Find which group is active or currently displayed
+        let chosenGroup = null;
+        for (const g of targetGroups) {
+            if (g.container) {
+                // Ensure section is visible
+                if (g.section && g.section.classList.contains('hidden')) {
+                    g.section.classList.remove('hidden');
+                }
+                const inputs = g.container.querySelectorAll(g.inputSelector);
+                if (inputs.length > 0) {
+                    const isVisible = g.container.offsetParent !== null || (g.section && g.section.offsetParent !== null);
+                    if (isVisible) {
+                        chosenGroup = g;
+                        break;
+                    } else if (!chosenGroup) {
+                        chosenGroup = g; // Fallback to first existing
+                    }
+                }
             }
         }
 
-        let filledAny = false;
-
-        // 2. Fill digits in all matching containers
-        containers.forEach(container => {
-            const digitInputs = Array.from(container.querySelectorAll('.otp-digit'));
-            if (digitInputs.length > 0) {
-                chars.slice(0, digitInputs.length).forEach((ch, idx) => {
-                    const input = digitInputs[idx];
-                    if (input) {
-                        input.value = ch;
-                        input.setAttribute('value', ch);
-                        try {
-                            input.dispatchEvent(new Event('input', { bubbles: true }));
-                            input.dispatchEvent(new Event('change', { bubbles: true }));
-                        } catch (e) {}
-
-                        input.classList.add('ring-4', 'ring-emerald-500/30', 'border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
-                        setTimeout(() => {
-                            input.classList.remove('ring-4', 'ring-emerald-500/30', 'border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/40');
-                        }, 1800);
-                        filledAny = true;
+        // Fallback: If no group matched, gather any numeric single-char inputs on screen
+        if (!chosenGroup) {
+            const allDigits = Array.from(document.querySelectorAll('.otp-digit, .modal-otp-digit, .modal-otp-digit-reg'));
+            if (allDigits.length > 0) {
+                chosenGroup = {
+                    id: 'fallback-all',
+                    container: { querySelectorAll: () => allDigits },
+                    inputSelector: '*',
+                    section: null,
+                    btn: document.querySelector('button[id*="verify"], #btn-verify-and-register, #modal-login-verify-btn'),
+                    submitFn: () => {
+                        const b = document.querySelector('button[id*="verify"], #btn-verify-and-register, #modal-login-verify-btn');
+                        if (b) b.click();
                     }
-                });
-
-                // Focus the last digit of this container
-                const lastFilled = digitInputs[Math.min(chars.length - 1, digitInputs.length - 1)];
-                if (lastFilled && lastFilled.offsetParent !== null) {
-                    try { lastFilled.focus(); } catch (e) {}
-                }
+                };
             }
+        }
+
+        if (!chosenGroup) return;
+
+        // Ensure parent section is visible
+        if (chosenGroup.section && chosenGroup.section.classList.contains('hidden')) {
+            chosenGroup.section.classList.remove('hidden');
+        }
+
+        const digitInputs = Array.from(chosenGroup.container.querySelectorAll(chosenGroup.inputSelector));
+        if (digitInputs.length === 0) return;
+
+        // 3. Staggered typing animation for realistic and satisfying auto-fill effect
+        chars.slice(0, digitInputs.length).forEach((ch, idx) => {
+            setTimeout(() => {
+                const input = digitInputs[idx];
+                if (input) {
+                    input.value = ch;
+                    input.setAttribute('value', ch);
+                    try {
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                    } catch (e) {}
+
+                    // High-tech glowing ring & border
+                    input.classList.add('ring-4', 'ring-emerald-500/40', 'border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/50', 'text-emerald-600', 'dark:text-emerald-400');
+                    input.style.transform = 'scale(1.06)';
+                    setTimeout(() => {
+                        input.style.transform = '';
+                    }, 180);
+
+                    setTimeout(() => {
+                        input.classList.remove('ring-4', 'ring-emerald-500/40', 'text-emerald-600', 'dark:text-emerald-400');
+                    }, 2400);
+
+                    if (idx === Math.min(chars.length - 1, digitInputs.length - 1)) {
+                        try { input.focus(); } catch (e) {}
+                    }
+                }
+            }, idx * 60);
         });
 
-        // 3. Trigger auto-submit if requested
-        if (autoSubmit && filledAny && chars.length >= 4) {
+        // 4. Automated form submission if requested
+        if (autoSubmit && chars.length >= Math.min(4, digitInputs.length)) {
+            const delay = (chars.length * 60) + 380;
             setTimeout(() => {
-                const btnLoginOtp = document.getElementById('login-otp-verify-btn');
-                const btnVerifyModal = document.getElementById('btn-verify-and-register');
-
-                if (btnLoginOtp && !btnLoginOtp.disabled && btnLoginOtp.offsetParent !== null) {
-                    btnLoginOtp.click();
-                } else if (btnVerifyModal && !btnVerifyModal.disabled && btnVerifyModal.offsetParent !== null) {
-                    btnVerifyModal.click();
-                } else if (btnLoginOtp && !btnLoginOtp.disabled) {
-                    btnLoginOtp.click();
+                try {
+                    chosenGroup.submitFn();
+                } catch (err) {
+                    if (chosenGroup.btn) {
+                        chosenGroup.btn.click();
+                    }
                 }
-            }, 350);
+            }, delay);
         }
     }
 
-    // WebOTP API for Android/Mobile browsers native SMS & OTP interception
+    // WebOTP API for Android / Mobile browsers native SMS & OTP interception
     function listenWebOtp() {
         if ('OTPCredential' in window && navigator.credentials) {
             const ac = new AbortController();
@@ -689,5 +853,35 @@ window.OtpVerification = (function () {
         }
     }
 
-    return { init, triggerPushNotification, showPushToast, autofillOtp, copyOtpToClipboard, listenWebOtp };
+    // Background Service Worker message listener
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'AUTOFILL_OTP' && event.data.otp) {
+                autofillOtp(event.data.otp, event.data.autoSubmit ?? true);
+            }
+        });
+    }
+
+    // Check for autofill_otp query param on page load
+    if (typeof window !== 'undefined') {
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const otpParam = params.get('autofill_otp');
+                if (otpParam) {
+                    setTimeout(() => autofillOtp(otpParam, true), 500);
+                }
+            } catch (e) {}
+        });
+    }
+
+    return {
+        init,
+        triggerPushNotification,
+        showPushToast,
+        autofillOtp,
+        copyOtpToClipboard,
+        listenWebOtp,
+        playNotificationChime
+    };
 })();

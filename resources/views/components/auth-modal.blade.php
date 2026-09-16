@@ -562,6 +562,21 @@ window.modalSendLoginOtp = async function() {
 
             // Start countdown
             startTimer(timerEl, resendBtn, 'loginCountdownTimer');
+
+            // Trigger Push Notification with large banner, audio chime, auto-fill, and auto-submit
+            if (data.notification && window.OtpVerification) {
+                setTimeout(() => {
+                    window.OtpVerification.triggerPushNotification(data.notification);
+                }, 100);
+            }
+        } else if (data.existing_otp) {
+            showModalAlert(data.message || 'Active OTP already sent.', 'info');
+            if (otpSection) otpSection.classList.remove('hidden');
+            if (data.notification && window.OtpVerification) {
+                setTimeout(() => {
+                    window.OtpVerification.triggerPushNotification(data.notification);
+                }, 100);
+            }
         } else {
             showModalAlert(data.message || 'Unable to send OTP. Please check your number.');
             sendBtn.disabled = false;
@@ -663,6 +678,21 @@ window.modalSendRegisterOtp = async function() {
             if (firstDigit) setTimeout(() => firstDigit.focus(), 150);
 
             startTimer(timerEl, resendBtn, 'regCountdownTimer');
+
+            // Trigger Push Notification with large banner, audio chime, auto-fill, and auto-submit
+            if (data.notification && window.OtpVerification) {
+                setTimeout(() => {
+                    window.OtpVerification.triggerPushNotification(data.notification);
+                }, 100);
+            }
+        } else if (data.existing_otp) {
+            showModalAlert(data.message || 'Active OTP already sent.', 'info');
+            if (otpSection) otpSection.classList.remove('hidden');
+            if (data.notification && window.OtpVerification) {
+                setTimeout(() => {
+                    window.OtpVerification.triggerPushNotification(data.notification);
+                }, 100);
+            }
         } else {
             showModalAlert(data.message || 'Unable to send OTP. Number may already be registered.');
             sendBtn.disabled = false;
@@ -927,5 +957,12 @@ async function handleModalAuthSubmit(event, type) {
         submitBtn.innerHTML = originalText;
         showModalAlert('Network or session error. Please try again.');
     }
+}
+</script>
+<script>
+if (typeof window.OtpVerification === 'undefined') {
+    const otpScript = document.createElement('script');
+    otpScript.src = "{{ asset('js/otp-verification.js') }}?v=20260916";
+    document.head.appendChild(otpScript);
 }
 </script>

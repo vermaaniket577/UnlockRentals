@@ -322,6 +322,7 @@
 
     @include('components.idle-logout')
 
+    <script src="{{ asset('js/otp-verification.js') }}?v=20260916"></script>
     @stack('scripts')
 </body>
 </html>
