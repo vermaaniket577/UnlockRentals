@@ -203,7 +203,7 @@
     @endif
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260920v1">
 
     <!-- Non-Blocking Phosphor Icons (Regular, Bold, Fill) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
@@ -1205,10 +1205,47 @@
     </header>
 
     <!-- Mobile Navigation Drawer -->
-    <div class="mobile-nav-overlay" id="mobileOverlay" onclick="toggleMobileNav()"></div>
-    <nav class="mobile-nav" id="mobileNav">
+    <style>
+        #mobileNav,
+        .mobile-nav {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-left: 1px solid #e2e8f0 !important;
+            box-shadow: -12px 0 40px rgba(15, 23, 42, 0.15) !important;
+        }
+        #mobileNav .mobile-nav-link,
+        .mobile-nav .mobile-nav-link {
+            color: #0f172a !important;
+            background: transparent !important;
+        }
+        #mobileNav .mobile-nav-link:hover,
+        .mobile-nav .mobile-nav-link:hover {
+            color: #2563EB !important;
+            background: #eff6ff !important;
+        }
+        #mobileNav .btn-ghost-sm,
+        .mobile-nav .btn-ghost-sm {
+            background: #f8fafc !important;
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+            border: 1.5px solid #cbd5e1 !important;
+        }
+        #mobileNav .mobile-close,
+        .mobile-nav .mobile-close {
+            background: #f1f5f9 !important;
+            background-color: #f1f5f9 !important;
+            color: #475569 !important;
+        }
+        #mobileOverlay,
+        .mobile-nav-overlay {
+            background: rgba(15, 23, 42, 0.45) !important;
+        }
+    </style>
+    <div class="mobile-nav-overlay" id="mobileOverlay" onclick="toggleMobileNav()" style="background: rgba(15, 23, 42, 0.45) !important;"></div>
+    <nav class="mobile-nav" id="mobileNav" style="background: #ffffff !important; background-color: #ffffff !important; color: #0f172a !important; border-left: 1px solid #e2e8f0 !important; box-shadow: -12px 0 40px rgba(15, 23, 42, 0.15) !important;">
         {{-- Drawer Header with Brand and Close Button --}}
-        <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100">
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100" style="border-bottom: 1px solid #f1f5f9 !important;">
             <x-brand-logo
                 href="{{ url('/') }}"
                 class="group flex-shrink-0"
@@ -1216,63 +1253,65 @@
                 textClass="text-base font-bold tracking-tight text-slate-900"
                 accentClass="text-[#2563EB]"
             />
-            <button type="button" class="mobile-close" onclick="toggleMobileNav()" aria-label="Close menu">
-                <i class="ph-bold ph-x text-sm"></i>
+            <button type="button" class="mobile-close" onclick="toggleMobileNav()" aria-label="Close menu" style="position: static !important; width: 34px !important; height: 34px !important; border-radius: 50% !important; background: #f1f5f9 !important; color: #475569 !important; border: none !important; display: flex !important; align-items: center !important; justify-content: center !important; cursor: pointer !important;">
+                <i class="ph-bold ph-x text-sm" style="color: #475569 !important;"></i>
             </button>
         </div>
 
-        <a href="{{ route('properties.index') }}" class="mobile-nav-link" title="Discover">
-            <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                <i class="ph-bold ph-compass text-base"></i>
-            </span>
-            <span class="font-semibold text-slate-800">Discover</span>
-        </a>
-        <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link" title="Buy">
-            <span class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                <i class="ph-bold ph-shopping-bag text-base"></i>
-            </span>
-            <span class="font-semibold text-slate-800">Buy</span>
-        </a>
-        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link" title="Rent">
-            <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                <i class="ph-bold ph-key text-base"></i>
-            </span>
-            <span class="font-semibold text-slate-800">Rent</span>
-        </a>
-        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link" title="Commercial">
-            <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                <i class="ph-bold ph-buildings text-base"></i>
-            </span>
-            <span class="font-semibold text-slate-800">Commercial</span>
-        </a>
-        <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" title="Process">
-            <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                <i class="ph-bold ph-git-merge text-base"></i>
-            </span>
-            <span class="font-semibold text-slate-800">Process</span>
-        </a>
-        <a href="{{ url('/blog') }}" class="mobile-nav-link" title="Blog">
-            <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                <i class="ph-bold ph-newspaper text-base"></i>
-            </span>
-            <span class="font-semibold text-slate-800">Blog</span>
-        </a>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="{{ route('properties.index') }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Discover">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: #eff6ff; color: #2563EB; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph-bold ph-compass text-base" style="color: #2563EB;"></i>
+                </span>
+                <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Discover</span>
+            </a>
+            <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Buy">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph-bold ph-shopping-bag text-base" style="color: #4f46e5;"></i>
+                </span>
+                <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Buy</span>
+            </a>
+            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Rent">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: #fffbeb; color: #d97706; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph-bold ph-key text-base" style="color: #d97706;"></i>
+                </span>
+                <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Rent</span>
+            </a>
+            <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Commercial">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph-bold ph-buildings text-base" style="color: #059669;"></i>
+                </span>
+                <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Commercial</span>
+            </a>
+            <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Process">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: #faf5ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph-bold ph-git-merge text-base" style="color: #7c3aed;"></i>
+                </span>
+                <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Process</span>
+            </a>
+            <a href="{{ url('/blog') }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Blog">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: #fff1f2; color: #e11d48; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph-bold ph-newspaper text-base" style="color: #e11d48;"></i>
+                </span>
+                <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Blog</span>
+            </a>
+        </div>
 
-        <div class="mobile-auth">
+        <div class="mobile-auth" style="margin-top: 18px !important; padding-top: 16px !important; border-top: 1px solid #f1f5f9 !important;">
             @if (Route::has('login'))
                 @auth
-                    <div style="padding:12px; margin-bottom:10px; border-radius:14px; background:#f8fafc; border:1px solid #e2e8f0;">
-                        <p style="color:#64748b; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:2px;">Signed in as</p>
-                        <p style="color:#0f172a; font-weight:700; font-size:14px; line-height:1.3;">{{ auth()->user()->name }}</p>
-                        <p style="color:#64748b; font-size:12px;">{{ auth()->user()->email }}</p>
+                    <div style="padding: 12px; margin-bottom: 10px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0;">
+                        <p style="color: #64748b; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px;">Signed in as</p>
+                        <p style="color: #0f172a; font-weight: 700; font-size: 14px; line-height: 1.3;">{{ auth()->user()->name }}</p>
+                        <p style="color: #64748b; font-size: 12px;">{{ auth()->user()->email }}</p>
                     </div>
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border-radius: 12px; height: 48px; margin-bottom: 8px; color: #ffffff !important;" title="Post Free Advertise">
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align: center !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; width: 100% !important; border-radius: 12px !important; height: 48px !important; margin-bottom: 8px !important; background: linear-gradient(135deg, #2563EB, #1d4ed8) !important; color: #ffffff !important; box-shadow: 0 8px 20px rgba(37,99,235,0.25) !important;" title="Post Free Advertise">
                         <i class="ph-bold ph-plus-circle" style="font-size: 19px; color: #ffffff !important;"></i>
                         <span style="color: #ffffff !important; font-weight: 700;">Post Free Advertise</span>
                     </a>
-                    <a href="{{ url('/dashboard') }}" class="btn-ghost-sm" style="text-align:center; width:100%; margin-bottom: 8px; display:flex; align-items:center; justify-content:center; gap:8px;" title="Dashboard">
+                    <a href="{{ url('/dashboard') }}" class="btn-ghost-sm" style="text-align: center !important; width: 100% !important; margin-bottom: 8px !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; height: 46px !important; background: #f8fafc !important; color: #0f172a !important; border: 1.5px solid #cbd5e1 !important; border-radius: 12px !important; font-weight: 700 !important;" title="Dashboard">
                         <i class="ph-bold ph-squares-four text-blue-600"></i>
-                        <span>Dashboard</span>
+                        <span style="color: #0f172a !important;">Dashboard</span>
                     </a>
                     <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                         @csrf
@@ -1282,12 +1321,12 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileNav(); window.openAuthModal('login');" class="btn-ghost-sm" style="text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; height:46px;" title="Log in">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileNav(); window.openAuthModal('login');" class="btn-ghost-sm" style="text-align: center !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; height: 46px !important; background: #f8fafc !important; color: #0f172a !important; border: 1.5px solid #cbd5e1 !important; border-radius: 12px !important; font-weight: 700 !important;" title="Log in">
                         <i class="ph-bold ph-sign-in text-blue-600 text-base"></i>
-                        <span>Log in</span>
+                        <span style="color: #0f172a !important;">Log in</span>
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border-radius: 12px; height: 48px; color: #ffffff !important;" title="Post Free Advertise">
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align: center !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; width: 100% !important; border-radius: 12px !important; height: 48px !important; background: linear-gradient(135deg, #2563EB, #1d4ed8) !important; color: #ffffff !important; box-shadow: 0 8px 20px rgba(37,99,235,0.25) !important;" title="Post Free Advertise">
                             <i class="ph-bold ph-plus-circle" style="font-size: 19px; color: #ffffff !important;"></i>
                             <span style="color: #ffffff !important; font-weight: 700;">Post Free Advertise</span>
                         </a>
@@ -2055,7 +2094,7 @@
     </section>
 
     {{-- Flipkart Style Mobile City / Location Selection Modal --}}
-    <div id="mobileCityModal" class="fixed inset-0 z-[99999] hidden items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300 p-0 sm:p-4" onclick="if(event.target === this) closeMobileCityModal()">
+    <div id="mobileCityModal" class="fixed inset-0 z-[99999] hidden items-end sm:items-center justify-center bg-slate-950/40 backdrop-blur-sm transition-opacity duration-300 p-0 sm:p-4" onclick="if(event.target === this) closeMobileCityModal()">
         <div class="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl p-5 shadow-2xl border border-slate-200 max-h-[88vh] overflow-y-auto" onclick="event.stopPropagation()">
             
             {{-- Modal Header --}}
