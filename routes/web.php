@@ -483,7 +483,47 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('/blogs/{blog}', [AdminController::class, 'destroyBlog'])->name('blogs.destroy');
     Route::post('/blogs/{blog}/toggle-publish', [AdminController::class, 'togglePublishBlog'])->name('blogs.toggle-publish');
     Route::post('/blogs/{blog}/toggle-featured', [AdminController::class, 'toggleFeaturedBlog'])->name('blogs.toggle-featured');
+
+    // CRM & Visitor Tracking Routes
+    Route::prefix('visitors')->name('visitors.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\VisitorDashboardController::class, 'index'])->name('index');
+        Route::get('/{visitor}', [\App\Http\Controllers\Admin\VisitorDashboardController::class, 'show'])->name('show');
+    });
+
+    Route::prefix('leads')->name('leads.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LeadCrmController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Admin\LeadCrmController::class, 'store'])->name('store');
+        Route::get('/export/csv', [\App\Http\Controllers\Admin\LeadCrmController::class, 'exportCsv'])->name('export.csv');
+        Route::get('/{lead}', [\App\Http\Controllers\Admin\LeadCrmController::class, 'show'])->name('show');
+        Route::put('/{lead}', [\App\Http\Controllers\Admin\LeadCrmController::class, 'update'])->name('update');
+        Route::post('/{lead}/notes', [\App\Http\Controllers\Admin\LeadCrmController::class, 'addNote'])->name('notes.store');
+        Route::post('/{lead}/send-whatsapp', [\App\Http\Controllers\Admin\LeadCrmController::class, 'sendWhatsApp'])->name('send-whatsapp');
+        Route::post('/{lead}/follow-ups', [\App\Http\Controllers\Admin\FollowUpController::class, 'store'])->name('follow-ups.store');
+    });
+
+    Route::prefix('follow-ups')->name('follow-ups.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\FollowUpController::class, 'index'])->name('index');
+        Route::put('/{followUp}', [\App\Http\Controllers\Admin\FollowUpController::class, 'update'])->name('update');
+        Route::post('/{followUp}/complete', [\App\Http\Controllers\Admin\FollowUpController::class, 'complete'])->name('complete');
+    });
+
+    Route::prefix('crm-settings')->name('crm-settings.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CrmSettingsController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Admin\CrmSettingsController::class, 'update'])->name('update');
+    });
 });
+
+// Visitor Tracking & Consent Public Endpoints
+Route::post('/api/visitor/event', [\App\Http\Controllers\VisitorTrackingController::class, 'recordEvent'])->name('api.visitor.event');
+Route::post('/api/consent/update', [\App\Http\Controllers\VisitorTrackingController::class, 'updateConsent'])->name('api.consent.update');
+
+// Lead Capture & Similar Properties Recommendations
+Route::post('/api/leads', [\App\Http\Controllers\LeadController::class, 'store'])->name('api.leads.store');
+Route::get('/api/leads/similar-properties/{property}', [\App\Http\Controllers\LeadController::class, 'similarProperties'])->name('api.leads.similar');
+
+// WhatsApp Inbound Webhook (Meta Cloud & Twilio callbacks)
+Route::match(['get', 'post'], '/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('webhook.whatsapp');
+Route::match(['get', 'post'], '/api/whatsapp/webhook', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('api.whatsapp.webhook');
 
 // Database Migration & Seeding Route (Securely triggered via key)
 Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
@@ -544,6 +584,13 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
             '2026_06_18_153728_add_billing_period_to_private_user_offers_table.php',
             '2026_06_19_120000_add_video_path_to_properties_table.php',
             '2026_06_20_100000_create_blogs_table.php',
+            '2026_09_01_203000_add_performance_indexes_table.php',
+            '2026_09_02_180000_create_otp_verifications_table.php',
+            '2026_09_02_180001_add_phone_verified_to_users_table.php',
+            '2026_09_03_210000_add_purpose_to_plans_table.php',
+            '2026_09_04_203000_create_seo_keywords_table.php',
+            '2026_09_20_100000_create_visitor_tracking_tables.php',
+            '2026_09_20_100001_create_leads_crm_tables.php',
         ];
 
         // Check for leftover duplicate migration files on the server

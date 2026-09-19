@@ -25,6 +25,7 @@
 @section('og_image', $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png'))
 
 @push('head')
+<meta name="property-id" content="{{ $property->id }}">
 <script type="application/ld+json">
 {
   "@@context": "https://schema.org/",
@@ -687,7 +688,23 @@
                             <a href="{{ route('login') }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Book Visit">
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </a>
-                            @endauth
+                        </div>
+
+                        @php
+                            $rawWa = \App\Models\Setting::get('whatsapp_number', \App\Models\Setting::get('agent_phone', '917974164274'));
+                            $cleanWa = preg_replace('/[^0-9]/', '', (string)$rawWa);
+                            if (strlen($cleanWa) === 10) { $cleanWa = '91' . $cleanWa; }
+                            $waMessage = urlencode("Hello, I am interested in this property on UnlockRentals.\nProperty ID: #{$property->id} ({$property->title})\nPrice: ₹" . number_format($property->price, 0) . "\nLink: " . route('properties.show', $property));
+                            $waUrl = "https://wa.me/{$cleanWa}?text={$waMessage}";
+                        @endphp
+
+                        <div class="mt-3 space-y-2">
+                            <a href="{{ $waUrl }}" target="_blank" id="whatsapp-inquiry-btn" data-track-whatsapp="true" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-105 active:scale-[0.99] text-white text-sm font-extrabold rounded-xl transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer" title="Chat with Verified Agent on WhatsApp">
+                                <i class="ph-bold ph-whatsapp-logo text-lg"></i> Chat on WhatsApp
+                            </a>
+                            <button type="button" onclick="window.openLeadModal('modal-similar-properties', {{ $property->id }}, '{{ addslashes($property->locality ?? $property->location) }}', {{ (int)$property->price }})" class="w-full py-2.5 px-4 bg-slate-50 hover:bg-blue-50/60 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-600 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="ph-bold ph-sparkle text-blue-500"></i> Get Similar Properties
+                            </button>
                         </div>
                     </div>
 

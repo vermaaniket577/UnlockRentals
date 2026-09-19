@@ -117,8 +117,37 @@
 
                 {{-- Group 2: CRM & Leads --}}
                 <div class="space-y-1">
-                    <span class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest block mb-1.5">Inquiries & CRM</span>
+                    <span class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest block mb-1.5">Visitor & Lead CRM</span>
                     
+                    <a href="{{ route('admin.visitors.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all {{ request()->routeIs('admin.visitors*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}">
+                        <div class="flex items-center gap-3">
+                            <i class="ph-bold ph-chart-polar text-base"></i>
+                            <span>Visitors Analytics</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('admin.leads.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all {{ request()->routeIs('admin.leads*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}">
+                        <div class="flex items-center gap-3">
+                            <i class="ph-bold ph-funnel text-base"></i>
+                            <span>Leads CRM</span>
+                        </div>
+                        @php $newLeadsCount = \App\Models\Lead::where('lead_status', 'new')->count(); @endphp
+                        @if($newLeadsCount > 0)
+                            <span class="bg-blue-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">{{ $newLeadsCount }}</span>
+                        @endif
+                    </a>
+
+                    <a href="{{ route('admin.follow-ups.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all {{ request()->routeIs('admin.follow-ups*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}">
+                        <div class="flex items-center gap-3">
+                            <i class="ph-bold ph-calendar-check text-base"></i>
+                            <span>Follow-ups Hub</span>
+                        </div>
+                        @php $dueFollowUps = \App\Models\LeadFollowUp::where('status', 'pending')->where('scheduled_at', '<=', now()->endOfDay())->count(); @endphp
+                        @if($dueFollowUps > 0)
+                            <span class="bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">{{ $dueFollowUps }}</span>
+                        @endif
+                    </a>
+
                     <a href="{{ route('admin.callbacks') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all {{ request()->routeIs('admin.callbacks*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}">
                         <div class="flex items-center gap-3">
                             <i class="ph-bold ph-phone-call text-base"></i>
@@ -184,9 +213,14 @@
                 <div class="space-y-1">
                     <span class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest block mb-1.5">Settings & Admin</span>
                     
-                    <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all {{ request()->routeIs('admin.settings*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}">
+                    <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all {{ request()->routeIs('admin.settings*') && !request()->routeIs('admin.crm-settings*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}">
                         <i class="ph-bold ph-gear text-base"></i>
                         <span>Site Settings</span>
+                    </a>
+
+                    <a href="{{ route('admin.crm-settings.index') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all {{ request()->routeIs('admin.crm-settings*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}">
+                        <i class="ph-bold ph-whatsapp-logo text-base text-emerald-400"></i>
+                        <span>WhatsApp & CRM Settings</span>
                     </a>
                 </div>
 

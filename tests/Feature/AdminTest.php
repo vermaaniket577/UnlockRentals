@@ -447,7 +447,7 @@ class TestUser extends User
     protected $table = 'users';
     public $mockActivePlan = null;
 
-    public function activePlan(): ?UserPlan
+    public function activePlan(?string $purpose = null): ?UserPlan
     {
         return $this->mockActivePlan;
     }

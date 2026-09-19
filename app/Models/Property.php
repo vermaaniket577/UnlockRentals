@@ -115,6 +115,22 @@ class Property extends Model
     }
 
     /**
+     * Get all CRM leads generated for this property.
+     */
+    public function leads(): HasMany
+    {
+        return $this->hasMany(Lead::class);
+    }
+
+    /**
+     * Get all visitor events for this property.
+     */
+    public function visitorEvents(): HasMany
+    {
+        return $this->hasMany(VisitorEvent::class);
+    }
+
+    /**
      * Scope: only approved properties.
      */
     public function scopeApproved($query)

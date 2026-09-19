@@ -86,6 +86,38 @@ class User extends Authenticatable
     }
 
     /**
+     * Get all leads submitted by this user.
+     */
+    public function leads(): HasMany
+    {
+        return $this->hasMany(Lead::class);
+    }
+
+    /**
+     * Get all leads assigned to this user (for sales/staff).
+     */
+    public function assignedLeads(): HasMany
+    {
+        return $this->hasMany(Lead::class, 'assigned_to');
+    }
+
+    /**
+     * Get all follow-ups assigned to this user.
+     */
+    public function leadFollowUps(): HasMany
+    {
+        return $this->hasMany(LeadFollowUp::class, 'assigned_to');
+    }
+
+    /**
+     * Get visitor tracking profiles associated with this user.
+     */
+    public function visitors(): HasMany
+    {
+        return $this->hasMany(Visitor::class);
+    }
+
+    /**
      * Get the user's current active plan subscription.
      * Optionally filtered by purpose ('rent', 'buy'/'sale').
      */
@@ -282,6 +314,22 @@ class User extends Authenticatable
     public function isTenant(): bool
     {
         return $this->role === 'tenant';
+    }
+
+    /**
+     * Check if user has CRM management access.
+     */
+    public function isCrmStaff(): bool
+    {
+        return in_array($this->role, ['admin', 'super_admin', 'sales_manager', 'sales_executive', 'support_agent']);
+    }
+
+    /**
+     * Check if user can assign leads or access full CRM analytics.
+     */
+    public function canManageLeads(): bool
+    {
+        return in_array($this->role, ['admin', 'super_admin', 'sales_manager']);
     }
 
     /**

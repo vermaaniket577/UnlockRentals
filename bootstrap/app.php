@@ -15,9 +15,21 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->web(append: [
             \App\Http\Middleware\AutoLogoutInactiveUser::class,
+            \App\Http\Middleware\TrackVisitor::class,
         ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
+        $middleware->validateCsrfTokens(except: [
+            'api/visitor/*',
+            'api/consent/*',
+            'api/leads',
+            'api/leads/*',
+            'webhook/*',
+            'api/whatsapp/*',
+        ]);
+        $middleware->encryptCookies(except: [
+            'ur_visitor_uuid',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -320,9 +320,12 @@
         <x-auth-modal />
     @endguest
 
-    @include('components.idle-logout')
+    @include('components.cookie-consent')
+    @include('components.exit-intent-modal')
+    @include('components.lead-modals')
 
     <script src="{{ asset('js/otp-verification.js') }}?v=20260916"></script>
+    <script src="{{ asset('js/visitor-tracker.js') }}?v=20260920" defer></script>
     @stack('scripts')
 </body>
 </html>

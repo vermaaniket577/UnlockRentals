@@ -266,21 +266,23 @@
 </style>
 
 @php
-    function getDirIconClass($tag) {
-        $l = strtolower($tag);
-        if (str_contains($l, 'loan') || str_contains($l, 'emi') || str_contains($l, 'calculator') || str_contains($l, 'interest') || str_contains($l, 'rent calculator')) return 'ph-bold ph-calculator';
-        if (str_contains($l, 'legal') || str_contains($l, 'agreement') || str_contains($l, 'notary') || str_contains($l, 'affidavit') || str_contains($l, 'lease') || str_contains($l, 'stamp')) return 'ph-bold ph-file-text';
-        if (str_contains($l, 'packers') || str_contains($l, 'movers')) return 'ph-bold ph-truck';
-        if (str_contains($l, 'clean') || str_contains($l, 'house cleaning')) return 'ph-bold ph-sparkle';
-        if (str_contains($l, 'interior') || str_contains($l, 'renovation') || str_contains($l, 'paint')) return 'ph-bold ph-paint-roller';
-        if (str_contains($l, 'electric') || str_contains($l, 'ac')) return 'ph-bold ph-lightning';
-        if (str_contains($l, 'plumb')) return 'ph-bold ph-wrench';
-        if (str_contains($l, 'forum') || str_contains($l, 'queries')) return 'ph-bold ph-chat-circle-dots';
-        if (str_contains($l, 'guide') || str_contains($l, 'tips') || str_contains($l, 'nri') || str_contains($l, 'vastu')) return 'ph-bold ph-book-bookmark';
-        if (str_contains($l, 'tenant') || str_contains($l, 'landlord')) return 'ph-bold ph-user-check';
-        if (str_contains($l, 'management') || str_contains($l, 'diligence')) return 'ph-bold ph-shield-check';
-        if (str_contains($l, 'builder') || str_contains($l, 'project') || str_contains($l, 'real estate')) return 'ph-bold ph-buildings';
-        return 'ph-bold ph-arrow-up-right';
+    if (!function_exists('getDirIconClass')) {
+        function getDirIconClass($tag) {
+            $l = strtolower($tag);
+            if (str_contains($l, 'loan') || str_contains($l, 'emi') || str_contains($l, 'calculator') || str_contains($l, 'interest') || str_contains($l, 'rent calculator')) return 'ph-bold ph-calculator';
+            if (str_contains($l, 'legal') || str_contains($l, 'agreement') || str_contains($l, 'notary') || str_contains($l, 'affidavit') || str_contains($l, 'lease') || str_contains($l, 'stamp')) return 'ph-bold ph-file-text';
+            if (str_contains($l, 'packers') || str_contains($l, 'movers')) return 'ph-bold ph-truck';
+            if (str_contains($l, 'clean') || str_contains($l, 'house cleaning')) return 'ph-bold ph-sparkle';
+            if (str_contains($l, 'interior') || str_contains($l, 'renovation') || str_contains($l, 'paint')) return 'ph-bold ph-paint-roller';
+            if (str_contains($l, 'electric') || str_contains($l, 'ac')) return 'ph-bold ph-lightning';
+            if (str_contains($l, 'plumb')) return 'ph-bold ph-wrench';
+            if (str_contains($l, 'forum') || str_contains($l, 'queries')) return 'ph-bold ph-chat-circle-dots';
+            if (str_contains($l, 'guide') || str_contains($l, 'tips') || str_contains($l, 'nri') || str_contains($l, 'vastu')) return 'ph-bold ph-book-bookmark';
+            if (str_contains($l, 'tenant') || str_contains($l, 'landlord')) return 'ph-bold ph-user-check';
+            if (str_contains($l, 'management') || str_contains($l, 'diligence')) return 'ph-bold ph-shield-check';
+            if (str_contains($l, 'builder') || str_contains($l, 'project') || str_contains($l, 'real estate')) return 'ph-bold ph-buildings';
+            return 'ph-bold ph-arrow-up-right';
+        }
     }
 
     $buyTagsRaw = $site_settings['directory_buy_tags'] ?? 'Property Legal Services, Sale Agreement, Home Loan EMI Calculator, Home Loan Balance Transfer, Home Loan Eligibility, Compare Interest Rates, Property Buyers Forum, Property Buyers Guide, Property Seller Guide, Home Loan Queries, Home Renovation Guide, Interior Design Tips, NRI Real Estate Guide, Real Estate Vastu Guide, Due Diligence Service';
