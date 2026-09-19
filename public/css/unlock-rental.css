@@ -2673,4 +2673,60 @@ a, button, input, select, textarea, [role="button"] {
     }
 }
 
+/* ============================================================
+   Universal Button Pure White Text & Icon Enforcement
+   Ensures all primary, CTA, gradient, and solid colored action buttons
+   strictly render high-contrast #ffffff text and icons across all browsers & webviews.
+   ============================================================ */
+.btn-primary,
+.btn-primary-sm,
+.btn-cta-premium,
+.btn-primary-lg,
+#dash-add-property,
+.mobile-post-ad-btn,
+a.btn-primary,
+a.btn-primary-sm,
+a.btn-cta-premium,
+a[class*="bg-blue-600"],
+button[class*="bg-blue-600"],
+a[class*="from-blue-600"],
+button[class*="from-blue-600"],
+a[class*="from-indigo-600"],
+button[class*="from-indigo-600"],
+a[class*="bg-emerald-600"],
+button[class*="bg-emerald-600"],
+a.bg-blue-600,
+button.bg-blue-600,
+.bg-blue-600,
+.bg-gradient-to-r.from-blue-600,
+.bg-gradient-to-tr.from-blue-600 {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.btn-primary *,
+.btn-primary-sm *,
+.btn-cta-premium *,
+.btn-primary-lg *,
+#dash-add-property *,
+.mobile-post-ad-btn *,
+a.btn-primary *,
+a.btn-primary-sm *,
+a.btn-cta-premium *,
+a[class*="bg-blue-600"] *,
+button[class*="bg-blue-600"] *,
+a[class*="from-blue-600"] *,
+button[class*="from-blue-600"] *,
+a[class*="from-indigo-600"] *,
+button[class*="from-indigo-600"] *,
+a[class*="bg-emerald-600"] *,
+button[class*="bg-emerald-600"] *,
+a.bg-blue-600 *,
+button.bg-blue-600 *,
+.bg-blue-600 *,
+.bg-gradient-to-r.from-blue-600 *,
+.bg-gradient-to-tr.from-blue-600 * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
 

@@ -163,7 +163,7 @@
     @endif
 
     {{-- Premium UnlockRentals Styles --}}
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260611-header-fix">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260920-btn-white">
     <style>
         @keyframes premiumShine {
             0% { transform: translateX(-140%); }

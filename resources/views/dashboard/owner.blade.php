@@ -41,9 +41,9 @@
                         <span>Billing History</span>
                     </a>
                     
-                    <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold rounded-xl shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-200" id="dash-add-property" title="List New Property">
-                        <i class="ph-bold ph-plus-circle text-lg"></i>
-                        <span>List New Property</span>
+                    <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white text-sm font-bold rounded-xl shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-200" id="dash-add-property" title="List New Property" style="color: #ffffff !important;">
+                        <i class="ph-bold ph-plus-circle text-lg" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">List New Property</span>
                     </a>
                 </div>
 
@@ -199,9 +199,9 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow transition-all" title="List Property">
-                        <i class="ph-bold ph-plus text-sm"></i>
-                        <span>Add Property</span>
+                    <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold rounded-xl shadow-sm hover:shadow transition-all" title="List Property" style="color: #ffffff !important;">
+                        <i class="ph-bold ph-plus text-sm" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Add Property</span>
                     </a>
                 </div>
             </div>
@@ -378,9 +378,9 @@
                 <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
                     UnlockRentals connects you directly with thousands of verified tenants with zero brokerage. List your first property in under 2 minutes.
                 </p>
-                <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold rounded-xl shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-200" title="List a Property">
-                    <i class="ph-bold ph-plus-circle text-lg"></i>
-                    <span>List Your First Property</span>
+                <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white text-sm font-bold rounded-xl shadow-md shadow-blue-600/20 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-200" title="List a Property" style="color: #ffffff !important;">
+                    <i class="ph-bold ph-plus-circle text-lg" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important;">List Your First Property</span>
                 </a>
             </div>
             @endif

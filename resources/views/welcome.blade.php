@@ -1045,9 +1045,9 @@
             @if (Route::has('login'))
                 @auth
                     {{-- Desktop Only: Post Ad CTA (hidden on mobile to prevent overlap) --}}
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle" style="font-size: 17px;"></i>
-                        <span>Post Free Advertise</span>
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px; color: #ffffff !important;" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle" style="font-size: 17px; color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Post Free Advertise</span>
                     </a>
 
                     {{-- Compact User Account Pill --}}
@@ -1191,9 +1191,9 @@
                         Log in
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px;" title="Post Free Advertise">
-                            <i class="ph-bold ph-plus-circle" style="font-size: 17px;"></i>
-                            <span>Post Free Advertise</span>
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px; color: #ffffff !important;" title="Post Free Advertise">
+                            <i class="ph-bold ph-plus-circle" style="font-size: 17px; color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">Post Free Advertise</span>
                         </a>
                     @endif
                 @endauth

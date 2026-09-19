@@ -46,7 +46,7 @@
     @endif
     
     {{-- Custom App Styles --}}
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v=20260830-admin-clean">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260920-btn-white">
     <style>
         body { font-family: 'Plus Jakarta Sans', Inter, sans-serif; }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
