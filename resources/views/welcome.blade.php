@@ -745,14 +745,62 @@
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
         }
 
-        .mobile-app-search-card {
-            background: rgba(15, 23, 42, 0.88);
+        .mobile-app-search-bar {
+            background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 18px;
+            padding: 8px 10px;
+            box-shadow: 0 14px 35px -8px rgba(2, 6, 23, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        .mobile-filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            font-size: 11.5px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mobile-filter-btn:active, .mobile-filter-btn.active {
+            background: #2563eb;
+            border-color: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+        }
+
+        .mobile-filter-dropdown-panel {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
             border-radius: 20px;
-            padding: 14px;
-            box-shadow: 0 20px 45px -10px rgba(2, 6, 23, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            padding: 16px 14px;
+            box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            margin-top: 8px;
+            animation: mobileDropdownSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes mobileDropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
         .mobile-purpose-tab {
             cursor: pointer;
@@ -1542,111 +1590,191 @@
             <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4"></button>
         </div>
 
-        {{-- App Search & Filter Card --}}
-        <div class="mobile-app-search-card mb-3.5">
-            
-            {{-- Purpose Switcher (Rent / Buy / PG) --}}
-            <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/80 rounded-xl mb-3 border border-slate-800/90">
-                <button type="button" 
-                        id="mobileTabRent"
-                        onclick="switchMobileTab('rent')"
-                        class="mobile-purpose-tab active py-2 text-xs font-bold rounded-lg text-center transition-all bg-blue-600 text-white shadow-md shadow-blue-600/30">
-                    Rent
-                </button>
-                <button type="button" 
-                        id="mobileTabBuy"
-                        onclick="switchMobileTab('buy')"
-                        class="mobile-purpose-tab py-2 text-xs font-bold rounded-lg text-center transition-all text-slate-400 hover:text-white">
-                    Buy
-                </button>
-                <button type="button" 
-                        id="mobileTabPg"
-                        onclick="switchMobileTab('pg')"
-                        class="mobile-purpose-tab py-2 text-xs font-bold rounded-lg text-center transition-all text-slate-400 hover:text-white">
-                    PG / Hostel
-                </button>
-            </div>
+        @php
+            $mobileActiveFiltersCount = 0;
+            if(request()->filled('district')) $mobileActiveFiltersCount++;
+            if(request()->filled('price') && request('price') !== 'any') $mobileActiveFiltersCount++;
+            if(request()->filled('rooms') && request('rooms') !== 'any') $mobileActiveFiltersCount++;
+            if(request()->filled('purpose') && request('purpose') !== 'rent') $mobileActiveFiltersCount++;
+        @endphp
 
-            {{-- Form Inputs --}}
-            <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET" class="space-y-2.5">
+        {{-- App Search Bar with Filter Dropdown Button (Clean & Compact above Cards) --}}
+        <div class="mb-3.5">
+            <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET">
                 <input type="hidden" name="purpose" id="mobile_purpose_input" value="{{ request('purpose', 'rent') }}">
                 <input type="hidden" name="type" id="mobile_type_input" value="{{ request('type', 'all') }}">
+                <input type="hidden" name="rooms" id="mobile_rooms_input" value="{{ request('rooms', 'any') }}">
 
-                {{-- Unified Search Field with GPS Near Me inside --}}
-                <div class="relative flex items-center">
-                    <div class="absolute left-3 text-slate-400 flex items-center pointer-events-none">
-                        <i class="ph-bold ph-magnifying-glass text-base text-blue-400"></i>
-                    </div>
-                    <input type="text" 
-                           name="search" 
-                           id="mobile_search_input"
-                           placeholder="Enter city, locality or area..." 
-                           value="{{ request('search') }}"
-                           class="w-full pl-9 pr-24 py-2.5 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs font-semibold text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                {{-- Compact Search & Filter Action Bar --}}
+                <div class="mobile-app-search-bar flex items-center gap-2">
                     
-                    {{-- Quick GPS Near Me Button --}}
+                    {{-- Search Input with Search Icon & GPS Near Me Inside --}}
+                    <div class="relative flex-1 flex items-center min-w-0">
+                        <div class="absolute left-2.5 text-slate-400 flex items-center pointer-events-none">
+                            <i class="ph-bold ph-magnifying-glass text-blue-400 text-sm"></i>
+                        </div>
+                        <input type="text" 
+                               name="search" 
+                               id="mobile_search_input"
+                               placeholder="Search city, area..." 
+                               value="{{ request('search') }}"
+                               class="w-full pl-8 pr-16 py-2 bg-slate-800/80 border border-slate-700/70 rounded-xl text-xs font-semibold text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                        
+                        {{-- Quick GPS Near Me Inside Input --}}
+                        <button type="button" 
+                                id="mobileBtnNearMe" 
+                                onclick="searchNearMe()" 
+                                class="absolute right-1 px-2 py-1 rounded-lg bg-blue-600/25 hover:bg-blue-600 text-blue-300 hover:text-white text-[10.5px] font-bold flex items-center gap-1 transition-all active:scale-95"
+                                title="Locate Near Me">
+                            <i class="ph-fill ph-navigation-arrow text-xs text-blue-400"></i>
+                            <span>Near</span>
+                        </button>
+                    </div>
+
+                    {{-- Dedicated Filter Dropdown Button --}}
                     <button type="button" 
-                            id="mobileBtnNearMe" 
-                            onclick="searchNearMe()" 
-                            class="absolute right-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95"
-                            title="Use My Location">
-                        <i class="ph-fill ph-navigation-arrow text-xs text-blue-400"></i>
-                        <span>Near Me</span>
+                            id="mobileFilterToggleBtn" 
+                            onclick="toggleMobileFiltersDropdown()" 
+                            class="mobile-filter-btn {{ $mobileActiveFiltersCount > 0 ? 'active' : '' }}"
+                            aria-expanded="false"
+                            aria-controls="mobileFiltersDropdownPanel">
+                        <i class="ph-bold ph-sliders-horizontal text-sm text-blue-400"></i>
+                        <span>Filter</span>
+                        <i class="ph-bold ph-caret-down text-[11px] transition-transform duration-300" id="mobileFilterCaret"></i>
+
+                        @if($mobileActiveFiltersCount > 0)
+                            <span id="mobileFilterBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-slate-900 shadow-md">
+                                {{ $mobileActiveFiltersCount }}
+                            </span>
+                        @endif
+                    </button>
+
+                    {{-- Search Submit Go Button --}}
+                    <button type="submit" 
+                            class="w-9 h-9 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-600/30 active:scale-95 transition-all"
+                            title="Search Properties">
+                        <i class="ph-bold ph-arrow-right text-sm"></i>
                     </button>
                 </div>
 
-                {{-- Quick City & Budget Dropdowns --}}
-                <div class="grid grid-cols-2 gap-2">
-                    <div class="relative">
-                        <select name="district" 
-                                id="mobile_city_select"
-                                class="w-full appearance-none pl-3 pr-8 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
-                            <option value="">All Top Cities</option>
-                            <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurugram</option>
-                            <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>Delhi NCR</option>
-                            <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>Noida</option>
-                            <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>Faridabad</option>
-                            <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>Ghaziabad</option>
-                            <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>Bengaluru</option>
-                            <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>Mumbai</option>
-                            <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>Pune</option>
-                            <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>Hyderabad</option>
-                            <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>Jaipur</option>
-                            <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>Chandigarh</option>
-                        </select>
-                        <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                {{-- Collapsible Dropdown Filter Panel (Reveals on clicking Filter button) --}}
+                <div id="mobileFiltersDropdownPanel" class="mobile-filter-dropdown-panel hidden">
+                    
+                    {{-- Dropdown Header --}}
+                    <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-700/60">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">
+                                <i class="ph-bold ph-faders-horizontal"></i>
+                            </div>
+                            <span class="text-xs font-black text-white tracking-wide">Filter Properties</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button type="button" 
+                                    onclick="resetMobileFilters()" 
+                                    class="text-[11px] font-bold text-slate-400 hover:text-red-400 active:scale-95 transition-colors">
+                                Reset
+                            </button>
+                            <button type="button" 
+                                    onclick="toggleMobileFiltersDropdown()" 
+                                    class="text-slate-400 hover:text-white p-1 rounded-md active:scale-95 transition-colors"
+                                    aria-label="Close Filter">
+                                <i class="ph-bold ph-x text-sm"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="relative">
-                        <select name="price" 
-                                id="mobile_price_select"
-                                class="w-full appearance-none pl-3 pr-8 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
-                            <option value="any">Any Budget</option>
-                            <option value="0-20000" {{ request('price') == '0-20000' ? 'selected' : '' }}>Under ₹20,000</option>
-                            <option value="20000-50000" {{ request('price') == '20000-50000' ? 'selected' : '' }}>₹20K – ₹50K</option>
-                            <option value="50000-plus" {{ request('price') == '50000-plus' ? 'selected' : '' }}>₹50,000+</option>
-                        </select>
-                        <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                    {{-- Purpose Tabs (Rent / Buy / PG) inside Dropdown --}}
+                    <div class="mb-3">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1.5">Listing Purpose</span>
+                        <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800/90">
+                            <button type="button" 
+                                    id="mobileTabRent"
+                                    onclick="switchMobileTab('rent')"
+                                    class="mobile-purpose-tab {{ request('purpose', 'rent') === 'rent' && request('type') !== 'pg-hostel' ? 'active bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-slate-400 hover:text-white' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                Rent
+                            </button>
+                            <button type="button" 
+                                    id="mobileTabBuy"
+                                    onclick="switchMobileTab('buy')"
+                                    class="mobile-purpose-tab {{ request('purpose') === 'buy' ? 'active bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-slate-400 hover:text-white' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                Buy
+                            </button>
+                            <button type="button" 
+                                    id="mobileTabPg"
+                                    onclick="switchMobileTab('pg')"
+                                    class="mobile-purpose-tab {{ request('type') === 'pg-hostel' ? 'active bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-slate-400 hover:text-white' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                PG / Hostel
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- City & Budget Grid inside Dropdown --}}
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">City</span>
+                            <div class="relative">
+                                <select name="district" 
+                                        id="mobile_city_select"
+                                        class="w-full appearance-none pl-3 pr-7 py-2 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
+                                    <option value="">All Top Cities</option>
+                                    <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurugram</option>
+                                    <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>Delhi NCR</option>
+                                    <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>Noida</option>
+                                    <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>Faridabad</option>
+                                    <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>Ghaziabad</option>
+                                    <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>Bengaluru</option>
+                                    <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>Mumbai</option>
+                                    <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>Pune</option>
+                                    <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>Hyderabad</option>
+                                    <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>Jaipur</option>
+                                    <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>Chandigarh</option>
+                                </select>
+                                <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Budget</span>
+                            <div class="relative">
+                                <select name="price" 
+                                        id="mobile_price_select"
+                                        class="w-full appearance-none pl-3 pr-7 py-2 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
+                                    <option value="any">Any Budget</option>
+                                    <option value="0-20000" {{ request('price') == '0-20000' ? 'selected' : '' }}>Under ₹20,000</option>
+                                    <option value="20000-50000" {{ request('price') == '20000-50000' ? 'selected' : '' }}>₹20K – ₹50K</option>
+                                    <option value="50000-plus" {{ request('price') == '50000-plus' ? 'selected' : '' }}>₹50,000+</option>
+                                </select>
+                                <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Layout BHK Selection Pills --}}
+                    <div class="mb-3.5">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1.5">BHK / Layout</span>
+                        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                            <button type="button" onclick="setMobileRoom('any', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms', 'any') == 'any' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">Any</button>
+                            <button type="button" onclick="setMobileRoom('1rk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '1rk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 RK</button>
+                            <button type="button" onclick="setMobileRoom('1bhk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '1bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 BHK</button>
+                            <button type="button" onclick="setMobileRoom('2bhk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '2bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">2 BHK</button>
+                            <button type="button" onclick="setMobileRoom('3bhk-plus', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ in_array(request('rooms'), ['3bhk-plus', '3bhk', '3plus']) ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">3+ BHK</button>
+                        </div>
+                    </div>
+
+                    {{-- Apply Filters Button --}}
+                    <div class="flex items-center gap-2">
+                        <button type="submit" 
+                                class="flex-1 py-2.5 px-4 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+                            <i class="ph-bold ph-check text-sm"></i>
+                            <span>Apply Filters</span>
+                        </button>
+                        <button type="button" 
+                                onclick="toggleMobileFiltersDropdown()" 
+                                class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold active:scale-[0.98] transition-all">
+                            Close
+                        </button>
                     </div>
                 </div>
-
-                {{-- Layout BHK Pills --}}
-                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Layout:</span>
-                    <input type="hidden" name="rooms" id="mobile_rooms_input" value="{{ request('rooms', 'any') }}">
-                    <button type="button" onclick="setMobileRoom('any', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms', 'any') == 'any' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">Any</button>
-                    <button type="button" onclick="setMobileRoom('1rk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '1rk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 RK</button>
-                    <button type="button" onclick="setMobileRoom('1bhk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '1bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 BHK</button>
-                    <button type="button" onclick="setMobileRoom('2bhk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '2bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">2 BHK</button>
-                    <button type="button" onclick="setMobileRoom('3bhk-plus', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ in_array(request('rooms'), ['3bhk-plus', '3bhk', '3plus']) ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">3+ BHK</button>
-                </div>
-
-                {{-- Action Submit Button --}}
-                <button type="submit" 
-                        class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
-                    <i class="ph-bold ph-magnifying-glass text-sm"></i>
-                    <span>Search Verified Properties</span>
-                </button>
             </form>
         </div>
 
@@ -2547,6 +2675,48 @@
                     document.body.style.overflow = 'hidden';
                 }
             }
+
+            // Toggle Mobile Filters Dropdown feature
+            window.toggleMobileFiltersDropdown = function() {
+                const panel = document.getElementById('mobileFiltersDropdownPanel');
+                const caret = document.getElementById('mobileFilterCaret');
+                const btn = document.getElementById('mobileFilterToggleBtn');
+                if (!panel) return;
+
+                const isHidden = panel.classList.contains('hidden');
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    if (caret) caret.style.transform = 'rotate(180deg)';
+                    if (btn) btn.classList.add('active');
+                } else {
+                    panel.classList.add('hidden');
+                    if (caret) caret.style.transform = 'rotate(0deg)';
+                    if (btn && !document.getElementById('mobileFilterBadge')) {
+                        btn.classList.remove('active');
+                    }
+                }
+            };
+
+            // Reset Mobile Filters
+            window.resetMobileFilters = function() {
+                const citySelect = document.getElementById('mobile_city_select');
+                const priceSelect = document.getElementById('mobile_price_select');
+                const searchInput = document.getElementById('mobile_search_input');
+                const roomsInput = document.getElementById('mobile_rooms_input');
+                const badge = document.getElementById('mobileFilterBadge');
+                const btn = document.getElementById('mobileFilterToggleBtn');
+
+                if (citySelect) citySelect.value = '';
+                if (priceSelect) priceSelect.value = 'any';
+                if (searchInput) searchInput.value = '';
+                if (roomsInput) roomsInput.value = 'any';
+                if (badge) badge.remove();
+                if (btn) btn.classList.remove('active');
+
+                window.switchMobileTab('rent');
+                const anyPill = document.querySelector('.mobile-room-pill');
+                if (anyPill) window.setMobileRoom('any', anyPill);
+            };
 
             // Mobile App Hero Tab Switcher (Rent / Buy / PG)
             window.switchMobileTab = function(tab) {
