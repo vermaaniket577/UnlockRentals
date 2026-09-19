@@ -67,10 +67,10 @@
         </div>
 
         {{-- Featured Hero Image --}}
-        <div class="rounded-3xl overflow-hidden mb-10 shadow-xl border border-slate-200/80 dark:border-slate-800 max-h-[480px] bg-slate-100 dark:bg-slate-800 aspect-[16/9] sm:aspect-[21/9]">
+        <div class="rounded-3xl overflow-hidden mb-10 shadow-xl border border-slate-200/80 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
             <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}"
                  onerror="this.onerror=null;this.src='{{ $post->getDefaultCoverImage() }}';"
-                 class="w-full h-full object-cover">
+                 class="w-full h-auto max-h-[580px] object-contain block mx-auto">
         </div>
 
         {{-- Article Content --}}
@@ -82,7 +82,7 @@
             </div>
             @endif
 
-            <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-600 dark:prose-li:text-slate-300 prose-img:rounded-2xl">
+            <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-600 dark:prose-li:text-slate-300 prose-img:rounded-2xl prose-img:mx-auto prose-img:h-auto prose-img:max-h-[600px] prose-img:object-contain">
                 {!! $post->content !!}
             </div>
 

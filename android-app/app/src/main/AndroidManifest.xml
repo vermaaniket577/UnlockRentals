@@ -113,6 +113,14 @@
                 <data android:scheme="unlockrentals" android:host="auth" />
             </intent-filter>
 
+            <!-- Custom App Scheme for Website / Indus Appstore Direct Launch -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="unlockrentals" android:host="launch" />
+            </intent-filter>
+
             <!-- Deep Links for the website domain -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

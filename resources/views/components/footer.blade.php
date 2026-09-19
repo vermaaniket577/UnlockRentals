@@ -418,7 +418,8 @@
                             <span class="ur-store-badge__title" style="font-size: 14px;">App Store</span>
                         </div>
                     </a>
-                    <a href="{{ (!empty($site_settings['app_indus_appstore_url']) && $site_settings['app_indus_appstore_url'] !== '#') ? $site_settings['app_indus_appstore_url'] : 'https://www.indusappstore.com' }}" target="_blank" class="ur-store-badge" style="min-width: 150px; padding: 6px 14px; border-radius: 8px;" title="Available on Indus Appstore">
+                    @php $indusUrlFoot = (!empty($site_settings['app_indus_appstore_url']) && $site_settings['app_indus_appstore_url'] !== '#') ? $site_settings['app_indus_appstore_url'] : 'https://www.indusappstore.com/app/com.unlockrentals.app'; @endphp
+                    <a href="{{ $indusUrlFoot }}" target="_blank" class="ur-store-badge" style="min-width: 150px; padding: 6px 14px; border-radius: 8px;" title="Available on Indus Appstore" onclick="return window.__launchIndusApp ? window.__launchIndusApp(event, '{{ $indusUrlFoot }}') : true;">
                         <div class="ur-store-badge__icon" style="width: 20px; height: 20px;">
                             <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
@@ -558,3 +559,28 @@
 
     </div>
 </footer>
+
+{{-- Indus Appstore Smart Launch Script (Android intent:// deep-link with fallback) --}}
+<script>
+(function() {
+    window.__launchIndusApp = function(event, fallbackUrl) {
+        var ua = navigator.userAgent || '';
+        // Only intercept on Android devices
+        if (!/android/i.test(ua)) {
+            return true; // Let the default <a> behavior work (opens in new tab)
+        }
+        event.preventDefault();
+
+        // Android intent:// URI — Chrome will try to launch the app package directly.
+        // If the app is not installed, it uses browser_fallback_url automatically.
+        var intentUrl = 'intent://launch#Intent;'
+            + 'scheme=unlockrentals;'
+            + 'package=com.unlockrentals.app;'
+            + 'S.browser_fallback_url=' + encodeURIComponent(fallbackUrl) + ';'
+            + 'end';
+
+        window.location.href = intentUrl;
+        return false;
+    };
+})();
+</script>

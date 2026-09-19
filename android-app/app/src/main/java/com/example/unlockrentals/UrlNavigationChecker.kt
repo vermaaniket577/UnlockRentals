@@ -33,7 +33,7 @@ class UrlNavigationChecker(private val productionUrl: String) {
             url.startsWith("tel:") -> NavigationTarget.DIAL
             url.startsWith("mailto:") -> NavigationTarget.SENDTO
             url.startsWith("whatsapp://") || host.contains("wa.me") || host.contains("api.whatsapp.com") -> NavigationTarget.WHATSAPP
-            url.startsWith("market://") || host.contains("play.google.com") || host.contains("apps.apple.com") -> NavigationTarget.APP_STORE
+            url.startsWith("market://") || host.contains("play.google.com") || host.contains("apps.apple.com") || host.contains("indusappstore.com") -> NavigationTarget.APP_STORE
             (host.contains("google.com") && url.contains("maps")) || host.contains("maps.google") -> NavigationTarget.MAPS
             url.startsWith("upi://") || url.startsWith("tez://") || url.startsWith("phonepe://") ||
             url.startsWith("paytmmp://") || url.startsWith("paytm://") || url.startsWith("bhim://") ||

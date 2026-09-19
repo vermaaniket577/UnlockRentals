@@ -536,7 +536,8 @@
                 </a>
 
                 <!-- Indus Appstore -->
-                <a href="{{ (!empty($site_settings['app_indus_appstore_url']) && $site_settings['app_indus_appstore_url'] !== '#') ? $site_settings['app_indus_appstore_url'] : 'https://www.indusappstore.com' }}" target="_blank" class="app-dl-store-btn" id="indusAppstoreBtn" title="Available on Indus Appstore">
+                @php $indusUrlDlPage = (!empty($site_settings['app_indus_appstore_url']) && $site_settings['app_indus_appstore_url'] !== '#') ? $site_settings['app_indus_appstore_url'] : 'https://www.indusappstore.com/app/com.unlockrentals.app'; @endphp
+                <a href="{{ $indusUrlDlPage }}" target="_blank" class="app-dl-store-btn" id="indusAppstoreBtn" title="Available on Indus Appstore" onclick="return window.__launchIndusApp ? window.__launchIndusApp(event, '{{ $indusUrlDlPage }}') : true;">
                     <div class="app-dl-store-btn__icon">
                         <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <defs>
@@ -621,6 +622,26 @@
         &copy; {{ date('Y') }} UnlockRentals. All rights reserved. 
         <a href="{{ route('home') }}" style="color: #60a5fa; text-decoration: none; margin-left: 8px;" title="Visit Website">Visit Website</a>
     </footer>
+
+    <!-- Indus Appstore Smart Launch Script (Android intent:// deep-link with fallback) -->
+    <script>
+    (function() {
+        window.__launchIndusApp = function(event, fallbackUrl) {
+            var ua = navigator.userAgent || '';
+            if (!/android/i.test(ua)) {
+                return true;
+            }
+            event.preventDefault();
+            var intentUrl = 'intent://launch#Intent;'
+                + 'scheme=unlockrentals;'
+                + 'package=com.unlockrentals.app;'
+                + 'S.browser_fallback_url=' + encodeURIComponent(fallbackUrl) + ';'
+                + 'end';
+            window.location.href = intentUrl;
+            return false;
+        };
+    })();
+    </script>
 
     <!-- Platform Detection Script -->
     <script>

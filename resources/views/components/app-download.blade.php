@@ -416,7 +416,8 @@
                         </div>
                     </a>
 
-                    <a href="{{ (!empty($site_settings['app_indus_appstore_url']) && $site_settings['app_indus_appstore_url'] !== '#') ? $site_settings['app_indus_appstore_url'] : 'https://www.indusappstore.com' }}" target="_blank" class="ur-store-badge" title="Available on Indus Appstore">
+                    @php $indusUrlDl1 = (!empty($site_settings['app_indus_appstore_url']) && $site_settings['app_indus_appstore_url'] !== '#') ? $site_settings['app_indus_appstore_url'] : 'https://www.indusappstore.com/app/com.unlockrentals.app'; @endphp
+                    <a href="{{ $indusUrlDl1 }}" target="_blank" class="ur-store-badge" title="Available on Indus Appstore" onclick="return window.__launchIndusApp ? window.__launchIndusApp(event, '{{ $indusUrlDl1 }}') : true;">
                         <div class="ur-store-badge__icon">
                             <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <defs>
