@@ -149,8 +149,12 @@
                                 <i class="ph-bold ph-key"></i> For Rent
                             </span>
                         @endif
-                        <span class="px-3 py-1 bg-[#2874F0]/10 text-[#2874F0] text-xs font-bold rounded-md uppercase tracking-wider">
-                            {{ ucfirst($property->type) }}
+                        <span class="px-3 py-1 bg-[#2874F0]/10 text-[#2874F0] text-xs font-bold rounded-md uppercase tracking-wider flex items-center gap-1">
+                            @if($property->type === 'plot')
+                                <i class="ph-bold ph-map-trifold"></i> Plot / Land
+                            @else
+                                {{ ucfirst($property->type) }}
+                            @endif
                         </span>
                         <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-md flex items-center gap-1 shadow-sm">
                             <i class="ph-bold ph-shield-check"></i> Verified Owner
@@ -392,60 +396,109 @@
 
                 {{-- Premium Quick Info Cards Grid --}}
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5" id="property-features">
-                    @if($property->bedrooms)
-                    <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                        <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                            <i class="ph-bold ph-bed text-xl"></i>
+                    @if($property->type === 'plot')
+                        {{-- Plot Area Sqft --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-ruler-square text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ number_format($property->area_sqft ?? 0) }}</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Sq. Ft. Area</p>
                         </div>
-                        <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ $property->bedrooms }} BHK</p>
-                        <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Bedrooms</p>
-                    </div>
-                    @endif
-                    
-                    @if($property->bathrooms)
-                    <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                        <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                            <i class="ph-bold ph-drop text-xl"></i>
-                        </div>
-                        <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ $property->bathrooms }} Baths</p>
-                        <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Bathrooms</p>
-                    </div>
-                    @endif
 
-                    @if($property->area_sqft)
-                    <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                        <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                            <i class="ph-bold ph-ruler-square text-xl"></i>
+                        {{-- Area in Sq. Yards (Gaj) --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-corners-out text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">
+                                {{ $property->area_sqft ? number_format(round($property->area_sqft / 9)) : 'N/A' }}
+                            </p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Sq. Yards (Gaj)</p>
                         </div>
-                        <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ number_format($property->area_sqft) }}</p>
-                        <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Sq. Ft. Area</p>
-                    </div>
+
+                        {{-- Classification --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-map-trifold text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">Plot / Land</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Property Type</p>
+                        </div>
+
+                        {{-- Ownership Status --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-certificate text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">Freehold</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Ownership</p>
+                        </div>
+
+                        {{-- Transaction Type --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-tag text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">Outright Sale</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Transaction</p>
+                        </div>
+                    @else
+                        @if($property->bedrooms)
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-bed text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ $property->bedrooms }} BHK</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Bedrooms</p>
+                        </div>
+                        @endif
+                        
+                        @if($property->bathrooms)
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-drop text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ $property->bathrooms }} Baths</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Bathrooms</p>
+                        </div>
+                        @endif
+
+                        @if($property->area_sqft)
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-ruler-square text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ number_format($property->area_sqft) }}</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Sq. Ft. Area</p>
+                        </div>
+                        @endif
+
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-couch text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none truncate max-w-full mb-1">
+                                {{ ucfirst(str_replace('-', ' ', $property->furnishing)) }}
+                            </p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Furnishing</p>
+                        </div>
+
+                        {{-- Dynamic Floor Display --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-stairs text-xl"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">
+                                @if($property->type === 'shop')
+                                    Ground Floor
+                                @else
+                                    {{ ($property->id % 4) + 1 }}nd Floor
+                                @endif
+                            </p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Floor Level</p>
+                        </div>
                     @endif
-
-                    <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                        <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                            <i class="ph-bold ph-couch text-xl"></i>
-                        </div>
-                        <p class="text-base font-extrabold text-zinc-900 leading-none truncate max-w-full mb-1">
-                            {{ ucfirst(str_replace('-', ' ', $property->furnishing)) }}
-                        </p>
-                        <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Furnishing</p>
-                    </div>
-
-                    {{-- Dynamic Floor Display --}}
-                    <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                        <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                            <i class="ph-bold ph-stairs text-xl"></i>
-                        </div>
-                        <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">
-                            @if($property->type === 'shop')
-                                Ground Floor
-                            @else
-                                {{ ($property->id % 4) + 1 }}nd Floor
-                            @endif
-                        </p>
-                        <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Floor Level</p>
-                    </div>
                 </div>
 
                 {{-- Highlights Section --}}
@@ -453,26 +506,49 @@
                     <h3 class="text-lg font-extrabold text-zinc-900 mb-4 flex items-center gap-2 border-b border-zinc-150 pb-3">
                         <i class="ph-bold ph-sparkles text-[#2874F0]"></i> Property Highlights
                     </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
-                        <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                            <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Gated Security Community
+                    @if($property->type === 'plot')
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Clear Title & Registry Ready
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Demarcated Boundary / Wall
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Wide Approach Road Access
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Electricity & Water Connection Ready
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> High Appreciation Investment Zone
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Immediate Possession Available
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                            <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Dedicated Car Parking
+                    @else
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Gated Security Community
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Dedicated Car Parking
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Power Backup Available
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> 24x7 Clean Water Supply
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Elevator / Lift Access
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Close to Metro Station
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                            <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Power Backup Available
-                        </div>
-                        <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                            <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> 24x7 Clean Water Supply
-                        </div>
-                        <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                            <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Elevator / Lift Access
-                        </div>
-                        <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                            <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Close to Metro Station
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
                 {{-- Professional About Property --}}

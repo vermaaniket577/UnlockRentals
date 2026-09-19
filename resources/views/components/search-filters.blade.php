@@ -43,6 +43,7 @@
                         'house' => ['label' => 'House/Flat', 'icon' => 'ph-bold ph-house-line'],
                         'shop' => ['label' => 'Shop/Office', 'icon' => 'ph-bold ph-storefront'],
                         'pg-hostel' => ['label' => 'PG / Hostel', 'icon' => 'ph-bold ph-buildings'],
+                        'plot' => ['label' => 'Plot / Land', 'icon' => 'ph-bold ph-map-trifold'],
                     ];
                 @endphp
                 @foreach($types as $val => $info)

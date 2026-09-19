@@ -32,6 +32,29 @@ class UpdatePropertyRequest extends FormRequest
     }
 
     /**
+     * Prepare inputs before validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('type') === 'plot') {
+            $merge = [
+                'bedrooms' => null,
+                'bathrooms' => null,
+            ];
+            if (!$this->filled('furnishing')) {
+                $merge['furnishing'] = 'unfurnished';
+            }
+            if (!$this->filled('purpose')) {
+                $merge['purpose'] = 'buy';
+            }
+            if (!$this->filled('price_period')) {
+                $merge['price_period'] = 'month';
+            }
+            $this->merge($merge);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
@@ -39,7 +62,7 @@ class UpdatePropertyRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'required|string|min:20',
-            'type' => 'required|in:house,shop,pg-hostel,hotel',
+            'type' => 'required|in:house,shop,pg-hostel,hotel,plot',
             'purpose' => 'nullable|string|in:rent,buy,sell',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
@@ -52,7 +75,7 @@ class UpdatePropertyRequest extends FormRequest
             'bedrooms' => 'nullable|integer|min:0|max:20',
             'bathrooms' => 'nullable|integer|min:0|max:20',
             'area_sqft' => 'nullable|integer|min:0',
-            'furnishing' => 'required|in:unfurnished,semi-furnished,fully-furnished',
+            'furnishing' => 'nullable|in:unfurnished,semi-furnished,fully-furnished',
             'images' => 'nullable|array|max:10',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'primary_image' => 'nullable|integer|min:0',

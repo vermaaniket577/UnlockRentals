@@ -86,7 +86,9 @@
                     @endif
                 </nav>
                 <h1 class="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-                    @if(request('type'))
+                    @if(request('type') === 'plot')
+                        <span class="text-blue-600">Plots & Land</span> for Sale & Investment
+                    @elseif(request('type'))
                         <span class="text-blue-600 capitalize">{{ request('type') }}s</span> for Rent & Buy
                     @elseif(request('search'))
                         Results for <span class="text-blue-600">"{{ request('search') }}"</span>
@@ -95,7 +97,7 @@
                     @endif
                 </h1>
                 <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal mt-1.5 leading-relaxed">
-                    Direct-owner verified houses, flats, PGs, and commercial spaces with zero brokerage.
+                    Direct-owner verified houses, flats, plots, land, PGs, and commercial spaces with zero brokerage.
                 </p>
             </div>
         </div>
@@ -106,6 +108,7 @@
                     $pills = [
                         ['label' => 'All Properties', 'url' => route('properties.index'), 'active' => !request('type') && !request('purpose')],
                         ['label' => 'Houses & Flats', 'url' => route('properties.index', ['type' => 'house']), 'active' => request('type') === 'house'],
+                        ['label' => 'Plots & Land', 'url' => route('properties.index', ['type' => 'plot']), 'active' => request('type') === 'plot'],
                         ['label' => 'Shops & Offices', 'url' => route('properties.index', ['type' => 'shop']), 'active' => request('type') === 'shop'],
                         ['label' => 'PG & Hostels', 'url' => route('properties.index', ['type' => 'pg-hostel']), 'active' => request('type') === 'pg-hostel'],
                         ['label' => 'For Rent', 'url' => route('properties.index', ['purpose' => 'rent']), 'active' => request('purpose') === 'rent'],

@@ -13,31 +13,52 @@
 
     // Collect available specs cleanly to prevent empty spaces or dangling dots
     $specs = [];
-    if ($property->bedrooms !== null && $property->bedrooms !== '') {
-        $beds = (int)$property->bedrooms;
+    if ($property->type === 'plot') {
+        if (!empty($property->area_sqft)) {
+            $sqft = (int)$property->area_sqft;
+            $specs[] = [
+                'icon' => 'ph-map-trifold',
+                'label' => 'Plot: ' . number_format($sqft) . ' sq.ft'
+            ];
+            if ($sqft >= 450) {
+                $sqYards = round($sqft / 9);
+                $specs[] = [
+                    'icon' => 'ph-corners-out',
+                    'label' => number_format($sqYards) . ' sq.yd'
+                ];
+            }
+        }
         $specs[] = [
-            'icon' => 'ph-bed',
-            'label' => $beds === 0 ? '1 RK' : ($beds === 1 ? '1 Bed' : $beds . ' Beds')
+            'icon' => 'ph-certificate',
+            'label' => 'Clear Title'
         ];
-    }
-    if (!empty($property->bathrooms)) {
-        $baths = (int)$property->bathrooms;
-        $specs[] = [
-            'icon' => 'ph-drop',
-            'label' => $baths === 1 ? '1 Bath' : $baths . ' Baths'
-        ];
-    }
-    if (!empty($property->area_sqft)) {
-        $specs[] = [
-            'icon' => 'ph-ruler',
-            'label' => number_format($property->area_sqft) . ' sq.ft'
-        ];
-    }
-    if (!empty($property->furnishing)) {
-        $specs[] = [
-            'icon' => 'ph-armchair',
-            'label' => ucfirst($property->furnishing)
-        ];
+    } else {
+        if ($property->bedrooms !== null && $property->bedrooms !== '') {
+            $beds = (int)$property->bedrooms;
+            $specs[] = [
+                'icon' => 'ph-bed',
+                'label' => $beds === 0 ? '1 RK' : ($beds === 1 ? '1 Bed' : $beds . ' Beds')
+            ];
+        }
+        if (!empty($property->bathrooms)) {
+            $baths = (int)$property->bathrooms;
+            $specs[] = [
+                'icon' => 'ph-drop',
+                'label' => $baths === 1 ? '1 Bath' : $baths . ' Baths'
+            ];
+        }
+        if (!empty($property->area_sqft)) {
+            $specs[] = [
+                'icon' => 'ph-ruler',
+                'label' => number_format($property->area_sqft) . ' sq.ft'
+            ];
+        }
+        if (!empty($property->furnishing)) {
+            $specs[] = [
+                'icon' => 'ph-armchair',
+                'label' => ucfirst($property->furnishing)
+            ];
+        }
     }
 
     $isSale = ($property->purpose ?? 'rent') === 'buy' || ($property->purpose ?? 'rent') === 'sell';
@@ -145,8 +166,12 @@
                         <i class="ph-bold ph-key text-[8px] sm:text-[10px]"></i> Rent
                     </span>
                 @endif
-                <span class="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-bold capitalize bg-slate-950/70 text-white/95 border border-white/15 shadow-xs sm:shadow-sm backdrop-blur-md truncate max-w-[80px] sm:max-w-none">
-                    {{ ucfirst($property->type) }}
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-bold capitalize bg-slate-950/70 text-white/95 border border-white/15 shadow-xs sm:shadow-sm backdrop-blur-md truncate max-w-[90px] sm:max-w-none">
+                    @if($property->type === 'plot')
+                        <i class="ph-bold ph-map-trifold text-amber-300 text-[9px] sm:text-[11px]"></i> Plot / Land
+                    @else
+                        {{ ucfirst($property->type) }}
+                    @endif
                 </span>
                 @if($property->is_booked && $property->is_featured)
                     <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-amber-500 text-slate-950 shadow-xs sm:shadow-sm backdrop-blur-md">

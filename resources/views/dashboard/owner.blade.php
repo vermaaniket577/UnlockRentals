@@ -266,11 +266,17 @@
                                         'commercial' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60',
                                         'shop' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60',
                                         'office' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60',
+                                        'plot' => 'bg-amber-50 text-amber-800 border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60',
+                                        'land' => 'bg-amber-50 text-amber-800 border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60',
                                     ];
                                     $style = $typeBadgeStyles[$typeKey] ?? 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
                                 @endphp
-                                <span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-lg border {{ $style }}">
-                                    {{ ucfirst($property->type) }}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg border {{ $style }}">
+                                    @if($typeKey === 'plot')
+                                        <i class="ph-bold ph-map-trifold"></i> Plot / Land
+                                    @else
+                                        {{ ucfirst($property->type) }}
+                                    @endif
                                 </span>
                             </td>
 

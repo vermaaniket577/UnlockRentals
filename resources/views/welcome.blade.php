@@ -1028,6 +1028,10 @@
                 <i class="ph-bold ph-buildings"></i>
                 Commercial
             </a>
+            <a href="{{ route('properties.index', ['type' => 'plot']) }}" class="nav-link" title="Plots / Land">
+                <i class="ph-bold ph-map-trifold"></i>
+                Plots / Land
+            </a>
             <a href="{{ url('/how-it-works') }}" class="nav-link" title="Process">
                 <i class="ph-bold ph-git-merge"></i>
                 Process
@@ -1282,6 +1286,12 @@
                     <i class="ph-bold ph-buildings text-base" style="color: #059669;"></i>
                 </span>
                 <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Commercial</span>
+            </a>
+            <a href="{{ route('properties.index', ['type' => 'plot']) }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Plots / Land">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph-bold ph-map-trifold text-base" style="color: #d97706;"></i>
+                </span>
+                <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Plots / Land</span>
             </a>
             <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Process">
                 <span style="width: 34px; height: 34px; border-radius: 10px; background: #faf5ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -1764,24 +1774,30 @@
                     {{-- Purpose Tabs (Rent / Buy / PG) inside Dropdown --}}
                     <div class="mb-3">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Listing Purpose</span>
-                        <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
+                        <div class="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200">
                             <button type="button" 
                                     id="mobileTabRent"
                                     onclick="switchMobileTab('rent')"
-                                    class="mobile-purpose-tab {{ request('purpose', 'rent') === 'rent' && request('type') !== 'pg-hostel' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                    class="mobile-purpose-tab {{ request('purpose', 'rent') === 'rent' && request('type') !== 'pg-hostel' && request('type') !== 'plot' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
                                 Rent
                             </button>
                             <button type="button" 
                                     id="mobileTabBuy"
                                     onclick="switchMobileTab('buy')"
-                                    class="mobile-purpose-tab {{ request('purpose') === 'buy' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                    class="mobile-purpose-tab {{ request('purpose') === 'buy' && request('type') !== 'plot' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
                                 Buy
                             </button>
                             <button type="button" 
                                     id="mobileTabPg"
                                     onclick="switchMobileTab('pg')"
                                     class="mobile-purpose-tab {{ request('type') === 'pg-hostel' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
-                                PG / Hostel
+                                PG
+                            </button>
+                            <button type="button" 
+                                    id="mobileTabPlot"
+                                    onclick="switchMobileTab('plot')"
+                                    class="mobile-purpose-tab {{ request('type') === 'plot' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                Plot
                             </button>
                         </div>
                     </div>
@@ -1898,6 +1914,14 @@
                         <i class="ph-bold ph-storefront text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">Commercial</span>
+                </a>
+
+                {{-- Category 5b: Plots & Land --}}
+                <a href="{{ route('properties.index', ['type' => 'plot']) }}" class="flipkart-cat-item">
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+                        <i class="ph-bold ph-map-trifold text-white" style="font-size: 22px; color: #ffffff !important;"></i>
+                    </div>
+                    <span class="flipkart-cat-label">Plot/Land</span>
                 </a>
 
                 {{-- Category 6: Near Me GPS --}}
@@ -3078,8 +3102,9 @@
                 const rentTab = document.getElementById('mobileTabRent');
                 const buyTab = document.getElementById('mobileTabBuy');
                 const pgTab = document.getElementById('mobileTabPg');
+                const plotTab = document.getElementById('mobileTabPlot');
 
-                [rentTab, buyTab, pgTab].forEach(t => {
+                [rentTab, buyTab, pgTab, plotTab].forEach(t => {
                     if (t) {
                         t.classList.remove('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/30', 'shadow-blue-500/25');
                         t.classList.add('text-slate-600');
@@ -3106,6 +3131,13 @@
                     if (pgTab) {
                         pgTab.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-500/25');
                         pgTab.classList.remove('text-slate-600');
+                    }
+                } else if (tab === 'plot') {
+                    if (purposeInput) purposeInput.value = 'buy';
+                    if (typeInput) typeInput.value = 'plot';
+                    if (plotTab) {
+                        plotTab.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-500/25');
+                        plotTab.classList.remove('text-slate-600');
                     }
                 }
             };

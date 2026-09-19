@@ -125,19 +125,20 @@
                     {{-- Property Type Selector --}}
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Property Type <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
                             @php
                                 $formTypes = [
                                     'house' => ['label' => 'House / Flat', 'icon' => 'ph-bold ph-house-line'],
                                     'shop' => ['label' => 'Commercial Shop', 'icon' => 'ph-bold ph-storefront'],
                                     'pg-hostel' => ['label' => 'PG / Hostel', 'icon' => 'ph-bold ph-buildings'],
+                                    'plot' => ['label' => 'Plot / Land', 'icon' => 'ph-bold ph-map-trifold'],
                                     'hotel' => ['label' => 'Hotel Room', 'icon' => 'ph-bold ph-bed']
                                 ];
                                 $curType = old('type', $property->type ?? 'house');
                             @endphp
                             @foreach($formTypes as $val => $info)
                             <label class="relative flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all {{ ($curType === $val) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-type-{{ $val }}">
-                                <input type="radio" name="type" value="{{ $val }}" id="edit-type-{{ $val }}" {{ $curType === $val ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600');">
+                                <input type="radio" name="type" value="{{ $val }}" id="edit-type-{{ $val }}" {{ $curType === $val ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600'); if(window.onEditTypeChange) window.onEditTypeChange('{{ $val }}');">
                                 <i class="{{ $info['icon'] }} text-lg sm:text-xl mb-1 text-blue-600"></i>
                                 <span class="text-[11px] sm:text-xs text-center leading-tight">{{ $info['label'] }}</span>
                             </label>
@@ -343,7 +344,7 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 sm:gap-5">
-                    <div>
+                    <div id="edit-bedrooms-col">
                         <label for="edit-bedrooms" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate">BHK</label>
                         <div class="relative">
                             <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-bed"></i></span>
@@ -352,7 +353,7 @@
                                    placeholder="3">
                         </div>
                     </div>
-                    <div>
+                    <div id="edit-bathrooms-col">
                         <label for="edit-bathrooms" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate">Baths</label>
                         <div class="relative">
                             <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-drop"></i></span>
@@ -361,8 +362,8 @@
                                    placeholder="2">
                         </div>
                     </div>
-                    <div>
-                        <label for="edit-area" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate">Area (sqft)</label>
+                    <div id="edit-area-col">
+                        <label for="edit-area" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate" id="edit-area-label">Area (sq.ft)</label>
                         <div class="relative">
                             <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-square-half"></i></span>
                             <input type="number" name="area_sqft" id="edit-area" value="{{ old('area_sqft', $property->area_sqft) }}" min="0" inputmode="numeric" enterkeyhint="next"
@@ -372,10 +373,19 @@
                     </div>
                 </div>
 
-                <div class="mt-3.5 sm:mt-5">
+                {{-- Plot Land Informational Helper --}}
+                <div id="edit-plot-helper" class="hidden mt-3.5 sm:mt-5 p-3 sm:p-4 bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5 shadow-2xs">
+                    <i class="ph-bold ph-info text-amber-600 text-base shrink-0 mt-0.5"></i>
+                    <div>
+                        <strong class="font-bold">Plot / Land Mode:</strong>
+                        <p class="mt-0.5 text-amber-700 dark:text-amber-400 font-normal">Living space specifications (BHK, Bathrooms, Furnishing) are hidden for vacant land. Enter total plot area above and specify dimensions, road frontage width, zoning, and boundary status in the description.</p>
+                    </div>
+                </div>
+
+                <div class="mt-3.5 sm:mt-5" id="edit-furnishing-container">
                     <label for="edit-furnishing" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Furnishing Status <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <select name="furnishing" id="edit-furnishing" required
+                        <select name="furnishing" id="edit-furnishing"
                                 class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                             <option value="unfurnished" {{ old('furnishing', $property->furnishing) === 'unfurnished' ? 'selected' : '' }}>Unfurnished</option>
                             <option value="semi-furnished" {{ old('furnishing', $property->furnishing) === 'semi-furnished' ? 'selected' : '' }}>Semi-Furnished</option>
@@ -1411,6 +1421,92 @@ window.onEditPurposeChange = function(purpose) {
         if (saleCol) saleCol.classList.add('hidden');
     }
 };
+
+window.onEditTypeChange = function(type) {
+    const isPlot = (type === 'plot');
+    const bedCol = document.getElementById('edit-bedrooms-col');
+    const bathCol = document.getElementById('edit-bathrooms-col');
+    const areaCol = document.getElementById('edit-area-col');
+    const areaLabel = document.getElementById('edit-area-label');
+    const areaInput = document.getElementById('edit-area');
+    const furnWrap = document.getElementById('edit-furnishing-container');
+    const plotHelper = document.getElementById('edit-plot-helper');
+    const titleInput = document.getElementById('edit-title');
+    const descInput = document.getElementById('edit-description');
+    const catSelect = document.getElementById('edit-category');
+
+    if (isPlot) {
+        // Automatically default intent to "For Sale"
+        const buyRadio = document.getElementById('edit-purpose-buy');
+        if (buyRadio && !buyRadio.checked) {
+            buyRadio.checked = true;
+            if (window.onEditPurposeChange) window.onEditPurposeChange('buy');
+            const grid = buyRadio.closest('.grid');
+            if (grid) {
+                grid.querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'));
+                buyRadio.closest('label')?.classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm');
+            }
+        }
+
+        // Hide bedrooms & bathrooms & furnishing
+        if (bedCol) bedCol.classList.add('hidden');
+        if (bathCol) bathCol.classList.add('hidden');
+        if (furnWrap) furnWrap.classList.add('hidden');
+        if (plotHelper) plotHelper.classList.remove('hidden');
+
+        // Clear values
+        const bedInput = document.getElementById('edit-bedrooms');
+        const bathInput = document.getElementById('edit-bathrooms');
+        if (bedInput) bedInput.value = '';
+        if (bathInput) bathInput.value = '';
+
+        // Expand area column to full width
+        if (areaCol) {
+            areaCol.className = 'col-span-3';
+        }
+        if (areaLabel) areaLabel.textContent = 'Total Plot / Land Area (sq.ft) *';
+        if (areaInput) areaInput.placeholder = 'e.g. 1500 (or 166 sq.yards)';
+
+        // Auto-select "Plots & Land" category if available
+        if (catSelect && (!catSelect.value || catSelect.value === '')) {
+            for (let opt of catSelect.options) {
+                if (opt.text.toLowerCase().includes('plot') || opt.text.toLowerCase().includes('land')) {
+                    catSelect.value = opt.value;
+                    break;
+                }
+            }
+        }
+
+        if (titleInput && (!titleInput.value || titleInput.value.includes('Flat') || titleInput.value.includes('BHK'))) {
+            titleInput.placeholder = 'e.g. 1500 sq.ft Residential Corner Plot in Sector 57';
+        }
+        if (descInput && (!descInput.value || descInput.value.includes('balcony'))) {
+            descInput.placeholder = 'Describe plot dimensions, road frontage width (e.g. 30ft road), facing direction (North/East), zoning (Residential/Commercial), boundary wall, and clear title status...';
+        }
+    } else {
+        if (bedCol) bedCol.classList.remove('hidden');
+        if (bathCol) bathCol.classList.remove('hidden');
+        if (furnWrap) furnWrap.classList.remove('hidden');
+        if (plotHelper) plotHelper.classList.add('hidden');
+
+        if (areaCol) {
+            areaCol.className = 'col-span-1';
+        }
+        if (areaLabel) areaLabel.textContent = 'Area (sq.ft)';
+        if (areaInput) areaInput.placeholder = '1250';
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const checkedPurpose = document.querySelector('input[name="purpose"]:checked');
+    if (checkedPurpose && window.onEditPurposeChange) {
+        window.onEditPurposeChange(checkedPurpose.value);
+    }
+    const checkedType = document.querySelector('input[name="type"]:checked');
+    if (checkedType && window.onEditTypeChange) {
+        window.onEditTypeChange(checkedType.value);
+    }
+});
 
 async function autoCompressEditVideos() {
     const MAX_SAFE = 60 * 1024 * 1024;
