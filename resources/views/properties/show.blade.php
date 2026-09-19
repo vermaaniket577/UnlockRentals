@@ -688,6 +688,7 @@
                             <a href="{{ route('login') }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Book Visit">
                                 <i class="ph-bold ph-calendar-blank"></i> Book Visit
                             </a>
+                            @endauth
                         </div>
 
                         @php
