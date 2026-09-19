@@ -661,27 +661,105 @@
         }
 
         /* ===================================================
-           MOBILE APP HERO SLIDER (Standard Native Format)
+           FLIPKART STYLE MOBILE APP HERO SECTION
            =================================================== */
         .mobile-app-hero-slider-section {
             position: relative;
             z-index: 20;
             width: 100%;
             margin: 0 auto;
-            padding-top: calc(64px + env(safe-area-inset-top, 0px));
+            padding-top: calc(56px + env(safe-area-inset-top, 0px));
             padding-bottom: 20px;
-            background: #090d16;
-            background: radial-gradient(circle at 50% 0%, #172554 0%, #090d16 75%);
+            background: #090e1a;
+            background: radial-gradient(circle at 50% 0%, #172554 0%, #090e1a 75%);
             box-sizing: border-box;
             overflow: hidden;
         }
 
+        /* Top Location Bar */
+        .flipkart-location-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .flipkart-location-chip:active {
+            background: rgba(37, 99, 235, 0.3);
+            border-color: #3b82f6;
+        }
+
+        /* Search Bar */
+        .mobile-app-search-bar {
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 6px 8px;
+            box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        /* Horizontal Category Circles Rail */
+        .flipkart-cat-rail {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 4px 2px 8px 2px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .flipkart-cat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            width: 58px;
+            text-decoration: none;
+            transition: transform 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .flipkart-cat-item:active {
+            transform: scale(0.92);
+        }
+        .flipkart-cat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 5px;
+            position: relative;
+        }
+        .flipkart-cat-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #e2e8f0;
+            text-align: center;
+            line-height: 1.15;
+            white-space: nowrap;
+        }
+
+        /* Hero Banner Slider */
         .mobile-hero-slider-container {
             position: relative;
             width: 100%;
-            border-radius: 22px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.75);
+            box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.75);
             margin-bottom: 4px;
         }
 
@@ -696,12 +774,12 @@
         .mobile-hero-banner-slide {
             flex: 0 0 100%;
             width: 100%;
-            padding: 22px 18px 24px;
+            padding: 18px 16px 20px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 220px;
+            min-height: 185px;
             position: relative;
             overflow: hidden;
             user-select: none;
@@ -714,7 +792,7 @@
             right: 0;
             bottom: 0;
             left: 0;
-            background: radial-gradient(circle at 88% 25%, rgba(255, 255, 255, 0.16) 0%, transparent 65%);
+            background: radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.18) 0%, transparent 60%);
             pointer-events: none;
         }
 
@@ -723,8 +801,8 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            margin-top: 10px;
-            margin-bottom: 14px;
+            margin-top: 8px;
+            margin-bottom: 12px;
         }
 
         .mobile-slider-dot {
@@ -745,26 +823,50 @@
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
         }
 
-        .mobile-app-search-bar {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-radius: 18px;
-            padding: 8px 10px;
-            box-shadow: 0 14px 35px -8px rgba(2, 6, 23, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        /* Quick Filter Chips */
+        .flipkart-quick-filters {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 2px 2px 8px 2px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .flipkart-filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 11px;
+            border-radius: 9999px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e2e8f0;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .flipkart-filter-chip:active, .flipkart-filter-chip.active {
+            background: #2563eb;
+            border-color: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
         }
 
         .mobile-filter-btn {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 8px 12px;
+            gap: 4px;
+            padding: 7px 11px;
             border-radius: 12px;
             background: rgba(30, 41, 59, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #f1f5f9;
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 700;
             white-space: nowrap;
             cursor: pointer;
@@ -781,7 +883,7 @@
         }
 
         .mobile-filter-dropdown-panel {
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(15, 23, 42, 0.96);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(59, 130, 246, 0.3);
@@ -1456,138 +1558,24 @@
          MOBILE APP HERO SLIDER SECTION (Clean, Standard Format)
          Visible ONLY in Mobile Application / Screens < 1024px
          ==================================================== --}}
+    {{-- ====================================================
+         FLIPKART STYLE MOBILE APP HERO SECTION
+         Clean, standard, app-native format like Flipkart App
+         Visible ONLY in Mobile Application / Screens < 1024px
+         ==================================================== --}}
     <section class="mobile-app-hero-slider-section block lg:hidden">
         
-        {{-- App Header Pill --}}
-        <div class="flex items-center justify-between gap-2 mb-2 px-1">
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 backdrop-blur-md">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="text-[10.5px] font-bold tracking-wide text-blue-200">Zero Brokerage • Direct Owner</span>
+        {{-- 1. Flipkart Top Location & Brand Status Bar --}}
+        <div class="flex items-center justify-between gap-2 mb-2 px-0.5">
+            <button type="button" onclick="searchNearMe()" class="flipkart-location-chip" title="Click to detect or change city">
+                <i class="ph-fill ph-map-pin text-blue-400 text-xs"></i>
+                <span id="mobileTopLocationText">{{ request('district') ?: 'Gurugram / NCR' }}</span>
+                <i class="ph ph-caret-down text-[10px] text-slate-400"></i>
+            </button>
+            <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-500/15 border border-blue-400/25">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-[9.5px] font-extrabold tracking-wider text-blue-300 uppercase">100% Direct Owner</span>
             </div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">100% Verified</span>
-        </div>
-
-        {{-- Standard Mobile App Hero Banner Slider (Touch Swipe & Auto Sliding) --}}
-        <div class="mobile-hero-slider-container" id="mobileHeroSliderContainer">
-            <div class="mobile-hero-slider-track" id="mobileHeroSliderTrack">
-                
-                {{-- Slide 1: Rooms & 1RK --}}
-                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 55%, #312e81 100%);">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1.5 shadow-xs">
-                            <i class="ph-fill ph-navigation-arrow text-sky-300"></i> Zero Brokerage
-                        </span>
-                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-base">
-                            <i class="ph-bold ph-door"></i>
-                        </div>
-                    </div>
-                    <div class="my-3">
-                        <h2 class="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight mb-1">
-                            Find Rooms & 1RK <br>
-                            <span class="text-sky-200">Near Your Location</span>
-                        </h2>
-                        <p class="text-xs text-blue-100 line-clamp-2 leading-relaxed">
-                            100% verified single rooms, studio units & flats directly from owners across India.
-                        </p>
-                    </div>
-                    <div>
-                        <button type="button" onclick="searchNearMe()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-blue-900 font-black text-xs shadow-lg active:scale-95 transition-all cursor-pointer">
-                            <i class="ph-fill ph-navigation-arrow text-blue-600 text-sm"></i>
-                            <span>Search Near Me</span>
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Slide 2: Flats & Apartments --}}
-                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #047857 0%, #065f46 55%, #0f172a 100%);">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1.5 shadow-xs">
-                            <i class="ph-fill ph-shield-check text-emerald-300"></i> Verified Homes
-                        </span>
-                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-base">
-                            <i class="ph-bold ph-buildings"></i>
-                        </div>
-                    </div>
-                    <div class="my-3">
-                        <h2 class="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight mb-1">
-                            Flats & Apartments <br>
-                            <span class="text-emerald-200">1, 2 & 3 BHK Rentals</span>
-                        </h2>
-                        <p class="text-xs text-emerald-100 line-clamp-2 leading-relaxed">
-                            Handpicked residential flats in gated societies. Move in with zero broker commission.
-                        </p>
-                    </div>
-                    <div>
-                        <a href="{{ url('/flat-for-rent-near-me') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-emerald-950 font-black text-xs shadow-lg active:scale-95 transition-all">
-                            <i class="ph-bold ph-buildings text-emerald-600 text-sm"></i>
-                            <span>Explore Flats</span>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Slide 3: PG & Co-Living --}}
-                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #b45309 0%, #c2410c 55%, #4c1d95 100%);">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1.5 shadow-xs">
-                            <i class="ph-fill ph-bed text-amber-200"></i> Fully Furnished
-                        </span>
-                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-base">
-                            <i class="ph-bold ph-bed"></i>
-                        </div>
-                    </div>
-                    <div class="my-3">
-                        <h2 class="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight mb-1">
-                            Premium PG Stays <br>
-                            <span class="text-amber-200">For Students & Pros</span>
-                        </h2>
-                        <p class="text-xs text-amber-100 line-clamp-2 leading-relaxed">
-                            High-speed Wi-Fi, home-style meals, air conditioning & daily housekeeping included.
-                        </p>
-                    </div>
-                    <div>
-                        <a href="{{ url('/pg-near-me') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-amber-950 font-black text-xs shadow-lg active:scale-95 transition-all">
-                            <i class="ph-bold ph-bed text-amber-600 text-sm"></i>
-                            <span>Browse PG Stays</span>
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Slide 4: Free Property Listing for Owners --}}
-                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #4338ca 0%, #6d28d9 55%, #0f172a 100%);">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1.5 shadow-xs">
-                            <i class="ph-fill ph-sparkle text-indigo-200"></i> 100% Free Listing
-                        </span>
-                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-base">
-                            <i class="ph-bold ph-plus-circle"></i>
-                        </div>
-                    </div>
-                    <div class="my-3">
-                        <h2 class="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight mb-1">
-                            Own a Property? <br>
-                            <span class="text-indigo-200">Post Free Advertisement</span>
-                        </h2>
-                        <p class="text-xs text-indigo-100 line-clamp-2 leading-relaxed">
-                            Get verified tenants fast with zero commission. Direct inquiries on your WhatsApp.
-                        </p>
-                    </div>
-                    <div>
-                        <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-indigo-950 font-black text-xs shadow-lg active:scale-95 transition-all">
-                            <i class="ph-bold ph-plus-circle text-indigo-600 text-sm"></i>
-                            <span>Post Property Free</span>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        {{-- Slider Dot Indicators --}}
-        <div class="mobile-slider-indicators" id="mobileSliderDots">
-            <button type="button" class="mobile-slider-dot active" onclick="goMobileSlide(0)" aria-label="Slide 1"></button>
-            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(1)" aria-label="Slide 2"></button>
-            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(2)" aria-label="Slide 3"></button>
-            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4"></button>
         </div>
 
         @php
@@ -1598,62 +1586,58 @@
             if(request()->filled('purpose') && request('purpose') !== 'rent') $mobileActiveFiltersCount++;
         @endphp
 
-        {{-- App Search Bar with Filter Dropdown Button (Clean & Compact above Cards) --}}
-        <div class="mb-3.5">
+        {{-- 2. Flipkart Prominent Search Bar with Filter Button --}}
+        <div class="mb-2.5">
             <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET">
                 <input type="hidden" name="purpose" id="mobile_purpose_input" value="{{ request('purpose', 'rent') }}">
                 <input type="hidden" name="type" id="mobile_type_input" value="{{ request('type', 'all') }}">
                 <input type="hidden" name="rooms" id="mobile_rooms_input" value="{{ request('rooms', 'any') }}">
 
-                {{-- Compact Search & Filter Action Bar --}}
-                <div class="mobile-app-search-bar flex items-center gap-2">
-                    
-                    {{-- Search Input with Search Icon & GPS Near Me Inside --}}
+                {{-- Unified Search Row --}}
+                <div class="mobile-app-search-bar flex items-center gap-1.5">
                     <div class="relative flex-1 flex items-center min-w-0">
-                        <div class="absolute left-2.5 text-slate-400 flex items-center pointer-events-none">
-                            <i class="ph-bold ph-magnifying-glass text-blue-400 text-sm"></i>
-                        </div>
+                        <i class="ph-bold ph-magnifying-glass text-blue-400 text-sm absolute left-2.5 pointer-events-none"></i>
                         <input type="text" 
                                name="search" 
                                id="mobile_search_input"
-                               placeholder="Search city, area..." 
+                               placeholder="Search 'Rooms in Gurugram'..." 
                                value="{{ request('search') }}"
-                               class="w-full pl-8 pr-16 py-2 bg-slate-800/80 border border-slate-700/70 rounded-xl text-xs font-semibold text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                               class="w-full pl-8 pr-14 py-2 bg-slate-800/80 border border-slate-700/60 rounded-xl text-xs font-semibold text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
                         
-                        {{-- Quick GPS Near Me Inside Input --}}
+                        {{-- Quick Near GPS inside input --}}
                         <button type="button" 
                                 id="mobileBtnNearMe" 
                                 onclick="searchNearMe()" 
-                                class="absolute right-1 px-2 py-1 rounded-lg bg-blue-600/25 hover:bg-blue-600 text-blue-300 hover:text-white text-[10.5px] font-bold flex items-center gap-1 transition-all active:scale-95"
+                                class="absolute right-1 px-2 py-1 rounded-lg bg-blue-600/25 hover:bg-blue-600 text-blue-300 hover:text-white text-[10px] font-bold flex items-center gap-0.5 transition-all active:scale-95"
                                 title="Locate Near Me">
-                            <i class="ph-fill ph-navigation-arrow text-xs text-blue-400"></i>
+                            <i class="ph-fill ph-navigation-arrow text-[11px] text-blue-400"></i>
                             <span>Near</span>
                         </button>
                     </div>
 
-                    {{-- Dedicated Filter Dropdown Button --}}
+                    {{-- Dedicated Filter Dropdown Toggle Button --}}
                     <button type="button" 
                             id="mobileFilterToggleBtn" 
                             onclick="toggleMobileFiltersDropdown()" 
                             class="mobile-filter-btn {{ $mobileActiveFiltersCount > 0 ? 'active' : '' }}"
                             aria-expanded="false"
                             aria-controls="mobileFiltersDropdownPanel">
-                        <i class="ph-bold ph-sliders-horizontal text-sm text-blue-400"></i>
+                        <i class="ph-bold ph-sliders-horizontal text-xs text-blue-400"></i>
                         <span>Filter</span>
-                        <i class="ph-bold ph-caret-down text-[11px] transition-transform duration-300" id="mobileFilterCaret"></i>
+                        <i class="ph-bold ph-caret-down text-[10px] transition-transform duration-300" id="mobileFilterCaret"></i>
 
                         @if($mobileActiveFiltersCount > 0)
-                            <span id="mobileFilterBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-slate-900 shadow-md">
+                            <span id="mobileFilterBadge" class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-extrabold flex items-center justify-center ring-2 ring-slate-900 shadow-md">
                                 {{ $mobileActiveFiltersCount }}
                             </span>
                         @endif
                     </button>
 
-                    {{-- Search Submit Go Button --}}
+                    {{-- Search Submit Action --}}
                     <button type="submit" 
-                            class="w-9 h-9 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-600/30 active:scale-95 transition-all"
-                            title="Search Properties">
-                        <i class="ph-bold ph-arrow-right text-sm"></i>
+                            class="w-8 h-8 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-600/30 active:scale-95 transition-all"
+                            title="Search">
+                        <i class="ph-bold ph-arrow-right text-xs"></i>
                     </button>
                 </div>
 
@@ -1778,59 +1762,236 @@
             </form>
         </div>
 
-        {{-- App Category Discovery Grid --}}
-        <div class="mb-3.5">
-            <div class="flex items-center justify-between mb-2 px-1">
-                <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300">Popular Categories</span>
-                <a href="{{ route('properties.index') }}" class="text-[11px] font-bold text-blue-400 hover:text-blue-300 flex items-center gap-0.5">
-                    View All <i class="ph-bold ph-caret-right text-[10px]"></i>
-                </a>
-            </div>
-
-            <div class="grid grid-cols-4 gap-2">
-                <a href="{{ url('/room-near-my-location') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Single Rooms">
-                    <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
+        {{-- 3. Flipkart Signature Horizontal Circular Category Rail --}}
+        <div class="mb-3">
+            <div class="flipkart-cat-rail no-scrollbar">
+                
+                {{-- Category 1: Single Rooms --}}
+                <a href="{{ url('/room-near-my-location') }}" class="flipkart-cat-item">
+                    <div class="flipkart-cat-icon bg-gradient-to-br from-blue-600 to-indigo-700">
                         <i class="ph-bold ph-door"></i>
                     </div>
-                    <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Rooms</span>
+                    <span class="flipkart-cat-label">Rooms</span>
                 </a>
 
-                <a href="{{ url('/flat-for-rent-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Flats & Apartments">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
+                {{-- Category 2: Flats --}}
+                <a href="{{ url('/flat-for-rent-near-me') }}" class="flipkart-cat-item">
+                    <div class="flipkart-cat-icon bg-gradient-to-br from-emerald-600 to-teal-800">
                         <i class="ph-bold ph-buildings"></i>
                     </div>
-                    <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Flats</span>
+                    <span class="flipkart-cat-label">Flats</span>
                 </a>
 
-                <a href="{{ url('/pg-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="PG & Co-Living">
-                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
+                {{-- Category 3: PG Stays --}}
+                <a href="{{ url('/pg-near-me') }}" class="flipkart-cat-item">
+                    <div class="flipkart-cat-icon bg-gradient-to-br from-amber-500 to-orange-700">
                         <i class="ph-bold ph-bed"></i>
                     </div>
-                    <span class="text-[10.5px] font-bold text-slate-200 leading-tight">PG Stays</span>
+                    <span class="flipkart-cat-label">PG Stays</span>
                 </a>
 
-                <a href="{{ url('/house-for-rent-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Independent Houses">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
+                {{-- Category 4: Independent Houses --}}
+                <a href="{{ url('/house-for-rent-near-me') }}" class="flipkart-cat-item">
+                    <div class="flipkart-cat-icon bg-gradient-to-br from-purple-600 to-pink-700">
                         <i class="ph-bold ph-house-line"></i>
                     </div>
-                    <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Houses</span>
+                    <span class="flipkart-cat-label">Houses</span>
                 </a>
+
+                {{-- Category 5: Commercial --}}
+                <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="flipkart-cat-item">
+                    <div class="flipkart-cat-icon bg-gradient-to-br from-sky-600 to-blue-800">
+                        <i class="ph-bold ph-storefront"></i>
+                    </div>
+                    <span class="flipkart-cat-label">Commercial</span>
+                </a>
+
+                {{-- Category 6: Near Me GPS --}}
+                <div onclick="searchNearMe()" class="flipkart-cat-item cursor-pointer">
+                    <div class="flipkart-cat-icon bg-gradient-to-br from-cyan-500 to-blue-600">
+                        <i class="ph-fill ph-navigation-arrow"></i>
+                    </div>
+                    <span class="flipkart-cat-label">Near Me</span>
+                </div>
+
+                {{-- Category 7: 0 Brokerage --}}
+                <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="flipkart-cat-item">
+                    <div class="flipkart-cat-icon bg-gradient-to-br from-rose-500 to-red-700">
+                        <i class="ph-bold ph-tag"></i>
+                    </div>
+                    <span class="flipkart-cat-label">0 Broker</span>
+                </a>
+
+                {{-- Category 8: Post Free Property --}}
+                <a href="{{ route('properties.create') }}" class="flipkart-cat-item">
+                    <div class="flipkart-cat-icon bg-gradient-to-br from-violet-600 to-indigo-800">
+                        <i class="ph-bold ph-plus-circle"></i>
+                    </div>
+                    <span class="flipkart-cat-label">Post Free</span>
+                </a>
+
             </div>
         </div>
 
-        {{-- Mobile Trust Badges Ribbon --}}
-        <div class="grid grid-cols-3 gap-1.5 py-2 px-3 rounded-xl bg-slate-900/60 border border-white/10 text-center backdrop-blur-md">
-            <div class="flex items-center justify-center gap-1.5">
+        {{-- 4. Flipkart Hero Promotional Banner Slider (Touch Swipe & Auto Sliding) --}}
+        <div class="mobile-hero-slider-container" id="mobileHeroSliderContainer">
+            <div class="mobile-hero-slider-track" id="mobileHeroSliderTrack">
+                
+                {{-- Slide 1: Rooms & 1RK Super Saver --}}
+                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 55%, #312e81 100%);">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
+                            <i class="ph-fill ph-lightning text-amber-300"></i> BIG SAVINGS • 0% BROKERAGE
+                        </span>
+                        <span class="text-[10px] font-bold text-sky-200">100% Direct Owner</span>
+                    </div>
+                    <div class="my-2">
+                        <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
+                            Single Rooms & 1 RK Rentals <br>
+                            <span class="text-sky-300 font-extrabold">Starting at ₹4,999/mo</span>
+                        </h2>
+                        <p class="text-[11px] text-blue-100 line-clamp-1 leading-relaxed">
+                            Verified independent rooms & studio units with direct owner contact.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <a href="{{ url('/room-near-my-location') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-blue-950 font-black text-[11px] shadow-lg active:scale-95 transition-all">
+                            <span>Explore Homes</span>
+                            <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                        </a>
+                        <span class="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-1 rounded-lg">Zero Deposit Options</span>
+                    </div>
+                </div>
+
+                {{-- Slide 2: Flats & Gated Societies --}}
+                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #047857 0%, #065f46 55%, #0f172a 100%);">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
+                            <i class="ph-fill ph-shield-check text-emerald-300"></i> GATED SOCIETIES
+                        </span>
+                        <span class="text-[10px] font-bold text-emerald-200">Gurugram & NCR</span>
+                    </div>
+                    <div class="my-2">
+                        <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
+                            1, 2 & 3 BHK Luxury Flats <br>
+                            <span class="text-emerald-300 font-extrabold">Starting at ₹14,999/mo</span>
+                        </h2>
+                        <p class="text-[11px] text-emerald-100 line-clamp-1 leading-relaxed">
+                            High-rise societies with gym, parking, swimming pool & 24/7 power backup.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <a href="{{ url('/flat-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-emerald-950 font-black text-[11px] shadow-lg active:scale-95 transition-all">
+                            <span>Browse Flats</span>
+                            <i class="ph-bold ph-arrow-right text-emerald-600 text-xs"></i>
+                        </a>
+                        <span class="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-1 rounded-lg">No Broker Fee</span>
+                    </div>
+                </div>
+
+                {{-- Slide 3: PG & Co-Living --}}
+                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #b45309 0%, #c2410c 55%, #4c1d95 100%);">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
+                            <i class="ph-fill ph-bed text-amber-200"></i> ALL-INCLUSIVE LIVING
+                        </span>
+                        <span class="text-[10px] font-bold text-amber-200">Food & Wi-Fi Included</span>
+                    </div>
+                    <div class="my-2">
+                        <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
+                            Premium PG & Hostels <br>
+                            <span class="text-amber-300 font-extrabold">Starting at ₹5,999/mo</span>
+                        </h2>
+                        <p class="text-[11px] text-amber-100 line-clamp-1 leading-relaxed">
+                            Air-conditioned rooms, 3-time home meals, Wi-Fi & daily cleaning.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <a href="{{ url('/pg-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-amber-950 font-black text-[11px] shadow-lg active:scale-95 transition-all">
+                            <span>Explore Stays</span>
+                            <i class="ph-bold ph-arrow-right text-amber-600 text-xs"></i>
+                        </a>
+                        <span class="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-1 rounded-lg">Boys & Girls PG</span>
+                    </div>
+                </div>
+
+                {{-- Slide 4: Free Property Listing for Owners --}}
+                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #4338ca 0%, #6d28d9 55%, #0f172a 100%);">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
+                            <i class="ph-fill ph-sparkle text-indigo-200"></i> 100% FREE ADVERTISEMENT
+                        </span>
+                        <span class="text-[10px] font-bold text-indigo-200">Direct Inquiries</span>
+                    </div>
+                    <div class="my-2">
+                        <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
+                            List Your Property Free <br>
+                            <span class="text-indigo-300 font-extrabold">Rent 10x Faster Online</span>
+                        </h2>
+                        <p class="text-[11px] text-indigo-100 line-clamp-1 leading-relaxed">
+                            Connect directly with 10,000+ verified tenants with zero middleman commission.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-indigo-950 font-black text-[11px] shadow-lg active:scale-95 transition-all">
+                            <span>Post Property Now</span>
+                            <i class="ph-bold ph-arrow-right text-indigo-600 text-xs"></i>
+                        </a>
+                        <span class="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-1 rounded-lg">Zero Brokerage</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {{-- Slider Dot Indicators --}}
+        <div class="mobile-slider-indicators" id="mobileSliderDots">
+            <button type="button" class="mobile-slider-dot active" onclick="goMobileSlide(0)" aria-label="Slide 1"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(1)" aria-label="Slide 2"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(2)" aria-label="Slide 3"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4"></button>
+        </div>
+
+        {{-- 5. Flipkart Style Quick Filter Chips --}}
+        <div class="mb-3">
+            <div class="flipkart-quick-filters no-scrollbar">
+                <a href="{{ route('properties.index') }}" class="flipkart-filter-chip active">
+                    <i class="ph-bold ph-squares-four text-xs text-blue-400"></i> All
+                </a>
+                <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="flipkart-filter-chip">
+                    <i class="ph-bold ph-key text-xs text-emerald-400"></i> For Rent
+                </a>
+                <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="flipkart-filter-chip">
+                    <i class="ph-bold ph-house text-xs text-purple-400"></i> For Buy
+                </a>
+                <a href="{{ route('properties.index', ['type' => 'pg-hostel']) }}" class="flipkart-filter-chip">
+                    <i class="ph-bold ph-bed text-xs text-amber-400"></i> PG / Stays
+                </a>
+                <a href="{{ route('properties.index', ['price' => '0-20000']) }}" class="flipkart-filter-chip">
+                    <i class="ph-bold ph-currency-inr text-xs text-sky-400"></i> Under ₹20k
+                </a>
+                <button type="button" onclick="searchNearMe()" class="flipkart-filter-chip">
+                    <i class="ph-fill ph-navigation-arrow text-xs text-cyan-400"></i> Near Me
+                </button>
+                <button type="button" onclick="toggleMobileFiltersDropdown()" class="flipkart-filter-chip bg-blue-600/30 border-blue-500/40 text-blue-300">
+                    <i class="ph-bold ph-faders text-xs"></i> More Filters
+                </button>
+            </div>
+        </div>
+
+        {{-- 6. Flipkart Style Trust & Assurance Ribbon --}}
+        <div class="grid grid-cols-3 gap-1 py-2 px-2.5 rounded-xl bg-slate-900/80 border border-white/10 text-center backdrop-blur-md">
+            <div class="flex items-center justify-center gap-1">
                 <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i>
-                <span class="text-[10px] font-bold text-slate-200">Zero Brokerage</span>
+                <span class="text-[9.5px] font-extrabold text-slate-200">Zero Brokerage</span>
             </div>
-            <div class="flex items-center justify-center gap-1.5 border-x border-white/10 px-1">
+            <div class="flex items-center justify-center gap-1 border-x border-white/10 px-0.5">
                 <i class="ph-fill ph-shield-check text-blue-400 text-xs"></i>
-                <span class="text-[10px] font-bold text-slate-200">100% Verified</span>
+                <span class="text-[9.5px] font-extrabold text-slate-200">100% Verified</span>
             </div>
-            <div class="flex items-center justify-center gap-1.5">
+            <div class="flex items-center justify-center gap-1">
                 <i class="ph-fill ph-whatsapp-logo text-emerald-400 text-xs"></i>
-                <span class="text-[10px] font-bold text-slate-200">Direct WhatsApp</span>
+                <span class="text-[9.5px] font-extrabold text-slate-200">Direct Contact</span>
             </div>
         </div>
 
@@ -2838,6 +2999,28 @@
                     }
                     window.resetMobileHeroTimer();
                 }, { passive: true });
+            });
+
+            // Flipkart Style Animated Rotating Search Placeholder
+            document.addEventListener('DOMContentLoaded', () => {
+                const searchPlaceholders = [
+                    'Search "Rooms in Gurugram"...',
+                    'Search "1 & 2 BHK Flats"...',
+                    'Search "PG with Food & Wi-Fi"...',
+                    'Search "Flats in Delhi NCR"...',
+                    'Search "Independent Houses"...',
+                    'Search "Zero Brokerage Rentals"...'
+                ];
+                let searchPlaceholderIndex = 0;
+                const mobileSearchInput = document.getElementById('mobile_search_input');
+                if (mobileSearchInput) {
+                    setInterval(() => {
+                        if (document.activeElement !== mobileSearchInput && !mobileSearchInput.value) {
+                            searchPlaceholderIndex = (searchPlaceholderIndex + 1) % searchPlaceholders.length;
+                            mobileSearchInput.setAttribute('placeholder', searchPlaceholders[searchPlaceholderIndex]);
+                        }
+                    }, 2800);
+                }
             });
 
             // Geolocation 'Search House Near Me' function
