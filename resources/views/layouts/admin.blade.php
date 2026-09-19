@@ -131,7 +131,13 @@
                             <i class="ph-bold ph-funnel text-base"></i>
                             <span>Leads CRM</span>
                         </div>
-                        @php $newLeadsCount = \App\Models\Lead::where('lead_status', 'new')->count(); @endphp
+                        @php
+                            try {
+                                $newLeadsCount = \Illuminate\Support\Facades\Schema::hasTable('leads') ? \App\Models\Lead::where('lead_status', 'new')->count() : 0;
+                            } catch (\Throwable $e) {
+                                $newLeadsCount = 0;
+                            }
+                        @endphp
                         @if($newLeadsCount > 0)
                             <span class="bg-blue-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">{{ $newLeadsCount }}</span>
                         @endif
@@ -142,7 +148,13 @@
                             <i class="ph-bold ph-calendar-check text-base"></i>
                             <span>Follow-ups Hub</span>
                         </div>
-                        @php $dueFollowUps = \App\Models\LeadFollowUp::where('status', 'pending')->where('scheduled_at', '<=', now()->endOfDay())->count(); @endphp
+                        @php
+                            try {
+                                $dueFollowUps = \Illuminate\Support\Facades\Schema::hasTable('lead_follow_ups') ? \App\Models\LeadFollowUp::where('status', 'pending')->where('scheduled_at', '<=', now()->endOfDay())->count() : 0;
+                            } catch (\Throwable $e) {
+                                $dueFollowUps = 0;
+                            }
+                        @endphp
                         @if($dueFollowUps > 0)
                             <span class="bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">{{ $dueFollowUps }}</span>
                         @endif
