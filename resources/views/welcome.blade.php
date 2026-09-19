@@ -661,23 +661,95 @@
         }
 
         /* ===================================================
-           MOBILE APP HERO COMPONENT (Native App Standard)
+           MOBILE APP HERO SLIDER (Standard Native Format)
            =================================================== */
-        .mobile-app-hero {
+        .mobile-app-hero-slider-section {
             position: relative;
             z-index: 20;
             width: 100%;
-            max-width: 580px;
             margin: 0 auto;
-            padding-top: calc(72px + env(safe-area-inset-top, 0px));
+            padding-top: calc(64px + env(safe-area-inset-top, 0px));
             padding-bottom: 20px;
+            background: #090d16;
+            background: radial-gradient(circle at 50% 0%, #172554 0%, #090d16 75%);
             box-sizing: border-box;
+            overflow: hidden;
         }
+
+        .mobile-hero-slider-container {
+            position: relative;
+            width: 100%;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.75);
+            margin-bottom: 4px;
+        }
+
+        .mobile-hero-slider-track {
+            display: flex;
+            width: 100%;
+            transition: transform 0.42s cubic-bezier(0.25, 1, 0.5, 1);
+            touch-action: pan-y;
+            will-change: transform;
+        }
+
+        .mobile-hero-banner-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            padding: 22px 18px 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .mobile-hero-banner-slide::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: radial-gradient(circle at 88% 25%, rgba(255, 255, 255, 0.16) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .mobile-slider-indicators {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+            margin-bottom: 14px;
+        }
+
+        .mobile-slider-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.25);
+            transition: all 0.3s ease;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .mobile-slider-dot.active {
+            width: 22px;
+            background: #3b82f6;
+            border-radius: 9999px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+        }
+
         .mobile-app-search-card {
             background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 20px;
             padding: 14px;
             box-shadow: 0 20px 45px -10px rgba(2, 6, 23, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
@@ -1023,7 +1095,7 @@
     </div>
     @endauth
 
-    <section class="hero-section">
+    <section class="hero-section hidden lg:block">
         <div class="hero-bg">
             <div class="glow-orb orb-1"></div>
             <div class="glow-orb orb-2"></div>
@@ -1041,197 +1113,7 @@
             <div class="overlay-gradient"></div>
         </div>
 
-        {{-- ====================================================
-             MOBILE APP HERO SECTION (Standard Native App Design)
-             Visible only on Mobile & Tablet (< 1024px)
-             ==================================================== --}}
-        <div class="mobile-app-hero block lg:hidden px-4 text-white text-left">
-            
-            {{-- 1. App Top Chip / Pill --}}
-            <div class="flex items-center justify-between gap-2 mb-2.5">
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 backdrop-blur-md">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="text-[10.5px] font-bold tracking-wide text-blue-200">Zero Brokerage • Direct Owner</span>
-                </div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">100% Verified</span>
-            </div>
-
-            {{-- 2. Catchy App Headline --}}
-            <h1 class="text-[26px] sm:text-3xl font-extrabold tracking-tight leading-[1.2] text-white mb-1.5">
-                Find Rooms & Flats <br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-200 to-indigo-300">Near Your Location</span>
-            </h1>
-            <p class="text-xs text-slate-300 mb-3.5 leading-relaxed">
-                Explore 10,000+ verified rooms, flats & PG stays across India. Contact owners directly.
-            </p>
-
-            {{-- 3. App-Style Search Card --}}
-            <div class="mobile-app-search-card mb-4">
-                
-                {{-- Segmented Purpose Switcher (Rent / Buy / PG) --}}
-                <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/80 rounded-xl mb-3 border border-slate-800/90">
-                    <button type="button" 
-                            id="mobileTabRent"
-                            onclick="switchMobileTab('rent')"
-                            class="mobile-purpose-tab active py-2 text-xs font-bold rounded-lg text-center transition-all bg-blue-600 text-white shadow-md shadow-blue-600/30">
-                        Rent
-                    </button>
-                    <button type="button" 
-                            id="mobileTabBuy"
-                            onclick="switchMobileTab('buy')"
-                            class="mobile-purpose-tab py-2 text-xs font-bold rounded-lg text-center transition-all text-slate-400 hover:text-white">
-                        Buy
-                    </button>
-                    <button type="button" 
-                            id="mobileTabPg"
-                            onclick="switchMobileTab('pg')"
-                            class="mobile-purpose-tab py-2 text-xs font-bold rounded-lg text-center transition-all text-slate-400 hover:text-white">
-                        PG / Hostel
-                    </button>
-                </div>
-
-                {{-- Mobile App Search Form --}}
-                <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET" class="space-y-2.5">
-                    <input type="hidden" name="purpose" id="mobile_purpose_input" value="{{ request('purpose', 'rent') }}">
-                    <input type="hidden" name="type" id="mobile_type_input" value="{{ request('type', 'all') }}">
-
-                    {{-- Main Search Field with GPS "Near Me" button right inside --}}
-                    <div class="relative flex items-center">
-                        <div class="absolute left-3 text-slate-400 flex items-center pointer-events-none">
-                            <i class="ph-bold ph-magnifying-glass text-base text-blue-400"></i>
-                        </div>
-                        <input type="text" 
-                               name="search" 
-                               id="mobile_search_input"
-                               placeholder="Enter city, locality or area..." 
-                               value="{{ request('search') }}"
-                               class="w-full pl-9 pr-24 py-2.5 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs font-semibold text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                        
-                        {{-- Integrated Quick GPS Button --}}
-                        <button type="button" 
-                                id="mobileBtnNearMe" 
-                                onclick="searchNearMe()" 
-                                class="absolute right-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95"
-                                title="Use My Location">
-                            <i class="ph-fill ph-navigation-arrow text-xs text-blue-400"></i>
-                            <span>Near Me</span>
-                        </button>
-                    </div>
-
-                    {{-- Quick City Selector Row --}}
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="relative">
-                            <select name="district" 
-                                    id="mobile_city_select"
-                                    class="w-full appearance-none pl-3 pr-8 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
-                                <option value="">All Top Cities</option>
-                                <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurugram</option>
-                                <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>Delhi NCR</option>
-                                <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>Noida</option>
-                                <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>Faridabad</option>
-                                <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>Ghaziabad</option>
-                                <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>Bengaluru</option>
-                                <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>Mumbai</option>
-                                <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>Pune</option>
-                                <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>Hyderabad</option>
-                                <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>Jaipur</option>
-                                <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>Chandigarh</option>
-                            </select>
-                            <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-                        </div>
-
-                        <div class="relative">
-                            <select name="price" 
-                                    id="mobile_price_select"
-                                    class="w-full appearance-none pl-3 pr-8 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
-                                <option value="any">Any Budget</option>
-                                <option value="0-20000" {{ request('price') == '0-20000' ? 'selected' : '' }}>Under ₹20,000</option>
-                                <option value="20000-50000" {{ request('price') == '20000-50000' ? 'selected' : '' }}>₹20K – ₹50K</option>
-                                <option value="50000-plus" {{ request('price') == '50000-plus' ? 'selected' : '' }}>₹50,000+</option>
-                            </select>
-                            <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
-                        </div>
-                    </div>
-
-                    {{-- Quick Layout Pills (1 RK, 1 BHK, 2 BHK, 3+) --}}
-                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Layout:</span>
-                        <input type="hidden" name="rooms" id="mobile_rooms_input" value="{{ request('rooms', 'any') }}">
-                        <button type="button" onclick="setMobileRoom('any', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms', 'any') == 'any' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">Any</button>
-                        <button type="button" onclick="setMobileRoom('1rk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '1rk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 RK</button>
-                        <button type="button" onclick="setMobileRoom('1bhk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '1bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 BHK</button>
-                        <button type="button" onclick="setMobileRoom('2bhk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '2bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">2 BHK</button>
-                        <button type="button" onclick="setMobileRoom('3bhk-plus', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ in_array(request('rooms'), ['3bhk-plus', '3bhk', '3plus']) ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">3+ BHK</button>
-                    </div>
-
-                    {{-- Submit Action Button --}}
-                    <button type="submit" 
-                            class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
-                        <i class="ph-bold ph-magnifying-glass text-sm"></i>
-                        <span>Search Verified Properties</span>
-                    </button>
-                </form>
-            </div>
-
-            {{-- 4. App Category Discovery Grid (Native Tactile Cards) --}}
-            <div class="mb-3.5">
-                <div class="flex items-center justify-between mb-2 px-1">
-                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300">Popular Categories</span>
-                    <a href="{{ route('properties.index') }}" class="text-[11px] font-bold text-blue-400 hover:text-blue-300 flex items-center gap-0.5">
-                        View All <i class="ph-bold ph-caret-right text-[10px]"></i>
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-4 gap-2">
-                    <a href="{{ url('/room-near-my-location') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Single Rooms">
-                        <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
-                            <i class="ph-bold ph-door"></i>
-                        </div>
-                        <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Rooms</span>
-                    </a>
-
-                    <a href="{{ url('/flat-for-rent-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Flats & Apartments">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
-                            <i class="ph-bold ph-buildings"></i>
-                        </div>
-                        <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Flats</span>
-                    </a>
-
-                    <a href="{{ url('/pg-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="PG & Co-Living">
-                        <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
-                            <i class="ph-bold ph-bed"></i>
-                        </div>
-                        <span class="text-[10.5px] font-bold text-slate-200 leading-tight">PG Stays</span>
-                    </a>
-
-                    <a href="{{ url('/house-for-rent-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Independent Houses">
-                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
-                            <i class="ph-bold ph-house-line"></i>
-                        </div>
-                        <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Houses</span>
-                    </a>
-                </div>
-            </div>
-
-            {{-- 5. Mobile Trust Badges Ribbon --}}
-            <div class="grid grid-cols-3 gap-1.5 py-2 px-3 rounded-xl bg-slate-900/60 border border-white/10 text-center backdrop-blur-md">
-                <div class="flex items-center justify-center gap-1.5">
-                    <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i>
-                    <span class="text-[10px] font-bold text-slate-200">Zero Brokerage</span>
-                </div>
-                <div class="flex items-center justify-center gap-1.5 border-x border-white/10 px-1">
-                    <i class="ph-fill ph-shield-check text-blue-400 text-xs"></i>
-                    <span class="text-[10px] font-bold text-slate-200">100% Verified</span>
-                </div>
-                <div class="flex items-center justify-center gap-1.5">
-                    <i class="ph-fill ph-whatsapp-logo text-emerald-400 text-xs"></i>
-                    <span class="text-[10px] font-bold text-slate-200">Direct WhatsApp</span>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="hero-container hidden lg:block">
+        <div class="hero-container">
             <div class="hero-badge badge-animate">
                 <span class="badge-dot"></span>
                 Verified Premium Listings
@@ -1476,8 +1358,312 @@
         </div>
     </section>
 
-    <!-- Premium Promo Slider Section -->
-    <div class="promo-slider-container">
+    {{-- ====================================================
+         MOBILE APP HERO SLIDER SECTION (Clean, Standard Format)
+         Visible ONLY in Mobile Application / Screens < 1024px
+         ==================================================== --}}
+    <section class="mobile-app-hero-slider-section block lg:hidden">
+        
+        {{-- App Header Pill --}}
+        <div class="flex items-center justify-between gap-2 mb-2 px-1">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 backdrop-blur-md">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-[10.5px] font-bold tracking-wide text-blue-200">Zero Brokerage • Direct Owner</span>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">100% Verified</span>
+        </div>
+
+        {{-- Standard Mobile App Hero Banner Slider (Touch Swipe & Auto Sliding) --}}
+        <div class="mobile-hero-slider-container" id="mobileHeroSliderContainer">
+            <div class="mobile-hero-slider-track" id="mobileHeroSliderTrack">
+                
+                {{-- Slide 1: Rooms & 1RK --}}
+                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 55%, #312e81 100%);">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1.5 shadow-xs">
+                            <i class="ph-fill ph-navigation-arrow text-sky-300"></i> Zero Brokerage
+                        </span>
+                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-base">
+                            <i class="ph-bold ph-door"></i>
+                        </div>
+                    </div>
+                    <div class="my-3">
+                        <h2 class="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight mb-1">
+                            Find Rooms & 1RK <br>
+                            <span class="text-sky-200">Near Your Location</span>
+                        </h2>
+                        <p class="text-xs text-blue-100 line-clamp-2 leading-relaxed">
+                            100% verified single rooms, studio units & flats directly from owners across India.
+                        </p>
+                    </div>
+                    <div>
+                        <button type="button" onclick="searchNearMe()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-blue-900 font-black text-xs shadow-lg active:scale-95 transition-all cursor-pointer">
+                            <i class="ph-fill ph-navigation-arrow text-blue-600 text-sm"></i>
+                            <span>Search Near Me</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Slide 2: Flats & Apartments --}}
+                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #047857 0%, #065f46 55%, #0f172a 100%);">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1.5 shadow-xs">
+                            <i class="ph-fill ph-shield-check text-emerald-300"></i> Verified Homes
+                        </span>
+                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-base">
+                            <i class="ph-bold ph-buildings"></i>
+                        </div>
+                    </div>
+                    <div class="my-3">
+                        <h2 class="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight mb-1">
+                            Flats & Apartments <br>
+                            <span class="text-emerald-200">1, 2 & 3 BHK Rentals</span>
+                        </h2>
+                        <p class="text-xs text-emerald-100 line-clamp-2 leading-relaxed">
+                            Handpicked residential flats in gated societies. Move in with zero broker commission.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{{ url('/flat-for-rent-near-me') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-emerald-950 font-black text-xs shadow-lg active:scale-95 transition-all">
+                            <i class="ph-bold ph-buildings text-emerald-600 text-sm"></i>
+                            <span>Explore Flats</span>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Slide 3: PG & Co-Living --}}
+                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #b45309 0%, #c2410c 55%, #4c1d95 100%);">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1.5 shadow-xs">
+                            <i class="ph-fill ph-bed text-amber-200"></i> Fully Furnished
+                        </span>
+                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-base">
+                            <i class="ph-bold ph-bed"></i>
+                        </div>
+                    </div>
+                    <div class="my-3">
+                        <h2 class="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight mb-1">
+                            Premium PG Stays <br>
+                            <span class="text-amber-200">For Students & Pros</span>
+                        </h2>
+                        <p class="text-xs text-amber-100 line-clamp-2 leading-relaxed">
+                            High-speed Wi-Fi, home-style meals, air conditioning & daily housekeeping included.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{{ url('/pg-near-me') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-amber-950 font-black text-xs shadow-lg active:scale-95 transition-all">
+                            <i class="ph-bold ph-bed text-amber-600 text-sm"></i>
+                            <span>Browse PG Stays</span>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Slide 4: Free Property Listing for Owners --}}
+                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #4338ca 0%, #6d28d9 55%, #0f172a 100%);">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1.5 shadow-xs">
+                            <i class="ph-fill ph-sparkle text-indigo-200"></i> 100% Free Listing
+                        </span>
+                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-base">
+                            <i class="ph-bold ph-plus-circle"></i>
+                        </div>
+                    </div>
+                    <div class="my-3">
+                        <h2 class="text-xl sm:text-2xl font-black text-white leading-tight tracking-tight mb-1">
+                            Own a Property? <br>
+                            <span class="text-indigo-200">Post Free Advertisement</span>
+                        </h2>
+                        <p class="text-xs text-indigo-100 line-clamp-2 leading-relaxed">
+                            Get verified tenants fast with zero commission. Direct inquiries on your WhatsApp.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-indigo-950 font-black text-xs shadow-lg active:scale-95 transition-all">
+                            <i class="ph-bold ph-plus-circle text-indigo-600 text-sm"></i>
+                            <span>Post Property Free</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {{-- Slider Dot Indicators --}}
+        <div class="mobile-slider-indicators" id="mobileSliderDots">
+            <button type="button" class="mobile-slider-dot active" onclick="goMobileSlide(0)" aria-label="Slide 1"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(1)" aria-label="Slide 2"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(2)" aria-label="Slide 3"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4"></button>
+        </div>
+
+        {{-- App Search & Filter Card --}}
+        <div class="mobile-app-search-card mb-3.5">
+            
+            {{-- Purpose Switcher (Rent / Buy / PG) --}}
+            <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/80 rounded-xl mb-3 border border-slate-800/90">
+                <button type="button" 
+                        id="mobileTabRent"
+                        onclick="switchMobileTab('rent')"
+                        class="mobile-purpose-tab active py-2 text-xs font-bold rounded-lg text-center transition-all bg-blue-600 text-white shadow-md shadow-blue-600/30">
+                    Rent
+                </button>
+                <button type="button" 
+                        id="mobileTabBuy"
+                        onclick="switchMobileTab('buy')"
+                        class="mobile-purpose-tab py-2 text-xs font-bold rounded-lg text-center transition-all text-slate-400 hover:text-white">
+                    Buy
+                </button>
+                <button type="button" 
+                        id="mobileTabPg"
+                        onclick="switchMobileTab('pg')"
+                        class="mobile-purpose-tab py-2 text-xs font-bold rounded-lg text-center transition-all text-slate-400 hover:text-white">
+                    PG / Hostel
+                </button>
+            </div>
+
+            {{-- Form Inputs --}}
+            <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET" class="space-y-2.5">
+                <input type="hidden" name="purpose" id="mobile_purpose_input" value="{{ request('purpose', 'rent') }}">
+                <input type="hidden" name="type" id="mobile_type_input" value="{{ request('type', 'all') }}">
+
+                {{-- Unified Search Field with GPS Near Me inside --}}
+                <div class="relative flex items-center">
+                    <div class="absolute left-3 text-slate-400 flex items-center pointer-events-none">
+                        <i class="ph-bold ph-magnifying-glass text-base text-blue-400"></i>
+                    </div>
+                    <input type="text" 
+                           name="search" 
+                           id="mobile_search_input"
+                           placeholder="Enter city, locality or area..." 
+                           value="{{ request('search') }}"
+                           class="w-full pl-9 pr-24 py-2.5 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs font-semibold text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    
+                    {{-- Quick GPS Near Me Button --}}
+                    <button type="button" 
+                            id="mobileBtnNearMe" 
+                            onclick="searchNearMe()" 
+                            class="absolute right-1.5 px-2.5 py-1.5 rounded-lg bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95"
+                            title="Use My Location">
+                        <i class="ph-fill ph-navigation-arrow text-xs text-blue-400"></i>
+                        <span>Near Me</span>
+                    </button>
+                </div>
+
+                {{-- Quick City & Budget Dropdowns --}}
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="relative">
+                        <select name="district" 
+                                id="mobile_city_select"
+                                class="w-full appearance-none pl-3 pr-8 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
+                            <option value="">All Top Cities</option>
+                            <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurugram</option>
+                            <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>Delhi NCR</option>
+                            <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>Noida</option>
+                            <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>Faridabad</option>
+                            <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>Ghaziabad</option>
+                            <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>Bengaluru</option>
+                            <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>Mumbai</option>
+                            <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>Pune</option>
+                            <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>Hyderabad</option>
+                            <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>Jaipur</option>
+                            <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>Chandigarh</option>
+                        </select>
+                        <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                    </div>
+
+                    <div class="relative">
+                        <select name="price" 
+                                id="mobile_price_select"
+                                class="w-full appearance-none pl-3 pr-8 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
+                            <option value="any">Any Budget</option>
+                            <option value="0-20000" {{ request('price') == '0-20000' ? 'selected' : '' }}>Under ₹20,000</option>
+                            <option value="20000-50000" {{ request('price') == '20000-50000' ? 'selected' : '' }}>₹20K – ₹50K</option>
+                            <option value="50000-plus" {{ request('price') == '50000-plus' ? 'selected' : '' }}>₹50,000+</option>
+                        </select>
+                        <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                    </div>
+                </div>
+
+                {{-- Layout BHK Pills --}}
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">Layout:</span>
+                    <input type="hidden" name="rooms" id="mobile_rooms_input" value="{{ request('rooms', 'any') }}">
+                    <button type="button" onclick="setMobileRoom('any', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms', 'any') == 'any' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">Any</button>
+                    <button type="button" onclick="setMobileRoom('1rk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '1rk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 RK</button>
+                    <button type="button" onclick="setMobileRoom('1bhk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '1bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 BHK</button>
+                    <button type="button" onclick="setMobileRoom('2bhk', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ request('rooms') == '2bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">2 BHK</button>
+                    <button type="button" onclick="setMobileRoom('3bhk-plus', this)" class="mobile-room-pill flex-shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all {{ in_array(request('rooms'), ['3bhk-plus', '3bhk', '3plus']) ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">3+ BHK</button>
+                </div>
+
+                {{-- Action Submit Button --}}
+                <button type="submit" 
+                        class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+                    <i class="ph-bold ph-magnifying-glass text-sm"></i>
+                    <span>Search Verified Properties</span>
+                </button>
+            </form>
+        </div>
+
+        {{-- App Category Discovery Grid --}}
+        <div class="mb-3.5">
+            <div class="flex items-center justify-between mb-2 px-1">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300">Popular Categories</span>
+                <a href="{{ route('properties.index') }}" class="text-[11px] font-bold text-blue-400 hover:text-blue-300 flex items-center gap-0.5">
+                    View All <i class="ph-bold ph-caret-right text-[10px]"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2">
+                <a href="{{ url('/room-near-my-location') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Single Rooms">
+                    <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
+                        <i class="ph-bold ph-door"></i>
+                    </div>
+                    <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Rooms</span>
+                </a>
+
+                <a href="{{ url('/flat-for-rent-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Flats & Apartments">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
+                        <i class="ph-bold ph-buildings"></i>
+                    </div>
+                    <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Flats</span>
+                </a>
+
+                <a href="{{ url('/pg-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="PG & Co-Living">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
+                        <i class="ph-bold ph-bed"></i>
+                    </div>
+                    <span class="text-[10.5px] font-bold text-slate-200 leading-tight">PG Stays</span>
+                </a>
+
+                <a href="{{ url('/house-for-rent-near-me') }}" class="mobile-category-card flex flex-col items-center justify-center p-2.5 text-center group" title="Independent Houses">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg mb-1 group-hover:scale-105 transition-transform">
+                        <i class="ph-bold ph-house-line"></i>
+                    </div>
+                    <span class="text-[10.5px] font-bold text-slate-200 leading-tight">Houses</span>
+                </a>
+            </div>
+        </div>
+
+        {{-- Mobile Trust Badges Ribbon --}}
+        <div class="grid grid-cols-3 gap-1.5 py-2 px-3 rounded-xl bg-slate-900/60 border border-white/10 text-center backdrop-blur-md">
+            <div class="flex items-center justify-center gap-1.5">
+                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i>
+                <span class="text-[10px] font-bold text-slate-200">Zero Brokerage</span>
+            </div>
+            <div class="flex items-center justify-center gap-1.5 border-x border-white/10 px-1">
+                <i class="ph-fill ph-shield-check text-blue-400 text-xs"></i>
+                <span class="text-[10px] font-bold text-slate-200">100% Verified</span>
+            </div>
+            <div class="flex items-center justify-center gap-1.5">
+                <i class="ph-fill ph-whatsapp-logo text-emerald-400 text-xs"></i>
+                <span class="text-[10px] font-bold text-slate-200">Direct WhatsApp</span>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Premium Promo Slider Section (Desktop only to prevent duplicate sliders on mobile) -->
+    <div class="promo-slider-container hidden lg:block">
         <div class="promo-slider" id="promo-slider">
             <!-- Slides Wrapper -->
             <div class="promo-slides-wrapper" id="promo-slides-wrapper">
@@ -2368,6 +2554,75 @@
                     btn.classList.add('bg-blue-600', 'text-white', 'shadow-xs');
                 }
             };
+
+            // Mobile App Hero Banner Slider Controller
+            let mobileHeroCurrentSlide = 0;
+            const mobileHeroTotalSlides = 4;
+            let mobileHeroTimer = null;
+
+            window.updateMobileHeroSlider = function() {
+                const track = document.getElementById('mobileHeroSliderTrack');
+                const dots = document.querySelectorAll('.mobile-slider-dot');
+                if (track) {
+                    track.style.transform = `translateX(-${mobileHeroCurrentSlide * 100}%)`;
+                }
+                dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === mobileHeroCurrentSlide);
+                });
+            };
+
+            window.goMobileSlide = function(idx) {
+                mobileHeroCurrentSlide = idx;
+                window.updateMobileHeroSlider();
+                window.resetMobileHeroTimer();
+            };
+
+            window.nextMobileHeroSlide = function() {
+                mobileHeroCurrentSlide = (mobileHeroCurrentSlide + 1) % mobileHeroTotalSlides;
+                window.updateMobileHeroSlider();
+            };
+
+            window.prevMobileHeroSlide = function() {
+                mobileHeroCurrentSlide = (mobileHeroCurrentSlide - 1 + mobileHeroTotalSlides) % mobileHeroTotalSlides;
+                window.updateMobileHeroSlider();
+            };
+
+            window.startMobileHeroTimer = function() {
+                mobileHeroTimer = setInterval(window.nextMobileHeroSlide, 4500);
+            };
+
+            window.resetMobileHeroTimer = function() {
+                if (mobileHeroTimer) clearInterval(mobileHeroTimer);
+                window.startMobileHeroTimer();
+            };
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const container = document.getElementById('mobileHeroSliderContainer');
+                if (!container) return;
+
+                window.startMobileHeroTimer();
+
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                container.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                    if (mobileHeroTimer) clearInterval(mobileHeroTimer);
+                }, { passive: true });
+
+                container.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].clientX;
+                    const diff = touchStartX - touchEndX;
+                    if (Math.abs(diff) > 40) {
+                        if (diff > 0) {
+                            window.nextMobileHeroSlide();
+                        } else {
+                            window.prevMobileHeroSlide();
+                        }
+                    }
+                    window.resetMobileHeroTimer();
+                }, { passive: true });
+            });
 
             // Geolocation 'Search House Near Me' function
             window.searchNearMe = function() {
