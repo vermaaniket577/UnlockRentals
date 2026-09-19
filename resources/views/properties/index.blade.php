@@ -29,7 +29,7 @@
 
 @section('content')
 
-<section class="min-h-screen pt-20 sm:pt-24 pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="properties-browse">
+<section class="min-h-screen pt-20 sm:pt-24 pb-32 sm:pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="properties-browse">
     {{-- Ambient Background Gradients --}}
     <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-500/[0.04] via-indigo-500/[0.02] to-transparent pointer-events-none"></div>
     <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -118,7 +118,6 @@
                     </a>
                 @endforeach
             </div>
-        </div>
 
         {{-- Mobile Filter Bar Toggle (Visible on screens < lg) --}}
         @php
