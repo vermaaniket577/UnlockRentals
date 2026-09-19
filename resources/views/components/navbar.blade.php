@@ -297,6 +297,7 @@
             </div>
         </div>
     </div>
+</nav>
 
     {{-- Modern Mobile Drawer Overlay & Sheet --}}
     <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer(false)" class="fixed inset-0 z-[9998] bg-slate-950/70 backdrop-blur-sm transition-opacity duration-300 pointer-events-none lg:hidden"></div>
@@ -485,7 +486,6 @@
         </div>
     </div>
     @endauth
-</nav>
 
 {{-- Spacer for fixed nav --}}
 <div class="h-16 lg:h-18"></div>
@@ -577,10 +577,17 @@ html.dark #main-nav .ur-nav-link.active-nav-link {
 #mobile-drawer-overlay {
     display: none !important;
     position: fixed !important;
-    inset: 0 !important;
-    z-index: 9998 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    z-index: 99998 !important;
     background: rgba(15, 23, 42, 0.65) !important;
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none !important;
@@ -598,17 +605,27 @@ html.dark #main-nav .ur-nav-link.active-nav-link {
     bottom: 0 !important;
     width: 320px !important;
     max-width: 85vw !important;
-    height: 100% !important;
-    z-index: 9999 !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    z-index: 99999 !important;
     background: #ffffff !important;
     border-left: 1px solid rgba(226, 232, 240, 0.8) !important;
     box-shadow: -10px 0 35px rgba(0, 0, 0, 0.25) !important;
     flex-direction: column !important;
     transform: translateX(100%) !important;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    overflow: hidden !important;
 }
 #mobile-drawer-sheet.active {
     display: flex !important;
     transform: translateX(0) !important;
+}
+#mobile-drawer-sheet .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+html.dark #mobile-drawer-sheet {
+    background: #0f172a !important;
+    border-left: 1px solid rgba(51, 65, 85, 0.8) !important;
 }
 </style>
