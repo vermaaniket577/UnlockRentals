@@ -1566,7 +1566,7 @@
         
         {{-- 1. Flipkart Top Location & Brand Status Bar --}}
         <div class="flex items-center justify-between gap-2 mb-2 px-0.5">
-            <button type="button" onclick="searchNearMe()" class="flipkart-location-chip" title="Click to detect or change city">
+            <button type="button" onclick="openMobileCityModal()" class="flipkart-location-chip" title="Click to select city">
                 <i class="ph-fill ph-map-pin text-blue-600 text-xs"></i>
                 <span id="mobileTopLocationText">{{ request('district') ?: 'Gurugram / NCR' }}</span>
                 <i class="ph ph-caret-down text-[10px] text-slate-500"></i>
@@ -1995,6 +1995,102 @@
         </div>
 
     </section>
+
+    {{-- Flipkart Style Mobile City / Location Selection Modal --}}
+    <div id="mobileCityModal" class="fixed inset-0 z-[99999] hidden items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300 p-0 sm:p-4" onclick="if(event.target === this) closeMobileCityModal()">
+        <div class="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-2xl p-5 shadow-2xl border border-slate-200 max-h-[88vh] overflow-y-auto" onclick="event.stopPropagation()">
+            
+            {{-- Modal Header --}}
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm shadow-xs">
+                        <i class="ph-fill ph-map-pin"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900 leading-tight">Select Location</h3>
+                        <p class="text-[11px] text-slate-500 font-medium">Browse direct owner rental homes</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeMobileCityModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center active:scale-95 transition-all" aria-label="Close">
+                    <i class="ph-bold ph-x text-sm"></i>
+                </button>
+            </div>
+
+            {{-- Optional Notice Banner (e.g. when GPS is denied) --}}
+            <div id="modalGpsNotice" class="hidden mb-3 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center gap-2">
+                <i class="ph-fill ph-warning-circle text-amber-600 text-sm flex-shrink-0"></i>
+                <span id="modalGpsNoticeText" class="flex-1">Location permission is turned off. Please pick your city below:</span>
+            </div>
+
+            {{-- 1-Click GPS Detect Location Row --}}
+            <button type="button" 
+                    id="modalGpsDetectBtn"
+                    onclick="searchNearMe()" 
+                    class="w-full mb-3.5 p-3 rounded-2xl bg-blue-50/80 hover:bg-blue-100 border border-blue-200 text-left flex items-center justify-between group active:scale-[0.99] transition-all">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base shadow-sm">
+                        <i class="ph-fill ph-navigation-arrow"></i>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-black text-blue-900">Use Current Location</span>
+                        <span class="block text-[10px] text-blue-700 font-medium">Auto-detect area via device GPS</span>
+                    </div>
+                </div>
+                <i class="ph-bold ph-caret-right text-blue-500 text-xs group-hover:translate-x-0.5 transition-transform"></i>
+            </button>
+
+            {{-- Popular Cities Section Header --}}
+            <div class="flex items-center justify-between mb-2 px-0.5">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Popular Cities</span>
+                <span class="text-[10px] font-bold text-slate-400">Zero Brokerage</span>
+            </div>
+
+            {{-- Popular Cities Grid --}}
+            <div class="grid grid-cols-2 gap-2 mb-3.5">
+                @php
+                    $mobileCityList = [
+                        ['name' => 'Gurugram', 'label' => 'Gurugram (Gurgaon)', 'tag' => 'Popular'],
+                        ['name' => 'New Delhi', 'label' => 'Delhi NCR', 'tag' => 'Top Search'],
+                        ['name' => 'Noida', 'label' => 'Noida', 'tag' => null],
+                        ['name' => 'Faridabad', 'label' => 'Faridabad', 'tag' => null],
+                        ['name' => 'Ghaziabad', 'label' => 'Ghaziabad', 'tag' => null],
+                        ['name' => 'Bengaluru', 'label' => 'Bengaluru', 'tag' => 'Tech Hub'],
+                        ['name' => 'Mumbai', 'label' => 'Mumbai', 'tag' => null],
+                        ['name' => 'Pune', 'label' => 'Pune', 'tag' => null],
+                        ['name' => 'Hyderabad', 'label' => 'Hyderabad', 'tag' => null],
+                        ['name' => 'Jaipur', 'label' => 'Jaipur', 'tag' => null],
+                        ['name' => 'Chandigarh', 'label' => 'Chandigarh', 'tag' => null],
+                    ];
+                    $selectedDistrict = request('district');
+                @endphp
+
+                @foreach($mobileCityList as $c)
+                    <button type="button" 
+                            onclick="selectMobileCity('{{ $c['name'] }}')" 
+                            class="p-2.5 rounded-xl border text-left flex items-center justify-between transition-all active:scale-[0.98] {{ $selectedDistrict === $c['name'] ? 'bg-blue-50/90 border-blue-500 ring-1 ring-blue-500 text-blue-900 shadow-xs' : 'bg-slate-50/80 hover:bg-slate-100 border-slate-200 text-slate-800' }}">
+                        <div class="min-w-0 pr-1">
+                            <span class="block text-xs font-bold truncate">{{ $c['label'] }}</span>
+                            @if($c['tag'])
+                                <span class="text-[9px] font-extrabold text-blue-600 uppercase">{{ $c['tag'] }}</span>
+                            @endif
+                        </div>
+                        @if($selectedDistrict === $c['name'])
+                            <i class="ph-fill ph-check-circle text-blue-600 text-sm flex-shrink-0"></i>
+                        @else
+                            <i class="ph ph-map-pin text-slate-400 text-xs flex-shrink-0"></i>
+                        @endif
+                    </button>
+                @endforeach
+            </div>
+
+            {{-- All Cities Option --}}
+            <button type="button" 
+                    onclick="selectMobileCity('')" 
+                    class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold text-center active:scale-[0.98] transition-all">
+                All Cities (Clear Location Filter)
+            </button>
+        </div>
+    </div>
 
     <!-- Premium Promo Slider Section (Desktop only to prevent duplicate sliders on mobile) -->
     <div class="promo-slider-container hidden lg:block">
@@ -3022,16 +3118,70 @@
                 }
             });
 
+            // Mobile City Location Selector Modal Controller
+            window.openMobileCityModal = function(noticeMsg = null) {
+                const modal = document.getElementById('mobileCityModal');
+                const notice = document.getElementById('modalGpsNotice');
+                const noticeText = document.getElementById('modalGpsNoticeText');
+                if (notice && noticeText) {
+                    if (noticeMsg) {
+                        noticeText.textContent = noticeMsg;
+                        notice.classList.remove('hidden');
+                    } else {
+                        notice.classList.add('hidden');
+                    }
+                }
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+
+            window.closeMobileCityModal = function() {
+                const modal = document.getElementById('mobileCityModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }
+            };
+
+            window.selectMobileCity = function(city) {
+                window.closeMobileCityModal();
+                if (city) {
+                    window.location.href = "{{ route('properties.index') }}?district=" + encodeURIComponent(city);
+                } else {
+                    window.location.href = "{{ route('properties.index') }}";
+                }
+            };
+
             // Geolocation 'Search House Near Me' function
             window.searchNearMe = function() {
-                if (!navigator.geolocation) {
-                    alert('Geolocation is not supported by your browser. You can search by entering your city name.');
-                    return;
-                }
                 const btn = document.getElementById('btnNearMe');
                 const mBtn = document.getElementById('mobileBtnNearMe');
+                const modalGpsBtn = document.getElementById('modalGpsDetectBtn');
+
+                if (!navigator.geolocation) {
+                    window.openMobileCityModal('Device geolocation is not supported. Please select your city below:');
+                    return;
+                }
+
                 if (btn) btn.innerHTML = '<i class="ph ph-circle-notch ph-spin" style="font-size:16px;"></i> Locating...';
                 if (mBtn) mBtn.innerHTML = '<i class="ph ph-circle-notch ph-spin text-xs"></i> <span>Locating...</span>';
+                if (modalGpsBtn) {
+                    modalGpsBtn.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base shadow-sm">
+                                <i class="ph ph-circle-notch ph-spin"></i>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-black text-blue-900">Detecting Location...</span>
+                                <span class="block text-[10px] text-blue-700 font-medium">Fetching GPS coordinates</span>
+                            </div>
+                        </div>
+                    `;
+                }
 
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -3041,7 +3191,7 @@
                             .then(res => res.json())
                             .then(data => {
                                 const city = (data.address && (data.address.city || data.address.town || data.address.state_district || data.address.suburb)) || 'Delhi';
-                                window.location.href = "{{ route('properties.index') }}?search=" + encodeURIComponent(city);
+                                window.location.href = "{{ route('properties.index') }}?district=" + encodeURIComponent(city);
                             })
                             .catch(() => {
                                 window.location.href = "{{ route('properties.index') }}";
@@ -3049,8 +3199,23 @@
                     },
                     (error) => {
                         if (btn) btn.innerHTML = '<i class="ph-fill ph-navigation-arrow" style="font-size:16px; color:#60a5fa;"></i> Search House Near Me';
-                        if (mBtn) mBtn.innerHTML = '<i class="ph-fill ph-navigation-arrow text-xs text-blue-400"></i> <span>Near Me</span>';
-                        alert('Location access was denied. Please select your city from the search filters.');
+                        if (mBtn) mBtn.innerHTML = '<i class="ph-fill ph-navigation-arrow text-xs text-blue-600"></i> <span>Near</span>';
+                        if (modalGpsBtn) {
+                            modalGpsBtn.innerHTML = `
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base shadow-sm">
+                                        <i class="ph-fill ph-navigation-arrow"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block text-xs font-black text-blue-900">Use Current Location</span>
+                                        <span class="block text-[10px] text-blue-700 font-medium">Auto-detect area via device GPS</span>
+                                    </div>
+                                </div>
+                                <i class="ph-bold ph-caret-right text-blue-500 text-xs"></i>
+                            `;
+                        }
+                        // Open the city picker modal smoothly with an in-modal notice banner instead of browser alert!
+                        window.openMobileCityModal('Location access is denied or disabled. Please select your city below:');
                     },
                     { timeout: 8000 }
                 );
