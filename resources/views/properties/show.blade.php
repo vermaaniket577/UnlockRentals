@@ -1696,13 +1696,12 @@
             counter.textContent = `${currentGalleryIndex + 1} of ${totalGalleryImages} Photos`;
         }
 
-        // Highlight active thumbnail & scroll it into view
+        // Highlight active thumbnail
         const thumbs = document.querySelectorAll('.gallery-thumb');
         thumbs.forEach((thumb, idx) => {
             if (idx === currentGalleryIndex) {
                 thumb.classList.add('border-[#2874F0]', 'ring-2', 'ring-[#2874F0]/20');
                 thumb.classList.remove('border-zinc-200');
-                thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             } else {
                 thumb.classList.remove('border-[#2874F0]', 'ring-2', 'ring-[#2874F0]/20');
                 thumb.classList.add('border-zinc-200');
@@ -1746,6 +1745,14 @@
         clearInterval(galleryAutoSlideTimer);
         resetGalleryProgressBar();
         galleryAutoSlideTimer = setInterval(() => {
+            const track = document.getElementById('gallery-slider-track');
+            if (track) {
+                const rect = track.getBoundingClientRect();
+                // Pause auto-sliding when gallery is out of viewport to save resources and avoid unwanted interactions
+                if (rect.bottom < 0 || rect.top > window.innerHeight) {
+                    return;
+                }
+            }
             updateGallerySlide(currentGalleryIndex + 1);
         }, gallerySlideDuration);
     }
