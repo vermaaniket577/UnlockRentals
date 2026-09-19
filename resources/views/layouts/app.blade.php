@@ -31,12 +31,13 @@
     </script>
     <script>
         (function () {
-            if (localStorage.getItem('ur-theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-            }
             var isApp = /UnlockRentals|wv|Version\/[0-9.]+/i.test(navigator.userAgent) || window.isNativeApp === true || new URLSearchParams(window.location.search).get('app') === '1';
             if (isApp) {
                 document.documentElement.classList.add('is-mobile-app');
+                document.documentElement.classList.remove('dark');
+                try { localStorage.removeItem('ur-theme'); } catch(e) {}
+            } else if (localStorage.getItem('ur-theme') === 'dark') {
+                document.documentElement.classList.add('dark');
             }
         })();
     </script>

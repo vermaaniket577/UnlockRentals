@@ -208,16 +208,21 @@ a { text-decoration: none; color: inherit; }
 }
 
 .btn-ghost-sm {
-    background: rgba(255,255,255,0.08);
-    color: #fff;
-    padding: 9px 22px;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 13px;
-    border: 1px solid rgba(255,255,255,0.15);
+    background: #f8fafc;
+    color: #1e293b;
+    padding: 11px 22px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    border: 1.5px solid #cbd5e1;
     transition: all 0.25s;
+    text-align: center;
 }
-.btn-ghost-sm:hover { background: rgba(255,255,255,0.15); }
+.btn-ghost-sm:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-color: #94a3b8;
+}
 
 /* =========================================
    HERO SECTION  (full-screen dark)
@@ -1044,10 +1049,11 @@ a { text-decoration: none; color: inherit; }
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
     z-index: 150;
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s ease;
 }
 .mobile-nav-overlay.active {
     display: block;
@@ -1057,33 +1063,43 @@ a { text-decoration: none; color: inherit; }
 .mobile-nav {
     display: none;
     position: fixed;
-    top: 0; right: -300px;
-    width: 280px;
+    top: 0; right: -320px;
+    width: 300px;
+    max-width: 85vw;
     height: 100vh;
-    background: #111;
+    background: #ffffff;
     z-index: 200;
-    padding: 80px 28px 40px;
-    transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 24px 20px 40px;
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     overflow-y: auto;
-    border-left: 1px solid rgba(255,255,255,0.08);
+    border-left: 1px solid #e2e8f0;
+    box-shadow: -10px 0 35px rgba(15, 23, 42, 0.12);
 }
 .mobile-nav.active {
     right: 0;
 }
 
 .mobile-nav .mobile-nav-link {
-    display: block;
-    color: rgba(255,255,255,0.85);
-    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #1e293b;
+    font-size: 15px;
     font-weight: 600;
-    padding: 14px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    transition: color 0.2s;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border-bottom: 1px solid #f8fafc;
+    transition: all 0.2s;
 }
-.mobile-nav .mobile-nav-link:hover { color: var(--primary); }
+.mobile-nav .mobile-nav-link:hover {
+    color: #2563EB;
+    background: #eff6ff;
+}
 
 .mobile-nav .mobile-auth {
-    margin-top: 24px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -1091,11 +1107,21 @@ a { text-decoration: none; color: inherit; }
 
 .mobile-close {
     position: absolute;
-    top: 20px; right: 20px;
-    background: none; border: none;
-    color: rgba(255,255,255,0.7);
+    top: 18px; right: 18px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: none;
+    color: #475569;
     cursor: pointer;
-    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.mobile-close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
 }
 
 /* =========================================

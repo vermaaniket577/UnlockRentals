@@ -1207,56 +1207,89 @@
     <!-- Mobile Navigation Drawer -->
     <div class="mobile-nav-overlay" id="mobileOverlay" onclick="toggleMobileNav()"></div>
     <nav class="mobile-nav" id="mobileNav">
-        <button class="mobile-close" onclick="toggleMobileNav()" aria-label="Close menu">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-        <a href="{{ route('properties.index') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Discover">
-            <i class="ph-bold ph-compass" style="font-size:18px; color:var(--primary);"></i> Discover
+        {{-- Drawer Header with Brand and Close Button --}}
+        <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100">
+            <x-brand-logo
+                href="{{ url('/') }}"
+                class="group flex-shrink-0"
+                imageClass="h-7 w-auto"
+                textClass="text-base font-bold tracking-tight text-slate-900"
+                accentClass="text-[#2563EB]"
+            />
+            <button type="button" class="mobile-close" onclick="toggleMobileNav()" aria-label="Close menu">
+                <i class="ph-bold ph-x text-sm"></i>
+            </button>
+        </div>
+
+        <a href="{{ route('properties.index') }}" class="mobile-nav-link" title="Discover">
+            <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <i class="ph-bold ph-compass text-base"></i>
+            </span>
+            <span class="font-semibold text-slate-800">Discover</span>
         </a>
-        <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Buy">
-            <i class="ph-bold ph-shopping-bag" style="font-size:18px; color:var(--primary);"></i> Buy
+        <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="mobile-nav-link" title="Buy">
+            <span class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <i class="ph-bold ph-shopping-bag text-base"></i>
+            </span>
+            <span class="font-semibold text-slate-800">Buy</span>
         </a>
-        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Rent">
-            <i class="ph-bold ph-key" style="font-size:18px; color:var(--primary);"></i> Rent
+        <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="mobile-nav-link" title="Rent">
+            <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <i class="ph-bold ph-key text-base"></i>
+            </span>
+            <span class="font-semibold text-slate-800">Rent</span>
         </a>
-        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Commercial">
-            <i class="ph-bold ph-buildings" style="font-size:18px; color:var(--primary);"></i> Commercial
+        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="mobile-nav-link" title="Commercial">
+            <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <i class="ph-bold ph-buildings text-base"></i>
+            </span>
+            <span class="font-semibold text-slate-800">Commercial</span>
         </a>
-        <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Process">
-            <i class="ph-bold ph-git-merge" style="font-size:18px; color:var(--primary);"></i> Process
+        <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" title="Process">
+            <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                <i class="ph-bold ph-git-merge text-base"></i>
+            </span>
+            <span class="font-semibold text-slate-800">Process</span>
         </a>
-        <a href="{{ url('/blog') }}" class="mobile-nav-link" style="display:flex; align-items:center; gap:10px;" title="Blog">
-            <i class="ph-bold ph-newspaper" style="font-size:18px; color:var(--primary);"></i> Blog
+        <a href="{{ url('/blog') }}" class="mobile-nav-link" title="Blog">
+            <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <i class="ph-bold ph-newspaper text-base"></i>
+            </span>
+            <span class="font-semibold text-slate-800">Blog</span>
         </a>
+
         <div class="mobile-auth">
             @if (Route::has('login'))
                 @auth
-                    <div style="padding:10px 16px; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <p style="color:rgba(255,255,255,0.6); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Signed in as</p>
-                        <p style="color:#fff; font-weight:600; font-size:15px;">{{ auth()->user()->name }}</p>
-                        <p style="color:rgba(255,255,255,0.5); font-size:12px;">{{ auth()->user()->email }}</p>
+                    <div style="padding:12px; margin-bottom:10px; border-radius:14px; background:#f8fafc; border:1px solid #e2e8f0;">
+                        <p style="color:#64748b; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:2px;">Signed in as</p>
+                        <p style="color:#0f172a; font-weight:700; font-size:14px; line-height:1.3;">{{ auth()->user()->name }}</p>
+                        <p style="color:#64748b; font-size:12px;">{{ auth()->user()->email }}</p>
                     </div>
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; margin-bottom: 10px; color: #ffffff !important;" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle" style="font-size: 20px; color: #ffffff !important;"></i>
-                        <span style="color: #ffffff !important;">Post Free Advertise</span>
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border-radius: 12px; height: 48px; margin-bottom: 8px; color: #ffffff !important;" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle" style="font-size: 19px; color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important; font-weight: 700;">Post Free Advertise</span>
                     </a>
-                    <a href="{{ url('/dashboard') }}" class="btn-primary-sm" style="text-align:center; width:100%; margin-bottom: 10px;" title="Dashboard">Dashboard</a>
+                    <a href="{{ url('/dashboard') }}" class="btn-ghost-sm" style="text-align:center; width:100%; margin-bottom: 8px; display:flex; align-items:center; justify-content:center; gap:8px;" title="Dashboard">
+                        <i class="ph-bold ph-squares-four text-blue-600"></i>
+                        <span>Dashboard</span>
+                    </a>
                     <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                         @csrf
-                        <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600/20 text-red-400 border border-red-500/30 font-bold text-sm hover:bg-red-600/30 transition-all cursor-pointer">
+                        <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-sm transition-all cursor-pointer">
                             <i class="ph-bold ph-sign-out text-base"></i>
                             <span>Sign Out</span>
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileNav(); window.openAuthModal('login');" class="btn-ghost-sm" style="text-align:center; display:block;" title="Log in">Log in</a>
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileNav(); window.openAuthModal('login');" class="btn-ghost-sm" style="text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; height:46px;" title="Log in">
+                        <i class="ph-bold ph-sign-in text-blue-600 text-base"></i>
+                        <span>Log in</span>
+                    </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; justify-content:center; width:100%; border-radius: 12px; height: 50px; color: #ffffff !important;" title="Post Free Advertise">
-                            <i class="ph-bold ph-plus-circle" style="font-size: 20px; color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important;">Post Free Advertise</span>
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border-radius: 12px; height: 48px; color: #ffffff !important;" title="Post Free Advertise">
+                            <i class="ph-bold ph-plus-circle" style="font-size: 19px; color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important; font-weight: 700;">Post Free Advertise</span>
                         </a>
                     @endif
                 @endauth
@@ -1266,44 +1299,44 @@
 
     {{-- Dedicated Mobile Account Bottom Sheet Modal for Welcome Page --}}
     @auth
-    <div id="welcome-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm" onclick="if(event.target===this) window.closeWelcomeAccountModal()">
-        <div class="w-full sm:max-w-md bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-[slideUp_0.2s_ease-out]">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+    <div id="welcome-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/40 backdrop-blur-sm" onclick="if(event.target===this) window.closeWelcomeAccountModal()">
+        <div class="w-full sm:max-w-md bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-[slideUp_0.2s_ease-out]">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h3 class="text-base font-black text-white truncate">{{ auth()->user()->name }}</h3>
-                        <p class="text-xs text-slate-400 capitalize truncate">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
+                        <h3 class="text-base font-black text-slate-900 truncate">{{ auth()->user()->name }}</h3>
+                        <p class="text-xs text-slate-500 capitalize truncate">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
                     </div>
                 </div>
-                <button type="button" onclick="window.closeWelcomeAccountModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                <button type="button" onclick="window.closeWelcomeAccountModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-colors">
                     <i class="ph-bold ph-x text-base"></i>
                 </button>
             </div>
             
             <div class="py-3 space-y-1">
-                <a href="{{ route('dashboard') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors">
-                    <i class="ph-bold ph-squares-four text-xl text-blue-500"></i>
+                <a href="{{ route('dashboard') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                    <i class="ph-bold ph-squares-four text-xl text-blue-600"></i>
                     <span>My Dashboard</span>
                 </a>
-                <a href="{{ route('plans.index') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors">
-                    <i class="ph-bold ph-crown text-xl text-blue-500"></i>
+                <a href="{{ route('plans.index') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                    <i class="ph-bold ph-crown text-xl text-blue-600"></i>
                     <span>Membership Plans</span>
                 </a>
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-200 hover:bg-slate-800 transition-colors">
-                        <i class="ph-bold ph-shield-check text-xl text-blue-500"></i>
+                    <a href="{{ route('admin.dashboard') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+                        <i class="ph-bold ph-shield-check text-xl text-blue-600"></i>
                         <span>Admin Panel</span>
                     </a>
                 @endif
             </div>
 
-            <div class="pt-3 border-t border-slate-800">
+            <div class="pt-3 border-t border-slate-100">
                 <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                     @csrf
-                    <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 font-bold text-sm transition-all cursor-pointer active:scale-[0.98]">
+                    <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-sm transition-all cursor-pointer active:scale-[0.98]">
                         <i class="ph-bold ph-sign-out text-base"></i>
                         <span>Sign Out</span>
                     </button>

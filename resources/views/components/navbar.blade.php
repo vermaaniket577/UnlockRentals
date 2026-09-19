@@ -333,34 +333,48 @@
 
             {{-- Main Navigation Links --}}
             <div>
-                <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 px-2">Discover</p>
+                <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-2 px-2">Discover</p>
                 <div class="space-y-1">
-                    <a href="{{ route('home') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('home') ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
-                        <i class="ph-bold ph-house text-lg text-blue-600"></i>
+                    <a href="{{ route('home') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('home') ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                        <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-house text-base"></i>
+                        </span>
                         <span>Home</span>
                     </a>
-                    <a href="{{ route('properties.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('properties.index') && !request()->has('type') && !request()->has('purpose') ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
-                        <i class="ph-bold ph-compass text-lg text-blue-600"></i>
+                    <a href="{{ route('properties.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('properties.index') && !request()->has('type') && !request()->has('purpose') ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-compass text-base"></i>
+                        </span>
                         <span>All Properties</span>
                     </a>
-                    <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('purpose') === 'rent' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
-                        <i class="ph-bold ph-key text-lg text-blue-600"></i>
+                    <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('purpose') === 'rent' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                        <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-key text-base"></i>
+                        </span>
                         <span>Properties for Rent</span>
                     </a>
-                    <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('purpose') === 'buy' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
-                        <i class="ph-bold ph-shopping-bag text-lg text-blue-600"></i>
+                    <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('purpose') === 'buy' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                        <span class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-shopping-bag text-base"></i>
+                        </span>
                         <span>Properties for Sale</span>
                     </a>
-                    <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('type') === 'commercial' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900' }}">
-                        <i class="ph-bold ph-buildings text-lg text-blue-600"></i>
+                    <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request('type') === 'commercial' ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-buildings text-base"></i>
+                        </span>
                         <span>Commercial & Shops</span>
                     </a>
-                    <a href="{{ url('/how-it-works') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
-                        <i class="ph-bold ph-git-merge text-lg text-blue-600"></i>
+                    <a href="{{ url('/how-it-works') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-700 hover:bg-slate-50">
+                        <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-git-merge text-base"></i>
+                        </span>
                         <span>How It Works</span>
                     </a>
-                    <a href="{{ url('/blog') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
-                        <i class="ph-bold ph-newspaper text-lg text-blue-600"></i>
+                    <a href="{{ url('/blog') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-700 hover:bg-slate-50">
+                        <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-newspaper text-base"></i>
+                        </span>
                         <span>Blog & Insights</span>
                     </a>
                 </div>
@@ -382,29 +396,39 @@
             </div>
 
             {{-- Auth / Settings --}}
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1">
+            <div class="pt-3 border-t border-slate-100 space-y-1">
                 @guest
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('login');" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
-                        <i class="ph-bold ph-sign-in text-lg text-blue-600"></i>
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('login');" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                        <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-sign-in text-base"></i>
+                        </span>
                         <span>Sign In</span>
                     </a>
-                    <a href="{{ route('register') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('register');" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-900">
-                        <i class="ph-bold ph-user-plus text-lg"></i>
+                    <a href="{{ route('register') }}" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openAuthModal('register');" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-blue-600 hover:bg-blue-50/50">
+                        <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-user-plus text-base"></i>
+                        </span>
                         <span>Create Account</span>
                     </a>
                 @else
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
-                        <i class="ph-bold ph-squares-four text-lg text-blue-600"></i>
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                        <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-squares-four text-base"></i>
+                        </span>
                         <span>Dashboard</span>
                     </a>
-                    <a href="#" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openProfileModal();" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900">
-                        <i class="ph-bold ph-user-gear text-lg text-blue-600"></i>
+                    <a href="#" onclick="event.preventDefault(); toggleMobileDrawer(false); window.openProfileModal();" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                        <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-user-gear text-base"></i>
+                        </span>
                         <span>Profile Settings</span>
                     </a>
                     <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)" class="pt-2">
                         @csrf
-                        <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer">
-                            <i class="ph-bold ph-sign-out text-lg"></i>
+                        <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-all cursor-pointer">
+                            <span class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                                <i class="ph-bold ph-sign-out text-base"></i>
+                            </span>
                             <span>Sign Out</span>
                         </button>
                     </form>
@@ -415,44 +439,44 @@
 
     {{-- Dedicated Mobile Account Modal / Bottom Sheet --}}
     @auth
-    <div id="mobile-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm" onclick="if(event.target===this) window.closeUserAccountModal()">
-        <div class="w-full sm:max-w-md bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 animate-[slideUp_0.2s_ease-out]">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+    <div id="mobile-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/40 backdrop-blur-sm" onclick="if(event.target===this) window.closeUserAccountModal()">
+        <div class="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-slate-200 animate-[slideUp_0.2s_ease-out]">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h3 class="text-base font-black text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
+                        <h3 class="text-base font-black text-slate-900 truncate">{{ auth()->user()->name }}</h3>
+                        <p class="text-xs text-slate-500 capitalize truncate">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
                     </div>
                 </div>
-                <button type="button" onclick="window.closeUserAccountModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors">
+                <button type="button" onclick="window.closeUserAccountModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-colors">
                     <i class="ph-bold ph-x text-base"></i>
                 </button>
             </div>
             
             <div class="py-3 space-y-1">
-                <a href="{{ route('dashboard') }}" onclick="window.closeUserAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                <a href="{{ route('dashboard') }}" onclick="window.closeUserAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                     <i class="ph-bold ph-squares-four text-xl text-blue-600"></i>
                     <span>My Dashboard</span>
                 </a>
-                <a href="#" onclick="event.preventDefault(); window.closeUserAccountModal(); window.openProfileModal();" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                <a href="#" onclick="event.preventDefault(); window.closeUserAccountModal(); window.openProfileModal();" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                     <i class="ph-bold ph-user-gear text-xl text-blue-600"></i>
                     <span>Profile Settings</span>
                 </a>
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}" onclick="window.closeUserAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    <a href="{{ route('admin.dashboard') }}" onclick="window.closeUserAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">
                         <i class="ph-bold ph-shield-check text-xl text-blue-600"></i>
                         <span>Admin Panel</span>
                     </a>
                 @endif
             </div>
 
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
+            <div class="pt-3 border-t border-slate-100">
                 <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                     @csrf
-                    <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/70 text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-900/40 font-bold text-sm transition-all cursor-pointer active:scale-[0.98]">
+                    <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-sm transition-all cursor-pointer active:scale-[0.98]">
                         <i class="ph-bold ph-sign-out text-base"></i>
                         <span>Sign Out</span>
                     </button>
@@ -582,11 +606,6 @@ html.dark #main-nav .ur-nav-link.active-nav-link {
     flex-direction: column !important;
     transform: translateX(100%) !important;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-html.dark #mobile-drawer-sheet {
-    background: #0f172a !important;
-    border-left: 1px solid #1e293b !important;
-    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.6) !important;
 }
 #mobile-drawer-sheet.active {
     display: flex !important;
