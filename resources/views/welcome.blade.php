@@ -547,12 +547,29 @@
         }
         
         @media (max-width: 1023px) {
+            .main-header {
+                background: #ffffff !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
+            }
             .main-header .main-nav,
             .main-nav {
                 display: none !important;
             }
             .main-header .hamburger {
                 display: inline-flex !important;
+                background: #f1f5f9 !important;
+                border: 1px solid #e2e8f0 !important;
+                color: #1e293b !important;
+            }
+            .main-header .hamburger svg {
+                stroke: #1e293b !important;
+            }
+            .logo-text {
+                color: #0f172a !important;
+            }
+            .logo-text .logo-accent {
+                color: #2563eb !important;
             }
             .btn-cta-premium-header {
                 display: none !important;
@@ -567,6 +584,12 @@
             }
             #welcome-mobile-top-login {
                 display: none !important;
+            }
+            .logo-text {
+                color: #ffffff !important;
+            }
+            .logo-text .logo-accent {
+                color: #60a5fa !important;
             }
         }
         @media (max-width: 768px) {
@@ -745,9 +768,9 @@
             position: relative;
         }
         .flipkart-cat-label {
-            font-size: 10.5px;
-            font-weight: 700;
-            color: #334155;
+            font-size: 11px;
+            font-weight: 800;
+            color: #0f172a;
             text-align: center;
             line-height: 1.15;
             white-space: nowrap;
@@ -841,7 +864,7 @@
             border-radius: 9999px;
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            color: #334155;
+            color: #0f172a;
             font-size: 11px;
             font-weight: 700;
             white-space: nowrap;
@@ -985,7 +1008,7 @@
                 <div style="width: 34px; height: 34px; border-radius: 9px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
                     <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="34" height="34" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
                 </div>
-                <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important; color: #ffffff !important;">Unlock<span style="color: #60a5fa !important;">Rentals</span></span>
+                <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important;">Unlock<span class="logo-accent">Rentals</span></span>
             </a>
         </div>
         <nav class="main-nav hidden lg:flex">
@@ -1171,7 +1194,7 @@
                     @endif
                 @endauth
             @endif
-            <button class="hamburger inline-flex lg:hidden" onclick="toggleMobileNav()" aria-label="Open menu" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #fff; cursor: pointer; flex-shrink: 0;">
+            <button class="hamburger inline-flex lg:hidden" onclick="toggleMobileNav()" aria-label="Open menu" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; cursor: pointer; flex-shrink: 0;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -1767,64 +1790,64 @@
                 
                 {{-- Category 1: Single Rooms --}}
                 <a href="{{ url('/room-near-my-location') }}" class="flipkart-cat-item">
-                    <div class="flipkart-cat-icon bg-gradient-to-br from-blue-600 to-indigo-700">
-                        <i class="ph-bold ph-door"></i>
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
+                        <i class="ph-bold ph-door text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">Rooms</span>
                 </a>
 
                 {{-- Category 2: Flats --}}
                 <a href="{{ url('/flat-for-rent-near-me') }}" class="flipkart-cat-item">
-                    <div class="flipkart-cat-icon bg-gradient-to-br from-emerald-600 to-teal-800">
-                        <i class="ph-bold ph-buildings"></i>
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                        <i class="ph-bold ph-buildings text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">Flats</span>
                 </a>
 
                 {{-- Category 3: PG Stays --}}
                 <a href="{{ url('/pg-near-me') }}" class="flipkart-cat-item">
-                    <div class="flipkart-cat-icon bg-gradient-to-br from-amber-500 to-orange-700">
-                        <i class="ph-bold ph-bed"></i>
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
+                        <i class="ph-bold ph-bed text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">PG Stays</span>
                 </a>
 
                 {{-- Category 4: Independent Houses --}}
                 <a href="{{ url('/house-for-rent-near-me') }}" class="flipkart-cat-item">
-                    <div class="flipkart-cat-icon bg-gradient-to-br from-purple-600 to-pink-700">
-                        <i class="ph-bold ph-house-line"></i>
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);">
+                        <i class="ph-bold ph-house-line text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">Houses</span>
                 </a>
 
                 {{-- Category 5: Commercial --}}
                 <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="flipkart-cat-item">
-                    <div class="flipkart-cat-icon bg-gradient-to-br from-sky-600 to-blue-800">
-                        <i class="ph-bold ph-storefront"></i>
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                        <i class="ph-bold ph-storefront text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">Commercial</span>
                 </a>
 
                 {{-- Category 6: Near Me GPS --}}
-                <div onclick="searchNearMe()" class="flipkart-cat-item cursor-pointer">
-                    <div class="flipkart-cat-icon bg-gradient-to-br from-cyan-500 to-blue-600">
-                        <i class="ph-fill ph-navigation-arrow"></i>
+                <div onclick="openMobileCityModal()" class="flipkart-cat-item cursor-pointer">
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                        <i class="ph-fill ph-navigation-arrow text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">Near Me</span>
                 </div>
 
                 {{-- Category 7: 0 Brokerage --}}
                 <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="flipkart-cat-item">
-                    <div class="flipkart-cat-icon bg-gradient-to-br from-rose-500 to-red-700">
-                        <i class="ph-bold ph-tag"></i>
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);">
+                        <i class="ph-bold ph-tag text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">0 Broker</span>
                 </a>
 
                 {{-- Category 8: Post Free Property --}}
                 <a href="{{ route('properties.create') }}" class="flipkart-cat-item">
-                    <div class="flipkart-cat-icon bg-gradient-to-br from-violet-600 to-indigo-800">
-                        <i class="ph-bold ph-plus-circle"></i>
+                    <div class="flipkart-cat-icon" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
+                        <i class="ph-bold ph-plus-circle text-white" style="font-size: 22px; color: #ffffff !important;"></i>
                     </div>
                     <span class="flipkart-cat-label">Post Free</span>
                 </a>
@@ -1842,14 +1865,14 @@
                         <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
                             <i class="ph-fill ph-lightning text-amber-300"></i> BIG SAVINGS • 0% BROKERAGE
                         </span>
-                        <span class="text-[10px] font-bold text-sky-200">100% Direct Owner</span>
+                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-xs">100% Direct Owner</span>
                     </div>
                     <div class="my-2">
                         <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
                             Single Rooms & 1 RK Rentals <br>
-                            <span class="text-sky-300 font-extrabold">Starting at ₹4,999/mo</span>
+                            <span class="text-amber-300 font-extrabold">Starting at ₹4,999/mo</span>
                         </h2>
-                        <p class="text-[11px] text-blue-100 line-clamp-1 leading-relaxed">
+                        <p class="text-[11px] text-white/90 line-clamp-1 leading-relaxed">
                             Verified independent rooms & studio units with direct owner contact.
                         </p>
                     </div>
@@ -1858,7 +1881,7 @@
                             <span>Explore Homes</span>
                             <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
                         </a>
-                        <span class="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-1 rounded-lg">Zero Deposit Options</span>
+                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-1 rounded-lg">Zero Deposit Options</span>
                     </div>
                 </div>
 
@@ -1868,14 +1891,14 @@
                         <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
                             <i class="ph-fill ph-shield-check text-emerald-300"></i> GATED SOCIETIES
                         </span>
-                        <span class="text-[10px] font-bold text-emerald-200">Gurugram & NCR</span>
+                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-xs">Gurugram & NCR</span>
                     </div>
                     <div class="my-2">
                         <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
                             1, 2 & 3 BHK Luxury Flats <br>
-                            <span class="text-emerald-300 font-extrabold">Starting at ₹14,999/mo</span>
+                            <span class="text-amber-300 font-extrabold">Starting at ₹14,999/mo</span>
                         </h2>
-                        <p class="text-[11px] text-emerald-100 line-clamp-1 leading-relaxed">
+                        <p class="text-[11px] text-white/90 line-clamp-1 leading-relaxed">
                             High-rise societies with gym, parking, swimming pool & 24/7 power backup.
                         </p>
                     </div>
@@ -1884,7 +1907,7 @@
                             <span>Browse Flats</span>
                             <i class="ph-bold ph-arrow-right text-emerald-600 text-xs"></i>
                         </a>
-                        <span class="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-1 rounded-lg">No Broker Fee</span>
+                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-1 rounded-lg">No Broker Fee</span>
                     </div>
                 </div>
 
@@ -1894,14 +1917,14 @@
                         <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
                             <i class="ph-fill ph-bed text-amber-200"></i> ALL-INCLUSIVE LIVING
                         </span>
-                        <span class="text-[10px] font-bold text-amber-200">Food & Wi-Fi Included</span>
+                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-xs">Food & Wi-Fi Included</span>
                     </div>
                     <div class="my-2">
                         <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
                             Premium PG & Hostels <br>
                             <span class="text-amber-300 font-extrabold">Starting at ₹5,999/mo</span>
                         </h2>
-                        <p class="text-[11px] text-amber-100 line-clamp-1 leading-relaxed">
+                        <p class="text-[11px] text-white/90 line-clamp-1 leading-relaxed">
                             Air-conditioned rooms, 3-time home meals, Wi-Fi & daily cleaning.
                         </p>
                     </div>
@@ -1910,7 +1933,7 @@
                             <span>Explore Stays</span>
                             <i class="ph-bold ph-arrow-right text-amber-600 text-xs"></i>
                         </a>
-                        <span class="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-1 rounded-lg">Boys & Girls PG</span>
+                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-1 rounded-lg">Boys & Girls PG</span>
                     </div>
                 </div>
 
@@ -1920,14 +1943,14 @@
                         <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
                             <i class="ph-fill ph-sparkle text-indigo-200"></i> 100% FREE ADVERTISEMENT
                         </span>
-                        <span class="text-[10px] font-bold text-indigo-200">Direct Inquiries</span>
+                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-xs">Direct Inquiries</span>
                     </div>
                     <div class="my-2">
                         <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
                             List Your Property Free <br>
-                            <span class="text-indigo-300 font-extrabold">Rent 10x Faster Online</span>
+                            <span class="text-amber-300 font-extrabold">Rent 10x Faster Online</span>
                         </h2>
-                        <p class="text-[11px] text-indigo-100 line-clamp-1 leading-relaxed">
+                        <p class="text-[11px] text-white/90 line-clamp-1 leading-relaxed">
                             Connect directly with 10,000+ verified tenants with zero middleman commission.
                         </p>
                     </div>
@@ -1936,7 +1959,7 @@
                             <span>Post Property Now</span>
                             <i class="ph-bold ph-arrow-right text-indigo-600 text-xs"></i>
                         </a>
-                        <span class="text-[10px] font-bold text-white/80 bg-white/10 px-2 py-1 rounded-lg">Zero Brokerage</span>
+                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-1 rounded-lg">Zero Brokerage</span>
                     </div>
                 </div>
 
@@ -1979,18 +2002,20 @@
         </div>
 
         {{-- 6. Flipkart Style Trust & Assurance Ribbon --}}
-        <div class="grid grid-cols-3 gap-1 py-2 px-2.5 rounded-xl bg-white border border-slate-200 shadow-xs text-center">
-            <div class="flex items-center justify-center gap-1">
-                <i class="ph-fill ph-check-circle text-emerald-600 text-xs"></i>
-                <span class="text-[9.5px] font-extrabold text-slate-700">Zero Brokerage</span>
+        <div class="py-2.5 px-3 rounded-2xl bg-white border border-slate-200 shadow-xs" style="display: flex; align-items: center; justify-content: space-around; width: 100%; box-sizing: border-box;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                <i class="ph-fill ph-check-circle text-emerald-600 text-sm"></i>
+                <span class="text-[11px] font-bold text-slate-800" style="white-space: nowrap;">Zero Brokerage</span>
             </div>
-            <div class="flex items-center justify-center gap-1 border-x border-slate-200 px-0.5">
-                <i class="ph-fill ph-shield-check text-blue-600 text-xs"></i>
-                <span class="text-[9.5px] font-extrabold text-slate-700">100% Verified</span>
+            <div style="width: 1px; height: 16px; background: #e2e8f0; flex-shrink: 0;"></div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                <i class="ph-fill ph-shield-check text-blue-600 text-sm"></i>
+                <span class="text-[11px] font-bold text-slate-800" style="white-space: nowrap;">100% Verified</span>
             </div>
-            <div class="flex items-center justify-center gap-1">
-                <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-xs"></i>
-                <span class="text-[9.5px] font-extrabold text-slate-700">Direct Contact</span>
+            <div style="width: 1px; height: 16px; background: #e2e8f0; flex-shrink: 0;"></div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-sm"></i>
+                <span class="text-[11px] font-bold text-slate-800" style="white-space: nowrap;">Direct Contact</span>
             </div>
         </div>
 
