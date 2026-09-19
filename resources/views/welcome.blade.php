@@ -661,7 +661,7 @@
         }
 
         /* ===================================================
-           FLIPKART STYLE MOBILE APP HERO SECTION
+           FLIPKART STYLE MOBILE APP HERO SECTION (Light Theme)
            =================================================== */
         .mobile-app-hero-slider-section {
             position: relative;
@@ -670,10 +670,11 @@
             margin: 0 auto;
             padding-top: calc(56px + env(safe-area-inset-top, 0px));
             padding-bottom: 20px;
-            background: #090e1a;
-            background: radial-gradient(circle at 50% 0%, #172554 0%, #090e1a 75%);
+            background: #f8fafc;
+            background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 40%, #f1f5f9 100%);
             box-sizing: border-box;
             overflow: hidden;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         /* Top Location Bar */
@@ -683,28 +684,27 @@
             gap: 5px;
             padding: 4px 10px;
             border-radius: 9999px;
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #f1f5f9;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
             font-size: 11px;
             font-weight: 700;
             cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
             transition: all 0.2s ease;
         }
         .flipkart-location-chip:active {
-            background: rgba(37, 99, 235, 0.3);
+            background: #eff6ff;
             border-color: #3b82f6;
         }
 
         /* Search Bar */
         .mobile-app-search-bar {
-            background: rgba(15, 23, 42, 0.92);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 16px;
             padding: 6px 8px;
-            box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
         }
 
         /* Horizontal Category Circles Rail */
@@ -739,15 +739,15 @@
             justify-content: center;
             font-size: 20px;
             color: #ffffff;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.35);
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 2px solid #ffffff;
             margin-bottom: 5px;
             position: relative;
         }
         .flipkart-cat-label {
             font-size: 10.5px;
             font-weight: 700;
-            color: #e2e8f0;
+            color: #334155;
             text-align: center;
             line-height: 1.15;
             white-space: nowrap;
@@ -759,7 +759,7 @@
             width: 100%;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.75);
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
             margin-bottom: 4px;
         }
 
@@ -809,7 +809,7 @@
             width: 6px;
             height: 6px;
             border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.25);
+            background: #cbd5e1;
             transition: all 0.3s ease;
             border: none;
             padding: 0;
@@ -818,9 +818,9 @@
 
         .mobile-slider-dot.active {
             width: 22px;
-            background: #3b82f6;
+            background: #2563eb;
             border-radius: 9999px;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
         }
 
         /* Quick Filter Chips */
@@ -837,11 +837,11 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 6px 11px;
+            padding: 6px 12px;
             border-radius: 9999px;
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #e2e8f0;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #334155;
             font-size: 11px;
             font-weight: 700;
             white-space: nowrap;
@@ -849,12 +849,13 @@
             text-decoration: none;
             transition: all 0.2s ease;
             cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         }
         .flipkart-filter-chip:active, .flipkart-filter-chip.active {
             background: #2563eb;
-            border-color: #3b82f6;
+            border-color: #2563eb;
             color: #ffffff;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
         }
 
         .mobile-filter-btn {
@@ -863,9 +864,9 @@
             gap: 4px;
             padding: 7px 11px;
             border-radius: 12px;
-            background: rgba(30, 41, 59, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #f1f5f9;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #334155;
             font-size: 11px;
             font-weight: 700;
             white-space: nowrap;
@@ -877,19 +878,17 @@
         }
         .mobile-filter-btn:active, .mobile-filter-btn.active {
             background: #2563eb;
-            border-color: #3b82f6;
+            border-color: #2563eb;
             color: #ffffff;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
         }
 
         .mobile-filter-dropdown-panel {
-            background: rgba(15, 23, 42, 0.96);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 20px;
             padding: 16px 14px;
-            box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.15), 0 1px 3px rgba(15, 23, 42, 0.06);
             margin-top: 8px;
             animation: mobileDropdownSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
@@ -1568,13 +1567,13 @@
         {{-- 1. Flipkart Top Location & Brand Status Bar --}}
         <div class="flex items-center justify-between gap-2 mb-2 px-0.5">
             <button type="button" onclick="searchNearMe()" class="flipkart-location-chip" title="Click to detect or change city">
-                <i class="ph-fill ph-map-pin text-blue-400 text-xs"></i>
+                <i class="ph-fill ph-map-pin text-blue-600 text-xs"></i>
                 <span id="mobileTopLocationText">{{ request('district') ?: 'Gurugram / NCR' }}</span>
-                <i class="ph ph-caret-down text-[10px] text-slate-400"></i>
+                <i class="ph ph-caret-down text-[10px] text-slate-500"></i>
             </button>
-            <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-500/15 border border-blue-400/25">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="text-[9.5px] font-extrabold tracking-wider text-blue-300 uppercase">100% Direct Owner</span>
+            <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 shadow-xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[9.5px] font-extrabold tracking-wider text-blue-700 uppercase">100% Direct Owner</span>
             </div>
         </div>
 
@@ -1596,21 +1595,21 @@
                 {{-- Unified Search Row --}}
                 <div class="mobile-app-search-bar flex items-center gap-1.5">
                     <div class="relative flex-1 flex items-center min-w-0">
-                        <i class="ph-bold ph-magnifying-glass text-blue-400 text-sm absolute left-2.5 pointer-events-none"></i>
+                        <i class="ph-bold ph-magnifying-glass text-blue-600 text-sm absolute left-2.5 pointer-events-none"></i>
                         <input type="text" 
                                name="search" 
                                id="mobile_search_input"
                                placeholder="Search 'Rooms in Gurugram'..." 
                                value="{{ request('search') }}"
-                               class="w-full pl-8 pr-14 py-2 bg-slate-800/80 border border-slate-700/60 rounded-xl text-xs font-semibold text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
+                               class="w-full pl-8 pr-14 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-500">
                         
                         {{-- Quick Near GPS inside input --}}
                         <button type="button" 
                                 id="mobileBtnNearMe" 
                                 onclick="searchNearMe()" 
-                                class="absolute right-1 px-2 py-1 rounded-lg bg-blue-600/25 hover:bg-blue-600 text-blue-300 hover:text-white text-[10px] font-bold flex items-center gap-0.5 transition-all active:scale-95"
+                                class="absolute right-1 px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-200 text-[10px] font-bold flex items-center gap-0.5 transition-all active:scale-95"
                                 title="Locate Near Me">
-                            <i class="ph-fill ph-navigation-arrow text-[11px] text-blue-400"></i>
+                            <i class="ph-fill ph-navigation-arrow text-[11px] text-blue-600"></i>
                             <span>Near</span>
                         </button>
                     </div>
@@ -1622,12 +1621,12 @@
                             class="mobile-filter-btn {{ $mobileActiveFiltersCount > 0 ? 'active' : '' }}"
                             aria-expanded="false"
                             aria-controls="mobileFiltersDropdownPanel">
-                        <i class="ph-bold ph-sliders-horizontal text-xs text-blue-400"></i>
+                        <i class="ph-bold ph-sliders-horizontal text-xs text-blue-600"></i>
                         <span>Filter</span>
                         <i class="ph-bold ph-caret-down text-[10px] transition-transform duration-300" id="mobileFilterCaret"></i>
 
                         @if($mobileActiveFiltersCount > 0)
-                            <span id="mobileFilterBadge" class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-extrabold flex items-center justify-center ring-2 ring-slate-900 shadow-md">
+                            <span id="mobileFilterBadge" class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-md">
                                 {{ $mobileActiveFiltersCount }}
                             </span>
                         @endif
@@ -1635,7 +1634,7 @@
 
                     {{-- Search Submit Action --}}
                     <button type="submit" 
-                            class="w-8 h-8 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-600/30 active:scale-95 transition-all"
+                            class="w-8 h-8 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/25 active:scale-95 transition-all"
                             title="Search">
                         <i class="ph-bold ph-arrow-right text-xs"></i>
                     </button>
@@ -1645,22 +1644,22 @@
                 <div id="mobileFiltersDropdownPanel" class="mobile-filter-dropdown-panel hidden">
                     
                     {{-- Dropdown Header --}}
-                    <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-700/60">
+                    <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-200">
                         <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">
+                            <div class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">
                                 <i class="ph-bold ph-faders-horizontal"></i>
                             </div>
-                            <span class="text-xs font-black text-white tracking-wide">Filter Properties</span>
+                            <span class="text-xs font-black text-slate-900 tracking-wide">Filter Properties</span>
                         </div>
                         <div class="flex items-center gap-3">
                             <button type="button" 
                                     onclick="resetMobileFilters()" 
-                                    class="text-[11px] font-bold text-slate-400 hover:text-red-400 active:scale-95 transition-colors">
+                                    class="text-[11px] font-bold text-slate-500 hover:text-red-500 active:scale-95 transition-colors">
                                 Reset
                             </button>
                             <button type="button" 
                                     onclick="toggleMobileFiltersDropdown()" 
-                                    class="text-slate-400 hover:text-white p-1 rounded-md active:scale-95 transition-colors"
+                                    class="text-slate-400 hover:text-slate-700 p-1 rounded-md active:scale-95 transition-colors"
                                     aria-label="Close Filter">
                                 <i class="ph-bold ph-x text-sm"></i>
                             </button>
@@ -1669,24 +1668,24 @@
 
                     {{-- Purpose Tabs (Rent / Buy / PG) inside Dropdown --}}
                     <div class="mb-3">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1.5">Listing Purpose</span>
-                        <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800/90">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Listing Purpose</span>
+                        <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
                             <button type="button" 
                                     id="mobileTabRent"
                                     onclick="switchMobileTab('rent')"
-                                    class="mobile-purpose-tab {{ request('purpose', 'rent') === 'rent' && request('type') !== 'pg-hostel' ? 'active bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-slate-400 hover:text-white' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                    class="mobile-purpose-tab {{ request('purpose', 'rent') === 'rent' && request('type') !== 'pg-hostel' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
                                 Rent
                             </button>
                             <button type="button" 
                                     id="mobileTabBuy"
                                     onclick="switchMobileTab('buy')"
-                                    class="mobile-purpose-tab {{ request('purpose') === 'buy' ? 'active bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-slate-400 hover:text-white' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                    class="mobile-purpose-tab {{ request('purpose') === 'buy' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
                                 Buy
                             </button>
                             <button type="button" 
                                     id="mobileTabPg"
                                     onclick="switchMobileTab('pg')"
-                                    class="mobile-purpose-tab {{ request('type') === 'pg-hostel' ? 'active bg-blue-600 text-white shadow-md shadow-blue-600/30' : 'text-slate-400 hover:text-white' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
+                                    class="mobile-purpose-tab {{ request('type') === 'pg-hostel' ? 'active bg-blue-600 text-white shadow-md shadow-blue-500/25' : 'text-slate-600 hover:text-slate-900' }} py-1.5 text-xs font-bold rounded-lg text-center transition-all">
                                 PG / Hostel
                             </button>
                         </div>
@@ -1695,11 +1694,11 @@
                     {{-- City & Budget Grid inside Dropdown --}}
                     <div class="grid grid-cols-2 gap-2 mb-3">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">City</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">City</span>
                             <div class="relative">
                                 <select name="district" 
                                         id="mobile_city_select"
-                                        class="w-full appearance-none pl-3 pr-7 py-2 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
+                                        class="w-full appearance-none pl-3 pr-7 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-500">
                                     <option value="">All Top Cities</option>
                                     <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurugram</option>
                                     <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>Delhi NCR</option>
@@ -1718,11 +1717,11 @@
                         </div>
 
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Budget</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">Budget</span>
                             <div class="relative">
                                 <select name="price" 
                                         id="mobile_price_select"
-                                        class="w-full appearance-none pl-3 pr-7 py-2 bg-slate-800/90 border border-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500">
+                                        class="w-full appearance-none pl-3 pr-7 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-500">
                                     <option value="any">Any Budget</option>
                                     <option value="0-20000" {{ request('price') == '0-20000' ? 'selected' : '' }}>Under ₹20,000</option>
                                     <option value="20000-50000" {{ request('price') == '20000-50000' ? 'selected' : '' }}>₹20K – ₹50K</option>
@@ -1735,26 +1734,26 @@
 
                     {{-- Layout BHK Selection Pills --}}
                     <div class="mb-3.5">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1.5">BHK / Layout</span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1.5">BHK / Layout</span>
                         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                            <button type="button" onclick="setMobileRoom('any', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms', 'any') == 'any' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">Any</button>
-                            <button type="button" onclick="setMobileRoom('1rk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '1rk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 RK</button>
-                            <button type="button" onclick="setMobileRoom('1bhk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '1bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">1 BHK</button>
-                            <button type="button" onclick="setMobileRoom('2bhk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '2bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">2 BHK</button>
-                            <button type="button" onclick="setMobileRoom('3bhk-plus', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ in_array(request('rooms'), ['3bhk-plus', '3bhk', '3plus']) ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300' }}">3+ BHK</button>
+                            <button type="button" onclick="setMobileRoom('any', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms', 'any') == 'any' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 border border-slate-200' }}">Any</button>
+                            <button type="button" onclick="setMobileRoom('1rk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '1rk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 border border-slate-200' }}">1 RK</button>
+                            <button type="button" onclick="setMobileRoom('1bhk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '1bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 border border-slate-200' }}">1 BHK</button>
+                            <button type="button" onclick="setMobileRoom('2bhk', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ request('rooms') == '2bhk' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 border border-slate-200' }}">2 BHK</button>
+                            <button type="button" onclick="setMobileRoom('3bhk-plus', this)" class="mobile-room-pill flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ in_array(request('rooms'), ['3bhk-plus', '3bhk', '3plus']) ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 border border-slate-200' }}">3+ BHK</button>
                         </div>
                     </div>
 
                     {{-- Apply Filters Button --}}
                     <div class="flex items-center gap-2">
                         <button type="submit" 
-                                class="flex-1 py-2.5 px-4 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
+                                class="flex-1 py-2.5 px-4 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
                             <i class="ph-bold ph-check text-sm"></i>
                             <span>Apply Filters</span>
                         </button>
                         <button type="button" 
                                 onclick="toggleMobileFiltersDropdown()" 
-                                class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold active:scale-[0.98] transition-all">
+                                class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold active:scale-[0.98] transition-all">
                             Close
                         </button>
                     </div>
@@ -1973,25 +1972,25 @@
                 <button type="button" onclick="searchNearMe()" class="flipkart-filter-chip">
                     <i class="ph-fill ph-navigation-arrow text-xs text-cyan-400"></i> Near Me
                 </button>
-                <button type="button" onclick="toggleMobileFiltersDropdown()" class="flipkart-filter-chip bg-blue-600/30 border-blue-500/40 text-blue-300">
+                <button type="button" onclick="toggleMobileFiltersDropdown()" class="flipkart-filter-chip bg-blue-50 border-blue-200 text-blue-700 font-bold">
                     <i class="ph-bold ph-faders text-xs"></i> More Filters
                 </button>
             </div>
         </div>
 
         {{-- 6. Flipkart Style Trust & Assurance Ribbon --}}
-        <div class="grid grid-cols-3 gap-1 py-2 px-2.5 rounded-xl bg-slate-900/80 border border-white/10 text-center backdrop-blur-md">
+        <div class="grid grid-cols-3 gap-1 py-2 px-2.5 rounded-xl bg-white border border-slate-200 shadow-xs text-center">
             <div class="flex items-center justify-center gap-1">
-                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i>
-                <span class="text-[9.5px] font-extrabold text-slate-200">Zero Brokerage</span>
+                <i class="ph-fill ph-check-circle text-emerald-600 text-xs"></i>
+                <span class="text-[9.5px] font-extrabold text-slate-700">Zero Brokerage</span>
             </div>
-            <div class="flex items-center justify-center gap-1 border-x border-white/10 px-0.5">
-                <i class="ph-fill ph-shield-check text-blue-400 text-xs"></i>
-                <span class="text-[9.5px] font-extrabold text-slate-200">100% Verified</span>
+            <div class="flex items-center justify-center gap-1 border-x border-slate-200 px-0.5">
+                <i class="ph-fill ph-shield-check text-blue-600 text-xs"></i>
+                <span class="text-[9.5px] font-extrabold text-slate-700">100% Verified</span>
             </div>
             <div class="flex items-center justify-center gap-1">
-                <i class="ph-fill ph-whatsapp-logo text-emerald-400 text-xs"></i>
-                <span class="text-[9.5px] font-extrabold text-slate-200">Direct Contact</span>
+                <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-xs"></i>
+                <span class="text-[9.5px] font-extrabold text-slate-700">Direct Contact</span>
             </div>
         </div>
 
@@ -2889,8 +2888,8 @@
 
                 [rentTab, buyTab, pgTab].forEach(t => {
                     if (t) {
-                        t.classList.remove('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/30');
-                        t.classList.add('text-slate-400');
+                        t.classList.remove('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/30', 'shadow-blue-500/25');
+                        t.classList.add('text-slate-600');
                     }
                 });
 
@@ -2898,22 +2897,22 @@
                     if (purposeInput) purposeInput.value = 'rent';
                     if (typeInput) typeInput.value = 'all';
                     if (rentTab) {
-                        rentTab.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/30');
-                        rentTab.classList.remove('text-slate-400');
+                        rentTab.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-500/25');
+                        rentTab.classList.remove('text-slate-600');
                     }
                 } else if (tab === 'buy') {
                     if (purposeInput) purposeInput.value = 'buy';
                     if (typeInput) typeInput.value = 'all';
                     if (buyTab) {
-                        buyTab.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/30');
-                        buyTab.classList.remove('text-slate-400');
+                        buyTab.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-500/25');
+                        buyTab.classList.remove('text-slate-600');
                     }
                 } else if (tab === 'pg') {
                     if (purposeInput) purposeInput.value = 'rent';
                     if (typeInput) typeInput.value = 'pg-hostel';
                     if (pgTab) {
-                        pgTab.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/30');
-                        pgTab.classList.remove('text-slate-400');
+                        pgTab.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-500/25');
+                        pgTab.classList.remove('text-slate-600');
                     }
                 }
             };
@@ -2924,10 +2923,10 @@
                 if (input) input.value = room;
                 document.querySelectorAll('.mobile-room-pill').forEach(p => {
                     p.classList.remove('bg-blue-600', 'text-white', 'shadow-xs');
-                    p.classList.add('bg-slate-800', 'text-slate-300');
+                    p.classList.add('bg-slate-100', 'text-slate-700', 'border', 'border-slate-200');
                 });
                 if (btn) {
-                    btn.classList.remove('bg-slate-800', 'text-slate-300');
+                    btn.classList.remove('bg-slate-100', 'text-slate-700', 'border', 'border-slate-200');
                     btn.classList.add('bg-blue-600', 'text-white', 'shadow-xs');
                 }
             };
