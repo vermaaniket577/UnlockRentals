@@ -5,109 +5,116 @@
 
 @section('content')
 
-<section class="min-h-screen pt-28 sm:pt-32 pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="create-property">
+<section class="min-h-screen pt-20 sm:pt-28 pb-32 sm:pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="create-property">
+    <style>
+        @media (max-width: 768px) {
+            .chatbot-trigger, .feedback-modal-trigger {
+                display: none !important;
+            }
+        }
+    </style>
     {{-- Ambient Background Gradients --}}
     <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-500/[0.04] via-indigo-500/[0.02] to-transparent pointer-events-none"></div>
     <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
     <div class="absolute top-1/3 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
 
         {{-- Page Header --}}
-        <div class="mb-10 text-center">
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-extrabold uppercase tracking-widest rounded-full mb-3 border border-blue-100 dark:border-blue-900/50">
+        <div class="mb-4 sm:mb-8 text-center">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest rounded-full mb-2 border border-blue-100 dark:border-blue-900/50">
                 <i class="ph-bold ph-sparkle text-xs"></i> 100% Free Owner Listing
             </span>
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
                 List Your Property
             </h1>
-            <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base font-normal max-w-xl mx-auto mt-2.5 leading-relaxed">
-                Reach thousands of verified tenants with zero brokerage and instant digital inquiries.
+            <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal max-w-md mx-auto mt-1 leading-snug">
+                Reach thousands of verified tenants with zero brokerage.
             </p>
         </div>
 
         {{-- Step Navigation Indicator --}}
-        <div class="mb-10 p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
-            <div class="grid grid-cols-4 gap-2 sm:gap-4 text-center">
-                <div class="flex flex-col items-center gap-1.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-xs">1</div>
-                    <span class="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-white">Basic Info</span>
+        <div class="mb-4 sm:mb-8 p-3 sm:p-4 bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div class="grid grid-cols-4 gap-1.5 sm:gap-4 text-center">
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-xs">1</div>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-white">Basic Info</span>
                 </div>
-                <div class="flex flex-col items-center gap-1.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">2</div>
-                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Pricing</span>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">2</div>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Pricing</span>
                 </div>
-                <div class="flex flex-col items-center gap-1.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">3</div>
-                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Location</span>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">3</div>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Location</span>
                 </div>
-                <div class="flex flex-col items-center gap-1.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">4</div>
-                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Photos</span>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">4</div>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Photos</span>
                 </div>
             </div>
         </div>
 
-        <form method="POST" action="{{ route('properties.store') }}" enctype="multipart/form-data" class="space-y-8" id="create-property-form" data-ur-loader-skip="true" data-no-smooth="true">
+        <form method="POST" action="{{ route('properties.store') }}" enctype="multipart/form-data" class="space-y-4 sm:space-y-6" id="create-property-form" data-ur-loader-skip="true" data-no-smooth="true">
             @csrf
 
             {{-- 1. Basic Info Section --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="create-basic-info">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <i class="ph-bold ph-info text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-basic-info">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-info"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Basic Information</h2>
-                        <p class="text-xs text-slate-400">General property headline and listing classification</p>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Basic Information</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400">General property headline and listing classification</p>
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-4 sm:space-y-5">
                     {{-- Title --}}
                     <div>
-                        <label for="create-title" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Property Title <span class="text-red-500">*</span></label>
-                        <input type="text" name="title" id="create-title" value="{{ old('title') }}" required
-                               class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                        <label for="create-title" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Property Title <span class="text-red-500">*</span></label>
+                        <input type="text" name="title" id="create-title" value="{{ old('title') }}" required enterkeyhint="next"
+                               class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                placeholder="e.g. Spacious 3 BHK Semi-Furnished Flat in Sector 57">
                         @error('title') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Description --}}
                     <div>
-                        <label for="create-description" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Description <span class="text-red-500">*</span></label>
-                        <textarea name="description" id="create-description" rows="4" required
-                                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all resize-none"
-                                  placeholder="Describe the key features, nearby amenities, sunlight, balcony view, and tenant preferences...">{{ old('description') }}</textarea>
+                        <label for="create-description" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Description <span class="text-red-500">*</span></label>
+                        <textarea name="description" id="create-description" rows="3" required
+                                  class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all resize-none"
+                                  placeholder="Describe key features, sunlight, balcony view, and tenant preferences...">{{ old('description') }}</textarea>
                         @error('description') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Listing Purpose (Rent vs Sell) --}}
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">Listing Purpose (Intent) <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
+                        <label class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Listing Purpose (Intent) <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3 max-w-xl">
                             @php
                                 $curPurpose = old('purpose', 'rent');
                             @endphp
-                            <label class="relative flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all {{ ($curPurpose === 'rent') ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="create-purpose-rent">
+                            <label class="relative flex items-center gap-2.5 p-2.5 sm:p-3.5 rounded-xl border cursor-pointer transition-all {{ ($curPurpose === 'rent') ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="create-purpose-rent">
                                 <input type="radio" name="purpose" value="rent" id="create-purpose-rent" {{ $curPurpose === 'rent' ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'); if(window.onPurposeChange) window.onPurposeChange('rent');">
-                                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
-                                    <i class="ph-bold ph-key text-base"></i>
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
+                                    <i class="ph-bold ph-key text-sm sm:text-base"></i>
                                 </div>
-                                <div>
-                                    <div class="text-xs sm:text-sm font-bold leading-tight">For Rent</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Monthly Lease / Rental Income</div>
+                                <div class="min-w-0">
+                                    <div class="text-xs sm:text-sm font-bold leading-tight truncate">For Rent</div>
+                                    <div class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-normal truncate">Monthly Lease</div>
                                 </div>
                             </label>
 
-                            <label class="relative flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all {{ in_array($curPurpose, ['buy', 'sell']) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="create-purpose-buy">
+                            <label class="relative flex items-center gap-2.5 p-2.5 sm:p-3.5 rounded-xl border cursor-pointer transition-all {{ in_array($curPurpose, ['buy', 'sell']) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="create-purpose-buy">
                                 <input type="radio" name="purpose" value="buy" id="create-purpose-buy" {{ in_array($curPurpose, ['buy', 'sell']) ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'); if(window.onPurposeChange) window.onPurposeChange('buy');">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                                    <i class="ph-bold ph-tag text-base"></i>
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                                    <i class="ph-bold ph-tag text-sm sm:text-base"></i>
                                 </div>
-                                <div>
-                                    <div class="text-xs sm:text-sm font-bold leading-tight">For Sell / Sale</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Outright Property Sale</div>
+                                <div class="min-w-0">
+                                    <div class="text-xs sm:text-sm font-bold leading-tight truncate">For Sale</div>
+                                    <div class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-normal truncate">Direct Outright Sale</div>
                                 </div>
                             </label>
                         </div>
@@ -116,8 +123,8 @@
 
                     {{-- Property Type Selector --}}
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">Property Type <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <label class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Property Type <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
                             @php
                                 $formTypes = [
                                     'house' => ['label' => 'House / Flat', 'icon' => 'ph-bold ph-house-line'],
@@ -127,22 +134,22 @@
                                 ];
                             @endphp
                             @foreach($formTypes as $val => $info)
-                            <label class="relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all {{ (old('type', 'house') === $val) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="create-type-{{ $val }}">
+                            <label class="relative flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all {{ (old('type', 'house') === $val) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="create-type-{{ $val }}">
                                 <input type="radio" name="type" value="{{ $val }}" id="create-type-{{ $val }}" {{ old('type', 'house') === $val ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600');">
-                                <i class="{{ $info['icon'] }} text-xl mb-1 text-blue-600"></i>
-                                <span class="text-xs text-center leading-tight">{{ $info['label'] }}</span>
+                                <i class="{{ $info['icon'] }} text-lg sm:text-xl mb-1 text-blue-600"></i>
+                                <span class="text-[11px] sm:text-xs text-center leading-tight">{{ $info['label'] }}</span>
                             </label>
                             @endforeach
                         </div>
                     </div>
 
                     {{-- Category & Phone Row --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
                         <div>
-                            <label for="create-category" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Category <span class="text-red-500">*</span></label>
+                            <label for="create-category" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Category <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="category_id" id="create-category" required
-                                        class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
                                     <option value="">Select Category</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -153,11 +160,11 @@
                         </div>
 
                         <div>
-                            <label for="create-phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Contact Phone Number <span class="text-red-500">*</span></label>
+                            <label for="create-phone" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Contact Phone Number <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-phone"></i></span>
-                                <input type="tel" name="contact_phone" id="create-phone" value="{{ old('contact_phone', auth()->user()->phone ?? '') }}" required
-                                       class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                <input type="tel" name="contact_phone" id="create-phone" value="{{ old('contact_phone', auth()->user()->phone ?? '') }}" required inputmode="tel" autocomplete="tel"
+                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                        placeholder="+91 94254 55499">
                             </div>
                             @error('contact_phone') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
@@ -167,24 +174,24 @@
             </div>
 
             {{-- 2. Pricing Section --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="create-pricing">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <i class="ph-bold ph-currency-inr text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-pricing">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-currency-inr"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white" id="create-pricing-title">Pricing & Billing</h2>
-                        <p class="text-xs text-slate-400" id="create-pricing-desc">Set your expected rent or sale price</p>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white" id="create-pricing-title">Pricing & Billing</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400" id="create-pricing-desc">Set your expected rent or sale price</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" id="pricing-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5" id="pricing-grid">
                     <div>
-                        <label for="create-price" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2" id="create-price-label">Expected Rent (₹) <span class="text-red-500">*</span></label>
+                        <label for="create-price" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" id="create-price-label">Expected Rent (₹) <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-sm">₹</span>
-                            <input type="number" name="price" id="create-price" value="{{ old('price') }}" required min="0" step="0.01"
-                                   class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                            <input type="number" name="price" id="create-price" value="{{ old('price') }}" required min="0" step="0.01" inputmode="numeric"
+                                   class="w-full pl-8 pr-3.5 py-2.5 sm:pl-9 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                    placeholder="25,000">
                         </div>
                         @error('price') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
@@ -192,10 +199,10 @@
 
                     {{-- Rent Billing Cycle (Per Month / Per Year) --}}
                     <div id="period-input-col">
-                        <label for="create-period" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2" id="create-period-label">Billing Cycle <span class="text-red-500">*</span></label>
+                        <label for="create-period" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" id="create-period-label">Billing Cycle <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <select name="price_period" id="create-period" required
-                                    class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                    class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
                                 <option value="month" {{ old('price_period') === 'month' ? 'selected' : '' }}>Per Month</option>
                                 <option value="year" {{ old('price_period') === 'year' ? 'selected' : '' }}>Per Year</option>
                             </select>
@@ -205,8 +212,8 @@
 
                     {{-- Sale Pricing Mode Badge (Shown when Selling) --}}
                     <div id="sale-badge-col" class="hidden">
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Payment Mode</label>
-                        <div class="h-[46px] px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 shadow-2xs">
+                        <label class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Payment Mode</label>
+                        <div class="h-[42px] sm:h-[46px] px-3.5 sm:px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 shadow-2xs">
                             <i class="ph-bold ph-tag text-emerald-600 text-base shrink-0"></i>
                             <span>One-Time Total Purchase Price (No recurring rent)</span>
                         </div>
@@ -215,29 +222,29 @@
             </div>
 
             {{-- 3. Location Details --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="create-location">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <i class="ph-bold ph-map-pin text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-location">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-map-pin"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Location Details</h2>
-                        <p class="text-xs text-slate-400">Accurate location helps verified tenants discover your listing</p>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Location Details</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400">Accurate location helps verified tenants discover your listing</p>
                     </div>
                 </div>
 
-                <div class="space-y-5">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="space-y-3.5 sm:space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
                         <div>
-                            <label for="create-state" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">State <span class="text-red-500">*</span></label>
+                            <label for="create-state" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">State <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="state" id="create-state" required onchange="if(window.handleLocationStateChange) window.handleLocationStateChange(this, 'create-city', 'create-locality-select');"
-                                        class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
                                     <option value="">Select State</option>
                                     @php $statesList = $globalAllStates ?? $allStates ?? []; @endphp
                                     @if(!empty($statesList))
                                         @foreach($statesList as $code => $name)
-                                            <option value="{{ $code }}" {{ old('state') == $code ? 'selected' : '' }}>{{ $name }}</option>
+                                             <option value="{{ $code }}" {{ old('state') == $code ? 'selected' : '' }}>{{ $name }}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -246,10 +253,10 @@
                         </div>
 
                         <div>
-                            <label for="create-city" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">City / District <span class="text-red-500">*</span></label>
+                            <label for="create-city" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">City / District <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="location" id="create-city" required onchange="if(window.handleLocationCityChange) window.handleLocationCityChange(this, 'create-locality-select', 'create-state');"
-                                        class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
                                     <option value="">Select District</option>
                                     @php $districtsList = $globalAllDistricts ?? $allDistricts ?? []; @endphp
                                     @if(!empty($districtsList))
@@ -270,11 +277,11 @@
                     </div>
                     
                     <div>
-                        <label for="create-locality-select" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Locality / Sector / Area <span class="text-red-500">*</span></label>
+                        <label for="create-locality-select" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Locality / Sector / Area <span class="text-red-500">*</span></label>
                         <div id="locality-select-wrap">
                             <div class="relative">
                                 <select name="locality" id="create-locality-select"
-                                        class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
                                     <option value="">Select City First</option>
                                 </select>
                                 <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
@@ -284,16 +291,16 @@
                             <div class="relative">
                                 <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                                 <input type="text" name="locality" id="create-locality-text" value="{{ old('locality') }}" 
-                                       class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                        placeholder="e.g. Sector 57, Sushant Lok">
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label for="create-address" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Complete Address <span class="text-red-500">*</span></label>
-                        <input type="text" name="address" id="create-address" value="{{ old('address') }}" required
-                               class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                        <label for="create-address" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Complete Address <span class="text-red-500">*</span></label>
+                        <input type="text" name="address" id="create-address" value="{{ old('address') }}" required enterkeyhint="next"
+                               class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                placeholder="Flat/House No, Building Name, Street / Landmark">
                     </div>
                 </div>
@@ -317,52 +324,52 @@
             </div>
 
             {{-- 4. Key Specifications --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="create-details">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <i class="ph-bold ph-house-line text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-details">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-house-line"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Key Specifications</h2>
-                        <p class="text-xs text-slate-400">Bedrooms, bathrooms, area, and furnishing level</p>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Key Specifications</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400">Bedrooms, bathrooms, area, and furnishing level</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="grid grid-cols-3 gap-2 sm:gap-5">
                     <div>
-                        <label for="create-bedrooms" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Bedrooms (BHK)</label>
+                        <label for="create-bedrooms" class="block text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 truncate">Bedrooms (BHK)</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-bed"></i></span>
-                            <input type="number" name="bedrooms" id="create-bedrooms" value="{{ old('bedrooms') }}" min="0" max="20"
-                                   class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-bed"></i></span>
+                            <input type="number" name="bedrooms" id="create-bedrooms" value="{{ old('bedrooms') }}" min="0" max="20" inputmode="numeric"
+                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                    placeholder="3">
                         </div>
                     </div>
                     <div>
-                        <label for="create-bathrooms" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Bathrooms</label>
+                        <label for="create-bathrooms" class="block text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 truncate">Bathrooms</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-drop"></i></span>
-                            <input type="number" name="bathrooms" id="create-bathrooms" value="{{ old('bathrooms') }}" min="0" max="20"
-                                   class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-drop"></i></span>
+                            <input type="number" name="bathrooms" id="create-bathrooms" value="{{ old('bathrooms') }}" min="0" max="20" inputmode="numeric"
+                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                    placeholder="2">
                         </div>
                     </div>
                     <div>
-                        <label for="create-area" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Area (sq.ft)</label>
+                        <label for="create-area" class="block text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 truncate">Area (sq.ft)</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-square-half"></i></span>
-                            <input type="number" name="area_sqft" id="create-area" value="{{ old('area_sqft') }}" min="0"
-                                   class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-square-half"></i></span>
+                            <input type="number" name="area_sqft" id="create-area" value="{{ old('area_sqft') }}" min="0" inputmode="numeric"
+                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                    placeholder="1250">
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-5">
-                    <label for="create-furnishing" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Furnishing Status <span class="text-red-500">*</span></label>
+                <div class="mt-3.5 sm:mt-5">
+                    <label for="create-furnishing" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Furnishing Status <span class="text-red-500">*</span></label>
                     <div class="relative">
                         <select name="furnishing" id="create-furnishing" required
-                                class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
                             <option value="unfurnished" {{ old('furnishing') === 'unfurnished' ? 'selected' : '' }}>Unfurnished</option>
                             <option value="semi-furnished" {{ old('furnishing') === 'semi-furnished' ? 'selected' : '' }}>Semi-Furnished</option>
                             <option value="fully-furnished" {{ old('furnishing') === 'fully-furnished' ? 'selected' : '' }}>Fully Furnished</option>
@@ -373,27 +380,27 @@
             </div>
 
             {{-- 5. Media & Photo Gallery --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="create-images">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                            <i class="ph-bold ph-images-square text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-images">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                            <i class="ph-bold ph-images-square"></i>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Property Photos</h2>
-                            <p class="text-xs text-slate-400">High-quality photos increase inquiries by up to 5x</p>
+                            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Property Photos</h2>
+                            <p class="text-[11px] sm:text-xs text-slate-400">High-quality photos increase inquiries by up to 5x</p>
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-lg self-start sm:self-auto border border-blue-200/60 dark:border-blue-800">Min 1 Photo or Video Tour *</span>
+                    <span class="text-[11px] sm:text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-1 rounded-lg self-start sm:self-auto border border-blue-200/60 dark:border-blue-800">Min 1 Photo or Video Tour *</span>
                 </div>
 
                 {{-- Upload Dropzone --}}
-                <div class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-8 text-center transition-all group relative bg-slate-50/50 dark:bg-slate-800/30">
-                    <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                        <i class="ph-bold ph-cloud-arrow-up text-2xl"></i>
+                <div class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-500 rounded-xl sm:rounded-2xl p-5 sm:p-8 text-center transition-all group relative bg-slate-50/50 dark:bg-slate-800/30">
+                    <div class="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center mx-auto mb-2.5 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-cloud-arrow-up text-xl sm:text-2xl"></i>
                     </div>
-                    <p class="text-sm font-bold text-slate-800 dark:text-white mb-1">Click to upload or drag & drop photos here</p>
-                    <p class="text-xs text-slate-400">Supports JPG, PNG, WebP · <span class="text-emerald-600 font-semibold">⚡ Auto-compressed for ultra-fast upload</span></p>
+                    <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-0.5">Click to upload or drag & drop photos here</p>
+                    <p class="text-[11px] sm:text-xs text-slate-400">Supports JPG, PNG, WebP · <span class="text-emerald-600 font-semibold">⚡ Auto-compressed for ultra-fast upload</span></p>
                     
                     <input type="file" name="images[]" multiple accept="image/*"
                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -413,7 +420,7 @@
                 <input type="hidden" name="primary_image" id="primary-image-input" value="0">
 
                 {{-- Preview Gallery Container --}}
-                <div id="image-preview-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3.5 mt-6 hidden">
+                <div id="image-preview-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2.5 sm:gap-3.5 mt-4 sm:mt-6 hidden">
                     {{-- Previews dynamically rendered here --}}
                 </div>
                 
@@ -421,52 +428,52 @@
                 @error('images.*') <p class="text-red-500 text-xs mt-3 font-semibold">{{ $message }}</p> @enderror
 
                 {{-- Video Tour Section --}}
-                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-                    <div class="flex items-center justify-between gap-3 mb-4">
+                <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center justify-between gap-2.5 sm:gap-3 mb-3.5 sm:mb-4">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center">
+                            <div class="w-8 h-8 rounded-lg sm:rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center">
                                 <i class="ph-bold ph-video-camera text-base"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    Property Video Tours & Clips
-                                    <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-[10px] font-extrabold uppercase rounded-full">Multi-Clip & Trimmer</span>
+                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5 sm:gap-2">
+                                    Video Tours & Clips
+                                    <span class="px-1.5 sm:px-2 py-0.5 bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-[9px] sm:text-[10px] font-extrabold uppercase rounded-full">Multi-Clip & Trimmer</span>
                                 </h3>
-                                <p class="text-xs text-slate-400">Upload multiple clips, trim large videos into short clips, or add YouTube/Vimeo links</p>
+                                <p class="text-[11px] sm:text-xs text-slate-400">Upload multiple clips, trim large videos, or add YouTube/Vimeo links</p>
                             </div>
                         </div>
-                        <span class="text-[11px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2.5 py-0.5 rounded-md border border-purple-200/60 dark:border-purple-800">3x Inquiries</span>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-md border border-purple-200/60 dark:border-purple-800 shrink-0">3x Inquiries</span>
                     </div>
 
                     {{-- Multi-Video Upload Box --}}
-                    <div id="video-upload-box" class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-purple-500 rounded-2xl p-6 text-center transition-all group relative bg-slate-50/40 dark:bg-slate-800/20 cursor-pointer" onclick="document.getElementById('create-video-input').click()">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                            <i class="ph-bold ph-film-slate text-xl"></i>
+                    <div id="video-upload-box" class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-purple-500 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center transition-all group relative bg-slate-50/40 dark:bg-slate-800/20 cursor-pointer" onclick="document.getElementById('create-video-input').click()">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                            <i class="ph-bold ph-film-slate text-lg sm:text-xl"></i>
                         </div>
-                        <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-0.5">Click to upload property videos / clips (Up to 10 videos)</p>
-                        <p class="text-xs text-slate-400">MP4, WebM, MOV, M4V · Auto-optimized for fast upload · Optional trim for long videos · Max 10 clips</p>
+                        <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-0.5">Click to upload property videos / clips (Up to 10)</p>
+                        <p class="text-[11px] sm:text-xs text-slate-400">MP4, WebM, MOV · Auto-optimized · Max 10 clips</p>
                         
                         <input type="file" id="create-video-input" multiple accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v" class="hidden" onchange="handleMultipleVideoSelection(event)">
                     </div>
 
                     {{-- External Video Tour Link Section --}}
-                    <div class="mt-4 p-4 rounded-xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <div class="mt-3.5 sm:mt-4 p-3 sm:p-4 rounded-xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80">
+                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                            <label class="text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                                 <i class="ph-bold ph-link text-purple-600"></i> Or Add Video Tour Link (YouTube / Vimeo / Cloud)
                             </label>
                         </div>
                         <div class="flex gap-2">
-                            <input type="url" id="video-url-input" placeholder="https://www.youtube.com/watch?v=... or cloud video link"
-                                   class="flex-1 px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-purple-600">
-                            <button type="button" onclick="addVideoUrlLink()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                            <input type="url" id="video-url-input" placeholder="https://www.youtube.com/watch?v=... or cloud link"
+                                   class="flex-1 px-3 py-2 sm:px-3.5 sm:py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-purple-600">
+                            <button type="button" onclick="addVideoUrlLink()" class="px-3.5 sm:px-4 py-2 sm:py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0">
                                 <i class="ph-bold ph-plus"></i> Add Link
                             </button>
                         </div>
                     </div>
 
                     {{-- Compression / Trimming Global Status --}}
-                    <div id="video-compress-status" class="mt-4 p-3.5 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-xl hidden">
+                    <div id="video-compress-status" class="mt-3.5 sm:mt-4 p-3 sm:p-3.5 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-xl hidden">
                         <div class="flex items-center justify-between text-xs font-bold text-purple-900 dark:text-purple-300 mb-1.5">
                             <span class="flex items-center gap-1.5"><i class="ph-bold ph-lightning text-amber-500 animate-pulse text-sm"></i> <span id="compress-status-text">Optimizing video for fast posting...</span></span>
                             <span id="compress-status-pct">0%</span>
@@ -477,155 +484,155 @@
                     </div>
 
                     {{-- Multi-Video Preview List Container --}}
-                    <div id="video-previews-container" class="mt-4 space-y-3"></div>
+                    <div id="video-previews-container" class="mt-3 sm:mt-4 space-y-2.5 sm:space-y-3"></div>
 
                     @error('video') <p class="text-red-500 text-xs mt-2 font-semibold">{{ $message }}</p> @enderror
                     @error('videos') <p class="text-red-500 text-xs mt-2 font-semibold">{{ $message }}</p> @enderror
                     @error('videos.*') <p class="text-red-500 text-xs mt-2 font-semibold">{{ $message }}</p> @enderror
                 </div>
-                      {{-- Interactive Video Trimmer Modal --}}
-            <div id="video-trimmer-modal" class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md hidden" style="z-index: 99999;">
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-5 sm:p-6 transition-all relative z-10" onclick="event.stopPropagation()">
-                    
-                    {{-- Modal Header --}}
-                    <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg">
-                                <i class="ph-bold ph-scissors"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    Trim Video Clip
-                                    <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-[10px] font-extrabold uppercase rounded-full">Fast Web Clip</span>
-                                </h3>
-                                <p class="text-xs text-slate-400">Cut a short highlight clip (15s–60s) for instant uploading & fast playback</p>
-                            </div>
-                        </div>
-                        <button type="button" onclick="closeTrimmerModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer">
-                            <i class="ph-bold ph-x text-lg"></i>
-                        </button>
-                    </div>
 
-                    {{-- Video Player Container --}}
-                    <div class="relative bg-black rounded-xl overflow-hidden aspect-video max-h-[280px] sm:max-h-[320px] mb-4 flex items-center justify-center shadow-inner">
-                        <video id="trimmer-preview-player" playsinline preload="metadata" class="w-full h-full object-contain"></video>
+                {{-- Interactive Video Trimmer Modal --}}
+                <div id="video-trimmer-modal" class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md hidden" style="z-index: 99999;">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-4 sm:p-6 transition-all relative z-10" onclick="event.stopPropagation()">
                         
-                        {{-- Time Overlay --}}
-                        <div class="absolute bottom-2 left-2 px-2.5 py-1 bg-black/75 backdrop-blur-xs text-white text-[11px] font-mono font-bold rounded-lg pointer-events-none">
-                            <span id="trimmer-current-time">00:00</span> / <span id="trimmer-total-duration">00:00</span>
-                        </div>
-                    </div>
-
-                    {{-- Clip Label Input --}}
-                    <div class="mb-4">
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                            Clip Name / Room (Optional)
-                        </label>
-                        <input type="text" id="trimmer-clip-title" placeholder="e.g. Living Room Walkthrough, Master Bedroom, Balcony View"
-                               class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-purple-600">
-                    </div>
-
-                    {{-- Trim Range Controls --}}
-                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200/80 dark:border-slate-700/80 mb-4 space-y-3.5">
-                        
-                        {{-- Sliders & Time Inputs --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                            {{-- Start Time --}}
-                            <div class="space-y-1.5">
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold text-slate-700 dark:text-slate-300">Start Time:</span>
-                                    <div class="flex items-center gap-1.5">
-                                        <span id="trimmer-start-display" class="font-mono font-bold text-purple-600 dark:text-purple-400">0.0s</span>
-                                        <button type="button" onclick="setTrimStartToCurrent()" class="px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 hover:bg-purple-200 text-purple-700 dark:text-purple-300 text-[10px] font-bold rounded cursor-pointer">
-                                            Set Current
-                                        </button>
-                                    </div>
+                        {{-- Modal Header --}}
+                        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center text-base sm:text-lg">
+                                    <i class="ph-bold ph-scissors"></i>
                                 </div>
-                                <input type="range" id="trimmer-start-slider" min="0" max="100" step="0.1" value="0"
-                                       class="w-full accent-purple-600 cursor-pointer" oninput="onTrimStartSliderChange(this.value)">
-                            </div>
-
-                            {{-- End Time --}}
-                            <div class="space-y-1.5">
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold text-slate-700 dark:text-slate-300">End Time:</span>
-                                    <div class="flex items-center gap-1.5">
-                                        <span id="trimmer-end-display" class="font-mono font-bold text-purple-600 dark:text-purple-400">30.0s</span>
-                                        <button type="button" onclick="setTrimEndToCurrent()" class="px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 hover:bg-purple-200 text-purple-700 dark:text-purple-300 text-[10px] font-bold rounded cursor-pointer">
-                                            Set Current
-                                        </button>
-                                    </div>
+                                <div>
+                                    <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                        Trim Video Clip
+                                        <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-[10px] font-extrabold uppercase rounded-full">Fast Web Clip</span>
+                                    </h3>
+                                    <p class="text-[11px] sm:text-xs text-slate-400">Cut a short highlight clip (15s–60s) for instant uploading & fast playback</p>
                                 </div>
-                                <input type="range" id="trimmer-end-slider" min="0" max="100" step="0.1" value="30"
-                                       class="w-full accent-purple-600 cursor-pointer" oninput="onTrimEndSliderChange(this.value)">
                             </div>
-                        </div>
-
-                        {{-- Quick Presets --}}
-                        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
-                            <span class="text-[11px] font-bold text-slate-400 mr-1">Fast Presets:</span>
-                            <button type="button" onclick="applyTrimPreset(15)" id="trim-preset-15" class="trim-preset-btn px-2.5 py-1 bg-white dark:bg-slate-700 hover:bg-purple-50 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-all">15s Clip</button>
-                            <button type="button" onclick="applyTrimPreset(30)" id="trim-preset-30" class="trim-preset-btn px-2.5 py-1 bg-white dark:bg-slate-700 hover:bg-purple-50 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-all">30s Clip</button>
-                            <button type="button" onclick="applyTrimPreset(45)" id="trim-preset-45" class="trim-preset-btn px-2.5 py-1 bg-white dark:bg-slate-700 hover:bg-purple-50 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-all">45s Clip</button>
-                            <button type="button" onclick="applyTrimPreset(60)" id="trim-preset-60" class="trim-preset-btn px-2.5 py-1 bg-white dark:bg-slate-700 hover:bg-purple-50 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-all">60s Clip</button>
-                            <button type="button" onclick="previewTrimRange()" class="ml-auto px-3 py-1 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-xs cursor-pointer">
-                                <i class="ph-bold ph-play"></i> Preview Clip
+                            <button type="button" onclick="closeTrimmerModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer">
+                                <i class="ph-bold ph-x text-base"></i>
                             </button>
                         </div>
 
-                        {{-- Summary Badge --}}
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 pt-1">
-                            <span>Clip Duration: <strong id="trimmer-duration-badge" class="text-purple-600 dark:text-purple-400">30.0s</strong> <span class="text-[10px] text-slate-400 font-normal">(Max 60s per clip)</span></span>
-                            <div id="trimmer-speed-badge">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold rounded-full border border-emerald-200/50">⚡ ~4.8 MB · Uploads in ~2 sec</span>
+                        {{-- Video Player Container --}}
+                        <div class="relative bg-black rounded-xl overflow-hidden aspect-video max-h-[220px] sm:max-h-[320px] mb-3.5 sm:mb-4 flex items-center justify-center shadow-inner">
+                            <video id="trimmer-preview-player" playsinline preload="metadata" class="w-full h-full object-contain"></video>
+                            
+                            {{-- Time Overlay --}}
+                            <div class="absolute bottom-2 left-2 px-2.5 py-1 bg-black/75 backdrop-blur-xs text-white text-[11px] font-mono font-bold rounded-lg pointer-events-none">
+                                <span id="trimmer-current-time">00:00</span> / <span id="trimmer-total-duration">00:00</span>
                             </div>
                         </div>
-                    </div>
 
-                    {{-- Trimming Progress Bar (during processing) --}}
-                    <div id="trimmer-progress-wrapper" class="mb-4 p-3 bg-purple-50 dark:bg-purple-950/40 rounded-xl border border-purple-200 dark:border-purple-800/60 hidden">
-                        <div class="flex items-center justify-between text-xs font-bold text-purple-900 dark:text-purple-300 mb-1.5">
-                            <span class="flex items-center gap-1.5"><i class="ph-bold ph-lightning text-amber-500 animate-pulse"></i> Extracting & optimizing clip...</span>
-                            <span id="trimmer-progress-pct">0%</span>
+                        {{-- Clip Label Input --}}
+                        <div class="mb-3.5 sm:mb-4">
+                            <label class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                                Clip Name / Room (Optional)
+                            </label>
+                            <input type="text" id="trimmer-clip-title" placeholder="e.g. Living Room Walkthrough, Master Bedroom, Balcony View"
+                                   class="w-full px-3 py-2 sm:px-3.5 sm:py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:border-purple-600">
                         </div>
-                        <div class="w-full bg-purple-200 dark:bg-purple-900 h-2 rounded-full overflow-hidden">
-                            <div id="trimmer-progress-bar" class="bg-gradient-to-r from-purple-600 to-indigo-600 h-full w-0 transition-all duration-100"></div>
+
+                        {{-- Trim Range Controls --}}
+                        <div class="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200/80 dark:border-slate-700/80 mb-3.5 sm:mb-4 space-y-3">
+                            
+                            {{-- Sliders & Time Inputs --}}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {{-- Start Time --}}
+                                <div class="space-y-1">
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">Start Time:</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span id="trimmer-start-display" class="font-mono font-bold text-purple-600 dark:text-purple-400">0.0s</span>
+                                            <button type="button" onclick="setTrimStartToCurrent()" class="px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 hover:bg-purple-200 text-purple-700 dark:text-purple-300 text-[10px] font-bold rounded cursor-pointer">
+                                                Set Current
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="trimmer-start-slider" min="0" max="100" step="0.1" value="0"
+                                           class="w-full accent-purple-600 cursor-pointer" oninput="onTrimStartSliderChange(this.value)">
+                                </div>
+
+                                {{-- End Time --}}
+                                <div class="space-y-1">
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">End Time:</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span id="trimmer-end-display" class="font-mono font-bold text-purple-600 dark:text-purple-400">30.0s</span>
+                                            <button type="button" onclick="setTrimEndToCurrent()" class="px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 hover:bg-purple-200 text-purple-700 dark:text-purple-300 text-[10px] font-bold rounded cursor-pointer">
+                                                Set Current
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="trimmer-end-slider" min="0" max="100" step="0.1" value="30"
+                                           class="w-full accent-purple-600 cursor-pointer" oninput="onTrimEndSliderChange(this.value)">
+                                </div>
+                            </div>
+
+                            {{-- Quick Presets --}}
+                            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                                <span class="text-[10px] sm:text-[11px] font-bold text-slate-400 mr-1">Fast Presets:</span>
+                                <button type="button" onclick="applyTrimPreset(15)" id="trim-preset-15" class="trim-preset-btn px-2.5 py-1 bg-white dark:bg-slate-700 hover:bg-purple-50 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-all">15s Clip</button>
+                                <button type="button" onclick="applyTrimPreset(30)" id="trim-preset-30" class="trim-preset-btn px-2.5 py-1 bg-white dark:bg-slate-700 hover:bg-purple-50 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-all">30s Clip</button>
+                                <button type="button" onclick="applyTrimPreset(45)" id="trim-preset-45" class="trim-preset-btn px-2.5 py-1 bg-white dark:bg-slate-700 hover:bg-purple-50 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-all">45s Clip</button>
+                                <button type="button" onclick="applyTrimPreset(60)" id="trim-preset-60" class="trim-preset-btn px-2.5 py-1 bg-white dark:bg-slate-700 hover:bg-purple-50 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer transition-all">60s Clip</button>
+                                <button type="button" onclick="previewTrimRange()" class="ml-auto px-3 py-1 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-xs cursor-pointer">
+                                    <i class="ph-bold ph-play"></i> Preview Clip
+                                </button>
+                            </div>
+
+                            {{-- Summary Badge --}}
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 pt-1">
+                                <span>Clip Duration: <strong id="trimmer-duration-badge" class="text-purple-600 dark:text-purple-400">30.0s</strong> <span class="text-[10px] text-slate-400 font-normal">(Max 60s per clip)</span></span>
+                                <div id="trimmer-speed-badge">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold rounded-full border border-emerald-200/50">⚡ ~4.8 MB · Uploads in ~2 sec</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Trimming Progress Bar (during processing) --}}
+                        <div id="trimmer-progress-wrapper" class="mb-3.5 sm:mb-4 p-3 bg-purple-50 dark:bg-purple-950/40 rounded-xl border border-purple-200 dark:border-purple-800/60 hidden">
+                            <div class="flex items-center justify-between text-xs font-bold text-purple-900 dark:text-purple-300 mb-1.5">
+                                <span class="flex items-center gap-1.5"><i class="ph-bold ph-lightning text-amber-500 animate-pulse"></i> Extracting & optimizing clip...</span>
+                                <span id="trimmer-progress-pct">0%</span>
+                            </div>
+                            <div class="w-full bg-purple-200 dark:bg-purple-900 h-2 rounded-full overflow-hidden">
+                                <div id="trimmer-progress-bar" class="bg-gradient-to-r from-purple-600 to-indigo-600 h-full w-0 transition-all duration-100"></div>
+                            </div>
+                        </div>
+
+                        {{-- Mode Selector: Add as new clip vs replace --}}
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4 mb-4 sm:mb-5 text-xs">
+                            <label class="inline-flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300 font-semibold">
+                                <input type="radio" name="trimmer_mode" value="add" id="trimmer-mode-add" checked class="text-purple-600 focus:ring-purple-500">
+                                <span>Add as New Clip <span class="text-[10px] text-slate-400">(Cut multiple clips for different rooms)</span></span>
+                            </label>
+                            <label class="inline-flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300 font-semibold">
+                                <input type="radio" name="trimmer_mode" value="replace" id="trimmer-mode-replace" class="text-purple-600 focus:ring-purple-500">
+                                <span>Replace Selected Video</span>
+                            </label>
+                        </div>
+
+                        {{-- Bottom Modal Buttons --}}
+                        <div class="flex items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                            <button type="button" onclick="closeTrimmerModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer">
+                                Cancel
+                            </button>
+                            <button type="button" id="trimmer-submit-btn" onclick="executeVideoTrimming()" class="px-4 sm:px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="ph-bold ph-scissors text-sm"></i>
+                                <span id="trimmer-submit-text">✂️ Cut & Add Clip</span>
+                            </button>
                         </div>
                     </div>
-
-                    {{-- Mode Selector: Add as new clip vs replace --}}
-                    <div class="flex items-center gap-4 mb-5 text-xs">
-                        <label class="inline-flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300 font-semibold">
-                            <input type="radio" name="trimmer_mode" value="add" id="trimmer-mode-add" checked class="text-purple-600 focus:ring-purple-500">
-                            <span>Add as New Clip <span class="text-[10px] text-slate-400">(Cut multiple clips for different rooms)</span></span>
-                        </label>
-                        <label class="inline-flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300 font-semibold">
-                            <input type="radio" name="trimmer_mode" value="replace" id="trimmer-mode-replace" class="text-purple-600 focus:ring-purple-500">
-                            <span>Replace Selected Video</span>
-                        </label>
-                    </div>
-
-                    {{-- Bottom Modal Buttons --}}
-                    <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" onclick="closeTrimmerModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer">
-                            Cancel
-                        </button>
-                        <button type="button" id="trimmer-submit-btn" onclick="executeVideoTrimming()" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
-                            <i class="ph-bold ph-scissors text-sm"></i>
-                            <span id="trimmer-submit-text">✂️ Cut & Add Clip to Uploads</span>
-                        </button>
-                    </div>
-                </div>
-            </div>        </div>
                 </div>
             </div>
 
             {{-- Action Buttons --}}
-            <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-6 border-t border-slate-200/70 dark:border-slate-800 mt-6">
-                <a href="{{ route('dashboard') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm text-center rounded-xl transition-all" id="create-cancel" title="Cancel">
+            <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 sm:gap-3 pt-4 sm:pt-6 border-t border-slate-200/70 dark:border-slate-800 mt-4 sm:mt-6">
+                <a href="{{ route('dashboard') }}" class="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm text-center rounded-xl transition-all" id="create-cancel" title="Cancel">
                     Cancel
                 </a>
-                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed" id="create-submit">
+                <button type="submit" class="w-full sm:w-auto px-6 py-3.5 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-md shadow-blue-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed" id="create-submit">
                     <i class="ph-bold ph-paper-plane-tilt text-base" id="submit-icon"></i> 
                     <span id="submit-label">Publish Property Listing</span>
                 </button>

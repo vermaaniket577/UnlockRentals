@@ -5,110 +5,117 @@
 
 @section('content')
 
-<section class="min-h-screen pt-28 sm:pt-32 pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="edit-property">
+<section class="min-h-screen pt-20 sm:pt-28 pb-32 sm:pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="edit-property">
+    <style>
+        @media (max-width: 768px) {
+            .chatbot-trigger, .feedback-modal-trigger {
+                display: none !important;
+            }
+        }
+    </style>
     {{-- Ambient Background Gradients --}}
     <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-500/[0.04] via-indigo-500/[0.02] to-transparent pointer-events-none"></div>
     <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
     <div class="absolute top-1/3 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
 
         {{-- Page Header --}}
-        <div class="mb-10 text-center">
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-extrabold uppercase tracking-widest rounded-full mb-3 border border-blue-100 dark:border-blue-900/50">
+        <div class="mb-4 sm:mb-8 text-center">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest rounded-full mb-2 border border-blue-100 dark:border-blue-900/50">
                 <i class="ph-bold ph-pencil-simple text-xs"></i> Edit Property Listing
             </span>
-            <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
                 Edit Property
             </h1>
-            <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base font-normal max-w-xl mx-auto mt-2.5 leading-relaxed">
+            <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal max-w-md mx-auto mt-1 leading-snug">
                 Update your listing details, photos, video walkthroughs, and pricing.
             </p>
         </div>
 
         {{-- Step Navigation Indicator --}}
-        <div class="mb-10 p-4 sm:p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
-            <div class="grid grid-cols-4 gap-2 sm:gap-4 text-center">
-                <div class="flex flex-col items-center gap-1.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-xs">1</div>
-                    <span class="text-[11px] sm:text-xs font-bold text-slate-900 dark:text-white">Basic Info</span>
+        <div class="mb-4 sm:mb-8 p-3 sm:p-4 bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div class="grid grid-cols-4 gap-1.5 sm:gap-4 text-center">
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-xs">1</div>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-white">Basic Info</span>
                 </div>
-                <div class="flex flex-col items-center gap-1.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">2</div>
-                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Pricing</span>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">2</div>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Pricing</span>
                 </div>
-                <div class="flex flex-col items-center gap-1.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">3</div>
-                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Location</span>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">3</div>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Location</span>
                 </div>
-                <div class="flex flex-col items-center gap-1.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">4</div>
-                    <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Media</span>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">4</div>
+                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Media</span>
                 </div>
             </div>
         </div>
 
-        <form method="POST" action="{{ route('properties.update', $property) }}" enctype="multipart/form-data" class="space-y-8" id="edit-property-form" data-ur-loader-skip="true" data-no-smooth="true">
+        <form method="POST" action="{{ route('properties.update', $property) }}" enctype="multipart/form-data" class="space-y-4 sm:space-y-6" id="edit-property-form" data-ur-loader-skip="true" data-no-smooth="true">
             @csrf
             @method('PUT')
 
             {{-- 1. Basic Info Section --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="edit-basic-info">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <i class="ph-bold ph-info text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="edit-basic-info">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-info"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Basic Information</h2>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Basic Information</h2>
                         <p class="text-xs text-slate-400">General property headline and listing classification</p>
                     </div>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-4 sm:space-y-6">
                     {{-- Title --}}
                     <div>
-                        <label for="edit-title" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Property Title <span class="text-red-500">*</span></label>
-                        <input type="text" name="title" id="edit-title" value="{{ old('title', $property->title) }}" required
-                               class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                        <label for="edit-title" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Property Title <span class="text-red-500">*</span></label>
+                        <input type="text" name="title" id="edit-title" value="{{ old('title', $property->title) }}" required enterkeyhint="next"
+                               class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                placeholder="e.g. Spacious 3 BHK Semi-Furnished Flat in Sector 57">
                         @error('title') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Description --}}
                     <div>
-                        <label for="edit-description" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Description <span class="text-red-500">*</span></label>
-                        <textarea name="description" id="edit-description" rows="4" required
-                                  class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all resize-none"
+                        <label for="edit-description" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Description <span class="text-red-500">*</span></label>
+                        <textarea name="description" id="edit-description" rows="3" required
+                                  class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all resize-none"
                                   placeholder="Describe the key features, nearby amenities, sunlight, balcony view, and tenant preferences...">{{ old('description', $property->description) }}</textarea>
                         @error('description') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Listing Purpose (Rent vs Sell) --}}
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">Listing Purpose (Intent) <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Listing Purpose (Intent) <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3 max-w-xl">
                             @php
                                 $editPurpose = old('purpose', $property->purpose ?? 'rent');
                             @endphp
-                            <label class="relative flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all {{ ($editPurpose === 'rent') ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-purpose-rent">
+                            <label class="relative flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3.5 rounded-xl border cursor-pointer transition-all {{ ($editPurpose === 'rent') ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-purpose-rent">
                                 <input type="radio" name="purpose" value="rent" id="edit-purpose-rent" {{ $editPurpose === 'rent' ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'); if(window.onEditPurposeChange) window.onEditPurposeChange('rent');">
-                                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
-                                    <i class="ph-bold ph-key text-base"></i>
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
+                                    <i class="ph-bold ph-key text-sm sm:text-base"></i>
                                 </div>
                                 <div>
                                     <div class="text-xs sm:text-sm font-bold leading-tight">For Rent</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Monthly Lease / Rental Income</div>
+                                    <div class="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400 font-normal">Monthly Lease / Rent</div>
                                 </div>
                             </label>
 
-                            <label class="relative flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all {{ in_array($editPurpose, ['buy', 'sell']) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-purpose-buy">
+                            <label class="relative flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3.5 rounded-xl border cursor-pointer transition-all {{ in_array($editPurpose, ['buy', 'sell']) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-purpose-buy">
                                 <input type="radio" name="purpose" value="buy" id="edit-purpose-buy" {{ in_array($editPurpose, ['buy', 'sell']) ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'); if(window.onEditPurposeChange) window.onEditPurposeChange('buy');">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                                    <i class="ph-bold ph-tag text-base"></i>
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                                    <i class="ph-bold ph-tag text-sm sm:text-base"></i>
                                 </div>
                                 <div>
-                                    <div class="text-xs sm:text-sm font-bold leading-tight">For Sell / Sale</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 font-normal">Outright Property Sale</div>
+                                    <div class="text-xs sm:text-sm font-bold leading-tight">For Sale</div>
+                                    <div class="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400 font-normal">Outright Property Sale</div>
                                 </div>
                             </label>
                         </div>
@@ -117,8 +124,8 @@
 
                     {{-- Property Type Selector --}}
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">Property Type <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Property Type <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
                             @php
                                 $formTypes = [
                                     'house' => ['label' => 'House / Flat', 'icon' => 'ph-bold ph-house-line'],
@@ -129,36 +136,36 @@
                                 $curType = old('type', $property->type ?? 'house');
                             @endphp
                             @foreach($formTypes as $val => $info)
-                            <label class="relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all {{ ($curType === $val) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-type-{{ $val }}">
+                            <label class="relative flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all {{ ($curType === $val) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-type-{{ $val }}">
                                 <input type="radio" name="type" value="{{ $val }}" id="edit-type-{{ $val }}" {{ $curType === $val ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600');">
-                                <i class="{{ $info['icon'] }} text-xl mb-1 text-blue-600"></i>
-                                <span class="text-xs text-center leading-tight">{{ $info['label'] }}</span>
+                                <i class="{{ $info['icon'] }} text-lg sm:text-xl mb-1 text-blue-600"></i>
+                                <span class="text-[11px] sm:text-xs text-center leading-tight">{{ $info['label'] }}</span>
                             </label>
                             @endforeach
                         </div>
                     </div>
 
                     {{-- Category & Phone Row --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
                         <div>
-                            <label for="edit-category" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Category <span class="text-red-500">*</span></label>
+                            <label for="edit-category" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Category <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="category_id" id="edit-category" required
-                                        class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('category_id', $property->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
-                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                             </div>
                         </div>
 
                         <div>
-                            <label for="edit-phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Contact Phone Number <span class="text-red-500">*</span></label>
+                            <label for="edit-phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Contact Phone <span class="text-red-500">*</span></label>
                             <div class="relative">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-phone"></i></span>
-                                <input type="tel" name="contact_phone" id="edit-phone" value="{{ old('contact_phone', $property->contact_phone ?? $property->owner->phone ?? auth()->user()->phone) }}" required
-                                       class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                <span class="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-phone"></i></span>
+                                <input type="tel" name="contact_phone" id="edit-phone" value="{{ old('contact_phone', $property->contact_phone ?? $property->owner->phone ?? auth()->user()->phone) }}" required inputmode="tel" enterkeyhint="next"
+                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                        placeholder="+91 94254 55499">
                             </div>
                             @error('contact_phone') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
@@ -168,26 +175,26 @@
             </div>
 
             {{-- 2. Pricing Section --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="edit-pricing">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <i class="ph-bold ph-currency-inr text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="edit-pricing">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-currency-inr"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white" id="edit-pricing-title">Pricing & Financials</h2>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white" id="edit-pricing-title">Pricing & Financials</h2>
                         <p class="text-xs text-slate-400" id="edit-pricing-desc">Update your expected rent or sale price</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" id="pricing-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5" id="pricing-grid">
                     <div>
-                        <label for="edit-price" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2" id="edit-price-label">
+                        <label for="edit-price" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2" id="edit-price-label">
                             {{ ($property->purpose === 'buy' || $property->purpose === 'sell') ? 'Total Sale Price (₹) *' : 'Expected Rent (₹) *' }}
                         </label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-sm">₹</span>
-                            <input type="number" name="price" id="edit-price" value="{{ old('price', $property->price) }}" required min="0" step="0.01"
-                                   class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                            <span class="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-sm">₹</span>
+                            <input type="number" name="price" id="edit-price" value="{{ old('price', $property->price) }}" required min="0" step="any" inputmode="numeric" enterkeyhint="next"
+                                   class="w-full pl-8 sm:pl-9 pr-3.5 sm:pr-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                    placeholder="25,000">
                         </div>
                         @error('price') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
@@ -195,47 +202,47 @@
 
                     {{-- Rent Billing Cycle (Per Month / Per Year) --}}
                     <div id="edit-period-col" class="{{ ($property->purpose === 'buy' || $property->purpose === 'sell') ? 'hidden' : '' }}">
-                        <label for="edit-period" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2" id="edit-period-label">Billing Cycle <span class="text-red-500">*</span></label>
+                        <label for="edit-period" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2" id="edit-period-label">Billing Cycle <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <select name="price_period" id="edit-period" required
-                                    class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                    class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                 <option value="month" {{ old('price_period', $property->price_period) === 'month' ? 'selected' : '' }}>Per Month</option>
                                 <option value="year" {{ old('price_period', $property->price_period) === 'year' ? 'selected' : '' }}>Per Year</option>
                             </select>
-                            <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                         </div>
                     </div>
 
                     {{-- Sale Pricing Mode Badge (Shown when Selling) --}}
                     <div id="edit-sale-badge-col" class="{{ ($property->purpose === 'buy' || $property->purpose === 'sell') ? '' : 'hidden' }}">
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Payment Mode</label>
-                        <div class="h-[46px] px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 shadow-2xs">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Payment Mode</label>
+                        <div class="h-[42px] sm:h-[46px] px-3 sm:px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 shadow-2xs">
                             <i class="ph-bold ph-tag text-emerald-600 text-base shrink-0"></i>
-                            <span>One-Time Total Purchase Price (No recurring rent)</span>
+                            <span class="truncate">One-Time Total Purchase Price</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             {{-- 3. Location Details --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="edit-location">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <i class="ph-bold ph-map-pin text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="edit-location">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-map-pin"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Location Details</h2>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Location Details</h2>
                         <p class="text-xs text-slate-400">Accurate location helps verified tenants discover your listing</p>
                     </div>
                 </div>
 
-                <div class="space-y-5">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="space-y-3.5 sm:space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
                         <div>
-                            <label for="edit-state" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">State <span class="text-red-500">*</span></label>
+                            <label for="edit-state" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">State <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="state" id="edit-state" required onchange="if(window.handleLocationStateChange) window.handleLocationStateChange(this, 'edit-city', 'edit-locality-select');"
-                                        class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                     <option value="">Select State</option>
                                     @php $statesList = $globalAllStates ?? $allStates ?? []; @endphp
                                     @if(!empty($statesList))
@@ -244,16 +251,16 @@
                                         @endforeach
                                     @endif
                                 </select>
-                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                             </div>
                             @error('state') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
-                            <label for="edit-city" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">City / District <span class="text-red-500">*</span></label>
+                            <label for="edit-city" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">City / District <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="location" id="edit-city" required onchange="if(window.handleLocationCityChange) window.handleLocationCityChange(this, 'edit-locality-select', 'edit-state');"
-                                        class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                     <option value="">Select District</option>
                                     @php $districtsList = $globalAllDistricts ?? $allDistricts ?? []; @endphp
                                     @if(!empty($districtsList))
@@ -268,28 +275,28 @@
                                         @endforeach
                                     @endif
                                 </select>
-                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                             </div>
                             @error('location') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                         </div>
                     </div>
                     
                     <div>
-                        <label for="edit-locality-select" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Locality / Sector / Area <span class="text-red-500">*</span></label>
+                        <label for="edit-locality-select" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Locality / Sector / Area <span class="text-red-500">*</span></label>
                         <div id="locality-select-wrap">
                             <div class="relative">
                                 <select name="locality" id="edit-locality-select"
-                                        class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                     <option value="">Select City First</option>
                                 </select>
-                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                             </div>
                         </div>
                         <div id="locality-text-wrap" style="display: none;">
                             <div class="relative">
-                                <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                                <input type="text" name="locality" id="edit-locality-text" value="{{ old('locality', $property->locality) }}" 
-                                       class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                <i class="ph-bold ph-map-pin absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                <input type="text" name="locality" id="edit-locality-text" value="{{ old('locality', $property->locality) }}" enterkeyhint="next"
+                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                        placeholder="e.g. Sector 57, Sushant Lok">
                             </div>
                         </div>
@@ -297,9 +304,9 @@
                     </div>
 
                     <div>
-                        <label for="edit-address" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Complete Address <span class="text-red-500">*</span></label>
-                        <input type="text" name="address" id="edit-address" value="{{ old('address', $property->address) }}" required
-                               class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                        <label for="edit-address" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Complete Address <span class="text-red-500">*</span></label>
+                        <input type="text" name="address" id="edit-address" value="{{ old('address', $property->address) }}" required enterkeyhint="next"
+                               class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                placeholder="Flat/House No, Building Name, Street / Landmark">
                         @error('address') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                     </div>
@@ -324,57 +331,57 @@
             </div>
 
             {{-- 4. Key Specifications --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="edit-details">
-                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                        <i class="ph-bold ph-house-line text-lg"></i>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="edit-details">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-house-line"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Key Specifications</h2>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Key Specifications</h2>
                         <p class="text-xs text-slate-400">Bedrooms, bathrooms, area, and furnishing level</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="grid grid-cols-3 gap-2 sm:gap-5">
                     <div>
-                        <label for="edit-bedrooms" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Bedrooms (BHK)</label>
+                        <label for="edit-bedrooms" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate">BHK</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-bed"></i></span>
-                            <input type="number" name="bedrooms" id="edit-bedrooms" value="{{ old('bedrooms', $property->bedrooms) }}" min="0" max="20"
-                                   class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-bed"></i></span>
+                            <input type="number" name="bedrooms" id="edit-bedrooms" value="{{ old('bedrooms', $property->bedrooms) }}" min="0" max="20" inputmode="numeric" enterkeyhint="next"
+                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all text-center sm:text-left"
                                    placeholder="3">
                         </div>
                     </div>
                     <div>
-                        <label for="edit-bathrooms" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Bathrooms</label>
+                        <label for="edit-bathrooms" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate">Baths</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-drop"></i></span>
-                            <input type="number" name="bathrooms" id="edit-bathrooms" value="{{ old('bathrooms', $property->bathrooms) }}" min="0" max="20"
-                                   class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-drop"></i></span>
+                            <input type="number" name="bathrooms" id="edit-bathrooms" value="{{ old('bathrooms', $property->bathrooms) }}" min="0" max="20" inputmode="numeric" enterkeyhint="next"
+                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all text-center sm:text-left"
                                    placeholder="2">
                         </div>
                     </div>
                     <div>
-                        <label for="edit-area" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Area (sq.ft)</label>
+                        <label for="edit-area" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate">Area (sqft)</label>
                         <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-square-half"></i></span>
-                            <input type="number" name="area_sqft" id="edit-area" value="{{ old('area_sqft', $property->area_sqft) }}" min="0"
-                                   class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-square-half"></i></span>
+                            <input type="number" name="area_sqft" id="edit-area" value="{{ old('area_sqft', $property->area_sqft) }}" min="0" inputmode="numeric" enterkeyhint="next"
+                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all text-center sm:text-left"
                                    placeholder="1250">
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-5">
-                    <label for="edit-furnishing" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Furnishing Status <span class="text-red-500">*</span></label>
+                <div class="mt-3.5 sm:mt-5">
+                    <label for="edit-furnishing" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Furnishing Status <span class="text-red-500">*</span></label>
                     <div class="relative">
                         <select name="furnishing" id="edit-furnishing" required
-                                class="w-full pl-4 pr-9 py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                             <option value="unfurnished" {{ old('furnishing', $property->furnishing) === 'unfurnished' ? 'selected' : '' }}>Unfurnished</option>
                             <option value="semi-furnished" {{ old('furnishing', $property->furnishing) === 'semi-furnished' ? 'selected' : '' }}>Semi-Furnished</option>
                             <option value="fully-furnished" {{ old('furnishing', $property->furnishing) === 'fully-furnished' ? 'selected' : '' }}>Fully Furnished</option>
                         </select>
-                        <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                        <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                     </div>
                 </div>
             </div>
@@ -725,11 +732,11 @@
             </div>
 
             {{-- Action Buttons --}}
-            <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-6 border-t border-slate-200/70 dark:border-slate-800 mt-6">
-                <a href="{{ route('dashboard') }}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm text-center rounded-xl transition-all" id="edit-cancel" title="Cancel">
+            <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 sm:gap-3 pt-4 sm:pt-6 border-t border-slate-200/70 dark:border-slate-800 mt-4 sm:mt-6">
+                <a href="{{ route('dashboard') }}" class="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm text-center rounded-xl transition-all" id="edit-cancel" title="Cancel">
                     Cancel
                 </a>
-                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed" id="edit-submit">
+                <button type="submit" class="w-full sm:w-auto px-6 py-3.5 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-md shadow-blue-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed" id="edit-submit">
                     <i class="ph-bold ph-floppy-disk text-base" id="edit-submit-icon"></i> 
                     <span id="edit-submit-label">Update Property</span>
                 </button>

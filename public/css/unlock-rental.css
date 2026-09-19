@@ -2136,6 +2136,14 @@ a { text-decoration: none; color: inherit; }
         width: 52px !important;
         height: 52px !important;
     }
+
+    /* Suppress floating triggers on property creation/edit forms so they do not cover inputs */
+    body:has(#create-property) .chatbot-trigger,
+    body:has(#edit-property) .chatbot-trigger,
+    body:has(#create-property) .feedback-modal-trigger,
+    body:has(#edit-property) .feedback-modal-trigger {
+        display: none !important;
+    }
 }
 
 @media (max-width: 420px) {
