@@ -8,10 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('phone_verified_at')->nullable()->after('phone');
-            $table->index('phone');
-        });
+        if (!Schema::hasColumn('users', 'phone_verified_at')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->timestamp('phone_verified_at')->nullable()->after('phone');
+                $table->index('phone');
+            });
+        }
     }
 
     public function down(): void

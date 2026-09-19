@@ -11,28 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('blogs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('author_name')->nullable();
-            $table->string('author_role')->nullable();
-            $table->string('author_avatar')->nullable();
-            $table->string('title');
-            $table->string('slug')->unique()->index();
-            $table->text('excerpt')->nullable();
-            $table->longText('content');
-            $table->string('image')->nullable();
-            $table->string('category')->default('General')->index();
-            $table->json('tags')->nullable();
-            $table->string('read_time')->nullable();
-            $table->boolean('is_featured')->default(false)->index();
-            $table->boolean('is_published')->default(true)->index();
-            $table->timestamp('published_at')->nullable()->index();
-            $table->unsignedBigInteger('views_count')->default(0);
-            $table->string('meta_title')->nullable();
-            $table->text('meta_description')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('blogs')) {
+            Schema::create('blogs', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+                $table->string('author_name')->nullable();
+                $table->string('author_role')->nullable();
+                $table->string('author_avatar')->nullable();
+                $table->string('title');
+                $table->string('slug')->unique()->index();
+                $table->text('excerpt')->nullable();
+                $table->longText('content');
+                $table->string('image')->nullable();
+                $table->string('category')->default('General')->index();
+                $table->json('tags')->nullable();
+                $table->string('read_time')->nullable();
+                $table->boolean('is_featured')->default(false)->index();
+                $table->boolean('is_published')->default(true)->index();
+                $table->timestamp('published_at')->nullable()->index();
+                $table->unsignedBigInteger('views_count')->default(0);
+                $table->string('meta_title')->nullable();
+                $table->text('meta_description')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

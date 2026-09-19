@@ -11,20 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('seo_keywords', function (Blueprint $table) {
-            $table->id();
-            $table->string('keyword', 255);
-            $table->string('search_intent', 50)->nullable();
-            $table->string('category', 100)->nullable()->index();
-            $table->string('priority', 20)->default('Medium')->index();
-            $table->string('city', 100)->nullable()->index();
-            $table->string('locality', 150)->nullable()->index();
-            $table->string('recommended_page', 100)->nullable()->index();
-            $table->string('seo_title', 255);
-            $table->text('meta_description');
-            $table->string('url_slug', 255)->unique();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('seo_keywords')) {
+            Schema::create('seo_keywords', function (Blueprint $table) {
+                $table->id();
+                $table->string('keyword', 255);
+                $table->string('search_intent', 50)->nullable();
+                $table->string('category', 100)->nullable()->index();
+                $table->string('priority', 20)->default('Medium')->index();
+                $table->string('city', 100)->nullable()->index();
+                $table->string('locality', 150)->nullable()->index();
+                $table->string('recommended_page', 100)->nullable()->index();
+                $table->string('seo_title', 255);
+                $table->text('meta_description');
+                $table->string('url_slug', 255)->unique();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
