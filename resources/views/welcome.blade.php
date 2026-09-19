@@ -777,6 +777,52 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* ===================================================
+           STRICT VISIBILITY: MOBILE APP SLIDER VS DESKTOP HERO
+           =================================================== */
+        @media (max-width: 1023px) {
+            /* COMPLETELY HIDE DESKTOP WEBSITE HERO ON MOBILE SCREEN */
+            .hero-section,
+            section.hero-section,
+            .hero-bg,
+            .hero-container,
+            .promo-slider-container {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                min-height: 0 !important;
+                max-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                pointer-events: none !important;
+            }
+
+            /* DISPLAY ONLY MOBILE APP HERO SLIDER ON MOBILE */
+            .mobile-app-hero-slider-section {
+                display: block !important;
+                visibility: visible !important;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            /* HIDE MOBILE APP HERO SLIDER ON DESKTOP */
+            .mobile-app-hero-slider-section {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+
+            /* DISPLAY DESKTOP WEBSITE HERO ON DESKTOP */
+            .hero-section {
+                display: flex !important;
+            }
+            .promo-slider-container {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body>
