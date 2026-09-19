@@ -164,6 +164,13 @@
                 @endif
             </div>
         </div>
+
+        {{-- Bottom Left: Unique Post ID Badge on Image --}}
+        <div class="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 z-20 pointer-events-none">
+            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/95 text-slate-800 text-[8.5px] sm:text-[9.5px] font-mono font-black shadow-xs border border-white/80 tracking-tight">
+                <span class="text-blue-600 font-bold">#</span>{{ $property->id }}
+            </span>
+        </div>
     </div>
 
     {{-- B & C. Information & Action Body (Snug, Balanced Spacing Without Giant Gaps) --}}
@@ -174,10 +181,15 @@
                 {{ $cleanTitle }}
             </h3>
 
-            {{-- Location --}}
-            <div class="flex items-center gap-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                <i class="ph-bold ph-map-pin text-blue-600 text-[10px] sm:text-xs shrink-0"></i>
-                <span class="truncate capitalize">{{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}</span>
+            {{-- Location & Unique Post ID --}}
+            <div class="flex items-center justify-between gap-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                <div class="flex items-center gap-1 min-w-0">
+                    <i class="ph-bold ph-map-pin text-blue-600 text-[10px] sm:text-xs shrink-0"></i>
+                    <span class="truncate capitalize">{{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}</span>
+                </div>
+                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 font-mono text-[8.5px] sm:text-[9.5px] font-bold shrink-0 border border-blue-100 dark:border-blue-900/60" title="Post ID: #{{ $property->id }}">
+                    ID: #{{ $property->id }}
+                </span>
             </div>
 
             {{-- Property Details / Specs Row (Single Clean Line on Mobile, Full on sm+) --}}
