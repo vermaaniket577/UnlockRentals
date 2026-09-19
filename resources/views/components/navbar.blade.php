@@ -299,9 +299,9 @@
     </div>
 
     {{-- Modern Mobile Drawer Overlay & Sheet --}}
-    <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer(false)" class="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none lg:hidden"></div>
+    <div id="mobile-drawer-overlay" onclick="toggleMobileDrawer(false)" class="fixed inset-0 z-[9998] bg-slate-950/70 backdrop-blur-sm transition-opacity duration-300 pointer-events-none lg:hidden"></div>
 
-    <aside id="mobile-drawer-sheet" class="fixed top-0 right-0 bottom-0 z-[101] w-80 max-w-[85vw] bg-white dark:bg-slate-950 border-l border-slate-200/80 dark:border-slate-800/80 shadow-2xl flex flex-col transition-transform duration-300 translate-x-full lg:hidden">
+    <aside id="mobile-drawer-sheet" class="fixed top-0 right-0 bottom-0 z-[9999] w-80 max-w-[85vw] bg-white dark:bg-slate-950 border-l border-slate-200/90 dark:border-slate-800 shadow-2xl flex flex-col transition-transform duration-300 lg:hidden">
         {{-- Drawer Header --}}
         <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
             <x-brand-logo
@@ -476,16 +476,12 @@
         if (!overlay || !sheet) return;
 
         if (open) {
-            overlay.classList.remove('opacity-0', 'pointer-events-none');
-            overlay.classList.add('opacity-100', 'pointer-events-auto');
-            sheet.classList.remove('translate-x-full');
-            sheet.classList.add('translate-x-0');
+            overlay.classList.add('active');
+            sheet.classList.add('active');
             document.body.style.overflow = 'hidden';
         } else {
-            overlay.classList.remove('opacity-100', 'pointer-events-auto');
-            overlay.classList.add('opacity-0', 'pointer-events-none');
-            sheet.classList.remove('translate-x-0');
-            sheet.classList.add('translate-x-full');
+            overlay.classList.remove('active');
+            sheet.classList.remove('active');
             document.body.style.overflow = '';
         }
     };
@@ -551,5 +547,49 @@ html.dark #main-nav .ur-nav-link.active-nav-link {
 #nav-mobile-top-login span {
     color: #ffffff !important;
     fill: #ffffff !important;
+}
+
+/* Mobile Drawer Overlay & Sheet */
+#mobile-drawer-overlay {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9998 !important;
+    background: rgba(15, 23, 42, 0.65) !important;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none !important;
+}
+#mobile-drawer-overlay.active {
+    display: block !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+#mobile-drawer-sheet {
+    display: none !important;
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 320px !important;
+    max-width: 85vw !important;
+    height: 100% !important;
+    z-index: 9999 !important;
+    background: #ffffff !important;
+    border-left: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.25) !important;
+    flex-direction: column !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+html.dark #mobile-drawer-sheet {
+    background: #0f172a !important;
+    border-left: 1px solid #1e293b !important;
+    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.6) !important;
+}
+#mobile-drawer-sheet.active {
+    display: flex !important;
+    transform: translateX(0) !important;
 }
 </style>

@@ -138,8 +138,8 @@
         </div>
 
         {{-- Mobile Filter Slide-up Bottom Sheet Modal --}}
-        <div id="mobile-filter-modal-overlay" onclick="toggleMobileFilterSheet(false)" class="fixed inset-0 z-[105] bg-slate-950/70 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none lg:hidden"></div>
-        <div id="mobile-filter-modal-sheet" class="fixed inset-x-0 bottom-0 z-[106] max-h-[88vh] bg-white dark:bg-slate-900 rounded-t-3xl border-t border-slate-200/80 dark:border-slate-800 shadow-2xl flex flex-col transition-transform duration-300 translate-y-full lg:hidden">
+        <div id="mobile-filter-modal-overlay" onclick="toggleMobileFilterSheet(false)" class="fixed inset-0 z-[9998] bg-slate-950/70 backdrop-blur-sm transition-opacity duration-300 pointer-events-none lg:hidden"></div>
+        <div id="mobile-filter-modal-sheet" class="fixed inset-x-0 bottom-0 z-[9999] max-h-[88vh] bg-white dark:bg-slate-900 rounded-t-3xl border-t border-slate-200/80 dark:border-slate-800 shadow-2xl flex flex-col transition-transform duration-300 lg:hidden">
             <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center">
@@ -204,19 +204,59 @@
         if (!overlay || !sheet) return;
 
         if (open) {
-            overlay.classList.remove('opacity-0', 'pointer-events-none');
-            overlay.classList.add('opacity-100', 'pointer-events-auto');
-            sheet.classList.remove('translate-y-full');
-            sheet.classList.add('translate-y-0');
+            overlay.classList.add('active');
+            sheet.classList.add('active');
             document.body.style.overflow = 'hidden';
         } else {
-            overlay.classList.remove('opacity-100', 'pointer-events-auto');
-            overlay.classList.add('opacity-0', 'pointer-events-none');
-            sheet.classList.remove('translate-y-0');
-            sheet.classList.add('translate-y-full');
+            overlay.classList.remove('active');
+            sheet.classList.remove('active');
             document.body.style.overflow = '';
         }
     }
 </script>
+
+<style>
+#mobile-filter-modal-overlay {
+    display: none !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9998 !important;
+    background: rgba(15, 23, 42, 0.7) !important;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none !important;
+}
+#mobile-filter-modal-overlay.active {
+    display: block !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+#mobile-filter-modal-sheet {
+    display: none !important;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    max-height: 88vh !important;
+    z-index: 9999 !important;
+    background: #ffffff !important;
+    border-top: 1px solid #e2e8f0 !important;
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    box-shadow: 0 -15px 35px rgba(0, 0, 0, 0.25) !important;
+    flex-direction: column !important;
+    transform: translateY(100%) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+html.dark #mobile-filter-modal-sheet {
+    background: #0f172a !important;
+    border-top: 1px solid #1e293b !important;
+    box-shadow: 0 -15px 35px rgba(0, 0, 0, 0.6) !important;
+}
+#mobile-filter-modal-sheet.active {
+    display: flex !important;
+    transform: translateY(0) !important;
+}
+</style>
 
 @endsection
