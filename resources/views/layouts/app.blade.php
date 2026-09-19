@@ -163,7 +163,7 @@
     @endif
 
     {{-- Premium UnlockRentals Styles --}}
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260920-btn-white">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260920-btn-white-v3">
     <style>
         @keyframes premiumShine {
             0% { transform: translateX(-140%); }
@@ -185,6 +185,101 @@
             stroke-dasharray: 90;
             stroke-dashoffset: 90;
             animation: successCheck .72s .22s ease forwards;
+        }
+
+        /* Universal Pure White Text & Icon Enforcement */
+        .text-white,
+        [class~="text-white"],
+        [class*="text-white"],
+        [class*="!text-white"],
+        .btn-primary,
+        .btn-primary-sm,
+        .btn-cta-premium,
+        .btn-primary-lg,
+        .btn-explore-premium,
+        .promo-btn,
+        #dash-add-property,
+        .mobile-post-ad-btn,
+        a.btn-primary,
+        a.btn-primary-sm,
+        a.btn-cta-premium,
+        a[class*="bg-[#2874F0]"],
+        button[class*="bg-[#2874F0]"],
+        a[class*="bg-[#1A5FDF]"],
+        button[class*="bg-[#1A5FDF]"],
+        a[class*="bg-[#2563EB]"],
+        button[class*="bg-[#2563EB]"],
+        a[class*="from-[#2874F0]"],
+        button[class*="from-[#2874F0]"],
+        a[class*="to-[#1A5FDF]"],
+        button[class*="to-[#1A5FDF]"],
+        a[class*="bg-blue-"],
+        button[class*="bg-blue-"],
+        a[class*="from-blue-"],
+        button[class*="from-blue-"],
+        a[class*="from-indigo-"],
+        button[class*="from-indigo-"],
+        a[class*="bg-emerald-"],
+        button[class*="bg-emerald-"],
+        a.bg-blue-600,
+        button.bg-blue-600,
+        .bg-blue-600,
+        .bg-gradient-to-r.from-blue-600,
+        .bg-gradient-to-tr.from-blue-600,
+        a[title="Explore"],
+        a[title="Inquiry"],
+        a[title="Book Visit"],
+        a[title="Sign In Now"],
+        a[title="Sign In to View"] {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
+
+        .text-white *,
+        [class~="text-white"] *,
+        [class*="text-white"] *,
+        [class*="!text-white"] *,
+        .btn-primary *,
+        .btn-primary-sm *,
+        .btn-cta-premium *,
+        .btn-primary-lg *,
+        .btn-explore-premium *,
+        .promo-btn *,
+        #dash-add-property *,
+        .mobile-post-ad-btn *,
+        a.btn-primary *,
+        a.btn-primary-sm *,
+        a.btn-cta-premium *,
+        a[class*="bg-[#2874F0]"] *,
+        button[class*="bg-[#2874F0]"] *,
+        a[class*="bg-[#1A5FDF]"] *,
+        button[class*="bg-[#1A5FDF]"] *,
+        a[class*="bg-[#2563EB]"] *,
+        button[class*="bg-[#2563EB]"] *,
+        a[class*="from-[#2874F0]"] *,
+        button[class*="from-[#2874F0]"] *,
+        a[class*="to-[#1A5FDF]"] *,
+        button[class*="to-[#1A5FDF]"] *,
+        a[class*="bg-blue-"] *,
+        button[class*="bg-blue-"] *,
+        a[class*="from-blue-"] *,
+        button[class*="from-blue-"] *,
+        a[class*="from-indigo-"] *,
+        button[class*="from-indigo-"] *,
+        a[class*="bg-emerald-"] *,
+        button[class*="bg-emerald-"] *,
+        a.bg-blue-600 *,
+        button.bg-blue-600 *,
+        .bg-blue-600 *,
+        .bg-gradient-to-r.from-blue-600 *,
+        .bg-gradient-to-tr.from-blue-600 *,
+        a[title="Explore"] *,
+        a[title="Inquiry"] *,
+        a[title="Book Visit"] *,
+        a[title="Sign In Now"] *,
+        a[title="Sign In to View"] * {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
         }
     </style>
 

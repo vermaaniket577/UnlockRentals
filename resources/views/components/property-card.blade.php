@@ -261,16 +261,18 @@
                         data-no-loader="true"
                         data-ur-loader-skip="true"
                         class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl shadow-xs hover:shadow transition-all relative z-20 shrink-0 cursor-pointer active:scale-95"
+                        style="color: #ffffff !important;"
                         title="Sign in to view details">
-                    <span class="hidden sm:inline">View Details</span>
-                    <span class="sm:hidden">View</span>
-                    <i class="ph-bold ph-lock text-[9px] sm:text-xs"></i>
+                    <span class="hidden sm:inline" style="color: #ffffff !important;">View Details</span>
+                    <span class="sm:hidden" style="color: #ffffff !important;">View</span>
+                    <i class="ph-bold ph-lock text-[9px] sm:text-xs" style="color: #ffffff !important;"></i>
                 </button>
             @else
-                <span class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-blue-600 group-hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl shadow-xs hover:shadow transition-all shrink-0">
-                    <span class="hidden sm:inline">View Details</span>
-                    <span class="sm:hidden">View</span>
-                    <i class="ph-bold ph-arrow-right text-[9px] sm:text-xs group-hover:translate-x-0.5 transition-transform"></i>
+                <span class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-blue-600 group-hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl shadow-xs hover:shadow transition-all shrink-0"
+                      style="color: #ffffff !important;">
+                    <span class="hidden sm:inline" style="color: #ffffff !important;">View Details</span>
+                    <span class="sm:hidden" style="color: #ffffff !important;">View</span>
+                    <i class="ph-bold ph-arrow-right text-[9px] sm:text-xs group-hover:translate-x-0.5 transition-transform" style="color: #ffffff !important;"></i>
                 </span>
             @endguest
         </div>
