@@ -511,7 +511,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/', [\App\Http\Controllers\Admin\CrmSettingsController::class, 'index'])->name('index');
         Route::post('/', [\App\Http\Controllers\Admin\CrmSettingsController::class, 'update'])->name('update');
     });
+
+    // Custom Push Notifications Management
+    Route::prefix('push-notifications')->name('push-notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\PushNotificationController::class, 'index'])->name('index');
+        Route::post('/send', [\App\Http\Controllers\Admin\PushNotificationController::class, 'send'])->name('send');
+        Route::delete('/{pushNotification}', [\App\Http\Controllers\Admin\PushNotificationController::class, 'destroy'])->name('destroy');
+    });
 });
+
+// Push Notification Subscription Endpoint (Client-side Registration)
+Route::post('/api/push/subscribe', [\App\Http\Controllers\Admin\PushNotificationController::class, 'subscribe'])->name('api.push.subscribe');
 
 // Visitor Tracking & Consent Public Endpoints
 Route::post('/api/visitor/event', [\App\Http\Controllers\VisitorTrackingController::class, 'recordEvent'])->name('api.visitor.event');

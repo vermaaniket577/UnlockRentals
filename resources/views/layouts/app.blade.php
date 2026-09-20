@@ -400,10 +400,62 @@
 
     <!-- PWA & Network Service Worker Logic -->
     <script>
+        function sendSubscriptionToServer(subscription) {
+            if (!subscription) return;
+            const subData = JSON.parse(JSON.stringify(subscription));
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            
+            fetch('/api/push/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || ''
+                },
+                body: JSON.stringify({
+                    endpoint: subscription.endpoint,
+                    keys: subData.keys || {},
+                    device_type: /Android|iPhone|iPad/i.test(navigator.userAgent) ? 'android' : 'web'
+                })
+            }).catch(e => console.warn('[Push] Subscription sync failed:', e));
+        }
+
+        async function initPushSubscription(reg) {
+            if (!('PushManager' in window) || !reg.pushManager) return;
+            try {
+                const sub = await reg.pushManager.getSubscription();
+                if (sub) {
+                    sendSubscriptionToServer(sub);
+                } else if (Notification.permission === 'granted') {
+                    // Subscribe with basic configuration
+                    const newSub = await reg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: null
+                    }).catch(() => null);
+                    if (newSub) sendSubscriptionToServer(newSub);
+                }
+            } catch (err) {
+                // Ignore silent push manager initializations
+            }
+        }
+
+        window.enablePushNotifications = async function() {
+            if (!('Notification' in window)) return false;
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted' && navigator.serviceWorker && navigator.serviceWorker.ready) {
+                const reg = await navigator.serviceWorker.ready;
+                initPushSubscription(reg);
+                return true;
+            }
+            return false;
+        };
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+                    .then(reg => {
+                        console.log('Service Worker registered successfully:', reg.scope);
+                        initPushSubscription(reg);
+                    })
                     .catch(err => console.error('Service Worker registration failed:', err));
             });
         }

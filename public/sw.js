@@ -87,7 +87,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 /* ─────────────────────────────────────────────────────────────
- * OTP PUSH NOTIFICATION & BACKGROUND AUTO-FILL
+ * PUSH NOTIFICATIONS (CUSTOM CAMPAIGNS & OTP)
  * ───────────────────────────────────────────────────────────── */
 
 // Handle Web Push Event
@@ -97,39 +97,46 @@ self.addEventListener('push', (event) => {
         payload = event.data ? event.data.json() : {};
     } catch (e) {
         payload = {
-            title: 'UnlockRentals Security Code',
-            body: event.data ? event.data.text() : 'Your verification code has arrived.'
+            title: 'UnlockRentals Alert',
+            body: event.data ? event.data.text() : 'You have a new update from UnlockRentals.'
         };
     }
 
-    const title = payload.title || 'UnlockRentals Security Code';
-    const bodyText = payload.body || 'Your verification code has arrived.';
-    
-    // Extract OTP digits (4 to 6 digits)
+    const title = payload.title || payload.notification?.title || 'UnlockRentals Alert';
+    const bodyText = payload.body || payload.notification?.body || 'You have a new update from UnlockRentals.';
+    const isOtp = Boolean(payload.otp || payload.type === 'otp_verification');
     const otpMatch = (payload.otp || bodyText.match(/\b\d{4,6}\b/) || [])[0] || payload.otp || '';
+
+    const clickUrl = payload.click_action || payload.url || payload.data?.url || '/';
+    const icon = payload.icon || payload.notification?.icon || '/favicon.png';
+    const image = payload.image || payload.notification?.image || payload.image_url || null;
 
     const options = {
         body: bodyText,
-        icon: payload.icon || '/favicon.ico',
-        badge: '/favicon.ico',
-        vibrate: [100, 50, 100, 50, 100],
-        tag: 'unlockrentals-otp-verify',
+        icon: icon,
+        badge: '/favicon.png',
+        image: image,
+        vibrate: [150, 80, 150],
+        tag: isOtp ? 'unlockrentals-otp-verify' : ('unlockrentals-alert-' + Date.now()),
         renotify: true,
-        requireInteraction: true,
+        requireInteraction: isOtp,
         data: {
             otp: otpMatch,
-            url: payload.click_action || payload.url || '/'
+            url: clickUrl
         },
-        actions: [
+        actions: isOtp ? [
             { action: 'autofill', title: '⚡ Auto-Fill & Submit' },
+            { action: 'dismiss', title: 'Dismiss' }
+        ] : [
+            { action: 'open', title: '👉 View Details' },
             { action: 'dismiss', title: 'Dismiss' }
         ]
     };
 
     event.waitUntil(
         self.registration.showNotification(title, options).then(() => {
-            // Broadcast auto-fill message to all active windows
-            if (otpMatch) {
+            // Broadcast auto-fill message to all active windows if it is an OTP
+            if (isOtp && otpMatch) {
                 return self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
                     clients.forEach((client) => {
                         client.postMessage({
@@ -144,16 +151,16 @@ self.addEventListener('push', (event) => {
     );
 });
 
-// Handle Notification Click (Focus window, auto-fill & auto-submit)
+// Handle Notification Click (Focus window & navigate to action URL)
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-
-    const otp = event.notification.data ? event.notification.data.otp : null;
-    const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/';
 
     if (event.action === 'dismiss') {
         return;
     }
+
+    const otp = event.notification.data ? event.notification.data.otp : null;
+    const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/';
 
     event.waitUntil(
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
@@ -167,21 +174,48 @@ self.addEventListener('notificationclick', (event) => {
                             autoSubmit: true
                         });
                     }
+                    if ('navigate' in client && targetUrl !== '/') {
+                        client.navigate(targetUrl);
+                    }
                     return client.focus();
                 }
             }
-            // If no window is open, open a new window
+            // If no window is open, open target URL in new window
             if (self.clients.openWindow) {
-                const urlWithOtp = targetUrl + (targetUrl.includes('?') ? '&' : '?') + (otp ? 'autofill_otp=' + encodeURIComponent(otp) : '');
-                return self.clients.openWindow(urlWithOtp);
+                const finalUrl = targetUrl + (otp ? ((targetUrl.includes('?') ? '&' : '?') + 'autofill_otp=' + encodeURIComponent(otp)) : '');
+                return self.clients.openWindow(finalUrl);
             }
         })
     );
 });
 
-// Handle Message from Client Window (e.g., to display notification via Service Worker)
+// Handle Message from Client Window
 self.addEventListener('message', (event) => {
     if (!event.data) return;
+
+    if (event.data.type === 'SHOW_CUSTOM_NOTIFICATION') {
+        const payload = event.data.payload || {};
+        const title = payload.title || 'UnlockRentals Alert';
+        const body = payload.body || 'You have a new update from UnlockRentals.';
+        const icon = payload.icon || '/favicon.png';
+        const image = payload.image || null;
+        const targetUrl = payload.url || '/';
+
+        self.registration.showNotification(title, {
+            body: body,
+            icon: icon,
+            image: image,
+            badge: '/favicon.png',
+            vibrate: [150, 80, 150],
+            tag: 'unlockrentals-custom-' + Date.now(),
+            renotify: true,
+            data: { url: targetUrl },
+            actions: [
+                { action: 'open', title: '👉 View Details' },
+                { action: 'dismiss', title: 'Dismiss' }
+            ]
+        });
+    }
 
     if (event.data.type === 'SHOW_OTP_NOTIFICATION') {
         const payload = event.data.payload || {};

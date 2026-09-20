@@ -383,6 +383,15 @@
                         @endif
                     </a>
 
+                    <a href="{{ route('admin.push-notifications.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.push-notifications*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Push Notifications">
+                        <div class="flex items-center gap-3">
+                            <div class="sidebar-icon-box">
+                                <i class="ph-bold ph-bell-ringing text-base text-blue-400"></i>
+                            </div>
+                            <span class="sidebar-item-label">Push Alerts</span>
+                        </div>
+                    </a>
+
                     <a href="{{ route('admin.resets') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.resets*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Password Resets">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
