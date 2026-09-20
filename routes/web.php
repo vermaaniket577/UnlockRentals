@@ -601,6 +601,8 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
             '2026_09_04_203000_create_seo_keywords_table.php',
             '2026_09_20_100000_create_visitor_tracking_tables.php',
             '2026_09_20_100001_create_leads_crm_tables.php',
+            '2026_09_20_110000_add_plot_to_properties_type_enum.php',
+            '2026_09_20_160000_create_push_notifications_tables.php',
         ];
 
         // Check for leftover duplicate migration files on the server
