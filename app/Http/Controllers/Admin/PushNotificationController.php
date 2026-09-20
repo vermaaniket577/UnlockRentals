@@ -8,6 +8,8 @@ use App\Models\PushSubscription;
 use App\Models\User;
 use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 
 class PushNotificationController extends Controller
 {
@@ -19,10 +21,57 @@ class PushNotificationController extends Controller
     }
 
     /**
+     * Auto-create push notification tables if they do not exist yet.
+     */
+    protected function ensureTablesExist(): void
+    {
+        try {
+            if (!Schema::hasTable('push_subscriptions')) {
+                Schema::create('push_subscriptions', function (Blueprint $table) {
+                    $table->id();
+                    $table->unsignedBigInteger('user_id')->nullable()->index();
+                    $table->text('endpoint');
+                    $table->string('endpoint_hash', 64)->unique()->index();
+                    $table->text('public_key')->nullable();
+                    $table->text('auth_token')->nullable();
+                    $table->string('fcm_token')->nullable()->index();
+                    $table->string('device_type', 20)->default('web');
+                    $table->text('user_agent')->nullable();
+                    $table->string('ip_address', 45)->nullable();
+                    $table->timestamp('last_active_at')->nullable();
+                    $table->timestamps();
+                });
+            }
+
+            if (!Schema::hasTable('push_notifications')) {
+                Schema::create('push_notifications', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('title');
+                    $table->text('body');
+                    $table->string('icon')->nullable();
+                    $table->string('image_url')->nullable();
+                    $table->string('action_url')->nullable();
+                    $table->string('target_type', 30)->default('all');
+                    $table->string('target_value')->nullable();
+                    $table->unsignedInteger('sent_count')->default(0);
+                    $table->unsignedInteger('failed_count')->default(0);
+                    $table->string('status', 20)->default('sent');
+                    $table->unsignedBigInteger('sent_by')->nullable()->index();
+                    $table->timestamps();
+                });
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Push tables auto-creation warning: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Display push notification composer and campaign history.
      */
     public function index(Request $request)
     {
+        $this->ensureTablesExist();
+
         $subscribersCount = PushSubscription::active()->count();
         $webSubscribersCount = PushSubscription::active()->where('device_type', 'web')->count();
         $mobileSubscribersCount = PushSubscription::active()->whereIn('device_type', ['android', 'ios'])->count();
@@ -54,6 +103,8 @@ class PushNotificationController extends Controller
      */
     public function send(Request $request)
     {
+        $this->ensureTablesExist();
+
         $validated = $request->validate([
             'title'        => 'required|string|max:120',
             'body'         => 'required|string|max:500',
@@ -86,6 +137,7 @@ class PushNotificationController extends Controller
      */
     public function destroy(PushNotification $pushNotification)
     {
+        $this->ensureTablesExist();
         $pushNotification->delete();
 
         return back()->with('success', 'Notification record deleted successfully.');
@@ -96,6 +148,8 @@ class PushNotificationController extends Controller
      */
     public function subscribe(Request $request)
     {
+        $this->ensureTablesExist();
+
         $request->validate([
             'endpoint' => 'required|string',
         ]);
