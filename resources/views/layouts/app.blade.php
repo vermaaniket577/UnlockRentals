@@ -163,7 +163,7 @@
     @endif
 
     {{-- Premium UnlockRentals Styles --}}
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260920-btn-white-v3">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260920-fix-inputs-v1">
     <style>
         @keyframes premiumShine {
             0% { transform: translateX(-140%); }
@@ -187,11 +187,40 @@
             animation: successCheck .72s .22s ease forwards;
         }
 
-        /* Universal Pure White Text & Icon Enforcement */
-        .text-white,
-        [class~="text-white"],
-        [class*="text-white"],
-        [class*="!text-white"],
+        /* ============================================================
+           FORM INPUT TEXT VISIBILITY SAFEGUARD
+           Guarantees input fields have dark readable text in light mode
+           and clear white text in dark mode.
+           ============================================================ */
+        html:not(.dark) input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]),
+        html:not(.dark) textarea,
+        html:not(.dark) select {
+            color: #0f172a !important;
+            -webkit-text-fill-color: #0f172a !important;
+        }
+
+        html:not(.dark) input:not([type="button"]):not([type="submit"]):not([type="reset"])::placeholder,
+        html:not(.dark) textarea::placeholder {
+            color: #94a3b8 !important;
+            -webkit-text-fill-color: #94a3b8 !important;
+        }
+
+        html.dark input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]),
+        html.dark textarea,
+        html.dark select {
+            color: #f8fafc !important;
+            -webkit-text-fill-color: #f8fafc !important;
+        }
+
+        html.dark input:not([type="button"]):not([type="submit"]):not([type="reset"])::placeholder,
+        html.dark textarea::placeholder {
+            color: #64748b !important;
+            -webkit-text-fill-color: #64748b !important;
+        }
+
+        /* Universal Pure White Text & Icon Enforcement for Buttons & CTAs */
+        .text-white:not(input):not(textarea):not(select),
+        .\!text-white:not(input):not(textarea):not(select),
         .btn-primary,
         .btn-primary-sm,
         .btn-cta-premium,
@@ -203,6 +232,9 @@
         a.btn-primary,
         a.btn-primary-sm,
         a.btn-cta-premium,
+        button.btn-primary,
+        button.btn-primary-sm,
+        button.btn-cta-premium,
         a[class*="bg-[#2874F0]"],
         button[class*="bg-[#2874F0]"],
         a[class*="bg-[#1A5FDF]"],
@@ -213,14 +245,16 @@
         button[class*="from-[#2874F0]"],
         a[class*="to-[#1A5FDF]"],
         button[class*="to-[#1A5FDF]"],
-        a[class*="bg-blue-"],
-        button[class*="bg-blue-"],
-        a[class*="from-blue-"],
-        button[class*="from-blue-"],
-        a[class*="from-indigo-"],
-        button[class*="from-indigo-"],
-        a[class*="bg-emerald-"],
-        button[class*="bg-emerald-"],
+        a[class*="bg-blue-600"],
+        button[class*="bg-blue-600"],
+        a[class*="bg-blue-700"],
+        button[class*="bg-blue-700"],
+        a[class*="from-blue-600"],
+        button[class*="from-blue-600"],
+        a[class*="from-indigo-600"],
+        button[class*="from-indigo-600"],
+        a[class*="bg-emerald-600"],
+        button[class*="bg-emerald-600"],
         a.bg-blue-600,
         button.bg-blue-600,
         .bg-blue-600,
@@ -235,10 +269,12 @@
             -webkit-text-fill-color: #ffffff !important;
         }
 
-        .text-white *,
-        [class~="text-white"] *,
-        [class*="text-white"] *,
-        [class*="!text-white"] *,
+        .text-white > i,
+        .text-white > span,
+        .text-white > svg,
+        .\!text-white > i,
+        .\!text-white > span,
+        .\!text-white > svg,
         .btn-primary *,
         .btn-primary-sm *,
         .btn-cta-premium *,
@@ -250,6 +286,9 @@
         a.btn-primary *,
         a.btn-primary-sm *,
         a.btn-cta-premium *,
+        button.btn-primary *,
+        button.btn-primary-sm *,
+        button.btn-cta-premium *,
         a[class*="bg-[#2874F0]"] *,
         button[class*="bg-[#2874F0]"] *,
         a[class*="bg-[#1A5FDF]"] *,
@@ -260,14 +299,16 @@
         button[class*="from-[#2874F0]"] *,
         a[class*="to-[#1A5FDF]"] *,
         button[class*="to-[#1A5FDF]"] *,
-        a[class*="bg-blue-"] *,
-        button[class*="bg-blue-"] *,
-        a[class*="from-blue-"] *,
-        button[class*="from-blue-"] *,
-        a[class*="from-indigo-"] *,
-        button[class*="from-indigo-"] *,
-        a[class*="bg-emerald-"] *,
-        button[class*="bg-emerald-"] *,
+        a[class*="bg-blue-600"] *,
+        button[class*="bg-blue-600"] *,
+        a[class*="bg-blue-700"] *,
+        button[class*="bg-blue-700"] *,
+        a[class*="from-blue-600"] *,
+        button[class*="from-blue-600"] *,
+        a[class*="from-indigo-600"] *,
+        button[class*="from-indigo-600"] *,
+        a[class*="bg-emerald-600"] *,
+        button[class*="bg-emerald-600"] *,
         a.bg-blue-600 *,
         button.bg-blue-600 *,
         .bg-blue-600 *,

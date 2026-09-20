@@ -2674,14 +2674,43 @@ a, button, input, select, textarea, [role="button"] {
 }
 
 /* ============================================================
-   Universal Pure White Text & Icon Enforcement Everywhere
-   Guarantees pure #ffffff text and icons across ALL buttons, CTAs,
-   blue/gradient elements, links, and elements marked text-white.
+   FORM INPUT TEXT VISIBILITY SAFEGUARD
+   Guarantees inputs, selects, and textareas always have dark readable
+   text in light mode and bright white text in dark mode.
    ============================================================ */
-.text-white,
-[class~="text-white"],
-[class*="text-white"],
-[class*="!text-white"],
+html:not(.dark) input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) textarea,
+html:not(.dark) select {
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+}
+
+html:not(.dark) input:not([type="button"]):not([type="submit"]):not([type="reset"])::placeholder,
+html:not(.dark) textarea::placeholder {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+}
+
+html.dark input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
+    color: #f8fafc !important;
+    -webkit-text-fill-color: #f8fafc !important;
+}
+
+html.dark input:not([type="button"]):not([type="submit"]):not([type="reset"])::placeholder,
+html.dark textarea::placeholder {
+    color: #64748b !important;
+    -webkit-text-fill-color: #64748b !important;
+}
+
+/* ============================================================
+   Universal Pure White Text & Icon Enforcement for Buttons & CTAs
+   Guarantees pure #ffffff text and icons across ALL buttons, CTAs,
+   blue/gradient elements, and action links.
+   ============================================================ */
+.text-white:not(input):not(textarea):not(select),
+.\!text-white:not(input):not(textarea):not(select),
 .btn-primary,
 .btn-primary-sm,
 .btn-cta-premium,
@@ -2693,6 +2722,9 @@ a, button, input, select, textarea, [role="button"] {
 a.btn-primary,
 a.btn-primary-sm,
 a.btn-cta-premium,
+button.btn-primary,
+button.btn-primary-sm,
+button.btn-cta-premium,
 a[class*="bg-[#2874F0]"],
 button[class*="bg-[#2874F0]"],
 a[class*="bg-[#1A5FDF]"],
@@ -2703,14 +2735,16 @@ a[class*="from-[#2874F0]"],
 button[class*="from-[#2874F0]"],
 a[class*="to-[#1A5FDF]"],
 button[class*="to-[#1A5FDF]"],
-a[class*="bg-blue-"],
-button[class*="bg-blue-"],
-a[class*="from-blue-"],
-button[class*="from-blue-"],
-a[class*="from-indigo-"],
-button[class*="from-indigo-"],
-a[class*="bg-emerald-"],
-button[class*="bg-emerald-"],
+a[class*="bg-blue-600"],
+button[class*="bg-blue-600"],
+a[class*="bg-blue-700"],
+button[class*="bg-blue-700"],
+a[class*="from-blue-600"],
+button[class*="from-blue-600"],
+a[class*="from-indigo-600"],
+button[class*="from-indigo-600"],
+a[class*="bg-emerald-600"],
+button[class*="bg-emerald-600"],
 a.bg-blue-600,
 button.bg-blue-600,
 .bg-blue-600,
@@ -2725,10 +2759,12 @@ a[title="Sign In to View"] {
     -webkit-text-fill-color: #ffffff !important;
 }
 
-.text-white *,
-[class~="text-white"] *,
-[class*="text-white"] *,
-[class*="!text-white"] *,
+.text-white > i,
+.text-white > span,
+.text-white > svg,
+.\!text-white > i,
+.\!text-white > span,
+.\!text-white > svg,
 .btn-primary *,
 .btn-primary-sm *,
 .btn-cta-premium *,
@@ -2740,6 +2776,9 @@ a[title="Sign In to View"] {
 a.btn-primary *,
 a.btn-primary-sm *,
 a.btn-cta-premium *,
+button.btn-primary *,
+button.btn-primary-sm *,
+button.btn-cta-premium *,
 a[class*="bg-[#2874F0]"] *,
 button[class*="bg-[#2874F0]"] *,
 a[class*="bg-[#1A5FDF]"] *,
@@ -2750,14 +2789,16 @@ a[class*="from-[#2874F0]"] *,
 button[class*="from-[#2874F0]"] *,
 a[class*="to-[#1A5FDF]"] *,
 button[class*="to-[#1A5FDF]"] *,
-a[class*="bg-blue-"] *,
-button[class*="bg-blue-"] *,
-a[class*="from-blue-"] *,
-button[class*="from-blue-"] *,
-a[class*="from-indigo-"] *,
-button[class*="from-indigo-"] *,
-a[class*="bg-emerald-"] *,
-button[class*="bg-emerald-"] *,
+a[class*="bg-blue-600"] *,
+button[class*="bg-blue-600"] *,
+a[class*="bg-blue-700"] *,
+button[class*="bg-blue-700"] *,
+a[class*="from-blue-600"] *,
+button[class*="from-blue-600"] *,
+a[class*="from-indigo-600"] *,
+button[class*="from-indigo-600"] *,
+a[class*="bg-emerald-600"] *,
+button[class*="bg-emerald-600"] *,
 a.bg-blue-600 *,
 button.bg-blue-600 *,
 .bg-blue-600 *,
