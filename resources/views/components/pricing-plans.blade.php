@@ -235,27 +235,32 @@
 .ur-slider-wrapper {
     position: relative;
     width: 100%;
-    touch-action: pan-y;
 }
 
 .ur-plans__slider-container {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 1rem 0 1.25rem;
     width: 100%;
-    padding: 1rem 0;
-    cursor: grab;
 }
 
-.ur-plans__slider-container:active {
-    cursor: grabbing;
+.ur-plans__slider-container::-webkit-scrollbar {
+    display: none;
 }
 
 .ur-plans__grid {
     display: flex;
     flex-wrap: nowrap;
-    gap: 1.5rem;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 1.25rem;
     align-items: stretch;
-    width: 100%;
+    width: max-content;
+    padding: 0 1.25rem;
+    box-sizing: border-box;
 }
 
 .ur-plan-card {
@@ -266,24 +271,28 @@
     padding: 1.75rem 1.5rem;
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
-    flex: 0 0 100%;
-    width: 100%;
+    flex: 0 0 calc(85vw - 1.5rem);
+    max-width: 345px;
+    min-width: 275px;
     box-sizing: border-box;
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 640px) and (max-width: 1023px) {
     .ur-plan-card {
+        flex: 0 0 340px;
         padding: 2rem 1.75rem;
-        flex: 0 0 85%;
     }
 }
 
 @media (min-width: 1024px) {
     .ur-plans__slider-container {
         overflow: visible;
+        padding: 1rem 0;
         cursor: default;
     }
     .ur-plans__grid {
@@ -291,16 +300,17 @@
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
         gap: 1.5rem !important;
         transform: none !important;
-        transition: none !important;
         width: 100% !important;
+        padding: 0 !important;
     }
     .ur-plan-card {
         flex: none !important;
         width: 100% !important;
+        max-width: none !important;
+        scroll-snap-align: none;
     }
     .ur-slider-controls,
-    .ur-slider-progress-wrap,
-    .ur-plan-tabs {
+    .ur-slider-hint {
         display: none !important;
     }
 }
@@ -311,33 +321,38 @@
     align-items: center;
     justify-content: center;
     gap: 1.25rem;
-    margin-top: 2rem;
+    margin-top: 1rem;
     position: relative;
     z-index: 15;
 }
 
 .ur-slider-btn {
-    width: 2.6rem;
-    height: 2.6rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: 50%;
     background: #ffffff;
     border: 1.5px solid rgba(15, 23, 42, 0.1);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
     color: #0f172a;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     padding: 0;
+    font-size: 1.15rem;
 }
 
 .ur-slider-btn:hover {
     background: #2563eb;
     color: #ffffff;
     border-color: #2563eb;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
-    transform: scale(1.06);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28);
+    transform: scale(1.05);
+}
+
+.ur-slider-btn:active {
+    transform: scale(0.95);
 }
 
 .ur-slider-dots {
@@ -351,33 +366,41 @@
     height: 0.55rem;
     border-radius: 50%;
     background: #cbd5e1;
+    border: none;
     cursor: pointer;
+    padding: 0;
     transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .ur-slider-dot.active {
-    width: 1.5rem;
+    width: 1.65rem;
     border-radius: 9999px;
     background: #2563eb;
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
 
-.ur-slider-progress-wrap {
-    width: 100%;
-    max-width: 12rem;
-    height: 3px;
-    background: rgba(15, 23, 42, 0.08);
-    border-radius: 9999px;
-    overflow: hidden;
-    margin: 0.75rem auto 0;
+.ur-slider-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-top: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
-.ur-slider-progress-bar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #2563eb, #60a5fa);
-    border-radius: 9999px;
-    transition: width 0.1s linear;
+.ur-slider-hint i {
+    font-size: 0.95rem;
+    color: #2563eb;
+    animation: urSwipeHint 2s infinite ease-in-out;
+}
+
+@keyframes urSwipeHint {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
 }
 
 .ur-plan-card:hover {
@@ -889,6 +912,25 @@
                     @endforeach
                 </div>
             </div>
+
+            {{-- Slider Controls (Mobile & Tablet) --}}
+            <div class="ur-slider-controls">
+                <button type="button" class="ur-slider-btn ur-slider-btn--prev" aria-label="Previous Plan" title="Previous Plan">
+                    <i class="ph-bold ph-caret-left"></i>
+                </button>
+                <div class="ur-slider-dots" role="tablist">
+                    @foreach($rentPlans as $index => $plan)
+                        <button type="button" class="ur-slider-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}" aria-label="{{ $plan->name }}" title="{{ $plan->name }}"></button>
+                    @endforeach
+                </div>
+                <button type="button" class="ur-slider-btn ur-slider-btn--next" aria-label="Next Plan" title="Next Plan">
+                    <i class="ph-bold ph-caret-right"></i>
+                </button>
+            </div>
+            <div class="ur-slider-hint">
+                <i class="ph-bold ph-arrows-left-right"></i>
+                <span>Swipe left or right to compare plans</span>
+            </div>
         </div>
 
         {{-- 2. Buyer Plans Slider Wrapper (Shown when Buyer Pass selected) --}}
@@ -1065,6 +1107,25 @@
                     @endforeach
                 </div>
             </div>
+
+            {{-- Slider Controls (Mobile & Tablet) --}}
+            <div class="ur-slider-controls">
+                <button type="button" class="ur-slider-btn ur-slider-btn--prev" aria-label="Previous Plan" title="Previous Plan">
+                    <i class="ph-bold ph-caret-left"></i>
+                </button>
+                <div class="ur-slider-dots" role="tablist">
+                    @foreach($buyPlans as $index => $plan)
+                        <button type="button" class="ur-slider-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}" aria-label="{{ $plan->name }}" title="{{ $plan->name }}"></button>
+                    @endforeach
+                </div>
+                <button type="button" class="ur-slider-btn ur-slider-btn--next" aria-label="Next Plan" title="Next Plan">
+                    <i class="ph-bold ph-caret-right"></i>
+                </button>
+            </div>
+            <div class="ur-slider-hint">
+                <i class="ph-bold ph-arrows-left-right"></i>
+                <span>Swipe left or right to compare plans</span>
+            </div>
         </div>
 
         {{-- View All Plans CTA --}}
@@ -1081,19 +1142,6 @@
 <script>
 (function() {
     function initPricingSlider() {
-        const grid = document.querySelector('.ur-plans__grid');
-        const container = document.querySelector('.ur-plans__slider-container');
-        const sliderWrapper = document.getElementById('ur-slider-wrapper');
-        const prevBtn = document.querySelector('.ur-slider-btn--prev');
-        const nextBtn = document.querySelector('.ur-slider-btn--next');
-        const dots = document.querySelectorAll('.ur-slider-dot');
-        const tabBtns = document.querySelectorAll('.ur-plan-tab-btn');
-        const cards = document.querySelectorAll('.ur-plan-card');
-        const progressBar = document.getElementById('ur-slider-progress');
-
-        if (!grid || !cards.length) return;
-
-        // Billing Toggle Logic (Segmented Switch)
         const monthlyBtn = document.getElementById('billing-monthly');
         const yearlyBtn = document.getElementById('billing-yearly');
         const rentalWrapper = document.getElementById('ur-rental-slider-wrapper');
@@ -1116,6 +1164,11 @@
             if (rentalWrapper && buyerWrapper) {
                 rentalWrapper.style.display = isYearly ? 'none' : 'block';
                 buyerWrapper.style.display = isYearly ? 'block' : 'none';
+
+                const targetWrapper = isYearly ? buyerWrapper : rentalWrapper;
+                if (targetWrapper && targetWrapper._sync) {
+                    targetWrapper._sync();
+                }
             }
         }
         
@@ -1126,79 +1179,110 @@
             if (!isYearly) updateBillingPeriod(true);
         });
 
-        // Setup Mobile-Only Swipe & Slider
-        function setupMobileSlider(wrapper) {
+        // Setup Mobile Slider Controller with Native Touch Scroll Snap & Controls
+        function setupSlider(wrapper) {
             if (!wrapper) return;
-            const currentGrid = wrapper.querySelector('.ur-plans__grid');
-            const currentContainer = wrapper.querySelector('.ur-plans__slider-container');
-            const currentCards = wrapper.querySelectorAll('.ur-plan-card');
+            const container = wrapper.querySelector('.ur-plans__slider-container');
+            const cards = wrapper.querySelectorAll('.ur-plan-card');
+            const prevBtn = wrapper.querySelector('.ur-slider-btn--prev');
+            const nextBtn = wrapper.querySelector('.ur-slider-btn--next');
+            const dots = wrapper.querySelectorAll('.ur-slider-dot');
             
-            if (!currentGrid || !currentContainer || !currentCards.length) return;
-
-            let currentIndex = 0;
+            if (!container || !cards.length) return;
 
             function isDesktop() {
                 return window.innerWidth >= 1024;
             }
 
-            function updateSlider(smooth = true) {
-                if (isDesktop()) {
-                    currentGrid.style.transform = 'none';
-                    currentGrid.style.transition = 'none';
-                    return;
-                }
+            function getClosestIndex() {
+                if (isDesktop()) return 0;
+                const scrollLeft = container.scrollLeft;
+                const containerCenter = scrollLeft + container.clientWidth / 2;
+                let closestIdx = 0;
+                let minDistance = Infinity;
 
-                const maxIndex = currentCards.length - 1;
-                if (currentIndex > maxIndex) currentIndex = maxIndex;
-                if (currentIndex < 0) currentIndex = 0;
-
-                const cardWidth = currentCards[0].offsetWidth;
-                const gap = parseFloat(window.getComputedStyle(currentGrid).gap) || 20;
-                const offset = currentIndex * (cardWidth + gap);
-
-                currentGrid.style.transition = smooth ? 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)' : 'none';
-                currentGrid.style.transform = `translateX(-${offset}px)`;
+                cards.forEach((card, idx) => {
+                    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                    const distance = Math.abs(containerCenter - cardCenter);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestIdx = idx;
+                    }
+                });
+                return closestIdx;
             }
 
-            // Mobile Touch Swipe Handling
-            let startX = 0;
-            let currentX = 0;
-            let isSwiping = false;
-
-            currentContainer.addEventListener('touchstart', (e) => {
-                if (isDesktop()) return;
-                startX = e.touches[0].clientX;
-                isSwiping = true;
-            }, { passive: true });
-
-            currentContainer.addEventListener('touchmove', (e) => {
-                if (!isSwiping || isDesktop()) return;
-                currentX = e.touches[0].clientX;
-            }, { passive: true });
-
-            currentContainer.addEventListener('touchend', () => {
-                if (!isSwiping || isDesktop()) return;
-                isSwiping = false;
-                const diffX = startX - currentX;
-                if (Math.abs(diffX) > 40) {
-                    if (diffX > 0 && currentIndex < currentCards.length - 1) {
-                        currentIndex++;
-                    } else if (diffX < 0 && currentIndex > 0) {
-                        currentIndex--;
-                    }
-                    updateSlider(true);
+            function updateUI(idx) {
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === idx);
+                });
+                if (prevBtn) {
+                    prevBtn.style.opacity = idx === 0 ? '0.4' : '1';
+                    prevBtn.style.pointerEvents = idx === 0 ? 'none' : 'auto';
                 }
+                if (nextBtn) {
+                    nextBtn.style.opacity = idx === cards.length - 1 ? '0.4' : '1';
+                    nextBtn.style.pointerEvents = idx === cards.length - 1 ? 'none' : 'auto';
+                }
+            }
+
+            function scrollToCard(idx) {
+                if (idx < 0) idx = 0;
+                if (idx >= cards.length) idx = cards.length - 1;
+                const targetCard = cards[idx];
+                if (!targetCard) return;
+
+                const targetLeft = targetCard.offsetLeft - (container.clientWidth - targetCard.offsetWidth) / 2;
+                container.scrollTo({
+                    left: Math.max(0, targetLeft),
+                    behavior: 'smooth'
+                });
+                updateUI(idx);
+            }
+
+            prevBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                const cur = getClosestIndex();
+                scrollToCard(cur - 1);
             });
 
-            window.addEventListener('resize', () => {
-                updateSlider(false);
+            nextBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                const cur = getClosestIndex();
+                scrollToCard(cur + 1);
             });
 
-            updateSlider(false);
+            dots.forEach((dot) => {
+                dot.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const slideIdx = parseInt(dot.getAttribute('data-index') || '0', 10);
+                    scrollToCard(slideIdx);
+                });
+            });
+
+            let scrollDebounce;
+            container.addEventListener('scroll', () => {
+                if (isDesktop()) return;
+                clearTimeout(scrollDebounce);
+                scrollDebounce = setTimeout(() => {
+                    updateUI(getClosestIndex());
+                }, 40);
+            }, { passive: true });
+
+            wrapper._sync = function() {
+                if (!isDesktop()) {
+                    setTimeout(() => {
+                        updateUI(getClosestIndex());
+                    }, 50);
+                }
+            };
+
+            // Initialize position
+            updateUI(0);
         }
 
-        setupMobileSlider(rentalWrapper);
-        setupMobileSlider(buyerWrapper);
+        setupSlider(rentalWrapper);
+        setupSlider(buyerWrapper);
 
         document.querySelectorAll('.plan-checkout-link').forEach(link => {
             link.addEventListener('click', () => {
