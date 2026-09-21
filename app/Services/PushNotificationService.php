@@ -100,20 +100,29 @@ class PushNotificationService
         }
 
         // 4. Record Campaign in Database
-        $pushRecord = PushNotification::create([
+        $recordData = [
             'title'        => $title,
             'body'         => $body,
             'icon'         => $icon,
             'image_url'    => $imageUrl,
             'action_url'   => $actionUrl,
-            'channel'      => $channel,
             'target_type'  => $targetType,
             'target_value' => (string)$targetValue,
             'sent_count'   => $sentCount,
             'failed_count' => $failedCount,
             'status'       => $sentCount > 0 ? 'sent' : 'failed',
             'sent_by'      => $sentBy,
-        ]);
+        ];
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('push_notifications', 'channel')) {
+                $recordData['channel'] = $channel;
+            }
+            $pushRecord = PushNotification::create($recordData);
+        } catch (\Throwable $e) {
+            unset($recordData['channel']);
+            $pushRecord = PushNotification::create($recordData);
+        }
 
         Log::info("📢 [PUSH CAMPAIGN DISPATCHED] ID: {$pushRecord->id} | Title: '{$title}' | Target: {$targetType} | Delivered: {$sentCount}");
 

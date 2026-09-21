@@ -79,21 +79,37 @@ class PushNotificationController extends Controller
     {
         $this->ensureTablesExist();
 
-        $subscribersCount = PushSubscription::active()->count();
-        $webSubscribersCount = PushSubscription::active()->where('device_type', 'web')->count();
-        $mobileSubscribersCount = PushSubscription::active()->whereIn('device_type', ['android', 'ios'])->count();
-        $registeredUsersCount = User::count();
+        try {
+            $subscribersCount       = PushSubscription::active()->count();
+            $webSubscribersCount    = PushSubscription::active()->where('device_type', 'web')->count();
+            $mobileSubscribersCount = PushSubscription::active()->whereIn('device_type', ['android', 'ios'])->count();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Push subscriber stats error: ' . $e->getMessage());
+            $subscribersCount       = 0;
+            $webSubscribersCount    = 0;
+            $mobileSubscribersCount = 0;
+        }
 
-        // Recent users for targeting specific users
-        $users = User::select('id', 'name', 'email', 'phone', 'role')
-            ->latest()
-            ->take(100)
-            ->get();
+        try {
+            $registeredUsersCount = User::count();
+            $users = User::select('id', 'name', 'email', 'phone', 'role')
+                ->latest()
+                ->take(100)
+                ->get();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Push users query error: ' . $e->getMessage());
+            $registeredUsersCount = 0;
+            $users = collect();
+        }
 
-        // Campaign history
-        $campaigns = PushNotification::with('sender')
-            ->latest()
-            ->paginate(15);
+        try {
+            $campaigns = PushNotification::with('sender')
+                ->latest()
+                ->paginate(15);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Push campaigns query error: ' . $e->getMessage());
+            $campaigns = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15);
+        }
 
         return view('admin.push-notifications.index', compact(
             'subscribersCount',

@@ -348,7 +348,7 @@
                                 <option value="">-- Choose Registered User --</option>
                                 @foreach($users as $user)
                                 <option value="{{ $user->id }}">
-                                    {{ $user->name }} ({{ $user->phone ?? $user->email }}) [{{ ucfirst($user->role) }}]
+                                    {{ $user->name }} ({{ $user->phone ?? $user->email }}) [{{ ucfirst($user->role ?? 'user') }}]
                                 </option>
                                 @endforeach
                             </select>
@@ -510,18 +510,18 @@
                     @forelse($campaigns as $camp)
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="py-4 px-5 whitespace-nowrap">
-                            <span class="font-bold text-slate-800">{{ $camp->created_at->format('M d, Y') }}</span>
-                            <span class="block text-[10px] text-slate-400 mt-0.5">{{ $camp->created_at->format('h:i A') }}</span>
+                            <span class="font-bold text-slate-800">{{ $camp->created_at ? \Carbon\Carbon::parse($camp->created_at)->format('M d, Y') : 'Recently' }}</span>
+                            <span class="block text-[10px] text-slate-400 mt-0.5">{{ $camp->created_at ? \Carbon\Carbon::parse($camp->created_at)->format('h:i A') : '' }}</span>
                         </td>
                         <td class="py-4 px-5 max-w-sm">
                             <div class="flex items-start gap-3">
-                                @if($camp->image_url)
-                                <img src="{{ $camp->image_url }}" alt="Banner" class="w-10 h-10 rounded-lg object-cover border border-slate-200 flex-shrink-0 mt-0.5">
+                                @if(!empty($camp->image_url))
+                                <img src="{{ $camp->image_url }}" alt="Banner" class="w-10 h-10 rounded-lg object-cover border border-slate-200 flex-shrink-0 mt-0.5" onerror="this.style.display='none'">
                                 @endif
                                 <div class="min-w-0">
-                                    <p class="font-bold text-slate-900 truncate" title="{{ $camp->title }}">{{ $camp->title }}</p>
-                                    <p class="text-[11px] text-slate-500 line-clamp-1 mt-0.5" title="{{ $camp->body }}">{{ $camp->body }}</p>
-                                    @if($camp->action_url)
+                                    <p class="font-bold text-slate-900 truncate" title="{{ $camp->title ?? '' }}">{{ $camp->title ?? 'Untitled' }}</p>
+                                    <p class="text-[11px] text-slate-500 line-clamp-1 mt-0.5" title="{{ $camp->body ?? '' }}">{{ $camp->body ?? '' }}</p>
+                                    @if(!empty($camp->action_url))
                                     <a href="{{ $camp->action_url }}" target="_blank" class="inline-flex items-center gap-1 text-[10px] text-blue-600 hover:underline mt-1 font-semibold">
                                         <i class="ph-bold ph-link text-[9px]"></i> View Destination
                                     </a>
@@ -549,20 +549,23 @@
                         </td>
                         <td class="py-4 px-5 whitespace-nowrap">
                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700">
-                                <i class="ph-bold ph-users text-xs text-blue-600"></i> {{ $camp->audience_label }}
+                                <i class="ph-bold ph-users text-xs text-blue-600"></i> {{ $camp->audience_label ?? 'All Subscribers' }}
                             </span>
                         </td>
                         <td class="py-4 px-5 whitespace-nowrap">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold {{ $camp->status === 'sent' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200' }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $camp->status === 'sent' ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
-                                {{ ucfirst($camp->status) }}
+                            @php
+                                $campStatus = $camp->status ?? 'sent';
+                            @endphp
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold {{ $campStatus === 'sent' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $campStatus === 'sent' ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
+                                {{ ucfirst($campStatus) }}
                             </span>
                         </td>
                         <td class="py-4 px-5 whitespace-nowrap">
                             <span class="font-semibold text-slate-700">{{ $camp->sender?->name ?? 'Administrator' }}</span>
                         </td>
                         <td class="py-4 px-5 text-right whitespace-nowrap">
-                            <form action="{{ route('admin.push-notifications.destroy', $camp) }}" method="POST" onsubmit="return confirm('Delete this notification log?');" class="inline-block">
+                            <form action="{{ route('admin.push-notifications.destroy', ['pushNotification' => $camp->id ?? $camp]) }}" method="POST" onsubmit="return confirm('Delete this notification log?');" class="inline-block">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Log">

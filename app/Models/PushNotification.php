@@ -24,6 +24,11 @@ class PushNotification extends Model
         'sent_by',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function sender()
     {
         return $this->belongsTo(User::class, 'sent_by');
@@ -46,12 +51,15 @@ class PushNotification extends Model
      */
     public function getAudienceLabelAttribute(): string
     {
-        return match ($this->target_type) {
+        $type = (string) ($this->target_type ?? 'all');
+        $val = (string) ($this->target_value ?? '');
+
+        return match ($type) {
             'all'           => 'All Subscribers',
-            'role'          => 'Role: ' . ucfirst($this->target_value ?? 'All'),
-            'specific_user' => 'User ID: ' . $this->target_value,
-            'topic'         => 'Topic: ' . $this->target_value,
-            default         => ucfirst($this->target_type),
+            'role'          => 'Role: ' . ucfirst($val ?: 'All'),
+            'specific_user' => 'User ID: ' . ($val ?: '-'),
+            'topic'         => 'Topic: ' . ($val ?: '-'),
+            default         => ucfirst($type ?: 'All'),
         };
     }
 }
