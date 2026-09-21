@@ -174,7 +174,11 @@ class AdminController extends Controller
         $paymentGateways = Setting::paymentGateways();
         $activePaymentGatewayId = Setting::get('active_payment_gateway_id', $paymentGateways[0]['id'] ?? null);
 
-        return view('admin.settings', compact('settings', 'paymentGateways', 'activePaymentGatewayId'));
+        $sliderBlogs = \Illuminate\Support\Facades\Schema::hasTable('blogs')
+            ? Blog::published()->latest('published_at')->get()
+            : collect();
+
+        return view('admin.settings', compact('settings', 'paymentGateways', 'activePaymentGatewayId', 'sliderBlogs'));
     }
 
     /**
@@ -189,9 +193,25 @@ class AdminController extends Controller
         $data = $request->except('_token', 'payment_gateways', 'active_payment_gateway_id');
         
         // Handle checkboxes (if they aren't in request, they should be '0')
-        $checkboxes = ['chatbot_enabled', 'feedback_enabled', 'bypass_property_approval', 'otp_mandatory_register', 'otp_phone_login_enabled'];
+        $checkboxes = ['chatbot_enabled', 'feedback_enabled', 'bypass_property_approval', 'otp_mandatory_register', 'otp_phone_login_enabled', 'home_blog_slider_enabled'];
         foreach($checkboxes as $box) {
             if(!$request->has($box)) $data[$box] = '0';
+        }
+
+        // Handle homepage slider blog IDs array
+        if ($request->has('home_blog_slider_ids')) {
+            $sliderIds = array_map('intval', (array) $request->input('home_blog_slider_ids', []));
+            $data['home_blog_slider_ids'] = json_encode($sliderIds);
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('blogs') && \Illuminate\Support\Facades\Schema::hasColumn('blogs', 'show_in_slider')) {
+                Blog::whereIn('id', $sliderIds)->update(['show_in_slider' => true]);
+                Blog::whereNotIn('id', $sliderIds)->update(['show_in_slider' => false]);
+            }
+        } elseif ($request->has('home_blog_slider_setting_submitted')) {
+            $data['home_blog_slider_ids'] = json_encode([]);
+            if (\Illuminate\Support\Facades\Schema::hasTable('blogs') && \Illuminate\Support\Facades\Schema::hasColumn('blogs', 'show_in_slider')) {
+                Blog::query()->update(['show_in_slider' => false]);
+            }
         }
 
         $paymentGateways = collect($request->input('payment_gateways', []))
@@ -236,6 +256,8 @@ class AdminController extends Controller
         }
 
         Cache::forget('site_settings');
+        Cache::forget('home_slider_blogs');
+        Cache::forget('home_blogs');
 
         return redirect()->back()->with('success', 'Settings updated successfully.');
     }
@@ -1049,6 +1071,7 @@ class AdminController extends Controller
             'author_avatar'     => 'nullable|file|mimes:jpeg,png,jpg,webp,avif,gif,svg,jfif|max:10240',
             'read_time'         => 'nullable|string|max:50',
             'is_featured'       => 'nullable|boolean',
+            'show_in_slider'    => 'nullable|boolean',
             'is_published'      => 'nullable|boolean',
             'published_at'      => 'nullable|date',
             'meta_title'        => 'nullable|string|max:255',
@@ -1181,6 +1204,7 @@ class AdminController extends Controller
         $data['user_id'] = auth()->id();
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
+        $data['show_in_slider'] = $request->boolean('show_in_slider');
 
         if ($data['is_published']) {
             $data['published_at'] = $request->filled('published_at') ? Carbon::parse($request->published_at) : now();
@@ -1196,6 +1220,15 @@ class AdminController extends Controller
 
         $blog = Blog::create($data);
 
+        // Synchronize with home_blog_slider_ids setting
+        $sliderIds = json_decode(Setting::get('home_blog_slider_ids', '[]'), true) ?: [];
+        if ($data['show_in_slider'] && !in_array($blog->id, $sliderIds)) {
+            $sliderIds[] = $blog->id;
+            Setting::updateOrCreate(['key' => 'home_blog_slider_ids'], ['value' => json_encode($sliderIds)]);
+            Cache::forget('site_settings');
+        }
+
+        Cache::forget('home_slider_blogs');
         Cache::forget('home_blogs');
         Cache::forget('sitemap_blogs');
 
@@ -1236,6 +1269,7 @@ class AdminController extends Controller
             'author_avatar_base64'  => 'nullable|string',
             'read_time'             => 'nullable|string|max:50',
             'is_featured'           => 'nullable|boolean',
+            'show_in_slider'        => 'nullable|boolean',
             'is_published'          => 'nullable|boolean',
             'published_at'          => 'nullable|date',
             'meta_title'            => 'nullable|string|max:255',
@@ -1383,6 +1417,7 @@ class AdminController extends Controller
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
+        $data['show_in_slider'] = $request->boolean('show_in_slider');
 
         if ($data['is_published'] && empty($blog->published_at)) {
             $data['published_at'] = $request->filled('published_at') ? Carbon::parse($request->published_at) : now();
@@ -1397,6 +1432,23 @@ class AdminController extends Controller
 
         $blog->update($data);
 
+        // Synchronize with home_blog_slider_ids setting
+        $sliderIds = json_decode(Setting::get('home_blog_slider_ids', '[]'), true) ?: [];
+        if ($data['show_in_slider']) {
+            if (!in_array($blog->id, $sliderIds)) {
+                $sliderIds[] = $blog->id;
+                Setting::updateOrCreate(['key' => 'home_blog_slider_ids'], ['value' => json_encode($sliderIds)]);
+                Cache::forget('site_settings');
+            }
+        } else {
+            if (in_array($blog->id, $sliderIds)) {
+                $sliderIds = array_values(array_diff($sliderIds, [$blog->id]));
+                Setting::updateOrCreate(['key' => 'home_blog_slider_ids'], ['value' => json_encode($sliderIds)]);
+                Cache::forget('site_settings');
+            }
+        }
+
+        Cache::forget('home_slider_blogs');
         Cache::forget('home_blogs');
         Cache::forget('sitemap_blogs');
 
@@ -1567,6 +1619,55 @@ class AdminController extends Controller
         }
 
         $state = $blog->is_featured ? 'featured on blog homepage' : 'removed from featured';
+        return redirect()->back()->with('success', "Blog \"{$blog->title}\" is now {$state}.");
+    }
+
+    /**
+     * Toggle homepage slider status via quick action.
+     */
+    public function toggleSliderBlog(Blog $blog)
+    {
+        $hasColumn = \Illuminate\Support\Facades\Schema::hasColumn('blogs', 'show_in_slider');
+        if ($hasColumn) {
+            $blog->show_in_slider = !$blog->show_in_slider;
+            $blog->save();
+            $inSlider = $blog->show_in_slider;
+        } else {
+            $inSlider = false;
+        }
+
+        // Synchronize with home_blog_slider_ids setting
+        $sliderIds = json_decode(Setting::get('home_blog_slider_ids', '[]'), true) ?: [];
+        if (!$hasColumn) {
+            if (in_array($blog->id, $sliderIds)) {
+                $sliderIds = array_values(array_diff($sliderIds, [$blog->id]));
+                $inSlider = false;
+            } else {
+                $sliderIds[] = $blog->id;
+                $inSlider = true;
+            }
+        } else {
+            if ($inSlider && !in_array($blog->id, $sliderIds)) {
+                $sliderIds[] = $blog->id;
+            } elseif (!$inSlider && in_array($blog->id, $sliderIds)) {
+                $sliderIds = array_values(array_diff($sliderIds, [$blog->id]));
+            }
+        }
+
+        Setting::updateOrCreate(['key' => 'home_blog_slider_ids'], ['value' => json_encode($sliderIds)]);
+        Cache::forget('site_settings');
+        Cache::forget('home_slider_blogs');
+        Cache::forget('home_blogs');
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'show_in_slider' => $inSlider,
+                'message' => $inSlider ? 'Added to homepage slider' : 'Removed from homepage slider',
+            ]);
+        }
+
+        $state = $inSlider ? 'added to homepage slider' : 'removed from homepage slider';
         return redirect()->back()->with('success', "Blog \"{$blog->title}\" is now {$state}.");
     }
 }

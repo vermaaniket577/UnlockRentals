@@ -22,6 +22,10 @@
             </div>
             
             <div class="flex items-center gap-2.5 flex-wrap">
+                <a href="{{ route('admin.settings') }}#section-blog-slider" class="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold rounded-xl border border-teal-200 shadow-xs transition-all duration-200" title="Configure Homepage Slider">
+                    <i class="ph-bold ph-slideshow text-sm text-teal-600"></i>
+                    <span>Slider Settings</span>
+                </a>
                 <a href="{{ route('blog.index') }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-blue-600 text-xs font-bold rounded-xl border border-slate-200 shadow-xs hover:border-blue-300 transition-all duration-200" title="View Public Blog">
                     <i class="ph-bold ph-arrow-square-out text-sm text-blue-600"></i>
                     <span>Public Blog</span>
@@ -186,6 +190,15 @@
                                             @if($blog->is_featured)
                                                 <span class="px-2 py-0.5 bg-amber-50 text-amber-800 text-[10px] font-extrabold uppercase rounded-md border border-amber-200/80">Featured</span>
                                             @endif
+                                            @php
+                                                $sliderIds = json_decode(\App\Models\Setting::get('home_blog_slider_ids', '[]'), true) ?: [];
+                                                $isInSlider = (!empty($blog->show_in_slider) && $blog->show_in_slider) || in_array($blog->id, $sliderIds);
+                                            @endphp
+                                            @if($isInSlider)
+                                                <span class="px-2 py-0.5 bg-teal-50 text-teal-800 text-[10px] font-extrabold uppercase rounded-md border border-teal-200/80 inline-flex items-center gap-1">
+                                                    <i class="ph-bold ph-slideshow text-[10px]"></i> Slider Active
+                                                </span>
+                                            @endif
                                         </div>
                                         <div class="flex items-center gap-2 text-[11px] text-slate-400">
                                             <span class="truncate max-w-[200px] sm:max-w-[280px]">/blog/{{ $blog->slug }}</span>
@@ -245,6 +258,14 @@
                             {{-- Action Buttons --}}
                             <td class="py-4 px-5 sm:px-6 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1.5">
+                                    {{-- Quick Homepage Slider Toggle --}}
+                                    <form method="POST" action="{{ route('admin.blogs.toggle-slider', $blog) }}" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center {{ $isInSlider ? 'bg-teal-50 text-teal-600 border border-teal-200 hover:bg-teal-100' : 'bg-slate-100 text-slate-400 hover:text-teal-600 hover:bg-teal-50' }} transition-colors" title="{{ $isInSlider ? 'Remove from Homepage Slider' : 'Add to Homepage Slider (RTL)' }}">
+                                            <i class="ph-bold ph-slideshow text-sm"></i>
+                                        </button>
+                                    </form>
+
                                     {{-- Quick Featured Toggle --}}
                                     <form method="POST" action="{{ route('admin.blogs.toggle-featured', $blog) }}" class="inline-block">
                                         @csrf

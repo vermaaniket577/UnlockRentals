@@ -24,6 +24,7 @@ class Blog extends Model
         'tags',
         'read_time',
         'is_featured',
+        'show_in_slider',
         'is_published',
         'published_at',
         'views_count',
@@ -34,6 +35,7 @@ class Blog extends Model
     protected $casts = [
         'tags' => 'array',
         'is_featured' => 'boolean',
+        'show_in_slider' => 'boolean',
         'is_published' => 'boolean',
         'published_at' => 'datetime',
         'views_count' => 'integer',
@@ -65,6 +67,14 @@ class Blog extends Model
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    /**
+     * Scope for homepage slider blogs
+     */
+    public function scopeInSlider($query)
+    {
+        return $query->where('show_in_slider', true);
     }
 
     /**

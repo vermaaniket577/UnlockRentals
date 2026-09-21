@@ -53,6 +53,9 @@
         <a href="#section-content" class="px-4 py-2 bg-white hover:bg-blue-50 hover:text-blue-600 text-slate-700 rounded-xl border border-slate-200 shadow-2xs transition-all shrink-0 flex items-center gap-1.5">
             <i class="ph-bold ph-layout text-cyan-600"></i> Landing Content
         </a>
+        <a href="#section-blog-slider" class="px-4 py-2 bg-white hover:bg-blue-50 hover:text-blue-600 text-slate-700 rounded-xl border border-slate-200 shadow-2xs transition-all shrink-0 flex items-center gap-1.5">
+            <i class="ph-bold ph-slideshow text-teal-600"></i> Homepage Slider (RTL)
+        </a>
     </div>
 
     <form id="settings-main-form" action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
@@ -675,6 +678,156 @@
             </div>
         </div>
 
+        {{-- 8. Homepage Blog & Knowledge Hub Slider (Right to Left RTL) --}}
+        <div id="section-blog-slider" class="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+                        <i class="ph-bold ph-slideshow"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base font-extrabold text-slate-900">Homepage Articles Slider (Right-to-Left RTL)</h2>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-50 text-teal-700 border border-teal-200">
+                                Live on Home
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400">Configure slide direction, autoplay speed, and select which articles appear in the animated homepage carousel.</p>
+                    </div>
+                </div>
+
+                <a href="{{ route('admin.blogs.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-blue-600 bg-slate-50 hover:bg-blue-50 rounded-xl border border-slate-200 transition-all self-start sm:self-auto">
+                    <i class="ph-bold ph-pencil-simple"></i>
+                    <span>Manage All Articles</span>
+                </a>
+            </div>
+
+            <input type="hidden" name="home_blog_slider_setting_submitted" value="1">
+
+            {{-- Slider Controls Grid --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                
+                {{-- Enable / Disable Slider --}}
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900">Enable Homepage Slider</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Activate animated slider on homepage</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="home_blog_slider_enabled" value="1" {{ ($settings['home_blog_slider_enabled'] ?? '1') == '1' ? 'checked' : '' }} class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                    </label>
+                </div>
+
+                {{-- Slider Direction (Right to Left / Left to Right) --}}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Slider Direction
+                    </label>
+                    <div class="relative">
+                        <select name="home_blog_slider_direction" class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-600/10 transition-all">
+                            <option value="rtl" {{ ($settings['home_blog_slider_direction'] ?? 'rtl') === 'rtl' ? 'selected' : '' }}>
+                                Right to Left (RTL) — Recommended
+                            </option>
+                            <option value="ltr" {{ ($settings['home_blog_slider_direction'] ?? '') === 'ltr' ? 'selected' : '' }}>
+                                Left to Right (LTR)
+                            </option>
+                        </select>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Cards flow smoothly from right edge across to the left.</p>
+                </div>
+
+                {{-- Slider Speed --}}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Animation & Autoplay Speed
+                    </label>
+                    <div class="relative">
+                        <select name="home_blog_slider_speed" class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-600/10 transition-all">
+                            <option value="slow" {{ ($settings['home_blog_slider_speed'] ?? '') === 'slow' ? 'selected' : '' }}>Slow & Relaxed (Smooth reading pace)</option>
+                            <option value="normal" {{ ($settings['home_blog_slider_speed'] ?? 'normal') === 'normal' ? 'selected' : '' }}>Normal (Balanced auto-motion)</option>
+                            <option value="fast" {{ ($settings['home_blog_slider_speed'] ?? '') === 'fast' ? 'selected' : '' }}>Fast (Dynamic movement)</option>
+                        </select>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Hovering over any card instantly pauses motion.</p>
+                </div>
+
+            </div>
+
+            {{-- Article Selection Section --}}
+            <div class="border-t border-slate-100 pt-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">Select Articles for Homepage Slider</h3>
+                        <p class="text-xs text-slate-400">Choose exactly which published articles appear in the homepage slider. Check/uncheck individual articles below.</p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="selectAllSliderBlogs(true)" class="px-3 py-1.5 text-xs font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-lg border border-teal-200 transition-all">
+                            Select All
+                        </button>
+                        <button type="button" onclick="selectAllSliderBlogs(false)" class="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-all">
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+
+                @php
+                    $savedSliderIds = json_decode($settings['home_blog_slider_ids'] ?? '[]', true) ?: [];
+                @endphp
+
+                @if(isset($sliderBlogs) && $sliderBlogs->isNotEmpty())
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[420px] overflow-y-auto p-1 custom-scrollbar">
+                        @foreach($sliderBlogs as $article)
+                            @php
+                                $isChecked = in_array($article->id, $savedSliderIds) || (!empty($article->show_in_slider) && $article->show_in_slider);
+                            @endphp
+                            <label class="slider-blog-card flex items-start gap-3 p-3 rounded-2xl border transition-all cursor-pointer select-none {{ $isChecked ? 'bg-teal-50/60 border-teal-300 shadow-2xs' : 'bg-slate-50/60 border-slate-200/80 hover:bg-white hover:border-slate-300' }}">
+                                <input type="checkbox" name="home_blog_slider_ids[]" value="{{ $article->id }}" {{ $isChecked ? 'checked' : '' }}
+                                       onchange="updateSliderCardStyle(this)"
+                                       class="slider-blog-checkbox mt-1 w-4 h-4 text-teal-600 rounded focus:ring-teal-500 border-slate-300">
+                                
+                                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
+                                    <img src="{{ $article->cover_image_url }}" alt="{{ $article->title }}"
+                                         onerror="this.onerror=null;this.src='{{ $article->getDefaultCoverImage() }}';"
+                                         class="w-full h-full object-cover">
+                                </div>
+
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-1.5 mb-0.5">
+                                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900 text-white leading-none">
+                                            {{ $article->category }}
+                                        </span>
+                                        @if($article->is_featured)
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 leading-none">
+                                                Featured
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <h5 class="text-xs font-bold text-slate-900 truncate" title="{{ $article->title }}">
+                                        {{ $article->title }}
+                                    </h5>
+                                    <p class="text-[10px] text-slate-400 truncate mt-0.5">
+                                        By {{ $article->author_display_name }} • {{ $article->estimated_read_time }}
+                                    </p>
+                                </div>
+                            </label>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-center">
+                        <i class="ph-bold ph-newspaper text-3xl text-slate-300 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-600">No custom articles created in the database yet.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">The homepage slider is currently displaying high-quality curated guide articles automatically.</p>
+                        <a href="{{ route('admin.blogs.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 mt-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs">
+                            <i class="ph-bold ph-plus-circle"></i>
+                            <span>Write Your First Article</span>
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
+
         {{-- Sticky Bottom Floating Action Bar --}}
         <div class="fixed bottom-0 left-64 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/90 py-3.5 px-8 flex items-center justify-between z-30 shadow-lg">
             <div class="text-xs font-semibold text-slate-600 hidden sm:block">
@@ -781,6 +934,25 @@ window.removePaymentGateway = function(button) {
     if (item) {
         item.remove();
     }
+};
+
+window.updateSliderCardStyle = function(checkbox) {
+    const card = checkbox.closest('.slider-blog-card');
+    if (!card) return;
+    if (checkbox.checked) {
+        card.classList.add('bg-teal-50/60', 'border-teal-300', 'shadow-2xs');
+        card.classList.remove('bg-slate-50/60', 'border-slate-200/80');
+    } else {
+        card.classList.remove('bg-teal-50/60', 'border-teal-300', 'shadow-2xs');
+        card.classList.add('bg-slate-50/60', 'border-slate-200/80');
+    }
+};
+
+window.selectAllSliderBlogs = function(select) {
+    document.querySelectorAll('.slider-blog-checkbox').forEach(cb => {
+        cb.checked = select;
+        window.updateSliderCardStyle(cb);
+    });
 };
 </script>
 @endpush

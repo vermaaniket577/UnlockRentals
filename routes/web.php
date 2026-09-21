@@ -483,6 +483,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('/blogs/{blog}', [AdminController::class, 'destroyBlog'])->name('blogs.destroy');
     Route::post('/blogs/{blog}/toggle-publish', [AdminController::class, 'togglePublishBlog'])->name('blogs.toggle-publish');
     Route::post('/blogs/{blog}/toggle-featured', [AdminController::class, 'toggleFeaturedBlog'])->name('blogs.toggle-featured');
+    Route::post('/blogs/{blog}/toggle-slider', [AdminController::class, 'toggleSliderBlog'])->name('blogs.toggle-slider');
 
     // CRM & Visitor Tracking Routes
     Route::prefix('visitors')->name('visitors.')->group(function () {
@@ -603,6 +604,7 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
             '2026_09_20_100001_create_leads_crm_tables.php',
             '2026_09_20_110000_add_plot_to_properties_type_enum.php',
             '2026_09_20_160000_create_push_notifications_tables.php',
+            '2026_09_21_120000_add_show_in_slider_to_blogs_table.php',
         ];
 
         // Check for leftover duplicate migration files on the server

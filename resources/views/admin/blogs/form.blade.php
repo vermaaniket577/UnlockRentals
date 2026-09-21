@@ -292,6 +292,24 @@
                         </label>
                     </div>
 
+                    @php
+                        $sliderIds = json_decode(\App\Models\Setting::get('home_blog_slider_ids', '[]'), true) ?: [];
+                        $inSliderCurrent = ($blog && (!empty($blog->show_in_slider) || in_array($blog->id, $sliderIds)));
+                    @endphp
+                    {{-- Homepage Slider Checkbox --}}
+                    <div class="pt-3 border-t border-slate-100">
+                        <label class="flex items-start gap-3 cursor-pointer p-2.5 rounded-xl hover:bg-teal-50/50 transition-colors">
+                            <input type="checkbox" name="show_in_slider" value="1" {{ old('show_in_slider', $inSliderCurrent) ? 'checked' : '' }}
+                                   class="w-4 h-4 mt-0.5 accent-teal-600 rounded">
+                            <div>
+                                <span class="text-xs font-extrabold text-slate-800 flex items-center gap-1">
+                                    <i class="ph-bold ph-slideshow text-teal-600 text-sm"></i> Show in Homepage Slider (RTL)
+                                </span>
+                                <span class="text-[11px] text-slate-400 block mt-0.5">Include this article in the animated homepage right-to-left slider</span>
+                            </div>
+                        </label>
+                    </div>
+
                     {{-- Published Date & Time --}}
                     <div class="pt-3 border-t border-slate-100">
                         <label for="post-published-at" class="text-xs font-bold text-slate-700 block mb-1.5">
