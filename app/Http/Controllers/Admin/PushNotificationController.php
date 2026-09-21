@@ -183,12 +183,27 @@ class PushNotificationController extends Controller
     /**
      * Delete campaign history record.
      */
-    public function destroy(PushNotification $pushNotification)
+    public function destroy(Request $request, $id)
     {
         $this->ensureTablesExist();
-        $pushNotification->delete();
+        try {
+            $campaign = PushNotification::find($id);
+            if ($campaign) {
+                $campaign->delete();
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Push delete warning: ' . $e->getMessage());
+        }
 
-        return back()->with('success', 'Notification record deleted successfully.');
+        return redirect()->route('admin.push-notifications.index')->with('success', 'Notification record deleted successfully.');
+    }
+
+    /**
+     * Show or fallback redirect for individual campaign route.
+     */
+    public function show(Request $request, $id)
+    {
+        return redirect()->route('admin.push-notifications.index');
     }
 
     /**

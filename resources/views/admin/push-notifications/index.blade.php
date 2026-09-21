@@ -567,7 +567,7 @@
                             <span class="font-semibold text-slate-700">{{ $camp->sender?->name ?? 'Administrator' }}</span>
                         </td>
                         <td class="py-4 px-5 text-right whitespace-nowrap">
-                            <form action="{{ route('admin.push-notifications.destroy', ['pushNotification' => $camp->id ?? $camp]) }}" method="POST" onsubmit="return confirm('Delete this notification log?');" class="inline-block">
+                            <form action="{{ route('admin.push-notifications.destroy', ['id' => $camp->id]) }}" method="POST" onsubmit="return confirm('Delete this notification log?');" class="inline-block">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Log">

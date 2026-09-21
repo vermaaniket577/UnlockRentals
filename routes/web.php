@@ -564,7 +564,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::prefix('push-notifications')->name('push-notifications.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\PushNotificationController::class, 'index'])->name('index');
         Route::post('/send', [\App\Http\Controllers\Admin\PushNotificationController::class, 'send'])->name('send');
-        Route::delete('/{pushNotification}', [\App\Http\Controllers\Admin\PushNotificationController::class, 'destroy'])->name('destroy');
+        Route::match(['delete', 'post'], '/{id}', [\App\Http\Controllers\Admin\PushNotificationController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/delete', [\App\Http\Controllers\Admin\PushNotificationController::class, 'destroy'])->name('destroy.get');
+        Route::get('/{id}', [\App\Http\Controllers\Admin\PushNotificationController::class, 'show'])->name('show');
     });
 });
 
