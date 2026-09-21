@@ -376,16 +376,16 @@
             {{-- Content Column --}}
             <div class="ur-app__content">
                 <div class="ur-app__badge">
-                    <i class="ph-fill ph-sparkle"></i>
-                    Experience Anywhere
+                    <i class="ph-fill ph-shield-check"></i>
+                    Official Mobile App • Zero Brokerage
                 </div>
                 
                 <h2 class="ur-app__title">
-                    Find Your <br><span>Perfect Home</span> <br>Anywhere
+                    Find Your Perfect Home <br><span>With Zero Brokerage</span>
                 </h2>
                 
                 <p class="ur-app__desc">
-                    Unlock India's most exclusive rental registry. Experience intelligent property search, virtual concierge support, and seamless digital viewings in one sophisticated app.
+                    Browse 10,000+ verified rental flats, single rooms, and PGs across India. Connect directly with genuine property owners on WhatsApp with ₹0 brokerage fees.
                 </p>
 
                 <div class="ur-app__stores">
