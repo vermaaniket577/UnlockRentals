@@ -1165,9 +1165,12 @@
                 rentalWrapper.style.display = isYearly ? 'none' : 'block';
                 buyerWrapper.style.display = isYearly ? 'block' : 'none';
 
-                const targetWrapper = isYearly ? buyerWrapper : rentalWrapper;
-                if (targetWrapper && targetWrapper._sync) {
-                    targetWrapper._sync();
+                if (isYearly) {
+                    if (rentalWrapper._stop) rentalWrapper._stop();
+                    if (buyerWrapper._sync) buyerWrapper._sync();
+                } else {
+                    if (buyerWrapper._stop) buyerWrapper._stop();
+                    if (rentalWrapper._sync) rentalWrapper._sync();
                 }
             }
         }
@@ -1179,7 +1182,7 @@
             if (!isYearly) updateBillingPeriod(true);
         });
 
-        // Setup Mobile Slider Controller with Native Touch Scroll Snap & Controls
+        // Setup Mobile Slider Controller with Native Touch Scroll Snap, Controls & Auto-Slide
         function setupSlider(wrapper) {
             if (!wrapper) return;
             const container = wrapper.querySelector('.ur-plans__slider-container');
@@ -1190,8 +1193,17 @@
             
             if (!container || !cards.length) return;
 
+            let currentIndex = 0;
+            let autoSlideTimer = null;
+            let isUserInteracting = false;
+            let resumeTimeout = null;
+
             function isDesktop() {
                 return window.innerWidth >= 1024;
+            }
+
+            function isVisible() {
+                return wrapper.style.display !== 'none' && wrapper.offsetParent !== null;
             }
 
             function getClosestIndex() {
@@ -1213,6 +1225,7 @@
             }
 
             function updateUI(idx) {
+                currentIndex = idx;
                 dots.forEach((dot, i) => {
                     dot.classList.toggle('active', i === idx);
                 });
@@ -1226,7 +1239,7 @@
                 }
             }
 
-            function scrollToCard(idx) {
+            function scrollToCard(idx, smooth = true) {
                 if (idx < 0) idx = 0;
                 if (idx >= cards.length) idx = cards.length - 1;
                 const targetCard = cards[idx];
@@ -1235,19 +1248,53 @@
                 const targetLeft = targetCard.offsetLeft - (container.clientWidth - targetCard.offsetWidth) / 2;
                 container.scrollTo({
                     left: Math.max(0, targetLeft),
-                    behavior: 'smooth'
+                    behavior: smooth ? 'smooth' : 'auto'
                 });
                 updateUI(idx);
             }
 
+            function nextSlide() {
+                if (isDesktop() || !isVisible() || isUserInteracting) return;
+                const cur = getClosestIndex();
+                const next = (cur + 1) % cards.length;
+                scrollToCard(next, true);
+            }
+
+            function startAutoSlide() {
+                stopAutoSlide();
+                if (isDesktop() || !isVisible()) return;
+                autoSlideTimer = setInterval(() => {
+                    nextSlide();
+                }, 3800);
+            }
+
+            function stopAutoSlide() {
+                if (autoSlideTimer) {
+                    clearInterval(autoSlideTimer);
+                    autoSlideTimer = null;
+                }
+            }
+
+            function pauseAndResume() {
+                isUserInteracting = true;
+                stopAutoSlide();
+                if (resumeTimeout) clearTimeout(resumeTimeout);
+                resumeTimeout = setTimeout(() => {
+                    isUserInteracting = false;
+                    startAutoSlide();
+                }, 4000);
+            }
+
             prevBtn?.addEventListener('click', (e) => {
                 e.preventDefault();
+                pauseAndResume();
                 const cur = getClosestIndex();
                 scrollToCard(cur - 1);
             });
 
             nextBtn?.addEventListener('click', (e) => {
                 e.preventDefault();
+                pauseAndResume();
                 const cur = getClosestIndex();
                 scrollToCard(cur + 1);
             });
@@ -1255,9 +1302,28 @@
             dots.forEach((dot) => {
                 dot.addEventListener('click', (e) => {
                     e.preventDefault();
+                    pauseAndResume();
                     const slideIdx = parseInt(dot.getAttribute('data-index') || '0', 10);
                     scrollToCard(slideIdx);
                 });
+            });
+
+            // Pause on touch gestures, resume afterwards
+            container.addEventListener('touchstart', () => {
+                isUserInteracting = true;
+                stopAutoSlide();
+            }, { passive: true });
+
+            container.addEventListener('touchend', () => {
+                pauseAndResume();
+            }, { passive: true });
+
+            // Pause on hover
+            wrapper.addEventListener('mouseenter', () => {
+                stopAutoSlide();
+            });
+            wrapper.addEventListener('mouseleave', () => {
+                if (!isUserInteracting) startAutoSlide();
             });
 
             let scrollDebounce;
@@ -1269,16 +1335,49 @@
                 }, 40);
             }, { passive: true });
 
+            // Intersection Observer to only auto-slide when plans are on screen
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            startAutoSlide();
+                        } else {
+                            stopAutoSlide();
+                        }
+                    });
+                }, { threshold: 0.15 });
+                observer.observe(wrapper);
+            } else {
+                startAutoSlide();
+            }
+
+            window.addEventListener('resize', () => {
+                if (isDesktop()) {
+                    stopAutoSlide();
+                } else if (isVisible()) {
+                    startAutoSlide();
+                }
+            });
+
             wrapper._sync = function() {
-                if (!isDesktop()) {
+                if (!isDesktop() && isVisible()) {
                     setTimeout(() => {
                         updateUI(getClosestIndex());
+                        startAutoSlide();
                     }, 50);
+                } else {
+                    stopAutoSlide();
                 }
             };
 
-            // Initialize position
+            wrapper._stop = stopAutoSlide;
+            wrapper._start = startAutoSlide;
+
+            // Initialize position & start auto-slider
             updateUI(0);
+            if (isVisible()) {
+                startAutoSlide();
+            }
         }
 
         setupSlider(rentalWrapper);
