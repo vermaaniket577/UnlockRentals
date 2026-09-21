@@ -504,6 +504,113 @@
         window.addEventListener('online', () => showNetworkToast(true));
         window.addEventListener('offline', () => showNetworkToast(false));
 
+        // ── Real-Time In-App & Browser Push Notification Deliverer ──
+        async function checkLatestPushNotification() {
+            try {
+                const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+                const deviceParam = isMobile ? 'app' : 'web';
+                const res = await fetch(`/api/push/latest?device=${deviceParam}`);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!data.success || !data.notification) return;
+
+                const n = data.notification;
+                const seenKey = 'seen_push_' + n.id;
+                if (localStorage.getItem(seenKey)) return;
+
+                // 1. Trigger ServiceWorker / System Notification if permission granted
+                if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'SHOW_CUSTOM_NOTIFICATION',
+                        payload: {
+                            title: n.title,
+                            body: n.body,
+                            icon: n.icon,
+                            image: n.image_url,
+                            url: n.action_url
+                        }
+                    });
+                }
+
+                // 2. Display In-App Floating Push Notification Toast (Works inside App WebView and all Browsers)
+                showInAppPushToast(n);
+            } catch (err) {
+                console.debug('[Push] Notification check quiet:', err);
+            }
+        }
+
+        function showInAppPushToast(n) {
+            const existing = document.getElementById('in-app-push-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'in-app-push-toast';
+            toast.className = 'fixed top-4 right-4 sm:top-6 sm:right-6 max-w-md w-[calc(100%-2rem)] bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-2xl rounded-2xl p-4 z-[99999] transition-all duration-300 transform -translate-y-8 opacity-0 flex flex-col gap-2.5';
+            toast.style.boxShadow = '0 20px 40px -15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)';
+
+            toast.innerHTML = `
+                <div class="flex items-start gap-3">
+                    ${n.image_url 
+                        ? `<img src="${n.image_url}" alt="Banner" class="w-12 h-12 rounded-xl object-cover border border-slate-100 flex-shrink-0">` 
+                        : `<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-lg flex-shrink-0 shadow-sm"><i class="ph-bold ph-bell-ringing"></i></div>`
+                    }
+                    <div class="flex-1 min-w-0 pr-6">
+                        <div class="flex items-center gap-1.5 mb-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">New Alert</span>
+                        </div>
+                        <h4 class="text-xs font-extrabold text-slate-900 leading-snug">${escapeHtml(n.title)}</h4>
+                        <p class="text-[11px] text-slate-500 line-clamp-2 mt-0.5 font-medium leading-relaxed">${escapeHtml(n.body)}</p>
+                    </div>
+                    <button type="button" onclick="dismissPushToast(${n.id})" class="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer" title="Dismiss">
+                        <i class="ph-bold ph-x text-sm"></i>
+                    </button>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-100/80">
+                    <button type="button" onclick="dismissPushToast(${n.id})" class="px-3 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer">Dismiss</button>
+                    <a href="${n.action_url || '/'}" onclick="dismissPushToast(${n.id})" class="px-3.5 py-1.5 rounded-lg text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all flex items-center gap-1">
+                        <span>View Details</span>
+                        <i class="ph-bold ph-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('-translate-y-8', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            }, 60);
+
+            // Auto-dismiss after 15 seconds
+            setTimeout(() => {
+                dismissPushToast(n.id);
+            }, 15000);
+        }
+
+        function dismissPushToast(id) {
+            localStorage.setItem('seen_push_' + id, '1');
+            const toast = document.getElementById('in-app-push-toast');
+            if (toast) {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-8', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        // Check for notifications on page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => setTimeout(checkLatestPushNotification, 1200));
+        } else {
+            setTimeout(checkLatestPushNotification, 1200);
+        }
+
         // Smooth form submission & double-click protection
         document.addEventListener('submit', (e) => {
             const form = e.target;

@@ -570,6 +570,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 // Push Notification Subscription Endpoint (Client-side Registration)
 Route::post('/api/push/subscribe', [\App\Http\Controllers\Admin\PushNotificationController::class, 'subscribe'])->name('api.push.subscribe');
+Route::get('/api/push/latest', [\App\Http\Controllers\Admin\PushNotificationController::class, 'latest'])->name('api.push.latest');
 
 // Visitor Tracking & Consent Public Endpoints
 Route::post('/api/visitor/event', [\App\Http\Controllers\VisitorTrackingController::class, 'recordEvent'])->name('api.visitor.event');

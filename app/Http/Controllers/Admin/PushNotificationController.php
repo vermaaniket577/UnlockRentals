@@ -210,4 +210,60 @@ class PushNotificationController extends Controller
             'id'      => $subscription?->id,
         ]);
     }
+
+    /**
+     * Public endpoint to fetch the latest active notification for Web & Mobile App.
+     */
+    public function latest(Request $request)
+    {
+        $this->ensureTablesExist();
+
+        try {
+            $user = auth()->user();
+            $device = $request->query('device', 'web'); // 'web' or 'app'
+
+            $query = PushNotification::where('status', 'sent')
+                ->where('created_at', '>=', now()->subDays(3));
+
+            // Platform channel matching: 'both' or matching device
+            if ($device === 'app') {
+                $query->whereIn('channel', ['both', 'app']);
+            } else {
+                $query->whereIn('channel', ['both', 'web']);
+            }
+
+            // Audience filtering
+            $query->where(function ($q) use ($user) {
+                $q->where('target_type', 'all');
+                if ($user) {
+                    $q->orWhere(function ($sub) use ($user) {
+                        $sub->where('target_type', 'role')->where('target_value', $user->role);
+                    })->orWhere(function ($sub) use ($user) {
+                        $sub->where('target_type', 'specific_user')->where('target_value', (string)$user->id);
+                    });
+                }
+            });
+
+            $notification = $query->latest('id')->first();
+
+            if (!$notification) {
+                return response()->json(['success' => true, 'notification' => null]);
+            }
+
+            return response()->json([
+                'success'      => true,
+                'notification' => [
+                    'id'         => $notification->id,
+                    'title'      => $notification->title,
+                    'body'       => $notification->body,
+                    'icon'       => $notification->icon ?: asset('favicon.png'),
+                    'image_url'  => $notification->image_url,
+                    'action_url' => $notification->action_url ?: url('/'),
+                    'created_at' => $notification->created_at?->toIso8601String() ?? now()->toIso8601String(),
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 200);
+        }
+    }
 }
