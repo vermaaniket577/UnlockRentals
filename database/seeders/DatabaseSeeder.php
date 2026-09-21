@@ -52,6 +52,9 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        // Seed Buyer Pass Plans if missing
+        \App\Models\Plan::ensureBuyerPlansExist();
+
         // Create Admin
         if (!User::where('email', 'admin@unlockrentals.com')->exists()) {
             User::create([

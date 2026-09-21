@@ -108,4 +108,80 @@ class Plan extends Model
     {
         return '₹' . number_format($this->price, 0);
     }
+
+    /**
+     * Ensure dedicated Buyer Pass plans exist in the database.
+     */
+    public static function ensureBuyerPlansExist(): void
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('plans')) {
+                return;
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
+                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('purpose', 20)->default('rent')->after('description');
+                });
+            }
+
+            $count = static::whereIn('purpose', ['buy', 'sale'])->count();
+            if ($count === 0) {
+                static::create([
+                    'name'          => 'Silver Buyer Pass',
+                    'purpose'       => 'buy',
+                    'description'   => 'Essential direct seller contacts and priority access for property buyers.',
+                    'price'         => 399.00,
+                    'duration_days' => 60,
+                    'contact_limit' => 30,
+                    'features'      => [
+                        '30 Verified Seller Direct Contacts',
+                        'Direct Phone & WhatsApp Unlock',
+                        'Zero Brokerage Guaranteed',
+                        '60 Days Priority Buyer Access',
+                    ],
+                    'is_active'     => true,
+                    'sort_order'    => 10,
+                ]);
+
+                static::create([
+                    'name'          => 'Gold Buyer Pass',
+                    'purpose'       => 'buy',
+                    'description'   => 'Most popular annual pass for active home buyers and property investors.',
+                    'price'         => 999.00,
+                    'duration_days' => 150,
+                    'contact_limit' => 75,
+                    'features'      => [
+                        '75 Verified Seller Direct Contacts',
+                        'Direct Phone & WhatsApp Unlock',
+                        'Zero Brokerage Guaranteed',
+                        '150 Days Priority Buyer Access',
+                        'Priority Support Response',
+                    ],
+                    'is_active'     => true,
+                    'sort_order'    => 11,
+                ]);
+
+                static::create([
+                    'name'          => 'Platinum Buyer Pass',
+                    'purpose'       => 'buy',
+                    'description'   => 'Ultimate annual pass with maximum verified seller unlocks for serious property buyers.',
+                    'price'         => 1999.00,
+                    'duration_days' => 365,
+                    'contact_limit' => 180,
+                    'features'      => [
+                        '180 Verified Seller Direct Contacts',
+                        'Direct Phone & WhatsApp Unlock',
+                        'Zero Brokerage Guaranteed',
+                        '365 Days Priority Buyer Access',
+                        'Dedicated Relationship Manager',
+                    ],
+                    'is_active'     => true,
+                    'sort_order'    => 12,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Auto-create buyer plans warning: ' . $e->getMessage());
+        }
+    }
 }

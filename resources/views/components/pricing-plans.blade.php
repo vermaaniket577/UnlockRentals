@@ -669,6 +669,8 @@
 </style>
 
 @php
+    \App\Models\Plan::ensureBuyerPlansExist();
+
     $rentPlans = \App\Models\Plan::active()
         ->where('is_private', false)
         ->whereIn('purpose', ['rent', 'both', null])
@@ -981,8 +983,18 @@
                                 @endif
                             </div>
 
-                            <h3 class="ur-plan-card__name">{{ $plan->name }}</h3>
-                            <p class="ur-plan-card__desc">{{ $plan->description ?? 'Direct owner contact access for verified property purchases.' }}</p>
+                            @php
+                                $isExplicitBuyPlan = ($plan->purpose === 'buy' || $plan->purpose === 'sale');
+                                $buyerDisplayName = $isExplicitBuyPlan ? $plan->name : ($isGold ? 'Gold Buyer Pass' : ($isPlatinum ? 'Platinum Buyer Pass' : 'Silver Buyer Pass'));
+                                $buyerDisplayDesc = $isExplicitBuyPlan ? ($plan->description ?: 'Direct seller contact access for verified property purchases.') : (
+                                    $isGold ? 'Most popular pass for active home buyers and property seekers.' : (
+                                        $isPlatinum ? 'Ultimate pass with maximum verified seller unlocks for serious property buyers.' : 'Essential direct seller contacts and priority access for property buyers.'
+                                    )
+                                );
+                            @endphp
+
+                            <h3 class="ur-plan-card__name">{{ $buyerDisplayName }}</h3>
+                            <p class="ur-plan-card__desc">{{ $buyerDisplayDesc }}</p>
 
                             <div class="ur-plan-card__price" style="flex-wrap: wrap; align-items: baseline;">
                                 <span class="ur-plan-card__currency">₹</span>

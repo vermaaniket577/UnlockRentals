@@ -203,6 +203,10 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         @php
+            \App\Models\Plan::ensureBuyerPlansExist();
+            if ($displayPlans->whereIn('purpose', ['buy', 'sale'])->isEmpty()) {
+                $displayPlans = \App\Models\Plan::public()->get();
+            }
             $rentPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['rent', 'both', null]));
             $buyPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['buy', 'sale']));
             // Fallback if no specific buy plans
@@ -541,11 +545,20 @@
                         @endif
                     </div>
 
+                    @php
+                        $isExplicitBuyPlan = ($plan->purpose === 'buy' || $plan->purpose === 'sale');
+                        $buyerDisplayName = $isExplicitBuyPlan ? $plan->name : ($isGold ? 'Gold Buyer Pass' : ($isPlatinum ? 'Platinum Buyer Pass' : 'Silver Buyer Pass'));
+                        $buyerDisplayDesc = $isExplicitBuyPlan ? ($plan->description ?: 'Direct seller contact access for verified property purchase.') : (
+                            $isGold ? 'Most popular annual pass for active home buyers and property investors.' : (
+                                $isPlatinum ? 'Ultimate annual pass with maximum verified seller unlocks for serious property buyers.' : 'Essential direct seller contacts and priority access for property buyers.'
+                            )
+                        );
+                    @endphp
                     <div class="flex items-start justify-between gap-3 mb-4">
                         <div>
                             <span class="px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider">Buyer Pass (365 Days)</span>
-                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">{{ $plan->name }}</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 min-h-[32px]">{{ $plan->description ?? 'Direct owner contact access for verified property purchase.' }}</p>
+                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">{{ $buyerDisplayName }}</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 min-h-[32px]">{{ $buyerDisplayDesc }}</p>
                         </div>
                     </div>
 
