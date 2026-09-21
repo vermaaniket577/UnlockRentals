@@ -166,12 +166,14 @@ class PushNotificationController extends Controller
         try {
             $campaign = $this->pushService->dispatch($validated);
 
-            $channelText = match ($campaign->channel) {
+            $channelText = match ($campaign->channel ?? 'both') {
                 'web'   => 'Web Browsers',
                 'app'   => 'Mobile App',
                 default => 'Web & Mobile App',
             };
 
+            return redirect()->route('admin.push-notifications.index')
+                ->with('success', "Push notification \"{$campaign->title}\" dispatched successfully to {$campaign->audience_label} ({$channelText})!");
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Push send error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return back()->with('error', 'Failed to dispatch push notification: ' . $e->getMessage())->withInput();
