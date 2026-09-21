@@ -134,9 +134,37 @@ class PropertyController extends Controller
             }
         }
 
+        // Proximity / Near Me Geolocation Distance Calculation
+        $hasCoords = ($request->filled('lat') && $request->filled('lng')) || ($request->filled('latitude') && $request->filled('longitude'));
+        $userLat = $hasCoords ? (float) ($request->lat ?? $request->latitude) : null;
+        $userLng = $hasCoords ? (float) ($request->lng ?? $request->longitude) : null;
+
+        if ($hasCoords && $userLat && $userLng) {
+            $haversine = "(6371 * acos(least(1.0, greatest(-1.0, cos(radians({$userLat})) * cos(radians(latitude)) * cos(radians(longitude) - radians({$userLng})) + sin(radians({$userLat})) * sin(radians(latitude))))))";
+
+            $query->selectRaw("properties.*, CASE WHEN latitude IS NOT NULL AND longitude IS NOT NULL AND latitude != 0 AND longitude != 0 THEN {$haversine} ELSE NULL END AS distance_km");
+
+            if ($request->boolean('strict_radius', false)) {
+                $radius = (float) $request->get('radius', 50);
+                $query->whereNotNull('latitude')
+                      ->whereNotNull('longitude')
+                      ->where('latitude', '!=', 0)
+                      ->where('longitude', '!=', 0)
+                      ->whereRaw("{$haversine} <= ?", [$radius]);
+            }
+        }
+
         // Sorting
-        $sortBy = $request->get('sort', 'latest');
+        $sortBy = $request->get('sort', ($hasCoords ? 'distance' : 'latest'));
         switch ($sortBy) {
+            case 'distance':
+            case 'nearest':
+                if ($hasCoords) {
+                    $query->orderByRaw('CASE WHEN distance_km IS NOT NULL THEN 0 ELSE 1 END, distance_km ASC');
+                } else {
+                    $query->latest();
+                }
+                break;
             case 'price_low':
                 $query->orderBy('price', 'asc');
                 break;
@@ -153,7 +181,11 @@ class PropertyController extends Controller
             case 'new_to_old':
             case 'newest':
             default:
-                $query->latest();
+                if ($hasCoords && !$request->filled('sort')) {
+                    $query->orderByRaw('CASE WHEN distance_km IS NOT NULL THEN 0 ELSE 1 END, distance_km ASC');
+                } else {
+                    $query->latest();
+                }
         }
 
         $properties = $query->paginate(12)->withQueryString();
@@ -167,7 +199,7 @@ class PropertyController extends Controller
                 ->pluck('location');
         });
 
-        return view('properties.index', compact('properties', 'categories', 'locations'));
+        return view('properties.index', compact('properties', 'categories', 'locations', 'userLat', 'userLng'));
     }
 
     /**

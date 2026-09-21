@@ -379,6 +379,7 @@
 
     <x-subscription.payment-success-modal />
     @include('components.profile-modal')
+    @include('components.location-modal')
 
     {{-- Footer (Hidden on mobile to save screen space) --}}
     <div class="hidden md:block">

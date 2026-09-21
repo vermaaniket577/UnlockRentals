@@ -104,9 +104,18 @@
 
             {{-- Quick Category Pills (Horizontal Scroll on Mobile) --}}
             <div class="mt-4 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none flex items-center gap-2 py-1">
+                {{-- Quick GPS Near Me Action Pill --}}
+                <button type="button" 
+                        onclick="window.fetchPropertiesNearMe ? window.fetchPropertiesNearMe() : (window.openLocationModal && window.openLocationModal())" 
+                        class="whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer {{ request('near_me') || request('lat') ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30 ring-2 ring-emerald-400' : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40' }}"
+                        title="Search properties near my current location">
+                    <i class="ph-fill ph-navigation-arrow text-sm {{ request('near_me') ? 'animate-pulse' : '' }}"></i>
+                    <span>{{ request('near_me') || request('lat') ? '📍 Near You Active' : '📍 Near Me' }}</span>
+                </button>
+
                 @php
                     $pills = [
-                        ['label' => 'All Properties', 'url' => route('properties.index'), 'active' => !request('type') && !request('purpose')],
+                        ['label' => 'All Properties', 'url' => route('properties.index'), 'active' => !request('type') && !request('purpose') && !request('near_me')],
                         ['label' => 'Houses & Flats', 'url' => route('properties.index', ['type' => 'house']), 'active' => request('type') === 'house'],
                         ['label' => 'Plots & Land', 'url' => route('properties.index', ['type' => 'plot']), 'active' => request('type') === 'plot'],
                         ['label' => 'Shops & Offices', 'url' => route('properties.index', ['type' => 'shop']), 'active' => request('type') === 'shop'],
@@ -124,7 +133,7 @@
 
         {{-- Mobile Filter Bar Toggle (Visible on screens < lg) --}}
         @php
-            $activeFilterCount = count(array_filter(request()->only(['search', 'type', 'state', 'district', 'locality', 'min_price', 'max_price', 'bedrooms', 'sort', 'media', 'availability'])));
+            $activeFilterCount = count(array_filter(request()->only(['search', 'type', 'state', 'district', 'locality', 'min_price', 'max_price', 'bedrooms', 'sort', 'media', 'availability', 'near_me'])));
         @endphp
         <div class="lg:hidden mb-5 flex items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
             <button type="button" onclick="toggleMobileFilterSheet(true)" class="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 font-bold text-xs rounded-xl active:scale-95 transition-all cursor-pointer">
@@ -168,6 +177,33 @@
 
             {{-- Right Property Grid --}}
             <div class="flex-1 w-full min-w-0">
+                {{-- Active Near Me Location Banner --}}
+                @if(request('near_me') || request('lat') || request('district'))
+                    <div class="mb-5 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                                <i class="ph-fill ph-map-pin"></i>
+                            </div>
+                            <div>
+                                <span class="block text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                                    Showing rentals near {{ request('district') ? request('district') : 'your current location' }}
+                                </span>
+                                <span class="block text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
+                                    Zero Brokerage • Sorted by nearest available
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="window.openLocationModal && window.openLocationModal()" class="px-3 py-1 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-colors cursor-pointer">
+                                Change
+                            </button>
+                            <a href="{{ route('properties.index') }}" class="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium" title="Clear Location Filter">
+                                View All
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
                 @if($properties->count() > 0)
                     {{-- Grid Container --}}
                     <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">

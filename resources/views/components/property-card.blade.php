@@ -180,8 +180,14 @@
                 @endif
             </div>
 
-            {{-- Top Right: FEATURED (when unbooked) --}}
+            {{-- Top Right: DISTANCE or FEATURED --}}
             <div class="flex items-center gap-1">
+                @if(isset($property->distance_km) && $property->distance_km !== null)
+                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase bg-emerald-600/95 text-white shadow-xs backdrop-blur-md">
+                        <i class="ph-fill ph-navigation-arrow text-[8px] sm:text-[10px]"></i>
+                        <span>{{ round($property->distance_km, 1) }} km</span>
+                    </span>
+                @endif
                 @if(!$property->is_booked && $property->is_featured)
                     <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-amber-500 text-slate-950 shadow-xs sm:shadow-sm backdrop-blur-md">
                         <i class="ph-fill ph-star text-[8px] sm:text-[10px]"></i> <span class="hidden sm:inline">Featured</span>
@@ -210,7 +216,12 @@
             <div class="flex items-center justify-between gap-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                 <div class="flex items-center gap-1 min-w-0">
                     <i class="ph-bold ph-map-pin text-blue-600 text-[10px] sm:text-xs shrink-0"></i>
-                    <span class="truncate capitalize">{{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}</span>
+                    <span class="truncate capitalize">
+                        {{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}
+                        @if(isset($property->distance_km) && $property->distance_km !== null)
+                            <span class="text-emerald-600 font-bold text-[9.5px] sm:text-[10.5px]">({{ round($property->distance_km, 1) }} km away)</span>
+                        @endif
+                    </span>
                 </div>
                 <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 font-mono text-[8.5px] sm:text-[9.5px] font-bold shrink-0 border border-blue-100 dark:border-blue-900/60" title="Post ID: #{{ $property->id }}">
                     ID: #{{ $property->id }}

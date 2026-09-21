@@ -2,10 +2,12 @@ package com.unlockrentals.app;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -27,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ValueCallback<Uri[]> uploadMessage;
     private static final int FILE_CHOOSER_RESULT_CODE = 1;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1002;
+    private String pendingGeoOrigin;
+    private GeolocationPermissions.Callback pendingGeoCallback;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -48,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setLoadsImagesAutomatically(true);
         webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setGeolocationEnabled(true);
         webSettings.setUserAgentString(webSettings.getUserAgentString() + " UnlockRentalsMobileApp/1.0");
 
         // Swipe-to-refresh
@@ -179,6 +185,21 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             }
+
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    callback.invoke(origin, true, false);
+                } else {
+                    pendingGeoOrigin = origin;
+                    pendingGeoCallback = callback;
+                    requestPermissions(new String[]{
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    }, LOCATION_PERMISSION_REQUEST_CODE);
+                }
+            }
         });
 
         // Modern OnBackPressed handling
@@ -271,5 +292,26 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            boolean granted = false;
+            if (grantResults != null && grantResults.length > 0) {
+                for (int res : grantResults) {
+                    if (res == PackageManager.PERMISSION_GRANTED) {
+                        granted = true;
+                        break;
+                    }
+                }
+            }
+            if (pendingGeoCallback != null) {
+                pendingGeoCallback.invoke(pendingGeoOrigin, granted, false);
+                pendingGeoOrigin = null;
+                pendingGeoCallback = null;
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
