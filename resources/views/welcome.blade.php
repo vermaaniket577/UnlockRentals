@@ -3530,5 +3530,6 @@
     <!-- Deferred Non-Critical Scripts -->
     <script src="{{ asset('js/otp-verification.js') }}?v=20260916"></script>
     @include('components.location-script')
+    @include('components.push-notification-deliverer')
 </body>
 </html>

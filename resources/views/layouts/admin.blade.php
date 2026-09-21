@@ -628,6 +628,7 @@
         });
     </script>
 
+    @include('components.push-notification-deliverer')
     @stack('scripts')
 </body>
 </html>

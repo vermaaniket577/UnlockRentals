@@ -936,20 +936,29 @@
             image = document.getElementById('push-image-url')?.value.trim() || null;
         }
 
-        if (!("Notification" in window)) {
-            alert("This browser does not support desktop notifications.");
-            return;
+        // Always show instant in-app banner toast immediately
+        if (typeof window.showInAppPushToast === 'function') {
+            window.showInAppPushToast({
+                id: 'test_' + Date.now(),
+                title: title,
+                body: body,
+                icon: icon,
+                image_url: image,
+                action_url: url
+            });
         }
 
-        if (Notification.permission === "granted") {
-            triggerBrowserNotification(title, body, icon, url, image);
-        } else if (Notification.permission !== "denied") {
-            const permission = await Notification.requestPermission();
-            if (permission === "granted") {
+        // Also trigger OS / Browser notification if permitted
+        if ("Notification" in window) {
+            if (Notification.permission === "granted") {
                 triggerBrowserNotification(title, body, icon, url, image);
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        triggerBrowserNotification(title, body, icon, url, image);
+                    }
+                }).catch(() => {});
             }
-        } else {
-            alert("Notification permission is blocked in your browser settings. Please enable notifications for this site to test.");
         }
     }
 
