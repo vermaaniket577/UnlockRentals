@@ -481,10 +481,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleIncomingUri(uri: Uri?): Boolean {
         if (uri == null) return false
-        val scheme = uri.scheme ?: ""
-        val host = uri.host ?: ""
+        val scheme = uri.scheme?.lowercase() ?: ""
+        val host = uri.host?.lowercase() ?: ""
 
-        // Handle custom scheme: unlockrentals://auth/callback?token=XYZ
+        // 1. Handle custom scheme: unlockrentals://auth/callback?token=XYZ
         if (scheme == "unlockrentals" && (host == "auth" || uri.path?.contains("callback") == true)) {
             val token = uri.getQueryParameter("token")
             if (!token.isNullOrEmpty()) {
@@ -494,8 +494,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Handle direct deep link / token-login HTTPS URLs
-        if (host.contains("unlockrentals")) {
+        // 2. Handle url parameter passed via custom scheme (e.g. unlockrentals://open?url=https://...)
+        if (scheme == "unlockrentals") {
+            val targetUrl = uri.getQueryParameter("url")
+            if (!targetUrl.isNullOrEmpty() && (targetUrl.startsWith("http://") || targetUrl.startsWith("https://"))) {
+                webView.loadUrl(targetUrl)
+                return true
+            }
+
+            // Path based scheme: unlockrentals://property/123 or unlockrentals://launch
+            val path = uri.path ?: ""
+            if (host.isNotEmpty() && host != "launch" && host != "open") {
+                val fullUrl = "${getString(R.string.production_url)}/$host$path${if (uri.query != null) "?${uri.query}" else ""}"
+                webView.loadUrl(fullUrl)
+                return true
+            } else if (path.isNotEmpty() && path != "/") {
+                val fullUrl = "${getString(R.string.production_url)}$path${if (uri.query != null) "?${uri.query}" else ""}"
+                webView.loadUrl(fullUrl)
+                return true
+            }
+            webView.loadUrl(getString(R.string.production_url))
+            return true
+        }
+
+        // 3. Handle direct deep link HTTP / HTTPS URLs (e.g. from Google Search or browser links)
+        if (scheme == "http" || scheme == "https") {
             webView.loadUrl(uri.toString())
             return true
         }

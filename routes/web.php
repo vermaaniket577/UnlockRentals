@@ -327,6 +327,53 @@ Route::get('/csrf-token', function () {
 // Offline Fallback Route
 Route::view('/offline', 'errors.offline')->name('offline');
 
+// Android Digital Asset Links (Ensures Android App Links work across all servers)
+Route::get('/.well-known/assetlinks.json', function () {
+    $path = public_path('.well-known/assetlinks.json');
+    if (file_exists($path)) {
+        return response(file_get_contents($path), 200, [
+            'Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin' => '*',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+    return response()->json([
+        [
+            'relation' => ['delegate_permission/common.handle_all_urls'],
+            'target' => [
+                'namespace' => 'android_app',
+                'package_name' => 'com.unlockrentals.app',
+                'sha256_cert_fingerprints' => [
+                    '46:E1:A4:81:FE:50:22:F8:9A:0A:80:96:0D:8D:E4:9C:66:A6:67:0F:86:8C:44:6E:25:2A:0D:BE:24:D4:48:96'
+                ]
+            ]
+        ]
+    ], 200, [
+        'Content-Type' => 'application/json',
+        'Access-Control-Allow-Origin' => '*',
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+});
+
+// Apple App Site Association (iOS Universal Links)
+Route::get('/.well-known/apple-app-site-association', function () {
+    return response()->json([
+        'applinks' => [
+            'apps' => [],
+            'details' => [
+                [
+                    'appID' => 'TEAMID.com.unlockrentals.app',
+                    'paths' => ['*']
+                ]
+            ]
+        ]
+    ], 200, [
+        'Content-Type' => 'application/json',
+        'Access-Control-Allow-Origin' => '*',
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Guest Routes (not authenticated)

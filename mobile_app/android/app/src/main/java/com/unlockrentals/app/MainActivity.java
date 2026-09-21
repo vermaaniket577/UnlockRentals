@@ -201,11 +201,11 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean handleIncomingUri(Uri uri) {
         if (uri == null) return false;
-        String scheme = uri.getScheme() != null ? uri.getScheme() : "";
-        String host = uri.getHost() != null ? uri.getHost() : "";
+        String scheme = uri.getScheme() != null ? uri.getScheme().toLowerCase() : "";
+        String host = uri.getHost() != null ? uri.getHost().toLowerCase() : "";
 
-        // Handle custom scheme: unlockrentals://auth/callback?token=XYZ
-        if ("unlockrentals".equalsIgnoreCase(scheme) && ("auth".equalsIgnoreCase(host) || (uri.getPath() != null && uri.getPath().contains("callback")))) {
+        // 1. Handle custom scheme: unlockrentals://auth/callback?token=XYZ
+        if ("unlockrentals".equals(scheme) && ("auth".equals(host) || (uri.getPath() != null && uri.getPath().contains("callback")))) {
             String token = uri.getQueryParameter("token");
             if (token != null && !token.isEmpty()) {
                 String loginUrl = APP_URL + "/auth/token-login?token=" + token;
@@ -214,8 +214,31 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // Handle direct deep link / token-login HTTPS URLs
-        if (host.contains("unlockrentals")) {
+        // 2. Handle url parameter passed via custom scheme (e.g. unlockrentals://open?url=https://...)
+        if ("unlockrentals".equals(scheme)) {
+            String targetUrl = uri.getQueryParameter("url");
+            if (targetUrl != null && !targetUrl.isEmpty() && (targetUrl.startsWith("http://") || targetUrl.startsWith("https://"))) {
+                webView.loadUrl(targetUrl);
+                return true;
+            }
+
+            // Path based scheme: unlockrentals://property/123 or unlockrentals://launch
+            String path = uri.getPath() != null ? uri.getPath() : "";
+            if (!host.isEmpty() && !"launch".equals(host) && !"open".equals(host)) {
+                String query = uri.getQuery() != null ? "?" + uri.getQuery() : "";
+                webView.loadUrl(APP_URL + "/" + host + path + query);
+                return true;
+            } else if (!path.isEmpty() && !"/".equals(path)) {
+                String query = uri.getQuery() != null ? "?" + uri.getQuery() : "";
+                webView.loadUrl(APP_URL + path + query);
+                return true;
+            }
+            webView.loadUrl(APP_URL);
+            return true;
+        }
+
+        // 3. Handle direct deep link HTTP / HTTPS URLs (e.g. from Google Search or browser links)
+        if ("http".equals(scheme) || "https".equals(scheme)) {
             webView.loadUrl(uri.toString());
             return true;
         }

@@ -105,31 +105,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Custom App Scheme for Instant Social Auth Token Handoff -->
+            <!-- Universal Custom Scheme for Deep Linking (e.g. unlockrentals://open?url=... or unlockrentals://launch) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="unlockrentals" android:host="auth" />
+                <data android:scheme="unlockrentals" />
             </intent-filter>
 
-            <!-- Custom App Scheme for Website / Indus Appstore Direct Launch -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="unlockrentals" android:host="launch" />
-            </intent-filter>
-
-            <!-- Deep Links for the website domain -->
+            <!-- Verified Android App Links for website domain (autoVerify automatically opens app from Google Search & Browsers) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                    android:host="unlockrentals.com" />
-                <data android:scheme="https"
-                    android:host="www.unlockrentals.com" />
+                <data android:scheme="https" android:host="unlockrentals.com" />
+                <data android:scheme="https" android:host="www.unlockrentals.com" />
+                <data android:scheme="http" android:host="unlockrentals.com" />
+                <data android:scheme="http" android:host="www.unlockrentals.com" />
             </intent-filter>
         </activity>
 

@@ -332,9 +332,18 @@
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#2563EB">
 
+    <!-- Mobile App Deep Link Metadata (Android App Links & iOS Universal Links) -->
+    <meta property="al:android:url" content="unlockrentals://open?url={{ urlencode(url()->full()) }}">
+    <meta property="al:android:package" content="com.unlockrentals.app">
+    <meta property="al:android:app_name" content="UnlockRentals">
+    <meta property="al:web:url" content="{{ url()->full() }}">
+
     @stack('head')
 </head>
 <body class="min-h-screen bg-white text-zinc-800 font-sans antialiased font-normal selection:bg-[#2563EB]/30 selection:text-zinc-900 dark:bg-slate-950 dark:text-slate-200 overflow-x-hidden w-full max-w-full">
+
+    {{-- Smart Mobile App Auto-Handoff & Open in App Banner --}}
+    @include('components.smart-app-banner')
 
     {{-- Premium Page Loader --}}
     @include('components.page-loader')
