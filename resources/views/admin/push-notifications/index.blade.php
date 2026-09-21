@@ -332,7 +332,6 @@
                                 <span class="text-[10px] text-slate-500 block mt-0.5">1-to-1 Direct</span>
                             </div>
                         </div>
-                    </div>
 
                         {{-- Role Selection Dropdown --}}
                         <div id="role-select-box" class="mt-3 hidden bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
