@@ -387,9 +387,9 @@
 
             {{-- Enterprise Card --}}
             @unless($hasEnterprise)
-                <article class="plan-card bg-slate-900 text-white dark:bg-slate-900 border-slate-800">
+                <article class="plan-card">
                     {{-- Enterprise Skyline Vector SVG Icon --}}
-                    <div class="w-14 h-14 rounded-2xl border border-teal-700/80 bg-teal-950/90 flex items-center justify-center mb-4 shadow-md shadow-teal-500/10">
+                    <div class="w-14 h-14 rounded-2xl border border-teal-200/80 dark:border-teal-700/80 bg-teal-50 dark:bg-teal-950/90 flex items-center justify-center mb-4 shadow-md shadow-teal-500/10">
                         <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <linearGradient id="entT1" x1="14" y1="6" x2="34" y2="42" gradientUnits="userSpaceOnUse">
@@ -419,38 +419,38 @@
                     </div>
 
                     <div class="mb-4">
-                        <span class="px-2.5 py-0.5 rounded-md bg-teal-950 text-teal-400 text-[10px] font-black uppercase tracking-wider">Corporate</span>
-                        <h2 class="text-xl font-extrabold text-white mt-1">Enterprise Plan</h2>
-                        <p class="text-xs text-slate-400 mt-1 min-h-[32px]">For agencies, relocation teams, and portfolio operations.</p>
+                        <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800 text-[10px] font-black uppercase tracking-wider">Corporate</span>
+                        <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">Enterprise Plan</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 min-h-[32px]">For agencies, relocation teams, and portfolio operations.</p>
                     </div>
 
-                    <div class="py-4 border-y border-slate-800 mb-5">
+                    <div class="py-4 border-y border-slate-100 dark:border-slate-800 mb-5">
                         <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-black text-white">Custom</span>
+                            <span class="text-3xl font-black text-slate-900 dark:text-white">Custom</span>
                         </div>
-                        <div class="mt-2 flex items-center gap-2 text-xs font-semibold text-teal-400">
+                        <div class="mt-2 flex items-center gap-2 text-xs font-semibold text-teal-600 dark:text-teal-400">
                             <i class="ph-bold ph-users-three"></i>
                             <span>Multi-User License</span>
                         </div>
                     </div>
 
-                    <ul class="space-y-3 mb-8 flex-1 text-slate-300">
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium">
-                            <span class="feature-icon-bullet bg-teal-500/20 text-teal-400"><i class="ph-bold ph-check"></i></span>
-                            <span>Unlimited Owner Unlocks</span>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
+                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Unlimited Owner Unlocks</span>
                         </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium">
-                            <span class="feature-icon-bullet bg-teal-500/20 text-teal-400"><i class="ph-bold ph-check"></i></span>
-                            <span>Dedicated Account Manager</span>
+                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
+                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Dedicated Account Manager</span>
                         </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium">
-                            <span class="feature-icon-bullet bg-teal-500/20 text-teal-400"><i class="ph-bold ph-check"></i></span>
-                            <span>GST Invoicing & API Integration</span>
+                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
+                            <span class="text-slate-800 dark:text-slate-200 font-semibold">GST Invoicing & API Integration</span>
                         </li>
                     </ul>
 
                     <div class="mt-auto">
-                        <a href="mailto:support@unlockrentals.com?subject=Enterprise%20Plan%20Inquiry" class="w-full py-3.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all" title="Contact Sales">
+                        <a href="mailto:support@unlockrentals.com?subject=Enterprise%20Plan%20Inquiry" class="w-full py-3.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-teal-500/20 active:scale-[0.98]" title="Contact Sales">
                             <i class="ph-bold ph-envelope"></i>
                             <span>Contact Sales</span>
                         </a>
@@ -643,9 +643,9 @@
 
             {{-- Enterprise Card --}}
             @unless($hasEnterprise)
-                <article class="plan-card bg-slate-900 text-white dark:bg-slate-900 border-slate-800">
+                <article class="plan-card">
                     {{-- Enterprise Skyline Vector SVG Icon --}}
-                    <div class="w-14 h-14 rounded-2xl border border-teal-700/80 bg-teal-950/90 flex items-center justify-center mb-4 shadow-md shadow-teal-500/10">
+                    <div class="w-14 h-14 rounded-2xl border border-teal-200/80 dark:border-teal-700/80 bg-teal-50 dark:bg-teal-950/90 flex items-center justify-center mb-4 shadow-md shadow-teal-500/10">
                         <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <linearGradient id="entT1_buy" x1="14" y1="6" x2="34" y2="42" gradientUnits="userSpaceOnUse">
@@ -675,38 +675,38 @@
                     </div>
 
                     <div class="mb-4">
-                        <span class="px-2.5 py-0.5 rounded-md bg-teal-950 text-teal-400 text-[10px] font-black uppercase tracking-wider">Investor Desk</span>
-                        <h2 class="text-xl font-extrabold text-white mt-1">Institutional Buyer</h2>
-                        <p class="text-xs text-slate-400 mt-1 min-h-[32px]">For property funds, builders, and large commercial investors.</p>
+                        <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800 text-[10px] font-black uppercase tracking-wider">Investor Desk</span>
+                        <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">Institutional Buyer</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 min-h-[32px]">For property funds, builders, and large commercial investors.</p>
                     </div>
 
-                    <div class="py-4 border-y border-slate-800 mb-5">
+                    <div class="py-4 border-y border-slate-100 dark:border-slate-800 mb-5">
                         <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-black text-white">Custom</span>
+                            <span class="text-3xl font-black text-slate-900 dark:text-white">Custom</span>
                         </div>
-                        <div class="mt-2 flex items-center gap-2 text-xs font-semibold text-teal-400">
+                        <div class="mt-2 flex items-center gap-2 text-xs font-semibold text-teal-600 dark:text-teal-400">
                             <i class="ph-bold ph-users-three"></i>
                             <span>Portfolio Access</span>
                         </div>
                     </div>
 
-                    <ul class="space-y-3 mb-8 flex-1 text-slate-300">
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium">
-                            <span class="feature-icon-bullet bg-teal-500/20 text-teal-400"><i class="ph-bold ph-check"></i></span>
-                            <span>Unlimited Seller Direct Unlocks</span>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
+                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Unlimited Seller Direct Unlocks</span>
                         </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium">
-                            <span class="feature-icon-bullet bg-teal-500/20 text-teal-400"><i class="ph-bold ph-check"></i></span>
-                            <span>Dedicated Investment Concierge</span>
+                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
+                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Dedicated Investment Concierge</span>
                         </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium">
-                            <span class="feature-icon-bullet bg-teal-500/20 text-teal-400"><i class="ph-bold ph-check"></i></span>
-                            <span>Direct API & Bulk Export</span>
+                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
+                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Direct API & Bulk Export</span>
                         </li>
                     </ul>
 
                     <div class="mt-auto">
-                        <a href="mailto:support@unlockrentals.com?subject=Institutional%20Buyer%20Inquiry" class="w-full py-3.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all" title="Contact Sales">
+                        <a href="mailto:support@unlockrentals.com?subject=Institutional%20Buyer%20Inquiry" class="w-full py-3.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-teal-500/20 active:scale-[0.98]" title="Contact Sales">
                             <i class="ph-bold ph-envelope"></i>
                             <span>Contact Sales</span>
                         </a>
