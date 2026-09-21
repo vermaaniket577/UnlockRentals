@@ -33,12 +33,20 @@ class PushNotificationService
         $actionUrl   = !empty($payload['action_url']) ? $payload['action_url'] : url('/');
         $icon        = !empty($payload['icon']) ? $payload['icon'] : asset('favicon.png');
         $imageUrl    = !empty($payload['image_url']) ? $payload['image_url'] : null;
+        $channel     = $payload['channel'] ?? 'both';
         $targetType  = $payload['target_type'] ?? 'all';
         $targetValue = $payload['target_value'] ?? null;
         $sentBy      = $payload['sent_by'] ?? auth()->id();
 
         // 1. Gather target subscriptions
         $subscriptionsQuery = PushSubscription::active();
+
+        // Platform Channel Filter
+        if ($channel === 'web') {
+            $subscriptionsQuery->where('device_type', 'web');
+        } elseif ($channel === 'app') {
+            $subscriptionsQuery->whereIn('device_type', ['android', 'ios']);
+        }
 
         if ($targetType === 'specific_user' && !empty($targetValue)) {
             $subscriptionsQuery->where('user_id', $targetValue);
@@ -70,17 +78,19 @@ class PushNotificationService
             }
         }
 
-        // 3. Dispatch to FCM Topic if configured
-        $fcmTopicSent = $this->sendToFcmTopic($targetType, $targetValue, [
-            'title'      => $title,
-            'body'       => $body,
-            'action_url' => $actionUrl,
-            'icon'       => $icon,
-            'image_url'  => $imageUrl,
-        ]);
+        // 3. Dispatch to FCM Topic if configured (for app or both)
+        if ($channel !== 'web') {
+            $fcmTopicSent = $this->sendToFcmTopic($targetType, $targetValue, [
+                'title'      => $title,
+                'body'       => $body,
+                'action_url' => $actionUrl,
+                'icon'       => $icon,
+                'image_url'  => $imageUrl,
+            ]);
 
-        if ($fcmTopicSent) {
-            $sentCount++;
+            if ($fcmTopicSent) {
+                $sentCount++;
+            }
         }
 
         // If no direct subscriptions yet but successfully triggered
@@ -96,6 +106,7 @@ class PushNotificationService
             'icon'         => $icon,
             'image_url'    => $imageUrl,
             'action_url'   => $actionUrl,
+            'channel'      => $channel,
             'target_type'  => $targetType,
             'target_value' => (string)$targetValue,
             'sent_count'   => $sentCount,

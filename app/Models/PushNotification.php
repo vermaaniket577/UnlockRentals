@@ -15,6 +15,7 @@ class PushNotification extends Model
         'icon',
         'image_url',
         'action_url',
+        'channel',
         'target_type',
         'target_value',
         'sent_count',
@@ -26,6 +27,18 @@ class PushNotification extends Model
     public function sender()
     {
         return $this->belongsTo(User::class, 'sent_by');
+    }
+
+    /**
+     * Target delivery channel human-readable label.
+     */
+    public function getChannelLabelAttribute(): string
+    {
+        return match ($this->channel ?? 'both') {
+            'web'   => 'Web Push',
+            'app'   => 'Mobile App',
+            default => 'Web & App',
+        };
     }
 
     /**

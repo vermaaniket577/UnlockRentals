@@ -51,6 +51,7 @@ class PushNotificationController extends Controller
                     $table->string('icon')->nullable();
                     $table->string('image_url')->nullable();
                     $table->string('action_url')->nullable();
+                    $table->string('channel', 20)->default('both');
                     $table->string('target_type', 30)->default('all');
                     $table->string('target_value')->nullable();
                     $table->unsignedInteger('sent_count')->default(0);
@@ -59,6 +60,12 @@ class PushNotificationController extends Controller
                     $table->unsignedBigInteger('sent_by')->nullable()->index();
                     $table->timestamps();
                 });
+            } else {
+                if (!Schema::hasColumn('push_notifications', 'channel')) {
+                    Schema::table('push_notifications', function (Blueprint $table) {
+                        $table->string('channel', 20)->default('both')->after('action_url');
+                    });
+                }
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('Push tables auto-creation warning: ' . $e->getMessage());
@@ -109,11 +116,28 @@ class PushNotificationController extends Controller
             'title'        => 'required|string|max:120',
             'body'         => 'required|string|max:500',
             'action_url'   => 'nullable|string|max:500',
-            'image_url'    => 'nullable|url|max:500',
+            'channel'      => 'nullable|in:both,web,app',
+            'image_url'    => 'nullable|string|max:500',
+            'image_file'   => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
             'icon'         => 'nullable|string|max:500',
             'target_type'  => 'required|in:all,role,specific_user',
             'target_value' => 'nullable|string|max:255',
         ]);
+
+        // Direct file upload handling
+        if ($request->hasFile('image_file')) {
+            $path = $request->file('image_file')->store('push-banners', 'public');
+            $validated['image_url'] = asset('storage/' . $path);
+        }
+
+        $validated['channel'] = $validated['channel'] ?? 'both';
+
+        // Auto-resolve role or user target value if submitted via subfields
+        if ($validated['target_type'] === 'role' && empty($validated['target_value'])) {
+            $validated['target_value'] = $request->input('target_value_role') ?: 'tenant';
+        } elseif ($validated['target_type'] === 'specific_user' && empty($validated['target_value'])) {
+            $validated['target_value'] = $request->input('target_value_user');
+        }
 
         if ($validated['target_type'] === 'specific_user' && empty($validated['target_value'])) {
             return back()->with('error', 'Please select a specific user to target.')->withInput();
@@ -126,7 +150,13 @@ class PushNotificationController extends Controller
         try {
             $campaign = $this->pushService->dispatch($validated);
 
-            return back()->with('success', "Push notification \"{$campaign->title}\" dispatched successfully to {$campaign->audience_label}!");
+            $channelText = match ($campaign->channel) {
+                'web'   => 'Web Browsers',
+                'app'   => 'Mobile App',
+                default => 'Web & Mobile App',
+            };
+
+            return back()->with('success', "Push notification \"{$campaign->title}\" dispatched successfully to {$campaign->audience_label} ({$channelText})!");
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to dispatch push notification: ' . $e->getMessage())->withInput();
         }
