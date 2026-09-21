@@ -74,7 +74,12 @@ class Blog extends Model
      */
     public function scopeInSlider($query)
     {
-        return $query->where('show_in_slider', true);
+        if (\Illuminate\Support\Facades\Schema::hasTable('blogs') && \Illuminate\Support\Facades\Schema::hasColumn('blogs', 'show_in_slider')) {
+            return $query->where('show_in_slider', true);
+        }
+
+        $sliderIds = json_decode(\App\Models\Setting::get('home_blog_slider_ids', '[]'), true) ?: [];
+        return $query->whereIn('id', $sliderIds);
     }
 
     /**

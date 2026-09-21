@@ -15,6 +15,8 @@ use App\Mail\SubscriptionActivated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -982,11 +984,29 @@ class AdminController extends Controller
     // ─── BLOG POST MANAGEMENT ──────────────────────
 
     /**
+     * Auto-ensure blogs table has required newer columns if migrations have not been run.
+     */
+    protected function ensureBlogColumnsExist(): void
+    {
+        try {
+            if (Schema::hasTable('blogs') && !Schema::hasColumn('blogs', 'show_in_slider')) {
+                Schema::table('blogs', function (Blueprint $table) {
+                    $table->boolean('show_in_slider')->default(false)->after('is_featured')->index();
+                });
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Blogs table show_in_slider auto-create warning: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Display a listing of blog posts with summary KPIs & filters.
      */
     public function blogs(Request $request)
     {
-        if (!\Illuminate\Support\Facades\Schema::hasTable('blogs')) {
+        $this->ensureBlogColumnsExist();
+
+        if (!Schema::hasTable('blogs')) {
             $stats = ['total' => 0, 'published' => 0, 'draft' => 0, 'views' => 0];
             $blogs = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12);
             $categories = collect(['Tenant Guide', 'Owner Insights', 'Commercial Hub', 'Legal & Finance', 'Lifestyle & Tech', 'Market Trends']);
@@ -1041,7 +1061,9 @@ class AdminController extends Controller
      */
     public function createBlog()
     {
-        if (!\Illuminate\Support\Facades\Schema::hasTable('blogs')) {
+        $this->ensureBlogColumnsExist();
+
+        if (!Schema::hasTable('blogs')) {
             return redirect()->route('admin.blogs.index')->with('error', 'The blogs table has not been created yet. Please run migrations first.');
         }
 
@@ -1057,6 +1079,8 @@ class AdminController extends Controller
      */
     public function storeBlog(Request $request)
     {
+        $this->ensureBlogColumnsExist();
+
         $data = $request->validate([
             'title'             => 'required|string|max:255',
             'slug'              => 'nullable|string|max:255|unique:blogs,slug',
@@ -1204,7 +1228,13 @@ class AdminController extends Controller
         $data['user_id'] = auth()->id();
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
-        $data['show_in_slider'] = $request->boolean('show_in_slider');
+        $showInSlider = $request->boolean('show_in_slider');
+
+        if (Schema::hasColumn('blogs', 'show_in_slider')) {
+            $data['show_in_slider'] = $showInSlider;
+        } else {
+            unset($data['show_in_slider']);
+        }
 
         if ($data['is_published']) {
             $data['published_at'] = $request->filled('published_at') ? Carbon::parse($request->published_at) : now();
@@ -1222,10 +1252,18 @@ class AdminController extends Controller
 
         // Synchronize with home_blog_slider_ids setting
         $sliderIds = json_decode(Setting::get('home_blog_slider_ids', '[]'), true) ?: [];
-        if ($data['show_in_slider'] && !in_array($blog->id, $sliderIds)) {
-            $sliderIds[] = $blog->id;
-            Setting::updateOrCreate(['key' => 'home_blog_slider_ids'], ['value' => json_encode($sliderIds)]);
-            Cache::forget('site_settings');
+        if ($showInSlider) {
+            if (!in_array($blog->id, $sliderIds)) {
+                $sliderIds[] = $blog->id;
+                Setting::updateOrCreate(['key' => 'home_blog_slider_ids'], ['value' => json_encode($sliderIds)]);
+                Cache::forget('site_settings');
+            }
+        } else {
+            if (in_array($blog->id, $sliderIds)) {
+                $sliderIds = array_values(array_diff($sliderIds, [$blog->id]));
+                Setting::updateOrCreate(['key' => 'home_blog_slider_ids'], ['value' => json_encode($sliderIds)]);
+                Cache::forget('site_settings');
+            }
         }
 
         Cache::forget('home_slider_blogs');
@@ -1241,6 +1279,8 @@ class AdminController extends Controller
      */
     public function editBlog(Blog $blog)
     {
+        $this->ensureBlogColumnsExist();
+
         $categories = Blog::select('category')->distinct()->pluck('category')->filter()->values();
         if ($categories->isEmpty()) {
             $categories = collect(['Tenant Guide', 'Owner Insights', 'Commercial Hub', 'Legal & Finance', 'Lifestyle & Tech', 'Market Trends']);
@@ -1253,6 +1293,8 @@ class AdminController extends Controller
      */
     public function updateBlog(Request $request, Blog $blog)
     {
+        $this->ensureBlogColumnsExist();
+
         $data = $request->validate([
             'title'                 => 'required|string|max:255',
             'slug'                  => 'nullable|string|max:255|unique:blogs,slug,' . $blog->id,
@@ -1417,7 +1459,13 @@ class AdminController extends Controller
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
-        $data['show_in_slider'] = $request->boolean('show_in_slider');
+        $showInSlider = $request->boolean('show_in_slider');
+
+        if (Schema::hasColumn('blogs', 'show_in_slider')) {
+            $data['show_in_slider'] = $showInSlider;
+        } else {
+            unset($data['show_in_slider']);
+        }
 
         if ($data['is_published'] && empty($blog->published_at)) {
             $data['published_at'] = $request->filled('published_at') ? Carbon::parse($request->published_at) : now();
@@ -1434,7 +1482,7 @@ class AdminController extends Controller
 
         // Synchronize with home_blog_slider_ids setting
         $sliderIds = json_decode(Setting::get('home_blog_slider_ids', '[]'), true) ?: [];
-        if ($data['show_in_slider']) {
+        if ($showInSlider) {
             if (!in_array($blog->id, $sliderIds)) {
                 $sliderIds[] = $blog->id;
                 Setting::updateOrCreate(['key' => 'home_blog_slider_ids'], ['value' => json_encode($sliderIds)]);
@@ -1627,7 +1675,9 @@ class AdminController extends Controller
      */
     public function toggleSliderBlog(Blog $blog)
     {
-        $hasColumn = \Illuminate\Support\Facades\Schema::hasColumn('blogs', 'show_in_slider');
+        $this->ensureBlogColumnsExist();
+
+        $hasColumn = Schema::hasColumn('blogs', 'show_in_slider');
         if ($hasColumn) {
             $blog->show_in_slider = !$blog->show_in_slider;
             $blog->save();
