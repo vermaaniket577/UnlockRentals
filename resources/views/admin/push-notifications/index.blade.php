@@ -263,37 +263,38 @@
                         <label class="block text-xs font-bold text-slate-700 mb-2">
                             Delivery Platform <span class="text-rose-500">*</span>
                         </label>
-                        <div class="grid grid-cols-3 gap-3">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="channel" value="both" checked class="peer sr-only">
-                                <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/50 peer-checked:border-blue-600 peer-checked:bg-blue-50/60 peer-checked:text-blue-700 transition-all text-center">
-                                    <div class="flex items-center justify-center gap-1.5 text-base mb-1">
-                                        <i class="ph-bold ph-globe"></i>
-                                        <span class="text-xs font-bold">+</span>
-                                        <i class="ph-bold ph-device-mobile"></i>
-                                    </div>
-                                    <span class="text-xs font-extrabold block">Web &amp; Mobile</span>
-                                    <span class="text-[10px] text-slate-500 block mt-0.5">All Devices (Recommended)</span>
+                        <input type="hidden" name="channel" id="selected-channel" value="{{ old('channel', 'both') }}">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="channel-cards-group">
+                            <div id="channel-card-both"
+                                 onclick="selectChannel('both')"
+                                 class="p-3.5 rounded-2xl border-2 transition-all text-center cursor-pointer select-none"
+                                 style="border-color: #2563eb; background-color: #eff6ff; color: #1d4ed8;">
+                                <div class="flex items-center justify-center gap-1.5 text-base mb-1">
+                                    <i class="ph-bold ph-globe"></i>
+                                    <span class="text-xs font-bold">+</span>
+                                    <i class="ph-bold ph-device-mobile"></i>
                                 </div>
-                            </label>
+                                <span class="text-xs font-extrabold block">Web &amp; Mobile</span>
+                                <span class="text-[10px] text-slate-500 block mt-0.5">All Devices (Recommended)</span>
+                            </div>
 
-                            <label class="cursor-pointer">
-                                <input type="radio" name="channel" value="web" class="peer sr-only">
-                                <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/50 peer-checked:border-blue-600 peer-checked:bg-blue-50/60 peer-checked:text-blue-700 transition-all text-center">
-                                    <i class="ph-bold ph-globe text-base block mb-1"></i>
-                                    <span class="text-xs font-extrabold block">Web Push Only</span>
-                                    <span class="text-[10px] text-slate-500 block mt-0.5">Desktop &amp; Browsers</span>
-                                </div>
-                            </label>
+                            <div id="channel-card-web"
+                                 onclick="selectChannel('web')"
+                                 class="p-3.5 rounded-2xl border transition-all text-center cursor-pointer select-none"
+                                 style="border-color: #e2e8f0; background-color: #f8fafc; color: #475569;">
+                                <i class="ph-bold ph-globe text-base block mb-1"></i>
+                                <span class="text-xs font-extrabold block">Web Push Only</span>
+                                <span class="text-[10px] text-slate-500 block mt-0.5">Desktop &amp; Browsers</span>
+                            </div>
 
-                            <label class="cursor-pointer">
-                                <input type="radio" name="channel" value="app" class="peer sr-only">
-                                <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/50 peer-checked:border-blue-600 peer-checked:bg-blue-50/60 peer-checked:text-blue-700 transition-all text-center">
-                                    <i class="ph-bold ph-device-mobile text-base block mb-1"></i>
-                                    <span class="text-xs font-extrabold block">Mobile App Only</span>
-                                    <span class="text-[10px] text-slate-500 block mt-0.5">Android APK &amp; iOS</span>
-                                </div>
-                            </label>
+                            <div id="channel-card-app"
+                                 onclick="selectChannel('app')"
+                                 class="p-3.5 rounded-2xl border transition-all text-center cursor-pointer select-none"
+                                 style="border-color: #e2e8f0; background-color: #f8fafc; color: #475569;">
+                                <i class="ph-bold ph-device-mobile text-base block mb-1"></i>
+                                <span class="text-xs font-extrabold block">Mobile App Only</span>
+                                <span class="text-[10px] text-slate-500 block mt-0.5">Android APK &amp; iOS</span>
+                            </div>
                         </div>
                     </div>
 
@@ -302,34 +303,36 @@
                         <label class="block text-xs font-bold text-slate-700 mb-2">
                             Target Audience <span class="text-rose-500">*</span>
                         </label>
-                        <div class="grid grid-cols-3 gap-3">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="target_type" value="all" checked onchange="toggleAudienceOptions()" class="peer sr-only">
-                                <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/50 peer-checked:border-blue-600 peer-checked:bg-blue-50/60 peer-checked:text-blue-700 transition-all text-center">
-                                    <i class="ph-bold ph-broadcast text-base block mb-1"></i>
-                                    <span class="text-xs font-extrabold block">All Subscribers</span>
-                                    <span class="text-[10px] text-slate-500 block mt-0.5">Broadcast Alert</span>
-                                </div>
-                            </label>
+                        <input type="hidden" name="target_type" id="selected-target-type" value="{{ old('target_type', 'all') }}">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="target-cards-group">
+                            <div id="target-card-all"
+                                 onclick="selectTargetType('all')"
+                                 class="p-3.5 rounded-2xl border-2 transition-all text-center cursor-pointer select-none"
+                                 style="border-color: #2563eb; background-color: #eff6ff; color: #1d4ed8;">
+                                <i class="ph-bold ph-broadcast text-base block mb-1"></i>
+                                <span class="text-xs font-extrabold block">All Subscribers</span>
+                                <span class="text-[10px] text-slate-500 block mt-0.5">Broadcast Alert</span>
+                            </div>
 
-                            <label class="cursor-pointer">
-                                <input type="radio" name="target_type" value="role" onchange="toggleAudienceOptions()" class="peer sr-only">
-                                <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/50 peer-checked:border-blue-600 peer-checked:bg-blue-50/60 peer-checked:text-blue-700 transition-all text-center">
-                                    <i class="ph-bold ph-users-three text-base block mb-1"></i>
-                                    <span class="text-xs font-extrabold block">By User Role</span>
-                                    <span class="text-[10px] text-slate-500 block mt-0.5">Filter by Group</span>
-                                </div>
-                            </label>
+                            <div id="target-card-role"
+                                 onclick="selectTargetType('role')"
+                                 class="p-3.5 rounded-2xl border transition-all text-center cursor-pointer select-none"
+                                 style="border-color: #e2e8f0; background-color: #f8fafc; color: #475569;">
+                                <i class="ph-bold ph-users-three text-base block mb-1"></i>
+                                <span class="text-xs font-extrabold block">By User Role</span>
+                                <span class="text-[10px] text-slate-500 block mt-0.5">Filter by Group</span>
+                            </div>
 
-                            <label class="cursor-pointer">
-                                <input type="radio" name="target_type" value="specific_user" onchange="toggleAudienceOptions()" class="peer sr-only">
-                                <div class="p-3 rounded-2xl border border-slate-200 bg-slate-50/50 peer-checked:border-blue-600 peer-checked:bg-blue-50/60 peer-checked:text-blue-700 transition-all text-center">
-                                    <i class="ph-bold ph-user text-base block mb-1"></i>
-                                    <span class="text-xs font-extrabold block">Single User</span>
-                                    <span class="text-[10px] text-slate-500 block mt-0.5">1-to-1 Direct</span>
-                                </div>
-                            </label>
+                            <div id="target-card-specific_user"
+                                 onclick="selectTargetType('specific_user')"
+                                 class="p-3.5 rounded-2xl border transition-all text-center cursor-pointer select-none"
+                                 style="border-color: #e2e8f0; background-color: #f8fafc; color: #475569;">
+                                <i class="ph-bold ph-user text-base block mb-1"></i>
+                                <span class="text-xs font-extrabold block">Single User</span>
+                                <span class="text-[10px] text-slate-500 block mt-0.5">1-to-1 Direct</span>
+                            </div>
                         </div>
+                    </div>
 
                         {{-- Role Selection Dropdown --}}
                         <div id="role-select-box" class="mt-3 hidden bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
@@ -836,20 +839,68 @@
         if (input) input.value = url;
     }
 
-    // Audience selection toggle
-    function toggleAudienceOptions() {
-        const targetType = document.querySelector('input[name="target_type"]:checked')?.value || 'all';
+    // Delivery Channel Switcher (Both, Web, App)
+    function selectChannel(ch) {
+        const input = document.getElementById('selected-channel');
+        if (input) input.value = ch;
+
+        const channels = ['both', 'web', 'app'];
+        channels.forEach(key => {
+            const card = document.getElementById(`channel-card-${key}`);
+            if (!card) return;
+            if (key === ch) {
+                card.style.borderColor = '#2563eb';
+                card.style.backgroundColor = '#eff6ff';
+                card.style.color = '#1d4ed8';
+                card.style.borderWidth = '2px';
+            } else {
+                card.style.borderColor = '#e2e8f0';
+                card.style.backgroundColor = '#f8fafc';
+                card.style.color = '#475569';
+                card.style.borderWidth = '1px';
+            }
+        });
+
+        // Switch live device simulator automatically
+        if (ch === 'web') {
+            setPreviewDevice('desktop');
+        } else if (ch === 'app') {
+            setPreviewDevice('android');
+        }
+    }
+
+    // Target Audience Switcher
+    function selectTargetType(type) {
+        const input = document.getElementById('selected-target-type');
+        if (input) input.value = type;
+
+        const types = ['all', 'role', 'specific_user'];
+        types.forEach(key => {
+            const card = document.getElementById(`target-card-${key}`);
+            if (!card) return;
+            if (key === type) {
+                card.style.borderColor = '#2563eb';
+                card.style.backgroundColor = '#eff6ff';
+                card.style.color = '#1d4ed8';
+                card.style.borderWidth = '2px';
+            } else {
+                card.style.borderColor = '#e2e8f0';
+                card.style.backgroundColor = '#f8fafc';
+                card.style.color = '#475569';
+                card.style.borderWidth = '1px';
+            }
+        });
+
         const roleBox = document.getElementById('role-select-box');
         const userBox = document.getElementById('user-select-box');
-
-        if (roleBox) roleBox.classList.toggle('hidden', targetType !== 'role');
-        if (userBox) userBox.classList.toggle('hidden', targetType !== 'specific_user');
+        if (roleBox) roleBox.classList.toggle('hidden', type !== 'role');
+        if (userBox) userBox.classList.toggle('hidden', type !== 'specific_user');
 
         syncTargetValue();
     }
 
     function syncTargetValue() {
-        const targetType = document.querySelector('input[name="target_type"]:checked')?.value || 'all';
+        const targetType = document.getElementById('selected-target-type')?.value || 'all';
         const finalInput = document.getElementById('final-target-value');
         if (!finalInput) return;
 
@@ -924,6 +975,9 @@
 
     // Initialize on load
     updatePreview();
-    toggleAudienceOptions();
+    const initialChannel = document.getElementById('selected-channel')?.value || 'both';
+    selectChannel(initialChannel);
+    const initialTarget = document.getElementById('selected-target-type')?.value || 'all';
+    selectTargetType(initialTarget);
 </script>
 @endsection

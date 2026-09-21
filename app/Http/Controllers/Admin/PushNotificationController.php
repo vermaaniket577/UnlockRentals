@@ -172,8 +172,8 @@ class PushNotificationController extends Controller
                 default => 'Web & Mobile App',
             };
 
-            return back()->with('success', "Push notification \"{$campaign->title}\" dispatched successfully to {$campaign->audience_label} ({$channelText})!");
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Push send error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return back()->with('error', 'Failed to dispatch push notification: ' . $e->getMessage())->withInput();
         }
     }
