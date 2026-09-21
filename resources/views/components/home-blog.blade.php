@@ -188,6 +188,41 @@
             </div>
         </div>
 
+        {{-- Custom Styles to guarantee exact 3-card desktop display without relying on arbitrary utility classes --}}
+        <style>
+            #rental-guides .blog-slider-card {
+                flex: 0 0 calc((100% - 48px) / 3);
+                width: calc((100% - 48px) / 3);
+                max-width: calc((100% - 48px) / 3);
+                box-sizing: border-box;
+            }
+            @media (max-width: 1024px) {
+                #rental-guides .blog-slider-card {
+                    flex: 0 0 calc((100% - 24px) / 2);
+                    width: calc((100% - 24px) / 2);
+                    max-width: calc((100% - 24px) / 2);
+                }
+            }
+            @media (max-width: 640px) {
+                #rental-guides .blog-slider-card {
+                    flex: 0 0 calc(100% - 32px);
+                    width: calc(100% - 32px);
+                    max-width: calc(100% - 32px);
+                }
+            }
+            #rental-guides .blog-card-img-wrap {
+                height: 13rem;
+                width: 100%;
+                overflow: hidden;
+                position: relative;
+            }
+            @media (max-width: 640px) {
+                #rental-guides .blog-card-img-wrap {
+                    height: 10rem;
+                }
+            }
+        </style>
+
         {{-- Right-to-Left (RTL) Slider Viewport --}}
         <div id="blog-slider-viewport"
              data-direction="{{ $sliderDirection }}"
@@ -200,8 +235,8 @@
                  style="transform: translateX(0px);">
                 
                 @foreach($sliderCards as $art)
-                <article class="blog-slider-card w-[290px] sm:w-[350px] md:w-[380px] shrink-0 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col group">
-                    <a href="{{ url('/blog/' . $art['slug']) }}" class="block relative h-36 sm:h-48 md:h-52 overflow-hidden" title="{{ $art['title'] }}">
+                <article class="blog-slider-card shrink-0 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col group">
+                    <a href="{{ url('/blog/' . $art['slug']) }}" class="blog-card-img-wrap block" title="{{ $art['title'] }}">
                         <img src="{{ $art['image'] }}" alt="{{ $art['title'] }}" title="{{ $art['title'] }}"
                              loading="lazy"
                              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80';"
