@@ -263,112 +263,118 @@
 </section>
 
 {{-- Interactive Add/Edit Comment & Status Modal --}}
-<div id="callbackCommentModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[99999] hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all flex flex-col">
+<div id="callbackCommentModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-[99999] hidden items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all flex flex-col max-h-[92vh] my-auto">
         
-        {{-- Modal Header --}}
-        <div class="p-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-xl">
+        {{-- Modal Header (Fixed at top) --}}
+        <div class="p-4 sm:p-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-lg sm:text-xl flex-shrink-0">
                     <i class="ph-bold ph-note-pencil"></i>
                 </div>
-                <div>
-                    <h3 class="text-base font-extrabold" id="modalCustomerName">Callback Notes &amp; Message</h3>
-                    <p class="text-xs text-blue-100" id="modalCustomerPhone">+91 - Customer Details</p>
+                <div class="min-w-0 pr-2">
+                    <h3 class="text-sm sm:text-base font-extrabold truncate" id="modalCustomerName">Callback Notes &amp; Message</h3>
+                    <p class="text-[11px] sm:text-xs text-blue-100 truncate" id="modalCustomerPhone">+91 - Customer Details</p>
                 </div>
             </div>
-            <button type="button" onclick="closeCommentModal()" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" title="Close">
+            <button type="button" onclick="closeCommentModal()" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex-shrink-0" title="Close">
                 <i class="ph-bold ph-x text-base"></i>
             </button>
         </div>
 
-        {{-- Modal Body Form --}}
-        <form id="commentForm" method="POST" action="" class="p-6 space-y-5">
+        {{-- Modal Body Form with Sticky Footer --}}
+        <form id="commentForm" method="POST" action="" class="flex flex-col flex-1 overflow-hidden m-0">
             @csrf
             
-            {{-- Status Selector --}}
-            <div>
-                <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-2">
-                    Update Lead Status
-                </label>
-                <div class="grid grid-cols-3 gap-2">
-                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 cursor-pointer text-xs font-bold transition-all hover:bg-slate-50 has-checked:border-amber-500 has-checked:bg-amber-50 has-checked:text-amber-800">
-                        <input type="radio" name="status" value="new" id="status-new" class="sr-only">
-                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        <span>New</span>
+            {{-- Scrollable Content Area --}}
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar" style="overflow-y: auto; max-height: calc(92vh - 135px);">
+                
+                {{-- Status Selector (Compact 3x2 Grid) --}}
+                <div>
+                    <label class="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1.5">
+                        Update Lead Status
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 cursor-pointer text-xs font-bold transition-all hover:bg-slate-50 has-checked:border-emerald-500 has-checked:bg-emerald-50 has-checked:text-emerald-800">
-                        <input type="radio" name="status" value="called" id="status-called" class="sr-only">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        <span>Called</span>
-                    </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 cursor-pointer text-xs font-bold transition-all hover:bg-slate-50 has-checked:border-blue-500 has-checked:bg-blue-50 has-checked:text-blue-800">
-                        <input type="radio" name="status" value="interested" id="status-interested" class="sr-only">
-                        <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-                        <span>Interested</span>
-                    </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 cursor-pointer text-xs font-bold transition-all hover:bg-slate-50 has-checked:border-rose-500 has-checked:bg-rose-50 has-checked:text-rose-800">
-                        <input type="radio" name="status" value="no_answer" id="status-no_answer" class="sr-only">
-                        <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-                        <span>No Answer</span>
-                    </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 cursor-pointer text-xs font-bold transition-all hover:bg-slate-50 has-checked:border-purple-500 has-checked:bg-purple-50 has-checked:text-purple-800">
-                        <input type="radio" name="status" value="completed" id="status-completed" class="sr-only">
-                        <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-                        <span>Completed</span>
-                    </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-slate-200 cursor-pointer text-xs font-bold transition-all hover:bg-slate-50 has-checked:border-slate-500 has-checked:bg-slate-100 has-checked:text-slate-800">
-                        <input type="radio" name="status" value="cancelled" id="status-cancelled" class="sr-only">
-                        <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                        <span>Cancelled</span>
-                    </label>
+                    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem;">
+                        <label class="flex items-center justify-center gap-1 p-1.5 sm:p-2 rounded-xl border border-slate-200 cursor-pointer text-[11px] font-bold transition-all hover:bg-slate-50 has-checked:border-amber-500 has-checked:bg-amber-50 has-checked:text-amber-800">
+                            <input type="radio" name="status" value="new" id="status-new" class="sr-only">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0"></span>
+                            <span>New</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-1 p-1.5 sm:p-2 rounded-xl border border-slate-200 cursor-pointer text-[11px] font-bold transition-all hover:bg-slate-50 has-checked:border-emerald-500 has-checked:bg-emerald-50 has-checked:text-emerald-800">
+                            <input type="radio" name="status" value="called" id="status-called" class="sr-only">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
+                            <span>Called</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-1 p-1.5 sm:p-2 rounded-xl border border-slate-200 cursor-pointer text-[11px] font-bold transition-all hover:bg-slate-50 has-checked:border-blue-500 has-checked:bg-blue-50 has-checked:text-blue-800">
+                            <input type="radio" name="status" value="interested" id="status-interested" class="sr-only">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></span>
+                            <span>Interested</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-1 p-1.5 sm:p-2 rounded-xl border border-slate-200 cursor-pointer text-[11px] font-bold transition-all hover:bg-slate-50 has-checked:border-rose-500 has-checked:bg-rose-50 has-checked:text-rose-800">
+                            <input type="radio" name="status" value="no_answer" id="status-no_answer" class="sr-only">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-400 flex-shrink-0"></span>
+                            <span>No Answer</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-1 p-1.5 sm:p-2 rounded-xl border border-slate-200 cursor-pointer text-[11px] font-bold transition-all hover:bg-slate-50 has-checked:border-purple-500 has-checked:bg-purple-50 has-checked:text-purple-800">
+                            <input type="radio" name="status" value="completed" id="status-completed" class="sr-only">
+                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0"></span>
+                            <span>Completed</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-1 p-1.5 sm:p-2 rounded-xl border border-slate-200 cursor-pointer text-[11px] font-bold transition-all hover:bg-slate-50 has-checked:border-slate-500 has-checked:bg-slate-100 has-checked:text-slate-800">
+                            <input type="radio" name="status" value="cancelled" id="status-cancelled" class="sr-only">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400 flex-shrink-0"></span>
+                            <span>Cancelled</span>
+                        </label>
+                    </div>
                 </div>
-            </div>
 
-            {{-- Quick Comment Templates --}}
-            <div>
-                <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
-                    Quick Templates (Click to insert)
-                </label>
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" onclick="insertNoteTemplate('Called: customer interested in ready-to-move flats.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer">
-                        + Interested in flats
-                    </button>
-                    <button type="button" onclick="insertNoteTemplate('Called: no answer. Will call back today evening.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer">
-                        + No answer (retry later)
-                    </button>
-                    <button type="button" onclick="insertNoteTemplate('Scheduled property visit for this weekend.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer">
-                        + Scheduled visit
-                    </button>
-                    <button type="button" onclick="insertNoteTemplate('Sent WhatsApp brochure and property options.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer">
-                        + Sent WhatsApp brochure
-                    </button>
+                {{-- Quick Comment Templates --}}
+                <div>
+                    <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
+                        Quick Templates (Click to insert)
+                    </label>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" onclick="insertNoteTemplate('Called: customer interested in ready-to-move flats.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer">
+                            + Interested in flats
+                        </button>
+                        <button type="button" onclick="insertNoteTemplate('Called: no answer. Will call back today evening.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer">
+                            + No answer (retry later)
+                        </button>
+                        <button type="button" onclick="insertNoteTemplate('Scheduled property visit for this weekend.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer">
+                            + Scheduled visit
+                        </button>
+                        <button type="button" onclick="insertNoteTemplate('Sent WhatsApp brochure and property options.')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition-colors cursor-pointer">
+                            + Sent WhatsApp brochure
+                        </button>
+                    </div>
                 </div>
+
+                {{-- Comment / Message Textarea --}}
+                <div>
+                    <label for="modalAdminNotes" class="block text-[11px] font-black uppercase tracking-wider text-slate-700 mb-1.5">
+                        Comments / Internal Notes
+                    </label>
+                    <textarea name="admin_notes" id="modalAdminNotes" rows="3" 
+                              placeholder="Type conversation notes, customer requirements, preferred localities, budget, or follow-up details here..."
+                              style="min-height: 75px; max-height: 150px;"
+                              class="w-full p-3 text-xs text-slate-900 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all leading-relaxed custom-scrollbar font-sans"></textarea>
+                    <p class="text-[10px] text-slate-400 mt-1">These notes are visible to administrators to keep track of customer interactions.</p>
+                </div>
+
             </div>
 
-            {{-- Comment / Message Textarea --}}
-            <div>
-                <label for="modalAdminNotes" class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5">
-                    Comments / Internal Notes
-                </label>
-                <textarea name="admin_notes" id="modalAdminNotes" rows="4" 
-                          placeholder="Type conversation notes, customer requirements, preferred localities, budget, or follow-up details here..."
-                          class="w-full p-3.5 text-xs text-slate-900 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-3 focus:ring-blue-500/20 outline-none transition-all leading-relaxed custom-scrollbar font-sans"></textarea>
-                <p class="text-[10px] text-slate-400 mt-1">These notes are visible to administrators to keep track of customer interactions.</p>
-            </div>
-
-            {{-- Modal Actions --}}
-            <div class="flex items-center justify-between gap-3 pt-4 border-t border-slate-100">
-                <a href="#" id="modalWhatsappBtn" target="_blank" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-all">
+            {{-- Modal Actions (Sticky Footer - Permanently Visible) --}}
+            <div class="flex items-center justify-between gap-2 p-3 sm:p-4 bg-slate-50 border-t border-slate-200/80 flex-shrink-0">
+                <a href="#" id="modalWhatsappBtn" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-all">
                     <i class="ph-bold ph-whatsapp-logo text-base"></i>
-                    <span>Open WhatsApp</span>
+                    <span class="hidden sm:inline">WhatsApp</span>
                 </a>
 
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="closeCommentModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer">
+                    <button type="button" onclick="closeCommentModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-200 transition-colors cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 transition-all cursor-pointer">
+                    <button type="submit" class="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-xl text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 shadow-md shadow-blue-500/20 transition-all cursor-pointer">
                         <i class="ph-bold ph-check text-sm"></i>
                         <span>Save Comment</span>
                     </button>
