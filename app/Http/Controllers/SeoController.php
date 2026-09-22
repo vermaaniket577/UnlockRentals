@@ -323,9 +323,13 @@ class SeoController extends Controller
             ];
         }
 
-        // Patterns 1, 2, 3: (room|pg|flat|house|apartment)-for-rent-in-([a-z0-9\-]+)
-        if (preg_match('/^(room|pg|flat|house|apartment)-for-rent-in-([a-z0-9\-]+)$/i', $slug, $matches)) {
-            $type = strtolower($matches[1]);
+        // Patterns 1, 2, 3: (room|pg|pg-co-living|co-living|flat|house|apartment)-for-rent-in-([a-z0-9\-]+)
+        if (preg_match('/^(room|pg|pg-co-living|co-living|flat|house|apartment)-for-rent-in-([a-z0-9\-]+)$/i', $slug, $matches)) {
+            $rawType = strtolower($matches[1]);
+            $type = match($rawType) {
+                'pg-co-living', 'co-living' => 'pg',
+                default => $rawType
+            };
             $remaining = $matches[2];
 
             $budget = null;
@@ -341,9 +345,13 @@ class SeoController extends Controller
             ];
         }
 
-        // Pattern 6: (room|pg|flat|house|apartment)-for-rent-near-([a-z0-9\-]+)
-        if (preg_match('/^(room|pg|flat|house|apartment)-for-rent-near-([a-z0-9\-]+)$/i', $slug, $matches)) {
-            $type = strtolower($matches[1]);
+        // Pattern 6: (room|pg|pg-co-living|co-living|flat|house|apartment)-for-rent-near-([a-z0-9\-]+)
+        if (preg_match('/^(room|pg|pg-co-living|co-living|flat|house|apartment)-for-rent-near-([a-z0-9\-]+)$/i', $slug, $matches)) {
+            $rawType = strtolower($matches[1]);
+            $type = match($rawType) {
+                'pg-co-living', 'co-living' => 'pg',
+                default => $rawType
+            };
             $remaining = $matches[2];
 
             if ($remaining === 'me' || $remaining === 'my-location') {

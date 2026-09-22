@@ -118,7 +118,7 @@
                         List Property Free
                     </a>
                     <span class="text-zinc-300 dark:text-slate-700">•</span>
-                    <a href="{{ url('/post-rental-ad') }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                    <a href="{{ route('properties.create') }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
                         Post Rental Ad
                     </a>
                     <span class="text-zinc-300 dark:text-slate-700">•</span>
@@ -126,7 +126,7 @@
                         Renting Guide
                     </a>
                     <span class="text-zinc-300 dark:text-slate-700">•</span>
-                    <a href="{{ url('/rental-agreement-guide') }}" class="text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400">
+                    <a href="{{ url('/blog/understanding-rental-laws-and-agreements') }}" class="text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400">
                         Agreement Guide
                     </a>
                 </div>

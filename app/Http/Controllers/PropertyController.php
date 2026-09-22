@@ -207,14 +207,9 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
-        // Require authentication to access full property details and features
-        if (!auth()->check()) {
-            return redirect()->route('login')->with('info', 'Please sign in to view complete property details and contact verified owners.');
-        }
-
         // Only show approved properties to public (owners/admins can see theirs)
         if (!$property->isApproved()) {
-            if (!auth()->user()->isAdmin() && auth()->user()->id !== $property->user_id) {
+            if (!auth()->check() || (!auth()->user()->isAdmin() && auth()->user()->id !== $property->user_id)) {
                 abort(404);
             }
         }

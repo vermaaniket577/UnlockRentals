@@ -811,12 +811,12 @@ Route::get('/storage/{path}', function ($path) {
     return redirect()->route('property.image.file', ['path' => $path]);
 })->where('path', '.*')->name('storage.file');
 
-// Direct blogs image file route
+// Direct blogs image file route (301 Permanent Redirect)
 Route::get('/blogs/authors/{filename}', function ($filename) {
-    return redirect()->route('property.image.file', ['path' => 'blogs/authors/' . $filename]);
+    return redirect()->route('property.image.file', ['path' => 'blogs/authors/' . $filename], 301);
 });
 Route::get('/blogs/{filename}', function ($filename) {
-    return redirect()->route('property.image.file', ['path' => 'blogs/' . $filename]);
+    return redirect()->route('property.image.file', ['path' => 'blogs/' . $filename], 301);
 });
 
 // Dedicated video streaming route with HTTP 206 Partial Content & Range header support
@@ -923,6 +923,22 @@ Route::view('/privacy-policy', 'privacy')->name('privacy');
 Route::view('/privacy', 'privacy');
 Route::view('/terms-and-conditions', 'terms')->name('terms');
 Route::view('/terms', 'terms');
+
+// Legacy 301 Redirects to avoid 404s for search crawlers & existing links
+Route::redirect('/rental-agreement-guide', '/blog/understanding-rental-laws-and-agreements', 301);
+Route::redirect('/post-rental-ad', '/properties/create', 301);
+
+// Dedicated fallback for visitor-tracker.js to ensure zero 404s
+Route::get('/js/visitor-tracker.js', function () {
+    $path = public_path('js/visitor-tracker.js');
+    if (file_exists($path)) {
+        return response()->file($path, [
+            'Content-Type' => 'application/javascript; charset=utf-8',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+    return response('/* visitor-tracker.js */', 200, ['Content-Type' => 'application/javascript']);
+});
 
 // Dynamic Catch-All Route for Programmatic SEO Pages
 Route::get('/{seo_slug}', [\App\Http\Controllers\SeoController::class, 'handle'])->name('seo.landing');
