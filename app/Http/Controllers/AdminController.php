@@ -361,12 +361,141 @@ class AdminController extends Controller
     }
 
     /**
+     * Ensure callback_requests table has administrative notes and status tracking columns.
+     */
+    protected function ensureCallbackNotesColumnExists(): void
+    {
+        try {
+            if (Schema::hasTable('callback_requests')) {
+                if (!Schema::hasColumn('callback_requests', 'admin_notes')) {
+                    Schema::table('callback_requests', function (Blueprint $table) {
+                        $table->text('admin_notes')->nullable()->after('status');
+                    });
+                }
+                if (!Schema::hasColumn('callback_requests', 'called_at')) {
+                    Schema::table('callback_requests', function (Blueprint $table) {
+                        $table->timestamp('called_at')->nullable()->after('admin_notes');
+                    });
+                }
+                if (!Schema::hasColumn('callback_requests', 'called_by')) {
+                    Schema::table('callback_requests', function (Blueprint $table) {
+                        $table->unsignedBigInteger('called_by')->nullable()->after('called_at');
+                    });
+                }
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Callback table check warning: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * List all callback requests.
      */
-    public function callbacks()
+    public function callbacks(Request $request)
     {
-        $callbacks = \App\Models\CallbackRequest::with('user')->latest()->paginate(20);
+        $this->ensureCallbackNotesColumnExists();
+
+        $query = \App\Models\CallbackRequest::with(['user', 'property', 'caller'])->latest();
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $term = trim($request->search);
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'like', "%{$term}%")
+                  ->orWhere('phone', 'like', "%{$term}%")
+                  ->orWhere('email', 'like', "%{$term}%")
+                  ->orWhere('admin_notes', 'like', "%{$term}%");
+            });
+        }
+
+        $callbacks = $query->paginate(20)->withQueryString();
         return view('admin.callbacks', compact('callbacks'));
+    }
+
+    /**
+     * Update comment/notes and status for a callback request.
+     */
+    public function updateCallbackComment(Request $request, $id)
+    {
+        $this->ensureCallbackNotesColumnExists();
+
+        $request->validate([
+            'admin_notes' => 'nullable|string|max:3000',
+            'status'      => 'nullable|string|in:new,called,no_answer,interested,completed,cancelled',
+        ]);
+
+        $callback = \App\Models\CallbackRequest::findOrFail($id);
+
+        $updateData = [];
+        if ($request->has('admin_notes')) {
+            $updateData['admin_notes'] = $request->input('admin_notes');
+        }
+        if ($request->filled('status')) {
+            $updateData['status'] = $request->input('status');
+            if (in_array($request->input('status'), ['called', 'completed', 'interested']) && empty($callback->called_at)) {
+                $updateData['called_at'] = now();
+                $updateData['called_by'] = auth()->id();
+            }
+        }
+
+        $callback->update($updateData);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment and status updated successfully.',
+                'callback' => $callback,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Callback comment and status updated successfully.');
+    }
+
+    /**
+     * Quick update status for a callback request.
+     */
+    public function updateCallbackStatus(Request $request, $id)
+    {
+        $this->ensureCallbackNotesColumnExists();
+
+        $validated = $request->validate([
+            'status' => 'required|string|in:new,called,no_answer,interested,completed,cancelled',
+        ]);
+
+        $callback = \App\Models\CallbackRequest::findOrFail($id);
+        $updateData = ['status' => $validated['status']];
+
+        if (in_array($validated['status'], ['called', 'completed', 'interested']) && empty($callback->called_at)) {
+            $updateData['called_at'] = now();
+            $updateData['called_by'] = auth()->id();
+        }
+
+        $callback->update($updateData);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Callback status updated to ' . ucfirst($validated['status']) . '.');
+    }
+
+    /**
+     * Delete a callback request.
+     */
+    public function destroyCallback(Request $request, $id)
+    {
+        $callback = \App\Models\CallbackRequest::find($id);
+        if ($callback) {
+            $callback->delete();
+        }
+
+        return redirect()->back()->with('success', 'Callback request record deleted successfully.');
     }
 
     /**
