@@ -1004,6 +1004,10 @@ return [
                 'Kendrapara Town', 'Pattamundai', 'Aul', 'Rajnagar (Bhitarkanika Gateway)', 'Marshaghai', 'Derabish',
                 'Mahakalapada'
             ],
+            'Keonjhar' => [
+                'Kendujhar (Keonjhar) Town', 'Barbil (Mining City)', 'Joda (Mining City)', 'Anandapur', 'Champua', 'Ghashipura',
+                'Telkoi', 'Ghatgaon (Maa Tarini)'
+            ],
             'Kendujhar' => [
                 'Kendujhar (Keonjhar) Town', 'Barbil (Mining City)', 'Joda (Mining City)', 'Anandapur', 'Champua', 'Ghashipura',
                 'Telkoi', 'Ghatgaon (Maa Tarini)'
