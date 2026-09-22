@@ -477,6 +477,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/feedback/{feedback}/reject', [AdminController::class, 'rejectFeedback'])->name('feedback.reject');
     Route::delete('/feedback/{feedback}', [AdminController::class, 'destroyFeedback'])->name('feedback.delete');
     Route::get('/chats', [AdminController::class, 'chats'])->name('chats');
+    Route::post('/chats/reply', [AdminController::class, 'replyChat'])->name('chats.reply');
     Route::get('/callbacks', [AdminController::class, 'callbacks'])->name('callbacks');
     Route::post('/callbacks/{id}/comment', [AdminController::class, 'updateCallbackComment'])->name('callbacks.comment');
     Route::post('/callbacks/{id}/status', [AdminController::class, 'updateCallbackStatus'])->name('callbacks.status');
