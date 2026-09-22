@@ -143,7 +143,7 @@
                                 </div>
                                 @if($callback->property)
                                 <div class="mt-1">
-                                    <a href="{{ route('property.detail', $callback->property->slug ?? $callback->property->id) }}" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:underline">
+                                    <a href="{{ route('properties.show', $callback->property->slug ?? $callback->property->id) }}" target="_blank" class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:underline">
                                         <i class="ph-bold ph-buildings text-xs"></i>
                                         <span class="truncate max-w-[150px]">{{ $callback->property->title }}</span>
                                     </a>
