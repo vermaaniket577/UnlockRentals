@@ -5,8 +5,50 @@
 @section('og_image', $post->cover_image_url)
 
 @section('content')
+<style>
+    /* Proper text justification for blog content */
+    .blog-article-content {
+        text-align: justify;
+        text-justify: inter-word;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        -ms-hyphens: auto;
+        hyphens: auto;
+    }
+    .blog-article-content p,
+    .blog-article-content div:not(.not-prose),
+    .blog-article-content li,
+    .blog-article-content blockquote,
+    .blog-article-content section,
+    .blog-article-content article {
+        text-align: justify !important;
+        text-justify: inter-word !important;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        -ms-hyphens: auto;
+        hyphens: auto;
+        line-height: 1.85 !important;
+        letter-spacing: 0.01em;
+    }
+    .blog-article-content h1,
+    .blog-article-content h2,
+    .blog-article-content h3,
+    .blog-article-content h4,
+    .blog-article-content h5,
+    .blog-article-content h6 {
+        text-align: left !important;
+        hyphens: none !important;
+    }
+    .blog-article-content pre,
+    .blog-article-content code,
+    .blog-article-content th,
+    .blog-article-content figcaption {
+        text-align: left !important;
+    }
+</style>
+
 <div class="min-h-screen bg-slate-50 dark:bg-slate-950 pt-24 pb-20">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {{-- Admin Draft Banner --}}
         @if(!$post->is_published)
@@ -74,15 +116,15 @@
         </div>
 
         {{-- Article Content --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-12 shadow-sm border border-slate-200/80 dark:border-slate-800 mb-12">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 lg:p-14 shadow-sm border border-slate-200/80 dark:border-slate-800 mb-12">
             
             @if($post->excerpt)
-            <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-l-4 border-blue-600 mb-8 text-base text-slate-700 dark:text-slate-200 italic font-medium leading-relaxed">
+            <div class="p-5 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-l-4 border-blue-600 mb-8 text-base sm:text-lg text-slate-700 dark:text-slate-200 italic font-medium leading-relaxed text-justify [text-justify:inter-word]">
                 {{ $post->excerpt }}
             </div>
             @endif
 
-            <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-600 dark:prose-li:text-slate-300 prose-img:rounded-2xl prose-img:mx-auto prose-img:h-auto prose-img:max-h-[600px] prose-img:object-contain">
+            <div class="prose prose-slate dark:prose-invert prose-lg max-w-none blog-article-content prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-img:rounded-2xl prose-img:mx-auto prose-img:h-auto prose-img:max-h-[600px] prose-img:object-contain">
                 {!! $post->content !!}
             </div>
 
