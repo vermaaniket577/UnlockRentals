@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        fetch("{{ route('admin.chats.reply') }}", {
+        fetch("{{ url('/admin/chats/reply') }}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
