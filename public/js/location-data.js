@@ -95,103 +95,205 @@
             "Raj Nagar", "Rajnagar", "Sagar Road", "Sarwai", "Satai", "Satai Road", "Shanti Nagar", "Subhash Nagar", "Tikamgarh Road", "Vivekanand Nagar"
         ],
         "cuttack": [
-            "Athagarh", "Badamba", "Badambadi", "Balu Bazaar", "Banki", "Baramba", "Barang", "Bhadimunda", "Bidanasi", "Buxi Bazaar",
-            "CDA Main Road", "CDA Sector 1", "CDA Sector 2", "CDA Sector 3", "CDA Sector 4", "CDA Sector 5", "CDA Sector 6", "CDA Sector 7", "CDA Sector 8", "CDA Sector 9",
-            "CDA Sector 10", "CDA Sector 11", "CDA Sector 12", "CDA Sector 13", "CDA Sector 14", "CDA Sector 15", "CDA Sector 16", "CDA Sector 17", "Chauliaganj", "Chhatra Bazaar",
-            "Choudhury Bazaar", "Choudwar", "College Square", "Damapada", "Dargha Bazaar", "Dolamundai", "Gandarpur", "Gopalpur", "Gurudijhatia", "Haripur",
-            "Jagatpur", "Jobra", "Kalyan Nagar", "Kanpur", "Kathajodi Vihar", "Kesharpur", "Khan Nagar", "Khuntuni", "Kishannagar", "Link Road",
-            "Madhupatna", "Mahanga", "Mangalabag", "Markat Nagar", "Meria Bazaar", "Naraj", "Narsinghpur", "Naya Bazaar", "Naya Sadak", "Nayabazar",
-            "Nemalo", "Niali Road", "Nischintakoili", "Nuapatna", "Phulnakhara", "Pratap Nagari", "Raghunathpur", "Rajendra Nagar", "Ranihat", "Ring Road",
-            "Salipur", "Sati Chaura", "Sector 6 Market", "Shelter Chhak", "Sikharpur", "Sutahat", "Tangi", "Tigiria", "Trishulia", "Tulsipur"
-        ],
-        "bhubaneswar": [
-            "Bhubaneswar City", "Patia (KIIT Area)", "Jayadev Vihar", "Nayapalli", "Saheed Nagar", "Khandagiri",
-            "Chandrasekharpur", "Master Canteen", "Janpath Bhubaneswar", "Unit 1 to 9", "Kharvela Nagar", "Bapuji Nagar",
-            "Satya Nagar", "Old Town Bhubaneswar (Lingaraj Area)", "Baramunda", "Sundarpada", "Jatani (IIT & NISER Area)", "Khordha Town",
-            "Info Valley", "Infocity", "Mancheswar Industrial Area", "Rasulgarh", "Pahal", "Tamando", "Ghangapatna"
+            "Cuttack", "Choudwar", "Athagarh", "Banki", "Salepur", "Niali", "Narsinghpur",
+            "Tigiria", "Naraj", "Barang", "Phulnakhara", "Bidanasi", "CDA Sector 1",
+            "CDA Sector 2", "CDA Sector 6", "CDA Sector 7", "CDA Sector 9", "CDA Sector 10",
+            "CDA Sector 11", "CDA Sector 13", "Link Road", "College Square", "Badambadi",
+            "Buxi Bazaar", "Chandinichowk", "Ranihat", "Mangalabag", "Tulsipur", "Jobra",
+            "Khan Nagar", "Dolamundai", "Chauliaganj", "Jagatpur", "Madhupatna",
+            "Shelter Chhak", "Naya Bazaar"
         ],
         "khordha": [
-            "Bhubaneswar City", "Patia (KIIT Area)", "Jayadev Vihar", "Nayapalli", "Saheed Nagar", "Khandagiri",
-            "Chandrasekharpur", "Master Canteen", "Janpath Bhubaneswar", "Unit 1 to 9", "Kharvela Nagar", "Bapuji Nagar",
-            "Satya Nagar", "Old Town Bhubaneswar (Lingaraj Area)", "Baramunda", "Sundarpada", "Jatani (IIT & NISER Area)", "Khordha Town",
-            "Info Valley", "Infocity", "Mancheswar Industrial Area", "Rasulgarh", "Pahal", "Tamando", "Ghangapatna"
+            "Bhubaneswar", "Khordha", "Jatani", "Balipatna", "Balianta", "Banapur",
+            "Tangi", "Begunia", "Bolagarh", "Chilika", "Balugaon", "Khurda Road",
+            "Patia", "Chandrasekharpur", "Sailashree Vihar", "Damana", "KIIT Square",
+            "Nandan Kanan", "Jaydev Vihar", "Saheed Nagar", "Sahid Nagar", "Rasulgarh",
+            "Mancheswar", "Bomikhal", "Laxmi Sagar", "Old Town", "Khandagiri",
+            "Jagamara", "Dumduma", "Tamando", "Patrapada", "Ghatikia", "Sundarpada",
+            "Pokhariput", "Airport Area", "Baramunda", "Nayapalli", "IRC Village",
+            "Unit 4", "Unit 6", "Unit 8", "Unit 9", "Unit 3", "Unit 1", "VSS Nagar",
+            "Acharya Vihar", "BJB Nagar", "Forest Park", "Shyamapur", "Jagannath Vihar",
+            "GGP Colony"
         ],
-        "rourkela": [
-            "Rourkela (Steel City)", "Civil Township Rourkela", "Sector 1 to 22 Rourkela", "Panposh", "Uditnagar", "Chhend Colony",
-            "Basanti Colony", "Koel Nagar", "Shakti Nagar Rourkela", "NIT Rourkela Area", "Sundargarh Town", "Rajgangpur (Cement City)",
-            "Biramitrapur", "Bonaigarh", "Koida (Mining Hub)"
-        ],
-        "sundargarh": [
-            "Rourkela (Steel City)", "Civil Township Rourkela", "Sector 1 to 22 Rourkela", "Panposh", "Uditnagar", "Chhend Colony",
-            "Basanti Colony", "Koel Nagar", "Shakti Nagar Rourkela", "NIT Rourkela Area", "Sundargarh Town", "Rajgangpur (Cement City)",
-            "Biramitrapur", "Bonaigarh", "Koida (Mining Hub)"
-        ],
-        "puri": [
-            "Puri Town", "Grand Road (Badadanda)", "VIP Road Puri", "Marine Drive Puri", "Chakratirtha Road", "Sea Beach Area",
-            "Konark (Sun Temple Area)", "Pipili (Applique Village)", "Nimapada", "Satyabadi (Sakshigopal)", "Kakatpur", "Brahmagiri"
-        ],
-        "sambalpur": [
-            "Sambalpur City", "Budharaja", "Ainthapali", "Dhanupali", "Modipara", "Burla (VSSUT & VIMSAR Area)",
-            "Hirakud (Dam Area)", "Rengali", "Kuchinda", "Redhakhol"
-        ],
-        "berhampur": [
-            "Berhampur City (Silk City)", "Gopalpur-on-Sea", "Chatrapur (District HQ)", "Aska", "Bhanjanagar", "Hinjilicut",
-            "Polasara", "Purushottampur", "Khallikote", "Digapahandi"
-        ],
-        "ganjam": [
-            "Berhampur City (Silk City)", "Gopalpur-on-Sea", "Chatrapur (District HQ)", "Aska", "Bhanjanagar", "Hinjilicut",
-            "Polasara", "Purushottampur", "Khallikote", "Digapahandi"
-        ],
-        "balasore": [
-            "Balasore Town", "Chandipur (Missile Testing Range & Beach)", "Remuna", "Soro", "Jaleswar", "Basta",
-            "Nilagiri", "Bahanaga"
+        "bhubaneswar": [
+            "Bhubaneswar", "Patia", "Chandrasekharpur", "Sailashree Vihar", "Damana", "KIIT Square",
+            "Nandan Kanan", "Jaydev Vihar", "Saheed Nagar", "Sahid Nagar", "Rasulgarh",
+            "Mancheswar", "Bomikhal", "Laxmi Sagar", "Old Town", "Khandagiri",
+            "Jagamara", "Dumduma", "Tamando", "Patrapada", "Ghatikia", "Sundarpada",
+            "Pokhariput", "Airport Area", "Baramunda", "Nayapalli", "IRC Village",
+            "Unit 4", "Unit 6", "Unit 8", "Unit 9", "Unit 3", "Unit 1", "VSS Nagar",
+            "Acharya Vihar", "BJB Nagar", "Forest Park", "Shyamapur", "Jagannath Vihar",
+            "GGP Colony"
         ],
         "angul": [
-            "Angul Town", "NALCO Nagar", "Jindal Steel Area (Nisha)", "Talcher (Coal City)", "NTPC Kaniha Area", "Athmallik",
-            "Pallahara", "Banarpal", "Chhendipada"
-        ],
-        "bargarh": [
-            "Bargarh Town", "Barpali", "Padampur", "Attabira", "Bhatli", "Paikmal (Nrusinghanath)", "Sohela"
-        ],
-        "bhadrak": [
-            "Bhadrak Town", "Charampa", "Dhamra Port Area", "Chandbali", "Basudevpur", "Bhandaripokhari", "Bonth", "Tihidi"
+            "Angul", "Talcher", "Banarpal", "Chhendipada", "Athamallik", "Pallahara",
+            "Kaniha", "Nalco Nagar", "Hakimpara", "Amalapada", "Turanga", "Similipada",
+            "Hulurisingha", "Gandhi Marg", "Industrial Estate", "Talcher Coalfields",
+            "Deulbera", "MCL Colony"
         ],
         "balangir": [
-            "Balangir Town", "Titilagarh", "Patnagarh", "Kantabanji", "Tushura", "Saintala (Ordnance Factory)", "Muribahal"
+            "Balangir", "Titlagarh", "Patnagarh", "Kantabanji", "Saintala", "Loisingha",
+            "Bangomunda", "Muribahal", "Agalpur", "Gudvela", "Puintala", "Deogaon",
+            "Tusura", "Sindhekela", "Belpara", "Khaprakhol"
         ],
-        "jharsuguda": [
-            "Jharsuguda Town", "Airport Area Jharsuguda", "Vedanta Alumina Hub", "Brajrajnagar", "Belpahar", "Kolabira", "Laikera"
+        "balasore": [
+            "Balasore", "Baleshwar", "Jaleswar", "Soro", "Nilagiri", "Basta",
+            "Bhograi", "Remuna", "Simulia", "Khantapara", "Chandipur", "Balipal",
+            "Sergarh", "Mitrapur", "Rupsa", "Sahupada", "Motiganj", "Sunhat", "Teligadia"
         ],
-        "jajpur": [
-            "Jajpur Town (Biraja Kshetra)", "Jajpur Road (Vyasanagar)", "Kalinganagar (Tata Steel Hub)", "Chandikhol", "Dharmasala", "Bari",
-            "Binjharpur", "Sukinda (Chromite Hub)"
+        "bargarh": [
+            "Bargarh", "Barpali", "Padampur", "Sohela", "Attabira", "Bijepur",
+            "Bhatli", "Ambabhona", "Jharbandh", "Gaisilet", "Melchhamunda", "Remunda",
+            "Godbhaga", "Bardol", "Tora", "Sambalpuri Colony"
         ],
-        "jagatsinghpur": [
-            "Jagatsinghpur Town", "Paradip Port Area", "IOCL Refinery Area", "Kujang", "Tirtol", "Balikuda", "Naugaon", "Erasama"
+        "bhadrak": [
+            "Bhadrak", "Basudevpur", "Chandabali", "Dhamnagar", "Bhandari Pokhari",
+            "Bonth", "Tihidi", "Agarpada", "Charampa", "Randia", "Gelpur", "Kuansh",
+            "Nalanga", "Bant", "Eram", "Dhamra"
+        ],
+        "boudh": [
+            "Boudh", "Kantamal", "Harabhanga", "Manamunda", "Purunakatak", "Tikarpada",
+            "Baunsuni", "Brahmani", "Dhalpur", "Charichhak"
+        ],
+        "deogarh": [
+            "Deogarh", "Barkote", "Reamal", "Tileibani", "Kundheigola", "Kankadahada",
+            "Balam", "Riamal"
         ],
         "dhenkanal": [
-            "Dhenkanal Town", "Bhuban", "Kamakhyanagar", "Hindol", "Gondia", "Odapada", "Kapilash Area"
+            "Dhenkanal", "Kamakhyanagar", "Hindol", "Bhuban", "Gondia", "Parjang",
+            "Odapada", "Kankadahad", "Balimi", "Motanga", "Mahabirod", "Meramandali",
+            "Bhapur", "Tumusinga", "Rasol"
         ],
-        "keonjhar": [
-            "Kendujhar (Keonjhar) Town", "Barbil (Mining City)", "Joda (Mining City)", "Anandapur", "Champua", "Ghashipura",
-            "Telkoi", "Ghatgaon (Maa Tarini)"
+        "gajapati": [
+            "Paralakhemundi", "Kashinagar", "R. Udayagiri", "Mohana", "Gumma",
+            "Nuagada", "Rayagada", "Garabandha", "Adaba", "Serango"
         ],
-        "kendujhar": [
-            "Kendujhar (Keonjhar) Town", "Barbil (Mining City)", "Joda (Mining City)", "Anandapur", "Champua", "Ghashipura",
-            "Telkoi", "Ghatgaon (Maa Tarini)"
+        "ganjam": [
+            "Berhampur", "Chhatrapur", "Gopalpur", "Aska", "Hinjilicut", "Bhanjanagar",
+            "Buguda", "Polasara", "Khallikote", "Purushottampur", "Digapahandi",
+            "Kabisuryanagar", "Kodala", "Rambha", "Chatrapur", "Sheragada",
+            "Sanakhemundi", "Patrapur", "Belaguntha", "Sorada", "Dharakote",
+            "Kukudakhandi", "Rangeilunda", "Lanjipalli", "Gosaninua Gaon",
+            "Engineering School Road", "Gate Bazaar", "Courtpeta", "Kamapalli",
+            "New Bus Stand", "Hillpatna", "Ankuli", "Haladiapadar", "Golanthara"
         ],
-        "koraput": [
-            "Koraput Town", "Jeypore (Commercial City)", "Sunabeda (HAL Area)", "Damanjodi (NALCO Area)", "Kotpad", "Borigumma",
-            "Semiliguda", "Pottangi (Deomali Area)"
+        "berhampur": [
+            "Berhampur", "Chhatrapur", "Gopalpur", "Aska", "Hinjilicut", "Bhanjanagar",
+            "Lanjipalli", "Gosaninua Gaon", "Engineering School Road", "Gate Bazaar",
+            "Courtpeta", "Kamapalli", "New Bus Stand", "Hillpatna", "Ankuli",
+            "Haladiapadar", "Golanthara"
+        ],
+        "jagatsinghpur": [
+            "Jagatsinghpur", "Paradeep", "Kujang", "Balikuda", "Tirtol", "Raghunathpur",
+            "Naugaon", "Biridi", "Ersama", "Paradipgarh", "Atharbanki",
+            "Abhayachandrapur", "Dolipur", "Madhuban", "Badapadia"
+        ],
+        "jajpur": [
+            "Jajpur", "Jajpur Road", "Vyasanagar", "Dharmasala", "Panikoili",
+            "Binjharpur", "Bari", "Rasulpur", "Sukinda", "Korei", "Dasarathpur",
+            "Danagadi", "Chandikhol", "Kalinganagar", "Duburi", "Jakhapura",
+            "Byree", "Mangalpur"
+        ],
+        "jharsuguda": [
+            "Jharsuguda", "Brajarajnagar", "Belpahar", "Lakhanpur", "Laikera",
+            "Kolabira", "Kirimira", "Kirmira", "Bandhbahal", "Orient Area",
+            "Gandhi Chowk", "Sarbahal", "Beheramal", "Station Road", "Sarandamal",
+            "Mangal Bazaar"
+        ],
+        "kalahandi": [
+            "Bhawanipatna", "Dharamgarh", "Junagarh", "Kesinga", "Narla", "Lanjigarh",
+            "Golamunda", "Kalampur", "Kokasara", "Thuamul Rampur", "Jaipatna",
+            "M. Rampur", "Karlamunda", "Madanpur Rampur", "Sadar", "Risida"
+        ],
+        "kandhamal": [
+            "Phulbani", "Baliguda", "G. Udayagiri", "Daringbadi", "Tikabali", "Raikia",
+            "Tumudibandh", "K. Nuagaon", "Chakapad", "Khajuripada", "Phiringia",
+            "Kotagarh", "Brahmanigaon", "Sarangada"
         ],
         "kendrapara": [
-            "Kendrapara Town", "Pattamundai", "Aul", "Rajnagar (Bhitarkanika Gateway)", "Marshaghai", "Derabish", "Mahakalapada"
+            "Kendrapara", "Pattamundai", "Rajkanika", "Aul", "Rajnagar", "Mahakalapada",
+            "Derabish", "Marsaghai", "Garadpur", "Nikirai", "Indupur",
+            "Pattamundai Bazar", "Sanamangala"
+        ],
+        "keonjhar": [
+            "Keonjhar", "Barbil", "Joda", "Anandapur", "Champua", "Ghatgaon", "Patna",
+            "Banspal", "Telkoi", "Hatadihi", "Jhumpura", "Saharpada", "Harichandanpur",
+            "Baria", "Bolani", "Kiriburu Road", "Joda East", "Joda West"
+        ],
+        "kendujhar": [
+            "Keonjhar", "Barbil", "Joda", "Anandapur", "Champua", "Ghatgaon", "Patna",
+            "Banspal", "Telkoi", "Hatadihi", "Jhumpura", "Saharpada", "Harichandanpur",
+            "Baria", "Bolani", "Kiriburu Road", "Joda East", "Joda West"
+        ],
+        "koraput": [
+            "Koraput", "Jeypore", "Sunabeda", "Semiliguda", "Kotpad", "Damanjodi",
+            "Laxmipur", "Nandapur", "Pottangi", "Borrigumma", "Bandhugaon",
+            "Narayanpatna", "Lamtaput", "Machkund", "Deomali", "Kakiriguma", "Dudhari"
+        ],
+        "malkangiri": [
+            "Malkangiri", "Balimela", "Korukonda", "Chitrakonda", "Kalimela", "Mathili",
+            "Khairput", "Podia", "Motu", "MV-79", "Govindapalli", "Panasput"
         ],
         "mayurbhanj": [
-            "Baripada", "Bhanjpur", "Rairangpur", "Karanjia", "Udala", "Similipal National Park Area", "Jashipur", "Betnoti"
+            "Baripada", "Rairangpur", "Karanjia", "Udala", "Betnoti", "Badasahi",
+            "Bangriposi", "Jashipur", "Kaptipada", "Khunta", "Kuliana", "Rasgovindpur",
+            "Bisoi", "Kusumi", "Morada", "Suliapada", "Thakurmunda", "Baripada Town",
+            "Takatpur", "Puruna Baripada"
+        ],
+        "nabarangpur": [
+            "Nabarangpur", "Umerkote", "Dabugam", "Raighar", "Papadahandi", "Jharigam",
+            "Chandahandi", "Nandahandi", "Tentulikhunti", "Kosagumuda", "Kodinga"
+        ],
+        "nayagarh": [
+            "Nayagarh", "Khandapada", "Dasapalla", "Ranpur", "Odagaon", "Nuagaon",
+            "Bhapur", "Gania", "Itamati", "Sarankul", "Dasapalla Town", "Kuanria",
+            "Nayagarh Town"
+        ],
+        "nuapada": [
+            "Nuapada", "Khariar", "Khariar Road", "Sinapali", "Boden", "Komna",
+            "Jonk", "Dharambandha", "Tarbod", "Duajhar", "Sunabeda"
+        ],
+        "puri": [
+            "Puri", "Konark", "Pipili", "Nimapara", "Sakhigopal", "Brahmagiri",
+            "Kakatpur", "Astaranga", "Delanga", "Gop", "Krushnaprasad", "Chandanpur",
+            "Balighai", "Swargadwar", "Grand Road", "Sea Beach", "Chakratirtha Road",
+            "Baliapanda", "VIP Road", "Station Road", "Dolamandap Sahi", "Narendra Kona"
         ],
         "rayagada": [
-            "Rayagada Town", "JK Pur (JK Paper Mill)", "Gunupur", "Muniguda", "Bissam Cuttack", "Padmapur (Rayagada)", "Kashipur"
+            "Rayagada", "Gunupur", "Muniguda", "Bissamcuttack", "Kashipur",
+            "Kalyansinghpur", "Padmapur", "Gudari", "Ramanaguda", "Kolnara",
+            "Chandrapur", "Tikiri", "Ambadola", "Doraguda"
+        ],
+        "sambalpur": [
+            "Sambalpur", "Burla", "Hirakud", "Rengali", "Kuchinda", "Bamra",
+            "Rairakhol", "Naktideul", "Jamankira", "Jujumura", "Dhankauda",
+            "Maneswar", "Ainthapali", "Dhanupali", "Khetrajpur", "Modipara",
+            "Budharaja", "Sakhipara", "Farm Road", "Hirakud Colony", "Burla Town",
+            "Sambalpur University Area"
+        ],
+        "subarnapur": [
+            "Sonepur", "Birmaharajpur", "Tarbha", "Ullunda", "Binika", "Dunguripali",
+            "Rampur", "Binka", "Subalaya", "Sonepur Town", "Sindurpur"
+        ],
+        "sonepur": [
+            "Sonepur", "Birmaharajpur", "Tarbha", "Ullunda", "Binika", "Dunguripali",
+            "Rampur", "Binka", "Subalaya", "Sonepur Town", "Sindurpur"
+        ],
+        "sundargarh": [
+            "Sundargarh", "Rourkela", "Rajgangpur", "Biramitrapur", "Bonai",
+            "Sundargarh Town", "Lathikata", "Kutra", "Koida", "Gurundia", "Hemgir",
+            "Lephripara", "Tangarpali", "Balishankara", "Bisra", "Panposh",
+            "Bondamunda", "Chhend Colony", "Civil Township", "Sector 1", "Sector 2",
+            "Sector 3", "Sector 4", "Sector 5", "Sector 6", "Sector 7", "Sector 8",
+            "Sector 9", "Sector 10", "Sector 13", "Sector 15", "Udit Nagar",
+            "Basanti Colony", "Koel Nagar", "Jagda", "Kalunga", "Fertilizer Township"
+        ],
+        "rourkela": [
+            "Rourkela", "Rajgangpur", "Panposh", "Bondamunda", "Chhend Colony",
+            "Civil Township", "Sector 1", "Sector 2", "Sector 3", "Sector 4",
+            "Sector 5", "Sector 6", "Sector 7", "Sector 8", "Sector 9", "Sector 10",
+            "Sector 13", "Sector 15", "Udit Nagar", "Basanti Colony", "Koel Nagar",
+            "Jagda", "Kalunga", "Fertilizer Township"
         ],
         "south goa": [
             "Agonda", "Ambaulim", "Aquem", "Arossim", "Assolda", "Assolna", "Avedem", "Balli", "Bandora", "Barcem",
