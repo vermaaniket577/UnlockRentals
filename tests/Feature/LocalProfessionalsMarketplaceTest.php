@@ -50,6 +50,18 @@ class LocalProfessionalsMarketplaceTest extends TestCase
     }
 
     /**
+     * Test registration page loads with form.
+     */
+    public function test_registration_page_loads_successfully(): void
+    {
+        $response = $this->get(route('services.register'));
+        $response->assertStatus(200);
+        $response->assertSee('List Your Professional Service — FREE');
+        $response->assertSee('Your Contact Details');
+        $response->assertSee('Your Service Location');
+    }
+
+    /**
      * Test registration validation rejects invalid input.
      */
     public function test_registration_rejects_missing_category_and_invalid_phone(): void
@@ -66,7 +78,7 @@ class LocalProfessionalsMarketplaceTest extends TestCase
             // Missing category_id
         ]);
 
-        $response->assertSessionHasErrors(['category_id', 'phone', 'description']);
+        $response->assertSessionHasErrors(['category_id', 'phone']);
     }
 
     /**

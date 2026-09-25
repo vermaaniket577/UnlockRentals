@@ -32,8 +32,10 @@ class RegisterProfessionalRequest extends FormRequest
             'category_id' => ['required', 'exists:professional_categories,id'],
             'service_ids' => ['nullable', 'array'],
             'service_ids.*' => ['exists:professional_services,id'],
+            'services' => ['nullable', 'array'],
+            'services.*' => ['exists:professional_services,id'],
             'years_experience' => ['required', 'integer', 'min:0', 'max:60'],
-            'description' => ['required', 'string', 'min:20', 'max:3000'],
+            'description' => ['nullable', 'string', 'max:3000'],
 
             // Location
             'state' => ['nullable', 'string', 'max:100'],
@@ -42,7 +44,7 @@ class RegisterProfessionalRequest extends FormRequest
             'locality' => ['nullable', 'string', 'max:150'],
             'pincode' => ['nullable', 'string', 'max:10'],
             'address' => ['nullable', 'string', 'max:500'],
-            'service_radius_km' => ['required', 'integer', 'min:1', 'max:100'],
+            'service_radius_km' => ['nullable', 'integer', 'min:1', 'max:100'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
 

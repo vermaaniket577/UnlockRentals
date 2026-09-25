@@ -112,7 +112,7 @@ class ProfessionalRegistrationController extends Controller
                 'phone' => $request->input('phone'),
                 'whatsapp_number' => $request->input('whatsapp_number') ?: $request->input('phone'),
                 'email' => $request->input('email'),
-                'description' => $request->input('description'),
+                'description' => $request->input('description') ?: ('Verified and experienced ' . ($request->input('business_name') ?: 'professional') . ' with ' . $request->input('years_experience', 5) . '+ years of experience serving ' . $request->input('city') . ' and nearby localities. Prompt doorstep service with customer satisfaction guaranteed.'),
                 'years_experience' => $request->input('years_experience', 0),
                 'starting_price' => $request->input('starting_price'),
                 'price_type' => $request->input('price_type', 'contact'),
@@ -139,8 +139,9 @@ class ProfessionalRegistrationController extends Controller
             ]);
 
             // 5. Sync Selected Services
-            if ($request->has('services') && is_array($request->input('services'))) {
-                $professional->services()->sync($request->input('services'));
+            $selectedServices = $request->input('services') ?? $request->input('service_ids');
+            if (!empty($selectedServices) && is_array($selectedServices)) {
+                $professional->services()->sync($selectedServices);
             }
 
             // 6. Create Primary Service Location
