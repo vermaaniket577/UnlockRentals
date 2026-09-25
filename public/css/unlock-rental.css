@@ -60,8 +60,10 @@ a { text-decoration: none; color: inherit; }
     position: absolute;
     top: 0; left: 0;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     z-index: 100;
-    padding: 20px 48px;
+    padding: 14px 28px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -122,17 +124,19 @@ a { text-decoration: none; color: inherit; }
 }
 .logo-text span { color: var(--primary); }
 
-.main-header .main-nav { display: flex; gap: 28px; align-items: center; }
+.main-header .main-nav { display: flex; gap: 16px; align-items: center; flex-wrap: nowrap; }
 .main-header .nav-link {
-    color: rgba(255,255,255,0.8);
-    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    font-size: 13.5px;
     font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     text-decoration: none;
     position: relative;
+    white-space: nowrap !important;
+    flex-shrink: 0;
 }
 .main-header .nav-link i {
     font-size: 18px;
@@ -153,7 +157,16 @@ a { text-decoration: none; color: inherit; }
     transform: scale(1.15);
 }
 
-.auth-nav { display: flex; gap: 12px; align-items: center; }
+.auth-nav { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+
+@media (min-width: 1024px) and (max-width: 1280px) {
+    .main-header { padding: 10px 16px !important; gap: 12px !important; }
+    .main-header .logo-wrapper { margin-right: 12px !important; }
+    .main-header .main-nav { gap: 12px !important; }
+    .main-header .nav-link { font-size: 13px !important; gap: 5px !important; }
+    .main-header .nav-link i { font-size: 16px !important; }
+    .btn-cta-premium-header { padding: 0 12px !important; font-size: 12.5px !important; height: 38px !important; }
+}
 
 .btn-primary-sm {
     background: var(--primary);

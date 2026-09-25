@@ -576,8 +576,18 @@
             }
         }
         @media (min-width: 1024px) {
+            .main-header {
+                box-sizing: border-box !important;
+                max-width: 100% !important;
+            }
             .main-header .main-nav {
                 display: flex !important;
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+            }
+            .main-header .nav-link {
+                white-space: nowrap !important;
+                flex-shrink: 0 !important;
             }
             .main-header .hamburger {
                 display: none !important;
@@ -590,6 +600,30 @@
             }
             .logo-text .logo-accent {
                 color: #60a5fa !important;
+            }
+        }
+        @media (min-width: 1024px) and (max-width: 1280px) {
+            .main-header {
+                padding: 10px 16px !important;
+                gap: 12px !important;
+            }
+            .main-header .logo-wrapper {
+                margin-right: 12px !important;
+            }
+            .main-header .main-nav {
+                gap: 12px !important;
+            }
+            .main-header .nav-link {
+                font-size: 13px !important;
+                gap: 5px !important;
+            }
+            .main-header .nav-link i {
+                font-size: 16px !important;
+            }
+            .btn-cta-premium-header {
+                padding: 0 12px !important;
+                font-size: 12.5px !important;
+                height: 38px !important;
             }
         }
         @media (max-width: 768px) {
@@ -1002,41 +1036,41 @@
     {{-- Premium Page Loader --}}
     @include('components.page-loader')
 
-    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 24px;">
-        <div class="logo-wrapper" style="flex-shrink: 0; padding-right: 28px; margin-right: 12px;">
+    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; padding: 12px 24px;">
+        <div class="logo-wrapper" style="flex-shrink: 0; margin-right: 20px;">
             <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
                 <div style="width: 34px; height: 34px; border-radius: 9px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
                     <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="34" height="34" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
                 </div>
-                <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important; padding-right: 16px;">Unlock<span class="logo-accent">Rentals</span></span>
+                <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important;">Unlock<span class="logo-accent">Rentals</span></span>
             </a>
         </div>
-        <nav class="main-nav hidden lg:flex">
-            <a href="{{ route('properties.index') }}" class="nav-link" title="Discover">
+        <nav class="main-nav hidden lg:flex" style="display: flex !important; align-items: center !important; gap: 16px !important; flex-shrink: 1;">
+            <a href="{{ route('properties.index') }}" class="nav-link" title="Discover" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-compass"></i>
                 Discover
             </a>
-            <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="nav-link" title="Buy">
+            <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="nav-link" title="Buy" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-shopping-bag"></i>
                 Buy
             </a>
-            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="nav-link" title="Rent">
+            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="nav-link" title="Rent" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-key"></i>
                 Rent
             </a>
-            <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="nav-link" title="Commercial">
+            <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="nav-link" title="Commercial" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-buildings"></i>
                 Commercial
             </a>
-            <a href="{{ route('properties.index', ['type' => 'plot']) }}" class="nav-link" title="Plots / Land">
+            <a href="{{ route('properties.index', ['type' => 'plot']) }}" class="nav-link" title="Plots / Land" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-map-trifold"></i>
-                Plots / Land
+                Plots
             </a>
-            <a href="{{ url('/how-it-works') }}" class="nav-link" title="Process">
+            <a href="{{ url('/how-it-works') }}" class="nav-link" title="Process" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-git-merge"></i>
                 Process
             </a>
-            <a href="{{ url('/blog') }}" class="nav-link" title="Blog">
+            <a href="{{ url('/blog') }}" class="nav-link" title="Blog" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-newspaper"></i>
                 Blog
             </a>
@@ -1045,9 +1079,9 @@
             @if (Route::has('login'))
                 @auth
                     {{-- Desktop Only: Post Ad CTA (hidden on mobile to prevent overlap) --}}
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px; color: #ffffff !important;" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle" style="font-size: 17px; color: #ffffff !important;"></i>
-                        <span style="color: #ffffff !important;">Post Free Advertise</span>
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space: nowrap !important; flex-shrink: 0; padding: 0 16px; height: 40px; align-items: center; gap: 6px; color: #ffffff !important;" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle" style="font-size: 16px; color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important; white-space: nowrap !important;">Post Free Advertise</span>
                     </a>
 
                     {{-- Compact User Account Pill --}}
@@ -1191,9 +1225,9 @@
                         Log in
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space:nowrap; padding: 0 18px; height: 42px; align-items: center; gap: 6px; color: #ffffff !important;" title="Post Free Advertise">
-                            <i class="ph-bold ph-plus-circle" style="font-size: 17px; color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important;">Post Free Advertise</span>
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space: nowrap !important; flex-shrink: 0; padding: 0 16px; height: 40px; align-items: center; gap: 6px; color: #ffffff !important;" title="Post Free Advertise">
+                            <i class="ph-bold ph-plus-circle" style="font-size: 16px; color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important; white-space: nowrap !important;">Post Free Advertise</span>
                         </a>
                     @endif
                 @endauth
