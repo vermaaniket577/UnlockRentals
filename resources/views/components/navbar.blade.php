@@ -4,7 +4,7 @@
         <div class="flex items-center justify-between h-16 lg:h-18 gap-3 xl:gap-6">
 
             {{-- Left Side: Brand Logo --}}
-            <div class="flex-shrink-0">
+            <div class="flex-shrink-0 pr-6 xl:pr-8">
                 <x-brand-logo
                     href="{{ url('/') }}"
                     id="nav-logo"

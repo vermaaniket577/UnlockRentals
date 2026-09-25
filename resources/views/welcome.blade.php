@@ -1002,13 +1002,13 @@
     {{-- Premium Page Loader --}}
     @include('components.page-loader')
 
-    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%;">
-        <div class="logo-wrapper" style="flex-shrink: 0;">
+    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 24px;">
+        <div class="logo-wrapper" style="flex-shrink: 0; padding-right: 28px; margin-right: 12px;">
             <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
                 <div style="width: 34px; height: 34px; border-radius: 9px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
                     <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="34" height="34" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
                 </div>
-                <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important;">Unlock<span class="logo-accent">Rentals</span></span>
+                <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important; padding-right: 16px;">Unlock<span class="logo-accent">Rentals</span></span>
             </a>
         </div>
         <nav class="main-nav hidden lg:flex">
