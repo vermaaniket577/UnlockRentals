@@ -43,14 +43,20 @@
             }
         }
 
+        let lastCheckTime = 0;
+        const MIN_CHECK_INTERVAL_MS = 90000; // 90 seconds minimum throttle
+
         window.checkLatestPushNotification = async function() {
-            if (isFetching) return;
+            if (isFetching || (document.hidden && document.visibilityState !== 'visible')) return;
+            const now = Date.now();
+            if (lastCheckTime && (now - lastCheckTime < MIN_CHECK_INTERVAL_MS)) return;
+            lastCheckTime = now;
             isFetching = true;
 
             try {
                 const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
                 const deviceParam = isMobile ? 'app' : 'web';
-                const res = await fetch(`/api/push/latest?device=${deviceParam}&t=${Date.now()}`, {
+                const res = await fetch(`/api/push/latest?device=${deviceParam}`, {
                     headers: { 'Accept': 'application/json' }
                 });
                 if (!res.ok) return;
@@ -185,10 +191,14 @@
             setTimeout(window.checkLatestPushNotification, 1200);
         }
 
-        // 2. Periodic polling every 20 seconds for instant notification delivery without refresh
-        setInterval(window.checkLatestPushNotification, 20000);
+        // 2. Periodic polling every 3 minutes (only if tab is actively visible)
+        setInterval(() => {
+            if (!document.hidden && document.visibilityState === 'visible') {
+                window.checkLatestPushNotification();
+            }
+        }, 180000);
 
-        // 3. Trigger check immediately when user switches back to window or unlocks phone
+        // 3. Trigger check when user switches back to window (throttled)
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 window.checkLatestPushNotification();
