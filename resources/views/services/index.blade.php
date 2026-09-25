@@ -230,7 +230,7 @@
                         </div>
                         <h4 class="text-xs font-black mb-1">Are you a Professional?</h4>
                         <p class="text-[11px] text-blue-100 mb-3">Join UnlockRentals today. Build your profile and get direct customer inquiries for FREE.</p>
-                        <a href="{{ route('services.register') }}" class="block w-full py-2 px-3 bg-white text-blue-600 hover:bg-blue-50 text-xs font-black rounded-lg shadow-sm transition-all">
+                        <a href="{{ route('services.register') }}" class="block w-full py-2.5 px-3 bg-white text-blue-600 hover:bg-blue-50 text-xs font-black rounded-lg shadow-sm transition-all" style="color: #2563eb !important; -webkit-text-fill-color: #2563eb !important; background-color: #ffffff !important;">
                             List Your Service FREE
                         </a>
                     </div>

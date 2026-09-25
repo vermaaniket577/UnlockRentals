@@ -83,9 +83,9 @@
                 </div>
 
                 <div class="flex-shrink-0">
-                    <a href="{{ route('services.register') }}" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white text-blue-700 hover:bg-blue-50 font-black text-xs sm:text-sm shadow-lg shadow-black/10 transition-all hover:scale-105 active:scale-95 whitespace-nowrap">
-                        <i class="ph-bold ph-identification-card text-base"></i>
-                        <span>List Your Service FREE</span>
+                    <a href="{{ route('services.register') }}" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white text-blue-700 hover:bg-blue-50 font-black text-xs sm:text-sm shadow-lg shadow-black/10 transition-all hover:scale-105 active:scale-95 whitespace-nowrap" style="color: #1d4ed8 !important; -webkit-text-fill-color: #1d4ed8 !important; background-color: #ffffff !important;">
+                        <i class="ph-bold ph-identification-card text-base" style="color: #1d4ed8 !important; -webkit-text-fill-color: #1d4ed8 !important;"></i>
+                        <span style="color: #1d4ed8 !important; -webkit-text-fill-color: #1d4ed8 !important;">List Your Service FREE</span>
                     </a>
                 </div>
             </div>

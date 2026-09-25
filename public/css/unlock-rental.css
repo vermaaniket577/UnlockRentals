@@ -2813,4 +2813,38 @@ a[title="Sign In to View"] * {
     -webkit-text-fill-color: #ffffff !important;
 }
 
+/* White buttons inside colored gradient containers must retain their text color */
+.bg-white,
+a.bg-white,
+button.bg-white,
+a[class*="bg-white"],
+button[class*="bg-white"],
+.bg-white *,
+a.bg-white *,
+button.bg-white *,
+a[class*="bg-white"] *,
+button[class*="bg-white"] * {
+    -webkit-text-fill-color: initial !important;
+}
+
+a.bg-white,
+button.bg-white,
+a[class*="bg-white"],
+button[class*="bg-white"] {
+    color: #2563eb !important;
+    -webkit-text-fill-color: #2563eb !important;
+}
+
+a[class*="bg-white"][class*="text-blue-600"],
+a[class*="bg-white"][class*="text-blue-600"] * {
+    color: #2563eb !important;
+    -webkit-text-fill-color: #2563eb !important;
+}
+
+a[class*="bg-white"][class*="text-blue-700"],
+a[class*="bg-white"][class*="text-blue-700"] * {
+    color: #1d4ed8 !important;
+    -webkit-text-fill-color: #1d4ed8 !important;
+}
+
 
