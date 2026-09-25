@@ -21,8 +21,43 @@
         <loc>{{ $baseUrl }}/properties</loc>
         <lastmod>{{ now()->tz('UTC')->toAtomString() }}</lastmod>
         <changefreq>daily</changefreq>
+    </url>
+
+    {{-- Local Professionals & Home Services Directory --}}
+    <url>
+        <loc>{{ $baseUrl }}/services</loc>
+        <lastmod>{{ now()->tz('UTC')->toAtomString() }}</lastmod>
+        <changefreq>daily</changefreq>
         <priority>0.95</priority>
     </url>
+    <url>
+        <loc>{{ $baseUrl }}/services/register</loc>
+        <lastmod>{{ now()->tz('UTC')->toAtomString() }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.85</priority>
+    </url>
+
+    @if(isset($professionalCategories))
+        @foreach($professionalCategories as $pCat)
+            <url>
+                <loc>{{ $baseUrl }}/services/{{ $pCat->slug }}</loc>
+                <lastmod>{{ $pCat->updated_at ? $pCat->updated_at->tz('UTC')->toAtomString() : now()->tz('UTC')->toAtomString() }}</lastmod>
+                <changefreq>weekly</changefreq>
+                <priority>0.85</priority>
+            </url>
+        @endforeach
+    @endif
+
+    @if(isset($approvedProfessionals))
+        @foreach($approvedProfessionals as $prof)
+            <url>
+                <loc>{{ $baseUrl }}/services/{{ $prof->category->slug }}/{{ \Illuminate\Support\Str::slug($prof->city ?: 'india') }}/{{ $prof->slug }}</loc>
+                <lastmod>{{ $prof->updated_at ? $prof->updated_at->tz('UTC')->toAtomString() : now()->tz('UTC')->toAtomString() }}</lastmod>
+                <changefreq>weekly</changefreq>
+                <priority>0.80</priority>
+            </url>
+        @endforeach
+    @endif
 
     {{-- Post Free Advertise --}}
     <url>

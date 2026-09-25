@@ -37,6 +37,10 @@
                     <i class="ph-bold ph-buildings text-sm xl:text-base text-blue-600"></i>
                     <span>Commercial</span>
                 </a>
+                <a href="{{ route('services.index') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('services*') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20 text-blue-600' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-local-professionals" title="Local Professionals">
+                    <i class="ph-bold ph-toolbox text-sm xl:text-base text-blue-600"></i>
+                    <span>Local Professionals</span>
+                </a>
                 <a href="{{ url('/how-it-works') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('how-it-works') || request()->is('process') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-process" title="Process">
                     <i class="ph-bold ph-git-merge text-sm xl:text-base text-blue-600"></i>
                     <span>Process</span>
@@ -216,6 +220,21 @@
                                 <a href="#" onclick="event.preventDefault(); window.closeUserDropdown(); window.openProfileModal();" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-profile-settings" title="Profile Settings">
                                     <i class="ph-bold ph-user-gear text-base text-blue-600"></i>
                                     <span>Profile Settings</span>
+                                </a>
+                                @if(auth()->user()->isProfessional())
+                                <a href="{{ route('professional.dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-prof-portal" title="Professional Dashboard">
+                                    <i class="ph-bold ph-toolbox text-base text-amber-500"></i>
+                                    <span>Professional Portal</span>
+                                </a>
+                                @else
+                                <a href="{{ route('services.register') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-prof-reg" title="List Your Service FREE">
+                                    <i class="ph-bold ph-identification-card text-base text-emerald-500"></i>
+                                    <span>List Your Service FREE</span>
+                                </a>
+                                @endif
+                                <a href="{{ route('services.my-requests') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-cust-requests" title="My Service Requests">
+                                    <i class="ph-bold ph-clipboard-text text-base text-blue-600"></i>
+                                    <span>My Service Requests</span>
                                 </a>
                                 @if(auth()->user()->isOwner())
                                 <a href="{{ route('inquiries.index') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-inquiries" title="Inquiries">

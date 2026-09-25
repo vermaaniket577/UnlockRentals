@@ -317,6 +317,38 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is a registered local professional.
+     */
+    public function isProfessional(): bool
+    {
+        return $this->role === 'professional' || $this->professional()->exists();
+    }
+
+    /**
+     * Professional profile if user is a service provider.
+     */
+    public function professional(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Professional::class);
+    }
+
+    /**
+     * Service requests submitted by this customer.
+     */
+    public function serviceRequests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ServiceRequest::class);
+    }
+
+    /**
+     * Saved / favorite professionals by this user.
+     */
+    public function favoriteProfessionals(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Professional::class, 'professional_favorites')->withTimestamps();
+    }
+
+    /**
      * Check if user has CRM management access.
      */
     public function isCrmStaff(): bool

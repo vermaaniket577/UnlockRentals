@@ -2670,6 +2670,9 @@
     {{-- Why Choose Us Section --}}
     @include('components.why-choose-us')
 
+    {{-- Local Professionals & Home Services Marketplace --}}
+    @include('components.home-professionals')
+
     {{-- How It Works Section --}}
     @include('components.how-it-works')
 

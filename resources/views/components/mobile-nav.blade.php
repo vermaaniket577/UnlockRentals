@@ -60,14 +60,16 @@
             </a>
         @endauth
 
-        {{-- Support Tab (Triggers Chatbot) --}}
-        <button type="button" onclick="handleMobileSupportClick(event)" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium cursor-pointer" id="mobile-support-nav-btn" data-chat-trigger="true" title="Support" aria-label="Help and Support">
+        {{-- Services Tab (Local Professionals) --}}
+        <a href="{{ route('services.index') }}" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 {{ request()->is('services*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium' }}" title="Services" aria-label="Services">
             <div class="relative flex items-center justify-center">
-                <i class="ph-bold ph-chats-circle text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
-                <span class="absolute -top-0.5 -right-1 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-950"></span>
+                <i class="{{ request()->is('services*') ? 'ph-fill ph-toolbox' : 'ph-bold ph-toolbox' }} text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
+                @if(request()->is('services*'))
+                    <span class="absolute -bottom-1.5 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
+                @endif
             </div>
-            <span class="text-[10px] tracking-tight mt-1">Support</span>
-        </button>
+            <span class="text-[10px] tracking-tight mt-1">Services</span>
+        </a>
 
     </div>
 </nav>

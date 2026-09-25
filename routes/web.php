@@ -12,6 +12,11 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\ProfessionalController;
+use App\Http\Controllers\ProfessionalRegistrationController;
+use App\Http\Controllers\ProfessionalDashboardController;
+use App\Http\Controllers\ServiceRequestController;
+use App\Http\Controllers\Admin\AdminProfessionalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -230,12 +235,18 @@ Route::get('/sitemap.xml', function () {
     // Curated blogs from database
     $blogs = \Illuminate\Support\Facades\Schema::hasTable('blogs') ? \App\Models\Blog::published()->latest('updated_at')->get() : collect();
 
+    // Professional categories and public approved professionals
+    $professionalCategories = \App\Models\ProfessionalCategory::active()->get();
+    $approvedProfessionals = \App\Models\Professional::approved()->with('category')->latest('updated_at')->take(200)->get();
+
     $baseUrl = rtrim(config('app.url', 'https://www.unlockrentals.com'), '/');
 
     return response()->view('sitemap', [
         'properties' => $properties,
         'programmaticUrls' => $programmaticUrls,
         'blogs' => $blogs,
+        'professionalCategories' => $professionalCategories,
+        'approvedProfessionals' => $approvedProfessionals,
         'baseUrl' => $baseUrl
     ])->header('Content-Type', 'application/xml; charset=UTF-8')
       ->header('Cache-Control', 'public, max-age=3600');
@@ -579,6 +590,33 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::match(['delete', 'post'], '/{id}', [\App\Http\Controllers\Admin\PushNotificationController::class, 'destroy'])->name('destroy');
         Route::get('/{id}/delete', [\App\Http\Controllers\Admin\PushNotificationController::class, 'destroy'])->name('destroy.get');
         Route::get('/{id}', [\App\Http\Controllers\Admin\PushNotificationController::class, 'show'])->name('show');
+    });
+
+    // Local Professionals & Home Services Marketplace CRM
+    Route::prefix('professionals')->name('professionals.')->group(function () {
+        Route::get('/', [AdminProfessionalController::class, 'index'])->name('index');
+        Route::get('/dashboard', [AdminProfessionalController::class, 'dashboard'])->name('dashboard');
+        Route::get('/categories', [AdminProfessionalController::class, 'categories'])->name('categories');
+        Route::post('/categories', [AdminProfessionalController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{category}', [AdminProfessionalController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{category}', [AdminProfessionalController::class, 'destroyCategory'])->name('categories.destroy');
+        Route::get('/services', [AdminProfessionalController::class, 'services'])->name('services');
+        Route::post('/services', [AdminProfessionalController::class, 'storeService'])->name('services.store');
+        Route::delete('/services/{service}', [AdminProfessionalController::class, 'destroyService'])->name('services.destroy');
+        Route::get('/leads', [AdminProfessionalController::class, 'leads'])->name('leads');
+        Route::get('/reviews', [AdminProfessionalController::class, 'reviews'])->name('reviews');
+        Route::post('/reviews/{review}/moderate', [AdminProfessionalController::class, 'moderateReview'])->name('reviews.moderate');
+        Route::get('/reports', [AdminProfessionalController::class, 'reports'])->name('reports');
+        Route::post('/reports/{report}/resolve', [AdminProfessionalController::class, 'resolveReport'])->name('reports.resolve');
+        Route::post('/bulk-action', [AdminProfessionalController::class, 'bulkAction'])->name('bulk-action');
+        Route::get('/{professional}', [AdminProfessionalController::class, 'show'])->name('show');
+        Route::post('/{professional}/approve', [AdminProfessionalController::class, 'approve'])->name('approve');
+        Route::post('/{professional}/reject', [AdminProfessionalController::class, 'reject'])->name('reject');
+        Route::post('/{professional}/toggle-verify', [AdminProfessionalController::class, 'toggleVerification'])->name('toggle-verify');
+        Route::post('/{professional}/toggle-featured', [AdminProfessionalController::class, 'toggleFeatured'])->name('toggle-featured');
+        Route::post('/{professional}/suspend', [AdminProfessionalController::class, 'suspend'])->name('suspend');
+        Route::get('/documents/{document}/download', [AdminProfessionalController::class, 'downloadDocument'])->name('documents.download');
+        Route::post('/documents/{document}/verify', [AdminProfessionalController::class, 'verifyDocument'])->name('documents.verify');
     });
 });
 
@@ -948,5 +986,60 @@ Route::get('/js/visitor-tracker.js', function () {
     return response('/* visitor-tracker.js */', 200, ['Content-Type' => 'application/javascript']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Local Professionals & Home Services Marketplace Routes
+|--------------------------------------------------------------------------
+*/
+
+// Free Professional Registration
+Route::get('/services/register', [ProfessionalRegistrationController::class, 'showRegistrationForm'])->name('services.register');
+Route::post('/services/register', [ProfessionalRegistrationController::class, 'register'])->name('services.register.submit');
+
+// AJAX sub-services by category
+Route::get('/services/categories/{category}/services', [ProfessionalController::class, 'getServicesByCategory'])->name('services.by-category');
+
+// Customer Service Request Submission & History
+Route::post('/services/request', [ServiceRequestController::class, 'store'])->name('services.request.submit');
+Route::get('/my-service-requests', [ServiceRequestController::class, 'myRequests'])->middleware('auth')->name('services.my-requests');
+
+// Professional Portal Dashboard & Management
+Route::middleware(['auth'])->prefix('professional')->name('professional.')->group(function () {
+    Route::get('/dashboard', [ProfessionalDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/leads', [ProfessionalDashboardController::class, 'leads'])->name('leads');
+    Route::post('/leads/{lead}/status', [ProfessionalDashboardController::class, 'updateLeadStatus'])->name('leads.status');
+    Route::get('/profile', [ProfessionalDashboardController::class, 'profile'])->name('profile');
+    Route::post('/profile', [ProfessionalDashboardController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/services', [ProfessionalDashboardController::class, 'services'])->name('services');
+    Route::post('/services', [ProfessionalDashboardController::class, 'updateServices'])->name('services.update');
+    Route::get('/locations', [ProfessionalDashboardController::class, 'locations'])->name('locations');
+    Route::post('/locations', [ProfessionalDashboardController::class, 'storeLocation'])->name('locations.store');
+    Route::delete('/locations/{location}', [ProfessionalDashboardController::class, 'destroyLocation'])->name('locations.destroy');
+    Route::get('/photos', [ProfessionalDashboardController::class, 'photos'])->name('photos');
+    Route::post('/photos', [ProfessionalDashboardController::class, 'storePhoto'])->name('photos.store');
+    Route::delete('/photos/{photo}', [ProfessionalDashboardController::class, 'destroyPhoto'])->name('photos.destroy');
+    Route::get('/documents', [ProfessionalDashboardController::class, 'documents'])->name('documents');
+    Route::post('/documents', [ProfessionalDashboardController::class, 'storeDocument'])->name('documents.store');
+    Route::get('/availability', [ProfessionalDashboardController::class, 'availability'])->name('availability');
+    Route::post('/availability', [ProfessionalDashboardController::class, 'updateAvailability'])->name('availability.update');
+});
+
+// Guarded private document download
+Route::get('/documents/professionals/{document}/download', [ProfessionalDashboardController::class, 'downloadPrivateDocument'])->middleware('auth')->name('professionals.documents.download');
+
+// Contact Tracking, Reviews, Reports & Favorites
+Route::match(['get', 'post'], '/professionals/{professional}/click/{type}', [ProfessionalController::class, 'trackClick'])->name('professionals.click');
+Route::post('/professionals/{professional}/review', [ProfessionalController::class, 'submitReview'])->middleware('auth')->name('professionals.review');
+Route::post('/professionals/{professional}/report', [ProfessionalController::class, 'submitReport'])->name('professionals.report');
+Route::post('/professionals/{professional}/favorite', [ProfessionalController::class, 'toggleFavorite'])->name('professionals.favorite');
+
+// Public Marketplace Search & Discovery
+Route::get('/services', [ProfessionalController::class, 'index'])->name('services.index');
+Route::get('/services/{category}', [ProfessionalController::class, 'category'])->name('services.category');
+Route::get('/services/{category}/{city}', [ProfessionalController::class, 'city'])->name('services.city');
+Route::get('/services/{category}/{city}/{locality}', [ProfessionalController::class, 'locality'])->name('services.locality');
+Route::get('/services/{category}/{city}/{slug}', [ProfessionalController::class, 'show'])->name('services.show');
+
 // Dynamic Catch-All Route for Programmatic SEO Pages
 Route::get('/{seo_slug}', [\App\Http\Controllers\SeoController::class, 'handle'])->name('seo.landing');
+

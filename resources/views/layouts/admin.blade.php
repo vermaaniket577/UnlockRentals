@@ -288,6 +288,93 @@
                     </a>
                 </div>
 
+                {{-- Group: Local Professionals & Home Services CRM --}}
+                <div class="space-y-1">
+                    <div class="sidebar-group-title">
+                        <span class="px-3 text-[10px] font-extrabold text-amber-400 uppercase tracking-widest block">Local Professionals</span>
+                    </div>
+                    <div class="sidebar-mini-divider"></div>
+
+                    <a href="{{ route('admin.professionals.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.dashboard') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Professionals Dashboard">
+                        <div class="sidebar-icon-box">
+                            <i class="ph-bold ph-toolbox text-base text-amber-400"></i>
+                        </div>
+                        <span class="sidebar-item-label">Services Dashboard</span>
+                    </a>
+
+                    <a href="{{ route('admin.professionals.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.index') || request()->routeIs('admin.professionals.show') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="All Professionals">
+                        <div class="flex items-center gap-3">
+                            <div class="sidebar-icon-box">
+                                <i class="ph-bold ph-identification-card text-base"></i>
+                            </div>
+                            <span class="sidebar-item-label">All Professionals</span>
+                        </div>
+                        @php
+                            try {
+                                $pendingProfCount = \App\Models\Professional::where('status', 'pending')->count();
+                            } catch (\Throwable $e) {
+                                $pendingProfCount = 0;
+                            }
+                        @endphp
+                        @if($pendingProfCount > 0)
+                            <span class="sidebar-badge-count bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">{{ $pendingProfCount }}</span>
+                            <span class="sidebar-mini-dot bg-amber-400 animate-pulse"></span>
+                        @endif
+                    </a>
+
+                    <a href="{{ route('admin.professionals.categories') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.categories') || request()->routeIs('admin.professionals.services') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Categories & Services">
+                        <div class="sidebar-icon-box">
+                            <i class="ph-bold ph-squares-four text-base"></i>
+                        </div>
+                        <span class="sidebar-item-label">Categories & Services</span>
+                    </a>
+
+                    <a href="{{ route('admin.professionals.leads') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.leads') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Service Leads CRM">
+                        <div class="sidebar-icon-box">
+                            <i class="ph-bold ph-funnel text-base"></i>
+                        </div>
+                        <span class="sidebar-item-label">Service Leads</span>
+                    </a>
+
+                    <a href="{{ route('admin.professionals.reviews') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.reviews') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Review Moderation">
+                        <div class="flex items-center gap-3">
+                            <div class="sidebar-icon-box">
+                                <i class="ph-bold ph-star text-base text-amber-400"></i>
+                            </div>
+                            <span class="sidebar-item-label">Review Moderation</span>
+                        </div>
+                        @php
+                            try {
+                                $pendingReviewCount = \App\Models\ProfessionalReview::where('status', 'pending')->count();
+                            } catch (\Throwable $e) {
+                                $pendingReviewCount = 0;
+                            }
+                        @endphp
+                        @if($pendingReviewCount > 0)
+                            <span class="sidebar-badge-count bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">{{ $pendingReviewCount }}</span>
+                        @endif
+                    </a>
+
+                    <a href="{{ route('admin.professionals.reports') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.reports') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Fraud & Abuse Reports">
+                        <div class="flex items-center gap-3">
+                            <div class="sidebar-icon-box">
+                                <i class="ph-bold ph-shield-warning text-base text-rose-400"></i>
+                            </div>
+                            <span class="sidebar-item-label">Fraud Reports</span>
+                        </div>
+                        @php
+                            try {
+                                $pendingReportCount = \App\Models\ProfessionalReport::where('status', 'pending')->count();
+                            } catch (\Throwable $e) {
+                                $pendingReportCount = 0;
+                            }
+                        @endphp
+                        @if($pendingReportCount > 0)
+                            <span class="sidebar-badge-count bg-rose-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">{{ $pendingReportCount }}</span>
+                        @endif
+                    </a>
+                </div>
+
                 {{-- Group 2: CRM & Leads --}}
                 <div class="space-y-1">
                     <div class="sidebar-group-title">

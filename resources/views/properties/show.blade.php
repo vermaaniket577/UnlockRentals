@@ -1032,6 +1032,37 @@
             </div>
         </div>
 
+        {{-- Need Help With Your New Home? Local Professionals Widget --}}
+        <div class="mt-12 bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-bold uppercase tracking-wider mb-2">
+                        <i class="ph-bold ph-toolbox"></i> Home Services & Maintenance
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black text-white">Need Help With Your New Home?</h2>
+                    <p class="text-xs sm:text-sm text-blue-100/80 mt-1 max-w-xl">
+                        Moving into this property? Connect with trusted, verified local professionals in {{ $property->locality ?? $property->location }}.
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mt-4">
+                        @foreach(['Electrician', 'Plumber', 'Carpenter', 'Painter', 'CCTV', 'Laundry', 'Driver', 'Security Guard'] as $sName)
+                            <a href="{{ route('services.index', ['category' => Str::slug($sName), 'location' => $property->city ?? $property->locality]) }}" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-xs transition-colors">
+                                {{ $sName }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="flex-shrink-0">
+                    <a href="{{ route('services.index', ['location' => $property->city ?? $property->locality]) }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 whitespace-nowrap">
+                        <span>Find Local Professionals</span>
+                        <i class="ph ph-arrow-right text-sm"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="absolute -right-10 -bottom-10 w-60 h-60 rounded-full bg-blue-500/10 blur-2xl pointer-events-none"></div>
+        </div>
+
         {{-- Similar Properties (Flipkart Product Cards Style Redesign) --}}
         @if($similarProperties->count() > 0)
         <div class="mt-16" id="similar-properties">

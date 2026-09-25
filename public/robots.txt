@@ -6,6 +6,8 @@ Allow: /properties
 Allow: /property/
 Allow: /blog
 Allow: /how-it-works
+Allow: /services
+Allow: /services/
 Allow: /favicon.ico
 Allow: /favicon.png
 Allow: /favicon-*.png
@@ -60,6 +62,9 @@ Allow: /images/
 User-agent: *
 Disallow: /admin/
 Disallow: /dashboard/
+Disallow: /professional/
+Disallow: /documents/
+Disallow: /my-service-requests
 Disallow: /inquiries/
 Disallow: /login
 Disallow: /register
