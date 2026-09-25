@@ -159,13 +159,13 @@ a { text-decoration: none; color: inherit; }
 
 .auth-nav { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
 
-@media (min-width: 1024px) and (max-width: 1280px) {
-    .main-header { padding: 10px 16px !important; gap: 12px !important; }
-    .main-header .logo-wrapper { margin-right: 12px !important; }
-    .main-header .main-nav { gap: 12px !important; }
-    .main-header .nav-link { font-size: 13px !important; gap: 5px !important; }
-    .main-header .nav-link i { font-size: 16px !important; }
-    .btn-cta-premium-header { padding: 0 12px !important; font-size: 12.5px !important; height: 38px !important; }
+@media (min-width: 1024px) and (max-width: 1320px) {
+    .main-header { padding: 10px 14px !important; gap: 8px !important; }
+    .main-header .logo-wrapper { margin-right: 8px !important; }
+    .main-header .main-nav { gap: 8px !important; }
+    .main-header .nav-link { font-size: 12.5px !important; gap: 4px !important; }
+    .main-header .nav-link i { font-size: 15px !important; }
+    .btn-cta-premium-header { padding: 0 12px !important; font-size: 12px !important; height: 38px !important; }
 }
 
 .btn-primary-sm {

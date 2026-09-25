@@ -602,27 +602,27 @@
                 color: #60a5fa !important;
             }
         }
-        @media (min-width: 1024px) and (max-width: 1280px) {
+        @media (min-width: 1024px) and (max-width: 1320px) {
             .main-header {
-                padding: 10px 16px !important;
-                gap: 12px !important;
+                padding: 10px 14px !important;
+                gap: 8px !important;
             }
             .main-header .logo-wrapper {
-                margin-right: 12px !important;
+                margin-right: 8px !important;
             }
             .main-header .main-nav {
-                gap: 12px !important;
+                gap: 8px !important;
             }
             .main-header .nav-link {
-                font-size: 13px !important;
-                gap: 5px !important;
+                font-size: 12.5px !important;
+                gap: 4px !important;
             }
             .main-header .nav-link i {
-                font-size: 16px !important;
+                font-size: 15px !important;
             }
             .btn-cta-premium-header {
                 padding: 0 12px !important;
-                font-size: 12.5px !important;
+                font-size: 12px !important;
                 height: 38px !important;
             }
         }
@@ -1066,6 +1066,10 @@
                 <i class="ph-bold ph-map-trifold"></i>
                 Plots
             </a>
+            <a href="{{ route('services.index') }}" class="nav-link" title="Local Professionals" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
+                <i class="ph-bold ph-toolbox"></i>
+                Local Professionals
+            </a>
             <a href="{{ url('/how-it-works') }}" class="nav-link" title="Process" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-git-merge"></i>
                 Process
@@ -1326,6 +1330,12 @@
                     <i class="ph-bold ph-map-trifold text-base" style="color: #d97706;"></i>
                 </span>
                 <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Plots / Land</span>
+            </a>
+            <a href="{{ route('services.index') }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Local Professionals">
+                <span style="width: 34px; height: 34px; border-radius: 10px; background: #eff6ff; color: #2563EB; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph-bold ph-toolbox text-base" style="color: #2563EB;"></i>
+                </span>
+                <span style="font-size: 15px; font-weight: 700; color: #0f172a !important;">Local Professionals</span>
             </a>
             <a href="{{ url('/how-it-works') }}" class="mobile-nav-link" style="display: flex !important; align-items: center !important; gap: 12px !important; padding: 10px 12px !important; border-radius: 12px !important; background: transparent !important; color: #0f172a !important; text-decoration: none !important; border: none !important;" title="Process">
                 <span style="width: 34px; height: 34px; border-radius: 10px; background: #faf5ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">

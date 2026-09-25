@@ -385,6 +385,12 @@
                         </span>
                         <span>Commercial & Shops</span>
                     </a>
+                    <a href="{{ route('services.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->is('services*') ? 'bg-blue-50 text-blue-600 font-bold' : 'text-slate-700 hover:bg-slate-50' }}">
+                        <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-toolbox text-base"></i>
+                        </span>
+                        <span>Local Professionals</span>
+                    </a>
                     <a href="{{ url('/how-it-works') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-700 hover:bg-slate-50">
                         <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
                             <i class="ph-bold ph-git-merge text-base"></i>
