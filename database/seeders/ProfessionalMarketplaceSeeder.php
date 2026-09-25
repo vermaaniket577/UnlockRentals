@@ -17,7 +17,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Electrician',
                 'slug' => 'electrician',
-                'icon' => 'ph-lightning',
+                'icon' => 'ph-bold ph-lightning',
                 'short_description' => 'Certified electricians for fan, wiring, switch, MCB, inverter & emergency electrical repair.',
                 'description' => 'Connect with trusted and verified local electricians for all your home, office, and apartment electrical requirements. From emergency short-circuit repairs to full house rewiring and appliance installations.',
                 'seo_title' => 'Electricians Near Me | Best Local Electricians & Electrical Services - UnlockRentals',
@@ -39,7 +39,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Plumber',
                 'slug' => 'plumber',
-                'icon' => 'ph-drop',
+                'icon' => 'ph-bold ph-drop',
                 'short_description' => 'Expert plumbers for tap repair, pipe leakages, bathroom fittings & water tank cleaning.',
                 'description' => 'Hire top-rated plumbers in your locality for quick leak fixes, toilet installations, drainage unblocking, sanitary fittings, and water motor connections.',
                 'seo_title' => 'Plumbers Near Me | Local Plumbing Services & Repair - UnlockRentals',
@@ -60,7 +60,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Carpenter',
                 'slug' => 'carpenter',
-                'icon' => 'ph-hammer',
+                'icon' => 'ph-bold ph-hammer',
                 'short_description' => 'Skilled carpenters for furniture repair, modular kitchens, door fittings & custom woodwork.',
                 'description' => 'Find skilled local carpenters for custom wood crafting, door lock repairs, bed assembly, cupboard adjustments, modular kitchen fittings, and termite damage restoration.',
                 'seo_title' => 'Carpenters Near Me | Local Carpentry & Furniture Repair - UnlockRentals',
@@ -81,7 +81,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Painter',
                 'slug' => 'painter',
-                'icon' => 'ph-paint-brush',
+                'icon' => 'ph-bold ph-paint-brush',
                 'short_description' => 'Professional house painters for interior, exterior, texture painting & waterproofing.',
                 'description' => 'Give your home, rental apartment, or office a fresh look with verified professional painters. Offering interior wall painting, exterior weatherproof coating, and damp proofing.',
                 'seo_title' => 'Painters Near Me | Professional House Painting & Whitewash - UnlockRentals',
@@ -102,7 +102,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'CCTV Professional',
                 'slug' => 'cctv-professional',
-                'icon' => 'ph-video-camera',
+                'icon' => 'ph-bold ph-video-camera',
                 'short_description' => 'CCTV camera installation, DVR/NVR configuration & security surveillance maintenance.',
                 'description' => 'Secure your residential property, PG, shop, or commercial office with certified CCTV camera technicians. Expert setup of dome cameras, bullet cameras, and mobile remote monitoring.',
                 'seo_title' => 'CCTV Installation Near Me | Security Camera Services - UnlockRentals',
@@ -122,7 +122,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'IT Professional',
                 'slug' => 'it-professional',
-                'icon' => 'ph-laptop',
+                'icon' => 'ph-bold ph-laptop',
                 'short_description' => 'IT support, computer repair, WiFi router setup, printer troubleshooting & data recovery.',
                 'description' => 'Get fast doorstep and remote IT technical assistance for laptop repair, desktop troubleshooting, home office network setup, virus removal, and smart home device connectivity.',
                 'seo_title' => 'IT Support & Computer Repair Near Me - UnlockRentals',
@@ -142,7 +142,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Labour',
                 'slug' => 'labour',
-                'icon' => 'ph-hard-hat',
+                'icon' => 'ph-bold ph-hard-hat',
                 'short_description' => 'Daily wage helpers, shifting labour, construction helpers & property maintenance labour.',
                 'description' => 'Book reliable and hardworking daily labour helpers for home shifting, furniture loading/unloading, construction work, debris clearing, garden maintenance, and general manual work.',
                 'seo_title' => 'Daily Labour Near Me | Shifting & Construction Helpers - UnlockRentals',
@@ -161,7 +161,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Mason',
                 'slug' => 'mason',
-                'icon' => 'ph-wall',
+                'icon' => 'ph-bold ph-wall',
                 'short_description' => 'Expert masons (mistri) for brickwork, plastering, tile fitting & concrete repairs.',
                 'description' => 'Experienced masons (raj mistri) for floor tile installation, wall plastering, bathroom remodeling, boundary wall construction, and cracks restoration.',
                 'seo_title' => 'Masons Near Me | Raj Mistri & Tile Fitting Services - UnlockRentals',
@@ -180,7 +180,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Mechanic',
                 'slug' => 'mechanic',
-                'icon' => 'ph-wrench',
+                'icon' => 'ph-bold ph-wrench',
                 'short_description' => 'Doorstep automobile mechanics for 2-wheeler & 4-wheeler repair, servicing & breakdown help.',
                 'description' => 'Find verified mobile vehicle mechanics for on-the-spot puncture repair, battery jump-start, oil changes, brake adjustments, and emergency roadside breakdown assistance.',
                 'seo_title' => 'Mechanics Near Me | Two & Four Wheeler Repair - UnlockRentals',
@@ -199,7 +199,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Driver',
                 'slug' => 'driver',
-                'icon' => 'ph-steering-wheel',
+                'icon' => 'ph-bold ph-steering-wheel',
                 'short_description' => 'Verified personal drivers for daily commute, outstation trips & hourly hire.',
                 'description' => 'Hire background-checked personal car drivers with clean driving records for city commuting, airport transfers, family vacations, or monthly dedicated driver arrangements.',
                 'seo_title' => 'Drivers on Demand Near Me | Personal & Outstation Drivers - UnlockRentals',
@@ -217,7 +217,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Security Guard',
                 'slug' => 'security-guard',
-                'icon' => 'ph-shield-check',
+                'icon' => 'ph-bold ph-shield-check',
                 'short_description' => 'Trained security personnel for residential societies, apartments, villas & commercial properties.',
                 'description' => 'Hire professional and alert security guards, bouncers, and gatekeepers for residential societies, individual bungalows, commercial offices, and private events.',
                 'seo_title' => 'Security Guards Near Me | Residential & Commercial Security - UnlockRentals',
@@ -235,7 +235,7 @@ class ProfessionalMarketplaceSeeder extends Seeder
             [
                 'name' => 'Laundry',
                 'slug' => 'laundry',
-                'icon' => 'ph-t-shirt',
+                'icon' => 'ph-bold ph-t-shirt',
                 'short_description' => 'Doorstep laundry, dry cleaning, steam ironing & blanket washing services.',
                 'description' => 'Convenient doorstep pickup and delivery for wash & fold, steam pressing, dry cleaning, curtain washing, and heavy quilt/blanket laundry for busy tenants and families.',
                 'seo_title' => 'Laundry & Dry Cleaning Near Me - UnlockRentals',

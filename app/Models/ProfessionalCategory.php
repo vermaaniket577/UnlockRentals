@@ -27,6 +27,49 @@ class ProfessionalCategory extends Model
     ];
 
     /**
+     * Accessor to ensure Phosphor icon class always has required prefix (ph-bold).
+     */
+    public function getIconAttribute($value): string
+    {
+        $val = trim($value ?? '');
+        if (empty($val)) {
+            return match ($this->slug) {
+                'electrician' => 'ph-bold ph-lightning',
+                'plumber' => 'ph-bold ph-drop',
+                'carpenter' => 'ph-bold ph-hammer',
+                'painter' => 'ph-bold ph-paint-brush',
+                'cctv-professional' => 'ph-bold ph-video-camera',
+                'it-professional' => 'ph-bold ph-laptop',
+                'labour' => 'ph-bold ph-hard-hat',
+                'mason' => 'ph-bold ph-wall',
+                'mechanic' => 'ph-bold ph-wrench',
+                'driver' => 'ph-bold ph-steering-wheel',
+                'security-guard' => 'ph-bold ph-shield-check',
+                'laundry' => 'ph-bold ph-t-shirt',
+                default => 'ph-bold ph-wrench',
+            };
+        }
+
+        if (str_starts_with($val, 'ph-bold ') || str_starts_with($val, 'ph ') || str_starts_with($val, 'ph-fill ') || str_starts_with($val, 'ph-duotone ')) {
+            return $val;
+        }
+
+        if (str_starts_with($val, 'ph-')) {
+            return 'ph-bold ' . $val;
+        }
+
+        return 'ph-bold ph-' . $val;
+    }
+
+    /**
+     * Phosphor Icon CSS Class alias.
+     */
+    public function getIconClassAttribute(): string
+    {
+        return $this->icon;
+    }
+
+    /**
      * Scope active categories.
      */
     public function scopeActive($query)
