@@ -25,6 +25,10 @@ class ProfessionalRegistrationController extends Controller
      */
     public function showRegistrationForm()
     {
+        if (!Auth::check()) {
+            return redirect()->guest(route('login'))->with('info', 'Please sign in or create an account first to list your professional service.');
+        }
+
         $categories = ProfessionalCategory::active()
             ->ordered()
             ->with(['services' => function ($q) {
@@ -49,9 +53,12 @@ class ProfessionalRegistrationController extends Controller
 
             // 1. Resolve or create associated User account
             if (!$user) {
-                $email = strtolower(trim($request->input('email')));
-                $existingUser = User::where('email', $email)->first();
+                $email = strtolower(trim($request->input('email', '')));
+                if (empty($email)) {
+                    return redirect()->route('login')->with('info', 'Please sign in or create an account first to list your professional service.');
+                }
 
+                $existingUser = User::where('email', $email)->first();
                 if ($existingUser) {
                     // If user exists but not logged in, require them to log in first
                     return back()
@@ -60,7 +67,7 @@ class ProfessionalRegistrationController extends Controller
                 }
 
                 $user = User::create([
-                    'name' => $request->input('full_name'),
+                    'name' => $request->input('full_name') ?: 'Professional Provider',
                     'email' => $email,
                     'phone' => $request->input('phone'),
                     'password' => Hash::make($request->input('password', Str::random(12))),
@@ -70,7 +77,7 @@ class ProfessionalRegistrationController extends Controller
                 Auth::login($user, true);
             } else {
                 // If user doesn't have phone, populate it
-                if (empty($user->phone)) {
+                if (empty($user->phone) && $request->filled('phone')) {
                     $user->update(['phone' => $request->input('phone')]);
                 }
             }
@@ -82,10 +89,14 @@ class ProfessionalRegistrationController extends Controller
                     ->with('info', 'You already have a registered professional listing. You can update it here.');
             }
 
+            // Name and email automatically fetched from account profile created in beginning
+            $fullName = $user ? $user->name : ($request->input('full_name') ?: 'Professional Provider');
+            $email = $user ? $user->email : $request->input('email');
+
             // 2. Generate unique slug
             $baseSlug = Str::slug($request->input('business_name'));
             if (empty($baseSlug)) {
-                $baseSlug = Str::slug($request->input('full_name') . ' ' . $request->input('city'));
+                $baseSlug = Str::slug($fullName . ' ' . $request->input('city'));
             }
             $slug = $baseSlug;
             $counter = 1;
@@ -99,6 +110,13 @@ class ProfessionalRegistrationController extends Controller
                 $photo = $request->file('profile_photo');
                 $photoName = 'prof_avatar_' . time() . '_' . Str::random(8) . '.' . $photo->getClientOriginalExtension();
                 $profilePhotoPath = $photo->storeAs('professionals/avatars', $photoName, 'public');
+
+                // If user doesn't have an avatar in their base profile, update it too
+                if ($user && empty($user->avatar)) {
+                    $user->update(['avatar' => $profilePhotoPath]);
+                }
+            } elseif ($user && !empty($user->avatar)) {
+                $profilePhotoPath = $user->avatar;
             }
 
             // 4. Create Professional Record
@@ -107,11 +125,11 @@ class ProfessionalRegistrationController extends Controller
                 'category_id' => $request->input('category_id'),
                 'business_name' => $request->input('business_name'),
                 'slug' => $slug,
-                'full_name' => $request->input('full_name'),
+                'full_name' => $fullName,
                 'profile_photo' => $profilePhotoPath,
                 'phone' => $request->input('phone'),
                 'whatsapp_number' => $request->input('whatsapp_number') ?: $request->input('phone'),
-                'email' => $request->input('email'),
+                'email' => $email,
                 'description' => $request->input('description') ?: ('Verified and experienced ' . ($request->input('business_name') ?: 'professional') . ' with ' . $request->input('years_experience', 5) . '+ years of experience serving ' . $request->input('city') . ' and nearby localities. Prompt doorstep service with customer satisfaction guaranteed.'),
                 'years_experience' => $request->input('years_experience', 0),
                 'starting_price' => $request->input('starting_price'),

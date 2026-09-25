@@ -20,12 +20,13 @@ class RegisterProfessionalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Personal
-            'full_name' => ['required', 'string', 'max:150'],
+            // Personal & Profile (Auto-fetched from existing account)
+            'full_name' => ['nullable', 'string', 'max:150'],
+            'email' => ['nullable', 'email', 'max:150'],
+            'password' => ['nullable', 'string', 'min:6'],
             'phone' => ['required', 'string', 'max:20', 'regex:/^[0-9+\s\-]{10,20}$/'],
             'whatsapp_number' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\s\-]{10,20}$/'],
-            'email' => ['nullable', 'email', 'max:150'],
-            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
 
             // Business & Services
             'business_name' => ['required', 'string', 'max:190'],

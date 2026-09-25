@@ -54,41 +54,82 @@
         <form action="{{ route('services.register.submit') }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none space-y-8">
             @csrf
 
-            {{-- 1. Contact & Identity Section --}}
+            {{-- 1. Profile & Direct Contact Details --}}
             <div class="space-y-4">
                 <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
                     <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-xs">
                         1
                     </div>
                     <div>
-                        <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Your Contact Details</h2>
-                        <p class="text-[11px] text-slate-500">Customers will contact you directly on these numbers</p>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Profile & Contact Details</h2>
+                        <p class="text-[11px] text-slate-500">Fetched from your registered profile. Customers will reach you via direct call & WhatsApp.</p>
                     </div>
                 </div>
 
+                {{-- Account Summary Card (Auto-fetched Name & Email) --}}
+                <div class="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-slate-50 dark:from-slate-800/80 dark:to-slate-800/40 border border-blue-200/60 dark:border-slate-700">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-base shadow-md shadow-blue-500/20 flex-shrink-0">
+                            {{ strtoupper(substr(auth()->user()?->name ?? 'P', 0, 1)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
+                                    {{ auth()->user()?->name ?? 'Verified Account' }}
+                                </h3>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                    <i class="ph-bold ph-seal-check"></i> Account Linked
+                                </span>
+                            </div>
+                            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                {{ auth()->user()?->email ?? 'Account email connected' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="hidden sm:flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                        <i class="ph-bold ph-lock-key text-blue-600 dark:text-blue-400"></i>
+                        <span>Auto-fetched</span>
+                    </div>
+                </div>
+
+                {{-- Profile Photo Upload Section with Interactive Live Preview --}}
+                <div class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        {{-- Photo Preview Container --}}
+                        <div class="relative w-20 h-20 rounded-2xl border-2 border-dashed border-blue-300 dark:border-blue-700 bg-blue-50/50 dark:bg-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-inner">
+                            @php
+                                $existingAvatar = auth()->user()?->avatar 
+                                    ? (str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . auth()->user()->avatar))
+                                    : null;
+                            @endphp
+                            <img id="profile_photo_preview" 
+                                 src="{{ $existingAvatar ?: '' }}" 
+                                 alt="Profile Photo Preview" 
+                                 class="w-full h-full object-cover {{ $existingAvatar ? '' : 'hidden' }}">
+                            
+                            <div id="photo_placeholder" class="{{ $existingAvatar ? 'hidden' : 'flex' }} flex-col items-center justify-center text-blue-600 dark:text-blue-400">
+                                <i class="ph ph-camera text-2xl"></i>
+                                <span class="text-[9px] font-bold uppercase mt-0.5">Photo</span>
+                            </div>
+                        </div>
+
+                        {{-- Photo Upload Input & Help Text --}}
+                        <div class="flex-1 space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                                Profile Photo / Business Logo (Recommended)
+                            </label>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                                Upload a clear picture of yourself or your business logo. Maximum 5MB (JPG, PNG, WebP).
+                            </p>
+                            <input type="file" name="profile_photo" id="profile_photo_input" accept="image/*"
+                                   class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 dark:file:bg-blue-950/60 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Calling Phone & WhatsApp Numbers --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Full Name *</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="ph ph-user text-base"></i>
-                            </span>
-                            <input type="text" name="full_name" value="{{ old('full_name', auth()->user()?->name) }}" required placeholder="e.g. Raj Kumar Sharma"
-                                   class="w-full h-11 pl-10 pr-3.5 text-sm font-semibold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 placeholder:font-normal focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Email Address *</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="ph ph-envelope-simple text-base"></i>
-                            </span>
-                            <input type="email" name="email" value="{{ old('email', auth()->user()?->email) }}" required placeholder="e.g. raj@gmail.com"
-                                   class="w-full h-11 pl-10 pr-3.5 text-sm font-semibold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 placeholder:font-normal focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none">
-                        </div>
-                    </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Calling Mobile Number *</label>
                         <div class="relative">
@@ -117,19 +158,6 @@
                         </div>
                     </div>
                 </div>
-
-                @guest
-                    <div class="pt-1">
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Create Password (For logging into your dashboard) *</label>
-                        <div class="relative sm:w-1/2">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="ph ph-lock-key text-base"></i>
-                            </span>
-                            <input type="password" name="password" required placeholder="Minimum 6 characters"
-                                   class="w-full h-11 pl-10 pr-3.5 text-sm font-semibold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 placeholder:font-normal focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none">
-                        </div>
-                    </div>
-                @endguest
             </div>
 
             {{-- 2. Business & Category Section --}}
@@ -332,13 +360,7 @@
 
                 <div id="optional_section" class="hidden p-4 sm:p-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Profile Photo / Logo</label>
-                        <input type="file" name="profile_photo" accept="image/*"
-                               class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Custom Description</label>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Custom Description (Optional)</label>
                         <textarea name="description" rows="2" placeholder="Tell customers about your skills, quality guarantee, and specialties..."
                                   class="w-full p-3 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none">{{ old('description') }}</textarea>
                     </div>
@@ -412,6 +434,27 @@
             syncCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     whatsappInput.value = phoneInput.value;
+                }
+            });
+        }
+
+        // Profile Photo Real-time Preview
+        const photoInput = document.getElementById('profile_photo_input');
+        const photoPreview = document.getElementById('profile_photo_preview');
+        const photoPlaceholder = document.getElementById('photo_placeholder');
+        if (photoInput && photoPreview) {
+            photoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        photoPreview.src = evt.target.result;
+                        photoPreview.classList.remove('hidden');
+                        if (photoPlaceholder) {
+                            photoPlaceholder.classList.add('hidden');
+                        }
+                    };
+                    reader.readAsDataURL(file);
                 }
             });
         }

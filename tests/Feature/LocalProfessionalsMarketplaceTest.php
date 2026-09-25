@@ -54,10 +54,11 @@ class LocalProfessionalsMarketplaceTest extends TestCase
      */
     public function test_registration_page_loads_successfully(): void
     {
-        $response = $this->get(route('services.register'));
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->get(route('services.register'));
         $response->assertStatus(200);
         $response->assertSee('List Your Professional Service — FREE');
-        $response->assertSee('Your Contact Details');
+        $response->assertSee('Profile & Contact Details', false);
         $response->assertSee('Your Service Location');
     }
 
@@ -66,12 +67,10 @@ class LocalProfessionalsMarketplaceTest extends TestCase
      */
     public function test_registration_rejects_missing_category_and_invalid_phone(): void
     {
-        $response = $this->post(route('services.register.submit'), [
-            'full_name' => 'Test Provider',
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->post(route('services.register.submit'), [
             'business_name' => 'Test Business',
             'phone' => '1234', // Invalid phone length
-            'email' => 'test@example.com',
-            'description' => 'Short', // Too short
             'city' => 'Gurgaon',
             'years_experience' => 5,
             'price_type' => 'hourly',
@@ -86,19 +85,22 @@ class LocalProfessionalsMarketplaceTest extends TestCase
      */
     public function test_valid_professional_registration_creates_pending_profile(): void
     {
+        $user = User::factory()->create([
+            'name' => 'Ramesh Kumar',
+            'email' => 'ramesh_' . time() . '@test.com',
+        ]);
+
         $category = ProfessionalCategory::first() ?? ProfessionalCategory::create([
             'name' => 'Plumber',
             'slug' => 'plumber',
             'status' => 'active',
         ]);
 
-        $uniqueEmail = 'plumber_' . time() . '@test.com';
-
-        $response = $this->post(route('services.register.submit'), [
-            'full_name' => 'Ramesh Kumar',
+        // Notice: full_name, email, and password are NOT submitted here.
+        // They are auto-fetched from the profile created in the beginning.
+        $response = $this->actingAs($user)->post(route('services.register.submit'), [
             'business_name' => 'Ramesh Plumbing Works',
             'phone' => '9876543210',
-            'email' => $uniqueEmail,
             'category_id' => $category->id,
             'years_experience' => 8,
             'starting_price' => 350,
@@ -110,11 +112,14 @@ class LocalProfessionalsMarketplaceTest extends TestCase
             'description' => 'Over 8 years of expert plumbing and leak repair experience with top rated customer feedback.',
             'home_visit' => '1',
             'available_today' => '1',
-            'password' => 'secret123',
         ]);
 
+        $response->assertRedirect(route('professional.dashboard'));
         $this->assertDatabaseHas('professionals', [
+            'user_id' => $user->id,
             'business_name' => 'Ramesh Plumbing Works',
+            'full_name' => 'Ramesh Kumar',
+            'email' => $user->email,
             'city' => 'Gurgaon',
             'status' => 'pending',
             'verification_status' => 'unverified',
