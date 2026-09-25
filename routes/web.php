@@ -146,6 +146,13 @@ Route::withoutMiddleware([
     \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
     \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 ])->get('/property-image/{id}', function ($id) {
+    $etag = '"pi-' . $id . '"';
+    if (request()->header('If-None-Match') === $etag) {
+        return response('', 304)
+            ->header('ETag', $etag)
+            ->header('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+
     $image = \App\Models\PropertyImage::withoutGlobalScope('withoutBlob')->findOrFail($id);
 
     if (empty($image->image_data)) {
@@ -161,6 +168,7 @@ Route::withoutMiddleware([
 
     return response($image->image_data, 200)
         ->header('Content-Type', $mimeType)
+        ->header('ETag', $etag)
         ->header('Cache-Control', 'public, max-age=31536000, immutable')
         ->header('Access-Control-Allow-Origin', '*');
 })->name('property.image');

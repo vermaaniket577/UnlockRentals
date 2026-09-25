@@ -210,7 +210,19 @@ class MainActivity : AppCompatActivity() {
         // Safety fallback to dismiss splash if network is sluggish
         Handler(Looper.getMainLooper()).postDelayed({
             dismissSplash()
-        }, 2200)
+        }, 1200)
+
+        // Asynchronous DNS & socket pre-warming to eliminate cold lookup latency
+        Thread {
+            try {
+                val host = Uri.parse(getString(R.string.production_url)).host
+                if (!host.isNullOrEmpty()) {
+                    java.net.InetAddress.getByName(host)
+                }
+                java.net.InetAddress.getByName("cdn.jsdelivr.net")
+                java.net.InetAddress.getByName("fonts.googleapis.com")
+            } catch (_: Exception) {}
+        }.start()
 
         // Load the initial URL or process incoming auth deep link
         val productionUrl = getString(R.string.production_url)
@@ -226,7 +238,7 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             splashOverlay.animate()
                 .alpha(0f)
-                .setDuration(280)
+                .setDuration(180)
                 .setInterpolator(AccelerateDecelerateInterpolator())
                 .withEndAction {
                     splashOverlay.visibility = View.GONE
@@ -262,6 +274,13 @@ class MainActivity : AppCompatActivity() {
             // Pre-rasterize offscreen content to eliminate scroll stutter and blank tiles
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 offscreenPreRaster = true
+            }
+
+            // High priority render thread & Google Safe Browsing overhead removal
+            @Suppress("DEPRECATION")
+            setRenderPriority(WebSettings.RenderPriority.HIGH)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                safeBrowsingEnabled = false
             }
 
             // Enable geolocation
@@ -415,7 +434,7 @@ class MainActivity : AppCompatActivity() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
                 progressBar.progress = newProgress
-                if (newProgress >= 40) {
+                if (newProgress >= 20) {
                     dismissSplash()
                 }
                 if (newProgress >= 100) {
@@ -577,6 +596,9 @@ class MainActivity : AppCompatActivity() {
         if (::webView.isInitialized) {
             webView.onPause()
             webView.pauseTimers()
+            try {
+                CookieManager.getInstance().flush()
+            } catch (_: Exception) {}
         }
     }
 

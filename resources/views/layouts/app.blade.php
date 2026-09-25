@@ -60,7 +60,8 @@
     {{-- Legacy & Universal Image Source --}}
     <link rel="image_src" href="@yield('og_image', asset('images/logo.png'))">
 
-    {{-- Performance: DNS prefetch for external resources --}}
+    {{-- Performance: DNS prefetch and Preconnect for external resources --}}
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
