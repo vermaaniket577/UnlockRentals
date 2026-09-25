@@ -25,29 +25,67 @@
             </div>
         </div>
 
+        {{-- Scoped Styles for Guaranteed Category Gradient Badges --}}
+        <style>
+            .ur-prof-cat-icon {
+                width: 3rem !important;
+                height: 3rem !important;
+                border-radius: 0.75rem !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #ffffff !important;
+                -webkit-text-fill-color: #ffffff !important;
+                flex-shrink: 0 !important;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12) !important;
+            }
+            .ur-prof-cat-icon i,
+            .ur-prof-cat-icon [class^="ph-"],
+            .ur-prof-cat-icon [class*=" ph-"] {
+                color: #ffffff !important;
+                -webkit-text-fill-color: #ffffff !important;
+                font-size: 1.5rem !important;
+                line-height: 1 !important;
+                display: inline-block !important;
+            }
+            .ur-prof-icon-electrician { background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%) !important; background-color: #f59e0b !important; }
+            .ur-prof-icon-plumber { background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%) !important; background-color: #3b82f6 !important; }
+            .ur-prof-icon-carpenter { background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%) !important; background-color: #f97316 !important; }
+            .ur-prof-icon-painter { background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%) !important; background-color: #f43f5e !important; }
+            .ur-prof-icon-cctv-professional { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important; background-color: #6366f1 !important; }
+            .ur-prof-icon-it-professional { background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%) !important; background-color: #10b981 !important; }
+            .ur-prof-icon-labour { background: linear-gradient(135deg, #475569 0%, #334155 100%) !important; background-color: #475569 !important; }
+            .ur-prof-icon-mason { background: linear-gradient(135deg, #b45309 0%, #d97706 100%) !important; background-color: #b45309 !important; }
+            .ur-prof-icon-mechanic { background: linear-gradient(135deg, #2563eb 0%, #6366f1 100%) !important; background-color: #2563eb !important; }
+            .ur-prof-icon-driver { background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important; background-color: #0284c7 !important; }
+            .ur-prof-icon-security-guard { background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important; background-color: #1e293b !important; }
+            .ur-prof-icon-laundry { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%) !important; background-color: #8b5cf6 !important; }
+        </style>
+
         {{-- Categories Grid (12 Core Categories) --}}
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5 mb-12">
             @php
                 $homepageCategories = [
-                    ['name' => 'Electrician', 'slug' => 'electrician', 'icon' => 'ph-lightning', 'color' => 'from-amber-500 to-yellow-400', 'desc' => 'Wiring, fans, inverter & repairs'],
-                    ['name' => 'Plumber', 'slug' => 'plumber', 'icon' => 'ph-wrench', 'color' => 'from-blue-500 to-cyan-400', 'desc' => 'Taps, pipes, leakage & fittings'],
-                    ['name' => 'Carpenter', 'slug' => 'carpenter', 'icon' => 'ph-ruler', 'color' => 'from-orange-500 to-amber-400', 'desc' => 'Furniture, doors, locks & wood'],
-                    ['name' => 'Painter', 'slug' => 'painter', 'icon' => 'ph-paint-brush', 'color' => 'from-rose-500 to-pink-400', 'desc' => 'Interior, exterior, texture & putty'],
-                    ['name' => 'CCTV Professional', 'slug' => 'cctv-professional', 'icon' => 'ph-video-camera', 'color' => 'from-indigo-500 to-purple-400', 'desc' => 'Camera installation & DVR setup'],
-                    ['name' => 'IT Professional', 'slug' => 'it-professional', 'icon' => 'ph-laptop', 'color' => 'from-emerald-500 to-teal-400', 'desc' => 'WiFi, PC repair & networking'],
-                    ['name' => 'Labour', 'slug' => 'labour', 'icon' => 'ph-hammer', 'color' => 'from-stone-600 to-zinc-500', 'desc' => 'Daily wage, shifting & helper'],
-                    ['name' => 'Mason', 'slug' => 'mason', 'icon' => 'ph-wall', 'color' => 'from-amber-700 to-yellow-600', 'desc' => 'Tile, brickwork & plastering'],
-                    ['name' => 'Mechanic', 'slug' => 'mechanic', 'icon' => 'ph-gear', 'color' => 'from-blue-600 to-indigo-500', 'desc' => 'Two-wheeler & home machine repair'],
-                    ['name' => 'Driver', 'slug' => 'driver', 'icon' => 'ph-steering-wheel', 'color' => 'from-sky-500 to-blue-400', 'desc' => 'Personal & commercial drivers'],
-                    ['name' => 'Security Guard', 'slug' => 'security-guard', 'icon' => 'ph-shield-check', 'color' => 'from-slate-700 to-zinc-600', 'desc' => 'Residential & event security'],
-                    ['name' => 'Laundry', 'slug' => 'laundry', 'icon' => 'ph-t-shirt', 'color' => 'from-violet-500 to-purple-400', 'desc' => 'Dry clean, iron & wash services'],
+                    ['name' => 'Electrician', 'slug' => 'electrician', 'icon' => 'ph-lightning', 'gradient' => 'linear-gradient(135deg, #f59e0b 0%, #eab308 100%)', 'solid' => '#f59e0b', 'desc' => 'Wiring, fans, inverter & repairs'],
+                    ['name' => 'Plumber', 'slug' => 'plumber', 'icon' => 'ph-wrench', 'gradient' => 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)', 'solid' => '#3b82f6', 'desc' => 'Taps, pipes, leakage & fittings'],
+                    ['name' => 'Carpenter', 'slug' => 'carpenter', 'icon' => 'ph-hammer', 'gradient' => 'linear-gradient(135deg, #f97316 0%, #f59e0b 100%)', 'solid' => '#f97316', 'desc' => 'Furniture, doors, locks & wood'],
+                    ['name' => 'Painter', 'slug' => 'painter', 'icon' => 'ph-paint-brush', 'gradient' => 'linear-gradient(135deg, #f43f5e 0%, #ec4899 100%)', 'solid' => '#f43f5e', 'desc' => 'Interior, exterior, texture & putty'],
+                    ['name' => 'CCTV Professional', 'slug' => 'cctv-professional', 'icon' => 'ph-video-camera', 'gradient' => 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', 'solid' => '#6366f1', 'desc' => 'Camera installation & DVR setup'],
+                    ['name' => 'IT Professional', 'slug' => 'it-professional', 'icon' => 'ph-laptop', 'gradient' => 'linear-gradient(135deg, #10b981 0%, #14b8a6 100%)', 'solid' => '#10b981', 'desc' => 'WiFi, PC repair & networking'],
+                    ['name' => 'Labour', 'slug' => 'labour', 'icon' => 'ph-hard-hat', 'gradient' => 'linear-gradient(135deg, #475569 0%, #334155 100%)', 'solid' => '#475569', 'desc' => 'Daily wage, shifting & helper'],
+                    ['name' => 'Mason', 'slug' => 'mason', 'icon' => 'ph-wall', 'gradient' => 'linear-gradient(135deg, #b45309 0%, #d97706 100%)', 'solid' => '#b45309', 'desc' => 'Tile, brickwork & plastering'],
+                    ['name' => 'Mechanic', 'slug' => 'mechanic', 'icon' => 'ph-gear', 'gradient' => 'linear-gradient(135deg, #2563eb 0%, #6366f1 100%)', 'solid' => '#2563eb', 'desc' => 'Two-wheeler & home machine repair'],
+                    ['name' => 'Driver', 'slug' => 'driver', 'icon' => 'ph-steering-wheel', 'gradient' => 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)', 'solid' => '#0284c7', 'desc' => 'Personal & commercial drivers'],
+                    ['name' => 'Security Guard', 'slug' => 'security-guard', 'icon' => 'ph-shield-check', 'gradient' => 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', 'solid' => '#1e293b', 'desc' => 'Residential & event security'],
+                    ['name' => 'Laundry', 'slug' => 'laundry', 'icon' => 'ph-t-shirt', 'gradient' => 'linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%)', 'solid' => '#8b5cf6', 'desc' => 'Dry clean, iron & wash services'],
                 ];
             @endphp
 
             @foreach($homepageCategories as $hCat)
-                <a href="{{ route('services.category', $hCat['slug']) }}" class="group bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/5 transition-all text-center flex flex-col items-center justify-between min-h-[145px]">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-tr {{ $hCat['color'] }} text-white flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform duration-200">
-                        <i class="ph-bold {{ $hCat['icon'] }}"></i>
+                <a href="{{ route('services.category', $hCat['slug']) }}" class="ur-prof-cat-card group bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/5 transition-all text-center flex flex-col items-center justify-between min-h-[145px]">
+                    <div class="ur-prof-cat-icon ur-prof-icon-{{ $hCat['slug'] }} w-12 h-12 rounded-xl text-white flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform duration-200"
+                         style="background: {{ $hCat['gradient'] }} !important; background-color: {{ $hCat['solid'] }} !important; color: #ffffff !important;">
+                        <i class="ph-bold {{ $hCat['icon'] }}" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; display: inline-block;"></i>
                     </div>
 
                     <div class="mt-2">

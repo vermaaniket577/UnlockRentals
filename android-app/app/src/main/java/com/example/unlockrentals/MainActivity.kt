@@ -396,7 +396,7 @@ class MainActivity : AppCompatActivity() {
                         if (!style) {
                             style = document.createElement('style');
                             style.id = 'ur-native-app-styles';
-                            style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section { display: none !important; }';
+                            style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section, .main-header .main-nav, #main-nav .main-nav { display: none !important; } #welcome-mobile-top-login, #nav-mobile-top-login { display: inline-flex !important; }';
                             document.head.appendChild(style);
                         }
                     })();

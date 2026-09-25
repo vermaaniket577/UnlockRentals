@@ -16,7 +16,7 @@
             </div>
 
             {{-- Center: Desktop Navigation Links (Responsive, Non-overlapping) --}}
-            <nav class="hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 flex-shrink">
+            <nav class="main-nav hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 flex-shrink">
                 <a href="{{ url('/') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('/') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-home" title="Home">
                     <i class="ph-bold ph-house text-sm xl:text-base text-blue-600"></i>
                     <span>Home</span>
@@ -596,6 +596,35 @@ html.dark #main-nav .ur-nav-link.active-nav-link {
 #nav-mobile-top-login span {
     color: #ffffff !important;
     fill: #ffffff !important;
+}
+
+@media (max-width: 1023px) {
+    #main-nav .main-nav,
+    #main-nav nav.hidden {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+    }
+    #nav-mobile-top-login {
+        display: inline-flex !important;
+        visibility: visible !important;
+    }
+}
+
+.is-mobile-app #main-nav .main-nav {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+}
+.is-mobile-app #nav-mobile-top-login {
+    display: inline-flex !important;
+    visibility: visible !important;
 }
 
 /* Mobile Drawer Overlay & Sheet */

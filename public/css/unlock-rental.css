@@ -1145,9 +1145,24 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 1024px) {
     .main-header { padding: 14px 20px; }
     .main-header .main-nav,
-    .main-nav { display: none !important; }
+    .main-nav,
+    header.main-header nav.main-nav,
+    #main-nav .main-nav,
+    #main-nav nav.hidden {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+    }
     .hamburger { display: flex !important; }
     .mobile-nav { display: block; }
+    #welcome-mobile-top-login,
+    #nav-mobile-top-login {
+        display: inline-flex !important;
+        visibility: visible !important;
+    }
     #welcome-mobile-top-login,
     #welcome-mobile-top-login *,
     #welcome-mobile-top-login i,
@@ -2859,5 +2874,53 @@ a[class*="bg-white"][class*="text-blue-700"] * {
     color: #1d4ed8 !important;
     -webkit-text-fill-color: #1d4ed8 !important;
 }
+
+/* =========================================
+   Home Services & Local Professional Icons
+   ========================================= */
+.ur-prof-cat-icon,
+.ur-prof-cat-icon *,
+a .ur-prof-cat-icon,
+a .ur-prof-cat-icon *,
+.ur-prof-cat-card .ur-prof-cat-icon,
+.ur-prof-cat-card .ur-prof-cat-icon * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.ur-prof-cat-icon {
+    width: 3rem !important;
+    height: 3rem !important;
+    border-radius: 0.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
+
+.ur-prof-cat-icon i,
+.ur-prof-cat-icon [class^="ph-"],
+.ur-prof-cat-icon [class*=" ph-"] {
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.ur-prof-icon-electrician { background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%) !important; background-color: #f59e0b !important; }
+.ur-prof-icon-plumber { background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%) !important; background-color: #3b82f6 !important; }
+.ur-prof-icon-carpenter { background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%) !important; background-color: #f97316 !important; }
+.ur-prof-icon-painter { background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%) !important; background-color: #f43f5e !important; }
+.ur-prof-icon-cctv-professional { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important; background-color: #6366f1 !important; }
+.ur-prof-icon-it-professional { background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%) !important; background-color: #10b981 !important; }
+.ur-prof-icon-labour { background: linear-gradient(135deg, #475569 0%, #334155 100%) !important; background-color: #475569 !important; }
+.ur-prof-icon-mason { background: linear-gradient(135deg, #b45309 0%, #d97706 100%) !important; background-color: #b45309 !important; }
+.ur-prof-icon-mechanic { background: linear-gradient(135deg, #2563eb 0%, #6366f1 100%) !important; background-color: #2563eb !important; }
+.ur-prof-icon-driver { background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important; background-color: #0284c7 !important; }
+.ur-prof-icon-security-guard { background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important; background-color: #1e293b !important; }
+.ur-prof-icon-laundry { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%) !important; background-color: #8b5cf6 !important; }
+
 
 

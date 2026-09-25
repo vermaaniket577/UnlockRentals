@@ -31,6 +31,18 @@
     </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+        (function () {
+            var isApp = /UnlockRentals|wv|Version\/[0-9.]+/i.test(navigator.userAgent) || window.isNativeApp === true || new URLSearchParams(window.location.search).get('app') === '1';
+            if (isApp) {
+                document.documentElement.classList.add('is-mobile-app');
+                document.documentElement.classList.remove('dark');
+                try { localStorage.removeItem('ur-theme'); } catch(e) {}
+            } else if (localStorage.getItem('ur-theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <link rel="canonical" href="{{ route('home') }}">
     <meta name="robots" content="index, follow">
     <title>Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals</title>
@@ -203,7 +215,7 @@
     @endif
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260920v1">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260926v1">
 
     <!-- Non-Blocking Phosphor Icons (Regular, Bold, Fill) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
@@ -551,28 +563,101 @@
                 background: #ffffff !important;
                 border-bottom: 1px solid #e2e8f0 !important;
                 box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
+                padding: calc(8px + env(safe-area-inset-top, 0px)) 14px 8px 14px !important;
+                min-height: 54px !important;
+                height: auto !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
             }
             .main-header .main-nav,
-            .main-nav {
+            .main-nav,
+            header.main-header nav.main-nav,
+            nav.main-nav {
                 display: none !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                position: absolute !important;
+                clip: rect(0, 0, 0, 0) !important;
             }
-            .main-header .hamburger {
-                display: inline-flex !important;
-                background: #f1f5f9 !important;
-                border: 1px solid #e2e8f0 !important;
-                color: #1e293b !important;
-            }
-            .main-header .hamburger svg {
-                stroke: #1e293b !important;
+            .logo-wrapper {
+                flex-shrink: 0 !important;
+                margin-right: 0 !important;
             }
             .logo-text {
                 color: #0f172a !important;
+                font-size: 16px !important;
+                font-weight: 800 !important;
             }
             .logo-text .logo-accent {
                 color: #2563eb !important;
             }
+            .auth-nav {
+                margin-left: auto !important;
+                flex-shrink: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+            #welcome-mobile-top-login {
+                display: inline-flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 5px !important;
+                height: 34px !important;
+                padding: 0 14px !important;
+                font-size: 12px !important;
+                font-weight: 700 !important;
+                border-radius: 9999px !important;
+                background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+                color: #ffffff !important;
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
+                text-decoration: none !important;
+                white-space: nowrap !important;
+                cursor: pointer !important;
+                -webkit-tap-highlight-color: transparent !important;
+            }
+            #welcome-mobile-top-login *,
+            #welcome-mobile-top-login i,
+            #welcome-mobile-top-login span {
+                color: #ffffff !important;
+                fill: #ffffff !important;
+                -webkit-text-fill-color: #ffffff !important;
+            }
+            .main-header .hamburger {
+                display: inline-flex !important;
+                width: 36px !important;
+                height: 36px !important;
+                border-radius: 10px !important;
+                background: #f1f5f9 !important;
+                border: 1px solid #e2e8f0 !important;
+                color: #1e293b !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .main-header .hamburger svg {
+                stroke: #1e293b !important;
+            }
             .btn-cta-premium-header {
                 display: none !important;
+            }
+            #userDropdownBtn {
+                background: #f1f5f9 !important;
+                border: 1px solid #e2e8f0 !important;
+                color: #0f172a !important;
+            }
+            #userDropdownBtn svg {
+                stroke: #0f172a !important;
+                opacity: 0.8 !important;
             }
         }
         @media (min-width: 1024px) {
@@ -626,6 +711,7 @@
                 height: 38px !important;
             }
         }
+
         @media (max-width: 768px) {
             .main-header {
                 padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px 12px !important;
@@ -641,33 +727,61 @@
                 right: 0 !important;
             }
             .main-header .main-nav,
-            .main-nav {
+            .main-nav,
+            header.main-header nav.main-nav,
+            nav.main-nav {
                 display: none !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                position: absolute !important;
+                clip: rect(0, 0, 0, 0) !important;
             }
             .logo-wrapper {
                 flex-shrink: 0 !important;
+                margin-right: 0 !important;
             }
             .logo-text {
                 font-size: 16px !important;
+                font-weight: 800 !important;
             }
             .auth-nav {
                 margin-left: auto !important;
                 flex-shrink: 0 !important;
                 display: flex !important;
                 align-items: center !important;
-                gap: 6px !important;
+                gap: 8px !important;
             }
             #welcome-mobile-top-login {
                 display: inline-flex !important;
-                padding: 6px 12px !important;
-                font-size: 11.5px !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 5px !important;
+                height: 34px !important;
+                padding: 0 14px !important;
+                font-size: 12px !important;
+                font-weight: 700 !important;
+                border-radius: 9999px !important;
+                background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
                 color: #ffffff !important;
+                box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
+                text-decoration: none !important;
+                white-space: nowrap !important;
+                cursor: pointer !important;
+                -webkit-tap-highlight-color: transparent !important;
             }
             #welcome-mobile-top-login *,
             #welcome-mobile-top-login i,
             #welcome-mobile-top-login span {
                 color: #ffffff !important;
                 fill: #ffffff !important;
+                -webkit-text-fill-color: #ffffff !important;
             }
             .btn-cta-premium-header {
                 display: none !important;
@@ -699,6 +813,24 @@
                 margin-left: auto !important;
                 margin-right: auto !important;
             }
+        }
+
+        /* Native Mobile Application Header Safeguards */
+        .is-mobile-app .main-header .main-nav,
+        .is-mobile-app .main-nav,
+        .is-mobile-app header.main-header nav.main-nav,
+        .is-mobile-app nav.main-nav {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            position: absolute !important;
+        }
+        .is-mobile-app #welcome-mobile-top-login {
+            display: inline-flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         @media (max-width: 480px) {
@@ -1037,7 +1169,7 @@
     @include('components.page-loader')
 
     <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; padding: 12px 24px;">
-        <div class="logo-wrapper" style="flex-shrink: 0; margin-right: 20px;">
+        <div class="logo-wrapper" style="flex-shrink: 0;">
             <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
                 <div style="width: 34px; height: 34px; border-radius: 9px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
                     <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="34" height="34" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
@@ -1045,7 +1177,7 @@
                 <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important;">Unlock<span class="logo-accent">Rentals</span></span>
             </a>
         </div>
-        <nav class="main-nav hidden lg:flex" style="display: flex !important; align-items: center !important; gap: 16px !important; flex-shrink: 1;">
+        <nav class="main-nav hidden lg:flex">
             <a href="{{ route('properties.index') }}" class="nav-link" title="Discover" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
                 <i class="ph-bold ph-compass"></i>
                 Discover
