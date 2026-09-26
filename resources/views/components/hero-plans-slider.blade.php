@@ -736,6 +736,8 @@
     gap: 1.15rem;
     align-items: stretch;
     width: 100%;
+    position: relative;
+    z-index: 5;
 }
 
 /* ─── 1. LEFT COLUMN: VALUE PROPOSITION & 2x2 BENEFITS ──── */
@@ -774,9 +776,10 @@
     box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
 }
 .ur-hps-plan-badge--silver {
-    background: #f1f5f9;
-    color: #334155;
-    border: 1px solid #cbd5e1;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
 }
 .ur-hps-plan-badge--buyer {
     background: #d1fae5;
@@ -809,7 +812,7 @@
     display: inline-block;
 }
 .ur-hps-slide-title .highlight-silver {
-    background: linear-gradient(135deg, #334155 0%, #1e293b 60%, #0f172a 100%);
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #0f172a 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -835,38 +838,38 @@
 .ur-hps-features-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.45rem;
+    gap: 0.55rem;
     width: 100%;
 }
 
 .ur-hps-feature-item {
     display: flex;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.52rem 0.7rem;
+    gap: 0.65rem;
+    padding: 0.62rem 0.75rem;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
-    transition: all 0.22s ease;
+    border-radius: 0.85rem;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+    transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ur-hps-feature-item:hover {
     border-color: #cbd5e1;
-    transform: translateY(-1.5px);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
 .ur-hps-f-icon-box {
-    width: 1.95rem;
-    height: 1.95rem;
-    border-radius: 0.55rem;
+    width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 0.65rem;
     background: #eff6ff;
     color: #2563eb;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 1rem;
     flex-shrink: 0;
 }
 
@@ -881,33 +884,29 @@
     border: 1px solid #dbeafe;
 }
 .ur-hps-feature-item--silver .ur-hps-f-icon-box {
-    background: #f8fafc;
-    color: #475569;
-    border: 1px solid #e2e8f0;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
 }
 .ur-hps-feature-item--buyer {
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: #ffffff;
     border: 1px solid rgba(167, 243, 208, 0.85);
-    border-radius: 14px;
+    border-radius: 0.85rem;
     box-shadow: 0 2px 6px rgba(5, 150, 105, 0.04);
-    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .ur-hps-feature-item--buyer:hover {
     border-color: #10b981;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 22px rgba(5, 150, 105, 0.13);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(5, 150, 105, 0.12);
 }
 .ur-hps-feature-item--buyer .ur-hps-f-icon-box {
     background: #ecfdf5;
     color: #059669;
     border: 1px solid #d1fae5;
-    border-radius: 0.55rem;
 }
 
 .ur-hps-f-text h4 {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 800;
     color: #0f172a;
     margin: 0 0 0.12rem;
@@ -936,9 +935,9 @@
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
     border-radius: 1.15rem;
-    padding: 1.05rem 1.2rem 0.95rem;
+    padding: 1.15rem 1.25rem 1rem;
     box-sizing: border-box;
-    box-shadow: 0 10px 28px -8px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.09), 0 2px 8px rgba(0, 0, 0, 0.02);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
     overflow: hidden;
     display: flex;
@@ -950,60 +949,118 @@
     transform: translateY(-3px);
 }
 
+/* Top accent color bar */
+.ur-hps-pass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3.5px;
+    border-radius: 1.15rem 1.15rem 0 0;
+}
+
 .ur-hps-pass-card--gold {
     border-color: #fde047;
-    box-shadow: 0 12px 30px -8px rgba(245, 158, 11, 0.18), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 12px 32px -8px rgba(245, 158, 11, 0.20), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
+.ur-hps-pass-card--gold::before {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24, #ea580c);
+}
+
 .ur-hps-pass-card--platinum {
     border-color: #93c5fd;
-    box-shadow: 0 12px 30px -8px rgba(37, 99, 235, 0.18), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 12px 32px -8px rgba(37, 99, 235, 0.20), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
+.ur-hps-pass-card--platinum::before {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa, #1d4ed8);
+}
+
 .ur-hps-pass-card--silver {
-    border-color: #cbd5e1;
-    box-shadow: 0 12px 30px -8px rgba(71, 85, 105, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
+    border-color: #bfdbfe;
+    box-shadow: 0 12px 32px -8px rgba(37, 99, 235, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
+.ur-hps-pass-card--silver::before {
+    background: linear-gradient(90deg, #2563eb, #60a5fa, #38bdf8);
+}
+
 .ur-hps-pass-card--buyer {
-    background: rgba(255, 255, 255, 0.96);
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border: 1.5px solid #10b981;
     border-radius: 1.15rem;
     box-shadow: 
-        0 16px 36px -10px rgba(5, 150, 105, 0.20),
-        0 0 0 1px rgba(245, 158, 11, 0.14),
+        0 16px 36px -10px rgba(5, 150, 105, 0.22),
+        0 0 0 1px rgba(245, 158, 11, 0.12),
         0 3px 10px rgba(15, 23, 42, 0.03);
     position: relative;
     z-index: 10;
 }
+.ur-hps-pass-card--buyer::before {
+    background: linear-gradient(90deg, #059669, #34d399, #047857);
+}
 .ur-hps-pass-card--buyer:hover {
     transform: translateY(-3px);
     box-shadow: 
-        0 20px 42px -10px rgba(5, 150, 105, 0.26),
+        0 20px 42px -10px rgba(5, 150, 105, 0.28),
         0 0 0 1.5px rgba(16, 185, 129, 0.4),
         0 6px 16px rgba(15, 23, 42, 0.05);
 }
 
-/* Card Header with Emblem */
+/* Card Header with Plan Identity Pill */
 .ur-hps-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.55rem;
+    margin-bottom: 0.65rem;
 }
 
-.ur-hps-brand-tag {
+.ur-hps-card-title-group {
     display: flex;
     align-items: center;
-    gap: 0.32rem;
-    font-size: 0.68rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #334155;
+    gap: 0.45rem;
 }
 
-.ur-hps-brand-tag span.ur-accent {
-    color: #2563eb;
+.ur-hps-card-tier-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.22rem 0.6rem;
+    border-radius: 9999px;
+}
+
+.ur-hps-card-tier-pill--gold {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+.ur-hps-card-tier-pill--platinum {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+.ur-hps-card-tier-pill--silver {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+.ur-hps-card-tier-pill--buyer {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.ur-hps-card-brand-sub {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .ur-hps-card-emblem {
@@ -1025,31 +1082,31 @@
 
 /* Price Box */
 .ur-hps-price-box {
-    margin-bottom: 0.55rem;
-    padding-bottom: 0.52rem;
+    margin-bottom: 0.65rem;
+    padding-bottom: 0.58rem;
     border-bottom: 1px solid #f1f5f9;
 }
 
 .ur-hps-price-top {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
     margin-bottom: 0.12rem;
 }
 
 .ur-hps-price-original {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #94a3b8;
     text-decoration: line-through;
 }
 
 .ur-hps-save-chip {
-    font-size: 0.62rem;
+    font-size: 0.64rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.1rem 0.45rem;
+    padding: 0.12rem 0.48rem;
     border-radius: 9999px;
     background: #ecfdf5;
     color: #047857;
@@ -1064,66 +1121,71 @@
 }
 
 .ur-hps-currency {
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     font-weight: 900;
     color: #0f172a;
 }
 
 .ur-hps-amount {
-    font-size: 2.2rem;
+    font-size: 2.3rem;
     font-weight: 900;
     color: #0f172a;
     line-height: 1;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.04em;
 }
 
 .ur-hps-period {
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     font-weight: 600;
     color: #64748b;
+    margin-left: 0.2rem;
 }
 
 .ur-hps-price-subtext {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
     font-size: 0.68rem;
     font-weight: 700;
-    color: #059669;
-    display: flex;
-    align-items: center;
-    gap: 0.28rem;
-    margin-top: 0.15rem;
+    color: #047857;
+    background: #f0fdf4;
+    border: 1px solid #dcfce7;
+    padding: 0.16rem 0.55rem;
+    border-radius: 9999px;
+    margin-top: 0.3rem;
 }
 
 /* Card Specs Pill List */
 .ur-hps-card-meta {
     display: flex;
     flex-direction: column;
-    gap: 0.26rem;
-    margin-bottom: 0.55rem;
+    gap: 0.32rem;
+    margin-bottom: 0.65rem;
     background: #f8fafc;
-    padding: 0.42rem 0.65rem;
-    border-radius: 0.65rem;
-    border: 1px solid #f1f5f9;
+    padding: 0.52rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
 }
 
 .ur-hps-meta-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     color: #0f172a;
 }
 
 .ur-hps-meta-row span.meta-label {
-    color: #64748b;
+    color: #475569;
     display: flex;
     align-items: center;
-    gap: 0.28rem;
+    gap: 0.35rem;
     font-weight: 600;
 }
 
 .ur-hps-meta-row span.meta-label i {
     color: #059669;
-    font-size: 0.76rem;
+    font-size: 0.82rem;
 }
 
 .ur-hps-meta-row span.meta-value {
@@ -1133,19 +1195,20 @@
 
 .ur-hps-meta-row span.meta-value.meta-accent {
     color: #059669;
+    font-weight: 900;
 }
 
-/* Primary High-Impact Orange CTA Button */
+/* Primary High-Impact CTA Button */
 .ur-hps-cta-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
     width: 100%;
-    padding: 0.65rem 1.1rem;
+    padding: 0.7rem 1.15rem;
     border-radius: 0.75rem;
     font-family: inherit;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 900;
     letter-spacing: -0.01em;
     text-decoration: none;
@@ -1154,7 +1217,7 @@
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.28rem;
     border: none;
 }
 
@@ -1171,23 +1234,27 @@
 }
 
 .ur-hps-cta-btn--platinum {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     color: #ffffff !important;
     box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
 }
 .ur-hps-cta-btn--platinum:hover {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45);
     transform: translateY(-2px);
+    color: #ffffff !important;
 }
 
 .ur-hps-cta-btn--silver {
-    background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     color: #ffffff !important;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22);
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
 }
 .ur-hps-cta-btn--silver:hover {
-    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45);
     transform: translateY(-2px);
+    color: #ffffff !important;
 }
 
 .ur-hps-cta-btn--buyer {
@@ -1236,7 +1303,7 @@
     text-decoration: none;
     transition: color 0.2s ease;
     text-align: center;
-    padding-top: 0.2rem;
+    padding-top: 0.25rem;
 }
 
 .ur-hps-compare-link:hover {
@@ -1258,7 +1325,7 @@
     border: 1.5px solid #e2e8f0;
     border-radius: 1.15rem;
     overflow: hidden;
-    box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.02);
+    box-shadow: 0 10px 28px -8px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.02);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1288,12 +1355,12 @@
 }
 
 .ur-hps-photo-card--silver {
-    border-color: #cbd5e1;
-    box-shadow: 0 10px 26px -6px rgba(71, 85, 105, 0.12);
+    border-color: #bfdbfe;
+    box-shadow: 0 10px 26px -6px rgba(37, 99, 235, 0.12);
 }
 .ur-hps-photo-card--silver:hover {
-    border-color: #64748b;
-    box-shadow: 0 14px 32px -6px rgba(71, 85, 105, 0.20);
+    border-color: #2563eb;
+    box-shadow: 0 14px 32px -6px rgba(37, 99, 235, 0.20);
 }
 
 .ur-hps-photo-card--buyer {
@@ -1308,7 +1375,7 @@
 .ur-hps-pc-photo-wrapper {
     position: relative;
     width: 100%;
-    height: 112px;
+    height: 120px;
     overflow: hidden;
     background: #0f172a;
 }
@@ -1334,9 +1401,9 @@
 
 .ur-hps-pc-tag-overlay {
     position: absolute;
-    bottom: 0.45rem;
-    left: 0.6rem;
-    right: 0.6rem;
+    bottom: 0.48rem;
+    left: 0.65rem;
+    right: 0.65rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1368,9 +1435,9 @@
     border: 1px solid #bfdbfe;
 }
 .ur-hps-pc-badge--silver {
-    background: rgba(241, 245, 249, 0.96);
-    color: #334155;
-    border: 1px solid #cbd5e1;
+    background: rgba(239, 246, 255, 0.96);
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
 }
 .ur-hps-pc-badge--buyer {
     background: rgba(209, 250, 229, 0.96);
@@ -1393,103 +1460,114 @@
 }
 
 .ur-hps-pc-body {
-    padding: 0.65rem 0.85rem 0.6rem;
+    padding: 0.7rem 0.95rem 0.65rem;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+    background: #ffffff;
     flex: 1;
     justify-content: space-between;
 }
 
 .ur-hps-pc-title {
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.12rem;
+    margin: 0 0 0.15rem;
     letter-spacing: -0.015em;
 }
 
 .ur-hps-pc-sub {
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     color: #64748b;
-    line-height: 1.3;
-    margin: 0 0 0.35rem;
+    line-height: 1.35;
+    margin: 0 0 0.42rem;
 }
 
 .ur-hps-pc-list {
     display: flex;
     flex-direction: column;
-    gap: 0.24rem;
+    gap: 0.32rem;
 }
 
 .ur-hps-pc-row {
     display: flex;
     align-items: center;
-    gap: 0.32rem;
-    font-size: 0.68rem;
+    gap: 0.42rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: #1e293b;
 }
 
-.ur-hps-pc-row i {
+.ur-hps-pc-check {
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 50%;
+    background: #ecfdf5;
     color: #059669;
-    font-size: 0.78rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
     flex-shrink: 0;
 }
 
 .ur-hps-pc-trust-note {
-    margin-top: 0.35rem;
-    padding-top: 0.35rem;
-    border-top: 1px solid #f1f5f9;
+    margin-top: 0.45rem;
+    padding: 0.38rem 0.65rem;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 0.5rem;
     display: flex;
     align-items: center;
-    gap: 0.28rem;
-    font-size: 0.66rem;
+    gap: 0.35rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    color: #047857;
+    color: #0f172a;
 }
 
 .ur-hps-pc-trust-note i {
-    color: #f59e0b;
-    font-size: 0.72rem;
+    color: #d97706;
+    font-size: 0.75rem;
 }
 
-/* ─── 4. BOTTOM HORIZONTAL TRUST ROW (TRANSLUCENT FLOATING BAR) ── */
+/* ─── 4. BOTTOM HORIZONTAL TRUST ROW (SOLID HIGH-CONTRAST BAR) ── */
 .ur-hps-trust-bar {
     grid-column: 1 / -1;
+    position: relative;
+    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.6rem;
+    gap: 1.75rem;
     flex-wrap: wrap;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(226, 232, 240, 0.88);
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0;
     border-radius: 9999px;
-    padding: 0.42rem 1.45rem;
-    margin-top: 0.75rem;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
-    font-size: 0.74rem;
+    padding: 0.48rem 1.65rem;
+    margin-top: 0.85rem;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+    font-size: 0.76rem;
     font-weight: 700;
-    color: #334155;
+    color: #0f172a !important;
     transition: all 0.25s ease;
 }
 
 .ur-hps-trust-bar:hover {
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
     border-color: #cbd5e1;
 }
 
 .ur-hps-tb-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.38rem;
+    color: #0f172a !important;
+    font-weight: 700;
 }
 
 .ur-hps-tb-item i {
     color: #059669;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
 }
 
 .ur-hps-tb-divider {
@@ -2186,11 +2264,14 @@
                             {{-- PART 2: CENTER COLUMN (Compact High-Conversion Pricing Card) --}}
                             <div class="ur-hps-col-center">
                                 <div class="ur-hps-pass-card ur-hps-pass-card--{{ $s['theme'] }}">
-                                    {{-- Card Header --}}
+                                    {{-- Card Header with Plan Identity --}}
                                     <div class="ur-hps-card-header">
-                                        <div class="ur-hps-brand-tag">
-                                            <i class="ph-bold ph-key"></i>
-                                            <span>Unlock<span class="ur-accent">Rentals</span> Pass</span>
+                                        <div class="ur-hps-card-title-group">
+                                            <span class="ur-hps-card-tier-pill ur-hps-card-tier-pill--{{ $s['theme'] }}">
+                                                <i class="ph-fill {{ $s['theme'] === 'gold' ? 'ph-crown' : ($s['theme'] === 'platinum' ? 'ph-sparkle' : ($s['theme'] === 'buyer' ? 'ph-buildings' : 'ph-shield-check')) }}"></i>
+                                                {{ $s['tab_label'] }}
+                                            </span>
+                                            <span class="ur-hps-card-brand-sub">Direct Pass</span>
                                         </div>
                                         <div class="ur-hps-card-emblem">
                                             @if($s['theme'] === 'gold')
@@ -2276,7 +2357,7 @@
                                         @foreach($s['specs'] as $spec)
                                             <div class="ur-hps-meta-row">
                                                 <span class="meta-label">
-                                                    <i class="ph-bold ph-check-circle"></i> {{ $spec['label'] }}:
+                                                    <i class="ph-bold {{ str_contains(strtolower($spec['label']), 'contact') || str_contains(strtolower($spec['label']), 'seller') ? 'ph-phone-call' : (str_contains(strtolower($spec['label']), 'duration') || str_contains(strtolower($spec['label']), 'validity') ? 'ph-calendar-check' : 'ph-shield-check') }}"></i> {{ $spec['label'] }}:
                                                 </span>
                                                 <span class="meta-value {{ !empty($spec['accent']) ? 'meta-accent' : '' }}">
                                                     {{ $spec['value'] }}
@@ -2341,7 +2422,7 @@
                                             <div class="ur-hps-pc-list">
                                                 @foreach($s['visual']['perks'] as $perk)
                                                     <div class="ur-hps-pc-row">
-                                                        <i class="ph-bold ph-check"></i>
+                                                        <span class="ur-hps-pc-check"><i class="ph-bold ph-check"></i></span>
                                                         <span>{{ $perk }}</span>
                                                     </div>
                                                 @endforeach
