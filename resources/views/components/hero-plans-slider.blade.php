@@ -2521,7 +2521,6 @@
 
         let currentIndex = 0;
         let autoSlideTimer = null;
-        let isUserInteracting = false;
         let resumeTimer = null;
 
         // Theme colors for background glow orbs
@@ -2549,23 +2548,18 @@
             if (index >= totalSlides) index = 0;
             currentIndex = index;
 
-            const targetSlide = slides[currentIndex];
             if (instant) {
                 track.style.transition = 'none';
             } else {
-                track.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1)';
+                track.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
             }
 
-            // Accurate physical slide displacement using exact slide offsetLeft
-            if (targetSlide) {
-                track.style.transform = `translateX(-${targetSlide.offsetLeft}px)`;
-            } else {
-                track.style.transform = `translateX(-${currentIndex * 100}%)`;
-            }
+            // Reliable 100% relative offset translation
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
             if (instant) {
                 void track.offsetWidth; // Force reflow
-                track.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1)';
+                track.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
             }
 
             // Update dots
@@ -2596,12 +2590,15 @@
                 }
             });
 
-            // Update top tabs
+            // Update top tabs and smoothly center the active tab
             tabs.forEach((tab, i) => {
                 const theme = tab.getAttribute('data-theme') || 'gold';
                 if (i === currentIndex) {
                     tab.classList.add('active', 'tab--' + theme);
                     tab.setAttribute('aria-selected', 'true');
+                    try {
+                        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } catch (e) {}
                 } else {
                     tab.classList.remove('active', 'tab--' + theme);
                     tab.setAttribute('aria-selected', 'false');
@@ -2619,20 +2616,20 @@
         }
 
         function nextSlide() {
-            goToSlide(currentIndex + 1);
+            goToSlide((currentIndex + 1) % totalSlides);
         }
 
         function prevSlide() {
-            goToSlide(currentIndex - 1);
+            goToSlide((currentIndex - 1 + totalSlides) % totalSlides);
         }
 
         function startAutoPlay() {
             stopAutoPlay();
             autoSlideTimer = setInterval(() => {
-                if (!isUserInteracting && document.visibilityState !== 'hidden') {
+                if (document.visibilityState !== 'hidden') {
                     nextSlide();
                 }
-            }, 5500);
+            }, 3500); // Smooth continuous 3.5s auto slide
         }
 
         function stopAutoPlay() {
@@ -2642,50 +2639,48 @@
             }
         }
 
-        function pauseAndResume() {
-            isUserInteracting = true;
+        function restartAutoPlay() {
             stopAutoPlay();
             if (resumeTimer) clearTimeout(resumeTimer);
             resumeTimer = setTimeout(() => {
-                isUserInteracting = false;
                 startAutoPlay();
-            }, 8000);
+            }, 3500);
         }
 
         // Export global controller functions for instant inline onclick support
         window.urGoToHeroSlide = function(idx) {
-            pauseAndResume();
             goToSlide(idx);
+            restartAutoPlay();
         };
         window.urNextHeroSlide = function() {
-            pauseAndResume();
             nextSlide();
+            restartAutoPlay();
         };
         window.urPrevHeroSlide = function() {
-            pauseAndResume();
             prevSlide();
+            restartAutoPlay();
         };
 
         // Arrow Listeners
         prevBtn?.addEventListener('click', (e) => {
             e.preventDefault();
-            pauseAndResume();
             prevSlide();
+            restartAutoPlay();
         });
 
         nextBtn?.addEventListener('click', (e) => {
             e.preventDefault();
-            pauseAndResume();
             nextSlide();
+            restartAutoPlay();
         });
 
         // Tab Listeners
         tabs.forEach((tab) => {
             tab.addEventListener('click', (e) => {
                 e.preventDefault();
-                pauseAndResume();
                 const targetIdx = parseInt(tab.getAttribute('data-target-index') || '0', 10);
                 goToSlide(targetIdx);
+                restartAutoPlay();
             });
         });
 
@@ -2693,17 +2688,15 @@
         dots.forEach((dot) => {
             dot.addEventListener('click', (e) => {
                 e.preventDefault();
-                pauseAndResume();
                 const targetIdx = parseInt(dot.getAttribute('data-index') || '0', 10);
                 goToSlide(targetIdx);
+                restartAutoPlay();
             });
         });
 
-        // Pause on Hover
+        // Pause on Desktop Hover and resume immediately on leave
         stage.addEventListener('mouseenter', () => stopAutoPlay());
-        stage.addEventListener('mouseleave', () => {
-            if (!isUserInteracting) startAutoPlay();
-        });
+        stage.addEventListener('mouseleave', () => startAutoPlay());
 
         // Recalculate position on window resize
         window.addEventListener('resize', () => {
@@ -2714,7 +2707,7 @@
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
                 stopAutoPlay();
-            } else if (!isUserInteracting) {
+            } else {
                 startAutoPlay();
             }
         });
@@ -2728,7 +2721,7 @@
         stage.addEventListener('touchstart', (e) => {
             touchStartX = e.changedTouches[0].screenX;
             touchStartY = e.changedTouches[0].screenY;
-            pauseAndResume();
+            stopAutoPlay();
         }, { passive: true });
 
         stage.addEventListener('touchend', (e) => {
@@ -2736,14 +2729,14 @@
             touchEndY = e.changedTouches[0].screenY;
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
-            if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+            if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
                 if (diffX < 0) {
                     nextSlide();
                 } else {
                     prevSlide();
                 }
             }
-            pauseAndResume();
+            restartAutoPlay();
         }, { passive: true });
 
         // Initial Slide Selection
