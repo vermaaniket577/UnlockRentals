@@ -295,7 +295,7 @@
     width: 100%;
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
     color: #0f172a;
-    padding: 0.95rem 0 0.75rem; /* Ultra-compact height: fits effortlessly in viewport */
+    padding: 0.75rem 0 0.5rem; /* Ultra-compact sleek height */
     overflow: hidden;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     border-top: 1px solid #e2e8f0;
@@ -359,37 +359,37 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.45rem;
     flex-wrap: wrap;
 }
 
 .ur-hps-top-heading {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    font-size: 0.75rem;
+    gap: 0.4rem;
+    font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: #1e40af;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
-    padding: 0.25rem 0.8rem;
+    padding: 0.2rem 0.65rem;
     border-radius: 9999px;
 }
 
 .ur-hps-top-heading i {
     color: #d97706;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 /* Quick Jump Plan Tabs Nav Bar */
 .ur-hps-tabs-bar {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
     flex-wrap: wrap;
-    padding: 0.2rem;
+    padding: 0.18rem;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
@@ -399,14 +399,14 @@
 .ur-hps-tab-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.32rem 0.8rem;
+    gap: 0.32rem;
+    padding: 0.24rem 0.68rem;
     border-radius: 9999px;
     border: 1px solid transparent;
     background: transparent;
     color: #64748b;
     font-family: inherit;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -447,11 +447,11 @@
 }
 
 .ur-hps-tab-pill {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.12rem 0.45rem;
+    padding: 0.08rem 0.38rem;
     border-radius: 9999px;
     background: #e2e8f0;
     color: #475569;
@@ -469,16 +469,17 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.5rem;
-    box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+    border-radius: 1.25rem;
+    box-shadow: 0 14px 34px -10px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.03);
     overflow: hidden;
 }
 
 /* Slide Track */
 .ur-hps-track {
     display: flex;
+    flex-wrap: nowrap;
     width: 100%;
-    transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
+    transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
     will-change: transform;
 }
 
@@ -486,7 +487,9 @@
 .ur-hps-slide {
     flex: 0 0 100%;
     width: 100%;
-    padding: 0.8rem 1.25rem 0.6rem; /* Tight compact slide padding */
+    min-width: 100%;
+    max-width: 100%;
+    padding: 0.65rem 1.15rem 0.5rem; /* Ultra-compact slide padding */
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
@@ -641,7 +644,7 @@
 .ur-hps-desktop-grid {
     display: grid;
     grid-template-columns: 1.15fr 0.98fr 0.75fr; /* Left (Value) · Center (Pricing) · Right (Visual) */
-    gap: 1rem;
+    gap: 0.85rem;
     align-items: stretch;
     width: 100%;
 }
@@ -652,20 +655,20 @@
     flex-direction: column;
     justify-content: space-between;
     z-index: 5;
-    padding-right: 0.35rem;
+    padding-right: 0.25rem;
 }
 
 .ur-hps-plan-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.65rem;
+    gap: 0.3rem;
+    font-size: 0.62rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 0.22rem 0.7rem;
+    padding: 0.16rem 0.6rem;
     border-radius: 9999px;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.22rem;
     width: fit-content;
 }
 
@@ -694,12 +697,12 @@
 }
 
 .ur-hps-slide-title {
-    font-size: clamp(1.35rem, 1.7vw, 1.7rem); /* Compact bold heading ~28-32px */
+    font-size: clamp(1.22rem, 1.55vw, 1.48rem); /* Compact bold heading ~24-28px */
     font-weight: 900;
     color: #0f172a;
-    line-height: 1.14;
+    line-height: 1.12;
     letter-spacing: -0.025em;
-    margin: 0 0 0.3rem;
+    margin: 0 0 0.2rem;
 }
 
 .ur-hps-slide-title .highlight-gold {
@@ -732,10 +735,10 @@
 }
 
 .ur-hps-slide-desc {
-    font-size: 0.78rem;
+    font-size: 0.73rem;
     color: #475569;
-    line-height: 1.35;
-    margin: 0 0 0.5rem;
+    line-height: 1.28;
+    margin: 0 0 0.35rem;
     max-width: 480px;
 }
 
@@ -743,18 +746,18 @@
 .ur-hps-features-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.4rem;
+    gap: 0.32rem;
     width: 100%;
 }
 
 .ur-hps-feature-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
-    padding: 0.42rem 0.6rem;
+    gap: 0.42rem;
+    padding: 0.32rem 0.5rem;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
+    border-radius: 0.65rem;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
     transition: all 0.22s ease;
 }
@@ -766,15 +769,15 @@
 }
 
 .ur-hps-f-icon-box {
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 0.5rem;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 0.45rem;
     background: #eff6ff;
     color: #2563eb;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     flex-shrink: 0;
 }
 
@@ -798,7 +801,7 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(167, 243, 208, 0.85);
-    border-radius: 16px; /* 16px compact radius */
+    border-radius: 14px;
     box-shadow: 0 2px 6px rgba(5, 150, 105, 0.04);
     transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -811,23 +814,23 @@
     background: #ecfdf5;
     color: #059669;
     border: 1px solid #d1fae5;
-    border-radius: 0.5rem;
+    border-radius: 0.45rem;
 }
 
 .ur-hps-f-text h4 {
-    font-size: 0.75rem;
+    font-size: 0.71rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.08rem;
+    margin: 0 0 0.04rem;
     letter-spacing: -0.01em;
-    line-height: 1.2;
+    line-height: 1.18;
 }
 
 .ur-hps-f-text p {
-    font-size: 0.66rem;
+    font-size: 0.62rem;
     color: #64748b;
     margin: 0;
-    line-height: 1.2;
+    line-height: 1.15;
 }
 
 /* ─── 2. CENTER COLUMN: COMPACT PRICING CARD ─────────────── */
@@ -843,10 +846,10 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.15rem;
-    padding: 0.82rem 1rem; /* Compact padding eliminates vertical stretch */
+    border-radius: 1rem;
+    padding: 0.65rem 0.85rem; /* Ultra-compact padding */
     box-sizing: border-box;
-    box-shadow: 0 10px 28px -6px rgba(15, 23, 42, 0.07), 0 2px 5px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.06), 0 2px 5px rgba(0, 0, 0, 0.02);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
     overflow: hidden;
     display: flex;
@@ -860,35 +863,35 @@
 
 .ur-hps-pass-card--gold {
     border-color: #fde047;
-    box-shadow: 0 12px 32px -6px rgba(245, 158, 11, 0.18), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 28px -6px rgba(245, 158, 11, 0.16), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 .ur-hps-pass-card--platinum {
     border-color: #93c5fd;
-    box-shadow: 0 12px 32px -6px rgba(37, 99, 235, 0.18), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 28px -6px rgba(37, 99, 235, 0.16), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 .ur-hps-pass-card--silver {
     border-color: #cbd5e1;
-    box-shadow: 0 12px 32px -6px rgba(71, 85, 105, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 28px -6px rgba(71, 85, 105, 0.12), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 .ur-hps-pass-card--buyer {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border: 1.5px solid #10b981;
-    border-radius: 22px;
+    border-radius: 16px;
     box-shadow: 
-        0 20px 45px -10px rgba(5, 150, 105, 0.22),
-        0 0 0 1px rgba(245, 158, 11, 0.16),
-        0 4px 14px rgba(15, 23, 42, 0.04);
+        0 16px 36px -10px rgba(5, 150, 105, 0.18),
+        0 0 0 1px rgba(245, 158, 11, 0.14),
+        0 3px 10px rgba(15, 23, 42, 0.03);
     position: relative;
     z-index: 10;
 }
 .ur-hps-pass-card--buyer:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     box-shadow: 
-        0 26px 52px -10px rgba(5, 150, 105, 0.28),
-        0 0 0 1.5px rgba(16, 185, 129, 0.45),
-        0 8px 22px rgba(15, 23, 42, 0.06);
+        0 20px 42px -10px rgba(5, 150, 105, 0.24),
+        0 0 0 1.5px rgba(16, 185, 129, 0.4),
+        0 6px 16px rgba(15, 23, 42, 0.05);
 }
 
 /* Card Header with Emblem */
@@ -896,14 +899,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.42rem;
+    margin-bottom: 0.28rem;
 }
 
 .ur-hps-brand-tag {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.68rem;
+    gap: 0.3rem;
+    font-size: 0.65rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -915,9 +918,9 @@
 }
 
 .ur-hps-card-emblem {
-    width: 1.85rem;
-    height: 1.85rem;
-    border-radius: 0.55rem;
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -927,37 +930,37 @@
 }
 
 .ur-emblem-svg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.15rem;
+    height: 1.15rem;
 }
 
 /* Price Box */
 .ur-hps-price-box {
-    margin-bottom: 0.42rem;
-    padding-bottom: 0.42rem;
+    margin-bottom: 0.28rem;
+    padding-bottom: 0.28rem;
     border-bottom: 1px solid #f1f5f9;
 }
 
 .ur-hps-price-top {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.12rem;
+    gap: 0.35rem;
+    margin-bottom: 0.08rem;
 }
 
 .ur-hps-price-original {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #94a3b8;
     text-decoration: line-through;
 }
 
 .ur-hps-save-chip {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.1rem 0.42rem;
+    padding: 0.08rem 0.35rem;
     border-radius: 9999px;
     background: #ecfdf5;
     color: #047857;
@@ -967,18 +970,18 @@
 .ur-hps-price-main {
     display: flex;
     align-items: baseline;
-    gap: 0.2rem;
-    margin-bottom: 0.12rem;
+    gap: 0.18rem;
+    margin-bottom: 0.08rem;
 }
 
 .ur-hps-currency {
-    font-size: 1.2rem;
+    font-size: 1.05rem;
     font-weight: 900;
     color: #0f172a;
 }
 
 .ur-hps-amount {
-    font-size: 2.05rem; /* Compact dominant price */
+    font-size: 1.85rem; /* Ultra-compact dominant price */
     font-weight: 900;
     color: #0f172a;
     line-height: 1;
@@ -986,29 +989,29 @@
 }
 
 .ur-hps-period {
-    font-size: 0.74rem;
+    font-size: 0.68rem;
     font-weight: 600;
     color: #64748b;
 }
 
 .ur-hps-price-subtext {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
     font-weight: 700;
     color: #059669;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.22rem;
 }
 
 /* Card Specs Pill List */
 .ur-hps-card-meta {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    margin-bottom: 0.42rem;
+    gap: 0.18rem;
+    margin-bottom: 0.28rem;
     background: #f8fafc;
-    padding: 0.38rem 0.65rem;
-    border-radius: 0.65rem;
+    padding: 0.28rem 0.55rem;
+    border-radius: 0.55rem;
     border: 1px solid #f1f5f9;
 }
 
@@ -1016,7 +1019,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.72rem;
+    font-size: 0.67rem;
     color: #0f172a;
 }
 
@@ -1024,13 +1027,13 @@
     color: #64748b;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.22rem;
     font-weight: 600;
 }
 
 .ur-hps-meta-row span.meta-label i {
     color: #059669;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
 }
 
 .ur-hps-meta-row span.meta-value {
@@ -1047,12 +1050,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: 0.4rem;
     width: 100%;
-    padding: 0.62rem 0.9rem;
-    border-radius: 0.75rem;
+    padding: 0.52rem 0.85rem;
+    border-radius: 0.65rem;
     font-family: inherit;
-    font-size: 0.86rem;
+    font-size: 0.82rem;
     font-weight: 900;
     letter-spacing: -0.01em;
     text-decoration: none;
@@ -1061,7 +1064,7 @@
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
-    margin-bottom: 0.22rem;
+    margin-bottom: 0.16rem;
     border: none;
 }
 
@@ -1164,8 +1167,8 @@
     width: 100%;
     background: linear-gradient(160deg, #ffffff 0%, #fffdf7 60%, #fffbeb 100%);
     border: 1px solid #fde68a;
-    border-radius: 1.15rem;
-    padding: 0.75rem 0.85rem;
+    border-radius: 1rem;
+    padding: 0.55rem 0.7rem;
     box-sizing: border-box;
     box-shadow: 0 6px 20px rgba(245, 158, 11, 0.08);
     display: flex;
@@ -1194,12 +1197,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
 }
 
 .ur-hps-house-svg {
     width: 100%;
-    max-width: 105px;
+    max-width: 85px;
     height: auto;
     display: block;
     margin: 0 auto;
@@ -1208,53 +1211,53 @@
 .ur-hps-vc-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    font-size: 0.62rem;
+    gap: 0.28rem;
+    font-size: 0.58rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 0.18rem 0.5rem;
+    padding: 0.14rem 0.45rem;
     border-radius: 9999px;
     background: #fef3c7;
     color: #b45309;
     border: 1px solid #fde68a;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.2rem;
     width: fit-content;
 }
 
 .ur-hps-vc-title {
-    font-size: 0.84rem;
+    font-size: 0.76rem;
     font-weight: 900;
     color: #0f172a;
-    margin: 0 0 0.12rem;
+    margin: 0 0 0.08rem;
     letter-spacing: -0.015em;
 }
 
 .ur-hps-vc-sub {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
     color: #64748b;
-    line-height: 1.25;
-    margin: 0 0 0.35rem;
+    line-height: 1.22;
+    margin: 0 0 0.22rem;
 }
 
 .ur-hps-vc-list {
     display: flex;
     flex-direction: column;
-    gap: 0.22rem;
+    gap: 0.16rem;
 }
 
 .ur-hps-vc-row {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.68rem;
+    gap: 0.3rem;
+    font-size: 0.64rem;
     font-weight: 700;
     color: #1e293b;
 }
 
 .ur-hps-vc-row i {
     color: #059669;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     flex-shrink: 0;
 }
 
@@ -1264,9 +1267,9 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid rgba(167, 243, 208, 0.85);
-    border-radius: 18px;
+    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 10px 28px -8px rgba(5, 150, 105, 0.14), 0 2px 5px rgba(15, 23, 42, 0.03);
+    box-shadow: 0 8px 22px -8px rgba(5, 150, 105, 0.14), 0 2px 5px rgba(15, 23, 42, 0.03);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1275,13 +1278,13 @@
 
 .ur-buyer-visual-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 16px 36px -8px rgba(5, 150, 105, 0.22);
+    box-shadow: 0 14px 30px -8px rgba(5, 150, 105, 0.2);
 }
 
 .ur-buyer-vc-photo-wrapper {
     position: relative;
     width: 100%;
-    height: 96px; /* Tight compact photo height */
+    height: 80px; /* Ultra-compact photo height */
     overflow: hidden;
     background: #0f172a;
 }
@@ -1307,9 +1310,9 @@
 
 .ur-buyer-vc-tag-overlay {
     position: absolute;
-    bottom: 0.45rem;
-    left: 0.65rem;
-    right: 0.65rem;
+    bottom: 0.35rem;
+    left: 0.5rem;
+    right: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1319,12 +1322,12 @@
 .ur-buyer-vc-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    font-size: 0.6rem;
+    gap: 0.25rem;
+    font-size: 0.58rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 0.18rem 0.5rem;
+    padding: 0.14rem 0.45rem;
     border-radius: 9999px;
     background: rgba(254, 243, 199, 0.96);
     color: #b45309;
@@ -1334,77 +1337,77 @@
 }
 
 .ur-buyer-vc-subtag {
-    font-size: 0.58rem;
+    font-size: 0.55rem;
     font-weight: 700;
     color: #ffffff;
     background: rgba(5, 150, 105, 0.92);
-    padding: 0.15rem 0.45rem;
+    padding: 0.12rem 0.4rem;
     border-radius: 9999px;
     backdrop-filter: blur(4px);
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.22rem;
     box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
 }
 
 .ur-buyer-vc-body {
-    padding: 0.55rem 0.8rem 0.6rem; /* Tight compact body */
+    padding: 0.42rem 0.65rem 0.45rem; /* Ultra-compact body */
     display: flex;
     flex-direction: column;
     background: linear-gradient(180deg, #ffffff 0%, #f7fdf9 100%);
 }
 
 .ur-buyer-vc-title {
-    font-size: 0.82rem;
+    font-size: 0.76rem;
     font-weight: 900;
     color: #0f172a;
-    margin: 0 0 0.12rem;
+    margin: 0 0 0.08rem;
     letter-spacing: -0.015em;
 }
 
 .ur-buyer-vc-sub {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
     color: #64748b;
-    line-height: 1.25;
-    margin: 0 0 0.35rem;
+    line-height: 1.22;
+    margin: 0 0 0.22rem;
 }
 
 .ur-buyer-vc-list {
     display: flex;
     flex-direction: column;
-    gap: 0.22rem;
+    gap: 0.16rem;
 }
 
 .ur-buyer-vc-row {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.68rem;
+    gap: 0.3rem;
+    font-size: 0.64rem;
     font-weight: 700;
     color: #1e293b;
 }
 
 .ur-buyer-vc-row i {
     color: #059669;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     flex-shrink: 0;
 }
 
 .ur-buyer-vc-trust-note {
-    margin-top: 0.35rem;
-    padding-top: 0.35rem;
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
     border-top: 1px solid #f1f5f9;
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    font-size: 0.65rem;
+    gap: 0.25rem;
+    font-size: 0.62rem;
     font-weight: 700;
     color: #047857;
 }
 
 .ur-buyer-vc-trust-note i {
     color: #f59e0b;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
 }
 
 /* ─── 4. BOTTOM HORIZONTAL TRUST ROW (TRANSLUCENT FLOATING BAR) ── */
@@ -1413,41 +1416,41 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.25rem;
+    gap: 1rem;
     flex-wrap: wrap;
     background: rgba(255, 255, 255, 0.86);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(167, 243, 208, 0.7);
     border-radius: 9999px;
-    padding: 0.35rem 1.25rem;
-    margin-top: 0.45rem;
-    box-shadow: 0 3px 12px rgba(5, 150, 105, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
-    font-size: 0.71rem;
+    padding: 0.28rem 1rem;
+    margin-top: 0.35rem;
+    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    font-size: 0.68rem;
     font-weight: 700;
     color: #334155;
     transition: all 0.25s ease;
 }
 
 .ur-hps-trust-bar:hover {
-    box-shadow: 0 5px 18px rgba(5, 150, 105, 0.1);
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.1);
     border-color: rgba(16, 185, 129, 0.85);
 }
 
 .ur-hps-tb-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
 }
 
 .ur-hps-tb-item i {
     color: #059669;
-    font-size: 0.88rem;
+    font-size: 0.82rem;
 }
 
 .ur-hps-tb-divider {
-    width: 3.5px;
-    height: 3.5px;
+    width: 3px;
+    height: 3px;
     border-radius: 50%;
     background: #cbd5e1;
 }
@@ -1457,8 +1460,8 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 2.15rem;
-    height: 2.15rem;
+    width: 1.95rem;
+    height: 1.95rem;
     border-radius: 50%;
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -1466,7 +1469,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     cursor: pointer;
     z-index: 20;
     transition: all 0.25s ease;
@@ -1481,8 +1484,8 @@
     box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
 }
 
-.ur-hps-arrow--prev { left: 0.65rem; }
-.ur-hps-arrow--next { right: 0.65rem; }
+.ur-hps-arrow--prev { left: 0.5rem; }
+.ur-hps-arrow--next { right: 0.5rem; }
 
 /* Bottom Nav Indicator Dots */
 .ur-hps-bottom-bar {
@@ -1490,7 +1493,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-top: 0.45rem;
+    margin-top: 0.35rem;
     padding: 0 0.5rem;
 }
 
@@ -1702,6 +1705,7 @@
                             data-target-index="{{ $idx }}"
                             data-theme="{{ $s['theme'] }}"
                             role="tab"
+                            onclick="if(window.urGoToHeroSlide){ window.urGoToHeroSlide({{ $idx }}); }"
                             aria-selected="{{ $idx === 0 ? 'true' : 'false' }}"
                             title="{{ $s['tab_label'] }}">
                         <i class="ph-bold {{ $s['tab_icon'] }}"></i>
@@ -1717,10 +1721,10 @@
         {{-- Slider Stage --}}
         <div class="ur-hps-slider-stage" id="heroPlanSliderStage">
             {{-- Prev & Next Navigation Arrows --}}
-            <button type="button" class="ur-hps-arrow ur-hps-arrow--prev" id="heroPlanPrevBtn" aria-label="Previous Plan" title="Previous Plan">
+            <button type="button" class="ur-hps-arrow ur-hps-arrow--prev" id="heroPlanPrevBtn" onclick="if(window.urPrevHeroSlide){ window.urPrevHeroSlide(); }" aria-label="Previous Plan" title="Previous Plan">
                 <i class="ph-bold ph-caret-left"></i>
             </button>
-            <button type="button" class="ur-hps-arrow ur-hps-arrow--next" id="heroPlanNextBtn" aria-label="Next Plan" title="Next Plan">
+            <button type="button" class="ur-hps-arrow ur-hps-arrow--next" id="heroPlanNextBtn" onclick="if(window.urNextHeroSlide){ window.urNextHeroSlide(); }" aria-label="Next Plan" title="Next Plan">
                 <i class="ph-bold ph-caret-right"></i>
             </button>
 
@@ -2062,6 +2066,7 @@
                     <button type="button" 
                             class="ur-hps-dot {{ $idx === 0 ? 'active' : '' }}" 
                             data-index="{{ $idx }}" 
+                            onclick="if(window.urGoToHeroSlide){ window.urGoToHeroSlide({{ $idx }}); }"
                             aria-label="Slide {{ $idx + 1 }}" 
                             title="{{ $s['tab_label'] }}"></button>
                 @endforeach
@@ -2098,7 +2103,7 @@
         let isUserInteracting = false;
         let resumeTimer = null;
 
-        // Theme colors for background glow orbs (Soft Light Pastels)
+        // Theme colors for background glow orbs
         const themeGlows = {
             gold: { 
                 orb1: 'radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, rgba(251, 191, 36, 0.03) 50%, transparent 80%)', 
@@ -2118,13 +2123,29 @@
             }
         };
 
-        function goToSlide(index) {
+        function goToSlide(index, instant) {
             if (index < 0) index = totalSlides - 1;
             if (index >= totalSlides) index = 0;
             currentIndex = index;
 
-            // Move track
-            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            const targetSlide = slides[currentIndex];
+            if (instant) {
+                track.style.transition = 'none';
+            } else {
+                track.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1)';
+            }
+
+            // Accurate physical slide displacement using exact slide offsetLeft
+            if (targetSlide) {
+                track.style.transform = `translateX(-${targetSlide.offsetLeft}px)`;
+            } else {
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }
+
+            if (instant) {
+                void track.offsetWidth; // Force reflow
+                track.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1)';
+            }
 
             // Update dots
             const curSlide = slides[currentIndex];
@@ -2167,7 +2188,6 @@
             });
 
             // Adjust ambient glow orbs to match current slide's theme
-            const curSlide = slides[currentIndex];
             if (curSlide) {
                 const theme = curSlide.getAttribute('data-theme') || 'gold';
                 if (themeGlows[theme]) {
@@ -2188,7 +2208,7 @@
         function startAutoPlay() {
             stopAutoPlay();
             autoSlideTimer = setInterval(() => {
-                if (!isUserInteracting) {
+                if (!isUserInteracting && document.visibilityState !== 'hidden') {
                     nextSlide();
                 }
             }, 5500);
@@ -2208,8 +2228,22 @@
             resumeTimer = setTimeout(() => {
                 isUserInteracting = false;
                 startAutoPlay();
-            }, 7000);
+            }, 8000);
         }
+
+        // Export global controller functions for instant inline onclick support
+        window.urGoToHeroSlide = function(idx) {
+            pauseAndResume();
+            goToSlide(idx);
+        };
+        window.urNextHeroSlide = function() {
+            pauseAndResume();
+            nextSlide();
+        };
+        window.urPrevHeroSlide = function() {
+            pauseAndResume();
+            prevSlide();
+        };
 
         // Arrow Listeners
         prevBtn?.addEventListener('click', (e) => {
@@ -2245,12 +2279,21 @@
         });
 
         // Pause on Hover
-        stage.addEventListener('mouseenter', () => {
-            stopAutoPlay();
+        stage.addEventListener('mouseenter', () => stopAutoPlay());
+        stage.addEventListener('mouseleave', () => {
+            if (!isUserInteracting) startAutoPlay();
         });
 
-        stage.addEventListener('mouseleave', () => {
-            if (!isUserInteracting) {
+        // Recalculate position on window resize
+        window.addEventListener('resize', () => {
+            goToSlide(currentIndex, true);
+        }, { passive: true });
+
+        // Pause on tab visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                stopAutoPlay();
+            } else if (!isUserInteracting) {
                 startAutoPlay();
             }
         });
@@ -2270,11 +2313,6 @@
         stage.addEventListener('touchend', (e) => {
             touchEndX = e.changedTouches[0].screenX;
             touchEndY = e.changedTouches[0].screenY;
-            handleSwipe();
-            pauseAndResume();
-        }, { passive: true });
-
-        function handleSwipe() {
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
             if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
@@ -2284,38 +2322,22 @@
                     prevSlide();
                 }
             }
-        }
+            pauseAndResume();
+        }, { passive: true });
 
-        // Intersection observer: only run autoplay when in viewport
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        startAutoPlay();
-                    } else {
-                        stopAutoPlay();
-                    }
-                });
-            }, { threshold: 0.15 });
-            observer.observe(stage);
-        } else {
-            startAutoPlay();
-        }
-
-        // Initialize state (supports ?tab=buyer, ?type=buy, or #buyer-pass to show buyer slide directly)
+        // Initial Slide Selection
         let initialIndex = 0;
         try {
             const urlParams = new URLSearchParams(window.location.search);
             const hash = window.location.hash.toLowerCase();
             if (urlParams.get('tab') === 'buyer' || urlParams.get('plan') === 'buyer' || urlParams.get('type') === 'buy' || hash === '#buyer-pass' || hash === '#buyer' || hash === '#direct-buyer-pass') {
                 const buyerIdx = Array.from(slides).findIndex(s => s.getAttribute('data-theme') === 'buyer');
-                if (buyerIdx >= 0) {
-                    initialIndex = buyerIdx;
-                }
+                if (buyerIdx >= 0) initialIndex = buyerIdx;
             }
         } catch (e) {}
 
-        goToSlide(initialIndex);
+        goToSlide(initialIndex, true);
+        startAutoPlay();
     }
 
     if (document.readyState === 'loading') {
