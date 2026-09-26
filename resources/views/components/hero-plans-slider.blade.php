@@ -1548,49 +1548,69 @@
     font-size: 0.85rem;
 }
 
-/* ─── RESPONSIVE BEHAVIOR (MOBILE & TABLET: STANDALONE CARDS) ─── */
+/* ─── DESKTOP VS MOBILE DISPLAY TOGGLES ───────────────────── */
+.ur-hps-mobile-card {
+    display: none; /* Hidden by default on desktop */
+}
+
+.ur-mc-bottom-trust {
+    display: none; /* Hidden by default on desktop */
+}
+
+/* ─── RESPONSIVE BEHAVIOR (MOBILE & TABLET: 16:9 SLIDER CARDS) ─── */
 @media (max-width: 1023px) {
-    .ur-hero-plans-slider-section {
-        padding: 0.85rem 0 1.25rem;
+    /* Hide the complex tall desktop layout completely on mobile */
+    .ur-hps-desktop-grid {
+        display: none !important;
     }
+
+    /* Outer Section & Container: Sleek compact vertical padding */
+    .ur-hero-plans-slider-section {
+        padding: 0.65rem 0 0.85rem;
+    }
+
     .ur-hps-container {
         padding: 0 0.75rem;
         max-width: 100%;
     }
 
-    /* Top Quick Switcher & Controls */
+    /* Top Controls Header: Compact single row */
     .ur-hps-top-nav {
-        margin-bottom: 0.65rem;
+        margin-bottom: 0.45rem;
         flex-direction: column;
         align-items: stretch;
-        gap: 0.45rem;
+        gap: 0.35rem;
     }
+
     .ur-hps-top-left {
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
+
     .ur-hps-top-heading {
-        align-self: flex-start;
-        font-size: 0.74rem;
+        font-size: 0.72rem;
         font-weight: 800;
         color: #0f172a;
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.3rem;
     }
+
     .ur-hps-top-heading i {
         color: #059669;
-        font-size: 0.88rem;
+        font-size: 0.82rem;
     }
+
     .ur-hps-top-right {
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 0.45rem;
+        gap: 0.4rem;
     }
+
     .ur-hps-tabs-bar {
         flex: 1;
         overflow-x: auto;
@@ -1599,481 +1619,451 @@
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         background: #f1f5f9;
-        padding: 0.2rem;
+        padding: 0.18rem;
         border-radius: 9999px;
         gap: 0.2rem;
     }
+
     .ur-hps-tabs-bar::-webkit-scrollbar {
         display: none;
     }
+
     .ur-hps-tab-btn {
         flex: 0 0 auto;
-        padding: 0.32rem 0.65rem;
-        font-size: 0.74rem;
+        padding: 0.28rem 0.6rem;
+        font-size: 0.72rem;
         border-radius: 9999px;
     }
+
     .ur-hps-tab-btn.active {
         background: #ffffff;
-        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
     }
+
     .ur-hps-nav-arrows {
         flex-shrink: 0;
         background: #f1f5f9;
         border-radius: 9999px;
-        padding: 0.15rem;
+        padding: 0.12rem;
         display: inline-flex;
-        gap: 0.15rem;
-    }
-    .ur-hps-arrow-btn {
-        width: 1.85rem;
-        height: 1.85rem;
-        font-size: 1rem;
+        gap: 0.12rem;
     }
 
-    /* Slider Stage: Transparent Track Viewport (No outer border/shadow) */
+    .ur-hps-arrow-btn {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 0.92rem;
+    }
+
+    /* Slider Stage: Clean track wrapper without clipping shadows */
     .ur-hps-slider-stage {
         background: transparent !important;
         border: none !important;
         border-radius: 0 !important;
         box-shadow: none !important;
         overflow: hidden;
-        padding: 0.2rem 0.1rem 0.4rem;
+        padding: 0.15rem 0.05rem 0.35rem;
     }
 
-    /* Standalone Elevated Mobile Plan Card */
+    /* Slide container */
     .ur-hps-slide {
         flex: 0 0 100%;
         width: 100%;
         min-width: 100%;
         max-width: 100%;
         box-sizing: border-box;
-        border-radius: 1.35rem; /* 22px modern mobile card */
-        padding: 1.15rem 1rem 1rem;
+        padding: 0;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        position: relative;
+    }
+
+    /* ─── DEDICATED 16:9 SEPARATE MOBILE CARD ──────────────── */
+    .ur-hps-mobile-card {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        width: 100%;
+        /* True 16:9 proportion, keeping card ultra-compact */
+        aspect-ratio: 16 / 9.6;
+        min-height: 215px;
+        max-height: 250px;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        padding: 0.85rem 0.95rem 0.8rem;
+        box-sizing: border-box;
         border-width: 1.5px;
         border-style: solid;
-        position: relative;
-        overflow: hidden;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.3s ease;
     }
 
-    /* Theme Standalone Card Styling on Mobile */
-    .ur-hps-slide--gold {
+    /* Theme Card Borders, Gradients & Shadows */
+    .ur-hps-mobile-card--gold {
         border-color: #fde68a !important;
-        background: radial-gradient(circle at 90% 0%, rgba(254, 243, 199, 0.6) 0%, transparent 60%),
-                    linear-gradient(180deg, #fffdfa 0%, #ffffff 40%, #fffdf4 100%) !important;
-        box-shadow: 0 14px 34px -8px rgba(245, 158, 11, 0.18), 0 2px 8px rgba(15, 23, 42, 0.04);
+        background: radial-gradient(circle at 100% 0%, rgba(254, 243, 199, 0.65) 0%, transparent 60%),
+                    linear-gradient(135deg, #fffefc 0%, #ffffff 50%, #fffdf4 100%) !important;
+        box-shadow: 0 10px 26px -6px rgba(245, 158, 11, 0.18), 0 2px 6px rgba(15, 23, 42, 0.03);
     }
-    .ur-hps-slide--platinum {
+
+    .ur-hps-mobile-card--platinum {
         border-color: #bfdbfe !important;
-        background: radial-gradient(circle at 90% 0%, rgba(219, 234, 254, 0.6) 0%, transparent 60%),
-                    linear-gradient(180deg, #f8faff 0%, #ffffff 40%, #eff6ff 100%) !important;
-        box-shadow: 0 14px 34px -8px rgba(37, 99, 235, 0.18), 0 2px 8px rgba(15, 23, 42, 0.04);
+        background: radial-gradient(circle at 100% 0%, rgba(219, 234, 254, 0.65) 0%, transparent 60%),
+                    linear-gradient(135deg, #f8faff 0%, #ffffff 50%, #eff6ff 100%) !important;
+        box-shadow: 0 10px 26px -6px rgba(37, 99, 235, 0.18), 0 2px 6px rgba(15, 23, 42, 0.03);
     }
-    .ur-hps-slide--silver {
+
+    .ur-hps-mobile-card--silver {
         border-color: #cbd5e1 !important;
-        background: radial-gradient(circle at 90% 0%, rgba(241, 245, 249, 0.7) 0%, transparent 60%),
-                    linear-gradient(180deg, #fafbfc 0%, #ffffff 40%, #f1f5f9 100%) !important;
-        box-shadow: 0 14px 34px -8px rgba(71, 85, 105, 0.14), 0 2px 8px rgba(15, 23, 42, 0.04);
+        background: radial-gradient(circle at 100% 0%, rgba(241, 245, 249, 0.75) 0%, transparent 60%),
+                    linear-gradient(135deg, #fafbfc 0%, #ffffff 50%, #f1f5f9 100%) !important;
+        box-shadow: 0 10px 26px -6px rgba(71, 85, 105, 0.14), 0 2px 6px rgba(15, 23, 42, 0.03);
     }
-    .ur-hps-slide--buyer {
+
+    .ur-hps-mobile-card--buyer {
         border-color: #a7f3d0 !important;
-        background: radial-gradient(circle at 90% 0%, rgba(209, 250, 229, 0.6) 0%, transparent 60%),
-                    linear-gradient(180deg, #f8fcf9 0%, #ffffff 40%, #ecfdf5 100%) !important;
-        box-shadow: 0 14px 34px -8px rgba(5, 150, 105, 0.20), 0 2px 8px rgba(15, 23, 42, 0.04);
+        background: radial-gradient(circle at 100% 0%, rgba(209, 250, 229, 0.65) 0%, transparent 60%),
+                    linear-gradient(135deg, #f8fcf9 0%, #ffffff 50%, #ecfdf5 100%) !important;
+        box-shadow: 0 10px 26px -6px rgba(5, 150, 105, 0.20), 0 2px 6px rgba(15, 23, 42, 0.03);
     }
 
-    /* Unified Mobile Card Layout Flow */
-    .ur-hps-desktop-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .ur-hps-col-left {
-        padding-right: 0;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .ur-hps-plan-badge {
-        align-self: flex-start;
-        font-size: 0.63rem;
-        font-weight: 800;
-        padding: 0.22rem 0.65rem;
-        border-radius: 9999px;
-        margin-bottom: 0.45rem;
-        letter-spacing: 0.03em;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-    }
-
-    .ur-hps-slide-title {
-        font-size: clamp(1.22rem, 4.8vw, 1.45rem);
-        font-weight: 800;
-        line-height: 1.22;
-        margin: 0 0 0.35rem;
-        letter-spacing: -0.02em;
-        color: #0f172a;
-    }
-
-    .ur-hps-slide-desc {
-        font-size: 0.78rem;
-        color: #64748b;
-        line-height: 1.35;
-        margin: 0 0 0.65rem;
-    }
-
-    /* Standard Mobile Visual Photo Banner (Clean & High-Trust) */
-    .ur-hps-col-right {
-        display: block !important;
-        width: 100%;
-        margin: 0.1rem 0 0.7rem;
-    }
-    .ur-hps-photo-card {
-        border-radius: 0.85rem;
+    /* Subtle Real Estate Photo Backdrop in 16:9 Card */
+    .ur-mc-backdrop {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
         overflow: hidden;
-        border: 1px solid rgba(226, 232, 240, 0.85);
-        box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
-        background: #0f172a;
-        transform: none !important;
     }
-    .ur-hps-photo-card:hover {
-        transform: none !important;
-    }
-    .ur-hps-pc-photo-wrapper {
-        height: 92px;
-        width: 100%;
-        position: relative;
-    }
-    .ur-hps-pc-photo {
-        width: 100%;
+
+    .ur-mc-backdrop-img {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 58%;
         height: 100%;
         object-fit: cover;
-        object-position: center 32%;
+        object-position: center 30%;
+        opacity: 0.28;
+        filter: saturate(1.1);
+        mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,1) 100%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,1) 100%);
     }
-    .ur-hps-pc-scrim {
-        background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0.65) 100%);
+
+    .ur-mc-scrim {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, 
+            rgba(255, 255, 255, 0.98) 0%, 
+            rgba(255, 255, 255, 0.94) 48%, 
+            rgba(255, 255, 255, 0.72) 100%);
     }
-    .ur-hps-pc-tag-overlay {
-        bottom: 0.45rem;
-        left: 0.55rem;
-        right: 0.55rem;
+
+    /* Card Contents (Above Backdrop) */
+    .ur-mc-top-row,
+    .ur-mc-mid-content,
+    .ur-mc-footer-row {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* 1. Top Row */
+    .ur-mc-top-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-    }
-    .ur-hps-pc-badge {
-        font-size: 0.58rem;
-        padding: 0.16rem 0.48rem;
-        border-radius: 9999px;
-        font-weight: 800;
-    }
-    .ur-hps-pc-subtag {
-        font-size: 0.56rem;
-        padding: 0.14rem 0.42rem;
-        border-radius: 9999px;
-        font-weight: 700;
-    }
-    .ur-hps-pc-body {
-        display: none !important; /* Hide long perks text on mobile to keep vertical space compact */
+        margin-bottom: 0.25rem;
     }
 
-    /* Benefits: 2-Columns Clean Mobile Chips */
-    .ur-hps-features-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.45rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .ur-hps-feature-item {
-        background: rgba(255, 255, 255, 0.85);
-        border: 1px solid rgba(226, 232, 240, 0.85);
-        border-radius: 0.75rem;
-        padding: 0.45rem 0.55rem;
-        display: flex;
-        align-items: center;
-        gap: 0.45rem;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
-    }
-
-    .ur-hps-f-icon-box {
-        width: 1.85rem;
-        height: 1.85rem;
-        min-width: 1.85rem;
-        border-radius: 0.55rem;
-        font-size: 0.95rem;
-    }
-
-    .ur-hps-f-text {
-        min-width: 0;
-    }
-
-    .ur-hps-f-text h4 {
-        font-size: 0.74rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0 0 0.08rem;
-        line-height: 1.18;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .ur-hps-f-text p {
-        font-size: 0.64rem;
-        color: #64748b;
-        line-height: 1.15;
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /* Seamlessly Integrated Pricing & Action Module (No ugly double-card) */
-    .ur-hps-col-center {
-        width: 100%;
-    }
-
-    .ur-hps-pass-card {
-        background: rgba(255, 255, 255, 0.96);
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        border-radius: 1rem;
-        padding: 0.85rem 0.85rem 0.75rem;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-        transform: none !important;
-        box-sizing: border-box;
-        width: 100%;
-    }
-
-    .ur-hps-pass-card:hover {
-        transform: none !important;
-    }
-
-    .ur-hps-card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.35rem;
-    }
-
-    .ur-hps-brand-tag {
-        font-size: 0.65rem;
-        font-weight: 800;
-        letter-spacing: 0.04em;
-    }
-
-    .ur-hps-card-emblem {
-        width: 1.65rem;
-        height: 1.65rem;
-        border-radius: 0.45rem;
-    }
-
-    .ur-hps-price-box {
-        margin-bottom: 0.35rem;
-        padding-bottom: 0.35rem;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .ur-hps-price-top {
+    .ur-mc-badge-group {
         display: flex;
         align-items: center;
         gap: 0.35rem;
-        margin-bottom: 0.1rem;
     }
 
-    .ur-hps-price-original {
-        font-size: 0.78rem;
-        font-weight: 700;
-        color: #94a3b8;
-        text-decoration: line-through;
-    }
-
-    .ur-hps-save-chip {
-        font-size: 0.58rem;
-        font-weight: 800;
-        padding: 0.08rem 0.36rem;
-        border-radius: 9999px;
-    }
-
-    .ur-hps-price-main {
-        display: flex;
-        align-items: baseline;
-        gap: 0.2rem;
-        margin-bottom: 0.1rem;
-    }
-
-    .ur-hps-currency {
-        font-size: 1.15rem;
-        font-weight: 900;
-        color: #0f172a;
-    }
-
-    .ur-hps-amount {
-        font-size: 2.1rem;
-        font-weight: 900;
-        color: #0f172a;
-        line-height: 1;
-        letter-spacing: -0.035em;
-    }
-
-    .ur-hps-period {
-        font-size: 0.72rem;
-        font-weight: 600;
-        color: #64748b;
-    }
-
-    .ur-hps-price-subtext {
-        font-size: 0.68rem;
-        font-weight: 700;
-        color: #059669;
-        display: flex;
+    .ur-mc-badge {
+        display: inline-flex;
         align-items: center;
         gap: 0.25rem;
-        margin-top: 0.15rem;
+        font-size: 0.6rem;
+        font-weight: 800;
+        padding: 0.16rem 0.5rem;
+        border-radius: 9999px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
     }
 
-    .ur-hps-card-meta {
-        background: #f8fafc;
-        border: 1px solid #f1f5f9;
-        border-radius: 0.65rem;
-        padding: 0.32rem 0.6rem;
-        gap: 0.2rem;
-        margin-bottom: 0.45rem;
+    .ur-mc-badge--gold {
+        background: #fef3c7;
+        color: #b45309;
+        border: 1px solid #fde68a;
+    }
+    .ur-mc-badge--platinum {
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
+    }
+    .ur-mc-badge--silver {
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+    }
+    .ur-mc-badge--buyer {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
     }
 
-    .ur-hps-meta-row {
+    .ur-mc-save-chip {
+        font-size: 0.56rem;
+        font-weight: 800;
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        padding: 0.12rem 0.4rem;
+        border-radius: 9999px;
+        letter-spacing: 0.04em;
+    }
+
+    .ur-mc-direct-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.22rem;
+        font-size: 0.58rem;
+        font-weight: 800;
+        color: #047857;
+        background: rgba(236, 253, 245, 0.9);
+        padding: 0.14rem 0.45rem;
+        border-radius: 9999px;
+        border: 1px solid #a7f3d0;
+    }
+
+    /* 2. Middle Content */
+    .ur-mc-mid-content {
+        margin: 0.15rem 0 0.35rem;
+    }
+
+    .ur-mc-title {
+        font-size: 1.25rem;
+        font-weight: 900;
+        line-height: 1.15;
+        margin: 0 0 0.15rem;
+        letter-spacing: -0.025em;
+    }
+
+    .ur-mc-subtext {
+        font-size: 0.68rem;
+        color: #64748b;
+        font-weight: 600;
+        margin: 0 0 0.45rem;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* 2 Perks Chips */
+    .ur-mc-perks-row {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        flex-wrap: nowrap;
+    }
+
+    .ur-mc-perk-item {
+        flex: 1;
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(226, 232, 240, 0.85);
+        border-radius: 0.5rem;
+        padding: 0.28rem 0.45rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #1e293b;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+    }
+
+    .ur-mc-perk-item i {
+        color: #059669;
+        font-size: 0.78rem;
+        flex-shrink: 0;
+    }
+
+    .ur-mc-perk-item span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* 3. Footer Price & Quick Action Row */
+    .ur-mc-footer-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-size: 0.68rem;
+        gap: 0.65rem;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(226, 232, 240, 0.85);
+        border-radius: 0.85rem;
+        padding: 0.42rem 0.65rem;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
     }
 
-    .ur-hps-meta-row span.meta-label {
-        font-size: 0.68rem;
-        color: #64748b;
+    .ur-mc-price-wrap {
+        display: flex;
+        flex-direction: column;
     }
 
-    .ur-hps-meta-row span.meta-value {
-        font-size: 0.7rem;
-        font-weight: 800;
+    .ur-mc-price-line {
+        display: flex;
+        align-items: baseline;
+        gap: 0.18rem;
+        line-height: 1;
+    }
+
+    .ur-mc-curr {
+        font-size: 0.92rem;
+        font-weight: 900;
         color: #0f172a;
     }
 
-    /* Full-Width Mobile Action Button (Standard 48px Thumb Friendly) */
-    .ur-hps-cta-btn {
-        min-height: 48px;
-        padding: 0.75rem 1rem;
-        font-size: 0.92rem;
-        font-weight: 800;
-        border-radius: 0.75rem;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
-        box-sizing: border-box;
-        margin-bottom: 0.15rem;
+    .ur-mc-amt {
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: #0f172a;
+        letter-spacing: -0.03em;
     }
 
-    .ur-hps-cta-btn:active {
-        transform: scale(0.98);
-    }
-
-    .ur-hps-compare-link {
-        font-size: 0.72rem;
-        padding: 0.3rem 0 0.1rem;
-    }
-
-    /* Mobile background performance & subtle opacity */
-    .ur-buyer-bg-villa {
-        display: none;
-    }
-    .ur-buyer-bg-skyline {
-        opacity: 0.08;
-        filter: blur(1.5px);
-        animation: none;
-    }
-    .ur-buyer-bg-blueprint,
-    .ur-buyer-floating-accent {
-        display: none;
-    }
-
-    /* Horizontal Trust Bar (Pill with Verified Proof) */
-    .ur-hps-trust-bar {
-        background: rgba(255, 255, 255, 0.85);
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        border-radius: 9999px;
-        padding: 0.4rem 0.75rem;
-        margin-top: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        gap: 0.4rem;
-        font-size: 0.66rem;
+    .ur-mc-orig {
+        font-size: 0.74rem;
         font-weight: 700;
-        color: #475569;
-        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+        color: #94a3b8;
+        text-decoration: line-through;
+        margin-left: 0.25rem;
     }
 
-    .ur-hps-tb-item {
+    .ur-mc-per-day-line {
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #059669;
         display: inline-flex;
         align-items: center;
-        gap: 0.28rem;
+        gap: 0.18rem;
+        margin-top: 0.12rem;
     }
 
-    .ur-hps-tb-item i {
-        font-size: 0.78rem;
-        color: #059669;
+    .ur-mc-per-day-line i {
+        font-size: 0.68rem;
     }
 
-    .ur-hps-tb-divider {
-        width: 3px;
-        height: 3px;
-        border-radius: 50%;
-        background: #cbd5e1;
-    }
-
-    .ur-hps-bottom-bar {
-        margin-top: 0.75rem;
+    /* Action Button (Thumb-Friendly, Rounded Pill) */
+    .ur-mc-cta-btn {
+        display: inline-flex;
+        align-items: center;
         justify-content: center;
-        gap: 0.85rem;
+        gap: 0.35rem;
+        padding: 0.55rem 0.95rem;
+        border-radius: 9999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        white-space: nowrap;
+        border: none;
+    }
+
+    .ur-mc-cta-btn:active {
+        transform: scale(0.96);
+    }
+
+    .ur-mc-cta-btn--gold {
+        background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+    }
+    .ur-mc-cta-btn--platinum {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+    .ur-mc-cta-btn--silver {
+        background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
+    }
+    .ur-mc-cta-btn--buyer {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.38);
+    }
+
+    /* Compact Bottom Indicator Controls */
+    .ur-hps-bottom-bar {
+        margin-top: 0.45rem;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .ur-hps-dots {
+        gap: 0.35rem;
+    }
+
+    .ur-hps-dot {
+        width: 0.45rem;
+        height: 0.45rem;
+    }
+
+    .ur-hps-dot.active {
+        width: 1.4rem;
     }
 
     .ur-hps-swipe-hint {
         display: none;
     }
-}
 
-@media (max-width: 480px) {
-    .ur-hps-container {
-        padding: 0 0.5rem;
+    /* Single-line Compact Mobile Trust Strip under Slider */
+    .ur-mc-bottom-trust {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 0.85rem;
+        margin-top: 0.4rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: #64748b;
     }
-    .ur-hps-slide {
-        padding: 1rem 0.8rem 0.95rem;
-        border-radius: 1.15rem;
+
+    .ur-mc-bt-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.22rem;
     }
-    .ur-hps-pass-card {
-        padding: 0.75rem 0.75rem 0.65rem;
-    }
-    .ur-hps-amount {
-        font-size: clamp(1.85rem, 6.8vw, 2.1rem);
-    }
-    .ur-hps-cta-btn {
-        font-size: 0.88rem;
-    }
-    .ur-hps-trust-bar {
-        padding: 0.35rem 0.5rem;
-        font-size: 0.63rem;
-        gap: 0.25rem;
-    }
-    .ur-hps-tb-divider {
-        display: none;
+
+    .ur-mc-bt-item i {
+        color: #059669;
+        font-size: 0.75rem;
     }
 }
 
-@media (max-width: 360px) {
-    .ur-hps-features-grid {
-        grid-template-columns: 1fr;
+@media (max-width: 370px) {
+    .ur-hps-mobile-card {
+        padding: 0.75rem 0.75rem 0.7rem;
+        min-height: 220px;
+    }
+    .ur-mc-title {
+        font-size: 1.15rem;
+    }
+    .ur-mc-amt {
+        font-size: 1.3rem;
+    }
+    .ur-mc-cta-btn {
+        padding: 0.48rem 0.75rem;
+        font-size: 0.78rem;
     }
 }
 </style>
@@ -2388,6 +2378,96 @@
                             </div>
 
                         </div>{{-- End .ur-hps-desktop-grid --}}
+
+                        {{-- ============================================================
+                             SEPARATE 16:9 ULTRA-COMPACT MOBILE CARD (VISIBLE ON MOBILE ONLY)
+                             Reduced height in 16:9 slider format, sleek real-estate backdrop,
+                             bold price, key perks, and thumb-friendly checkout CTA button.
+                             ============================================================ --}}
+                        <div class="ur-hps-mobile-card ur-hps-mobile-card--{{ $s['theme'] }}">
+                            {{-- Subtle 16:9 Real Estate Photographic Backdrop --}}
+                            <div class="ur-mc-backdrop" aria-hidden="true">
+                                <img src="{{ $s['visual']['image'] }}" 
+                                     alt="{{ $s['visual']['title'] }}" 
+                                     class="ur-mc-backdrop-img" 
+                                     loading="lazy" 
+                                     decoding="async"
+                                     onerror="if(!this.dataset.triedFallback){ this.dataset.triedFallback='1'; this.src='{{ $s['visual']['fallback'] ?? '' }}'; }">
+                                <div class="ur-mc-scrim"></div>
+                            </div>
+
+                            {{-- Row 1: Top Bar with Theme Pill + Savings Chip + 100% Genuine Tag --}}
+                            <div class="ur-mc-top-row">
+                                <div class="ur-mc-badge-group">
+                                    <span class="ur-mc-badge ur-mc-badge--{{ $s['theme'] }}">
+                                        <i class="ph-bold {{ $s['tab_icon'] }}"></i>
+                                        <span>{{ $s['tab_badge'] ?? 'PASS' }}</span>
+                                    </span>
+                                    <span class="ur-mc-save-chip">
+                                        SAVE {{ $s['savings_pct'] }}%
+                                    </span>
+                                </div>
+                                <span class="ur-mc-direct-tag">
+                                    <i class="ph-fill ph-seal-check"></i>
+                                    <span>{{ $s['visual']['tag'] ?? '100% DIRECT' }}</span>
+                                </span>
+                            </div>
+
+                            {{-- Row 2: Main Plan Title & Micro Specs Tagline --}}
+                            <div class="ur-mc-mid-content">
+                                <div class="ur-mc-header-info">
+                                    <h4 class="ur-mc-title">
+                                        <span class="highlight-{{ $s['theme'] }}">{{ $s['title_highlight'] }}</span>
+                                    </h4>
+                                    <p class="ur-mc-subtext">
+                                        {{ $s['specs'][0]['value'] }} · {{ $s['specs'][1]['value'] }} · ₹0 Commission
+                                    </p>
+                                </div>
+
+                                {{-- 2 Compact Key Feature Badges --}}
+                                <div class="ur-mc-perks-row">
+                                    @foreach(array_slice($s['highlights'], 0, 2) as $f)
+                                        <div class="ur-mc-perk-item">
+                                            <i class="ph-bold {{ $f['icon'] }}"></i>
+                                            <span>{{ $f['title'] }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            {{-- Row 3: High-Conversion Price & Quick Unlock Action Row --}}
+                            <div class="ur-mc-footer-row">
+                                <div class="ur-mc-price-wrap">
+                                    <div class="ur-mc-price-line">
+                                        <span class="ur-mc-curr">₹</span>
+                                        <span class="ur-mc-amt">{{ number_format($s['price'], 0) }}</span>
+                                        <span class="ur-mc-orig">₹{{ number_format($s['original_price'], 0) }}</span>
+                                    </div>
+                                    <div class="ur-mc-per-day-line">
+                                        <i class="ph-bold ph-lightning"></i>
+                                        <span>Only ₹{{ $s['per_day'] }}/day · Direct</span>
+                                    </div>
+                                </div>
+
+                                @guest
+                                    <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
+                                       onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
+                                       class="ur-mc-cta-btn ur-mc-cta-btn--{{ $s['theme'] }}" 
+                                       title="Unlock Verified Contacts">
+                                        <span>Unlock Pass</span>
+                                        <i class="ph-bold ph-arrow-right"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ $checkoutUrl }}" 
+                                       class="ur-mc-cta-btn ur-mc-cta-btn--{{ $s['theme'] }}" 
+                                       title="Unlock Verified Contacts">
+                                        <span>Unlock Pass</span>
+                                        <i class="ph-bold ph-arrow-right"></i>
+                                    </a>
+                                @endguest
+                            </div>
+                        </div>
+
                     </div>
                 @endforeach
             </div>
@@ -2410,6 +2490,13 @@
                 <i class="ph-bold ph-arrows-left-right"></i>
                 <span>Swipe or click tabs to explore passes</span>
             </div>
+        </div>
+
+        {{-- Mobile Single-Line Compact Trust Strip --}}
+        <div class="ur-mc-bottom-trust">
+            <div class="ur-mc-bt-item"><i class="ph-fill ph-lightning"></i> <span>30s Activation</span></div>
+            <div class="ur-mc-bt-item"><i class="ph-fill ph-shield-check"></i> <span>Verified Owners</span></div>
+            <div class="ur-mc-bt-item"><i class="ph-fill ph-lock-key"></i> <span>Safe UPI</span></div>
         </div>
     </div>
 </section>
