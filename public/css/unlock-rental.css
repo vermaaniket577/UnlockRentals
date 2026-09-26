@@ -2782,7 +2782,9 @@ a[title="Explore"],
 a[title="Inquiry"],
 a[title="Book Visit"],
 a[title="Sign In Now"],
-a[title="Sign In to View"] {
+a[title="Sign In to View"],
+#ur-btn-find-professional,
+.ur-find-professional-btn {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
 }
@@ -2836,7 +2838,9 @@ a[title="Explore"] *,
 a[title="Inquiry"] *,
 a[title="Book Visit"] *,
 a[title="Sign In Now"] *,
-a[title="Sign In to View"] * {
+a[title="Sign In to View"] *,
+#ur-btn-find-professional *,
+.ur-find-professional-btn * {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
 }

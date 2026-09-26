@@ -18,15 +18,22 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <a href="{{ route('services.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all active:scale-95 whitespace-nowrap">
-                    <span>Find a Professional</span>
-                    <i class="ph ph-arrow-right text-xs"></i>
+                <a href="{{ route('services.index') }}" id="ur-btn-find-professional" class="ur-find-professional-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all active:scale-95 whitespace-nowrap" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                    <span style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">Find a Professional</span>
+                    <i class="ph ph-arrow-right text-xs" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;"></i>
                 </a>
             </div>
         </div>
 
-        {{-- Scoped Styles for Guaranteed Category Gradient Badges --}}
+        {{-- Scoped Styles for Guaranteed Category Gradient Badges & Action Buttons --}}
         <style>
+            .ur-find-professional-btn,
+            .ur-find-professional-btn *,
+            #ur-btn-find-professional,
+            #ur-btn-find-professional * {
+                color: #ffffff !important;
+                -webkit-text-fill-color: #ffffff !important;
+            }
             .ur-prof-cat-icon {
                 width: 3rem !important;
                 height: 3rem !important;

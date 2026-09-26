@@ -1054,9 +1054,9 @@
                 </div>
 
                 <div class="flex-shrink-0">
-                    <a href="{{ route('services.index', ['location' => $property->city ?? $property->locality]) }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 whitespace-nowrap">
-                        <span>Find Local Professionals</span>
-                        <i class="ph ph-arrow-right text-sm"></i>
+                    <a href="{{ route('services.index', ['location' => $property->city ?? $property->locality]) }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 whitespace-nowrap" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                        <span style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">Find Local Professionals</span>
+                        <i class="ph ph-arrow-right text-sm" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;"></i>
                     </a>
                 </div>
             </div>
