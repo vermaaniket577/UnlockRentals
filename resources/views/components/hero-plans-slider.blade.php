@@ -1054,64 +1054,354 @@
     font-size: 0.95rem;
 }
 
-/* ─── RESPONSIVE BEHAVIOR ───────────────────────────────── */
+/* Desktop View Wrapper */
+.ur-hps-desktop-view {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    width: 100%;
+}
+
+/* Mobile 16:9 Card (hidden on desktop) */
+.ur-hps-mobile-card {
+    display: none;
+}
+
+/* ─── RESPONSIVE BEHAVIOR (MOBILE 16:9 SHORT CARD FORMAT) ──────────── */
 @media (max-width: 1023px) {
     .ur-hero-plans-slider-section {
-        padding: 2.5rem 0 3rem;
+        padding: 1.5rem 0 2rem;
     }
-    .ur-hps-slide {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        padding: 2.5rem 2rem;
-        min-height: auto;
+    .ur-hps-container {
+        padding: 0 0.85rem;
+    }
+    .ur-hps-header {
+        margin: 0 auto 1rem;
+    }
+    .ur-hps-eyebrow {
+        font-size: 0.68rem;
+        padding: 0.25rem 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .ur-hps-title {
+        font-size: 1.35rem;
+        margin: 0 0 0.35rem;
+        line-height: 1.25;
+    }
+    .ur-hps-subtitle {
+        font-size: 0.8rem;
+        line-height: 1.35;
+        max-width: 90%;
+        margin: 0 auto;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .ur-hps-tabs-bar {
+        width: 100%;
+        margin-bottom: 0.85rem;
+        padding: 0.25rem;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .ur-hps-tabs-bar::-webkit-scrollbar {
+        display: none;
+    }
+    .ur-hps-tab-btn {
+        flex: 0 0 auto;
+        padding: 0.38rem 0.75rem;
+        font-size: 0.74rem;
+        white-space: nowrap;
+    }
+    .ur-hps-tab-btn .ur-hps-tab-pill {
+        display: none;
+    }
+
+    .ur-hps-slider-stage {
+        border-radius: 1.25rem;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        min-height: auto !important;
     }
     .ur-hps-arrow {
         display: none;
     }
-    .ur-hps-card-side {
+
+    .ur-hps-slide {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 0 !important;
+        min-height: auto !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    /* Hide heavy desktop column content on mobile */
+    .ur-hps-desktop-view {
+        display: none !important;
+    }
+
+    /* Show 16:9 Short Mobile Card (Jain Shaadi Milan App Format) */
+    .ur-hps-mobile-card {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: space-between;
         width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        aspect-ratio: 16 / 9;
+        box-sizing: border-box;
+        padding: 0.95rem 1.15rem;
+        border-radius: 1.25rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
-    .ur-hps-pass-card {
-        max-width: 100%;
+
+    /* Card Themes */
+    .ur-hps-mobile-card--gold {
+        background: radial-gradient(ellipse at top right, rgba(245, 158, 11, 0.3) 0%, transparent 60%),
+                    linear-gradient(145deg, #131722 0%, #1c1813 50%, #120f0a 100%);
+        border: 1px solid rgba(245, 158, 11, 0.45);
     }
-    .ur-hps-features-grid {
-        grid-template-columns: 1fr;
+    .ur-hps-mobile-card--platinum {
+        background: radial-gradient(ellipse at top right, rgba(59, 130, 246, 0.32) 0%, transparent 60%),
+                    linear-gradient(145deg, #0d1527 0%, #101c36 50%, #080d1a 100%);
+        border: 1px solid rgba(59, 130, 246, 0.5);
+    }
+    .ur-hps-mobile-card--silver {
+        background: radial-gradient(ellipse at top right, rgba(148, 163, 184, 0.25) 0%, transparent 60%),
+                    linear-gradient(145deg, #121620 0%, #1a2230 50%, #0d1117 100%);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .ur-hps-mobile-card--buyer {
+        background: radial-gradient(ellipse at top right, rgba(16, 185, 129, 0.3) 0%, transparent 60%),
+                    linear-gradient(145deg, #091a18 0%, #0d2621 50%, #061513 100%);
+        border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+
+    .ur-hps-mob-watermark {
+        position: absolute;
+        right: -8px;
+        top: -8px;
+        font-size: 5.5rem;
+        opacity: 0.06;
+        pointer-events: none;
+        line-height: 1;
+        z-index: 1;
+    }
+
+    /* Top Bar */
+    .ur-hps-mob-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        z-index: 2;
+        gap: 0.5rem;
+    }
+    .ur-hps-mob-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+    }
+    .ur-hps-mob-badge--gold {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fde047;
+        border: 1px solid rgba(253, 224, 71, 0.35);
+    }
+    .ur-hps-mob-badge--platinum {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
+        border: 1px solid rgba(147, 197, 253, 0.35);
+    }
+    .ur-hps-mob-badge--silver {
+        background: rgba(148, 163, 184, 0.2);
+        color: #e2e8f0;
+        border: 1px solid rgba(226, 232, 240, 0.3);
+    }
+    .ur-hps-mob-badge--buyer {
+        background: rgba(16, 185, 129, 0.2);
+        color: #a7f3d0;
+        border: 1px solid rgba(167, 243, 208, 0.35);
+    }
+
+    .ur-hps-mob-save {
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #34d399;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        padding: 0.15rem 0.55rem;
+        border-radius: 9999px;
+        letter-spacing: 0.03em;
+    }
+
+    /* Middle Row */
+    .ur-hps-mob-body {
+        position: relative;
+        z-index: 2;
+        margin: 0.15rem 0;
+    }
+    .ur-hps-mob-title {
+        font-size: 1.18rem;
+        font-weight: 900;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.2rem;
+    }
+    .ur-hps-mob-tagline {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        line-height: 1.3;
+        margin: 0 0 0.35rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .ur-hps-mob-chips {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        flex-wrap: nowrap;
+        overflow: hidden;
+    }
+    .ur-hps-mob-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.64rem;
+        font-weight: 700;
+        color: #cbd5e1;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.2rem 0.45rem;
+        border-radius: 0.4rem;
+        white-space: nowrap;
+    }
+    .ur-hps-mob-chip i {
+        color: #fbbf24;
+        font-size: 0.7rem;
+    }
+
+    /* Bottom Row: Price & Pay Now Button */
+    .ur-hps-mob-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        z-index: 2;
+        gap: 0.75rem;
+        padding-top: 0.4rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .ur-hps-mob-price {
+        display: flex;
+        flex-direction: column;
+    }
+    .ur-hps-mob-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.3rem;
+        line-height: 1;
+    }
+    .ur-hps-mob-curr {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #94a3b8;
+    }
+    .ur-hps-mob-amount {
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+    }
+    .ur-hps-mob-orig {
+        font-size: 0.78rem;
+        color: #64748b;
+        text-decoration: line-through;
+        font-weight: 600;
+    }
+    .ur-hps-mob-rate {
+        font-size: 0.62rem;
+        color: #94a3b8;
+        font-weight: 600;
+        margin-top: 0.15rem;
+    }
+
+    /* High-impact Pay Now CTA */
+    .ur-hps-mob-pay-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.55rem 1.15rem;
+        border-radius: 9999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .ur-hps-mob-pay-btn:active {
+        transform: scale(0.96);
+    }
+    .ur-hps-mob-pay-btn--gold {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: #000000;
+        border: 1px solid #fde047;
+        box-shadow: 0 4px 16px rgba(245, 158, 11, 0.45);
+    }
+    .ur-hps-mob-pay-btn--platinum {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: #ffffff;
+        border: 1px solid #93c5fd;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.45);
+    }
+    .ur-hps-mob-pay-btn--silver {
+        background: linear-gradient(135deg, #475569 0%, #334155 100%);
+        color: #ffffff;
+        border: 1px solid #cbd5e1;
+        box-shadow: 0 4px 14px rgba(71, 85, 105, 0.4);
+    }
+    .ur-hps-mob-pay-btn--buyer {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        border: 1px solid #6ee7b7;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);
     }
 }
 
-@media (max-width: 640px) {
-    .ur-hero-plans-slider-section {
-        padding: 2rem 0 2.5rem;
+@media (max-width: 380px) {
+    .ur-hps-mobile-card {
+        padding: 0.75rem 0.85rem;
     }
-    .ur-hps-container {
-        padding: 0 1rem;
+    .ur-hps-mob-title {
+        font-size: 1.05rem;
     }
-    .ur-hps-slider-stage {
-        border-radius: 1.5rem;
+    .ur-hps-mob-amount {
+        font-size: 1.25rem;
     }
-    .ur-hps-slide {
-        padding: 1.75rem 1.25rem;
-    }
-    .ur-hps-pass-card {
-        padding: 1.5rem 1.25rem;
-        border-radius: 1.5rem;
-    }
-    .ur-hps-amount {
-        font-size: 2.6rem;
-    }
-    .ur-hps-tabs-bar {
-        width: 100%;
-        border-radius: 1rem;
-        justify-content: stretch;
-    }
-    .ur-hps-tab-btn {
-        flex: 1 1 calc(50% - 0.5rem);
-        padding: 0.5rem 0.65rem;
-        font-size: 0.78rem;
-        justify-content: center;
-    }
-    .ur-hps-tab-btn .ur-hps-tab-pill {
-        display: none;
+    .ur-hps-mob-pay-btn {
+        padding: 0.45rem 0.85rem;
+        font-size: 0.76rem;
     }
 }
 </style>
@@ -1181,185 +1471,267 @@
                     @endphp
 
                     <div class="ur-hps-slide ur-hps-slide--{{ $s['theme'] }}" data-slide-index="{{ $idx }}" data-theme="{{ $s['theme'] }}">
-                        {{-- Left Column: Value Proposition & Details --}}
-                        <div class="ur-hps-slide-content">
-                            <span class="ur-hps-plan-badge ur-hps-plan-badge--{{ $s['theme'] }}">
-                                {!! $s['badge'] !!}
-                            </span>
+                        {{-- Desktop Expanded Layout (Visible only on Desktop/Tablet landscape) --}}
+                        <div class="ur-hps-desktop-view">
+                            {{-- Left Column: Value Proposition & Details --}}
+                            <div class="ur-hps-slide-content">
+                                <span class="ur-hps-plan-badge ur-hps-plan-badge--{{ $s['theme'] }}">
+                                    {!! $s['badge'] !!}
+                                </span>
 
-                            <h3 class="ur-hps-slide-title">
-                                {{ $s['title_prefix'] }} <br>
-                                <span class="highlight-{{ $s['theme'] }}">{{ $s['title_highlight'] }}</span>
-                            </h3>
+                                <h3 class="ur-hps-slide-title">
+                                    {{ $s['title_prefix'] }} <br>
+                                    <span class="highlight-{{ $s['theme'] }}">{{ $s['title_highlight'] }}</span>
+                                </h3>
 
-                            <p class="ur-hps-slide-desc">
-                                {{ $s['tagline'] }}
-                            </p>
+                                <p class="ur-hps-slide-desc">
+                                    {{ $s['tagline'] }}
+                                </p>
 
-                            {{-- 2x2 Highlights Grid --}}
-                            <div class="ur-hps-features-grid">
-                                @foreach($s['highlights'] as $f)
-                                    <div class="ur-hps-feature-item ur-hps-feature-item--{{ $s['theme'] }}">
-                                        <div class="ur-hps-f-icon-box">
-                                            <i class="ph-bold {{ $f['icon'] }}"></i>
+                                {{-- 2x2 Highlights Grid --}}
+                                <div class="ur-hps-features-grid">
+                                    @foreach($s['highlights'] as $f)
+                                        <div class="ur-hps-feature-item ur-hps-feature-item--{{ $s['theme'] }}">
+                                            <div class="ur-hps-f-icon-box">
+                                                <i class="ph-bold {{ $f['icon'] }}"></i>
+                                            </div>
+                                            <div class="ur-hps-f-text">
+                                                <h4>{{ $f['title'] }}</h4>
+                                                <p>{{ $f['desc'] }}</p>
+                                            </div>
                                         </div>
-                                        <div class="ur-hps-f-text">
-                                            <h4>{{ $f['title'] }}</h4>
-                                            <p>{{ $f['desc'] }}</p>
-                                        </div>
+                                    @endforeach
+                                </div>
+
+                                {{-- Trust Badges Row --}}
+                                <div class="ur-hps-trust-row">
+                                    <div class="ur-hps-trust-item">
+                                        <i class="ph-fill ph-check-circle"></i>
+                                        <span>Instant Activation (30 Sec)</span>
                                     </div>
-                                @endforeach
+                                    <div class="ur-hps-trust-item">
+                                        <i class="ph-fill ph-shield-check"></i>
+                                        <span>100% Verified Owners Only</span>
+                                    </div>
+                                    <div class="ur-hps-trust-item">
+                                        <i class="ph-fill ph-lock-key"></i>
+                                        <span>Safe UPI / Card Checkout</span>
+                                    </div>
+                                </div>
                             </div>
 
-                            {{-- Trust Badges Row --}}
-                            <div class="ur-hps-trust-row">
-                                <div class="ur-hps-trust-item">
-                                    <i class="ph-fill ph-check-circle"></i>
-                                    <span>Instant Activation (30 Sec)</span>
-                                </div>
-                                <div class="ur-hps-trust-item">
-                                    <i class="ph-fill ph-shield-check"></i>
-                                    <span>100% Verified Owners Only</span>
-                                </div>
-                                <div class="ur-hps-trust-item">
-                                    <i class="ph-fill ph-lock-key"></i>
-                                    <span>Safe UPI / Card Checkout</span>
+                            {{-- Right Column: Floating 3D Pass Card --}}
+                            <div class="ur-hps-card-side">
+                                <div class="ur-hps-pass-card ur-hps-pass-card--{{ $s['theme'] }}">
+                                    {{-- Card Header & Emblem --}}
+                                    <div class="ur-hps-card-header">
+                                        <div class="ur-hps-brand-tag">
+                                            <i class="ph-bold ph-key"></i>
+                                            <span>Unlock<span class="ur-accent">Rentals</span> Pass</span>
+                                        </div>
+
+                                        <div class="ur-hps-card-emblem">
+                                            @if($s['theme'] === 'gold')
+                                                {{-- 3D Gold Imperial Crown --}}
+                                                <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <defs>
+                                                        <linearGradient id="goldHero_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
+                                                            <stop offset="0%" stop-color="#FDE047"/>
+                                                            <stop offset="45%" stop-color="#F59E0B"/>
+                                                            <stop offset="100%" stop-color="#D97706"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldHero_{{ $planUid }})"/>
+                                                    <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
+                                                    <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
+                                                    <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                                    <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
+                                                    <circle cx="24" cy="37" r="2" fill="#10B981"/>
+                                                </svg>
+                                            @elseif($s['theme'] === 'platinum')
+                                                {{-- Royal Sapphire Diamond --}}
+                                                <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <defs>
+                                                        <linearGradient id="platHero_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                                                            <stop offset="0%" stop-color="#93C5FD"/>
+                                                            <stop offset="50%" stop-color="#3B82F6"/>
+                                                            <stop offset="100%" stop-color="#1D4ED8"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <polygon points="14,10 34,10 42,20 6,20" fill="url(#platHero_{{ $planUid }})"/>
+                                                    <polygon points="6,20 42,20 24,42" fill="url(#platHero_{{ $planUid }})"/>
+                                                    <polygon points="15,20 33,20 24,42" fill="#BAE6FD" fill-opacity="0.8"/>
+                                                </svg>
+                                            @elseif($s['theme'] === 'buyer')
+                                                {{-- Luxury Villa / Penthouse Emblem --}}
+                                                <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <defs>
+                                                        <linearGradient id="buyHero_{{ $planUid }}" x1="6" y1="8" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+                                                            <stop offset="0%" stop-color="#A7F3D0"/>
+                                                            <stop offset="50%" stop-color="#10B981"/>
+                                                            <stop offset="100%" stop-color="#047857"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path d="M24 6L6 20V40C6 41.1 6.9 42 8 42H40C41.1 42 42 41.1 42 40V20L24 6Z" fill="url(#buyHero_{{ $planUid }})"/>
+                                                    <rect x="20" y="26" width="8" height="16" rx="2" fill="#064E3B"/>
+                                                    <rect x="12" y="24" width="6" height="6" rx="1.5" fill="#ECFDF5"/>
+                                                    <rect x="30" y="24" width="6" height="6" rx="1.5" fill="#ECFDF5"/>
+                                                </svg>
+                                            @else
+                                                {{-- Metallic Titanium Shield --}}
+                                                <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <defs>
+                                                        <linearGradient id="silvHero_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+                                                            <stop offset="0%" stop-color="#E2E8F0"/>
+                                                            <stop offset="50%" stop-color="#94A3B8"/>
+                                                            <stop offset="100%" stop-color="#475569"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvHero_{{ $planUid }})"/>
+                                                    <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
+                                                </svg>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    {{-- Price Box --}}
+                                    <div class="ur-hps-price-box">
+                                        <div class="ur-hps-price-top">
+                                            <span class="ur-hps-price-original">₹{{ number_format($s['original_price'], 0) }}</span>
+                                            <span class="ur-hps-save-chip">Save {{ $s['savings_pct'] }}%</span>
+                                        </div>
+
+                                        <div class="ur-hps-price-main">
+                                            <span class="ur-hps-currency">₹</span>
+                                            <span class="ur-hps-amount">{{ number_format($s['price'], 0) }}</span>
+                                            <span class="ur-hps-period">/ {{ $s['type'] === 'buy' ? 'annual pass' : 'pass' }}</span>
+                                        </div>
+
+                                        <div class="ur-hps-price-subtext">
+                                            <i class="ph-bold ph-seal-check"></i>
+                                            <span>Only ₹{{ $s['per_day'] }}/day · {{ $plan->duration_days ?? 90 }} Days Validity</span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Card Meta Rows --}}
+                                    <div class="ur-hps-card-meta">
+                                        <div class="ur-hps-meta-row">
+                                            <span class="meta-label"><i class="ph-bold ph-lock-key-open"></i> Contact Credits:</span>
+                                            <span class="meta-value">{{ $plan->contact_limit ?? 60 }} Direct Unlocks</span>
+                                        </div>
+                                        <div class="ur-hps-meta-row">
+                                            <span class="meta-label"><i class="ph-bold ph-clock"></i> Access Duration:</span>
+                                            <span class="meta-value">{{ $plan->duration_days ?? 90 }} Full Days</span>
+                                        </div>
+                                        <div class="ur-hps-meta-row">
+                                            <span class="meta-label"><i class="ph-bold ph-shield-star"></i> Brokerage:</span>
+                                            <span class="meta-value" style="color: #34d399;">₹0 (Zero Commission)</span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Primary Checkout CTA Button --}}
+                                    @guest
+                                        <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
+                                           onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
+                                           class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }}" 
+                                           title="Unlock Verified Contacts">
+                                            <i class="ph-fill ph-lightning"></i>
+                                            <span>Unlock Contacts Now · ₹{{ number_format($s['price'], 0) }}</span>
+                                        </a>
+                                    @else
+                                        <a href="{{ $checkoutUrl }}" 
+                                           class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }}" 
+                                           title="Unlock Verified Contacts">
+                                            <i class="ph-fill ph-lightning"></i>
+                                            <span>Unlock Contacts Now · ₹{{ number_format($s['price'], 0) }}</span>
+                                        </a>
+                                    @endguest
+
+                                    {{-- Compare All Plans Link (Smooth scrolls to bottom plan cards) --}}
+                                    <a href="#pricing-plans" class="ur-hps-compare-link" onclick="if(document.getElementById('pricing-plans')){ document.getElementById('pricing-plans').scrollIntoView({behavior:'smooth'}); return false; }">
+                                        <span>Compare All Plan Details</span>
+                                        <i class="ph-bold ph-arrow-down"></i>
+                                    </a>
                                 </div>
                             </div>
-                        </div>
+                        </div>{{-- End .ur-hps-desktop-view --}}
 
-                        {{-- Right Column: Floating 3D Pass Card --}}
-                        <div class="ur-hps-card-side">
-                            <div class="ur-hps-pass-card ur-hps-pass-card--{{ $s['theme'] }}">
-                                {{-- Card Header & Emblem --}}
-                                <div class="ur-hps-card-header">
-                                    <div class="ur-hps-brand-tag">
-                                        <i class="ph-bold ph-key"></i>
-                                        <span>Unlock<span class="ur-accent">Rentals</span> Pass</span>
+                        {{-- =======================================================
+                             MOBILE 16:9 SHORT CARD (JAIN SHAADI MILAN APP FORMAT)
+                             Displays Plan Name, Key Highlights, Price, and Pay Now Button
+                             Strict 16:9 Aspect Ratio with Zero Vertical Scrolling
+                             ======================================================= --}}
+                        <div class="ur-hps-mobile-card ur-hps-mobile-card--{{ $s['theme'] }}">
+                            {{-- Watermark Background Icon --}}
+                            <div class="ur-hps-mob-watermark">
+                                <i class="ph-fill {{ $s['tab_icon'] }}"></i>
+                            </div>
+
+                            {{-- 1. Top Bar: Badge + Save Tag --}}
+                            <div class="ur-hps-mob-top">
+                                <span class="ur-hps-mob-badge ur-hps-mob-badge--{{ $s['theme'] }}">
+                                    <i class="ph-fill {{ $s['tab_icon'] }}"></i>
+                                    <span>{{ $s['tab_badge'] ?? 'Featured Pass' }}</span>
+                                </span>
+                                <span class="ur-hps-mob-save">
+                                    Save {{ $s['savings_pct'] }}%
+                                </span>
+                            </div>
+
+                            {{-- 2. Middle: Plan Name & Short Feature Chips --}}
+                            <div class="ur-hps-mob-body">
+                                <h3 class="ur-hps-mob-title highlight-{{ $s['theme'] }}">
+                                    {{ $s['title_highlight'] }}
+                                </h3>
+                                <p class="ur-hps-mob-tagline">
+                                    {{ Str::limit($s['tagline'], 65) }}
+                                </p>
+                                <div class="ur-hps-mob-chips">
+                                    <span class="ur-hps-mob-chip">
+                                        <i class="ph-bold ph-phone-call"></i> {{ $plan->contact_limit ?? 60 }} Contacts
+                                    </span>
+                                    <span class="ur-hps-mob-chip">
+                                        <i class="ph-bold ph-calendar"></i> {{ $plan->duration_days ?? 90 }} Days
+                                    </span>
+                                    <span class="ur-hps-mob-chip">
+                                        <i class="ph-bold ph-shield-check"></i> ₹0 Brokerage
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- 3. Bottom: Price (Left) + Pay Now Button (Right) --}}
+                            <div class="ur-hps-mob-footer">
+                                <div class="ur-hps-mob-price">
+                                    <div class="ur-hps-mob-price-row">
+                                        <span class="ur-hps-mob-curr">₹</span>
+                                        <span class="ur-hps-mob-amount">{{ number_format($s['price'], 0) }}</span>
+                                        <span class="ur-hps-mob-orig">₹{{ number_format($s['original_price'], 0) }}</span>
                                     </div>
-
-                                    <div class="ur-hps-card-emblem">
-                                        @if($s['theme'] === 'gold')
-                                            {{-- 3D Gold Imperial Crown --}}
-                                            <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <defs>
-                                                    <linearGradient id="goldHero_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
-                                                        <stop offset="0%" stop-color="#FDE047"/>
-                                                        <stop offset="45%" stop-color="#F59E0B"/>
-                                                        <stop offset="100%" stop-color="#D97706"/>
-                                                    </linearGradient>
-                                                </defs>
-                                                <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldHero_{{ $planUid }})"/>
-                                                <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
-                                                <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
-                                                <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
-                                                <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
-                                                <circle cx="24" cy="37" r="2" fill="#10B981"/>
-                                            </svg>
-                                        @elseif($s['theme'] === 'platinum')
-                                            {{-- Royal Sapphire Diamond --}}
-                                            <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <defs>
-                                                    <linearGradient id="platHero_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-                                                        <stop offset="0%" stop-color="#93C5FD"/>
-                                                        <stop offset="50%" stop-color="#3B82F6"/>
-                                                        <stop offset="100%" stop-color="#1D4ED8"/>
-                                                    </linearGradient>
-                                                </defs>
-                                                <polygon points="14,10 34,10 42,20 6,20" fill="url(#platHero_{{ $planUid }})"/>
-                                                <polygon points="6,20 42,20 24,42" fill="url(#platHero_{{ $planUid }})"/>
-                                                <polygon points="15,20 33,20 24,42" fill="#BAE6FD" fill-opacity="0.8"/>
-                                            </svg>
-                                        @elseif($s['theme'] === 'buyer')
-                                            {{-- Luxury Villa / Penthouse Emblem --}}
-                                            <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <defs>
-                                                    <linearGradient id="buyHero_{{ $planUid }}" x1="6" y1="8" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-                                                        <stop offset="0%" stop-color="#A7F3D0"/>
-                                                        <stop offset="50%" stop-color="#10B981"/>
-                                                        <stop offset="100%" stop-color="#047857"/>
-                                                    </linearGradient>
-                                                </defs>
-                                                <path d="M24 6L6 20V40C6 41.1 6.9 42 8 42H40C41.1 42 42 41.1 42 40V20L24 6Z" fill="url(#buyHero_{{ $planUid }})"/>
-                                                <rect x="20" y="26" width="8" height="16" rx="2" fill="#064E3B"/>
-                                                <rect x="12" y="24" width="6" height="6" rx="1.5" fill="#ECFDF5"/>
-                                                <rect x="30" y="24" width="6" height="6" rx="1.5" fill="#ECFDF5"/>
-                                            </svg>
-                                        @else
-                                            {{-- Metallic Titanium Shield --}}
-                                            <svg style="width: 2.25rem; height: 2.25rem;" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <defs>
-                                                    <linearGradient id="silvHero_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
-                                                        <stop offset="0%" stop-color="#E2E8F0"/>
-                                                        <stop offset="50%" stop-color="#94A3B8"/>
-                                                        <stop offset="100%" stop-color="#475569"/>
-                                                    </linearGradient>
-                                                </defs>
-                                                <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvHero_{{ $planUid }})"/>
-                                                <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
-                                            </svg>
-                                        @endif
+                                    <div class="ur-hps-mob-rate">
+                                        ₹{{ $s['per_day'] }}/day · Direct Unlocks
                                     </div>
                                 </div>
 
-                                {{-- Price Box --}}
-                                <div class="ur-hps-price-box">
-                                    <div class="ur-hps-price-top">
-                                        <span class="ur-hps-price-original">₹{{ number_format($s['original_price'], 0) }}</span>
-                                        <span class="ur-hps-save-chip">Save {{ $s['savings_pct'] }}%</span>
-                                    </div>
-
-                                    <div class="ur-hps-price-main">
-                                        <span class="ur-hps-currency">₹</span>
-                                        <span class="ur-hps-amount">{{ number_format($s['price'], 0) }}</span>
-                                        <span class="ur-hps-period">/ {{ $s['type'] === 'buy' ? 'annual pass' : 'pass' }}</span>
-                                    </div>
-
-                                    <div class="ur-hps-price-subtext">
-                                        <i class="ph-bold ph-seal-check"></i>
-                                        <span>Only ₹{{ $s['per_day'] }}/day · {{ $plan->duration_days ?? 90 }} Days Validity</span>
-                                    </div>
+                                <div class="ur-hps-mob-action">
+                                    @guest
+                                        <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
+                                           onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
+                                           class="ur-hps-mob-pay-btn ur-hps-mob-pay-btn--{{ $s['theme'] }}"
+                                           title="Pay Now & Unlock Contacts">
+                                            <i class="ph-fill ph-lightning"></i>
+                                            <span>Pay Now</span>
+                                            <i class="ph-bold ph-arrow-right"></i>
+                                        </a>
+                                    @else
+                                        <a href="{{ $checkoutUrl }}" 
+                                           class="ur-hps-mob-pay-btn ur-hps-mob-pay-btn--{{ $s['theme'] }}"
+                                           title="Pay Now & Unlock Contacts">
+                                            <i class="ph-fill ph-lightning"></i>
+                                            <span>Pay Now</span>
+                                            <i class="ph-bold ph-arrow-right"></i>
+                                        </a>
+                                    @endguest
                                 </div>
-
-                                {{-- Card Meta Rows --}}
-                                <div class="ur-hps-card-meta">
-                                    <div class="ur-hps-meta-row">
-                                        <span class="meta-label"><i class="ph-bold ph-lock-key-open"></i> Contact Credits:</span>
-                                        <span class="meta-value">{{ $plan->contact_limit ?? 60 }} Direct Unlocks</span>
-                                    </div>
-                                    <div class="ur-hps-meta-row">
-                                        <span class="meta-label"><i class="ph-bold ph-clock"></i> Access Duration:</span>
-                                        <span class="meta-value">{{ $plan->duration_days ?? 90 }} Full Days</span>
-                                    </div>
-                                    <div class="ur-hps-meta-row">
-                                        <span class="meta-label"><i class="ph-bold ph-shield-star"></i> Brokerage:</span>
-                                        <span class="meta-value" style="color: #34d399;">₹0 (Zero Commission)</span>
-                                    </div>
-                                </div>
-
-                                {{-- Primary Checkout CTA Button --}}
-                                @guest
-                                    <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
-                                       onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
-                                       class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }}" 
-                                       title="Unlock Verified Contacts">
-                                        <i class="ph-fill ph-lightning"></i>
-                                        <span>Unlock Contacts Now · ₹{{ number_format($s['price'], 0) }}</span>
-                                    </a>
-                                @else
-                                    <a href="{{ $checkoutUrl }}" 
-                                       class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }}" 
-                                       title="Unlock Verified Contacts">
-                                        <i class="ph-fill ph-lightning"></i>
-                                        <span>Unlock Contacts Now · ₹{{ number_format($s['price'], 0) }}</span>
-                                    </a>
-                                @endguest
-
-                                {{-- Compare All Plans Link (Smooth scrolls to bottom plan cards) --}}
-                                <a href="#pricing-plans" class="ur-hps-compare-link" onclick="if(document.getElementById('pricing-plans')){ document.getElementById('pricing-plans').scrollIntoView({behavior:'smooth'}); return false; }">
-                                    <span>Compare All Plan Details</span>
-                                    <i class="ph-bold ph-arrow-down"></i>
-                                </a>
                             </div>
                         </div>
                     </div>
