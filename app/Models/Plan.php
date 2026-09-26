@@ -34,6 +34,22 @@ class Plan extends Model
     }
 
     /**
+     * The booted method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v1');
+            \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v1');
+            \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
+        });
+    }
+
+    /**
      * Get all subscriptions for this plan.
      */
     public function userPlans(): HasMany
@@ -114,6 +130,10 @@ class Plan extends Model
      */
     public static function ensureBuyerPlansExist(): void
     {
+        if (\Illuminate\Support\Facades\Cache::has('buyer_plans_ensured_v1')) {
+            return;
+        }
+
         try {
             if (!\Illuminate\Support\Facades\Schema::hasTable('plans')) {
                 return;
@@ -180,6 +200,8 @@ class Plan extends Model
                     'sort_order'    => 12,
                 ]);
             }
+
+            \Illuminate\Support\Facades\Cache::forever('buyer_plans_ensured_v1', true);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('Auto-create buyer plans warning: ' . $e->getMessage());
         }

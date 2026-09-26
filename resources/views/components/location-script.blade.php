@@ -1,5 +1,5 @@
 @php
-    $dbDistrictsByState = \Illuminate\Support\Facades\Cache::remember('db_districts_by_state_v3', 1800, function() {
+    $dbDistrictsByState = \Illuminate\Support\Facades\Cache::remember('db_districts_by_state_v3', 86400, function() {
         try {
             if (!\Illuminate\Support\Facades\Schema::hasTable('districts') || !\Illuminate\Support\Facades\Schema::hasTable('states')) {
                 return [];

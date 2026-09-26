@@ -217,6 +217,11 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260926v2">
 
+    <!-- High-Performance Preconnects & Resource Hints -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+
     <!-- Non-Blocking Phosphor Icons (Regular, Bold, Fill) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" media="print" onload="this.media='all'">
@@ -2389,6 +2394,13 @@
         </div>
     </div>
 
+    {{-- ====================================================
+         HERO PLANS SLIDER (NEW DESIGN - TOP)
+         Grand hero-scale slider directly below the Hero Section.
+         Note: The bottom pricing plans card section is fully preserved.
+         ==================================================== --}}
+    @include('components.hero-plans-slider')
+
     <!-- Premium Promo Slider Section (Desktop only to prevent duplicate sliders on mobile) -->
     <div class="promo-slider-container hidden lg:block">
         <div class="promo-slider" id="promo-slider">
@@ -3707,7 +3719,7 @@
     @include('components.idle-logout')
 
     <!-- Deferred Non-Critical Scripts -->
-    <script src="{{ asset('js/otp-verification.js') }}?v=20260916"></script>
+    <script defer src="{{ asset('js/otp-verification.js') }}?v=20260916"></script>
     @include('components.location-script')
     @include('components.push-notification-deliverer')
 </body>

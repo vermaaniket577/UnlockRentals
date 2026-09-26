@@ -51,9 +51,18 @@ class PropertyImage extends Model
                     'property_images.sort_order',
                     'property_images.created_at',
                     'property_images.updated_at',
-                    DB::raw('(CASE WHEN property_images.image_data IS NOT NULL AND LENGTH(property_images.image_data) > 0 THEN 1 ELSE 0 END) AS has_image_data'),
+                    DB::raw('(CASE WHEN property_images.image_data IS NOT NULL THEN 1 ELSE 0 END) AS has_image_data'),
                 ]);
             }
+        });
+
+        // Automatically purge any cached image file when the model is updated or deleted
+        static::saved(function ($model) {
+            $model->purgeCachedFile();
+        });
+
+        static::deleted(function ($model) {
+            $model->purgeCachedFile();
         });
     }
 
@@ -66,25 +75,84 @@ class PropertyImage extends Model
     }
 
     /**
+     * Directory path where binary images are cached on disk for high-speed direct static serving.
+     */
+    public static function getCacheDir(): string
+    {
+        return public_path('cache/property-images');
+    }
+
+    /**
+     * Get path of cached file on disk if it exists.
+     */
+    public function getCachedFilePath(): ?string
+    {
+        $dir = self::getCacheDir();
+        $candidates = [
+            $dir . DIRECTORY_SEPARATOR . $this->id . '.jpg',
+            $dir . DIRECTORY_SEPARATOR . $this->id . '.webp',
+            $dir . DIRECTORY_SEPARATOR . $this->id . '.png',
+        ];
+        foreach ($candidates as $cand) {
+            if (is_file($cand)) {
+                return $cand;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Purge the cached file from disk.
+     */
+    public function purgeCachedFile(): void
+    {
+        $dir = self::getCacheDir();
+        foreach (['.jpg', '.webp', '.png', '.jpeg'] as $ext) {
+            $f = $dir . DIRECTORY_SEPARATOR . $this->id . $ext;
+            if (is_file($f)) {
+                @unlink($f);
+            }
+        }
+    }
+
+    /**
      * Get the URL to display this image.
      * Serves from DB binary if available, otherwise falls back to storage.
      */
     public function imageUrl(): string
     {
-        // Check computed flag or raw attribute without loading entire binary blob
+        // 1. If static cached file already exists, return the direct static asset URL (bypasses PHP & DB completely)
+        $cachedPath = $this->getCachedFilePath();
+        if ($cachedPath) {
+            $basename = basename($cachedPath);
+            return asset('cache/property-images/' . $basename);
+        }
+
+        // 2. Check computed flag or raw attribute for binary data in database
         if (!empty($this->has_image_data) || !empty($this->image_data)) {
             return route('property.image', $this->id, false);
         }
 
+        // 3. File path storage handling
         if ($this->path) {
             $p = ltrim($this->path, '/');
             if (filter_var($p, FILTER_VALIDATE_URL)) {
                 return $p;
             }
+
+            // Direct static serve check if file already exists in public storage
+            $cleanStoragePath = preg_replace('#^storage/#i', '', $p);
+            if (is_file(public_path('storage/' . $cleanStoragePath))) {
+                return asset('storage/' . $cleanStoragePath);
+            }
+            if (is_file(public_path($p))) {
+                return asset($p);
+            }
+
             return route('property.image.file', ['path' => $p], false);
         }
 
-        return asset('images/luxury_sunlit.png');
+        return asset('images/luxury_sunlit.webp');
     }
 
     /**

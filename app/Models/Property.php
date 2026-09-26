@@ -290,24 +290,31 @@ class Property extends Model
         return !empty($all) ? $all[0] : null;
     }
 
+    protected ?string $memoizedPrimaryImageUrl = null;
+    protected bool $hasCheckedPrimaryImageUrl = false;
+
     /**
      * Get the primary image URL or fallback to first image.
      */
     public function primaryImageUrl(): ?string
     {
+        if ($this->hasCheckedPrimaryImageUrl) {
+            return $this->memoizedPrimaryImageUrl;
+        }
+        $this->hasCheckedPrimaryImageUrl = true;
+
         if ($this->relationLoaded('primaryImage') && $this->primaryImage) {
-            return $this->primaryImage->imageUrl();
+            return $this->memoizedPrimaryImageUrl = $this->primaryImage->imageUrl();
         }
         if ($this->relationLoaded('images') && $this->images && $this->images->isNotEmpty()) {
-            return $this->images->first()->imageUrl();
+            return $this->memoizedPrimaryImageUrl = $this->images->first()->imageUrl();
         }
         if ($this->primaryImage) {
-            return $this->primaryImage->imageUrl();
+            return $this->memoizedPrimaryImageUrl = $this->primaryImage->imageUrl();
         }
-        $first = $this->images()->first();
-        if ($first) {
-            return $first->imageUrl();
+        if ($first = $this->images()->first()) {
+            return $this->memoizedPrimaryImageUrl = $first->imageUrl();
         }
-        return null;
+        return $this->memoizedPrimaryImageUrl = null;
     }
 }

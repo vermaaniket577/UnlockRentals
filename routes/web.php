@@ -144,7 +144,7 @@ Route::get('/', function(Illuminate\Http\Request $request) {
     return view('welcome', compact('featuredRentals', 'feedbacks', 'userOffers'));
 })->name('home');
 
-// Serve a property image directly from binary DB data
+// Serve a property image directly from binary DB data with high-speed filesystem caching
 Route::withoutMiddleware([
     \Illuminate\Session\Middleware\StartSession::class,
     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
@@ -156,6 +156,33 @@ Route::withoutMiddleware([
         return response('', 304)
             ->header('ETag', $etag)
             ->header('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+
+    $cacheDir = public_path('cache/property-images');
+    if (!is_dir($cacheDir)) {
+        @mkdir($cacheDir, 0755, true);
+    }
+
+    $candidates = [
+        'jpg'  => $cacheDir . DIRECTORY_SEPARATOR . $id . '.jpg',
+        'webp' => $cacheDir . DIRECTORY_SEPARATOR . $id . '.webp',
+        'png'  => $cacheDir . DIRECTORY_SEPARATOR . $id . '.png',
+    ];
+
+    foreach ($candidates as $ext => $filePath) {
+        if (is_file($filePath)) {
+            $mime = match ($ext) {
+                'webp' => 'image/webp',
+                'png'  => 'image/png',
+                default => 'image/jpeg',
+            };
+            return response()->file($filePath, [
+                'Content-Type' => $mime,
+                'ETag' => $etag,
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+                'Access-Control-Allow-Origin' => '*',
+            ]);
+        }
     }
 
     $image = \App\Models\PropertyImage::withoutGlobalScope('withoutBlob')->findOrFail($id);
@@ -170,6 +197,15 @@ Route::withoutMiddleware([
     if (!$mimeType || !str_starts_with($mimeType, 'image/')) {
         $mimeType = 'image/jpeg';
     }
+
+    // Write file to disk cache for fast static serving on all subsequent requests
+    $fileExt = match ($mimeType) {
+        'image/webp' => 'webp',
+        'image/png'  => 'png',
+        default      => 'jpg',
+    };
+    $targetFile = $cacheDir . DIRECTORY_SEPARATOR . $id . '.' . $fileExt;
+    @file_put_contents($targetFile, $image->image_data);
 
     return response($image->image_data, 200)
         ->header('Content-Type', $mimeType)
