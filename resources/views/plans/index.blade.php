@@ -5,102 +5,1129 @@
 
 @push('head')
 <style>
-    .pricing-hero {
-        background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.08) 0%, rgba(248, 250, 252, 0) 70%);
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    /* ==========================================
+       MATRIMONIAL-STYLE PLANS PAGE
+       Clean, structured, premium layout
+    ========================================== */
+
+    .plans-page {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: #f8f9fb;
+        min-height: 100vh;
     }
-    .dark .pricing-hero {
-        background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.15) 0%, rgba(2, 6, 23, 0) 70%);
+    .dark .plans-page {
+        background: #0a0e1a;
     }
-    
-    .billing-toggle-wrapper {
-        display: inline-flex;
+
+    /* ---- Horizontal Tab Navigation ---- */
+    .plans-tab-bar {
+        display: flex;
         align-items: center;
-        padding: 4px;
-        background: rgba(241, 245, 249, 0.9);
-        border: 1px solid rgba(203, 213, 225, 0.8);
-        border-radius: 9999px;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        background: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 0 16px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        position: sticky;
+        top: 64px;
+        z-index: 30;
+        gap: 0;
     }
-    .dark .billing-toggle-wrapper {
-        background: rgba(15, 23, 42, 0.8);
-        border-color: rgba(51, 65, 85, 0.8);
+    .dark .plans-tab-bar {
+        background: #111827;
+        border-bottom-color: #1f2937;
     }
-    
-    .billing-btn {
+    .plans-tab-bar::-webkit-scrollbar { display: none; }
+
+    .plan-tab {
         position: relative;
-        padding: 8px 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 22px;
         font-size: 13px;
         font-weight: 700;
-        color: #64748b;
-        border-radius: 9999px;
-        transition: all 0.2s ease;
+        color: #6b7280;
+        white-space: nowrap;
+        cursor: pointer;
         border: none;
         background: transparent;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s ease;
+        letter-spacing: 0.01em;
+    }
+    .dark .plan-tab {
+        color: #9ca3af;
+    }
+    .plan-tab:hover {
+        color: #1e40af;
+        background: rgba(37, 99, 235, 0.04);
+    }
+    .dark .plan-tab:hover {
+        color: #60a5fa;
+        background: rgba(59, 130, 246, 0.08);
+    }
+    .plan-tab.active {
+        color: #1d4ed8;
+        border-bottom-color: #2563eb;
+    }
+    .dark .plan-tab.active {
+        color: #60a5fa;
+        border-bottom-color: #3b82f6;
+    }
+    .plan-tab .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border-radius: 4px;
+        line-height: 1.4;
+    }
+    .plan-tab .tab-badge.popular {
+        background: #f59e0b;
+        color: #451a03;
+    }
+    .plan-tab .tab-badge.vip {
+        background: #8b5cf6;
+        color: #fff;
+    }
+    .plan-tab .tab-badge.budget {
+        background: #e5e7eb;
+        color: #374151;
+    }
+    .dark .plan-tab .tab-badge.budget {
+        background: #374151;
+        color: #d1d5db;
+    }
+    .plan-tab .tab-badge.buyer {
+        background: #10b981;
+        color: #fff;
+    }
+    .plan-tab .tab-icon {
+        font-size: 16px;
+    }
+
+    /* ---- Main Content Area ---- */
+    .plan-detail-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px 60px;
+    }
+
+    /* ---- Category Toggle (Rental / Buyer) ---- */
+    .category-toggle {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        background: #f1f5f9;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        width: fit-content;
+        margin: 0 auto 36px;
+    }
+    .dark .category-toggle {
+        background: #1e293b;
+        border-color: #334155;
+    }
+    .category-toggle-btn {
+        padding: 10px 28px;
+        font-size: 14px;
+        font-weight: 700;
+        border-radius: 10px;
+        border: none;
         cursor: pointer;
+        transition: all 0.2s ease;
+        background: transparent;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .dark .category-toggle-btn {
+        color: #94a3b8;
+    }
+    .category-toggle-btn.active {
+        background: #ffffff;
+        color: #1e293b;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .dark .category-toggle-btn.active {
+        background: #334155;
+        color: #f1f5f9;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .category-toggle-btn .save-tag {
+        padding: 2px 7px;
+        font-size: 10px;
+        font-weight: 800;
+        background: #dcfce7;
+        color: #166534;
+        border-radius: 6px;
+        letter-spacing: 0.03em;
+    }
+    .dark .category-toggle-btn .save-tag {
+        background: #064e3b;
+        color: #6ee7b7;
+    }
+
+    /* ---- Plan Content Panel (Split Layout) ---- */
+    .plan-content-panel {
+        display: none;
+    }
+    .plan-content-panel.active {
+        display: block;
+    }
+
+    .plan-split-layout {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 32px;
+        align-items: start;
+    }
+    @media (max-width: 900px) {
+        .plan-split-layout {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+    }
+
+    /* Left Side - Plan Info */
+    .plan-info-left {
+        padding: 0;
+    }
+    .plan-info-left .plan-badge-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    .plan-info-left .plan-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+    .dark .plan-info-left .plan-type-badge {
+        background: #064e3b;
+        color: #6ee7b7;
+        border-color: #047857;
+    }
+    .plan-info-left .plan-type-badge.buyer {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a;
+    }
+    .dark .plan-info-left .plan-type-badge.buyer {
+        background: #451a03;
+        color: #fcd34d;
+        border-color: #92400e;
+    }
+    .plan-info-left h1 {
+        font-size: 32px;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1.2;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+    }
+    .dark .plan-info-left h1 {
+        color: #f1f5f9;
+    }
+    .plan-info-left h1 .plan-name-highlight {
+        display: block;
+        background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-style: italic;
+    }
+    .plan-info-left .plan-subtitle {
+        font-size: 15px;
+        color: #64748b;
+        line-height: 1.6;
+        max-width: 520px;
+        margin-bottom: 28px;
+    }
+    .dark .plan-info-left .plan-subtitle {
+        color: #94a3b8;
+    }
+
+    /* Feature Grid (2x2) */
+    .feature-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+    @media (max-width: 600px) {
+        .feature-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .feature-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 18px 20px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        transition: all 0.2s ease;
+    }
+    .dark .feature-box {
+        background: #1e293b;
+        border-color: #334155;
+    }
+    .feature-box:hover {
+        border-color: #93c5fd;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.06);
+    }
+    .dark .feature-box:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+    }
+    .feature-box .feat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+    }
+    .dark .feature-box .feat-icon {
+        background: #1e3a5f;
+        color: #60a5fa;
+        border-color: #1e40af;
+    }
+    .feature-box .feat-icon.green {
+        background: #ecfdf5;
+        color: #059669;
+        border-color: #a7f3d0;
+    }
+    .dark .feature-box .feat-icon.green {
+        background: #064e3b;
+        color: #34d399;
+        border-color: #047857;
+    }
+    .feature-box .feat-text h4 {
+        font-size: 14px;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0 0 3px;
+    }
+    .dark .feature-box .feat-text h4 {
+        color: #f1f5f9;
+    }
+    .feature-box .feat-text p {
+        font-size: 12px;
+        color: #94a3b8;
+        margin: 0;
+        line-height: 1.4;
+    }
+    .dark .feature-box .feat-text p {
+        color: #64748b;
+    }
+
+    /* Right Side - Pricing Card */
+    .pricing-card {
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+        position: sticky;
+        top: 140px;
+    }
+    .dark .pricing-card {
+        background: #1e293b;
+        border-color: #334155;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .pricing-card.popular-card {
+        border-color: #2563eb;
+        box-shadow: 0 8px 40px rgba(37, 99, 235, 0.12);
+    }
+    .dark .pricing-card.popular-card {
+        border-color: #3b82f6;
+        box-shadow: 0 8px 40px rgba(59, 130, 246, 0.15);
+    }
+
+    .pricing-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .dark .pricing-card-header {
+        border-bottom-color: #334155;
+    }
+    .pricing-card-header .card-tab {
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        background: transparent;
+        color: #94a3b8;
+        transition: all 0.15s ease;
+    }
+    .pricing-card-header .card-tab.active {
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+    .dark .pricing-card-header .card-tab.active {
+        background: #3b82f6;
+    }
+    .pricing-card-header .card-icon {
+        margin-left: auto;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 18px;
+    }
+    .dark .pricing-card-header .card-icon {
+        background: #1e3a5f;
+        color: #60a5fa;
+    }
+
+    .pricing-card-body {
+        padding: 28px 24px;
+    }
+
+    .pricing-card .price-row {
+        margin-bottom: 4px;
+    }
+    .pricing-card .price-old {
+        font-size: 14px;
+        color: #94a3b8;
+        text-decoration: line-through;
+        font-weight: 600;
+    }
+    .pricing-card .price-save {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 800;
+        background: #dcfce7;
+        color: #166534;
+        border-radius: 6px;
+        margin-left: 10px;
+        letter-spacing: 0.03em;
+    }
+    .dark .pricing-card .price-save {
+        background: #064e3b;
+        color: #6ee7b7;
+    }
+    .pricing-card .price-main {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        margin-bottom: 2px;
+    }
+    .pricing-card .price-main .currency {
+        font-size: 24px;
+        font-weight: 900;
+        color: #0f172a;
+    }
+    .dark .pricing-card .price-main .currency {
+        color: #f1f5f9;
+    }
+    .pricing-card .price-main .amount {
+        font-size: 48px;
+        font-weight: 900;
+        color: #0f172a;
+        letter-spacing: -0.03em;
+        line-height: 1;
+    }
+    .dark .pricing-card .price-main .amount {
+        color: #f1f5f9;
+    }
+    .pricing-card .price-main .period {
+        font-size: 14px;
+        color: #94a3b8;
+        font-weight: 600;
+        margin-left: 4px;
+    }
+    .pricing-card .price-subtitle {
+        font-size: 12px;
+        color: #10b981;
+        font-weight: 700;
         display: flex;
         align-items: center;
         gap: 6px;
+        margin-bottom: 20px;
     }
-    .dark .billing-btn {
-        color: #94a3b8;
-    }
-    .billing-btn.active {
-        background: #2563EB;
-        color: #ffffff;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
-    }
-    
-    .plan-card {
-        position: relative;
+
+    /* Plan Stats Row */
+    .plan-stats {
         display: flex;
         flex-direction: column;
-        background: #ffffff;
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        border-radius: 20px;
-        padding: 28px 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-        transition: all 0.25s ease;
+        gap: 12px;
+        padding: 16px 0;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        margin-bottom: 20px;
     }
-    .dark .plan-card {
+    .dark .plan-stats {
+        border-color: #334155;
+    }
+    .plan-stat-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+    }
+    .plan-stat-row .stat-label {
+        color: #64748b;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .dark .plan-stat-row .stat-label {
+        color: #94a3b8;
+    }
+    .plan-stat-row .stat-label i {
+        font-size: 15px;
+        color: #94a3b8;
+    }
+    .dark .plan-stat-row .stat-label i {
+        color: #64748b;
+    }
+    .plan-stat-row .stat-value {
+        font-weight: 800;
+        color: #1e293b;
+    }
+    .dark .plan-stat-row .stat-value {
+        color: #f1f5f9;
+    }
+    .plan-stat-row .stat-value.highlight {
+        color: #2563eb;
+    }
+    .dark .plan-stat-row .stat-value.highlight {
+        color: #60a5fa;
+    }
+    .plan-stat-row .stat-value.green {
+        color: #059669;
+    }
+    .dark .plan-stat-row .stat-value.green {
+        color: #34d399;
+    }
+
+    /* CTA Button */
+    .plan-cta-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 16px 24px;
+        font-size: 15px;
+        font-weight: 800;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        letter-spacing: 0.01em;
+    }
+    .plan-cta-btn.primary {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+    }
+    .plan-cta-btn.primary:hover {
+        box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
+        transform: translateY(-1px);
+    }
+    .plan-cta-btn.blue {
+        background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+    }
+    .plan-cta-btn.blue:hover {
+        box-shadow: 0 6px 24px rgba(37, 99, 235, 0.4);
+        transform: translateY(-1px);
+    }
+    .plan-cta-btn.dark-btn {
         background: #0f172a;
-        border-color: rgba(51, 65, 85, 0.6);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        color: #ffffff;
     }
-    .plan-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
-        border-color: rgba(37, 99, 235, 0.4);
+    .dark .plan-cta-btn.dark-btn {
+        background: #f1f5f9;
+        color: #0f172a;
     }
-    .dark .plan-card:hover {
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
-        border-color: rgba(59, 130, 246, 0.4);
+    .plan-cta-btn.dark-btn:hover {
+        background: #1e293b;
+        transform: translateY(-1px);
     }
-    
-    .plan-card.popular {
-        border: 2px solid #2563EB;
-        box-shadow: 0 12px 32px rgba(37, 99, 235, 0.12);
-        background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+    .dark .plan-cta-btn.dark-btn:hover {
+        background: #e2e8f0;
     }
-    .dark .plan-card.popular {
-        background: linear-gradient(180deg, #0f172a 0%, #172033 100%);
+    .plan-cta-btn.disabled {
+        background: #f1f5f9;
+        color: #94a3b8;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+    .dark .plan-cta-btn.disabled {
+        background: #1e293b;
+        color: #475569;
+    }
+    .plan-cta-btn.active-plan {
+        background: #ecfdf5;
+        color: #059669;
+        border: 2px solid #a7f3d0;
+        cursor: default;
+    }
+    .dark .plan-cta-btn.active-plan {
+        background: #064e3b;
+        color: #34d399;
+        border-color: #047857;
+    }
+    .plan-cta-btn.pending-plan {
+        background: #fffbeb;
+        color: #b45309;
+        border: 2px solid #fde68a;
+        cursor: default;
+    }
+    .dark .plan-cta-btn.pending-plan {
+        background: #451a03;
+        color: #fbbf24;
+        border-color: #92400e;
+    }
+
+    .plan-compare-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
+    .dark .plan-compare-link {
+        color: #94a3b8;
+    }
+    .plan-compare-link:hover {
+        color: #2563eb;
+    }
+
+    /* ---- Right Panel: Info Card (beside pricing) ---- */
+    .plan-info-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-top: 20px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .dark .plan-info-card {
+        background: #1e293b;
+        border-color: #334155;
+    }
+    .plan-info-card-img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        display: block;
+    }
+    .plan-info-card-body {
+        padding: 20px;
+    }
+    .plan-info-card-body .card-badges {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .plan-info-card-body .card-badges span {
+        padding: 4px 10px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-radius: 6px;
+    }
+    .plan-info-card-body .card-badges .badge-green {
+        background: #dcfce7;
+        color: #166534;
+    }
+    .dark .plan-info-card-body .card-badges .badge-green {
+        background: #064e3b;
+        color: #6ee7b7;
+    }
+    .plan-info-card-body .card-badges .badge-blue {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    .dark .plan-info-card-body .card-badges .badge-blue {
+        background: #1e3a5f;
+        color: #93c5fd;
+    }
+    .plan-info-card-body h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 8px;
+    }
+    .dark .plan-info-card-body h3 {
+        color: #f1f5f9;
+    }
+    .plan-info-card-body .card-desc {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 16px;
+    }
+    .dark .plan-info-card-body .card-desc {
+        color: #94a3b8;
+    }
+    .plan-info-card-body .card-checks {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .plan-info-card-body .card-checks li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+    }
+    .dark .plan-info-card-body .card-checks li {
+        color: #cbd5e1;
+    }
+    .plan-info-card-body .card-checks li i {
+        color: #10b981;
+        font-size: 14px;
+    }
+
+    .plan-info-card-footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 20px;
+        border-top: 1px solid #f1f5f9;
+        font-size: 12px;
+        font-weight: 700;
+        color: #7c3aed;
+        background: #faf5ff;
+    }
+    .dark .plan-info-card-footer {
+        background: #1e1b4b;
+        border-top-color: #334155;
+        color: #a78bfa;
+    }
+
+    /* ---- Active/Pending Plan Banner ---- */
+    .active-plan-banner {
+        max-width: 800px;
+        margin: 0 auto 24px;
+        padding: 16px 20px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #ecfdf5;
+        border: 1.5px solid #a7f3d0;
+    }
+    .dark .active-plan-banner {
+        background: #064e3b;
+        border-color: #047857;
+    }
+    .active-plan-banner.pending {
+        background: #fffbeb;
+        border-color: #fde68a;
+    }
+    .dark .active-plan-banner.pending {
+        background: #451a03;
+        border-color: #92400e;
+    }
+    .active-plan-banner .banner-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+        background: #d1fae5;
+        color: #059669;
+    }
+    .dark .active-plan-banner .banner-icon {
+        background: #047857;
+        color: #6ee7b7;
+    }
+    .active-plan-banner.pending .banner-icon {
+        background: #fef3c7;
+        color: #d97706;
+    }
+    .dark .active-plan-banner.pending .banner-icon {
+        background: #92400e;
+        color: #fbbf24;
+    }
+    .active-plan-banner .banner-text h3 {
+        font-size: 14px;
+        font-weight: 800;
+        color: #065f46;
+        margin: 0 0 2px;
+    }
+    .dark .active-plan-banner .banner-text h3 {
+        color: #6ee7b7;
+    }
+    .active-plan-banner.pending .banner-text h3 {
+        color: #92400e;
+    }
+    .dark .active-plan-banner.pending .banner-text h3 {
+        color: #fbbf24;
+    }
+    .active-plan-banner .banner-text p {
+        font-size: 12px;
+        color: #047857;
+        margin: 0;
+    }
+    .dark .active-plan-banner .banner-text p {
+        color: #34d399;
+    }
+    .active-plan-banner.pending .banner-text p {
+        color: #b45309;
+    }
+    .dark .active-plan-banner.pending .banner-text p {
+        color: #fcd34d;
+    }
+    .active-plan-banner .banner-badge {
+        margin-left: auto;
+        padding: 5px 14px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-radius: 8px;
+        background: #059669;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    /* ---- Comparison Section ---- */
+    .comparison-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px 60px;
+    }
+    .comparison-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+    .dark .comparison-card {
+        background: #111827;
+        border-color: #1f2937;
+    }
+    .comparison-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 28px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .dark .comparison-card-header {
+        border-bottom-color: #1f2937;
+    }
+    .comparison-card-header .comp-title {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .comparison-card-header .comp-title span {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #2563eb;
+    }
+    .dark .comparison-card-header .comp-title span {
+        color: #60a5fa;
+    }
+    .comparison-card-header .comp-title h2 {
+        font-size: 22px;
+        font-weight: 900;
+        color: #0f172a;
+        margin: 0;
+    }
+    .dark .comparison-card-header .comp-title h2 {
+        color: #f1f5f9;
+    }
+    .comparison-card-header .comp-secure {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+    }
+    .dark .comparison-card-header .comp-secure {
+        color: #94a3b8;
+    }
+    .comparison-card-header .comp-secure i {
+        color: #10b981;
+    }
+
+    .comparison-table {
+        width: 100%;
+        text-align: left;
+        border-collapse: collapse;
+    }
+    .comparison-table thead th {
+        padding: 14px 20px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .dark .comparison-table thead th {
+        color: #64748b;
+        border-bottom-color: #1f2937;
+    }
+    .comparison-table tbody td {
+        padding: 14px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        border-bottom: 1px solid #f8fafc;
+    }
+    .dark .comparison-table tbody td {
+        color: #cbd5e1;
+        border-bottom-color: #1f2937;
+    }
+    .comparison-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .comparison-table tbody td:first-child {
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .dark .comparison-table tbody td:first-child {
+        color: #f1f5f9;
+    }
+    .comparison-table .check-cell {
+        color: #10b981;
+        font-weight: 700;
+    }
+    .comparison-table .highlight-cell {
+        color: #2563eb;
+        font-weight: 800;
+    }
+    .dark .comparison-table .highlight-cell {
+        color: #60a5fa;
+    }
+
+    /* ---- FAQ Section ---- */
+    .faq-section {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 0 20px 80px;
+    }
+    .faq-section h2 {
+        font-size: 26px;
+        font-weight: 900;
+        color: #0f172a;
+        text-align: center;
+        margin-bottom: 28px;
+        letter-spacing: -0.02em;
+    }
+    .dark .faq-section h2 {
+        color: #f1f5f9;
+    }
+    .faq-item {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        margin-bottom: 12px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+    .dark .faq-item {
+        background: #111827;
+        border-color: #1f2937;
+    }
+    .faq-item:hover {
+        border-color: #93c5fd;
+    }
+    .dark .faq-item:hover {
         border-color: #3b82f6;
     }
-    
-    .feature-icon-bullet {
+    .faq-question {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        cursor: pointer;
+        user-select: none;
+    }
+    .faq-question h3 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        flex: 1;
+    }
+    .dark .faq-question h3 {
+        color: #e2e8f0;
+    }
+    .faq-question .faq-toggle {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: 14px;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+    .dark .faq-question .faq-toggle {
+        background: #1e293b;
+        color: #94a3b8;
+    }
+    .faq-item.open .faq-toggle {
+        background: #2563eb;
+        color: #ffffff;
+        transform: rotate(45deg);
+    }
+    .faq-answer {
+        display: none;
+        padding: 0 22px 18px;
+    }
+    .faq-item.open .faq-answer {
+        display: block;
+    }
+    .faq-answer p {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.7;
+        margin: 0;
+    }
+    .dark .faq-answer p {
+        color: #94a3b8;
+    }
+
+    /* ---- Flash Alert ---- */
+    .plans-flash-alert {
+        max-width: 700px;
+        margin: 0 auto 20px;
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+    }
+    .plans-flash-alert.success {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    .dark .plans-flash-alert.success {
+        background: #064e3b;
+        color: #6ee7b7;
+        border-color: #047857;
+    }
+    .plans-flash-alert.error {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+    .dark .plans-flash-alert.error {
+        background: #450a0a;
+        color: #fca5a5;
+        border-color: #991b1b;
+    }
+
+    /* ---- Plan Feature List (within pricing card) ---- */
+    .pricing-feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .pricing-feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+    }
+    .dark .pricing-feature-list li {
+        color: #cbd5e1;
+    }
+    .pricing-feature-list li i {
         width: 20px;
         height: 20px;
         border-radius: 50%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(37, 99, 235, 0.1);
-        color: #2563EB;
+        background: #ecfdf5;
+        color: #059669;
         font-size: 11px;
         flex-shrink: 0;
     }
-    .dark .feature-icon-bullet {
-        background: rgba(59, 130, 246, 0.15);
-        color: #60a5fa;
+    .dark .pricing-feature-list li i {
+        background: #064e3b;
+        color: #34d399;
+    }
+
+    /* Animate in */
+    .plan-content-panel.active .plan-split-layout {
+        animation: fadeSlideUp 0.35s ease-out;
+    }
+    @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 @endpush
@@ -110,57 +1137,137 @@
     $paymentFailedReason = session('payment_failed_reason') ?: (request()->boolean('payment_failed') ? request('reason', 'Payment failed. Please try again or choose another payment method.') : null);
     $displayPlans = $plans->values();
     $hasEnterprise = $displayPlans->contains(fn($item) => str_contains(strtolower($item->name), 'enterprise'));
+
+    \App\Models\Plan::ensureBuyerPlansExist();
+    if ($displayPlans->whereIn('purpose', ['buy', 'sale'])->isEmpty()) {
+        $displayPlans = \App\Models\Plan::public()->get();
+    }
+    $rentPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['rent', 'both', null]));
+    $buyPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['buy', 'sale']));
+    if ($buyPlans->isEmpty()) {
+        $buyPlans = $rentPlans;
+    }
+
+    $requestedBilling = request('billing');
+    $requestedPurpose = request('purpose');
+    $initialBilling = ($requestedBilling === 'yearly' || in_array($requestedPurpose, ['buy', 'sale'])) ? 'yearly' : 'monthly';
+    $isYearly = ($initialBilling === 'yearly');
+
+    // Build combined plan list for tabs
+    $allPlansForTabs = $isYearly ? $buyPlans : $rentPlans;
+    $firstPlanId = $allPlansForTabs->first()?->id;
 @endphp
 
-<div class="min-h-screen bg-slate-50/60 dark:bg-slate-950 pb-24">
+<div class="plans-page pb-24">
 
-    {{-- Hero Section --}}
-    <section class="pricing-hero pt-28 pb-12 lg:pt-36 lg:pb-16 text-center px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-900/60 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-5 shadow-xs">
-                <i class="ph-bold ph-shield-check text-sm"></i>
-                <span>Zero Brokerage · Direct Owner Contacts</span>
-            </div>
-            
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-                Simple, Transparent Plans for <br class="hidden sm:inline">
-                <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 bg-clip-text text-transparent">Renters & Buyers</span>
-            </h1>
-            
-            <p class="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-normal">
-                Unlock direct landlord phone numbers, chat on WhatsApp, and schedule private property walkthroughs with zero middleman fees.
-            </p>
+    {{-- ============================================
+         HORIZONTAL TAB BAR (Sticky)
+    ============================================ --}}
+    <nav class="plans-tab-bar" id="plans-tab-bar" aria-label="Membership Plans">
+        {{-- Rental Plan Tabs --}}
+        <div id="rental-tabs" class="{{ $isYearly ? 'hidden' : '' }}" style="display: {{ $isYearly ? 'none' : 'flex' }}; align-items: center; gap: 0;">
+            @foreach($rentPlans as $index => $plan)
+                @php
+                    $nameLower = strtolower($plan->name);
+                    $isGold = str_contains($nameLower, 'gold') || str_contains($nameLower, 'pro') || str_contains($nameLower, 'popular');
+                    $isPlatinum = str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond') || str_contains($nameLower, 'vip');
+                    $tabBadge = $isGold ? 'MOST POPULAR' : ($isPlatinum ? 'VIP CHOICE' : '');
+                    $tabBadgeClass = $isGold ? 'popular' : ($isPlatinum ? 'vip' : 'budget');
+                @endphp
+                <button type="button"
+                    class="plan-tab {{ $index === 0 ? 'active' : '' }}"
+                    data-plan-tab="rent_{{ $plan->id }}"
+                    data-category="rental">
+                    @if(str_contains($nameLower, 'silver') || str_contains($nameLower, 'start') || str_contains($nameLower, 'basic'))
+                        <i class="ph-bold ph-shield-check tab-icon"></i>
+                    @elseif($isGold)
+                        <i class="ph-bold ph-crown tab-icon"></i>
+                    @elseif($isPlatinum)
+                        <i class="ph-bold ph-diamond tab-icon"></i>
+                    @else
+                        <i class="ph-bold ph-star tab-icon"></i>
+                    @endif
+                    <span>{{ strtoupper($plan->name) }}</span>
+                    @if($tabBadge)
+                        <span class="tab-badge {{ $tabBadgeClass }}">{{ $tabBadge }}</span>
+                    @endif
+                </button>
+            @endforeach
+            @unless($hasEnterprise)
+                <button type="button" class="plan-tab" data-plan-tab="rent_enterprise" data-category="rental">
+                    <i class="ph-bold ph-buildings tab-icon"></i>
+                    <span>ENTERPRISE</span>
+                </button>
+            @endunless
+        </div>
 
-            {{-- Interactive Pass Switcher (Rental Pass vs Buyer Pass) --}}
-            @php
-                $requestedBilling = request('billing');
-                $requestedPurpose = request('purpose');
-                $initialBilling = ($requestedBilling === 'yearly' || in_array($requestedPurpose, ['buy', 'sale'])) ? 'yearly' : 'monthly';
-                $isYearly = ($initialBilling === 'yearly');
-            @endphp
-            <div class="mt-8 flex flex-col items-center gap-3">
-                <div class="billing-toggle-wrapper" id="billing-toggle" role="group" aria-label="Plan category selector">
-                    <button type="button" class="billing-btn {{ $isYearly ? '' : 'active' }}" data-billing-choice="monthly">
-                        <i class="ph-bold ph-house-line text-sm"></i>
-                        <span>Rental Pass</span>
-                    </button>
-                    <button type="button" class="billing-btn {{ $isYearly ? 'active' : '' }}" data-billing-choice="yearly">
-                        <i class="ph-bold ph-buildings text-sm"></i>
-                        <span>Buyer Pass</span>
-                        <span class="px-1.5 py-0.5 text-[10px] font-black uppercase rounded-full bg-amber-400 text-slate-950 ml-1">Save 20%</span>
-                    </button>
-                </div>
-                <p class="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    Need instant 1-month access or a 1-year pass for buying properties? Switch anytime.
-                </p>
+        {{-- Buyer Plan Tabs --}}
+        <div id="buyer-tabs" class="{{ $isYearly ? '' : 'hidden' }}" style="display: {{ $isYearly ? 'flex' : 'none' }}; align-items: center; gap: 0;">
+            @foreach($buyPlans as $index => $plan)
+                @php
+                    $nameLower = strtolower($plan->name);
+                    $isGold = str_contains($nameLower, 'gold') || str_contains($nameLower, 'pro') || str_contains($nameLower, 'popular');
+                    $isPlatinum = str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond') || str_contains($nameLower, 'vip');
+                    $tabBadge = $isGold ? 'MOST POPULAR' : ($isPlatinum ? 'VIP CHOICE' : '');
+                    $tabBadgeClass = $isGold ? 'popular' : ($isPlatinum ? 'vip' : 'budget');
+                @endphp
+                <button type="button"
+                    class="plan-tab {{ $index === 0 ? 'active' : '' }}"
+                    data-plan-tab="buy_{{ $plan->id }}"
+                    data-category="buyer">
+                    @if(str_contains($nameLower, 'silver') || str_contains($nameLower, 'start') || str_contains($nameLower, 'basic'))
+                        <i class="ph-bold ph-shield-check tab-icon"></i>
+                    @elseif($isGold)
+                        <i class="ph-bold ph-crown tab-icon"></i>
+                    @elseif($isPlatinum)
+                        <i class="ph-bold ph-diamond tab-icon"></i>
+                    @else
+                        <i class="ph-bold ph-star tab-icon"></i>
+                    @endif
+                    <span>{{ strtoupper($plan->name) }}</span>
+                    @if($tabBadge)
+                        <span class="tab-badge {{ $tabBadgeClass }}">{{ $tabBadge }}</span>
+                    @endif
+                </button>
+            @endforeach
+            @unless($hasEnterprise)
+                <button type="button" class="plan-tab" data-plan-tab="buy_enterprise" data-category="buyer">
+                    <i class="ph-bold ph-buildings tab-icon"></i>
+                    <span>INSTITUTIONAL BUYER</span>
+                </button>
+            @endunless
+
+            {{-- Buyer Pass badge on right edge --}}
+            <div style="margin-left: auto; padding: 0 16px;">
+                <span class="tab-badge buyer" style="font-size: 10px; padding: 4px 10px;">HOME BUYERS</span>
             </div>
+        </div>
+    </nav>
+
+    {{-- ============================================
+         MAIN CONTENT AREA
+    ============================================ --}}
+    <div class="plan-detail-section">
+
+        {{-- Category Toggle --}}
+        <div class="category-toggle" id="category-toggle" role="group" aria-label="Plan category selector">
+            <button type="button" class="category-toggle-btn {{ $isYearly ? '' : 'active' }}" data-billing-choice="monthly">
+                <i class="ph-bold ph-house-line"></i>
+                <span>Rental Pass</span>
+            </button>
+            <button type="button" class="category-toggle-btn {{ $isYearly ? 'active' : '' }}" data-billing-choice="yearly">
+                <i class="ph-bold ph-buildings"></i>
+                <span>Buyer Pass</span>
+                <span class="save-tag">SAVE 20%</span>
+            </button>
         </div>
 
         {{-- Flash Alerts --}}
-        @if(session('success') || session('error') || $errors->has('payment_reference'))
-            <div class="max-w-2xl mx-auto mt-8 p-4 rounded-xl text-sm font-semibold border {{ session('error') || $errors->has('payment_reference') ? 'bg-red-50 dark:bg-red-950/40 border-red-200 text-red-700 dark:text-red-300' : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 text-emerald-700 dark:text-emerald-300' }}">
-                {{ session('error') ?? session('success') ?? $errors->first('payment_reference') }}
-            </div>
+        @if(session('success'))
+            <div class="plans-flash-alert success">{{ session('success') }}</div>
+        @endif
+        @if(session('error') || $errors->has('payment_reference'))
+            <div class="plans-flash-alert error">{{ session('error') ?? $errors->first('payment_reference') }}</div>
         @endif
 
         {{-- Active/Pending Subscriptions banner --}}
@@ -169,655 +1276,731 @@
                 $userActivePlans = collect([$activeRentPlan ?? null, $activeBuyPlan ?? null])->filter()->unique('id');
             @endphp
             @if($userActivePlans->isNotEmpty())
-                <div class="max-w-3xl mx-auto mt-8 space-y-3">
-                    @foreach($userActivePlans as $curPlan)
-                        <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-emerald-500/50 shadow-lg shadow-emerald-500/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center text-2xl flex-shrink-0">
-                                    <i class="ph-bold ph-check-circle"></i>
-                                </div>
-                                <div>
-                                    <h2 class="text-sm font-bold text-slate-900 dark:text-white">Active Plan: {{ $curPlan->plan->name ?? 'Premium' }} ({{ $curPlan->plan && $curPlan->plan->isBuyPlan() ? 'Buyer Pass' : 'Rental Plan' }})</h2>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ $curPlan->remaining_contacts }} contact unlocks remaining · Valid until {{ $curPlan->expires_at->format('M d, Y') }}</p>
-                                </div>
-                            </div>
-                            <span class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider">Active</span>
+                @foreach($userActivePlans as $curPlan)
+                    <div class="active-plan-banner">
+                        <div class="banner-icon">
+                            <i class="ph-bold ph-check-circle"></i>
                         </div>
-                    @endforeach
-                </div>
+                        <div class="banner-text">
+                            <h3>Active Plan: {{ $curPlan->plan->name ?? 'Premium' }} ({{ $curPlan->plan && $curPlan->plan->isBuyPlan() ? 'Buyer Pass' : 'Rental Plan' }})</h3>
+                            <p>{{ $curPlan->remaining_contacts }} contact unlocks remaining · Valid until {{ $curPlan->expires_at->format('M d, Y') }}</p>
+                        </div>
+                        <span class="banner-badge">Active</span>
+                    </div>
+                @endforeach
             @elseif($pendingPlan)
-                <div class="max-w-3xl mx-auto mt-8 p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-amber-500/50 shadow-lg shadow-amber-500/10 flex items-center gap-3.5 text-left">
-                    <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center text-2xl flex-shrink-0">
+                <div class="active-plan-banner pending">
+                    <div class="banner-icon">
                         <i class="ph-bold ph-clock"></i>
                     </div>
-                    <div>
-                        <h2 class="text-sm font-bold text-slate-900 dark:text-white">Payment Review Pending: {{ $pendingPlan->plan->name ?? 'Plan' }}</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Admin verification is in progress. Your plan will activate automatically upon confirmation.</p>
+                    <div class="banner-text">
+                        <h3>Payment Review Pending: {{ $pendingPlan->plan->name ?? 'Plan' }}</h3>
+                        <p>Admin verification is in progress. Your plan will activate automatically upon confirmation.</p>
                     </div>
                 </div>
             @endif
         @endauth
-    </section>
 
-    {{-- Plans Grid Section --}}
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        @php
-            \App\Models\Plan::ensureBuyerPlansExist();
-            if ($displayPlans->whereIn('purpose', ['buy', 'sale'])->isEmpty()) {
-                $displayPlans = \App\Models\Plan::public()->get();
-            }
-            $rentPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['rent', 'both', null]));
-            $buyPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['buy', 'sale']));
-            // Fallback if no specific buy plans
-            if ($buyPlans->isEmpty()) {
-                $buyPlans = $rentPlans;
-            }
-        @endphp
 
-        {{-- 1. Rental Plans Grid --}}
-        <div id="rental-plans-grid" class="{{ $isYearly ? 'hidden ' : '' }}grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-            @foreach($rentPlans as $plan)
-                @php
-                    $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
-                    $monthlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'monthly')->first() : null;
-                    $price = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : (float) $plan->price;
-                    $nameLower = strtolower($plan->name);
-                    $planUid = 'rent_' . $plan->id;
-                @endphp
-
-                <article class="plan-card {{ $isGold ? 'popular' : '' }}">
-                    @if($isGold)
-                        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[11px] font-black uppercase tracking-wider shadow-md">
-                            ★ Most Popular
+        {{-- ========== RENTAL PLAN PANELS ========== --}}
+        @foreach($rentPlans as $index => $plan)
+            @php
+                $nameLower = strtolower($plan->name);
+                $isGold = str_contains($nameLower, 'gold') || str_contains($nameLower, 'pro') || str_contains($nameLower, 'popular');
+                $isPlatinum = str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond') || str_contains($nameLower, 'vip');
+                $monthlyOffer = isset($userOffers) ? $userOffers->where('plan_id', $plan->id)->where('billing_period', 'monthly')->first() : null;
+                $price = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $monthlyOffer->discounted_price : (float) $plan->price;
+                $originalPrice = ($monthlyOffer && $monthlyOffer->discounted_price !== null) ? (float) $plan->price : null;
+                $savePercent = $originalPrice ? round((($originalPrice - $price) / $originalPrice) * 100) : null;
+                $perDay = $plan->duration_days > 0 ? round($price / $plan->duration_days, 1) : 0;
+            @endphp
+            <div class="plan-content-panel rental-panel {{ $index === 0 && !$isYearly ? 'active' : '' }}"
+                 id="panel-rent_{{ $plan->id }}" data-category="rental">
+                <div class="plan-split-layout">
+                    {{-- LEFT SIDE --}}
+                    <div class="plan-info-left">
+                        <div class="plan-badge-row">
+                            <span class="plan-type-badge">
+                                <i class="ph-bold ph-shield-check"></i>
+                                ZERO BROKERAGE RENTAL PASS · DIRECT OWNER DEALS
+                            </span>
                         </div>
-                    @endif
 
-                    {{-- Standard Plan Icon Badge with High-Definition Vector SVGs --}}
-                    <div class="w-14 h-14 rounded-2xl border flex items-center justify-center mb-4 flex-shrink-0 {{ str_contains($nameLower, 'gold') ? 'bg-amber-50/80 dark:bg-amber-950/50 border-amber-200/80 dark:border-amber-800/80 shadow-md shadow-amber-500/10' : (str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond') ? 'bg-blue-50/80 dark:bg-blue-950/50 border-blue-200/80 dark:border-blue-800/80 shadow-md shadow-blue-500/10' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-sm') }}">
-                        @if($plan->image_path)
-                            <img src="{{ asset('storage/' . $plan->image_path) }}" alt="{{ $plan->name }}" class="w-8 h-8 object-contain">
-                        @elseif(str_contains($nameLower, 'gold'))
-                            {{-- Luxury 3D Imperial Gold Crown --}}
-                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="goldG_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#FDE047"/>
-                                        <stop offset="45%" stop-color="#F59E0B"/>
-                                        <stop offset="100%" stop-color="#D97706"/>
-                                    </linearGradient>
-                                    <linearGradient id="goldB_{{ $planUid }}" x1="8" y1="34" x2="40" y2="38" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#FFFBEB"/>
-                                        <stop offset="100%" stop-color="#FDE68A"/>
-                                    </linearGradient>
-                                </defs>
-                                <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldG_{{ $planUid }})"/>
-                                <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
-                                <rect x="8" y="35" width="32" height="4" rx="2" fill="url(#goldB_{{ $planUid }})"/>
-                                <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
-                                <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
-                                <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
-                                <circle cx="16" cy="37" r="1.5" fill="#EF4444"/>
-                                <circle cx="24" cy="37" r="2" fill="#10B981"/>
-                                <circle cx="32" cy="37" r="1.5" fill="#EF4444"/>
-                            </svg>
-                        @elseif(str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond'))
-                            {{-- Brilliant Cut Royal Sapphire Diamond --}}
-                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="platG1_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#60A5FA"/>
-                                        <stop offset="50%" stop-color="#3B82F6"/>
-                                        <stop offset="100%" stop-color="#1D4ED8"/>
-                                    </linearGradient>
-                                    <linearGradient id="platFacet_{{ $planUid }}" x1="14" y1="10" x2="34" y2="20" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#EFF6FF"/>
-                                        <stop offset="100%" stop-color="#BFDBFE"/>
-                                    </linearGradient>
-                                </defs>
-                                <polygon points="14,10 34,10 42,20 6,20" fill="url(#platG1_{{ $planUid }})"/>
-                                <polygon points="18,10 30,10 33,20 15,20" fill="url(#platFacet_{{ $planUid }})"/>
-                                <polygon points="6,20 42,20 24,42" fill="url(#platG1_{{ $planUid }})"/>
-                                <polygon points="15,20 33,20 24,42" fill="#93C5FD" fill-opacity="0.9"/>
-                                <path d="M37 7L38.5 11.5L43 13L38.5 14.5L37 19L35.5 14.5L31 13L35.5 11.5L37 7Z" fill="#FFFFFF"/>
-                            </svg>
-                        @else
-                            {{-- High-End Metallic Silver Shield --}}
-                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="silvG_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#CBD5E1"/>
-                                        <stop offset="40%" stop-color="#64748B"/>
-                                        <stop offset="100%" stop-color="#334155"/>
-                                    </linearGradient>
-                                    <linearGradient id="silvShine_{{ $planUid }}" x1="12" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#F8FAFC" stop-opacity="0.9"/>
-                                        <stop offset="100%" stop-color="#94A3B8" stop-opacity="0.3"/>
-                                    </linearGradient>
-                                </defs>
-                                <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvG_{{ $planUid }})"/>
-                                <path d="M24 7L11 12V21.5C11 30.2 16.5 38.3 24 40C31.5 38.3 37 30.2 37 21.5V12L24 7Z" fill="url(#silvShine_{{ $planUid }})"/>
-                                <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
-                            </svg>
-                        @endif
-                    </div>
+                        <h1>
+                            Find Your Dream Rental With
+                            <span class="plan-name-highlight">{{ $plan->name }} Pass</span>
+                        </h1>
+                        <p class="plan-subtitle">
+                            {{ $plan->description ?? 'Looking for a flat, PG, or room? Skip the 1-month broker commission and negotiate directly with verified landlords.' }}
+                        </p>
 
-                    <div class="flex items-start justify-between gap-3 mb-4">
-                        <div>
-                            <span class="px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-wider">Rental Pass</span>
-                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">{{ $plan->name }}</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 min-h-[32px]">{{ $plan->description ?? 'Direct owner contact access for verified rental listings.' }}</p>
+                        {{-- Feature Grid --}}
+                        <div class="feature-grid">
+                            <div class="feature-box">
+                                <div class="feat-icon">
+                                    <i class="ph-bold ph-user-circle-check"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>{{ $plan->contact_limit }} Verified Direct Owners</h4>
+                                    <p>Direct owners & builder representatives</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon green">
+                                    <i class="ph-bold ph-currency-inr"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Save ₹1 Lakh to ₹5 Lakhs</h4>
+                                    <p>Zero broker commission on rent transactions</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon">
+                                    <i class="ph-bold ph-calendar-check"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>{{ $plan->duration_days }} Days Validity</h4>
+                                    <p>Extended window to evaluate deals</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon green">
+                                    <i class="ph-bold ph-handshake"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Direct Negotiation</h4>
+                                    <p>Direct owner negotiation access</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="py-4 border-y border-slate-100 dark:border-slate-800/80 mb-5">
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-2xl font-black text-slate-900 dark:text-white">₹</span>
-                            <span class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{{ number_format($price, 0) }}</span>
-                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-1">/ rent pass</span>
-                        </div>
-                        <div class="mt-2 flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
-                            <i class="ph-bold ph-calendar-check"></i>
-                            <span>{{ $plan->duration_days }} Days Validity</span>
-                        </div>
-                    </div>
+                    {{-- RIGHT SIDE - Pricing Card --}}
+                    <div>
+                        <div class="pricing-card {{ $isGold ? 'popular-card' : '' }}">
+                            <div class="pricing-card-header">
+                                <span class="card-tab active">RENTAL PASS</span>
+                                <span class="card-tab" style="cursor: default; opacity: 0.4;">DIRECT PASS</span>
+                                <div class="card-icon">
+                                    <i class="ph-bold ph-house-line"></i>
+                                </div>
+                            </div>
 
-                    <ul class="space-y-3 mb-8 flex-1">
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                            <span><strong>{{ $plan->contact_limit }}</strong> Verified Owner Contacts</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                            <span>Direct Phone & WhatsApp Unlock</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                            <span>Zero Brokerage Guarantee</span>
-                        </li>
-                        @if($plan->features && is_array($plan->features))
-                            @foreach($plan->features as $feature)
-                                @if(!empty(trim($feature)))
-                                    <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                                        <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                                        <span>{{ $feature }}</span>
-                                    </li>
+                            <div class="pricing-card-body">
+                                {{-- Price Row --}}
+                                @if($originalPrice)
+                                    <div class="price-row">
+                                        <span class="price-old">₹{{ number_format($originalPrice, 0) }}</span>
+                                        <span class="price-save">SAVE {{ $savePercent }}%</span>
+                                    </div>
                                 @endif
-                            @endforeach
-                        @endif
-                    </ul>
+                                <div class="price-main">
+                                    <span class="currency">₹</span>
+                                    <span class="amount">{{ number_format($price, 0) }}</span>
+                                    <span class="period">/ rental pass</span>
+                                </div>
+                                <div class="price-subtitle">
+                                    <i class="ph-bold ph-seal-check"></i>
+                                    Only ₹{{ number_format($perDay, 1) }}/day · {{ $plan->duration_days }} Full Days Validity
+                                </div>
 
-                    <div class="mt-auto">
-                        @if(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0 && $activeRentPlan->plan_id === $plan->id)
-                            <button disabled class="w-full py-3.5 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold text-sm text-center cursor-default">
-                                ✓ Current Active Plan
-                            </button>
-                        @elseif(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0 && $activeRentPlan->plan && (float) $plan->price > (float) $activeRentPlan->plan->price)
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" title="Upgrade Plan">
-                                <i class="ph-bold ph-lightning"></i>
-                                <span>Upgrade Plan</span>
-                            </a>
-                        @elseif(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0)
-                            <button disabled class="w-full py-3.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold text-sm text-center cursor-not-allowed">
-                                Already Subscribed
-                            </button>
-                        @elseif(auth()->check() && $pendingPlan && $pendingPlan->plan && $pendingPlan->plan->isRentPlan())
-                            <button disabled class="w-full py-3.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-bold text-sm text-center cursor-default">
-                                Verification Pending
-                            </button>
-                        @else
-                            @guest
-                                <a href="{{ route('login', ['redirect' => route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1])]) }}"
-                                   onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}');"
-                                   class="w-full py-3.5 px-4 rounded-xl {{ $isGold ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/25' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100' }} font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all" title="Unlock Contacts">
-                                    <i class="ph-bold ph-lightning text-amber-400"></i>
-                                    <span>Unlock Contacts</span>
-                                </a>
-                            @else
-                                <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}"
-                                   class="w-full py-3.5 px-4 rounded-xl {{ $isGold ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/25' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100' }} font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all" title="Unlock Contacts">
-                                    <i class="ph-bold ph-lightning text-amber-400"></i>
-                                    <span>Unlock Contacts</span>
-                                </a>
-                            @endguest
-                        @endif
-                    </div>
-                </article>
-            @endforeach
+                                {{-- Stats --}}
+                                <div class="plan-stats">
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-phone"></i> Direct Owner Contacts</span>
+                                        <span class="stat-value highlight">{{ $plan->contact_limit }} Direct Unlocks</span>
+                                    </div>
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-calendar"></i> Access Duration</span>
+                                        <span class="stat-value">{{ $plan->duration_days }} Full Days</span>
+                                    </div>
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-hand-coins"></i> Brokerage Fee</span>
+                                        <span class="stat-value green">₹0 (Zero Commission)</span>
+                                    </div>
+                                </div>
 
-            {{-- Enterprise Card --}}
-            @unless($hasEnterprise)
-                <article class="plan-card">
-                    {{-- Enterprise Skyline Vector SVG Icon --}}
-                    <div class="w-14 h-14 rounded-2xl border border-teal-200/80 dark:border-teal-700/80 bg-teal-50 dark:bg-teal-950/90 flex items-center justify-center mb-4 shadow-md shadow-teal-500/10">
-                        <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="entT1" x1="14" y1="6" x2="34" y2="42" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#5EEAD4"/>
-                                    <stop offset="50%" stop-color="#0D9488"/>
-                                    <stop offset="100%" stop-color="#115E59"/>
-                                </linearGradient>
-                                <linearGradient id="entT2" x1="6" y1="16" x2="22" y2="42" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#2DD4BF"/>
-                                    <stop offset="100%" stop-color="#0F766E"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M6 18L18 12V42H6V18Z" fill="url(#entT2)"/>
-                            <path d="M18 8L32 4V42H18V8Z" fill="url(#entT1)"/>
-                            <path d="M32 16L42 20V42H32V16Z" fill="url(#entT2)"/>
-                            <rect x="21" y="10" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="26" y="10" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="21" y="17" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="26" y="17" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="21" y="24" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="26" y="24" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="9" y="22" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
-                            <rect x="9" y="28" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
-                            <rect x="35" y="24" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
-                            <rect x="35" y="30" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
-                        </svg>
-                    </div>
-
-                    <div class="mb-4">
-                        <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800 text-[10px] font-black uppercase tracking-wider">Corporate</span>
-                        <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">Enterprise Plan</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 min-h-[32px]">For agencies, relocation teams, and portfolio operations.</p>
-                    </div>
-
-                    <div class="py-4 border-y border-slate-100 dark:border-slate-800 mb-5">
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-black text-slate-900 dark:text-white">Custom</span>
-                        </div>
-                        <div class="mt-2 flex items-center gap-2 text-xs font-semibold text-teal-600 dark:text-teal-400">
-                            <i class="ph-bold ph-users-three"></i>
-                            <span>Multi-User License</span>
-                        </div>
-                    </div>
-
-                    <ul class="space-y-3 mb-8 flex-1">
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
-                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Unlimited Owner Unlocks</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
-                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Dedicated Account Manager</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
-                            <span class="text-slate-800 dark:text-slate-200 font-semibold">GST Invoicing & API Integration</span>
-                        </li>
-                    </ul>
-
-                    <div class="mt-auto">
-                        <a href="mailto:support@unlockrentals.com?subject=Enterprise%20Plan%20Inquiry" class="w-full py-3.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-teal-500/20 active:scale-[0.98]" title="Contact Sales">
-                            <i class="ph-bold ph-envelope"></i>
-                            <span>Contact Sales</span>
-                        </a>
-                    </div>
-                </article>
-            @endunless
-        </div>
-
-        {{-- 2. Buyer Plans Grid (Hidden by default, shown when Buyer Pass selected) --}}
-        <div id="buyer-plans-grid" class="{{ $isYearly ? '' : 'hidden ' }}grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-            @foreach($buyPlans as $plan)
-                @php
-                    $isGold = str_contains(strtolower($plan->name), 'gold') || str_contains(strtolower($plan->name), 'pro') || str_contains(strtolower($plan->name), 'popular');
-                    $price = (float) $plan->price;
-                    $nameLower = strtolower($plan->name);
-                    $planUid = 'buy_' . $plan->id;
-                @endphp
-
-                <article class="plan-card {{ $isGold ? 'popular' : '' }}">
-                    @if($isGold)
-                        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[11px] font-black uppercase tracking-wider shadow-md">
-                            ★ VIP Buyer Choice
-                        </div>
-                    @endif
-
-                    {{-- Standard Plan Icon Badge with High-Definition Vector SVGs --}}
-                    <div class="w-14 h-14 rounded-2xl border flex items-center justify-center mb-4 flex-shrink-0 {{ str_contains($nameLower, 'gold') ? 'bg-amber-50/80 dark:bg-amber-950/50 border-amber-200/80 dark:border-amber-800/80 shadow-md shadow-amber-500/10' : (str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond') ? 'bg-blue-50/80 dark:bg-blue-950/50 border-blue-200/80 dark:border-blue-800/80 shadow-md shadow-blue-500/10' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 shadow-sm') }}">
-                        @if($plan->image_path)
-                            <img src="{{ asset('storage/' . $plan->image_path) }}" alt="{{ $plan->name }}" class="w-8 h-8 object-contain">
-                        @elseif(str_contains($nameLower, 'gold'))
-                            {{-- Luxury 3D Imperial Gold Crown --}}
-                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="goldG_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#FDE047"/>
-                                        <stop offset="45%" stop-color="#F59E0B"/>
-                                        <stop offset="100%" stop-color="#D97706"/>
-                                    </linearGradient>
-                                    <linearGradient id="goldB_{{ $planUid }}" x1="8" y1="34" x2="40" y2="38" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#FFFBEB"/>
-                                        <stop offset="100%" stop-color="#FDE68A"/>
-                                    </linearGradient>
-                                </defs>
-                                <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldG_{{ $planUid }})"/>
-                                <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
-                                <rect x="8" y="35" width="32" height="4" rx="2" fill="url(#goldB_{{ $planUid }})"/>
-                                <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
-                                <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
-                                <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
-                                <circle cx="16" cy="37" r="1.5" fill="#EF4444"/>
-                                <circle cx="24" cy="37" r="2" fill="#10B981"/>
-                                <circle cx="32" cy="37" r="1.5" fill="#EF4444"/>
-                            </svg>
-                        @elseif(str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond'))
-                            {{-- Brilliant Cut Royal Sapphire Diamond --}}
-                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="platG1_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#60A5FA"/>
-                                        <stop offset="50%" stop-color="#3B82F6"/>
-                                        <stop offset="100%" stop-color="#1D4ED8"/>
-                                    </linearGradient>
-                                    <linearGradient id="platFacet_{{ $planUid }}" x1="14" y1="10" x2="34" y2="20" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#EFF6FF"/>
-                                        <stop offset="100%" stop-color="#BFDBFE"/>
-                                    </linearGradient>
-                                </defs>
-                                <polygon points="14,10 34,10 42,20 6,20" fill="url(#platG1_{{ $planUid }})"/>
-                                <polygon points="18,10 30,10 33,20 15,20" fill="url(#platFacet_{{ $planUid }})"/>
-                                <polygon points="6,20 42,20 24,42" fill="url(#platG1_{{ $planUid }})"/>
-                                <polygon points="15,20 33,20 24,42" fill="#93C5FD" fill-opacity="0.9"/>
-                                <path d="M37 7L38.5 11.5L43 13L38.5 14.5L37 19L35.5 14.5L31 13L35.5 11.5L37 7Z" fill="#FFFFFF"/>
-                            </svg>
-                        @else
-                            {{-- High-End Metallic Silver Shield --}}
-                            <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="silvG_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#CBD5E1"/>
-                                        <stop offset="40%" stop-color="#64748B"/>
-                                        <stop offset="100%" stop-color="#334155"/>
-                                    </linearGradient>
-                                    <linearGradient id="silvShine_{{ $planUid }}" x1="12" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#F8FAFC" stop-opacity="0.9"/>
-                                        <stop offset="100%" stop-color="#94A3B8" stop-opacity="0.3"/>
-                                    </linearGradient>
-                                </defs>
-                                <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvG_{{ $planUid }})"/>
-                                <path d="M24 7L11 12V21.5C11 30.2 16.5 38.3 24 40C31.5 38.3 37 30.2 37 21.5V12L24 7Z" fill="url(#silvShine_{{ $planUid }})"/>
-                                <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
-                            </svg>
-                        @endif
-                    </div>
-
-                    @php
-                        $isExplicitBuyPlan = ($plan->purpose === 'buy' || $plan->purpose === 'sale');
-                        $buyerDisplayName = $isExplicitBuyPlan ? $plan->name : ($isGold ? 'Gold Buyer Pass' : ($isPlatinum ? 'Platinum Buyer Pass' : 'Silver Buyer Pass'));
-                        $buyerDisplayDesc = $isExplicitBuyPlan ? ($plan->description ?: 'Direct seller contact access for verified property purchase.') : (
-                            $isGold ? 'Most popular annual pass for active home buyers and property investors.' : (
-                                $isPlatinum ? 'Ultimate annual pass with maximum verified seller unlocks for serious property buyers.' : 'Essential direct seller contacts and priority access for property buyers.'
-                            )
-                        );
-                    @endphp
-                    <div class="flex items-start justify-between gap-3 mb-4">
-                        <div>
-                            <span class="px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider">Buyer Pass (365 Days)</span>
-                            <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">{{ $buyerDisplayName }}</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 min-h-[32px]">{{ $buyerDisplayDesc }}</p>
-                        </div>
-                    </div>
-
-                    <div class="py-4 border-y border-slate-100 dark:border-slate-800/80 mb-5">
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-2xl font-black text-slate-900 dark:text-white">₹</span>
-                            <span class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{{ number_format($price, 0) }}</span>
-                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 ml-1">/ annual pass</span>
-                        </div>
-                        <div class="mt-2 flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                            <i class="ph-bold ph-shield-check"></i>
-                            <span>{{ $plan->duration_days }} Days Priority Buyer Access</span>
-                        </div>
-                    </div>
-
-                    <ul class="space-y-3 mb-8 flex-1">
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                            <span><strong>{{ $plan->contact_limit }}</strong> Verified Seller Contacts</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                            <span>Direct Phone & WhatsApp Unlock</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                            <span>Zero Brokerage Guaranteed</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                            <span>Schedule Property Walkthroughs</span>
-                        </li>
-                        @if($plan->features && is_array($plan->features))
-                            @foreach($plan->features as $feature)
-                                @if(!empty(trim($feature)))
-                                    <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                                        <span class="feature-icon-bullet"><i class="ph-bold ph-check"></i></span>
-                                        <span>{{ $feature }}</span>
-                                    </li>
+                                {{-- CTA --}}
+                                @if(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0 && $activeRentPlan->plan_id === $plan->id)
+                                    <button class="plan-cta-btn active-plan" disabled>
+                                        <i class="ph-bold ph-check-circle"></i>
+                                        Current Active Plan
+                                    </button>
+                                @elseif(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0 && $activeRentPlan->plan && (float) $plan->price > (float) $activeRentPlan->plan->price)
+                                    <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="plan-cta-btn blue">
+                                        <i class="ph-bold ph-lightning"></i>
+                                        Upgrade Plan
+                                    </a>
+                                @elseif(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0)
+                                    <button class="plan-cta-btn disabled" disabled>
+                                        Already Subscribed
+                                    </button>
+                                @elseif(auth()->check() && $pendingPlan && $pendingPlan->plan && $pendingPlan->plan->isRentPlan())
+                                    <button class="plan-cta-btn pending-plan" disabled>
+                                        <i class="ph-bold ph-clock"></i>
+                                        Verification Pending
+                                    </button>
+                                @else
+                                    @guest
+                                        <a href="{{ route('login', ['redirect' => route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1])]) }}"
+                                           onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}');"
+                                           class="plan-cta-btn primary">
+                                            <i class="ph-bold ph-lock-key-open"></i>
+                                            Unlock Contacts Now · ₹{{ number_format($price, 0) }}
+                                        </a>
+                                    @else
+                                        <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}"
+                                           class="plan-cta-btn primary">
+                                            <i class="ph-bold ph-lock-key-open"></i>
+                                            Unlock Contacts Now · ₹{{ number_format($price, 0) }}
+                                        </a>
+                                    @endguest
                                 @endif
-                            @endforeach
-                        @endif
-                    </ul>
 
-                    <div class="mt-auto">
-                        @if(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0 && $activeBuyPlan->plan_id === $plan->id)
-                            <button disabled class="w-full py-3.5 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold text-sm text-center cursor-default">
-                                ✓ Current Active Plan
-                            </button>
-                        @elseif(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0 && $activeBuyPlan->plan && (float) $plan->price > (float) $activeBuyPlan->plan->price)
-                            <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}" class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all" title="Upgrade Plan">
-                                <i class="ph-bold ph-lightning"></i>
-                                <span>Upgrade Plan</span>
-                            </a>
-                        @elseif(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0)
-                            <button disabled class="w-full py-3.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 font-bold text-sm text-center cursor-not-allowed">
-                                Already Subscribed
-                            </button>
-                        @elseif(auth()->check() && $pendingPlan && $pendingPlan->plan && $pendingPlan->plan->isBuyPlan())
-                            <button disabled class="w-full py-3.5 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-bold text-sm text-center cursor-default">
-                                Verification Pending
-                            </button>
-                        @else
-                            @guest
-                                <a href="{{ route('login', ['redirect' => route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1])]) }}"
-                                   onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}');"
-                                   class="w-full py-3.5 px-4 rounded-xl {{ $isGold ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/25' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100' }} font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all" title="Unlock Buyer Contacts">
-                                    <i class="ph-bold ph-lightning text-amber-400"></i>
-                                    <span>Unlock Buyer Contacts</span>
+                                <a href="#comparison-section" class="plan-compare-link">
+                                    Compare All Plan Details <i class="ph-bold ph-caret-down"></i>
                                 </a>
-                            @else
-                                <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}"
-                                   class="w-full py-3.5 px-4 rounded-xl {{ $isGold ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/25' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100' }} font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all" title="Unlock Buyer Contacts">
-                                    <i class="ph-bold ph-lightning text-amber-400"></i>
-                                    <span>Unlock Buyer Contacts</span>
-                                </a>
-                            @endguest
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-
-            {{-- Enterprise Card --}}
-            @unless($hasEnterprise)
-                <article class="plan-card">
-                    {{-- Enterprise Skyline Vector SVG Icon --}}
-                    <div class="w-14 h-14 rounded-2xl border border-teal-200/80 dark:border-teal-700/80 bg-teal-50 dark:bg-teal-950/90 flex items-center justify-center mb-4 shadow-md shadow-teal-500/10">
-                        <svg class="w-8 h-8 drop-shadow-sm" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="entT1_buy" x1="14" y1="6" x2="34" y2="42" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#5EEAD4"/>
-                                    <stop offset="50%" stop-color="#0D9488"/>
-                                    <stop offset="100%" stop-color="#115E59"/>
-                                </linearGradient>
-                                <linearGradient id="entT2_buy" x1="6" y1="16" x2="22" y2="42" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0%" stop-color="#2DD4BF"/>
-                                    <stop offset="100%" stop-color="#0F766E"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M6 18L18 12V42H6V18Z" fill="url(#entT2_buy)"/>
-                            <path d="M18 8L32 4V42H18V8Z" fill="url(#entT1_buy)"/>
-                            <path d="M32 16L42 20V42H32V16Z" fill="url(#entT2_buy)"/>
-                            <rect x="21" y="10" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="26" y="10" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="21" y="17" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="26" y="17" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="21" y="24" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="26" y="24" width="3" height="4" rx="0.5" fill="#CCFBF1" fill-opacity="0.8"/>
-                            <rect x="9" y="22" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
-                            <rect x="9" y="28" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
-                            <rect x="35" y="24" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
-                            <rect x="35" y="30" width="3" height="3" rx="0.5" fill="#CCFBF1" fill-opacity="0.6"/>
-                        </svg>
-                    </div>
-
-                    <div class="mb-4">
-                        <span class="px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800 text-[10px] font-black uppercase tracking-wider">Investor Desk</span>
-                        <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">Institutional Buyer</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 min-h-[32px]">For property funds, builders, and large commercial investors.</p>
-                    </div>
-
-                    <div class="py-4 border-y border-slate-100 dark:border-slate-800 mb-5">
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-black text-slate-900 dark:text-white">Custom</span>
+                            </div>
                         </div>
-                        <div class="mt-2 flex items-center gap-2 text-xs font-semibold text-teal-600 dark:text-teal-400">
-                            <i class="ph-bold ph-users-three"></i>
-                            <span>Portfolio Access</span>
+
+                        {{-- Info Card --}}
+                        <div class="plan-info-card">
+                            <div class="plan-info-card-body">
+                                <div class="card-badges">
+                                    <span class="badge-green">DIRECT OWNER DEALS</span>
+                                    <span class="badge-blue">100% Genuine</span>
+                                </div>
+                                <h3>Direct Property Rental</h3>
+                                <p class="card-desc">Connect directly with genuine property owners and save lakhs in brokerage fees.</p>
+                                <ul class="card-checks">
+                                    <li><i class="ph-bold ph-check-circle"></i> Verified Direct Owner Contacts</li>
+                                    <li><i class="ph-bold ph-check-circle"></i> Save 1 Month Brokerage Fee</li>
+                                    <li><i class="ph-bold ph-check-circle"></i> Rental Agreement Checklist</li>
+                                </ul>
+                            </div>
+                            <div class="plan-info-card-footer">
+                                <i class="ph-bold ph-sparkle"></i>
+                                Direct Owner Negotiation · ₹0 Middleman
+                            </div>
                         </div>
                     </div>
-
-                    <ul class="space-y-3 mb-8 flex-1">
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
-                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Unlimited Seller Direct Unlocks</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
-                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Dedicated Investment Concierge</span>
-                        </li>
-                        <li class="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                            <span class="feature-icon-bullet bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800"><i class="ph-bold ph-check"></i></span>
-                            <span class="text-slate-800 dark:text-slate-200 font-semibold">Direct API & Bulk Export</span>
-                        </li>
-                    </ul>
-
-                    <div class="mt-auto">
-                        <a href="mailto:support@unlockrentals.com?subject=Institutional%20Buyer%20Inquiry" class="w-full py-3.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-teal-500/20 active:scale-[0.98]" title="Contact Sales">
-                            <i class="ph-bold ph-envelope"></i>
-                            <span>Contact Sales</span>
-                        </a>
-                    </div>
-                </article>
-            @endunless
-        </div>
-
-        {{-- Feature Comparison Matrix --}}
-        <div class="mt-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 lg:p-8 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
-                <div>
-                    <span class="text-xs font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400">Detailed Comparison</span>
-                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">What's included in every plan</h2>
                 </div>
-                <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    <i class="ph-bold ph-lock-key text-emerald-500"></i>
-                    <span>256-Bit SSL Encrypted Instant Activation</span>
+            </div>
+        @endforeach
+
+        {{-- Enterprise Panel (Rental) --}}
+        @unless($hasEnterprise)
+            <div class="plan-content-panel rental-panel" id="panel-rent_enterprise" data-category="rental">
+                <div class="plan-split-layout">
+                    <div class="plan-info-left">
+                        <div class="plan-badge-row">
+                            <span class="plan-type-badge" style="background: #ccfbf1; color: #134e4a; border-color: #99f6e4;">
+                                <i class="ph-bold ph-buildings"></i>
+                                ENTERPRISE · CORPORATE SOLUTIONS
+                            </span>
+                        </div>
+                        <h1>
+                            Scale Your Operations With
+                            <span class="plan-name-highlight">Enterprise Plan</span>
+                        </h1>
+                        <p class="plan-subtitle">For agencies, relocation teams, and portfolio operations. Get unlimited access, dedicated account management, and seamless API integration.</p>
+
+                        <div class="feature-grid">
+                            <div class="feature-box">
+                                <div class="feat-icon" style="background: #ccfbf1; color: #0d9488; border-color: #99f6e4;">
+                                    <i class="ph-bold ph-infinity"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Unlimited Owner Unlocks</h4>
+                                    <p>No cap on contact discoveries</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon" style="background: #ccfbf1; color: #0d9488; border-color: #99f6e4;">
+                                    <i class="ph-bold ph-user-circle-gear"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Dedicated Account Manager</h4>
+                                    <p>Personal support for your team</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon" style="background: #ccfbf1; color: #0d9488; border-color: #99f6e4;">
+                                    <i class="ph-bold ph-receipt"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>GST Invoicing & API</h4>
+                                    <p>Seamless financial integration</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon" style="background: #ccfbf1; color: #0d9488; border-color: #99f6e4;">
+                                    <i class="ph-bold ph-users-three"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Multi-User License</h4>
+                                    <p>Team-wide access and controls</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="pricing-card">
+                            <div class="pricing-card-header">
+                                <span class="card-tab active" style="background: #0d9488; color: #fff; box-shadow: 0 2px 8px rgba(13,148,136,0.25);">ENTERPRISE</span>
+                                <div class="card-icon" style="background: #ccfbf1; color: #0d9488;">
+                                    <i class="ph-bold ph-buildings"></i>
+                                </div>
+                            </div>
+                            <div class="pricing-card-body">
+                                <div class="price-main">
+                                    <span class="amount" style="font-size: 36px;">Custom</span>
+                                </div>
+                                <div class="price-subtitle" style="color: #0d9488;">
+                                    <i class="ph-bold ph-users-three"></i>
+                                    Multi-User License · Tailored Pricing
+                                </div>
+
+                                <div class="plan-stats">
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-phone"></i> Owner Contacts</span>
+                                        <span class="stat-value highlight">Unlimited</span>
+                                    </div>
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-calendar"></i> Access Duration</span>
+                                        <span class="stat-value">Custom</span>
+                                    </div>
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-headset"></i> Support Level</span>
+                                        <span class="stat-value green">24/7 SLA Manager</span>
+                                    </div>
+                                </div>
+
+                                <a href="mailto:support@unlockrentals.com?subject=Enterprise%20Plan%20Inquiry"
+                                   class="plan-cta-btn" style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: #fff; box-shadow: 0 4px 16px rgba(13,148,136,0.3);">
+                                    <i class="ph-bold ph-envelope"></i>
+                                    Contact Sales
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endunless
+
+
+        {{-- ========== BUYER PLAN PANELS ========== --}}
+        @foreach($buyPlans as $index => $plan)
+            @php
+                $nameLower = strtolower($plan->name);
+                $isGold = str_contains($nameLower, 'gold') || str_contains($nameLower, 'pro') || str_contains($nameLower, 'popular');
+                $isPlatinum = str_contains($nameLower, 'plat') || str_contains($nameLower, 'diamond') || str_contains($nameLower, 'vip');
+                $price = (float) $plan->price;
+                $perDay = $plan->duration_days > 0 ? round($price / $plan->duration_days, 1) : 0;
+
+                $isExplicitBuyPlan = ($plan->purpose === 'buy' || $plan->purpose === 'sale');
+                $buyerDisplayName = $isExplicitBuyPlan ? $plan->name : ($isGold ? 'Gold Buyer Pass' : ($isPlatinum ? 'Platinum Buyer Pass' : 'Silver Buyer Pass'));
+                $buyerDisplayDesc = $isExplicitBuyPlan ? ($plan->description ?: 'Direct seller contact access for verified property purchase.') : (
+                    $isGold ? 'Most popular annual pass for active home buyers and property investors.' : (
+                        $isPlatinum ? 'Ultimate annual pass with maximum verified seller unlocks for serious property buyers.' : 'Essential direct seller contacts and priority access for property buyers.'
+                    )
+                );
+            @endphp
+            <div class="plan-content-panel buyer-panel {{ $index === 0 && $isYearly ? 'active' : '' }}"
+                 id="panel-buy_{{ $plan->id }}" data-category="buyer">
+                <div class="plan-split-layout">
+                    {{-- LEFT SIDE --}}
+                    <div class="plan-info-left">
+                        <div class="plan-badge-row">
+                            <span class="plan-type-badge buyer">
+                                <i class="ph-bold ph-key"></i>
+                                ZERO BROKERAGE BUYER PASS · DIRECT SELLER DEALS
+                            </span>
+                        </div>
+
+                        <h1>
+                            Purchase Your Dream Property With
+                            <span class="plan-name-highlight">{{ $buyerDisplayName }}</span>
+                        </h1>
+                        <p class="plan-subtitle">{{ $buyerDisplayDesc }}</p>
+
+                        <div class="feature-grid">
+                            <div class="feature-box">
+                                <div class="feat-icon">
+                                    <i class="ph-bold ph-user-circle-check"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>{{ $plan->contact_limit }} Verified Direct Sellers</h4>
+                                    <p>Direct owners & builder representatives</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon green">
+                                    <i class="ph-bold ph-currency-inr"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Save ₹1 Lakh to ₹5 Lakhs</h4>
+                                    <p>Zero broker commission on buy transactions</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon">
+                                    <i class="ph-bold ph-calendar-check"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>{{ $plan->duration_days }} Days Buyer Validity</h4>
+                                    <p>Extended window to evaluate deals</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon green">
+                                    <i class="ph-bold ph-file-text"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Title & Visit Assistance</h4>
+                                    <p>Direct owner negotiation pass</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- RIGHT SIDE - Pricing Card --}}
+                    <div>
+                        <div class="pricing-card {{ $isGold ? 'popular-card' : '' }}">
+                            <div class="pricing-card-header">
+                                <span class="card-tab active" style="background: #d97706; color: #fff; box-shadow: 0 2px 8px rgba(217,119,6,0.25);">BUYER PASS</span>
+                                <span class="card-tab" style="cursor: default; opacity: 0.4;">DIRECT PASS</span>
+                                <div class="card-icon" style="background: #fef3c7; color: #d97706;">
+                                    <i class="ph-bold ph-buildings"></i>
+                                </div>
+                            </div>
+
+                            <div class="pricing-card-body">
+                                <div class="price-main">
+                                    <span class="currency">₹</span>
+                                    <span class="amount">{{ number_format($price, 0) }}</span>
+                                    <span class="period">/ annual pass</span>
+                                </div>
+                                <div class="price-subtitle">
+                                    <i class="ph-bold ph-seal-check"></i>
+                                    Only ₹{{ number_format($perDay, 1) }}/day · {{ $plan->duration_days }} Full Days Validity
+                                </div>
+
+                                <div class="plan-stats">
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-phone"></i> Direct Seller Contacts</span>
+                                        <span class="stat-value highlight">{{ $plan->contact_limit }} Direct Unlocks</span>
+                                    </div>
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-calendar"></i> Access Duration</span>
+                                        <span class="stat-value">{{ $plan->duration_days }} Full Days</span>
+                                    </div>
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-hand-coins"></i> Brokerage Fee</span>
+                                        <span class="stat-value green">₹0 (Zero Commission)</span>
+                                    </div>
+                                </div>
+
+                                {{-- CTA --}}
+                                @if(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0 && $activeBuyPlan->plan_id === $plan->id)
+                                    <button class="plan-cta-btn active-plan" disabled>
+                                        <i class="ph-bold ph-check-circle"></i>
+                                        Current Active Plan
+                                    </button>
+                                @elseif(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0 && $activeBuyPlan->plan && (float) $plan->price > (float) $activeBuyPlan->plan->price)
+                                    <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}" class="plan-cta-btn blue">
+                                        <i class="ph-bold ph-lightning"></i>
+                                        Upgrade Plan
+                                    </a>
+                                @elseif(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0)
+                                    <button class="plan-cta-btn disabled" disabled>
+                                        Already Subscribed
+                                    </button>
+                                @elseif(auth()->check() && $pendingPlan && $pendingPlan->plan && $pendingPlan->plan->isBuyPlan())
+                                    <button class="plan-cta-btn pending-plan" disabled>
+                                        <i class="ph-bold ph-clock"></i>
+                                        Verification Pending
+                                    </button>
+                                @else
+                                    @guest
+                                        <a href="{{ route('login', ['redirect' => route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1])]) }}"
+                                           onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}');"
+                                           class="plan-cta-btn primary">
+                                            <i class="ph-bold ph-lock-key-open"></i>
+                                            Unlock Contacts Now · ₹{{ number_format($price, 0) }}
+                                        </a>
+                                    @else
+                                        <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}"
+                                           class="plan-cta-btn primary">
+                                            <i class="ph-bold ph-lock-key-open"></i>
+                                            Unlock Contacts Now · ₹{{ number_format($price, 0) }}
+                                        </a>
+                                    @endguest
+                                @endif
+
+                                <a href="#comparison-section" class="plan-compare-link">
+                                    Compare All Plan Details <i class="ph-bold ph-caret-down"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- Info Card --}}
+                        <div class="plan-info-card">
+                            <div class="plan-info-card-body">
+                                <div class="card-badges">
+                                    <span class="badge-green">DIRECT SELLER DEALS</span>
+                                    <span class="badge-blue">100% Genuine</span>
+                                </div>
+                                <h3>Direct Property Purchase</h3>
+                                <p class="card-desc">Connect directly with genuine property sellers and save lakhs in brokerage fees.</p>
+                                <ul class="card-checks">
+                                    <li><i class="ph-bold ph-check-circle"></i> Verified Direct Seller Contacts</li>
+                                    <li><i class="ph-bold ph-check-circle"></i> Save 1% to 2% Brokerage Fee</li>
+                                    <li><i class="ph-bold ph-check-circle"></i> Title Document Checklist</li>
+                                </ul>
+                            </div>
+                            <div class="plan-info-card-footer">
+                                <i class="ph-bold ph-sparkle"></i>
+                                Direct Seller Negotiation · ₹0 Middleman
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+
+        {{-- Enterprise Panel (Buyer) --}}
+        @unless($hasEnterprise)
+            <div class="plan-content-panel buyer-panel" id="panel-buy_enterprise" data-category="buyer">
+                <div class="plan-split-layout">
+                    <div class="plan-info-left">
+                        <div class="plan-badge-row">
+                            <span class="plan-type-badge" style="background: #ccfbf1; color: #134e4a; border-color: #99f6e4;">
+                                <i class="ph-bold ph-buildings"></i>
+                                INVESTOR DESK · INSTITUTIONAL SOLUTIONS
+                            </span>
+                        </div>
+                        <h1>
+                            Scale Your Investments With
+                            <span class="plan-name-highlight">Institutional Buyer</span>
+                        </h1>
+                        <p class="plan-subtitle">For property funds, builders, and large commercial investors. Get unlimited seller access, dedicated investment concierge, and API integration.</p>
+
+                        <div class="feature-grid">
+                            <div class="feature-box">
+                                <div class="feat-icon" style="background: #ccfbf1; color: #0d9488; border-color: #99f6e4;">
+                                    <i class="ph-bold ph-infinity"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Unlimited Seller Unlocks</h4>
+                                    <p>No cap on contact discoveries</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon" style="background: #ccfbf1; color: #0d9488; border-color: #99f6e4;">
+                                    <i class="ph-bold ph-user-circle-gear"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Dedicated Investment Concierge</h4>
+                                    <p>Personal support for your portfolio</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon" style="background: #ccfbf1; color: #0d9488; border-color: #99f6e4;">
+                                    <i class="ph-bold ph-code"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Direct API & Bulk Export</h4>
+                                    <p>Programmatic access to data</p>
+                                </div>
+                            </div>
+                            <div class="feature-box">
+                                <div class="feat-icon" style="background: #ccfbf1; color: #0d9488; border-color: #99f6e4;">
+                                    <i class="ph-bold ph-chart-line-up"></i>
+                                </div>
+                                <div class="feat-text">
+                                    <h4>Portfolio Access</h4>
+                                    <p>Multi-property deal pipeline</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="pricing-card">
+                            <div class="pricing-card-header">
+                                <span class="card-tab active" style="background: #0d9488; color: #fff; box-shadow: 0 2px 8px rgba(13,148,136,0.25);">INSTITUTIONAL</span>
+                                <div class="card-icon" style="background: #ccfbf1; color: #0d9488;">
+                                    <i class="ph-bold ph-buildings"></i>
+                                </div>
+                            </div>
+                            <div class="pricing-card-body">
+                                <div class="price-main">
+                                    <span class="amount" style="font-size: 36px;">Custom</span>
+                                </div>
+                                <div class="price-subtitle" style="color: #0d9488;">
+                                    <i class="ph-bold ph-users-three"></i>
+                                    Portfolio Access · Tailored Pricing
+                                </div>
+
+                                <div class="plan-stats">
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-phone"></i> Seller Contacts</span>
+                                        <span class="stat-value highlight">Unlimited</span>
+                                    </div>
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-calendar"></i> Access Duration</span>
+                                        <span class="stat-value">Custom</span>
+                                    </div>
+                                    <div class="plan-stat-row">
+                                        <span class="stat-label"><i class="ph-bold ph-headset"></i> Support Level</span>
+                                        <span class="stat-value green">24/7 SLA Manager</span>
+                                    </div>
+                                </div>
+
+                                <a href="mailto:support@unlockrentals.com?subject=Institutional%20Buyer%20Inquiry"
+                                   class="plan-cta-btn" style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); color: #fff; box-shadow: 0 4px 16px rgba(13,148,136,0.3);">
+                                    <i class="ph-bold ph-envelope"></i>
+                                    Contact Sales
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endunless
+
+    </div>{{-- End plan-detail-section --}}
+
+
+    {{-- ============================================
+         FEATURE COMPARISON TABLE
+    ============================================ --}}
+    <div class="comparison-section" id="comparison-section">
+        <div class="comparison-card">
+            <div class="comparison-card-header">
+                <div class="comp-title">
+                    <span>Detailed Comparison</span>
+                    <h2>What's included in every plan</h2>
+                </div>
+                <div class="comp-secure">
+                    <i class="ph-bold ph-lock-key"></i>
+                    256-Bit SSL Encrypted · Instant Activation
                 </div>
             </div>
 
-            <div class="overflow-x-auto mt-4">
-                <table class="w-full text-left text-sm">
+            <div style="overflow-x: auto;">
+                <table class="comparison-table">
                     <thead>
-                        <tr class="border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                            <th class="py-3.5">Features & Benefits</th>
-                            <th class="py-3.5 px-4">Basic</th>
-                            <th class="py-3.5 px-4">Gold (Popular)</th>
-                            <th class="py-3.5 px-4">Platinum</th>
-                            <th class="py-3.5 px-4">Enterprise</th>
+                        <tr>
+                            <th>Features & Benefits</th>
+                            <th>Basic</th>
+                            <th>Gold (Popular)</th>
+                            <th>Platinum</th>
+                            <th>Enterprise</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
+                    <tbody>
                         <tr>
-                            <td class="py-3.5 font-bold text-slate-900 dark:text-white">Direct Landlord Contact Unlocks</td>
-                            <td class="px-4">Starter Pack</td>
-                            <td class="px-4 font-bold text-blue-600 dark:text-blue-400">Expanded Pack</td>
-                            <td class="px-4">High Volume</td>
-                            <td class="px-4">Unlimited</td>
+                            <td>Direct Landlord Contact Unlocks</td>
+                            <td>Starter Pack</td>
+                            <td class="highlight-cell">Expanded Pack</td>
+                            <td>High Volume</td>
+                            <td>Unlimited</td>
                         </tr>
                         <tr>
-                            <td class="py-3.5 font-bold text-slate-900 dark:text-white">Direct WhatsApp & Call Connect</td>
-                            <td class="px-4">✓ Included</td>
-                            <td class="px-4">✓ Included</td>
-                            <td class="px-4">✓ Included</td>
-                            <td class="px-4">✓ Included</td>
+                            <td>Direct WhatsApp & Call Connect</td>
+                            <td class="check-cell">✓ Included</td>
+                            <td class="check-cell">✓ Included</td>
+                            <td class="check-cell">✓ Included</td>
+                            <td class="check-cell">✓ Included</td>
                         </tr>
                         <tr>
-                            <td class="py-3.5 font-bold text-slate-900 dark:text-white">Zero Brokerage Guarantee</td>
-                            <td class="px-4 text-emerald-600 font-bold">100% Free</td>
-                            <td class="px-4 text-emerald-600 font-bold">100% Free</td>
-                            <td class="px-4 text-emerald-600 font-bold">100% Free</td>
-                            <td class="px-4 text-emerald-600 font-bold">100% Free</td>
+                            <td>Zero Brokerage Guarantee</td>
+                            <td class="check-cell" style="font-weight: 800;">100% Free</td>
+                            <td class="check-cell" style="font-weight: 800;">100% Free</td>
+                            <td class="check-cell" style="font-weight: 800;">100% Free</td>
+                            <td class="check-cell" style="font-weight: 800;">100% Free</td>
                         </tr>
                         <tr>
-                            <td class="py-3.5 font-bold text-slate-900 dark:text-white">Visit Booking Access</td>
-                            <td class="px-4">Standard</td>
-                            <td class="px-4">Priority</td>
-                            <td class="px-4">Instant Slot Lock</td>
-                            <td class="px-4">Concierge</td>
+                            <td>Visit Booking Access</td>
+                            <td>Standard</td>
+                            <td>Priority</td>
+                            <td>Instant Slot Lock</td>
+                            <td>Concierge</td>
                         </tr>
                         <tr>
-                            <td class="py-3.5 font-bold text-slate-900 dark:text-white">Customer Support</td>
-                            <td class="px-4">Email Support</td>
-                            <td class="px-4 font-semibold text-slate-900 dark:text-white">Priority Chat & Phone</td>
-                            <td class="px-4">Dedicated Support</td>
-                            <td class="px-4">24/7 SLA Manager</td>
+                            <td>Customer Support</td>
+                            <td>Email Support</td>
+                            <td class="highlight-cell">Priority Chat & Phone</td>
+                            <td>Dedicated Support</td>
+                            <td>24/7 SLA Manager</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
 
-        {{-- Frequently Asked Questions --}}
-        <div class="mt-16 max-w-3xl mx-auto">
-            <h2 class="text-2xl font-black text-slate-900 dark:text-white text-center mb-8">Frequently Asked Questions</h2>
-            
-            <div class="space-y-4">
-                <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center justify-between">
-                        <span>How does the direct owner contact unlock work?</span>
-                        <i class="ph-bold ph-plus text-blue-600"></i>
-                    </h3>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                        Once you choose a plan and complete payment, you can click "Unlock Owner Contact" on any property. You will instantly view the landlord's verified mobile number and can directly call or message them on WhatsApp with zero broker commission.
-                    </p>
-                </div>
 
-                <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center justify-between">
-                        <span>What is the difference between Rental Pass and Buyer Pass?</span>
-                        <i class="ph-bold ph-plus text-blue-600"></i>
-                    </h3>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                        The <strong>Rental Pass</strong> is designed for quick 30-day apartment and room hunting. The <strong>Buyer Pass</strong> provides 365-day extended validity with 20% discount, designed for home buyers and real estate investors exploring properties over several months.
-                    </p>
-                </div>
+    {{-- ============================================
+         FAQ SECTION
+    ============================================ --}}
+    <div class="faq-section">
+        <h2>Frequently Asked Questions</h2>
 
-                <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center justify-between">
-                        <span>Which payment methods are supported?</span>
-                        <i class="ph-bold ph-plus text-blue-600"></i>
-                    </h3>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                        We support all popular Indian payment modes including UPI (Google Pay, PhonePe, Paytm), Credit/Debit cards (Visa, Mastercard, RuPay), NetBanking, and Wallets through secure encrypted payment gateways.
-                    </p>
-                </div>
+        <div class="faq-item open">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <h3>How does the direct owner contact unlock work?</h3>
+                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
+            </div>
+            <div class="faq-answer">
+                <p>Once you choose a plan and complete payment, you can click "Unlock Owner Contact" on any property. You will instantly view the landlord's verified mobile number and can directly call or message them on WhatsApp with zero broker commission.</p>
             </div>
         </div>
 
-    </section>
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <h3>What is the difference between Rental Pass and Buyer Pass?</h3>
+                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
+            </div>
+            <div class="faq-answer">
+                <p>The <strong>Rental Pass</strong> is designed for quick 30-day apartment and room hunting. The <strong>Buyer Pass</strong> provides 365-day extended validity with 20% discount, designed for home buyers and real estate investors exploring properties over several months.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <h3>Which payment methods are supported?</h3>
+                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
+            </div>
+            <div class="faq-answer">
+                <p>We support all popular Indian payment modes including UPI (Google Pay, PhonePe, Paytm), Credit/Debit cards (Visa, Mastercard, RuPay), NetBanking, and Wallets through secure encrypted payment gateways.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <h3>Can I upgrade my plan mid-subscription?</h3>
+                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
+            </div>
+            <div class="faq-answer">
+                <p>Yes! You can upgrade to a higher plan at any time. Your remaining contacts from the current plan will carry forward, and you'll get the additional benefits of the upgraded plan immediately upon payment confirmation.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                <h3>Is my payment information secure?</h3>
+                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
+            </div>
+            <div class="faq-answer">
+                <p>Absolutely. All payments are processed through 256-bit SSL encrypted payment gateways. We never store your card details on our servers. Your transaction is fully secure and PCI DSS compliant.</p>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <x-subscription.payment-failed-modal :payment-failed-reason="$paymentFailedReason" />
@@ -826,44 +2009,79 @@
 @push('scripts')
 <script>
 (() => {
-    const buttons = document.querySelectorAll('[data-billing-choice]');
-    const rentalGrid = document.getElementById('rental-plans-grid');
-    const buyerGrid = document.getElementById('buyer-plans-grid');
+    // ---- Category Toggle (Rental / Buyer) ----
+    const categoryBtns = document.querySelectorAll('[data-billing-choice]');
+    const rentalTabs = document.getElementById('rental-tabs');
+    const buyerTabs = document.getElementById('buyer-tabs');
 
-    function setBilling(period, updateUrl = false) {
-        buttons.forEach(button => {
-            if (button.dataset.billingChoice === period) {
-                button.classList.add('active');
-            } else {
-                button.classList.remove('active');
-            }
+    function setCategory(period, updateUrl = false) {
+        categoryBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.billingChoice === period);
         });
 
         if (period === 'yearly') {
-            if (rentalGrid) rentalGrid.classList.add('hidden');
-            if (buyerGrid) buyerGrid.classList.remove('hidden');
+            rentalTabs.style.display = 'none';
+            buyerTabs.style.display = 'flex';
+            // Hide all rental panels, show first buyer panel
+            document.querySelectorAll('.rental-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.buyer-panel').forEach(p => p.classList.remove('active'));
+            const firstBuyer = document.querySelector('.buyer-panel');
+            if (firstBuyer) firstBuyer.classList.add('active');
+            // Activate first buyer tab
+            document.querySelectorAll('#buyer-tabs .plan-tab').forEach((t, i) => {
+                t.classList.toggle('active', i === 0);
+            });
         } else {
-            if (rentalGrid) rentalGrid.classList.remove('hidden');
-            if (buyerGrid) buyerGrid.classList.add('hidden');
+            rentalTabs.style.display = 'flex';
+            buyerTabs.style.display = 'none';
+            // Hide all buyer panels, show first rental panel
+            document.querySelectorAll('.buyer-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.rental-panel').forEach(p => p.classList.remove('active'));
+            const firstRental = document.querySelector('.rental-panel');
+            if (firstRental) firstRental.classList.add('active');
+            // Activate first rental tab
+            document.querySelectorAll('#rental-tabs .plan-tab').forEach((t, i) => {
+                t.classList.toggle('active', i === 0);
+            });
         }
 
         if (updateUrl && window.history.replaceState) {
             const currentUrl = new URL(window.location.href);
             currentUrl.searchParams.set('billing', period);
-            if (period === 'yearly') {
-                currentUrl.searchParams.set('purpose', 'buy');
-            } else {
-                currentUrl.searchParams.set('purpose', 'rent');
-            }
+            currentUrl.searchParams.set('purpose', period === 'yearly' ? 'buy' : 'rent');
             window.history.replaceState({}, '', currentUrl.toString());
         }
     }
 
-    buttons.forEach(button => {
-        button.addEventListener('click', () => setBilling(button.dataset.billingChoice, true));
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => setCategory(btn.dataset.billingChoice, true));
     });
 
-    // Check query params & hash on load
+    // ---- Plan Tab Switching ----
+    document.querySelectorAll('.plan-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const planId = tab.dataset.planTab;
+            const category = tab.dataset.category;
+            if (!planId) return;
+
+            // Deactivate sibling tabs
+            const parentContainer = tab.closest('#rental-tabs, #buyer-tabs');
+            if (parentContainer) {
+                parentContainer.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('active'));
+            }
+            tab.classList.add('active');
+
+            // Show matching panel
+            const panels = category === 'rental'
+                ? document.querySelectorAll('.rental-panel')
+                : document.querySelectorAll('.buyer-panel');
+            panels.forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('panel-' + planId);
+            if (target) target.classList.add('active');
+        });
+    });
+
+    // ---- Init from URL ----
     const urlParams = new URLSearchParams(window.location.search);
     const billingParam = urlParams.get('billing');
     const purposeParam = urlParams.get('purpose');
@@ -877,30 +2095,25 @@
     } else if (purposeParam === 'rent' || hash.includes('rental') || hash.includes('monthly')) {
         targetBilling = 'monthly';
     }
+    setCategory(targetBilling, false);
 
-    if (targetBilling) {
-        setBilling(targetBilling, false);
-    }
-
-    // Smooth scroll to toggle/plans if specific billing was requested
+    // Smooth scroll if param requested
     if (billingParam || purposeParam || hash.includes('buyer') || hash.includes('rental') || hash.includes('billing')) {
         setTimeout(() => {
-            const target = document.getElementById('billing-toggle') || document.getElementById(targetBilling === 'yearly' ? 'buyer-plans-grid' : 'rental-plans-grid');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const scrollTarget = document.getElementById('category-toggle') || document.getElementById('plans-tab-bar');
+            if (scrollTarget) {
+                scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }, 150);
     }
-
-    document.querySelectorAll('.plan-checkout-link').forEach(link => {
-        link.addEventListener('click', () => {
-            if (!link.hasAttribute('onclick')) {
-                link.style.pointerEvents = 'none';
-                link.style.opacity = '0.75';
-                link.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i><span>Opening Checkout...</span>';
-            }
-        });
-    });
 })();
+
+// FAQ Toggle
+function toggleFaq(el) {
+    const item = el.closest('.faq-item');
+    if (item) {
+        item.classList.toggle('open');
+    }
+}
 </script>
 @endpush
