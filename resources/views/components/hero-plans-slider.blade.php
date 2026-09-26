@@ -333,7 +333,7 @@
     width: 100%;
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
     color: #0f172a;
-    padding: 0.75rem 0 0.5rem; /* Ultra-compact sleek height */
+    padding: 1.35rem 0 1.15rem; /* Clean, standard, well-balanced desktop height */
     overflow: hidden;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     border-top: 1px solid #e2e8f0;
@@ -396,8 +396,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 0.5rem;
+    gap: 0.85rem;
+    margin-bottom: 0.75rem;
     flex-wrap: wrap;
 }
 
@@ -409,28 +409,28 @@
 .ur-hps-top-heading {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.7rem;
+    gap: 0.45rem;
+    font-size: 0.74rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #1e40af;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    padding: 0.22rem 0.7rem;
+    letter-spacing: 0.06em;
+    color: #0f172a;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 0.28rem 0.85rem;
     border-radius: 9999px;
-    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.06);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .ur-hps-top-heading i {
-    color: #d97706;
-    font-size: 0.85rem;
+    color: #059669;
+    font-size: 0.88rem;
 }
 
 .ur-hps-top-right {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
 }
 
 /* Quick Jump Plan Tabs Nav Bar */
@@ -449,14 +449,14 @@
 .ur-hps-tab-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.32rem;
-    padding: 0.22rem 0.65rem;
+    gap: 0.35rem;
+    padding: 0.32rem 0.85rem;
     border-radius: 9999px;
     border: 1px solid transparent;
     background: transparent;
     color: #64748b;
     font-family: inherit;
-    font-size: 0.73rem;
+    font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
@@ -497,11 +497,11 @@
 }
 
 .ur-hps-tab-pill {
-    font-size: 0.56rem;
+    font-size: 0.58rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.06rem 0.36rem;
+    padding: 0.08rem 0.42rem;
     border-radius: 9999px;
     background: #e2e8f0;
     color: #475569;
@@ -517,8 +517,8 @@
 .ur-hps-nav-arrows {
     display: inline-flex;
     align-items: center;
-    gap: 0.2rem;
-    padding: 0.16rem;
+    gap: 0.22rem;
+    padding: 0.2rem;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
@@ -526,8 +526,8 @@
 }
 
 .ur-hps-arrow-btn {
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.95rem;
+    height: 1.95rem;
     border-radius: 50%;
     background: transparent;
     border: 1px solid transparent;
@@ -535,7 +535,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -578,7 +578,7 @@
     width: 100%;
     min-width: 100%;
     max-width: 100%;
-    padding: 0.65rem 1.15rem 0.5rem; /* Ultra-compact slide padding */
+    padding: 1.15rem 1.45rem 1rem;
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
@@ -732,8 +732,8 @@
 /* ─── 3-PART HORIZONTAL DESKTOP GRID ─────────────────────── */
 .ur-hps-desktop-grid {
     display: grid;
-    grid-template-columns: 1.15fr 0.98fr 0.75fr; /* Left (Value) · Center (Pricing) · Right (Visual) */
-    gap: 0.85rem;
+    grid-template-columns: 1.18fr 0.98fr 0.84fr; /* Left (Value) · Center (Pricing) · Right (Visual) */
+    gap: 1.15rem;
     align-items: stretch;
     width: 100%;
 }
@@ -750,14 +750,14 @@
 .ur-hps-plan-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    font-size: 0.62rem;
+    gap: 0.35rem;
+    font-size: 0.65rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.16rem 0.6rem;
+    letter-spacing: 0.06em;
+    padding: 0.22rem 0.72rem;
     border-radius: 9999px;
-    margin-bottom: 0.22rem;
+    margin-bottom: 0.45rem;
     width: fit-content;
 }
 
@@ -786,12 +786,12 @@
 }
 
 .ur-hps-slide-title {
-    font-size: clamp(1.22rem, 1.55vw, 1.48rem); /* Compact bold heading ~24-28px */
+    font-size: clamp(1.35rem, 1.75vw, 1.62rem);
     font-weight: 900;
     color: #0f172a;
-    line-height: 1.12;
+    line-height: 1.2;
     letter-spacing: -0.025em;
-    margin: 0 0 0.2rem;
+    margin: 0 0 0.35rem;
 }
 
 .ur-hps-slide-title .highlight-gold {
@@ -824,29 +824,29 @@
 }
 
 .ur-hps-slide-desc {
-    font-size: 0.73rem;
+    font-size: 0.8rem;
     color: #475569;
-    line-height: 1.28;
-    margin: 0 0 0.35rem;
+    line-height: 1.42;
+    margin: 0 0 0.75rem;
     max-width: 480px;
 }
 
-/* Feature 2x2 Highlights Grid — Tight, compact, elegant */
+/* Feature 2x2 Highlights Grid — Clean, balanced chips */
 .ur-hps-features-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.32rem;
+    gap: 0.45rem;
     width: 100%;
 }
 
 .ur-hps-feature-item {
     display: flex;
-    align-items: flex-start;
-    gap: 0.42rem;
-    padding: 0.32rem 0.5rem;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.52rem 0.7rem;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 0.65rem;
+    border-radius: 0.75rem;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
     transition: all 0.22s ease;
 }
@@ -858,15 +858,15 @@
 }
 
 .ur-hps-f-icon-box {
-    width: 1.55rem;
-    height: 1.55rem;
-    border-radius: 0.45rem;
+    width: 1.95rem;
+    height: 1.95rem;
+    border-radius: 0.55rem;
     background: #eff6ff;
     color: #2563eb;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     flex-shrink: 0;
 }
 
@@ -903,23 +903,23 @@
     background: #ecfdf5;
     color: #059669;
     border: 1px solid #d1fae5;
-    border-radius: 0.45rem;
+    border-radius: 0.55rem;
 }
 
 .ur-hps-f-text h4 {
-    font-size: 0.71rem;
+    font-size: 0.78rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.04rem;
+    margin: 0 0 0.12rem;
     letter-spacing: -0.01em;
-    line-height: 1.18;
+    line-height: 1.25;
 }
 
 .ur-hps-f-text p {
-    font-size: 0.62rem;
+    font-size: 0.68rem;
     color: #64748b;
     margin: 0;
-    line-height: 1.15;
+    line-height: 1.25;
 }
 
 /* ─── 2. CENTER COLUMN: COMPACT PRICING CARD ─────────────── */
@@ -935,10 +935,10 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1rem;
-    padding: 0.65rem 0.85rem; /* Ultra-compact padding */
+    border-radius: 1.15rem;
+    padding: 1.05rem 1.2rem 0.95rem;
     box-sizing: border-box;
-    box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.06), 0 2px 5px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 10px 28px -8px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
     overflow: hidden;
     display: flex;
@@ -952,24 +952,24 @@
 
 .ur-hps-pass-card--gold {
     border-color: #fde047;
-    box-shadow: 0 10px 28px -6px rgba(245, 158, 11, 0.16), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 12px 30px -8px rgba(245, 158, 11, 0.18), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 .ur-hps-pass-card--platinum {
     border-color: #93c5fd;
-    box-shadow: 0 10px 28px -6px rgba(37, 99, 235, 0.16), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 12px 30px -8px rgba(37, 99, 235, 0.18), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 .ur-hps-pass-card--silver {
     border-color: #cbd5e1;
-    box-shadow: 0 10px 28px -6px rgba(71, 85, 105, 0.12), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 12px 30px -8px rgba(71, 85, 105, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 .ur-hps-pass-card--buyer {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border: 1.5px solid #10b981;
-    border-radius: 16px;
+    border-radius: 1.15rem;
     box-shadow: 
-        0 16px 36px -10px rgba(5, 150, 105, 0.18),
+        0 16px 36px -10px rgba(5, 150, 105, 0.20),
         0 0 0 1px rgba(245, 158, 11, 0.14),
         0 3px 10px rgba(15, 23, 42, 0.03);
     position: relative;
@@ -978,7 +978,7 @@
 .ur-hps-pass-card--buyer:hover {
     transform: translateY(-3px);
     box-shadow: 
-        0 20px 42px -10px rgba(5, 150, 105, 0.24),
+        0 20px 42px -10px rgba(5, 150, 105, 0.26),
         0 0 0 1.5px rgba(16, 185, 129, 0.4),
         0 6px 16px rgba(15, 23, 42, 0.05);
 }
@@ -988,17 +988,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.28rem;
+    margin-bottom: 0.55rem;
 }
 
 .ur-hps-brand-tag {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    font-size: 0.65rem;
+    gap: 0.32rem;
+    font-size: 0.68rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     color: #334155;
 }
 
@@ -1007,9 +1007,9 @@
 }
 
 .ur-hps-card-emblem {
-    width: 1.65rem;
-    height: 1.65rem;
-    border-radius: 0.5rem;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 0.55rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1019,37 +1019,37 @@
 }
 
 .ur-emblem-svg {
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 /* Price Box */
 .ur-hps-price-box {
-    margin-bottom: 0.28rem;
-    padding-bottom: 0.28rem;
+    margin-bottom: 0.55rem;
+    padding-bottom: 0.52rem;
     border-bottom: 1px solid #f1f5f9;
 }
 
 .ur-hps-price-top {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    margin-bottom: 0.08rem;
+    gap: 0.45rem;
+    margin-bottom: 0.12rem;
 }
 
 .ur-hps-price-original {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: #94a3b8;
     text-decoration: line-through;
 }
 
 .ur-hps-save-chip {
-    font-size: 0.58rem;
+    font-size: 0.62rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.08rem 0.35rem;
+    padding: 0.1rem 0.45rem;
     border-radius: 9999px;
     background: #ecfdf5;
     color: #047857;
@@ -1059,18 +1059,18 @@
 .ur-hps-price-main {
     display: flex;
     align-items: baseline;
-    gap: 0.18rem;
-    margin-bottom: 0.08rem;
+    gap: 0.2rem;
+    margin-bottom: 0.1rem;
 }
 
 .ur-hps-currency {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     font-weight: 900;
     color: #0f172a;
 }
 
 .ur-hps-amount {
-    font-size: 1.85rem; /* Ultra-compact dominant price */
+    font-size: 2.2rem;
     font-weight: 900;
     color: #0f172a;
     line-height: 1;
@@ -1078,29 +1078,30 @@
 }
 
 .ur-hps-period {
-    font-size: 0.68rem;
+    font-size: 0.74rem;
     font-weight: 600;
     color: #64748b;
 }
 
 .ur-hps-price-subtext {
-    font-size: 0.64rem;
+    font-size: 0.68rem;
     font-weight: 700;
     color: #059669;
     display: flex;
     align-items: center;
-    gap: 0.22rem;
+    gap: 0.28rem;
+    margin-top: 0.15rem;
 }
 
 /* Card Specs Pill List */
 .ur-hps-card-meta {
     display: flex;
     flex-direction: column;
-    gap: 0.18rem;
-    margin-bottom: 0.28rem;
+    gap: 0.26rem;
+    margin-bottom: 0.55rem;
     background: #f8fafc;
-    padding: 0.28rem 0.55rem;
-    border-radius: 0.55rem;
+    padding: 0.42rem 0.65rem;
+    border-radius: 0.65rem;
     border: 1px solid #f1f5f9;
 }
 
@@ -1108,7 +1109,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.67rem;
+    font-size: 0.7rem;
     color: #0f172a;
 }
 
@@ -1116,13 +1117,13 @@
     color: #64748b;
     display: flex;
     align-items: center;
-    gap: 0.22rem;
+    gap: 0.28rem;
     font-weight: 600;
 }
 
 .ur-hps-meta-row span.meta-label i {
     color: #059669;
-    font-size: 0.72rem;
+    font-size: 0.76rem;
 }
 
 .ur-hps-meta-row span.meta-value {
@@ -1139,12 +1140,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     width: 100%;
-    padding: 0.52rem 0.85rem;
-    border-radius: 0.65rem;
+    padding: 0.65rem 1.1rem;
+    border-radius: 0.75rem;
     font-family: inherit;
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     font-weight: 900;
     letter-spacing: -0.01em;
     text-decoration: none;
@@ -1153,7 +1154,7 @@
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
-    margin-bottom: 0.16rem;
+    margin-bottom: 0.25rem;
     border: none;
 }
 
@@ -1228,14 +1229,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.3rem;
-    font-size: 0.72rem;
+    gap: 0.35rem;
+    font-size: 0.74rem;
     font-weight: 700;
     color: #64748b;
     text-decoration: none;
     transition: color 0.2s ease;
     text-align: center;
-    padding-top: 0.15rem;
+    padding-top: 0.2rem;
 }
 
 .ur-hps-compare-link:hover {
@@ -1255,9 +1256,9 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1rem;
+    border-radius: 1.15rem;
     overflow: hidden;
-    box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.02);
+    box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.02);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1270,44 +1271,44 @@
 
 .ur-hps-photo-card--gold {
     border-color: #fde68a;
-    box-shadow: 0 8px 22px -6px rgba(245, 158, 11, 0.14);
+    box-shadow: 0 10px 26px -6px rgba(245, 158, 11, 0.16);
 }
 .ur-hps-photo-card--gold:hover {
     border-color: #f59e0b;
-    box-shadow: 0 12px 28px -6px rgba(245, 158, 11, 0.22);
+    box-shadow: 0 14px 32px -6px rgba(245, 158, 11, 0.24);
 }
 
 .ur-hps-photo-card--platinum {
     border-color: #bfdbfe;
-    box-shadow: 0 8px 22px -6px rgba(37, 99, 235, 0.14);
+    box-shadow: 0 10px 26px -6px rgba(37, 99, 235, 0.16);
 }
 .ur-hps-photo-card--platinum:hover {
     border-color: #2563eb;
-    box-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.22);
+    box-shadow: 0 14px 32px -6px rgba(37, 99, 235, 0.24);
 }
 
 .ur-hps-photo-card--silver {
     border-color: #cbd5e1;
-    box-shadow: 0 8px 22px -6px rgba(71, 85, 105, 0.10);
+    box-shadow: 0 10px 26px -6px rgba(71, 85, 105, 0.12);
 }
 .ur-hps-photo-card--silver:hover {
     border-color: #64748b;
-    box-shadow: 0 12px 28px -6px rgba(71, 85, 105, 0.18);
+    box-shadow: 0 14px 32px -6px rgba(71, 85, 105, 0.20);
 }
 
 .ur-hps-photo-card--buyer {
     border-color: rgba(167, 243, 208, 0.85);
-    box-shadow: 0 8px 22px -6px rgba(5, 150, 105, 0.14);
+    box-shadow: 0 10px 26px -6px rgba(5, 150, 105, 0.16);
 }
 .ur-hps-photo-card--buyer:hover {
     border-color: #10b981;
-    box-shadow: 0 12px 28px -6px rgba(5, 150, 105, 0.22);
+    box-shadow: 0 14px 32px -6px rgba(5, 150, 105, 0.24);
 }
 
 .ur-hps-pc-photo-wrapper {
     position: relative;
     width: 100%;
-    height: 82px; /* Sleek compact photo banner */
+    height: 112px;
     overflow: hidden;
     background: #0f172a;
 }
@@ -1328,14 +1329,14 @@
 .ur-hps-pc-scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0.62) 100%);
 }
 
 .ur-hps-pc-tag-overlay {
     position: absolute;
-    bottom: 0.35rem;
-    left: 0.5rem;
-    right: 0.5rem;
+    bottom: 0.45rem;
+    left: 0.6rem;
+    right: 0.6rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1345,12 +1346,12 @@
 .ur-hps-pc-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    font-size: 0.58rem;
+    gap: 0.28rem;
+    font-size: 0.62rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 0.14rem 0.45rem;
+    padding: 0.18rem 0.52rem;
     border-radius: 9999px;
     backdrop-filter: blur(4px);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
@@ -1378,21 +1379,21 @@
 }
 
 .ur-hps-pc-subtag {
-    font-size: 0.55rem;
+    font-size: 0.58rem;
     font-weight: 700;
     color: #ffffff;
     background: rgba(5, 150, 105, 0.92);
-    padding: 0.12rem 0.4rem;
+    padding: 0.14rem 0.46rem;
     border-radius: 9999px;
     backdrop-filter: blur(4px);
     display: inline-flex;
     align-items: center;
-    gap: 0.22rem;
+    gap: 0.24rem;
     box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
 }
 
 .ur-hps-pc-body {
-    padding: 0.42rem 0.65rem 0.45rem;
+    padding: 0.65rem 0.85rem 0.6rem;
     display: flex;
     flex-direction: column;
     background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
@@ -1401,56 +1402,56 @@
 }
 
 .ur-hps-pc-title {
-    font-size: 0.76rem;
+    font-size: 0.82rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.08rem;
+    margin: 0 0 0.12rem;
     letter-spacing: -0.015em;
 }
 
 .ur-hps-pc-sub {
-    font-size: 0.64rem;
+    font-size: 0.68rem;
     color: #64748b;
-    line-height: 1.22;
-    margin: 0 0 0.22rem;
+    line-height: 1.3;
+    margin: 0 0 0.35rem;
 }
 
 .ur-hps-pc-list {
     display: flex;
     flex-direction: column;
-    gap: 0.16rem;
+    gap: 0.24rem;
 }
 
 .ur-hps-pc-row {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    font-size: 0.64rem;
+    gap: 0.32rem;
+    font-size: 0.68rem;
     font-weight: 700;
     color: #1e293b;
 }
 
 .ur-hps-pc-row i {
     color: #059669;
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     flex-shrink: 0;
 }
 
 .ur-hps-pc-trust-note {
-    margin-top: 0.25rem;
-    padding-top: 0.25rem;
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
     border-top: 1px solid #f1f5f9;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    font-size: 0.62rem;
+    gap: 0.28rem;
+    font-size: 0.66rem;
     font-weight: 700;
     color: #047857;
 }
 
 .ur-hps-pc-trust-note i {
     color: #f59e0b;
-    font-size: 0.68rem;
+    font-size: 0.72rem;
 }
 
 /* ─── 4. BOTTOM HORIZONTAL TRUST ROW (TRANSLUCENT FLOATING BAR) ── */
@@ -1459,36 +1460,36 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.25rem;
+    gap: 1.6rem;
     flex-wrap: wrap;
-    background: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(226, 232, 240, 0.85);
+    border: 1px solid rgba(226, 232, 240, 0.88);
     border-radius: 9999px;
-    padding: 0.3rem 1.15rem;
-    margin-top: 0.4rem;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
-    font-size: 0.68rem;
+    padding: 0.42rem 1.45rem;
+    margin-top: 0.75rem;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    font-size: 0.74rem;
     font-weight: 700;
     color: #334155;
     transition: all 0.25s ease;
 }
 
 .ur-hps-trust-bar:hover {
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
     border-color: #cbd5e1;
 }
 
 .ur-hps-tb-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.32rem;
+    gap: 0.35rem;
 }
 
 .ur-hps-tb-item i {
     color: #059669;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
 }
 
 .ur-hps-tb-divider {
@@ -1504,7 +1505,7 @@
     align-items: center;
     justify-content: center;
     gap: 1.25rem;
-    margin-top: 0.45rem;
+    margin-top: 0.75rem;
     padding: 0 0.5rem;
 }
 
