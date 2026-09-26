@@ -340,7 +340,7 @@
     justify-content: center;
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
     color: #0f172a;
-    padding: 1.35rem 0 1.15rem; /* Clean, standard, well-balanced desktop height */
+    padding: 2.5rem 0 2rem;
     overflow: hidden;
     overflow-x: clip;
     box-sizing: border-box;
@@ -394,9 +394,9 @@
     position: relative;
     z-index: 10;
     width: 100%;
-    max-width: 1220px; /* Bounded width eliminates large right-hand white void */
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 0 1.25rem;
+    padding: 0 2rem;
     box-sizing: border-box;
 }
 
@@ -405,8 +405,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.85rem;
-    margin-bottom: 0.75rem;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
     flex-wrap: wrap;
 }
 
@@ -418,17 +418,17 @@
 .ur-hps-top-heading {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    font-size: 0.74rem;
+    gap: 0.5rem;
+    font-size: 0.82rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: #0f172a;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    padding: 0.28rem 0.85rem;
+    padding: 0.38rem 1rem;
     border-radius: 9999px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
 }
 
 .ur-hps-top-heading i {
@@ -570,8 +570,8 @@
     box-sizing: border-box;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.25rem;
-    box-shadow: 0 14px 34px -10px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.03);
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(15, 23, 42, 0.03);
     overflow: hidden;
 }
 
@@ -590,7 +590,7 @@
     width: 100%;
     min-width: 100%;
     max-width: 100%;
-    padding: 1.15rem 1.45rem 1rem;
+    padding: 1.75rem 2.25rem 1.5rem;
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
@@ -744,8 +744,8 @@
 /* ─── 3-PART HORIZONTAL DESKTOP GRID ─────────────────────── */
 .ur-hps-desktop-grid {
     display: grid;
-    grid-template-columns: 1.18fr 0.98fr 0.84fr; /* Left (Value) · Center (Pricing) · Right (Visual) */
-    gap: 1.15rem;
+    grid-template-columns: 1.15fr 1fr 0.85fr;
+    gap: 1.75rem;
     align-items: stretch;
     width: 100%;
     position: relative;
@@ -764,14 +764,14 @@
 .ur-hps-plan-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.65rem;
+    gap: 0.4rem;
+    font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 0.22rem 0.72rem;
+    padding: 0.3rem 0.85rem;
     border-radius: 9999px;
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.6rem;
     width: fit-content;
 }
 
@@ -801,12 +801,12 @@
 }
 
 .ur-hps-slide-title {
-    font-size: clamp(1.35rem, 1.75vw, 1.62rem);
+    font-size: clamp(1.5rem, 2vw, 1.85rem);
     font-weight: 900;
     color: #0f172a;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-    margin: 0 0 0.35rem;
+    line-height: 1.18;
+    letter-spacing: -0.03em;
+    margin: 0 0 0.5rem;
 }
 
 .ur-hps-slide-title .highlight-gold {
@@ -839,30 +839,30 @@
 }
 
 .ur-hps-slide-desc {
-    font-size: 0.8rem;
+    font-size: 0.88rem;
     color: #475569;
-    line-height: 1.42;
-    margin: 0 0 0.75rem;
-    max-width: 480px;
+    line-height: 1.55;
+    margin: 0 0 1rem;
+    max-width: 520px;
 }
 
 /* Feature 2x2 Highlights Grid — Clean, balanced chips */
 .ur-hps-features-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.55rem;
+    gap: 0.7rem;
     width: 100%;
 }
 
 .ur-hps-feature-item {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.62rem 0.75rem;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 0.85rem;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+    border-radius: 0.9rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -873,15 +873,15 @@
 }
 
 .ur-hps-f-icon-box {
-    width: 2.15rem;
-    height: 2.15rem;
-    border-radius: 0.65rem;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 0.7rem;
     background: #eff6ff;
     color: #2563eb;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 1.1rem;
     flex-shrink: 0;
 }
 
@@ -918,19 +918,19 @@
 }
 
 .ur-hps-f-text h4 {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.12rem;
+    margin: 0 0 0.15rem;
     letter-spacing: -0.01em;
-    line-height: 1.25;
+    line-height: 1.28;
 }
 
 .ur-hps-f-text p {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     color: #64748b;
     margin: 0;
-    line-height: 1.25;
+    line-height: 1.3;
 }
 
 /* ─── 2. CENTER COLUMN: COMPACT PRICING CARD ─────────────── */
@@ -946,10 +946,10 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.15rem;
-    padding: 1.15rem 1.25rem 1rem;
+    border-radius: 1.25rem;
+    padding: 1.35rem 1.4rem 1.15rem;
     box-sizing: border-box;
-    box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.09), 0 2px 8px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(0, 0, 0, 0.03);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
     overflow: hidden;
     display: flex;
@@ -1139,7 +1139,7 @@
 }
 
 .ur-hps-amount {
-    font-size: 2.3rem;
+    font-size: 2.6rem;
     font-weight: 900;
     color: #0f172a;
     line-height: 1;
@@ -1215,12 +1215,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
     width: 100%;
-    padding: 0.7rem 1.15rem;
-    border-radius: 0.75rem;
+    padding: 0.82rem 1.25rem;
+    border-radius: 0.85rem;
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 900;
     letter-spacing: -0.01em;
     text-decoration: none;
@@ -1229,7 +1229,7 @@
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
-    margin-bottom: 0.28rem;
+    margin-bottom: 0.35rem;
     border: none;
 }
 
@@ -1328,6 +1328,7 @@
     align-items: stretch;
     justify-content: center;
     z-index: 5;
+    min-width: 0;
 }
 
 .ur-hps-photo-card {
@@ -1335,9 +1336,9 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.15rem;
+    border-radius: 1.25rem;
     overflow: hidden;
-    box-shadow: 0 10px 28px -8px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.02);
+    box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.1), 0 4px 10px rgba(15, 23, 42, 0.03);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1387,7 +1388,7 @@
 .ur-hps-pc-photo-wrapper {
     position: relative;
     width: 100%;
-    height: 120px;
+    height: 180px;
     overflow: hidden;
     background: #0f172a;
 }
@@ -1472,7 +1473,7 @@
 }
 
 .ur-hps-pc-body {
-    padding: 0.7rem 0.95rem 0.65rem;
+    padding: 0.9rem 1.1rem 0.8rem;
     display: flex;
     flex-direction: column;
     background: #ffffff;
@@ -1481,18 +1482,18 @@
 }
 
 .ur-hps-pc-title {
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.15rem;
+    margin: 0 0 0.2rem;
     letter-spacing: -0.015em;
 }
 
 .ur-hps-pc-sub {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: #64748b;
-    line-height: 1.35;
-    margin: 0 0 0.42rem;
+    line-height: 1.4;
+    margin: 0 0 0.5rem;
 }
 
 .ur-hps-pc-list {
@@ -1504,8 +1505,8 @@
 .ur-hps-pc-row {
     display: flex;
     align-items: center;
-    gap: 0.42rem;
-    font-size: 0.7rem;
+    gap: 0.5rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #1e293b;
 }
@@ -1550,15 +1551,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.75rem;
+    gap: 2rem;
     flex-wrap: wrap;
     background: #ffffff !important;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
-    padding: 0.48rem 1.65rem;
-    margin-top: 0.85rem;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
-    font-size: 0.76rem;
+    padding: 0.6rem 2rem;
+    margin-top: 1.15rem;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    font-size: 0.8rem;
     font-weight: 700;
     color: #0f172a !important;
     transition: all 0.25s ease;
@@ -1594,8 +1595,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.25rem;
-    margin-top: 0.75rem;
+    gap: 1.5rem;
+    margin-top: 1.15rem;
     padding: 0 0.5rem;
 }
 
