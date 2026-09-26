@@ -152,6 +152,8 @@
                     'Direct Landlord Visit Scheduling',
                     'Save ₹15,000 to ₹35,000 Fees',
                 ],
+                'trust_note' => 'Direct Landlords Only · ₹0 Commission',
+                'image' => asset('images/buyer_pass/gold_apartment_card.webp'),
             ],
         ],
         [
@@ -190,6 +192,8 @@
                     'Unlimited Direct Landlord Calls',
                     'Free Rental Agreement Draft',
                 ],
+                'trust_note' => 'Dedicated Concierge · ₹0 Brokerage',
+                'image' => asset('images/buyer_pass/platinum_luxury_card.webp'),
             ],
         ],
         [
@@ -228,6 +232,8 @@
                     'Zero Broker Commission',
                     'Standard Online Support',
                 ],
+                'trust_note' => 'Verified Direct Listings · Fast Connect',
+                'image' => asset('images/buyer_pass/silver_studio_card.webp'),
             ],
         ],
     ]);
@@ -276,6 +282,7 @@
                     'Save 1% to 2% Brokerage Fee',
                     'Title Document Checklist',
                 ],
+                'trust_note' => 'Direct Seller Negotiation · ₹0 Middleman',
                 'image' => asset('images/buyer_pass/buyer_villa_card.webp'),
             ],
         ]);
@@ -353,14 +360,19 @@
     box-sizing: border-box;
 }
 
-/* Compact Section Top Bar: Eyebrow + Plan Switcher Tabs */
+/* Compact Section Top Bar: Eyebrow + Plan Switcher Tabs + Nav Controls */
 .ur-hps-top-nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.5rem;
     flex-wrap: wrap;
+}
+
+.ur-hps-top-left {
+    display: flex;
+    align-items: center;
 }
 
 .ur-hps-top-heading {
@@ -374,8 +386,9 @@
     color: #1e40af;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
-    padding: 0.2rem 0.65rem;
+    padding: 0.22rem 0.7rem;
     border-radius: 9999px;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.06);
 }
 
 .ur-hps-top-heading i {
@@ -383,33 +396,39 @@
     font-size: 0.85rem;
 }
 
+.ur-hps-top-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 /* Quick Jump Plan Tabs Nav Bar */
 .ur-hps-tabs-bar {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.22rem;
     flex-wrap: wrap;
-    padding: 0.18rem;
+    padding: 0.16rem;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .ur-hps-tab-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.32rem;
-    padding: 0.24rem 0.68rem;
+    padding: 0.22rem 0.65rem;
     border-radius: 9999px;
     border: 1px solid transparent;
     background: transparent;
     color: #64748b;
     font-family: inherit;
-    font-size: 0.74rem;
+    font-size: 0.73rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
 }
 
@@ -421,37 +440,37 @@
 .ur-hps-tab-btn.active.tab--gold {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     border-color: #f59e0b;
-    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.28);
+    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.28);
     color: #ffffff;
 }
 
 .ur-hps-tab-btn.active.tab--platinum {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     border-color: #2563eb;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
     color: #ffffff;
 }
 
 .ur-hps-tab-btn.active.tab--silver {
     background: linear-gradient(135deg, #475569 0%, #334155 100%);
     border-color: #334155;
-    box-shadow: 0 4px 14px rgba(51, 65, 85, 0.25);
+    box-shadow: 0 3px 10px rgba(51, 65, 85, 0.25);
     color: #ffffff;
 }
 
 .ur-hps-tab-btn.active.tab--buyer {
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     border-color: #059669;
-    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.28);
+    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.28);
     color: #ffffff;
 }
 
 .ur-hps-tab-pill {
-    font-size: 0.58rem;
+    font-size: 0.56rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.08rem 0.38rem;
+    padding: 0.06rem 0.36rem;
     border-radius: 9999px;
     background: #e2e8f0;
     color: #475569;
@@ -461,6 +480,45 @@
 .ur-hps-tab-btn.active .ur-hps-tab-pill {
     background: rgba(255, 255, 255, 0.25);
     color: #ffffff;
+}
+
+/* Integrated Top Navigation Controls Pill */
+.ur-hps-nav-arrows {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.16rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.ur-hps-arrow-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ur-hps-arrow-btn:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    transform: scale(1.05);
+}
+
+.ur-hps-arrow-btn:active {
+    transform: scale(0.94);
 }
 
 /* ─── SLIDER STAGE WRAPPER ───────────────────────────────── */
@@ -1153,8 +1211,7 @@
     color: #0f172a;
 }
 
-/* ─── 3. RIGHT COLUMN: SUBTLE PREMIUM VISUAL ELEMENT ─────── */
-/* Eliminates the large blank empty area on desktop */
+/* ─── 3. RIGHT COLUMN: UNIFIED PHOTOREALISTIC REAL ESTATE CARD ─── */
 .ur-hps-col-right {
     display: flex;
     align-items: stretch;
@@ -1162,153 +1219,88 @@
     z-index: 5;
 }
 
-.ur-hps-visual-card {
-    position: relative;
-    width: 100%;
-    background: linear-gradient(160deg, #ffffff 0%, #fffdf7 60%, #fffbeb 100%);
-    border: 1px solid #fde68a;
-    border-radius: 1rem;
-    padding: 0.55rem 0.7rem;
-    box-sizing: border-box;
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.08);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
-}
-
-.ur-hps-visual-card--platinum {
-    background: linear-gradient(160deg, #ffffff 0%, #f8faff 60%, #eff6ff 100%);
-    border-color: #bfdbfe;
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.08);
-}
-.ur-hps-visual-card--silver {
-    background: linear-gradient(160deg, #ffffff 0%, #fbfcfd 60%, #f1f5f9 100%);
-    border-color: #cbd5e1;
-    box-shadow: 0 6px 20px rgba(71, 85, 105, 0.06);
-}
-.ur-hps-visual-card--buyer {
-    background: linear-gradient(160deg, #ffffff 0%, #f7fef9 60%, #ecfdf5 100%);
-    border-color: #a7f3d0;
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.08);
-}
-
-.ur-hps-vc-illustration {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 0.25rem;
-}
-
-.ur-hps-house-svg {
-    width: 100%;
-    max-width: 85px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-}
-
-.ur-hps-vc-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.28rem;
-    font-size: 0.58rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 0.14rem 0.45rem;
-    border-radius: 9999px;
-    background: #fef3c7;
-    color: #b45309;
-    border: 1px solid #fde68a;
-    margin-bottom: 0.2rem;
-    width: fit-content;
-}
-
-.ur-hps-vc-title {
-    font-size: 0.76rem;
-    font-weight: 900;
-    color: #0f172a;
-    margin: 0 0 0.08rem;
-    letter-spacing: -0.015em;
-}
-
-.ur-hps-vc-sub {
-    font-size: 0.64rem;
-    color: #64748b;
-    line-height: 1.22;
-    margin: 0 0 0.22rem;
-}
-
-.ur-hps-vc-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.16rem;
-}
-
-.ur-hps-vc-row {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.64rem;
-    font-weight: 700;
-    color: #1e293b;
-}
-
-.ur-hps-vc-row i {
-    color: #059669;
-    font-size: 0.75rem;
-    flex-shrink: 0;
-}
-
-/* ─── PREMIUM PHOTOREALISTIC BUYER VISUAL CARD ──────────────── */
-.ur-buyer-visual-card {
+.ur-hps-photo-card {
     position: relative;
     width: 100%;
     background: #ffffff;
-    border: 1.5px solid rgba(167, 243, 208, 0.85);
-    border-radius: 15px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 1rem;
     overflow: hidden;
-    box-shadow: 0 8px 22px -8px rgba(5, 150, 105, 0.14), 0 2px 5px rgba(15, 23, 42, 0.03);
+    box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.02);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
 }
 
-.ur-buyer-visual-card:hover {
+.ur-hps-photo-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 30px -8px rgba(5, 150, 105, 0.2);
 }
 
-.ur-buyer-vc-photo-wrapper {
+.ur-hps-photo-card--gold {
+    border-color: #fde68a;
+    box-shadow: 0 8px 22px -6px rgba(245, 158, 11, 0.14);
+}
+.ur-hps-photo-card--gold:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 12px 28px -6px rgba(245, 158, 11, 0.22);
+}
+
+.ur-hps-photo-card--platinum {
+    border-color: #bfdbfe;
+    box-shadow: 0 8px 22px -6px rgba(37, 99, 235, 0.14);
+}
+.ur-hps-photo-card--platinum:hover {
+    border-color: #2563eb;
+    box-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.22);
+}
+
+.ur-hps-photo-card--silver {
+    border-color: #cbd5e1;
+    box-shadow: 0 8px 22px -6px rgba(71, 85, 105, 0.10);
+}
+.ur-hps-photo-card--silver:hover {
+    border-color: #64748b;
+    box-shadow: 0 12px 28px -6px rgba(71, 85, 105, 0.18);
+}
+
+.ur-hps-photo-card--buyer {
+    border-color: rgba(167, 243, 208, 0.85);
+    box-shadow: 0 8px 22px -6px rgba(5, 150, 105, 0.14);
+}
+.ur-hps-photo-card--buyer:hover {
+    border-color: #10b981;
+    box-shadow: 0 12px 28px -6px rgba(5, 150, 105, 0.22);
+}
+
+.ur-hps-pc-photo-wrapper {
     position: relative;
     width: 100%;
-    height: 80px; /* Ultra-compact photo height */
+    height: 82px; /* Sleek compact photo banner */
     overflow: hidden;
     background: #0f172a;
 }
 
-.ur-buyer-vc-photo {
+.ur-hps-pc-photo {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 32%;
-    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    object-position: center 35%;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
     display: block;
 }
 
-.ur-buyer-visual-card:hover .ur-buyer-vc-photo {
+.ur-hps-photo-card:hover .ur-hps-pc-photo {
     transform: scale(1.06);
 }
 
-.ur-buyer-vc-scrim {
+.ur-hps-pc-scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0.68) 100%);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
 }
 
-.ur-buyer-vc-tag-overlay {
+.ur-hps-pc-tag-overlay {
     position: absolute;
     bottom: 0.35rem;
     left: 0.5rem;
@@ -1319,7 +1311,7 @@
     z-index: 2;
 }
 
-.ur-buyer-vc-badge {
+.ur-hps-pc-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
@@ -1329,14 +1321,32 @@
     letter-spacing: 0.08em;
     padding: 0.14rem 0.45rem;
     border-radius: 9999px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+.ur-hps-pc-badge--gold {
     background: rgba(254, 243, 199, 0.96);
     color: #b45309;
     border: 1px solid #fde68a;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-    backdrop-filter: blur(4px);
+}
+.ur-hps-pc-badge--platinum {
+    background: rgba(219, 234, 254, 0.96);
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+.ur-hps-pc-badge--silver {
+    background: rgba(241, 245, 249, 0.96);
+    color: #334155;
+    border: 1px solid #cbd5e1;
+}
+.ur-hps-pc-badge--buyer {
+    background: rgba(209, 250, 229, 0.96);
+    color: #065f46;
+    border: 1px solid #a7f3d0;
 }
 
-.ur-buyer-vc-subtag {
+.ur-hps-pc-subtag {
     font-size: 0.55rem;
     font-weight: 700;
     color: #ffffff;
@@ -1350,35 +1360,37 @@
     box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
 }
 
-.ur-buyer-vc-body {
-    padding: 0.42rem 0.65rem 0.45rem; /* Ultra-compact body */
+.ur-hps-pc-body {
+    padding: 0.42rem 0.65rem 0.45rem;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(180deg, #ffffff 0%, #f7fdf9 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+    flex: 1;
+    justify-content: space-between;
 }
 
-.ur-buyer-vc-title {
+.ur-hps-pc-title {
     font-size: 0.76rem;
-    font-weight: 900;
+    font-weight: 800;
     color: #0f172a;
     margin: 0 0 0.08rem;
     letter-spacing: -0.015em;
 }
 
-.ur-buyer-vc-sub {
+.ur-hps-pc-sub {
     font-size: 0.64rem;
     color: #64748b;
     line-height: 1.22;
     margin: 0 0 0.22rem;
 }
 
-.ur-buyer-vc-list {
+.ur-hps-pc-list {
     display: flex;
     flex-direction: column;
     gap: 0.16rem;
 }
 
-.ur-buyer-vc-row {
+.ur-hps-pc-row {
     display: flex;
     align-items: center;
     gap: 0.3rem;
@@ -1387,13 +1399,13 @@
     color: #1e293b;
 }
 
-.ur-buyer-vc-row i {
+.ur-hps-pc-row i {
     color: #059669;
     font-size: 0.75rem;
     flex-shrink: 0;
 }
 
-.ur-buyer-vc-trust-note {
+.ur-hps-pc-trust-note {
     margin-top: 0.25rem;
     padding-top: 0.25rem;
     border-top: 1px solid #f1f5f9;
@@ -1405,7 +1417,7 @@
     color: #047857;
 }
 
-.ur-buyer-vc-trust-note i {
+.ur-hps-pc-trust-note i {
     color: #f59e0b;
     font-size: 0.68rem;
 }
@@ -1416,16 +1428,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
-    background: rgba(255, 255, 255, 0.86);
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(167, 243, 208, 0.7);
+    border: 1px solid rgba(226, 232, 240, 0.85);
     border-radius: 9999px;
-    padding: 0.28rem 1rem;
-    margin-top: 0.35rem;
-    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    padding: 0.3rem 1.15rem;
+    margin-top: 0.4rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
     font-size: 0.68rem;
     font-weight: 700;
     color: #334155;
@@ -1433,14 +1445,14 @@
 }
 
 .ur-hps-trust-bar:hover {
-    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.1);
-    border-color: rgba(16, 185, 129, 0.85);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    border-color: #cbd5e1;
 }
 
 .ur-hps-tb-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.32rem;
 }
 
 .ur-hps-tb-item i {
@@ -1455,45 +1467,13 @@
     background: #cbd5e1;
 }
 
-/* ─── SLIDER CONTROLS (COMPACT ARROWS & BOTTOM DOTS) ─────── */
-.ur-hps-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.95rem;
-    height: 1.95rem;
-    border-radius: 50%;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    color: #0f172a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.88rem;
-    cursor: pointer;
-    z-index: 20;
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-}
-
-.ur-hps-arrow:hover {
-    background: #f59e0b;
-    border-color: #f59e0b;
-    color: #ffffff;
-    transform: translateY(-50%) scale(1.08);
-    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
-}
-
-.ur-hps-arrow--prev { left: 0.5rem; }
-.ur-hps-arrow--next { right: 0.5rem; }
-
-/* Bottom Nav Indicator Dots */
+/* ─── BOTTOM CONTROLS (BALANCED INDICATOR DOTS & HINT) ───── */
 .ur-hps-bottom-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 0.35rem;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 0.45rem;
     padding: 0 0.5rem;
 }
 
@@ -1525,7 +1505,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: #64748b;
     text-transform: uppercase;
@@ -1534,7 +1514,7 @@
 
 .ur-hps-swipe-hint i {
     color: #f59e0b;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 /* ─── RESPONSIVE BEHAVIOR (MOBILE & TABLET) ──────────────── */
@@ -1551,12 +1531,25 @@
         align-items: stretch;
         gap: 0.5rem;
     }
+    .ur-hps-top-left {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
     .ur-hps-top-heading {
         align-self: flex-start;
         font-size: 0.72rem;
     }
-    .ur-hps-tabs-bar {
+    .ur-hps-top-right {
         width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+    .ur-hps-tabs-bar {
+        flex: 1;
         overflow-x: auto;
         flex-wrap: nowrap;
         justify-content: flex-start;
@@ -1571,10 +1564,8 @@
         padding: 0.35rem 0.75rem;
         font-size: 0.76rem;
     }
-
-    /* Hide arrows on touch screens */
-    .ur-hps-arrow {
-        display: none;
+    .ur-hps-nav-arrows {
+        flex-shrink: 0;
     }
 
     .ur-hps-slide {
@@ -1692,42 +1683,48 @@
     <div class="ur-hps-container">
         {{-- Section Top Nav Bar --}}
         <div class="ur-hps-top-nav">
-            <span class="ur-hps-top-heading">
-                <i class="ph-fill ph-shield-check"></i>
-                Zero Brokerage Direct Pass
-            </span>
+            <div class="ur-hps-top-left">
+                <span class="ur-hps-top-heading">
+                    <i class="ph-fill ph-shield-check"></i>
+                    Zero Brokerage Direct Pass
+                </span>
+            </div>
 
-            {{-- Quick Plan Switcher Tabs --}}
-            <div class="ur-hps-tabs-bar" role="tablist" aria-label="Plans quick navigation">
-                @foreach($heroSlides as $idx => $s)
-                    <button type="button" 
-                            class="ur-hps-tab-btn {{ $idx === 0 ? 'active tab--' . $s['theme'] : '' }}" 
-                            data-target-index="{{ $idx }}"
-                            data-theme="{{ $s['theme'] }}"
-                            role="tab"
-                            onclick="if(window.urGoToHeroSlide){ window.urGoToHeroSlide({{ $idx }}); }"
-                            aria-selected="{{ $idx === 0 ? 'true' : 'false' }}"
-                            title="{{ $s['tab_label'] }}">
-                        <i class="ph-bold {{ $s['tab_icon'] }}"></i>
-                        <span>{{ $s['tab_label'] }}</span>
-                        @if(!empty($s['tab_badge']))
-                            <span class="ur-hps-tab-pill">{{ $s['tab_badge'] }}</span>
-                        @endif
+            <div class="ur-hps-top-right">
+                {{-- Quick Plan Switcher Tabs --}}
+                <div class="ur-hps-tabs-bar" role="tablist" aria-label="Plans quick navigation">
+                    @foreach($heroSlides as $idx => $s)
+                        <button type="button" 
+                                class="ur-hps-tab-btn {{ $idx === 0 ? 'active tab--' . $s['theme'] : '' }}" 
+                                data-target-index="{{ $idx }}"
+                                data-theme="{{ $s['theme'] }}"
+                                role="tab"
+                                onclick="if(window.urGoToHeroSlide){ window.urGoToHeroSlide({{ $idx }}); }"
+                                aria-selected="{{ $idx === 0 ? 'true' : 'false' }}"
+                                title="{{ $s['tab_label'] }}">
+                            <i class="ph-bold {{ $s['tab_icon'] }}"></i>
+                            <span>{{ $s['tab_label'] }}</span>
+                            @if(!empty($s['tab_badge']))
+                                <span class="ur-hps-tab-pill">{{ $s['tab_badge'] }}</span>
+                            @endif
+                        </button>
+                    @endforeach
+                </div>
+
+                {{-- Clean Top Slider Navigation Controls --}}
+                <div class="ur-hps-nav-arrows">
+                    <button type="button" class="ur-hps-arrow-btn" id="heroPlanPrevBtn" onclick="if(window.urPrevHeroSlide){ window.urPrevHeroSlide(); }" aria-label="Previous Plan" title="Previous Plan">
+                        <i class="ph-bold ph-caret-left"></i>
                     </button>
-                @endforeach
+                    <button type="button" class="ur-hps-arrow-btn" id="heroPlanNextBtn" onclick="if(window.urNextHeroSlide){ window.urNextHeroSlide(); }" aria-label="Next Plan" title="Next Plan">
+                        <i class="ph-bold ph-caret-right"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
         {{-- Slider Stage --}}
         <div class="ur-hps-slider-stage" id="heroPlanSliderStage">
-            {{-- Prev & Next Navigation Arrows --}}
-            <button type="button" class="ur-hps-arrow ur-hps-arrow--prev" id="heroPlanPrevBtn" onclick="if(window.urPrevHeroSlide){ window.urPrevHeroSlide(); }" aria-label="Previous Plan" title="Previous Plan">
-                <i class="ph-bold ph-caret-left"></i>
-            </button>
-            <button type="button" class="ur-hps-arrow ur-hps-arrow--next" id="heroPlanNextBtn" onclick="if(window.urNextHeroSlide){ window.urNextHeroSlide(); }" aria-label="Next Plan" title="Next Plan">
-                <i class="ph-bold ph-caret-right"></i>
-            </button>
-
             {{-- Slider Track --}}
             <div class="ur-hps-track" id="heroPlanTrack">
                 @foreach($heroSlides as $idx => $s)
@@ -1921,113 +1918,45 @@
 
                             {{-- PART 3: RIGHT COLUMN (Subtle Premium Verified-Owner Visual Element) --}}
                             <div class="ur-hps-col-right">
-                                @if($s['theme'] === 'buyer')
-                                    {{-- High-End Photorealistic Real Estate Visual Panel for Direct Buyer Pass --}}
-                                    <div class="ur-buyer-visual-card">
-                                        <div class="ur-buyer-vc-photo-wrapper">
-                                            <img src="{{ asset('images/buyer_pass/buyer_villa_card.webp') }}" 
-                                                 alt="Luxury Modern Real Estate Indian Villa" 
-                                                 class="ur-buyer-vc-photo" 
-                                                 loading="lazy" 
-                                                 decoding="async"
-                                                 width="400" 
-                                                 height="250">
-                                            <div class="ur-buyer-vc-scrim"></div>
-                                            <div class="ur-buyer-vc-tag-overlay">
-                                                <span class="ur-buyer-vc-badge">
-                                                    <i class="ph-fill ph-seal-check"></i>
-                                                    <span>{{ $s['visual']['tag'] }}</span>
-                                                </span>
-                                                <span class="ur-buyer-vc-subtag">
-                                                    <i class="ph-bold ph-shield-check"></i> 100% Genuine
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="ur-buyer-vc-body">
-                                            <h5 class="ur-buyer-vc-title">{{ $s['visual']['title'] }}</h5>
-                                            <p class="ur-buyer-vc-sub">{{ $s['visual']['sub'] }}</p>
-                                            <div class="ur-buyer-vc-list">
-                                                @foreach($s['visual']['perks'] as $perk)
-                                                    <div class="ur-buyer-vc-row">
-                                                        <i class="ph-bold ph-check"></i>
-                                                        <span>{{ $perk }}</span>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                            <div class="ur-buyer-vc-trust-note">
-                                                <i class="ph-fill ph-sparkle"></i>
-                                                <span>Direct Seller Negotiation · ₹0 Middleman</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="ur-hps-visual-card ur-hps-visual-card--{{ $s['theme'] }}">
-                                        <div class="ur-hps-vc-glow"></div>
-                                        
-                                        {{-- Architectural SVG House / Shield Illustration --}}
-                                        <div class="ur-hps-vc-illustration">
-                                            <svg viewBox="0 0 160 110" fill="none" class="ur-hps-house-svg">
-                                                <defs>
-                                                    <linearGradient id="roofGrad_{{ $planUid }}" x1="20" y1="20" x2="140" y2="70" gradientUnits="userSpaceOnUse">
-                                                        @if($s['theme'] === 'gold')
-                                                            <stop offset="0%" stop-color="#F59E0B"/>
-                                                            <stop offset="100%" stop-color="#D97706"/>
-                                                        @elseif($s['theme'] === 'platinum')
-                                                            <stop offset="0%" stop-color="#60A5FA"/>
-                                                            <stop offset="100%" stop-color="#2563EB"/>
-                                                        @else
-                                                            <stop offset="0%" stop-color="#94A3B8"/>
-                                                            <stop offset="100%" stop-color="#475569"/>
-                                                        @endif
-                                                    </linearGradient>
-                                                    <linearGradient id="wallGrad_{{ $planUid }}" x1="30" y1="50" x2="130" y2="105" gradientUnits="userSpaceOnUse">
-                                                        <stop offset="0%" stop-color="#FFFFFF"/>
-                                                        <stop offset="100%" stop-color="#F8FAFC"/>
-                                                    </linearGradient>
-                                                </defs>
-                                                {{-- Ground Shadow --}}
-                                                <ellipse cx="80" cy="100" rx="65" ry="6" fill="#E2E8F0" fill-opacity="0.6"/>
-                                                {{-- House Body --}}
-                                                <path d="M32 52L80 18L128 52V98C128 100 126.5 101.5 124.5 101.5H35.5C33.5 101.5 32 100 32 98V52Z" fill="url(#wallGrad_{{ $planUid }})" stroke="#CBD5E1" stroke-width="1.4"/>
-                                                {{-- Roof Eaves --}}
-                                                <path d="M24 55L80 15L136 55" stroke="url(#roofGrad_{{ $planUid }})" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                {{-- Modern Large Glass Window with Reflection --}}
-                                                <rect x="44" y="58" width="28" height="22" rx="2.5" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.2"/>
-                                                <line x1="58" y1="58" x2="58" y2="80" stroke="#BFDBFE" stroke-width="1.2"/>
-                                                <line x1="44" y1="69" x2="72" y2="69" stroke="#BFDBFE" stroke-width="1.2"/>
-                                                {{-- Front Door --}}
-                                                <rect x="86" y="56" width="26" height="45" rx="2" fill="#1E293B"/>
-                                                <circle cx="106" cy="80" r="1.8" fill="#F59E0B"/>
-                                                {{-- Floating Verified Badge --}}
-                                                <g transform="translate(104, 10)">
-                                                    <circle cx="18" cy="18" r="16" fill="#FFFFFF" filter="drop-shadow(0 2px 5px rgba(15,23,42,0.12))"/>
-                                                    <circle cx="18" cy="18" r="13.5" fill="#10B981"/>
-                                                    <path d="M13.5 18L16.5 21L23 14.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </g>
-                                            </svg>
-                                        </div>
-
-                                        {{-- Secondary Trust Content --}}
-                                        <div class="ur-hps-vc-content">
-                                            <div class="ur-hps-vc-badge">
+                                <div class="ur-hps-photo-card ur-hps-photo-card--{{ $s['theme'] }}">
+                                    <div class="ur-hps-pc-photo-wrapper">
+                                        <img src="{{ $s['visual']['image'] }}" 
+                                             alt="{{ $s['visual']['title'] }}" 
+                                             class="ur-hps-pc-photo" 
+                                             loading="lazy" 
+                                             decoding="async"
+                                             width="400" 
+                                             height="250">
+                                        <div class="ur-hps-pc-scrim"></div>
+                                        <div class="ur-hps-pc-tag-overlay">
+                                            <span class="ur-hps-pc-badge ur-hps-pc-badge--{{ $s['theme'] }}">
                                                 <i class="ph-fill ph-seal-check"></i>
                                                 <span>{{ $s['visual']['tag'] }}</span>
-                                            </div>
-
-                                            <h5 class="ur-hps-vc-title">{{ $s['visual']['title'] }}</h5>
-                                            <p class="ur-hps-vc-sub">{{ $s['visual']['sub'] }}</p>
-
-                                            <div class="ur-hps-vc-list">
+                                            </span>
+                                            <span class="ur-hps-pc-subtag">
+                                                <i class="ph-bold ph-shield-check"></i> 100% Genuine
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="ur-hps-pc-body">
+                                        <div>
+                                            <h5 class="ur-hps-pc-title">{{ $s['visual']['title'] }}</h5>
+                                            <p class="ur-hps-pc-sub">{{ $s['visual']['sub'] }}</p>
+                                            <div class="ur-hps-pc-list">
                                                 @foreach($s['visual']['perks'] as $perk)
-                                                    <div class="ur-hps-vc-row">
+                                                    <div class="ur-hps-pc-row">
                                                         <i class="ph-bold ph-check"></i>
                                                         <span>{{ $perk }}</span>
                                                     </div>
                                                 @endforeach
                                             </div>
                                         </div>
+                                        <div class="ur-hps-pc-trust-note">
+                                            <i class="ph-fill ph-sparkle"></i>
+                                            <span>{{ $s['visual']['trust_note'] ?? 'Direct Owner Connect · ₹0 Brokerage' }}</span>
+                                        </div>
                                     </div>
-                                @endif
+                                </div>
                             </div>
 
                             {{-- PART 4: HORIZONTAL TRUST ROW (Spans full width underneath) --}}
