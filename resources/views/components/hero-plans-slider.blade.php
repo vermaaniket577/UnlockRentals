@@ -331,10 +331,19 @@
 .ur-hero-plans-slider-section {
     position: relative;
     width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
     color: #0f172a;
     padding: 1.35rem 0 1.15rem; /* Clean, standard, well-balanced desktop height */
     overflow: hidden;
+    overflow-x: clip;
+    box-sizing: border-box;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     border-top: 1px solid #e2e8f0;
     border-bottom: 1px solid #e2e8f0;
@@ -556,6 +565,9 @@
 .ur-hps-slider-stage {
     position: relative;
     width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
     border-radius: 1.25rem;
@@ -2597,6 +2609,13 @@
 
         if (!stage || !track) return;
 
+        if (window.scrollX > 0) {
+            window.scrollTo({ left: 0 });
+        }
+        if (document.documentElement && document.documentElement.scrollLeft > 0) {
+            document.documentElement.scrollLeft = 0;
+        }
+
         const slides = track.querySelectorAll('.ur-hps-slide');
         const totalSlides = slides.length;
         if (totalSlides <= 1) return;
@@ -2672,20 +2691,37 @@
                 }
             });
 
-            // Update top tabs and smoothly center the active tab
+            // Update top tabs
             tabs.forEach((tab, i) => {
                 const theme = tab.getAttribute('data-theme') || 'gold';
                 if (i === currentIndex) {
                     tab.classList.add('active', 'tab--' + theme);
                     tab.setAttribute('aria-selected', 'true');
-                    try {
-                        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    } catch (e) {}
                 } else {
                     tab.classList.remove('active', 'tab--' + theme);
                     tab.setAttribute('aria-selected', 'false');
                 }
             });
+
+            // If tabs bar is horizontally scrollable (only on mobile/tablet view), scroll ONLY the tabs bar container
+            try {
+                const tabsBar = document.querySelector('.ur-hps-tabs-bar');
+                const activeTab = tabs[currentIndex];
+                if (tabsBar && activeTab && tabsBar.scrollWidth > tabsBar.clientWidth) {
+                    const scrollLeftTarget = activeTab.offsetLeft - (tabsBar.clientWidth / 2) + (activeTab.offsetWidth / 2);
+                    tabsBar.scrollTo({
+                        left: Math.max(0, scrollLeftTarget),
+                        behavior: 'smooth'
+                    });
+                }
+            } catch (e) {}
+
+            // Guard: ensure the document window horizontal scroll is never offset to the right
+            if (window.scrollX > 0 || (document.documentElement && document.documentElement.scrollLeft > 0) || (document.body && document.body.scrollLeft > 0)) {
+                window.scrollTo({ left: 0 });
+                if (document.documentElement) document.documentElement.scrollLeft = 0;
+                if (document.body) document.body.scrollLeft = 0;
+            }
 
             // Adjust ambient glow orbs to match current slide's theme
             if (curSlide) {
