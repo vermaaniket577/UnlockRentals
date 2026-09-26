@@ -295,7 +295,7 @@
     width: 100%;
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
     color: #0f172a;
-    padding: 2.5rem 0 2.25rem; /* 40px top, 36px bottom — tight & comfortable */
+    padding: 0.95rem 0 0.75rem; /* Ultra-compact height: fits effortlessly in viewport */
     overflow: hidden;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     border-top: 1px solid #e2e8f0;
@@ -358,38 +358,38 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.15rem;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
     flex-wrap: wrap;
 }
 
 .ur-hps-top-heading {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
+    gap: 0.45rem;
+    font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     color: #1e40af;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
-    padding: 0.35rem 0.95rem;
+    padding: 0.25rem 0.8rem;
     border-radius: 9999px;
 }
 
 .ur-hps-top-heading i {
     color: #d97706;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 /* Quick Jump Plan Tabs Nav Bar */
 .ur-hps-tabs-bar {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     flex-wrap: wrap;
-    padding: 0.25rem;
+    padding: 0.2rem;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
@@ -399,14 +399,14 @@
 .ur-hps-tab-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.38rem;
-    padding: 0.42rem 0.95rem;
+    gap: 0.35rem;
+    padding: 0.32rem 0.8rem;
     border-radius: 9999px;
     border: 1px solid transparent;
     background: transparent;
     color: #64748b;
     font-family: inherit;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -486,7 +486,7 @@
 .ur-hps-slide {
     flex: 0 0 100%;
     width: 100%;
-    padding: 1.75rem 2rem 1.35rem; /* Compact slide padding */
+    padding: 0.8rem 1.25rem 0.6rem; /* Tight compact slide padding */
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
@@ -640,8 +640,8 @@
 /* ─── 3-PART HORIZONTAL DESKTOP GRID ─────────────────────── */
 .ur-hps-desktop-grid {
     display: grid;
-    grid-template-columns: 1.18fr 0.96fr 0.72fr; /* Left (Value) · Center (Pricing) · Right (Visual) */
-    gap: 1.35rem;
+    grid-template-columns: 1.15fr 0.98fr 0.75fr; /* Left (Value) · Center (Pricing) · Right (Visual) */
+    gap: 1rem;
     align-items: stretch;
     width: 100%;
 }
@@ -652,20 +652,20 @@
     flex-direction: column;
     justify-content: space-between;
     z-index: 5;
-    padding-right: 0.5rem;
+    padding-right: 0.35rem;
 }
 
 .ur-hps-plan-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.7rem;
+    gap: 0.35rem;
+    font-size: 0.65rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 0.28rem 0.8rem;
+    letter-spacing: 0.08em;
+    padding: 0.22rem 0.7rem;
     border-radius: 9999px;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.35rem;
     width: fit-content;
 }
 
@@ -694,12 +694,12 @@
 }
 
 .ur-hps-slide-title {
-    font-size: clamp(1.65rem, 2.1vw, 2.15rem); /* Compact bold heading ~34-38px */
+    font-size: clamp(1.35rem, 1.7vw, 1.7rem); /* Compact bold heading ~28-32px */
     font-weight: 900;
     color: #0f172a;
-    line-height: 1.16;
+    line-height: 1.14;
     letter-spacing: -0.025em;
-    margin: 0 0 0.45rem;
+    margin: 0 0 0.3rem;
 }
 
 .ur-hps-slide-title .highlight-gold {
@@ -732,10 +732,10 @@
 }
 
 .ur-hps-slide-desc {
-    font-size: 0.86rem;
+    font-size: 0.78rem;
     color: #475569;
-    line-height: 1.45;
-    margin: 0 0 0.85rem;
+    line-height: 1.35;
+    margin: 0 0 0.5rem;
     max-width: 480px;
 }
 
@@ -743,19 +743,19 @@
 .ur-hps-features-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.6rem;
+    gap: 0.4rem;
     width: 100%;
 }
 
 .ur-hps-feature-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.65rem;
-    padding: 0.65rem 0.8rem;
+    gap: 0.5rem;
+    padding: 0.42rem 0.6rem;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 0.85rem;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
     transition: all 0.22s ease;
 }
 
@@ -766,15 +766,15 @@
 }
 
 .ur-hps-f-icon-box {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.6rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
     background: #eff6ff;
     color: #2563eb;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     flex-shrink: 0;
 }
 
@@ -798,8 +798,8 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(167, 243, 208, 0.85);
-    border-radius: 20px; /* 18-24px per prompt */
-    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.05);
+    border-radius: 16px; /* 16px compact radius */
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.04);
     transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .ur-hps-feature-item--buyer:hover {
@@ -811,23 +811,23 @@
     background: #ecfdf5;
     color: #059669;
     border: 1px solid #d1fae5;
-    border-radius: 12px;
+    border-radius: 0.5rem;
 }
 
 .ur-hps-f-text h4 {
-    font-size: 0.81rem;
+    font-size: 0.75rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.12rem;
+    margin: 0 0 0.08rem;
     letter-spacing: -0.01em;
-    line-height: 1.25;
+    line-height: 1.2;
 }
 
 .ur-hps-f-text p {
-    font-size: 0.71rem;
+    font-size: 0.66rem;
     color: #64748b;
     margin: 0;
-    line-height: 1.25;
+    line-height: 1.2;
 }
 
 /* ─── 2. CENTER COLUMN: COMPACT PRICING CARD ─────────────── */
@@ -843,10 +843,10 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.25rem;
-    padding: 1.15rem 1.25rem; /* Compact padding eliminates vertical stretch */
+    border-radius: 1.15rem;
+    padding: 0.82rem 1rem; /* Compact padding eliminates vertical stretch */
     box-sizing: border-box;
-    box-shadow: 0 12px 32px -6px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 10px 28px -6px rgba(15, 23, 42, 0.07), 0 2px 5px rgba(0, 0, 0, 0.02);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
     overflow: hidden;
     display: flex;
@@ -896,17 +896,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.42rem;
 }
 
 .ur-hps-brand-tag {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.7rem;
+    gap: 0.35rem;
+    font-size: 0.68rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.06em;
     color: #334155;
 }
 
@@ -915,9 +915,9 @@
 }
 
 .ur-hps-card-emblem {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 0.65rem;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 0.55rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -927,37 +927,37 @@
 }
 
 .ur-emblem-svg {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 /* Price Box */
 .ur-hps-price-box {
-    margin-bottom: 0.65rem;
-    padding-bottom: 0.65rem;
+    margin-bottom: 0.42rem;
+    padding-bottom: 0.42rem;
     border-bottom: 1px solid #f1f5f9;
 }
 
 .ur-hps-price-top {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.2rem;
+    gap: 0.4rem;
+    margin-bottom: 0.12rem;
 }
 
 .ur-hps-price-original {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #94a3b8;
     text-decoration: line-through;
 }
 
 .ur-hps-save-chip {
-    font-size: 0.68rem;
+    font-size: 0.62rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.15rem 0.5rem;
+    padding: 0.1rem 0.42rem;
     border-radius: 9999px;
     background: #ecfdf5;
     color: #047857;
@@ -967,48 +967,48 @@
 .ur-hps-price-main {
     display: flex;
     align-items: baseline;
-    gap: 0.25rem;
-    margin-bottom: 0.2rem;
+    gap: 0.2rem;
+    margin-bottom: 0.12rem;
 }
 
 .ur-hps-currency {
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     font-weight: 900;
     color: #0f172a;
 }
 
 .ur-hps-amount {
-    font-size: 2.45rem; /* Dominant ₹999 price */
+    font-size: 2.05rem; /* Compact dominant price */
     font-weight: 900;
     color: #0f172a;
     line-height: 1;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.035em;
 }
 
 .ur-hps-period {
-    font-size: 0.8rem;
+    font-size: 0.74rem;
     font-weight: 600;
     color: #64748b;
 }
 
 .ur-hps-price-subtext {
-    font-size: 0.73rem;
+    font-size: 0.68rem;
     font-weight: 700;
     color: #059669;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.25rem;
 }
 
 /* Card Specs Pill List */
 .ur-hps-card-meta {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 0.75rem;
+    gap: 0.25rem;
+    margin-bottom: 0.42rem;
     background: #f8fafc;
-    padding: 0.55rem 0.75rem;
-    border-radius: 0.75rem;
+    padding: 0.38rem 0.65rem;
+    border-radius: 0.65rem;
     border: 1px solid #f1f5f9;
 }
 
@@ -1016,7 +1016,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.77rem;
+    font-size: 0.72rem;
     color: #0f172a;
 }
 
@@ -1024,13 +1024,13 @@
     color: #64748b;
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
     font-weight: 600;
 }
 
 .ur-hps-meta-row span.meta-label i {
     color: #059669;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
 }
 
 .ur-hps-meta-row span.meta-value {
@@ -1047,12 +1047,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
     width: 100%;
-    padding: 0.78rem 1rem;
-    border-radius: 0.85rem;
+    padding: 0.62rem 0.9rem;
+    border-radius: 0.75rem;
     font-family: inherit;
-    font-size: 0.92rem;
+    font-size: 0.86rem;
     font-weight: 900;
     letter-spacing: -0.01em;
     text-decoration: none;
@@ -1061,7 +1061,7 @@
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.22rem;
     border: none;
 }
 
@@ -1164,8 +1164,8 @@
     width: 100%;
     background: linear-gradient(160deg, #ffffff 0%, #fffdf7 60%, #fffbeb 100%);
     border: 1px solid #fde68a;
-    border-radius: 1.25rem;
-    padding: 1.1rem 1rem;
+    border-radius: 1.15rem;
+    padding: 0.75rem 0.85rem;
     box-sizing: border-box;
     box-shadow: 0 6px 20px rgba(245, 158, 11, 0.08);
     display: flex;
@@ -1190,15 +1190,83 @@
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.08);
 }
 
+.ur-hps-vc-illustration {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.ur-hps-house-svg {
+    width: 100%;
+    max-width: 105px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.ur-hps-vc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.18rem 0.5rem;
+    border-radius: 9999px;
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    margin-bottom: 0.3rem;
+    width: fit-content;
+}
+
+.ur-hps-vc-title {
+    font-size: 0.84rem;
+    font-weight: 900;
+    color: #0f172a;
+    margin: 0 0 0.12rem;
+    letter-spacing: -0.015em;
+}
+
+.ur-hps-vc-sub {
+    font-size: 0.68rem;
+    color: #64748b;
+    line-height: 1.25;
+    margin: 0 0 0.35rem;
+}
+
+.ur-hps-vc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+}
+
+.ur-hps-vc-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.ur-hps-vc-row i {
+    color: #059669;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
 /* ─── PREMIUM PHOTOREALISTIC BUYER VISUAL CARD ──────────────── */
 .ur-buyer-visual-card {
     position: relative;
     width: 100%;
     background: #ffffff;
     border: 1.5px solid rgba(167, 243, 208, 0.85);
-    border-radius: 20px;
+    border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 14px 34px -8px rgba(5, 150, 105, 0.16), 0 2px 6px rgba(15, 23, 42, 0.03);
+    box-shadow: 0 10px 28px -8px rgba(5, 150, 105, 0.14), 0 2px 5px rgba(15, 23, 42, 0.03);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1207,13 +1275,13 @@
 
 .ur-buyer-visual-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 20px 42px -8px rgba(5, 150, 105, 0.24);
+    box-shadow: 0 16px 36px -8px rgba(5, 150, 105, 0.22);
 }
 
 .ur-buyer-vc-photo-wrapper {
     position: relative;
     width: 100%;
-    height: 136px;
+    height: 96px; /* Tight compact photo height */
     overflow: hidden;
     background: #0f172a;
 }
@@ -1239,9 +1307,9 @@
 
 .ur-buyer-vc-tag-overlay {
     position: absolute;
-    bottom: 0.6rem;
-    left: 0.75rem;
-    right: 0.75rem;
+    bottom: 0.45rem;
+    left: 0.65rem;
+    right: 0.65rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1251,12 +1319,12 @@
 .ur-buyer-vc-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.64rem;
+    gap: 0.3rem;
+    font-size: 0.6rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 0.24rem 0.6rem;
+    padding: 0.18rem 0.5rem;
     border-radius: 9999px;
     background: rgba(254, 243, 199, 0.96);
     color: #b45309;
@@ -1266,77 +1334,77 @@
 }
 
 .ur-buyer-vc-subtag {
-    font-size: 0.62rem;
+    font-size: 0.58rem;
     font-weight: 700;
     color: #ffffff;
     background: rgba(5, 150, 105, 0.92);
-    padding: 0.18rem 0.55rem;
+    padding: 0.15rem 0.45rem;
     border-radius: 9999px;
     backdrop-filter: blur(4px);
     display: inline-flex;
     align-items: center;
-    gap: 0.28rem;
+    gap: 0.25rem;
     box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
 }
 
 .ur-buyer-vc-body {
-    padding: 0.85rem 1rem 0.95rem;
+    padding: 0.55rem 0.8rem 0.6rem; /* Tight compact body */
     display: flex;
     flex-direction: column;
     background: linear-gradient(180deg, #ffffff 0%, #f7fdf9 100%);
 }
 
 .ur-buyer-vc-title {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
     font-weight: 900;
     color: #0f172a;
-    margin: 0 0 0.18rem;
+    margin: 0 0 0.12rem;
     letter-spacing: -0.015em;
 }
 
 .ur-buyer-vc-sub {
-    font-size: 0.71rem;
+    font-size: 0.68rem;
     color: #64748b;
-    line-height: 1.35;
-    margin: 0 0 0.65rem;
+    line-height: 1.25;
+    margin: 0 0 0.35rem;
 }
 
 .ur-buyer-vc-list {
     display: flex;
     flex-direction: column;
-    gap: 0.38rem;
+    gap: 0.22rem;
 }
 
 .ur-buyer-vc-row {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.72rem;
+    gap: 0.35rem;
+    font-size: 0.68rem;
     font-weight: 700;
     color: #1e293b;
 }
 
 .ur-buyer-vc-row i {
     color: #059669;
-    font-size: 0.84rem;
+    font-size: 0.8rem;
     flex-shrink: 0;
 }
 
 .ur-buyer-vc-trust-note {
-    margin-top: 0.65rem;
-    padding-top: 0.5rem;
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
     border-top: 1px solid #f1f5f9;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.68rem;
+    gap: 0.3rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: #047857;
 }
 
 .ur-buyer-vc-trust-note i {
     color: #f59e0b;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
 }
 
 /* ─── 4. BOTTOM HORIZONTAL TRUST ROW (TRANSLUCENT FLOATING BAR) ── */
@@ -1345,41 +1413,41 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.75rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
     background: rgba(255, 255, 255, 0.86);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(167, 243, 208, 0.7);
     border-radius: 9999px;
-    padding: 0.55rem 1.65rem;
-    margin-top: 0.65rem;
-    box-shadow: 0 4px 18px rgba(5, 150, 105, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
-    font-size: 0.76rem;
+    padding: 0.35rem 1.25rem;
+    margin-top: 0.45rem;
+    box-shadow: 0 3px 12px rgba(5, 150, 105, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    font-size: 0.71rem;
     font-weight: 700;
     color: #334155;
     transition: all 0.25s ease;
 }
 
 .ur-hps-trust-bar:hover {
-    box-shadow: 0 6px 22px rgba(5, 150, 105, 0.12);
+    box-shadow: 0 5px 18px rgba(5, 150, 105, 0.1);
     border-color: rgba(16, 185, 129, 0.85);
 }
 
 .ur-hps-tb-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
 }
 
 .ur-hps-tb-item i {
     color: #059669;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
 }
 
 .ur-hps-tb-divider {
-    width: 4px;
-    height: 4px;
+    width: 3.5px;
+    height: 3.5px;
     border-radius: 50%;
     background: #cbd5e1;
 }
@@ -1389,8 +1457,8 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 2.35rem;
-    height: 2.35rem;
+    width: 2.15rem;
+    height: 2.15rem;
     border-radius: 50%;
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -1398,7 +1466,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     cursor: pointer;
     z-index: 20;
     transition: all 0.25s ease;
@@ -1422,7 +1490,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-top: 0.85rem;
+    margin-top: 0.45rem;
     padding: 0 0.5rem;
 }
 
