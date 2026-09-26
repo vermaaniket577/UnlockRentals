@@ -13,10 +13,47 @@
 <script type="application/ld+json">
 {!! $schemas['faqs'] !!}
 </script>
+<style>
+    .ur-seo-landing-section {
+        padding-top: calc(4.25rem + env(safe-area-inset-top, 0px));
+    }
+    @media (min-width: 640px) {
+        .ur-seo-landing-section {
+            padding-top: 5rem;
+        }
+    }
+    @media (min-width: 1024px) {
+        .ur-seo-landing-section {
+            padding-top: 6rem;
+        }
+    }
+    /* Mobile App / Webview with no visible web navbar */
+    .is-mobile-app .ur-seo-landing-section,
+    .no-web-navbar .ur-seo-landing-section {
+        padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
+    }
+    @media (max-width: 640px) {
+        .ur-seo-landing-section {
+            padding-top: calc(3.85rem + env(safe-area-inset-top, 0px));
+        }
+        .is-mobile-app .ur-seo-landing-section,
+        .no-web-navbar .ur-seo-landing-section {
+            padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
+        }
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var nav = document.getElementById('main-nav');
+        if (!nav || window.getComputedStyle(nav).display === 'none' || nav.offsetHeight === 0) {
+            document.documentElement.classList.add('no-web-navbar');
+        }
+    });
+</script>
 @endpush
 
 @section('content')
-<section class="min-h-screen pt-28 pb-32 bg-[#fcfcfd] dark:bg-slate-950 relative overflow-hidden">
+<section class="min-h-screen ur-seo-landing-section pb-16 sm:pb-32 bg-[#fcfcfd] dark:bg-slate-950 relative overflow-hidden">
     {{-- Ambient Background Gradients --}}
     <div class="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-[#2563EB]/5 via-indigo-500/[0.02] to-transparent pointer-events-none"></div>
     <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-[#2563EB]/10 rounded-full blur-[120px] pointer-events-none dark:bg-[#2563EB]/5"></div>
@@ -25,7 +62,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {{-- Breadcrumb Navigation --}}
-        <nav class="flex items-center gap-2.5 text-[10px] font-bold text-zinc-400 dark:text-slate-500 uppercase tracking-widest mb-6">
+        <nav class="flex items-center gap-2.5 text-[10px] font-bold text-zinc-400 dark:text-slate-500 uppercase tracking-widest mb-3 sm:mb-6">
             <a href="{{ url('/') }}" class="hover:text-[#2563EB] dark:hover:text-[#2563EB] transition-colors" title="Home">Home</a>
             <i class="ph-bold ph-caret-right text-[8px]"></i>
             @if(!empty($isNearMe))
@@ -42,13 +79,13 @@
         </nav>
 
         {{-- Hero Header Area --}}
-        <div class="mb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-stone-200/60 dark:border-slate-800/60">
+        <div class="mb-6 sm:mb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 pb-6 sm:pb-8 border-b border-stone-200/60 dark:border-slate-800/60">
             <div class="max-w-4xl">
-                <div class="inline-flex items-center gap-2 px-3 py-1 bg-[#2563EB]/10 text-[#2563EB] text-xs font-bold rounded-full mb-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-[#2563EB]/10 text-[#2563EB] text-xs font-bold rounded-full mb-2.5 sm:mb-4">
                     <span class="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse"></span>
                     Verified Direct Owner Listings · 0% Brokerage
                 </div>
-                <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-slate-100 mb-4 leading-[1.15]">
+                <h1 class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-slate-100 mb-2.5 sm:mb-4 leading-[1.15]">
                     {!! str_replace($typeDisplay, '<span class="text-[#2563EB]">' . $typeDisplay . '</span>', str_replace(' | UnlockRentals', '', $meta_title)) !!}
                 </h1>
                 <p class="text-zinc-500 dark:text-slate-400 text-base md:text-lg font-light leading-relaxed max-w-2xl mb-4">

@@ -13,10 +13,38 @@
 <script type="application/ld+json">
 {!! $schemas['faqs'] !!}
 </script>
+<style>
+    .ur-seo-owner-section {
+        padding-top: calc(4.25rem + env(safe-area-inset-top, 0px));
+    }
+    @media (min-width: 640px) {
+        .ur-seo-owner-section {
+            padding-top: 5rem;
+        }
+    }
+    @media (min-width: 1024px) {
+        .ur-seo-owner-section {
+            padding-top: 6rem;
+        }
+    }
+    .is-mobile-app .ur-seo-owner-section,
+    .no-web-navbar .ur-seo-owner-section {
+        padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
+    }
+    @media (max-width: 640px) {
+        .ur-seo-owner-section {
+            padding-top: calc(3.85rem + env(safe-area-inset-top, 0px));
+        }
+        .is-mobile-app .ur-seo-owner-section,
+        .no-web-navbar .ur-seo-owner-section {
+            padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
+        }
+    }
+</style>
 @endpush
 
 @section('content')
-<div class="min-h-screen pt-24 pb-28 bg-[#fcfcfd] dark:bg-slate-950 relative overflow-hidden">
+<div class="min-h-screen ur-seo-owner-section pb-16 sm:pb-28 bg-[#fcfcfd] dark:bg-slate-950 relative overflow-hidden">
     {{-- Ambient Background Gradients --}}
     <div class="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-blue-600/5 via-indigo-500/[0.02] to-transparent pointer-events-none"></div>
     <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none dark:bg-blue-600/5"></div>
@@ -25,7 +53,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {{-- Breadcrumb Navigation --}}
-        <nav class="flex items-center gap-2.5 text-[10px] font-bold text-zinc-400 dark:text-slate-500 uppercase tracking-widest mb-6">
+        <nav class="flex items-center gap-2.5 text-[10px] font-bold text-zinc-400 dark:text-slate-500 uppercase tracking-widest mb-3 sm:mb-6">
             <a href="{{ url('/') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Home">Home</a>
             <i class="ph-bold ph-caret-right text-[8px]"></i>
             <a href="{{ route('properties.index') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Rentals">Rentals</a>
