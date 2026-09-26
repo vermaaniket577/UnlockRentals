@@ -1548,36 +1548,48 @@
     font-size: 0.85rem;
 }
 
-/* ─── RESPONSIVE BEHAVIOR (MOBILE & TABLET) ──────────────── */
+/* ─── RESPONSIVE BEHAVIOR (MOBILE & TABLET: STANDALONE CARDS) ─── */
 @media (max-width: 1023px) {
     .ur-hero-plans-slider-section {
-        padding: 1.25rem 0 1.5rem;
+        padding: 0.85rem 0 1.25rem;
     }
     .ur-hps-container {
-        padding: 0 0.85rem;
+        padding: 0 0.75rem;
+        max-width: 100%;
     }
+
+    /* Top Quick Switcher & Controls */
     .ur-hps-top-nav {
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.65rem;
         flex-direction: column;
         align-items: stretch;
-        gap: 0.5rem;
+        gap: 0.45rem;
     }
     .ur-hps-top-left {
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
     }
     .ur-hps-top-heading {
         align-self: flex-start;
-        font-size: 0.72rem;
+        font-size: 0.74rem;
+        font-weight: 800;
+        color: #0f172a;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .ur-hps-top-heading i {
+        color: #059669;
+        font-size: 0.88rem;
     }
     .ur-hps-top-right {
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 0.5rem;
+        gap: 0.45rem;
     }
     .ur-hps-tabs-bar {
         flex: 1;
@@ -1586,84 +1598,390 @@
         justify-content: flex-start;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        background: #f1f5f9;
+        padding: 0.2rem;
+        border-radius: 9999px;
+        gap: 0.2rem;
     }
     .ur-hps-tabs-bar::-webkit-scrollbar {
         display: none;
     }
     .ur-hps-tab-btn {
         flex: 0 0 auto;
-        padding: 0.35rem 0.75rem;
-        font-size: 0.76rem;
+        padding: 0.32rem 0.65rem;
+        font-size: 0.74rem;
+        border-radius: 9999px;
+    }
+    .ur-hps-tab-btn.active {
+        background: #ffffff;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
     }
     .ur-hps-nav-arrows {
         flex-shrink: 0;
+        background: #f1f5f9;
+        border-radius: 9999px;
+        padding: 0.15rem;
+        display: inline-flex;
+        gap: 0.15rem;
+    }
+    .ur-hps-arrow-btn {
+        width: 1.85rem;
+        height: 1.85rem;
+        font-size: 1rem;
     }
 
+    /* Slider Stage: Transparent Track Viewport (No outer border/shadow) */
+    .ur-hps-slider-stage {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        overflow: hidden;
+        padding: 0.2rem 0.1rem 0.4rem;
+    }
+
+    /* Standalone Elevated Mobile Plan Card */
     .ur-hps-slide {
-        padding: 1.25rem 1rem;
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        border-radius: 1.35rem; /* 22px modern mobile card */
+        padding: 1.15rem 1rem 1rem;
+        border-width: 1.5px;
+        border-style: solid;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* Naturally Stacked Layout on Mobile as requested */
+    /* Theme Standalone Card Styling on Mobile */
+    .ur-hps-slide--gold {
+        border-color: #fde68a !important;
+        background: radial-gradient(circle at 90% 0%, rgba(254, 243, 199, 0.6) 0%, transparent 60%),
+                    linear-gradient(180deg, #fffdfa 0%, #ffffff 40%, #fffdf4 100%) !important;
+        box-shadow: 0 14px 34px -8px rgba(245, 158, 11, 0.18), 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+    .ur-hps-slide--platinum {
+        border-color: #bfdbfe !important;
+        background: radial-gradient(circle at 90% 0%, rgba(219, 234, 254, 0.6) 0%, transparent 60%),
+                    linear-gradient(180deg, #f8faff 0%, #ffffff 40%, #eff6ff 100%) !important;
+        box-shadow: 0 14px 34px -8px rgba(37, 99, 235, 0.18), 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+    .ur-hps-slide--silver {
+        border-color: #cbd5e1 !important;
+        background: radial-gradient(circle at 90% 0%, rgba(241, 245, 249, 0.7) 0%, transparent 60%),
+                    linear-gradient(180deg, #fafbfc 0%, #ffffff 40%, #f1f5f9 100%) !important;
+        box-shadow: 0 14px 34px -8px rgba(71, 85, 105, 0.14), 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+    .ur-hps-slide--buyer {
+        border-color: #a7f3d0 !important;
+        background: radial-gradient(circle at 90% 0%, rgba(209, 250, 229, 0.6) 0%, transparent 60%),
+                    linear-gradient(180deg, #f8fcf9 0%, #ffffff 40%, #ecfdf5 100%) !important;
+        box-shadow: 0 14px 34px -8px rgba(5, 150, 105, 0.20), 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Unified Mobile Card Layout Flow */
     .ur-hps-desktop-grid {
         display: flex;
         flex-direction: column;
-        gap: 1.15rem;
+        gap: 0;
     }
 
     .ur-hps-col-left {
         padding-right: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ur-hps-plan-badge {
+        align-self: flex-start;
+        font-size: 0.63rem;
+        font-weight: 800;
+        padding: 0.22rem 0.65rem;
+        border-radius: 9999px;
+        margin-bottom: 0.45rem;
+        letter-spacing: 0.03em;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
 
     .ur-hps-slide-title {
-        font-size: 1.45rem; /* ~30-34px on tablet/mobile */
-        line-height: 1.2;
+        font-size: clamp(1.22rem, 4.8vw, 1.45rem);
+        font-weight: 800;
+        line-height: 1.22;
+        margin: 0 0 0.35rem;
+        letter-spacing: -0.02em;
+        color: #0f172a;
     }
 
     .ur-hps-slide-desc {
-        font-size: 0.82rem;
+        font-size: 0.78rem;
+        color: #64748b;
+        line-height: 1.35;
+        margin: 0 0 0.65rem;
+    }
+
+    /* Standard Mobile Visual Photo Banner (Clean & High-Trust) */
+    .ur-hps-col-right {
+        display: block !important;
+        width: 100%;
+        margin: 0.1rem 0 0.7rem;
+    }
+    .ur-hps-photo-card {
+        border-radius: 0.85rem;
+        overflow: hidden;
+        border: 1px solid rgba(226, 232, 240, 0.85);
+        box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+        background: #0f172a;
+        transform: none !important;
+    }
+    .ur-hps-photo-card:hover {
+        transform: none !important;
+    }
+    .ur-hps-pc-photo-wrapper {
+        height: 92px;
+        width: 100%;
+        position: relative;
+    }
+    .ur-hps-pc-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 32%;
+    }
+    .ur-hps-pc-scrim {
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0.65) 100%);
+    }
+    .ur-hps-pc-tag-overlay {
+        bottom: 0.45rem;
+        left: 0.55rem;
+        right: 0.55rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .ur-hps-pc-badge {
+        font-size: 0.58rem;
+        padding: 0.16rem 0.48rem;
+        border-radius: 9999px;
+        font-weight: 800;
+    }
+    .ur-hps-pc-subtag {
+        font-size: 0.56rem;
+        padding: 0.14rem 0.42rem;
+        border-radius: 9999px;
+        font-weight: 700;
+    }
+    .ur-hps-pc-body {
+        display: none !important; /* Hide long perks text on mobile to keep vertical space compact */
+    }
+
+    /* Benefits: 2-Columns Clean Mobile Chips */
+    .ur-hps-features-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.45rem;
         margin-bottom: 0.75rem;
     }
 
-    /* Benefits: 2-columns on standard mobile, 1-col on tiny */
-    .ur-hps-features-grid {
-        gap: 0.5rem;
-    }
-
     .ur-hps-feature-item {
-        padding: 0.55rem 0.65rem;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(226, 232, 240, 0.85);
+        border-radius: 0.75rem;
+        padding: 0.45rem 0.55rem;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
     }
 
     .ur-hps-f-icon-box {
         width: 1.85rem;
         height: 1.85rem;
+        min-width: 1.85rem;
+        border-radius: 0.55rem;
         font-size: 0.95rem;
+    }
+
+    .ur-hps-f-text {
+        min-width: 0;
     }
 
     .ur-hps-f-text h4 {
-        font-size: 0.78rem;
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 0.08rem;
+        line-height: 1.18;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .ur-hps-f-text p {
-        font-size: 0.68rem;
+        font-size: 0.64rem;
+        color: #64748b;
+        line-height: 1.15;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    /* Pricing card full width on mobile */
+    /* Seamlessly Integrated Pricing & Action Module (No ugly double-card) */
+    .ur-hps-col-center {
+        width: 100%;
+    }
+
     .ur-hps-pass-card {
-        padding: 1rem;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-radius: 1rem;
+        padding: 0.85rem 0.85rem 0.75rem;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+        transform: none !important;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .ur-hps-pass-card:hover {
+        transform: none !important;
+    }
+
+    .ur-hps-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.35rem;
+    }
+
+    .ur-hps-brand-tag {
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+    }
+
+    .ur-hps-card-emblem {
+        width: 1.65rem;
+        height: 1.65rem;
+        border-radius: 0.45rem;
+    }
+
+    .ur-hps-price-box {
+        margin-bottom: 0.35rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .ur-hps-price-top {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .ur-hps-price-original {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-decoration: line-through;
+    }
+
+    .ur-hps-save-chip {
+        font-size: 0.58rem;
+        font-weight: 800;
+        padding: 0.08rem 0.36rem;
+        border-radius: 9999px;
+    }
+
+    .ur-hps-price-main {
+        display: flex;
+        align-items: baseline;
+        gap: 0.2rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .ur-hps-currency {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: #0f172a;
     }
 
     .ur-hps-amount {
-        font-size: 2.15rem;
+        font-size: 2.1rem;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1;
+        letter-spacing: -0.035em;
     }
 
+    .ur-hps-period {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #64748b;
+    }
+
+    .ur-hps-price-subtext {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #059669;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.15rem;
+    }
+
+    .ur-hps-card-meta {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 0.65rem;
+        padding: 0.32rem 0.6rem;
+        gap: 0.2rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .ur-hps-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.68rem;
+    }
+
+    .ur-hps-meta-row span.meta-label {
+        font-size: 0.68rem;
+        color: #64748b;
+    }
+
+    .ur-hps-meta-row span.meta-value {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    /* Full-Width Mobile Action Button (Standard 48px Thumb Friendly) */
     .ur-hps-cta-btn {
-        padding: 0.85rem 1rem;
-        font-size: 0.95rem;
+        min-height: 48px;
+        padding: 0.75rem 1rem;
+        font-size: 0.92rem;
+        font-weight: 800;
+        border-radius: 0.75rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        box-sizing: border-box;
+        margin-bottom: 0.15rem;
     }
 
-    /* Hide right visual on mobile to keep page short and fast */
-    .ur-hps-col-right {
-        display: none;
+    .ur-hps-cta-btn:active {
+        transform: scale(0.98);
+    }
+
+    .ur-hps-compare-link {
+        font-size: 0.72rem;
+        padding: 0.3rem 0 0.1rem;
     }
 
     /* Mobile background performance & subtle opacity */
@@ -1680,17 +1998,45 @@
         display: none;
     }
 
+    /* Horizontal Trust Bar (Pill with Verified Proof) */
     .ur-hps-trust-bar {
-        border-radius: 14px;
-        padding: 0.65rem 0.85rem;
-        gap: 0.5rem 0.85rem;
-        margin-top: 0.35rem;
-        font-size: 0.72rem;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 9999px;
+        padding: 0.4rem 0.75rem;
+        margin-top: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 0.4rem;
+        font-size: 0.66rem;
+        font-weight: 700;
+        color: #475569;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+    }
+
+    .ur-hps-tb-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.28rem;
+    }
+
+    .ur-hps-tb-item i {
+        font-size: 0.78rem;
+        color: #059669;
+    }
+
+    .ur-hps-tb-divider {
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: #cbd5e1;
     }
 
     .ur-hps-bottom-bar {
-        margin-top: 0.65rem;
+        margin-top: 0.75rem;
         justify-content: center;
+        gap: 0.85rem;
     }
 
     .ur-hps-swipe-hint {
@@ -1698,7 +2044,34 @@
     }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
+    .ur-hps-container {
+        padding: 0 0.5rem;
+    }
+    .ur-hps-slide {
+        padding: 1rem 0.8rem 0.95rem;
+        border-radius: 1.15rem;
+    }
+    .ur-hps-pass-card {
+        padding: 0.75rem 0.75rem 0.65rem;
+    }
+    .ur-hps-amount {
+        font-size: clamp(1.85rem, 6.8vw, 2.1rem);
+    }
+    .ur-hps-cta-btn {
+        font-size: 0.88rem;
+    }
+    .ur-hps-trust-bar {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.63rem;
+        gap: 0.25rem;
+    }
+    .ur-hps-tb-divider {
+        display: none;
+    }
+}
+
+@media (max-width: 360px) {
     .ur-hps-features-grid {
         grid-template-columns: 1fr;
     }
