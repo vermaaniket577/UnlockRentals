@@ -88,17 +88,16 @@
         $allBuyPlans = collect([
             (object)[
                 'id' => 4,
-                'name' => 'Gold Buyer Pass',
-                'description' => 'Most popular pass for active property buyers looking for direct seller deals without paying 1-2% brokerage.',
-                'price' => 999.00,
-                'duration_days' => 150,
-                'contact_limit' => 75,
+                'name' => 'Direct Buyer Pass',
+                'description' => 'Buying a flat, villa, or commercial space? Skip the 1% to 2% property broker commission and negotiate directly with verified sellers.',
+                'price' => 50000.00,
+                'duration_days' => 60,
+                'contact_limit' => 30,
                 'features' => [
-                    '75 Verified Seller Direct Contacts',
-                    'Direct WhatsApp & Phone Unlock',
-                    'Zero Brokerage Guaranteed (Save ₹1,00,000+)',
-                    '150 Days Priority Buyer Access',
-                    'Direct Property Document Assistance'
+                    '30 Verified Direct Sellers',
+                    'Save ₹1 Lakh to ₹5 Lakhs Brokerage',
+                    '60 Days Buyer Validity',
+                    'Title & Visit Assistance'
                 ],
                 'image_path' => null,
             ],
@@ -234,6 +233,13 @@
     ]);
 
     if ($buyerPlan) {
+        $buyerPrice = (float) (($buyerPlan->price && $buyerPlan->price >= 5000) ? $buyerPlan->price : 50000.00);
+        $buyerDays = (int) (($buyerPlan->duration_days && $buyerPlan->duration_days <= 90) ? $buyerPlan->duration_days : 60);
+        $buyerContacts = (int) (($buyerPlan->contact_limit && $buyerPlan->contact_limit <= 50) ? $buyerPlan->contact_limit : 30);
+        $buyerOriginalPrice = round($buyerPrice * 3);
+        $buyerSavingsPct = 67;
+        $buyerPerDay = round($buyerPrice / max(1, $buyerDays), 1);
+
         $heroSlides->push([
             'plan' => $buyerPlan,
             'type' => 'buy',
@@ -246,19 +252,19 @@
             'title_highlight' => 'Direct Buyer Pass',
             'title_suffix' => '',
             'tagline' => 'Buying a flat, villa, or commercial space? Skip the 1% to 2% property broker commission and negotiate directly with verified sellers.',
-            'original_price' => round((float) ($buyerPlan->price ?? 999) * 3),
-            'price' => (float) ($buyerPlan->price ?? 999),
-            'savings_pct' => 67,
-            'per_day' => round(((float) ($buyerPlan->price ?? 999)) / max(1, (int) ($buyerPlan->duration_days ?? 150)), 1),
+            'original_price' => $buyerOriginalPrice,
+            'price' => $buyerPrice,
+            'savings_pct' => $buyerSavingsPct,
+            'per_day' => $buyerPerDay,
             'highlights' => [
-                ['icon' => 'ph-house-line', 'title' => ($buyerPlan->contact_limit ?? 75) . ' Verified Direct Sellers', 'desc' => 'Direct owners & builder representatives'],
+                ['icon' => 'ph-house-line', 'title' => $buyerContacts . ' Verified Direct Sellers', 'desc' => 'Direct owners & builder representatives'],
                 ['icon' => 'ph-money', 'title' => 'Save ₹1 Lakh to ₹5 Lakhs', 'desc' => 'Zero broker commission on buy transactions'],
-                ['icon' => 'ph-calendar-check', 'title' => ($buyerPlan->duration_days ?? 150) . ' Days Buyer Validity', 'desc' => 'Extended window to evaluate deals'],
+                ['icon' => 'ph-calendar-check', 'title' => $buyerDays . ' Days Buyer Validity', 'desc' => 'Extended window to evaluate deals'],
                 ['icon' => 'ph-file-text', 'title' => 'Title & Visit Assistance', 'desc' => 'Direct owner negotiation pass'],
             ],
             'specs' => [
-                ['label' => 'Direct Seller Contacts', 'value' => ($buyerPlan->contact_limit ?? 75) . ' Direct Unlocks'],
-                ['label' => 'Access Duration', 'value' => ($buyerPlan->duration_days ?? 150) . ' Full Days'],
+                ['label' => 'Direct Seller Contacts', 'value' => $buyerContacts . ' Direct Unlocks'],
+                ['label' => 'Access Duration', 'value' => $buyerDays . ' Full Days'],
                 ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
             ],
             'visual' => [
@@ -270,6 +276,7 @@
                     'Save 1% to 2% Brokerage Fee',
                     'Title Document Checklist',
                 ],
+                'image' => asset('images/buyer_pass/buyer_villa_card.webp'),
             ],
         ]);
     }
@@ -497,9 +504,137 @@
     background: radial-gradient(ellipse at 85% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%),
                 linear-gradient(135deg, #ffffff 0%, #fbfcfd 50%, #f1f5f9 100%);
 }
+/* ─── BUYER PASS SLIDE: 5-LAYER REAL ESTATE COMPOSITION ─────── */
 .ur-hps-slide--buyer {
-    background: radial-gradient(ellipse at 85% 30%, rgba(16, 185, 129, 0.06) 0%, transparent 60%),
-                linear-gradient(135deg, #ffffff 0%, #f7fef9 50%, #ecfdf5 100%);
+    position: relative;
+    background: linear-gradient(135deg, #f8fcf9 0%, #ffffff 40%, #ecfdf5 100%);
+    overflow: hidden;
+}
+
+/* Background Layers Wrap (Layer 1-4) */
+.ur-buyer-bg-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+/* Layer 2: Cityscape & Residential Apartment Towers */
+.ur-buyer-bg-skyline {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    background-image: url('/images/buyer_pass/buyer_skyline_bg.webp');
+    background-size: cover;
+    background-position: left center;
+    opacity: 0.13; /* Subtle 8-18% range */
+    filter: blur(2px);
+    transform-origin: center center;
+    animation: urKenBurnsSkyline 22s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+/* Layer 3: Subtle Luxury Villa Image */
+.ur-buyer-bg-villa {
+    position: absolute;
+    top: -5%;
+    right: -5%;
+    width: 65%;
+    height: 110%;
+    background-image: url('/images/buyer_pass/buyer_villa_bg.webp');
+    background-size: cover;
+    background-position: right center;
+    opacity: 0.12; /* Subtle 8-18% range */
+    filter: blur(1.5px);
+    mask-image: radial-gradient(ellipse at 75% 50%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0) 80%);
+    -webkit-mask-image: radial-gradient(ellipse at 75% 50%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0) 80%);
+    transform-origin: 75% center;
+    animation: urKenBurnsVilla 18s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+/* Layer 4: Translucent White & Emerald Gradient Overlay for 100% Readability */
+.ur-buyer-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(ellipse at 25% 45%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.88) 60%, rgba(240, 253, 244, 0.8) 100%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 45%, rgba(236, 253, 245, 0.82) 100%);
+}
+
+/* Architectural CAD Line Grid */
+.ur-buyer-bg-blueprint {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(5, 150, 105, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(5, 150, 105, 0.035) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7) 0%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7) 0%, transparent 80%);
+}
+
+/* Floating subtle micro-icons */
+.ur-buyer-floating-accent {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #059669;
+    pointer-events: none;
+    opacity: 0.16;
+}
+.ur-buyer-floating-accent--1 {
+    top: 7%;
+    right: 28%;
+    font-size: 1.5rem;
+    animation: urFloatSlow 7s ease-in-out infinite alternate;
+}
+.ur-buyer-floating-accent--2 {
+    bottom: 12%;
+    left: 3%;
+    font-size: 1.35rem;
+    animation: urFloatSlow 9s ease-in-out 1.2s infinite alternate-reverse;
+}
+
+/* Ken Burns Subtle Background Movement */
+@keyframes urKenBurnsSkyline {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+    100% {
+        transform: scale(1.05) translate(-1.2%, -0.8%);
+    }
+}
+
+@keyframes urKenBurnsVilla {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+    100% {
+        transform: scale(1.06) translate(1%, 0.6%);
+    }
+}
+
+@keyframes urFloatSlow {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-8px) rotate(4deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ur-buyer-bg-skyline,
+    .ur-buyer-bg-villa,
+    .ur-buyer-floating-accent {
+        animation: none !important;
+        transform: none !important;
+    }
 }
 
 /* ─── 3-PART HORIZONTAL DESKTOP GRID ─────────────────────── */
@@ -658,10 +793,25 @@
     color: #475569;
     border: 1px solid #e2e8f0;
 }
+.ur-hps-feature-item--buyer {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(167, 243, 208, 0.85);
+    border-radius: 20px; /* 18-24px per prompt */
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.05);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ur-hps-feature-item--buyer:hover {
+    border-color: #10b981;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(5, 150, 105, 0.13);
+}
 .ur-hps-feature-item--buyer .ur-hps-f-icon-box {
     background: #ecfdf5;
     color: #059669;
     border: 1px solid #d1fae5;
+    border-radius: 12px;
 }
 
 .ur-hps-f-text h4 {
@@ -721,8 +871,24 @@
     box-shadow: 0 12px 32px -6px rgba(71, 85, 105, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 .ur-hps-pass-card--buyer {
-    border-color: #a7f3d0;
-    box-shadow: 0 12px 32px -6px rgba(16, 185, 129, 0.18), 0 2px 6px rgba(0, 0, 0, 0.03);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1.5px solid #10b981;
+    border-radius: 22px;
+    box-shadow: 
+        0 20px 45px -10px rgba(5, 150, 105, 0.22),
+        0 0 0 1px rgba(245, 158, 11, 0.16),
+        0 4px 14px rgba(15, 23, 42, 0.04);
+    position: relative;
+    z-index: 10;
+}
+.ur-hps-pass-card--buyer:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+        0 26px 52px -10px rgba(5, 150, 105, 0.28),
+        0 0 0 1.5px rgba(16, 185, 129, 0.45),
+        0 8px 22px rgba(15, 23, 42, 0.06);
 }
 
 /* Card Header with Emblem */
@@ -934,11 +1100,35 @@
 .ur-hps-cta-btn--buyer {
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     color: #ffffff !important;
-    box-shadow: 0 8px 22px rgba(5, 150, 105, 0.35);
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.38), 0 2px 4px rgba(4, 120, 87, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+.ur-hps-cta-btn--buyer::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        60deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transform: rotate(30deg) translateX(-100%);
+    transition: transform 0.75s ease;
+}
+.ur-hps-cta-btn--buyer:hover::after {
+    transform: rotate(30deg) translateX(100%);
 }
 .ur-hps-cta-btn--buyer:hover {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.48), 0 4px 8px rgba(4, 120, 87, 0.25);
     transform: translateY(-2px);
+    color: #ffffff !important;
 }
 
 /* Compact Scroll Down Link */
@@ -1000,36 +1190,65 @@
     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.08);
 }
 
-.ur-hps-vc-glow {
-    position: absolute;
-    width: 150px;
-    height: 150px;
-    background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
-    top: -40px;
-    right: -40px;
-    pointer-events: none;
-}
-
-.ur-hps-vc-illustration {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.65rem;
-}
-
-.ur-hps-house-svg {
+/* ─── PREMIUM PHOTOREALISTIC BUYER VISUAL CARD ──────────────── */
+.ur-buyer-visual-card {
+    position: relative;
     width: 100%;
-    max-width: 150px;
-    height: auto;
-    filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.06));
-}
-
-.ur-hps-vc-content {
+    background: #ffffff;
+    border: 1.5px solid rgba(167, 243, 208, 0.85);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 14px 34px -8px rgba(5, 150, 105, 0.16), 0 2px 6px rgba(15, 23, 42, 0.03);
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
 }
 
-.ur-hps-vc-badge {
+.ur-buyer-visual-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 42px -8px rgba(5, 150, 105, 0.24);
+}
+
+.ur-buyer-vc-photo-wrapper {
+    position: relative;
+    width: 100%;
+    height: 136px;
+    overflow: hidden;
+    background: #0f172a;
+}
+
+.ur-buyer-vc-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 32%;
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    display: block;
+}
+
+.ur-buyer-visual-card:hover .ur-buyer-vc-photo {
+    transform: scale(1.06);
+}
+
+.ur-buyer-vc-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0.68) 100%);
+}
+
+.ur-buyer-vc-tag-overlay {
+    position: absolute;
+    bottom: 0.6rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 2;
+}
+
+.ur-buyer-vc-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -1037,53 +1256,90 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 0.2rem 0.55rem;
+    padding: 0.24rem 0.6rem;
     border-radius: 9999px;
-    background: #fef3c7;
+    background: rgba(254, 243, 199, 0.96);
     color: #b45309;
     border: 1px solid #fde68a;
-    width: fit-content;
-    margin-bottom: 0.35rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(4px);
 }
 
-.ur-hps-vc-title {
-    font-size: 0.84rem;
+.ur-buyer-vc-subtag {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: rgba(5, 150, 105, 0.92);
+    padding: 0.18rem 0.55rem;
+    border-radius: 9999px;
+    backdrop-filter: blur(4px);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+}
+
+.ur-buyer-vc-body {
+    padding: 0.85rem 1rem 0.95rem;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #ffffff 0%, #f7fdf9 100%);
+}
+
+.ur-buyer-vc-title {
+    font-size: 0.88rem;
     font-weight: 900;
     color: #0f172a;
-    margin: 0 0 0.15rem;
-    letter-spacing: -0.01em;
+    margin: 0 0 0.18rem;
+    letter-spacing: -0.015em;
 }
 
-.ur-hps-vc-sub {
-    font-size: 0.7rem;
+.ur-buyer-vc-sub {
+    font-size: 0.71rem;
     color: #64748b;
-    line-height: 1.3;
+    line-height: 1.35;
     margin: 0 0 0.65rem;
 }
 
-.ur-hps-vc-list {
+.ur-buyer-vc-list {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.38rem;
 }
 
-.ur-hps-vc-row {
+.ur-buyer-vc-row {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
     font-size: 0.72rem;
     font-weight: 700;
-    color: #334155;
+    color: #1e293b;
 }
 
-.ur-hps-vc-row i {
+.ur-buyer-vc-row i {
     color: #059669;
-    font-size: 0.8rem;
+    font-size: 0.84rem;
     flex-shrink: 0;
 }
 
-/* ─── 4. BOTTOM HORIZONTAL TRUST ROW ─────────────────────── */
-/* Single compact row placed underneath the 3 columns */
+.ur-buyer-vc-trust-note {
+    margin-top: 0.65rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #047857;
+}
+
+.ur-buyer-vc-trust-note i {
+    color: #f59e0b;
+    font-size: 0.75rem;
+}
+
+/* ─── 4. BOTTOM HORIZONTAL TRUST ROW (TRANSLUCENT FLOATING BAR) ── */
 .ur-hps-trust-bar {
     grid-column: 1 / -1;
     display: flex;
@@ -1091,12 +1347,23 @@
     justify-content: center;
     gap: 1.75rem;
     flex-wrap: wrap;
-    border-top: 1px solid #f1f5f9;
-    padding-top: 0.75rem;
-    margin-top: 0.4rem;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(167, 243, 208, 0.7);
+    border-radius: 9999px;
+    padding: 0.55rem 1.65rem;
+    margin-top: 0.65rem;
+    box-shadow: 0 4px 18px rgba(5, 150, 105, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
     font-size: 0.76rem;
     font-weight: 700;
-    color: #475569;
+    color: #334155;
+    transition: all 0.25s ease;
+}
+
+.ur-hps-trust-bar:hover {
+    box-shadow: 0 6px 22px rgba(5, 150, 105, 0.12);
+    border-color: rgba(16, 185, 129, 0.85);
 }
 
 .ur-hps-tb-item {
@@ -1306,10 +1573,25 @@
         display: none;
     }
 
+    /* Mobile background performance & subtle opacity */
+    .ur-buyer-bg-villa {
+        display: none;
+    }
+    .ur-buyer-bg-skyline {
+        opacity: 0.08;
+        filter: blur(1.5px);
+        animation: none;
+    }
+    .ur-buyer-bg-blueprint,
+    .ur-buyer-floating-accent {
+        display: none;
+    }
+
     .ur-hps-trust-bar {
-        gap: 0.85rem;
-        padding-top: 0.65rem;
-        margin-top: 0.25rem;
+        border-radius: 14px;
+        padding: 0.65rem 0.85rem;
+        gap: 0.5rem 0.85rem;
+        margin-top: 0.35rem;
         font-size: 0.72rem;
     }
 
@@ -1388,6 +1670,22 @@
                     @endphp
 
                     <div class="ur-hps-slide ur-hps-slide--{{ $s['theme'] }}" data-slide-index="{{ $idx }}" data-theme="{{ $s['theme'] }}">
+                        @if($s['theme'] === 'buyer')
+                            {{-- Layered Photorealistic Background Elements --}}
+                            <div class="ur-buyer-bg-wrap" aria-hidden="true">
+                                <div class="ur-buyer-bg-skyline"></div>
+                                <div class="ur-buyer-bg-villa"></div>
+                                <div class="ur-buyer-bg-overlay"></div>
+                                <div class="ur-buyer-bg-blueprint"></div>
+                                <div class="ur-buyer-floating-accent ur-buyer-floating-accent--1">
+                                    <i class="ph-bold ph-key"></i>
+                                </div>
+                                <div class="ur-buyer-floating-accent ur-buyer-floating-accent--2">
+                                    <i class="ph-bold ph-house-line"></i>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="ur-hps-desktop-grid">
                             
                             {{-- PART 1: LEFT COLUMN (Value Proposition & Benefits 2x2) --}}
@@ -1551,75 +1849,113 @@
 
                             {{-- PART 3: RIGHT COLUMN (Subtle Premium Verified-Owner Visual Element) --}}
                             <div class="ur-hps-col-right">
-                                <div class="ur-hps-visual-card ur-hps-visual-card--{{ $s['theme'] }}">
-                                    <div class="ur-hps-vc-glow"></div>
-                                    
-                                    {{-- Architectural SVG House / Shield Illustration --}}
-                                    <div class="ur-hps-vc-illustration">
-                                        <svg viewBox="0 0 160 110" fill="none" class="ur-hps-house-svg">
-                                            <defs>
-                                                <linearGradient id="roofGrad_{{ $planUid }}" x1="20" y1="20" x2="140" y2="70" gradientUnits="userSpaceOnUse">
-                                                    @if($s['theme'] === 'gold')
-                                                        <stop offset="0%" stop-color="#F59E0B"/>
-                                                        <stop offset="100%" stop-color="#D97706"/>
-                                                    @elseif($s['theme'] === 'platinum')
-                                                        <stop offset="0%" stop-color="#60A5FA"/>
-                                                        <stop offset="100%" stop-color="#2563EB"/>
-                                                    @elseif($s['theme'] === 'buyer')
-                                                        <stop offset="0%" stop-color="#34D399"/>
-                                                        <stop offset="100%" stop-color="#059669"/>
-                                                    @else
-                                                        <stop offset="0%" stop-color="#94A3B8"/>
-                                                        <stop offset="100%" stop-color="#475569"/>
-                                                    @endif
-                                                </linearGradient>
-                                                <linearGradient id="wallGrad_{{ $planUid }}" x1="30" y1="50" x2="130" y2="105" gradientUnits="userSpaceOnUse">
-                                                    <stop offset="0%" stop-color="#FFFFFF"/>
-                                                    <stop offset="100%" stop-color="#F8FAFC"/>
-                                                </linearGradient>
-                                            </defs>
-                                            {{-- Ground Shadow --}}
-                                            <ellipse cx="80" cy="100" rx="65" ry="6" fill="#E2E8F0" fill-opacity="0.6"/>
-                                            {{-- House Body --}}
-                                            <path d="M32 52L80 18L128 52V98C128 100 126.5 101.5 124.5 101.5H35.5C33.5 101.5 32 100 32 98V52Z" fill="url(#wallGrad_{{ $planUid }})" stroke="#CBD5E1" stroke-width="1.4"/>
-                                            {{-- Roof Eaves --}}
-                                            <path d="M24 55L80 15L136 55" stroke="url(#roofGrad_{{ $planUid }})" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            {{-- Modern Large Glass Window with Reflection --}}
-                                            <rect x="44" y="58" width="28" height="22" rx="2.5" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.2"/>
-                                            <line x1="58" y1="58" x2="58" y2="80" stroke="#BFDBFE" stroke-width="1.2"/>
-                                            <line x1="44" y1="69" x2="72" y2="69" stroke="#BFDBFE" stroke-width="1.2"/>
-                                            {{-- Front Door --}}
-                                            <rect x="86" y="56" width="26" height="45" rx="2" fill="#1E293B"/>
-                                            <circle cx="106" cy="80" r="1.8" fill="#F59E0B"/>
-                                            {{-- Floating Verified Badge --}}
-                                            <g transform="translate(104, 10)">
-                                                <circle cx="18" cy="18" r="16" fill="#FFFFFF" filter="drop-shadow(0 2px 5px rgba(15,23,42,0.12))"/>
-                                                <circle cx="18" cy="18" r="13.5" fill="#10B981"/>
-                                                <path d="M13.5 18L16.5 21L23 14.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </g>
-                                        </svg>
-                                    </div>
-
-                                    {{-- Secondary Trust Content --}}
-                                    <div class="ur-hps-vc-content">
-                                        <div class="ur-hps-vc-badge">
-                                            <i class="ph-fill ph-seal-check"></i>
-                                            <span>{{ $s['visual']['tag'] }}</span>
+                                @if($s['theme'] === 'buyer')
+                                    {{-- High-End Photorealistic Real Estate Visual Panel for Direct Buyer Pass --}}
+                                    <div class="ur-buyer-visual-card">
+                                        <div class="ur-buyer-vc-photo-wrapper">
+                                            <img src="{{ asset('images/buyer_pass/buyer_villa_card.webp') }}" 
+                                                 alt="Luxury Modern Real Estate Indian Villa" 
+                                                 class="ur-buyer-vc-photo" 
+                                                 loading="lazy" 
+                                                 decoding="async"
+                                                 width="400" 
+                                                 height="250">
+                                            <div class="ur-buyer-vc-scrim"></div>
+                                            <div class="ur-buyer-vc-tag-overlay">
+                                                <span class="ur-buyer-vc-badge">
+                                                    <i class="ph-fill ph-seal-check"></i>
+                                                    <span>{{ $s['visual']['tag'] }}</span>
+                                                </span>
+                                                <span class="ur-buyer-vc-subtag">
+                                                    <i class="ph-bold ph-shield-check"></i> 100% Genuine
+                                                </span>
+                                            </div>
                                         </div>
-
-                                        <h5 class="ur-hps-vc-title">{{ $s['visual']['title'] }}</h5>
-                                        <p class="ur-hps-vc-sub">{{ $s['visual']['sub'] }}</p>
-
-                                        <div class="ur-hps-vc-list">
-                                            @foreach($s['visual']['perks'] as $perk)
-                                                <div class="ur-hps-vc-row">
-                                                    <i class="ph-bold ph-check"></i>
-                                                    <span>{{ $perk }}</span>
-                                                </div>
-                                            @endforeach
+                                        <div class="ur-buyer-vc-body">
+                                            <h5 class="ur-buyer-vc-title">{{ $s['visual']['title'] }}</h5>
+                                            <p class="ur-buyer-vc-sub">{{ $s['visual']['sub'] }}</p>
+                                            <div class="ur-buyer-vc-list">
+                                                @foreach($s['visual']['perks'] as $perk)
+                                                    <div class="ur-buyer-vc-row">
+                                                        <i class="ph-bold ph-check"></i>
+                                                        <span>{{ $perk }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            <div class="ur-buyer-vc-trust-note">
+                                                <i class="ph-fill ph-sparkle"></i>
+                                                <span>Direct Seller Negotiation · ₹0 Middleman</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                @else
+                                    <div class="ur-hps-visual-card ur-hps-visual-card--{{ $s['theme'] }}">
+                                        <div class="ur-hps-vc-glow"></div>
+                                        
+                                        {{-- Architectural SVG House / Shield Illustration --}}
+                                        <div class="ur-hps-vc-illustration">
+                                            <svg viewBox="0 0 160 110" fill="none" class="ur-hps-house-svg">
+                                                <defs>
+                                                    <linearGradient id="roofGrad_{{ $planUid }}" x1="20" y1="20" x2="140" y2="70" gradientUnits="userSpaceOnUse">
+                                                        @if($s['theme'] === 'gold')
+                                                            <stop offset="0%" stop-color="#F59E0B"/>
+                                                            <stop offset="100%" stop-color="#D97706"/>
+                                                        @elseif($s['theme'] === 'platinum')
+                                                            <stop offset="0%" stop-color="#60A5FA"/>
+                                                            <stop offset="100%" stop-color="#2563EB"/>
+                                                        @else
+                                                            <stop offset="0%" stop-color="#94A3B8"/>
+                                                            <stop offset="100%" stop-color="#475569"/>
+                                                        @endif
+                                                    </linearGradient>
+                                                    <linearGradient id="wallGrad_{{ $planUid }}" x1="30" y1="50" x2="130" y2="105" gradientUnits="userSpaceOnUse">
+                                                        <stop offset="0%" stop-color="#FFFFFF"/>
+                                                        <stop offset="100%" stop-color="#F8FAFC"/>
+                                                    </linearGradient>
+                                                </defs>
+                                                {{-- Ground Shadow --}}
+                                                <ellipse cx="80" cy="100" rx="65" ry="6" fill="#E2E8F0" fill-opacity="0.6"/>
+                                                {{-- House Body --}}
+                                                <path d="M32 52L80 18L128 52V98C128 100 126.5 101.5 124.5 101.5H35.5C33.5 101.5 32 100 32 98V52Z" fill="url(#wallGrad_{{ $planUid }})" stroke="#CBD5E1" stroke-width="1.4"/>
+                                                {{-- Roof Eaves --}}
+                                                <path d="M24 55L80 15L136 55" stroke="url(#roofGrad_{{ $planUid }})" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                {{-- Modern Large Glass Window with Reflection --}}
+                                                <rect x="44" y="58" width="28" height="22" rx="2.5" fill="#EFF6FF" stroke="#93C5FD" stroke-width="1.2"/>
+                                                <line x1="58" y1="58" x2="58" y2="80" stroke="#BFDBFE" stroke-width="1.2"/>
+                                                <line x1="44" y1="69" x2="72" y2="69" stroke="#BFDBFE" stroke-width="1.2"/>
+                                                {{-- Front Door --}}
+                                                <rect x="86" y="56" width="26" height="45" rx="2" fill="#1E293B"/>
+                                                <circle cx="106" cy="80" r="1.8" fill="#F59E0B"/>
+                                                {{-- Floating Verified Badge --}}
+                                                <g transform="translate(104, 10)">
+                                                    <circle cx="18" cy="18" r="16" fill="#FFFFFF" filter="drop-shadow(0 2px 5px rgba(15,23,42,0.12))"/>
+                                                    <circle cx="18" cy="18" r="13.5" fill="#10B981"/>
+                                                    <path d="M13.5 18L16.5 21L23 14.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+
+                                        {{-- Secondary Trust Content --}}
+                                        <div class="ur-hps-vc-content">
+                                            <div class="ur-hps-vc-badge">
+                                                <i class="ph-fill ph-seal-check"></i>
+                                                <span>{{ $s['visual']['tag'] }}</span>
+                                            </div>
+
+                                            <h5 class="ur-hps-vc-title">{{ $s['visual']['title'] }}</h5>
+                                            <p class="ur-hps-vc-sub">{{ $s['visual']['sub'] }}</p>
+
+                                            <div class="ur-hps-vc-list">
+                                                @foreach($s['visual']['perks'] as $perk)
+                                                    <div class="ur-hps-vc-row">
+                                                        <i class="ph-bold ph-check"></i>
+                                                        <span>{{ $perk }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
                             {{-- PART 4: HORIZONTAL TRUST ROW (Spans full width underneath) --}}
@@ -1723,13 +2059,30 @@
             track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
             // Update dots
+            const curSlide = slides[currentIndex];
+            const activeTheme = curSlide ? (curSlide.getAttribute('data-theme') || 'gold') : 'gold';
             dots.forEach((dot, i) => {
                 if (i === currentIndex) {
                     dot.classList.add('active');
                     dot.setAttribute('aria-current', 'true');
+                    if (activeTheme === 'buyer') {
+                        dot.style.background = '#059669';
+                        dot.style.boxShadow = '0 2px 8px rgba(5, 150, 105, 0.4)';
+                    } else if (activeTheme === 'platinum') {
+                        dot.style.background = '#2563eb';
+                        dot.style.boxShadow = '0 2px 8px rgba(37, 99, 235, 0.4)';
+                    } else if (activeTheme === 'silver') {
+                        dot.style.background = '#475569';
+                        dot.style.boxShadow = '0 2px 8px rgba(71, 85, 105, 0.35)';
+                    } else {
+                        dot.style.background = '#f59e0b';
+                        dot.style.boxShadow = '0 2px 8px rgba(245, 158, 11, 0.4)';
+                    }
                 } else {
                     dot.classList.remove('active');
                     dot.removeAttribute('aria-current');
+                    dot.style.background = '#cbd5e1';
+                    dot.style.boxShadow = 'none';
                 }
             });
 
@@ -1881,8 +2234,20 @@
             startAutoPlay();
         }
 
-        // Initialize state
-        goToSlide(0);
+        // Initialize state (supports ?tab=buyer, ?type=buy, or #buyer-pass to show buyer slide directly)
+        let initialIndex = 0;
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hash = window.location.hash.toLowerCase();
+            if (urlParams.get('tab') === 'buyer' || urlParams.get('plan') === 'buyer' || urlParams.get('type') === 'buy' || hash === '#buyer-pass' || hash === '#buyer' || hash === '#direct-buyer-pass') {
+                const buyerIdx = Array.from(slides).findIndex(s => s.getAttribute('data-theme') === 'buyer');
+                if (buyerIdx >= 0) {
+                    initialIndex = buyerIdx;
+                }
+            }
+        } catch (e) {}
+
+        goToSlide(initialIndex);
     }
 
     if (document.readyState === 'loading') {
