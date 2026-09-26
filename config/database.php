@@ -62,8 +62,9 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 \PDO::ATTR_PERSISTENT => false,
                 \PDO::ATTR_TIMEOUT => 5,
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET SESSION wait_timeout=30, SESSION interactive_timeout=30',
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            ], fn ($v) => $v !== null && $v !== '') : [],
         ],
 
         'mariadb' => [
@@ -82,8 +83,11 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
+                \PDO::ATTR_PERSISTENT => false,
+                \PDO::ATTR_TIMEOUT => 5,
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET SESSION wait_timeout=30, SESSION interactive_timeout=30',
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            ], fn ($v) => $v !== null && $v !== '') : [],
         ],
 
         'pgsql' => [
