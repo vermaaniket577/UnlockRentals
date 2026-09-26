@@ -115,6 +115,33 @@
     $platRent = $platRent ?? $allRentPlans->skip(2)->first() ?? $allRentPlans->first();
     $silverRent = $silverRent ?? $allRentPlans->first();
 
+    // Smart image URL resolver that supports local subfolder paths, asset(), and reliable CDN fallback
+    $resolveHeroPassImg = function($localPath, $cdnFallback) {
+        $base = request()->getBasePath();
+        $primary = $base ? ($base . '/' . ltrim($localPath, '/')) : asset($localPath);
+        return [
+            'primary' => $primary,
+            'fallback' => $cdnFallback,
+        ];
+    };
+
+    $goldImg = $resolveHeroPassImg(
+        'images/buyer_pass/gold_apartment_card.webp',
+        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80'
+    );
+    $platImg = $resolveHeroPassImg(
+        'images/buyer_pass/platinum_luxury_card.webp',
+        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'
+    );
+    $silverImg = $resolveHeroPassImg(
+        'images/buyer_pass/silver_studio_card.webp',
+        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80'
+    );
+    $buyerImg = $resolveHeroPassImg(
+        'images/buyer_pass/buyer_villa_card.webp',
+        'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80'
+    );
+
     $heroSlides = collect([
         [
             'plan' => $goldRent,
@@ -153,7 +180,8 @@
                     'Save ₹15,000 to ₹35,000 Fees',
                 ],
                 'trust_note' => 'Direct Landlords Only · ₹0 Commission',
-                'image' => asset('images/buyer_pass/gold_apartment_card.webp'),
+                'image' => $goldImg['primary'],
+                'fallback' => $goldImg['fallback'],
             ],
         ],
         [
@@ -193,7 +221,8 @@
                     'Free Rental Agreement Draft',
                 ],
                 'trust_note' => 'Dedicated Concierge · ₹0 Brokerage',
-                'image' => asset('images/buyer_pass/platinum_luxury_card.webp'),
+                'image' => $platImg['primary'],
+                'fallback' => $platImg['fallback'],
             ],
         ],
         [
@@ -233,7 +262,8 @@
                     'Standard Online Support',
                 ],
                 'trust_note' => 'Verified Direct Listings · Fast Connect',
-                'image' => asset('images/buyer_pass/silver_studio_card.webp'),
+                'image' => $silverImg['primary'],
+                'fallback' => $silverImg['fallback'],
             ],
         ],
     ]);
@@ -283,7 +313,8 @@
                     'Title Document Checklist',
                 ],
                 'trust_note' => 'Direct Seller Negotiation · ₹0 Middleman',
-                'image' => asset('images/buyer_pass/buyer_villa_card.webp'),
+                'image' => $buyerImg['primary'],
+                'fallback' => $buyerImg['fallback'],
             ],
         ]);
     }
@@ -1926,7 +1957,8 @@
                                              loading="lazy" 
                                              decoding="async"
                                              width="400" 
-                                             height="250">
+                                             height="250"
+                                             onerror="if(!this.dataset.triedFallback){ this.dataset.triedFallback='1'; this.src='{{ $s['visual']['fallback'] ?? '' }}'; }">
                                         <div class="ur-hps-pc-scrim"></div>
                                         <div class="ur-hps-pc-tag-overlay">
                                             <span class="ur-hps-pc-badge ur-hps-pc-badge--{{ $s['theme'] }}">
