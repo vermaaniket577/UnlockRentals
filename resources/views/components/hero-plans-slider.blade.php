@@ -1071,38 +1071,29 @@
 /* ─── RESPONSIVE BEHAVIOR (MOBILE 16:9 SHORT CARD FORMAT) ──────────── */
 @media (max-width: 1023px) {
     .ur-hero-plans-slider-section {
-        padding: 1.5rem 0 2rem;
+        padding: 0.65rem 0 0.85rem;
     }
     .ur-hps-container {
-        padding: 0 0.85rem;
+        padding: 0 0.75rem;
     }
     .ur-hps-header {
-        margin: 0 auto 1rem;
+        margin: 0 auto 0.35rem;
     }
     .ur-hps-eyebrow {
-        font-size: 0.68rem;
-        padding: 0.25rem 0.75rem;
-        margin-bottom: 0.5rem;
+        display: none;
     }
     .ur-hps-title {
-        font-size: 1.35rem;
-        margin: 0 0 0.35rem;
-        line-height: 1.25;
+        font-size: 1.05rem;
+        margin: 0 0 0.15rem;
+        line-height: 1.2;
     }
     .ur-hps-subtitle {
-        font-size: 0.8rem;
-        line-height: 1.35;
-        max-width: 90%;
-        margin: 0 auto;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        display: none;
     }
     .ur-hps-tabs-bar {
         width: 100%;
-        margin-bottom: 0.85rem;
-        padding: 0.25rem;
+        margin-bottom: 0.4rem;
+        padding: 0.2rem;
         overflow-x: auto;
         flex-wrap: nowrap;
         justify-content: flex-start;
@@ -1114,9 +1105,10 @@
     }
     .ur-hps-tab-btn {
         flex: 0 0 auto;
-        padding: 0.38rem 0.75rem;
-        font-size: 0.74rem;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.7rem;
         white-space: nowrap;
+        gap: 0.3rem;
     }
     .ur-hps-tab-btn .ur-hps-tab-pill {
         display: none;
@@ -1156,13 +1148,13 @@
         width: 100%;
         max-width: 480px;
         margin: 0 auto;
-        aspect-ratio: 16 / 9;
+        aspect-ratio: 16 / 8.5;
         box-sizing: border-box;
-        padding: 0.95rem 1.15rem;
-        border-radius: 1.25rem;
+        padding: 0.75rem 0.95rem;
+        border-radius: 1.15rem;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
+        box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
     /* Card Themes */
@@ -1189,9 +1181,9 @@
 
     .ur-hps-mob-watermark {
         position: absolute;
-        right: -8px;
-        top: -8px;
-        font-size: 5.5rem;
+        right: -6px;
+        top: -6px;
+        font-size: 4.75rem;
         opacity: 0.06;
         pointer-events: none;
         line-height: 1;
@@ -1205,17 +1197,18 @@
         justify-content: space-between;
         position: relative;
         z-index: 2;
-        gap: 0.5rem;
+        gap: 0.4rem;
+        margin-bottom: 0.1rem;
     }
     .ur-hps-mob-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.35rem;
-        font-size: 0.68rem;
+        gap: 0.3rem;
+        font-size: 0.62rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        padding: 0.2rem 0.6rem;
+        letter-spacing: 0.06em;
+        padding: 0.15rem 0.5rem;
         border-radius: 9999px;
     }
     .ur-hps-mob-badge--gold {
@@ -1240,12 +1233,12 @@
     }
 
     .ur-hps-mob-save {
-        font-size: 0.68rem;
+        font-size: 0.62rem;
         font-weight: 800;
         color: #34d399;
         background: rgba(16, 185, 129, 0.15);
         border: 1px solid rgba(52, 211, 153, 0.3);
-        padding: 0.15rem 0.55rem;
+        padding: 0.12rem 0.45rem;
         border-radius: 9999px;
         letter-spacing: 0.03em;
     }
@@ -1254,48 +1247,41 @@
     .ur-hps-mob-body {
         position: relative;
         z-index: 2;
-        margin: 0.15rem 0;
+        margin: 0.1rem 0;
     }
     .ur-hps-mob-title {
-        font-size: 1.18rem;
+        font-size: 1.05rem;
         font-weight: 900;
         line-height: 1.15;
         letter-spacing: -0.02em;
-        margin: 0 0 0.2rem;
+        margin: 0 0 0.15rem;
     }
     .ur-hps-mob-tagline {
-        font-size: 0.72rem;
-        color: #94a3b8;
-        line-height: 1.3;
-        margin: 0 0 0.35rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        display: none;
     }
     .ur-hps-mob-chips {
         display: flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.25rem;
         flex-wrap: nowrap;
         overflow: hidden;
     }
     .ur-hps-mob-chip {
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
-        font-size: 0.64rem;
+        gap: 0.2rem;
+        font-size: 0.62rem;
         font-weight: 700;
         color: #cbd5e1;
         background: rgba(255, 255, 255, 0.07);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 0.2rem 0.45rem;
-        border-radius: 0.4rem;
+        padding: 0.15rem 0.38rem;
+        border-radius: 0.35rem;
         white-space: nowrap;
     }
     .ur-hps-mob-chip i {
         color: #fbbf24;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
     }
 
     /* Bottom Row: Price & Pay Now Button */
@@ -1305,8 +1291,9 @@
         justify-content: space-between;
         position: relative;
         z-index: 2;
-        gap: 0.75rem;
-        padding-top: 0.4rem;
+        gap: 0.5rem;
+        padding-top: 0.35rem;
+        margin-top: 0.15rem;
         border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
     .ur-hps-mob-price {
@@ -1316,31 +1303,31 @@
     .ur-hps-mob-price-row {
         display: flex;
         align-items: baseline;
-        gap: 0.3rem;
+        gap: 0.25rem;
         line-height: 1;
     }
     .ur-hps-mob-curr {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 800;
         color: #94a3b8;
     }
     .ur-hps-mob-amount {
-        font-size: 1.45rem;
+        font-size: 1.28rem;
         font-weight: 900;
         color: #ffffff;
         letter-spacing: -0.02em;
     }
     .ur-hps-mob-orig {
-        font-size: 0.78rem;
+        font-size: 0.72rem;
         color: #64748b;
         text-decoration: line-through;
         font-weight: 600;
     }
     .ur-hps-mob-rate {
-        font-size: 0.62rem;
+        font-size: 0.58rem;
         color: #94a3b8;
         font-weight: 600;
-        margin-top: 0.15rem;
+        margin-top: 0.1rem;
     }
 
     /* High-impact Pay Now CTA */
@@ -1348,16 +1335,16 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.4rem;
-        padding: 0.55rem 1.15rem;
+        gap: 0.35rem;
+        padding: 0.42rem 1rem;
         border-radius: 9999px;
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         font-weight: 800;
         letter-spacing: 0.02em;
         text-decoration: none;
         cursor: pointer;
         white-space: nowrap;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
     .ur-hps-mob-pay-btn:active {
@@ -1367,41 +1354,62 @@
         background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         color: #000000;
         border: 1px solid #fde047;
-        box-shadow: 0 4px 16px rgba(245, 158, 11, 0.45);
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
     }
     .ur-hps-mob-pay-btn--platinum {
         background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         color: #ffffff;
         border: 1px solid #93c5fd;
-        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.45);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45);
     }
     .ur-hps-mob-pay-btn--silver {
         background: linear-gradient(135deg, #475569 0%, #334155 100%);
         color: #ffffff;
         border: 1px solid #cbd5e1;
-        box-shadow: 0 4px 14px rgba(71, 85, 105, 0.4);
+        box-shadow: 0 4px 12px rgba(71, 85, 105, 0.4);
     }
     .ur-hps-mob-pay-btn--buyer {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: #ffffff;
         border: 1px solid #6ee7b7;
-        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+    }
+
+    /* Compact Bottom Bar on Mobile */
+    .ur-hps-bottom-bar {
+        margin-top: 0.4rem;
+        justify-content: center;
+        padding: 0;
+    }
+    .ur-hps-dots {
+        gap: 0.35rem;
+    }
+    .ur-hps-dot {
+        width: 0.45rem;
+        height: 0.45rem;
+    }
+    .ur-hps-dot.active {
+        width: 1.4rem;
+    }
+    .ur-hps-swipe-hint {
+        display: none !important;
     }
 }
 
 @media (max-width: 380px) {
     .ur-hps-mobile-card {
-        padding: 0.75rem 0.85rem;
+        padding: 0.65rem 0.8rem;
+        aspect-ratio: 16 / 8.8;
     }
     .ur-hps-mob-title {
-        font-size: 1.05rem;
+        font-size: 0.98rem;
     }
     .ur-hps-mob-amount {
-        font-size: 1.25rem;
+        font-size: 1.18rem;
     }
     .ur-hps-mob-pay-btn {
-        padding: 0.45rem 0.85rem;
-        font-size: 0.76rem;
+        padding: 0.38rem 0.85rem;
+        font-size: 0.74rem;
     }
 }
 </style>
