@@ -431,6 +431,9 @@ Route::middleware('guest')->group(function () {
 
 Route::match(['GET', 'POST'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Razorpay Public Callback (handles cross-origin POST redirects where SameSite=Lax cookies are not sent)
+Route::match(['GET', 'POST'], '/plans/{plan}/razorpay/callback', [PlanController::class, 'razorpayCallback'])->name('plans.razorpay.callback');
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

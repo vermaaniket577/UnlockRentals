@@ -301,6 +301,37 @@
                     <span class="flex items-center gap-1.5"><i class="ph-bold ph-receipt text-emerald-600"></i> Tax Invoice</span>
                 </div>
 
+                {{-- 6. Mobile UPI / Post-Payment Status & Manual Verification Card --}}
+                <div id="manual-verify-section" class="hidden mt-4 p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-slate-800 dark:text-slate-200 transition-all">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="ph-bold ph-hourglass-high animate-spin text-base"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Awaiting Payment Confirmation</h4>
+                            <p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 mt-0.5">If you approved payment in Google Pay, PhonePe, Paytm, or your bank app, we are verifying your transaction.</p>
+                            
+                            <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <button type="button" id="manual-verify-btn" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer">
+                                    <i class="ph-bold ph-check-circle"></i>
+                                    <span>I Have Completed Payment — Verify & Activate Now</span>
+                                </button>
+                            </div>
+
+                            <div class="mt-3 pt-2.5 border-t border-amber-200/60 dark:border-amber-800/60">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Have a Payment ID or UPI Ref?</span>
+                                </div>
+                                <div class="mt-1.5 flex gap-2">
+                                    <input type="text" id="manual_razorpay_payment_id" placeholder="e.g. pay_... or UPI Ref" class="flex-1 px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                    <button type="button" id="manual-verify-custom-btn" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition cursor-pointer">Submit</button>
+                                </div>
+                                <p id="manual-verify-error" class="hidden text-[11px] text-red-600 font-semibold mt-1"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -335,8 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
         razorpayKeyConfigured: @json((bool) $razorpayKeyId),
         razorpayOrderUrl: @json(route('plans.razorpay.order', $plan)),
         checkOrderStatusUrl: @json(route('plans.check-order-status', $plan)),
+        callbackUrl: @json(route('plans.razorpay.callback', $plan)),
+        dashboardUrl: @json(route('dashboard')),
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
         plansUrl: @json(route('plans.index')),
+        planId: {{ $plan->id }},
         billingPeriod: @json($billingPeriod),
         planName: @json($plan->name),
         brandLogo: @json(asset('images/logo-icon.png')),

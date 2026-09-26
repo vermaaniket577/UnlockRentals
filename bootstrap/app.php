@@ -27,6 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/leads/*',
             'webhook/*',
             'api/whatsapp/*',
+            'plans/*/razorpay/callback',
+            'plans/*/purchase/process',
         ]);
         $middleware->encryptCookies(except: [
             'ur_visitor_uuid',

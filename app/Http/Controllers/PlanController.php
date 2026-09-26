@@ -417,11 +417,14 @@ class PlanController extends Controller
     /**
      * AJAX endpoint: Poll order payment status from Razorpay.
      * Called by the client-side JS every few seconds after the modal opens.
+     * Automatically activates the plan on the server as soon as payment is confirmed,
+     * guaranteeing instant activation even if mobile app or browser backgrounded.
      */
     public function checkOrderStatus(Request $request, Plan $plan): JsonResponse
     {
         $request->validate([
             'order_id' => ['required', 'string', 'starts_with:order_'],
+            'billing_period' => ['nullable', 'in:monthly,yearly'],
         ]);
 
         $activeGateway = Setting::activePaymentGateway();
@@ -438,10 +441,95 @@ class PlanController extends Controller
 
             // Find any captured or authorized payment
             foreach (($payments['items'] ?? []) as $payment) {
-                if (in_array($payment['status'] ?? '', ['captured', 'authorized'])) {
+                $status = $payment['status'] ?? '';
+                if (in_array($status, ['captured', 'authorized'])) {
+                    $paymentId = $payment['id'];
+
+                    // Auto-capture if authorized
+                    if ($status === 'authorized') {
+                        try {
+                            $payment = $this->captureRazorpayPaymentDirect(
+                                $paymentId, (int) $payment['amount'], 'INR', $razorpayKeyId, $razorpayKeySecret
+                            );
+                        } catch (\Throwable $captureEx) {
+                            \Illuminate\Support\Facades\Log::warning('Auto-capture in checkOrderStatus failed', ['error' => $captureEx->getMessage()]);
+                        }
+                    }
+
+                    // Check if already approved/activated
+                    $existingSubscription = $this->payments->findApprovedByTransaction($paymentId);
+                    if ($existingSubscription) {
+                        $successPayload = $this->payments->successPayload($existingSubscription, $existingSubscription->invoice_id ?? 'INV-APPROVED');
+                        session([
+                            'subscription_success' => $successPayload,
+                            'success' => "Payment verified. Your \"{$plan->name}\" plan is active.",
+                        ]);
+
+                        return response()->json([
+                            'status' => 'paid',
+                            'activated' => true,
+                            'payment_id' => $paymentId,
+                            'order_id' => $request->order_id,
+                            'amount' => $payment['amount'],
+                            'redirect_url' => route('dashboard'),
+                            'subscription_success' => $successPayload,
+                        ]);
+                    }
+
+                    // Activate immediately on server
+                    $user = auth()->user();
+                    if (!$user && isset($payment['notes']['user_id'])) {
+                        $user = \App\Models\User::find($payment['notes']['user_id']);
+                        if ($user) {
+                            auth()->login($user);
+                        }
+                    }
+
+                    if ($user) {
+                        $billingPeriod = ($payment['notes']['billing_period'] ?? $request->input('billing_period', 'monthly')) === 'yearly' ? 'yearly' : 'monthly';
+                        [$effectivePrice, $privateOffer] = $this->effectivePlanPrice($plan, $user, $billingPeriod);
+                        $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod, $privateOffer);
+                        $invoiceId = $this->payments->generateInvoiceId();
+
+                        $userPlan = $this->payments->activateSubscription(
+                            $user,
+                            $plan,
+                            $billing,
+                            $billingPeriod,
+                            'razorpay',
+                            $paymentId,
+                            $invoiceId,
+                            $request,
+                            false
+                        );
+
+                        try {
+                            \Illuminate\Support\Facades\Mail::to($user->email)->send(new SubscriptionActivated($userPlan));
+                        } catch (\Throwable $mailEx) {
+                            report($mailEx);
+                        }
+
+                        $successPayload = $this->payments->successPayload($userPlan, $invoiceId);
+                        session([
+                            'subscription_success' => $successPayload,
+                            'success' => "Payment successful. Your \"{$plan->name}\" plan has been activated automatically.",
+                        ]);
+
+                        return response()->json([
+                            'status' => 'paid',
+                            'activated' => true,
+                            'payment_id' => $paymentId,
+                            'order_id' => $request->order_id,
+                            'amount' => $payment['amount'],
+                            'redirect_url' => route('dashboard'),
+                            'subscription_success' => $successPayload,
+                            'message' => 'Payment verified and plan activated successfully!',
+                        ]);
+                    }
+
                     return response()->json([
                         'status' => 'paid',
-                        'payment_id' => $payment['id'],
+                        'payment_id' => $paymentId,
                         'order_id' => $request->order_id,
                         'amount' => $payment['amount'],
                     ]);
@@ -452,6 +540,113 @@ class PlanController extends Controller
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('Order status check failed', ['error' => $e->getMessage()]);
             return response()->json(['status' => 'pending']);
+        }
+    }
+
+    /**
+     * Direct Razorpay Callback: Handles mobile 3DS redirects, UPI callbacks, and browser redirects.
+     */
+    public function razorpayCallback(Request $request, Plan $plan)
+    {
+        $activeGateway = Setting::activePaymentGateway();
+        [$razorpayKeyId, $razorpayKeySecret] = $this->razorpayCredentials($activeGateway);
+
+        $paymentId = $request->input('razorpay_payment_id');
+        $orderId = $request->input('razorpay_order_id');
+        $signature = $request->input('razorpay_signature');
+
+        if (!$paymentId) {
+            return redirect()->route('plans.index')->with('error', 'Payment was cancelled or not completed.');
+        }
+
+        $user = auth()->user();
+
+        // If session was lost on cross-site redirect, resolve user from Razorpay order notes
+        if (!$user && $orderId && $razorpayKeyId && $razorpayKeySecret) {
+            try {
+                $orderData = $this->fetchRazorpayOrderDirect($orderId, $razorpayKeyId, $razorpayKeySecret);
+                $userId = $orderData['notes']['user_id'] ?? null;
+                if ($userId) {
+                    $user = \App\Models\User::find($userId);
+                    if ($user) {
+                        auth()->login($user);
+                    }
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Please sign in to complete your plan activation.');
+        }
+
+        // Check if already activated
+        $existing = $this->payments->findApprovedByTransaction($paymentId);
+        if ($existing) {
+            return redirect()->route('dashboard')
+                ->with('success', 'Your plan is active.')
+                ->with('subscription_success', $this->payments->successPayload($existing, $existing->invoice_id ?? 'INV-APPROVED'));
+        }
+
+        $verified = false;
+        if ($signature && $orderId) {
+            try {
+                $this->payments->verifyRazorpaySignature($orderId, $paymentId, $signature, $razorpayKeyId, $razorpayKeySecret);
+                $verified = true;
+            } catch (\Exception $e) {
+                report($e);
+            }
+        }
+
+        if (!$verified && $razorpayKeyId && $razorpayKeySecret) {
+            try {
+                $paymentData = $this->fetchRazorpayPaymentDirect($paymentId, $razorpayKeyId, $razorpayKeySecret);
+                if (($paymentData['status'] ?? '') === 'authorized') {
+                    $paymentData = $this->captureRazorpayPaymentDirect($paymentId, (int) $paymentData['amount'], 'INR', $razorpayKeyId, $razorpayKeySecret);
+                }
+                if (($paymentData['status'] ?? '') === 'captured') {
+                    $verified = true;
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        if (!$verified) {
+            return $this->paymentFailureRedirect($plan, 'monthly', 'Payment verification failed. Please contact support with payment ID: ' . $paymentId);
+        }
+
+        $billingPeriod = $request->input('billing_period', 'monthly') === 'yearly' ? 'yearly' : 'monthly';
+        [$effectivePrice, $privateOffer] = $this->effectivePlanPrice($plan, $user, $billingPeriod);
+        $billing = $this->payments->billingBreakdown($plan, (float) $effectivePrice, $billingPeriod, $privateOffer);
+        $invoiceId = $this->payments->generateInvoiceId();
+
+        try {
+            $userPlan = $this->payments->activateSubscription(
+                $user,
+                $plan,
+                $billing,
+                $billingPeriod,
+                'razorpay',
+                $paymentId,
+                $invoiceId,
+                $request,
+                false
+            );
+
+            try {
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new SubscriptionActivated($userPlan));
+            } catch (\Throwable $mailEx) {
+                report($mailEx);
+            }
+
+            return redirect()->route('dashboard')
+                ->with('success', "Payment successful. Your \"{$plan->name}\" plan has been activated automatically.")
+                ->with('subscription_success', $this->payments->successPayload($userPlan, $invoiceId));
+        } catch (\Throwable $e) {
+            report($e);
+            return $this->paymentFailureRedirect($plan, $billingPeriod, 'Plan activation error: ' . $e->getMessage());
         }
     }
 
@@ -702,6 +897,15 @@ class PlanController extends Controller
     ): array {
         $url = 'https://api.razorpay.com/v1/payments/' . urlencode($paymentId) . '/capture';
         return $this->razorpayCurlPost($url, ['amount' => $amountPaise, 'currency' => $currency], $keyId, $keySecret);
+    }
+
+    /**
+     * Fetch a single Razorpay order by ID using direct curl.
+     */
+    private function fetchRazorpayOrderDirect(string $orderId, string $keyId, string $keySecret): array
+    {
+        $url = 'https://api.razorpay.com/v1/orders/' . urlencode($orderId);
+        return $this->razorpayCurlGet($url, $keyId, $keySecret);
     }
 
     /**

@@ -314,4 +314,19 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (webView != null) {
+            webView.onResume();
+            webView.resumeTimers();
+            try {
+                webView.evaluateJavascript(
+                    "(function(){ window.dispatchEvent(new Event('app_resumed')); if(typeof window.checkPendingPaymentOnResume==='function'){ window.checkPendingPaymentOnResume(); } })();",
+                    null
+                );
+            } catch (Exception ignored) {}
+        }
+    }
 }

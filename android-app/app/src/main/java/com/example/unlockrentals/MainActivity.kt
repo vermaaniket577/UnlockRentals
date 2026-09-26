@@ -588,6 +588,12 @@ class MainActivity : AppCompatActivity() {
         if (::webView.isInitialized) {
             webView.onResume()
             webView.resumeTimers()
+            try {
+                webView.evaluateJavascript(
+                    "(function(){ window.dispatchEvent(new Event('app_resumed')); if(typeof window.checkPendingPaymentOnResume==='function'){ window.checkPendingPaymentOnResume(); } })();",
+                    null
+                )
+            } catch (_: Exception) {}
         }
     }
 

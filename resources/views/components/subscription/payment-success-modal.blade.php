@@ -19,6 +19,11 @@
     {{-- Modal Card --}}
     <div class="relative w-full max-w-md overflow-hidden rounded-3xl bg-white p-8 text-center shadow-2xl" style="animation: successScaleIn .4s cubic-bezier(.21,1.02,.73,1) both; box-shadow: 0 25px 80px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.04);">
 
+        {{-- Close Button --}}
+        <button type="button" onclick="document.getElementById('subscription-success-modal')?.remove()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer z-20" aria-label="Close modal">
+            <i class="ph-bold ph-x text-sm"></i>
+        </button>
+
         {{-- Top accent gradient line --}}
         <div class="absolute inset-x-0 top-0 h-1" style="background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);"></div>
 
@@ -59,13 +64,18 @@
         </div>
 
         {{-- CTA Button --}}
-        <a href="{{ route('dashboard') }}" class="mt-6 flex w-full items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 text-sm font-extrabold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl" style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25);" title="Go to Dashboard">
-            <i class="ph-bold ph-squares-four text-base"></i>
-            Go to Dashboard
-        </a>
+        <div class="mt-6 flex flex-col gap-2">
+            <a href="{{ route('dashboard') }}" class="flex w-full items-center justify-center gap-2.5 rounded-2xl px-5 py-3.5 text-sm font-extrabold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl" style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); box-shadow: 0 8px 30px rgba(16, 185, 129, 0.25);" title="Go to Dashboard">
+                <i class="ph-bold ph-squares-four text-base"></i>
+                Go to Dashboard
+            </a>
+            <button type="button" onclick="document.getElementById('subscription-success-modal')?.remove()" class="w-full py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 transition cursor-pointer">
+                Continue Browsing
+            </button>
+        </div>
 
         {{-- Security Badge --}}
-        <div class="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400">
+        <div class="mt-3 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400">
             <i class="ph ph-shield-check text-emerald-500"></i>
             <span>Secured by UnlockRentals</span>
         </div>
