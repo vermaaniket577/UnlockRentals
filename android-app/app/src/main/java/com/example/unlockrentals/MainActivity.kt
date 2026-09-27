@@ -253,6 +253,13 @@ class MainActivity : AppCompatActivity() {
         cookieManager.setAcceptCookie(true)
         cookieManager.setAcceptThirdPartyCookies(webView, true)
 
+        // 60fps/120fps Hardware Acceleration & Instant Touch Performance
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        webView.overScrollMode = View.OVER_SCROLL_NEVER
+        webView.isVerticalScrollBarEnabled = false
+        webView.isHorizontalScrollBarEnabled = false
+        webView.isHapticFeedbackEnabled = true
+
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
@@ -387,14 +394,14 @@ class MainActivity : AppCompatActivity() {
                 swipeRefresh.isRefreshing = false
                 progressBar.visibility = View.GONE
 
-                // Inject CSS to hide web-only prompts in the native app wrapper
+                // Inject CSS to hide web-only prompts and enforce instant single-touch responsiveness
                 val hideScript = """
                     (function() {
                         var style = document.getElementById('ur-native-app-styles');
                         if (!style) {
                             style = document.createElement('style');
                             style.id = 'ur-native-app-styles';
-                            style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section, .main-header .main-nav, #main-nav .main-nav { display: none !important; } #welcome-mobile-top-login, #nav-mobile-top-login { display: inline-flex !important; }';
+                            style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section, .main-header .main-nav, #main-nav .main-nav { display: none !important; } #welcome-mobile-top-login, #nav-mobile-top-login { display: inline-flex !important; } * { -webkit-tap-highlight-color: transparent !important; } html, body { touch-action: manipulation !important; -webkit-overflow-scrolling: touch !important; } button, a, input, select, textarea, [role="button"], [role="tab"], .ur-mc-cta-btn, .ur-hps-tab-btn, .ur-hps-arrow-btn, .ur-hps-cta-btn, .plan-cta-btn { touch-action: manipulation !important; -webkit-touch-callout: none !important; user-select: none !important; cursor: pointer !important; }';
                             document.head.appendChild(style);
                         }
                     })();

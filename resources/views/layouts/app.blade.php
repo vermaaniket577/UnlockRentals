@@ -45,9 +45,22 @@
         .is-mobile-app .website-only-social {
             display: none !important;
         }
+        /* Zero-Latency Instant Mobile Touch Performance */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            touch-action: manipulation;
+            -webkit-overflow-scrolling: touch;
+        }
+        button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .card, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn {
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            cursor: pointer;
+        }
     </style>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="description" content="@yield('meta_description', 'Search room near my location, single rooms for rent, 1RK, 1BHK flats, PGs & houses with zero brokerage on UnlockRentals. 100% verified properties by direct owners.')">

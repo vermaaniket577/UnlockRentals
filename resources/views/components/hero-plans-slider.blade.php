@@ -652,8 +652,16 @@
     font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.ur-hps-tab-btn:active {
+    transform: scale(0.96);
 }
 
 .ur-hps-tab-btn:hover {
@@ -764,8 +772,9 @@
     display: flex;
     flex-wrap: nowrap;
     width: 100%;
-    transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+    transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1);
     will-change: transform;
+    touch-action: pan-y pinch-zoom;
 }
 
 /* Individual Slide */
@@ -2247,9 +2256,13 @@
         font-weight: 800;
         text-decoration: none;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
         white-space: nowrap;
         border: none;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .ur-mc-cta-btn:active {
@@ -2370,7 +2383,6 @@
                                 data-theme="{{ $s['theme'] }}"
                                 data-has-offer="{{ !empty($s['has_offer']) ? 'true' : 'false' }}"
                                 role="tab"
-                                onclick="if(window.urGoToHeroSlide){ window.urGoToHeroSlide({{ $idx }}); }"
                                 aria-selected="{{ $idx === 0 ? 'true' : 'false' }}"
                                 title="{{ $s['tab_label'] }}">
                             <i class="ph-bold {{ $s['tab_icon'] }}"></i>
@@ -2984,27 +2996,47 @@
             restartAutoPlay();
         };
 
+        function userInteracted() {
+            stopAutoPlay();
+            if (resumeTimer) clearTimeout(resumeTimer);
+            // On mobile devices, don't jerk the card away while user is interacting
+            resumeTimer = setTimeout(() => {
+                if (window.innerWidth > 768) {
+                    startAutoPlay();
+                }
+            }, 10000);
+        }
+
         // Arrow Listeners
         prevBtn?.addEventListener('click', (e) => {
             e.preventDefault();
             prevSlide();
-            restartAutoPlay();
+            userInteracted();
         });
 
         nextBtn?.addEventListener('click', (e) => {
             e.preventDefault();
             nextSlide();
-            restartAutoPlay();
+            userInteracted();
         });
 
-        // Tab Listeners
+        // Tab Listeners - Instant Single-Touch Response
         tabs.forEach((tab) => {
             tab.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetIdx = parseInt(tab.getAttribute('data-target-index') || '0', 10);
                 goToSlide(targetIdx);
-                restartAutoPlay();
+                userInteracted();
             });
+            tab.addEventListener('pointerdown', () => {
+                tab.style.transform = 'scale(0.96)';
+            }, { passive: true });
+            tab.addEventListener('pointerup', () => {
+                tab.style.transform = '';
+            }, { passive: true });
+            tab.addEventListener('pointercancel', () => {
+                tab.style.transform = '';
+            }, { passive: true });
         });
 
         // Dot Listeners
@@ -3013,7 +3045,7 @@
                 e.preventDefault();
                 const targetIdx = parseInt(dot.getAttribute('data-index') || '0', 10);
                 goToSlide(targetIdx);
-                restartAutoPlay();
+                userInteracted();
             });
         });
 
@@ -3035,7 +3067,7 @@
             }
         });
 
-        // Touch & Swipe Support for Mobile & Tablets
+        // Touch & Swipe Support for Mobile & Tablets - Zero Latency & Scroll Safe
         let touchStartX = 0;
         let touchEndX = 0;
         let touchStartY = 0;
@@ -3044,7 +3076,7 @@
         stage.addEventListener('touchstart', (e) => {
             touchStartX = e.changedTouches[0].screenX;
             touchStartY = e.changedTouches[0].screenY;
-            stopAutoPlay();
+            userInteracted();
         }, { passive: true });
 
         stage.addEventListener('touchend', (e) => {
@@ -3052,14 +3084,14 @@
             touchEndY = e.changedTouches[0].screenY;
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
-            if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+            // Only trigger slide change if swipe is decisively horizontal (not a vertical scroll gesture)
+            if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
                 if (diffX < 0) {
                     nextSlide();
                 } else {
                     prevSlide();
                 }
             }
-            restartAutoPlay();
         }, { passive: true });
 
         // Initial Slide Selection

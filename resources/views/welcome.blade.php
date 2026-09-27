@@ -30,7 +30,22 @@
       })();
     </script>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <style>
+        /* Zero-Latency Instant Mobile Touch Performance */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            touch-action: manipulation;
+            -webkit-overflow-scrolling: touch;
+        }
+        button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .card, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn {
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            cursor: pointer;
+        }
+    </style>
     <script>
         (function () {
             var isApp = /UnlockRentals|wv|Version\/[0-9.]+/i.test(navigator.userAgent) || window.isNativeApp === true || new URLSearchParams(window.location.search).get('app') === '1';
