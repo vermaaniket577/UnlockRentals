@@ -1394,18 +1394,41 @@
                         {{-- Desktop Dropdown Backdrop --}}
                         <div id="userDropdownBackdrop" class="fixed inset-0 z-[9998] hidden bg-black/20" onclick="window.closeUserDropdown()"></div>
 
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-1.5 py-1 px-2 rounded-full hover:bg-white/10 transition-all border border-white/15 bg-white/5 relative z-[9999] cursor-pointer" id="userDropdownBtn" aria-label="User Account">
-                            <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg, #2563eb, #6366f1); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; box-shadow:0 2px 8px rgba(37,99,235,0.4); flex-shrink:0; pointer-events:none;">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        @php
+                            $welcomeActivePlan = auth()->user()->activePlan();
+                        @endphp
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-2 py-1 px-2 rounded-full hover:bg-white/10 transition-all border border-white/15 bg-white/5 relative z-[9999] cursor-pointer" id="userDropdownBtn" aria-label="User Account">
+                            <div class="relative pointer-events-none">
+                                <div style="width:30px; height:30px; border-radius:50%; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.6), 0 2px 10px rgba(245,158,11,0.5);' : 'background:linear-gradient(135deg, #2563eb, #6366f1); box-shadow:0 2px 8px rgba(37,99,235,0.4);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0;">
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                </div>
+                                @if($welcomeActivePlan)
+                                    <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[7.5px] ring-1.5 ring-slate-900 shadow-xs" title="Paid Member">
+                                        <i class="ph-fill ph-crown"></i>
+                                    </span>
+                                @endif
                             </div>
+                            @if($welcomeActivePlan)
+                                <x-premium-badge :plan="$welcomeActivePlan" size="xs" :showPlan="false" class="hidden sm:inline-flex pointer-events-none" />
+                            @endif
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7; flex-shrink:0; pointer-events:none;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </button>
                         
-                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:240px; background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.5); overflow:hidden; z-index:9999;">
+                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:260px; background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.5); overflow:hidden; z-index:9999;">
                             <div style="padding:14px; border-bottom:1px solid rgba(255,255,255,0.08);">
-                                <p style="color:rgba(255,255,255,0.5); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px;">Signed in as</p>
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2px; gap:8px;">
+                                    <p style="color:rgba(255,255,255,0.5); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Signed in as</p>
+                                    @if($welcomeActivePlan)
+                                        <x-premium-badge :plan="$welcomeActivePlan" size="xs" :showPlan="false" />
+                                    @endif
+                                </div>
                                 <p style="color:#fff; font-weight:700; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->name }}</p>
                                 <p style="color:rgba(255,255,255,0.6); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->email }}</p>
+                                @if($welcomeActivePlan)
+                                    <div style="margin-top:10px;">
+                                        <x-premium-badge :plan="$welcomeActivePlan" type="card" />
+                                    </div>
+                                @endif
                             </div>
                             <div style="padding:6px 0;">
                                 <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none; transition:all 0.2s;" title="Dashboard">
@@ -1570,10 +1593,29 @@
         <div class="mobile-auth" style="margin-top: 18px !important; padding-top: 16px !important; border-top: 1px solid #f1f5f9 !important;">
             @if (Route::has('login'))
                 @auth
-                    <div style="padding: 12px; margin-bottom: 10px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0;">
-                        <p style="color: #64748b; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px;">Signed in as</p>
-                        <p style="color: #0f172a; font-weight: 700; font-size: 14px; line-height: 1.3;">{{ auth()->user()->name }}</p>
-                        <p style="color: #64748b; font-size: 12px;">{{ auth()->user()->email }}</p>
+                    @php
+                        $welcomeDrawerPlan = auth()->user()->activePlan();
+                    @endphp
+                    <div style="padding: 12px; margin-bottom: 10px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0; display:flex; align-items:center; gap:12px;">
+                        <div class="relative">
+                            <div style="width:40px; height:40px; border-radius:12px; {{ $welcomeDrawerPlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px #fff, 0 0 0 4px #f59e0b, 0 4px 12px rgba(245,158,11,0.3);' : 'background:#2563eb;' }} color:#fff; font-weight:900; display:flex; align-items:center; justify-content:center; font-size:16px;">
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            </div>
+                            @if($welcomeDrawerPlan)
+                                <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white shadow-xs">
+                                    <i class="ph-fill ph-crown"></i>
+                                </span>
+                            @endif
+                        </div>
+                        <div style="min-width:0; flex:1;">
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                <p style="color: #0f172a; font-weight: 700; font-size: 14px; line-height: 1.3;">{{ auth()->user()->name }}</p>
+                                @if($welcomeDrawerPlan)
+                                    <x-premium-badge :plan="$welcomeDrawerPlan" size="xs" :showPlan="false" />
+                                @endif
+                            </div>
+                            <p style="color: #64748b; font-size: 12px;">{{ $welcomeDrawerPlan ? ($welcomeDrawerPlan->plan->name ?? 'Pro Plan') : auth()->user()->email }}</p>
+                        </div>
                     </div>
                     <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium" style="text-align: center !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; width: 100% !important; border-radius: 12px !important; height: 48px !important; margin-bottom: 8px !important; background: linear-gradient(135deg, #2563EB, #1d4ed8) !important; color: #ffffff !important; box-shadow: 0 8px 20px rgba(37,99,235,0.25) !important;" title="Post Free Advertise">
                         <i class="ph-bold ph-plus-circle" style="font-size: 19px; color: #ffffff !important;"></i>
@@ -1608,15 +1650,30 @@
 
     {{-- Dedicated Mobile Account Bottom Sheet Modal for Welcome Page --}}
     @auth
+    @php
+        $welcomeModalPlan = auth()->user()->activePlan();
+    @endphp
     <div id="welcome-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/40 backdrop-blur-sm" onclick="if(event.target===this) window.closeWelcomeAccountModal()">
         <div class="w-full sm:max-w-md bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-[slideUp_0.2s_ease-out]">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    <div class="relative">
+                        <div class="w-12 h-12 rounded-2xl {{ $welcomeModalPlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white shadow-lg shadow-amber-500/25' : 'bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/25' }} text-white font-black text-xl flex items-center justify-center shadow-lg">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        @if($welcomeModalPlan)
+                            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs">
+                                <i class="ph-fill ph-crown"></i>
+                            </span>
+                        @endif
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h3 class="text-base font-black text-slate-900 truncate">{{ auth()->user()->name }}</h3>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <h3 class="text-base font-black text-slate-900 truncate">{{ auth()->user()->name }}</h3>
+                            @if($welcomeModalPlan)
+                                <x-premium-badge :plan="$welcomeModalPlan" size="xs" :showPlan="false" />
+                            @endif
+                        </div>
                         <p class="text-xs text-slate-500 capitalize truncate">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
                     </div>
                 </div>
@@ -1624,6 +1681,12 @@
                     <i class="ph-bold ph-x text-base"></i>
                 </button>
             </div>
+            
+            @if($welcomeModalPlan)
+            <div class="mt-3">
+                <x-premium-badge :plan="$welcomeModalPlan" type="card" />
+            </div>
+            @endif
             
             <div class="py-3 space-y-1">
                 <a href="{{ route('dashboard') }}" onclick="window.closeWelcomeAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">

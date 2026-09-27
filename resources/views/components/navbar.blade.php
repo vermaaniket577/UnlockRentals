@@ -170,18 +170,23 @@
                         {{-- Dropdown Backdrop for Desktop --}}
                         <div id="nav-user-backdrop" class="fixed inset-0 z-[9998] hidden bg-black/20 dark:bg-black/60" onclick="window.closeUserDropdown()"></div>
 
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative cursor-pointer z-[9999]" id="nav-user-menu" aria-label="User Account">
-                            <div class="w-8 h-8 {{ $navActivePlan ? 'bg-gradient-to-br ' . $navBadgeClass . ' ring-2 ring-white shadow-lg shadow-blue-500/20' : 'bg-[#2563EB]' }} rounded-full flex items-center justify-center text-white text-sm font-bold relative overflow-hidden pointer-events-none">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative cursor-pointer z-[9999]" id="nav-user-menu" aria-label="User Account">
+                            <div class="relative pointer-events-none">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold relative overflow-hidden {{ $navActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 shadow-md shadow-amber-500/30' : 'bg-[#2563EB]' }}">
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    @if($navActivePlan)
+                                        <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[premiumShine_2.6s_ease-in-out_infinite]"></span>
+                                    @endif
+                                </div>
                                 @if($navActivePlan)
-                                    <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[premiumShine_2.6s_ease-in-out_infinite]"></span>
+                                    <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white dark:ring-slate-900 shadow-xs" title="Paid Member">
+                                        <i class="ph-fill ph-crown"></i>
+                                    </span>
                                 @endif
                             </div>
                             <span class="hidden xl:inline text-xs xl:text-sm font-semibold text-zinc-700 dark:text-slate-200 whitespace-nowrap pointer-events-none">{{ auth()->user()->name }}</span>
                             @if($navActivePlan)
-                                <span class="hidden 2xl:inline-flex items-center gap-1 rounded-full bg-gradient-to-r {{ $navBadgeClass }} px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-sm whitespace-nowrap pointer-events-none">
-                                    <i class="ph-bold ph-crown"></i> Pro
-                                </span>
+                                <x-premium-badge :plan="$navActivePlan" size="xs" :showPlan="false" class="hidden sm:inline-flex pointer-events-none" />
                             @endif
                             <i class="ph ph-caret-down text-xs text-zinc-500 dark:text-slate-400 pointer-events-none"></i>
                             @if(isset($adminNotifications) && $adminNotifications['total_unread'] > 0)
@@ -192,22 +197,18 @@
                         {{-- Dropdown Menu --}}
                         <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-[9999]">
                             <div class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50">
-                                <p class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    {{ auth()->user()->name }}
+                                <div class="flex items-center justify-between gap-2 mb-0.5">
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                        {{ auth()->user()->name }}
+                                    </p>
                                     @if($navActivePlan)
-                                        <span class="inline-flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r {{ $navBadgeClass }} text-white"><i class="ph-bold ph-check text-[10px]"></i></span>
+                                        <x-premium-badge :plan="$navActivePlan" size="xs" :showPlan="false" />
                                     @endif
-                                </p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 capitalize mt-0.5">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 capitalize">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
                                 @if($navActivePlan)
-                                    <div class="mt-2.5 rounded-xl border border-blue-200 bg-blue-50/60 p-2.5 dark:border-blue-900/60 dark:bg-blue-950/40">
-                                        <div class="flex items-center gap-2">
-                                            <span class="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-r {{ $navBadgeClass }} text-white text-xs"><i class="ph-bold ph-crown"></i></span>
-                                            <div>
-                                                <p class="text-[9px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">Active Membership</p>
-                                                <p class="text-xs font-black text-slate-900 dark:text-white">{{ $navActivePlan->plan->name ?? 'Pro Plan' }}</p>
-                                            </div>
-                                        </div>
+                                    <div class="mt-2.5">
+                                        <x-premium-badge :plan="$navActivePlan" type="card" />
                                     </div>
                                 @endif
                             </div>
@@ -340,13 +341,28 @@
         <div class="flex-1 overflow-y-auto px-4 py-4 space-y-5">
             {{-- User info if logged in --}}
             @auth
+                @php
+                    $drawerActivePlan = auth()->user()->activePlan();
+                @endphp
                 <div class="p-3.5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-slate-900 dark:to-slate-900/80 border border-blue-100/80 dark:border-slate-800 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-sm shadow-sm">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    <div class="relative">
+                        <div class="w-10 h-10 rounded-xl {{ $drawerActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 shadow-md shadow-amber-500/25' : 'bg-blue-600' }} text-white font-black flex items-center justify-center text-sm shadow-sm">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        @if($drawerActivePlan)
+                            <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white dark:ring-slate-900 shadow-xs">
+                                <i class="ph-fill ph-crown"></i>
+                            </span>
+                        @endif
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
-                        <p class="text-[11px] text-slate-500 capitalize">{{ auth()->user()->role }}</p>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ auth()->user()->name }}</p>
+                            @if($drawerActivePlan)
+                                <x-premium-badge :plan="$drawerActivePlan" size="xs" :showPlan="false" />
+                            @endif
+                        </div>
+                        <p class="text-[11px] text-slate-500 capitalize">{{ $drawerActivePlan ? ($drawerActivePlan->plan->name ?? 'Pro Plan') : ucfirst(auth()->user()->role) }}</p>
                     </div>
                 </div>
             @endauth
@@ -465,15 +481,30 @@
 
     {{-- Dedicated Mobile Account Modal / Bottom Sheet --}}
     @auth
+    @php
+        $modalActivePlan = auth()->user()->activePlan();
+    @endphp
     <div id="mobile-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/40 backdrop-blur-sm" onclick="if(event.target===this) window.closeUserAccountModal()">
         <div class="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-slate-200 animate-[slideUp_0.2s_ease-out]">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    <div class="relative">
+                        <div class="w-12 h-12 rounded-2xl {{ $modalActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white shadow-lg shadow-amber-500/25' : 'bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/25' }} text-white font-black text-xl flex items-center justify-center shadow-lg">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        @if($modalActivePlan)
+                            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs">
+                                <i class="ph-fill ph-crown"></i>
+                            </span>
+                        @endif
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h3 class="text-base font-black text-slate-900 truncate">{{ auth()->user()->name }}</h3>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <h3 class="text-base font-black text-slate-900 truncate">{{ auth()->user()->name }}</h3>
+                            @if($modalActivePlan)
+                                <x-premium-badge :plan="$modalActivePlan" size="xs" :showPlan="false" />
+                            @endif
+                        </div>
                         <p class="text-xs text-slate-500 capitalize truncate">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
                     </div>
                 </div>
@@ -481,6 +512,12 @@
                     <i class="ph-bold ph-x text-base"></i>
                 </button>
             </div>
+            
+            @if($modalActivePlan)
+            <div class="mt-3">
+                <x-premium-badge :plan="$modalActivePlan" type="card" />
+            </div>
+            @endif
             
             <div class="py-3 space-y-1">
                 <a href="{{ route('dashboard') }}" onclick="window.closeUserAccountModal()" class="flex items-center gap-3 px-3.5 py-3 rounded-2xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors">

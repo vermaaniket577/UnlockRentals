@@ -42,14 +42,28 @@
 
         {{-- Dashboard / Account Tab --}}
         @auth
+            @php
+                $mobileNavPlan = auth()->user()->activePlan();
+            @endphp
             <a href="{{ route('dashboard') }}" onclick="if(typeof window.openUserAccountModal==='function'){event.preventDefault();window.openUserAccountModal();}" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 {{ request()->routeIs('dashboard*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium' }}" title="Account" aria-label="Account">
                 <div class="relative flex items-center justify-center">
-                    <i class="{{ request()->routeIs('dashboard*') ? 'ph-fill ph-user-circle' : 'ph-bold ph-user-circle' }} text-[22px] transition-transform duration-200 group-hover:scale-110"></i>
+                    <i class="{{ request()->routeIs('dashboard*') ? 'ph-fill ph-user-circle' : 'ph-bold ph-user-circle' }} text-[22px] transition-transform duration-200 group-hover:scale-110 {{ $mobileNavPlan ? 'text-amber-500 dark:text-amber-400' : '' }}"></i>
+                    @if($mobileNavPlan)
+                        <span class="absolute -top-1 -right-1.5 w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[7.5px] ring-1.5 ring-white dark:ring-slate-900 shadow-xs" title="Paid Member">
+                            <i class="ph-fill ph-crown"></i>
+                        </span>
+                    @endif
                     @if(request()->routeIs('dashboard*'))
-                        <span class="absolute -bottom-1.5 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
+                        <span class="absolute -bottom-1.5 w-1.5 h-1.5 {{ $mobileNavPlan ? 'bg-amber-500' : 'bg-blue-600 dark:bg-blue-400' }} rounded-full"></span>
                     @endif
                 </div>
-                <span class="text-[10px] tracking-tight mt-1">Account</span>
+                <span class="text-[10px] tracking-tight mt-1 flex items-center gap-0.5 {{ $mobileNavPlan ? 'font-bold text-amber-600 dark:text-amber-400' : '' }}">
+                    @if($mobileNavPlan)
+                        <span>PRO</span>
+                    @else
+                        <span>Account</span>
+                    @endif
+                </span>
             </a>
         @else
             <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="group flex flex-col items-center justify-center py-1 rounded-xl transition-all duration-150 active:scale-95 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium" title="Sign In" aria-label="Account">

@@ -717,13 +717,25 @@
     <aside class="dash-sidebar" id="dash-sidebar">
         {{-- User profile summary --}}
         <div style="padding: 0 1.5rem; margin-bottom: 0.5rem;">
-            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem; background:#f8fafc; border-radius:12px;">
-                <div style="width:2.5rem;height:2.5rem;background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:'Poppins',sans-serif;flex-shrink:0;">
-                    {{ $nameInitial }}
+            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
+                <div class="relative">
+                    <div style="width:2.5rem;height:2.5rem;{{ $activePlan ? 'background:linear-gradient(135deg,#2563eb,#7c3aed,#f59e0b);box-shadow:0 0 0 2px #fff, 0 0 0 3.5px #f59e0b;' : 'background:linear-gradient(135deg,#2563eb,#7c3aed);' }}border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;font-family:'Poppins',sans-serif;flex-shrink:0;">
+                        {{ $nameInitial }}
+                    </div>
+                    @if($activePlan)
+                        <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white shadow-xs" title="Paid Member">
+                            <i class="ph-fill ph-crown"></i>
+                        </span>
+                    @endif
                 </div>
-                <div style="min-width:0;">
-                    <p style="font-size:0.82rem;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $user->name }}</p>
-                    <p style="font-size:0.7rem;color:#64748b;">Tenant Account</p>
+                <div style="min-width:0; flex:1;">
+                    <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+                        <p style="font-size:0.82rem;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $user->name }}</p>
+                        @if($activePlan)
+                            <x-premium-badge :plan="$activePlan" size="xs" :showPlan="false" />
+                        @endif
+                    </div>
+                    <p style="font-size:0.7rem;color:#64748b;">{{ $activePlan ? ($activePlan->plan?->name ?? 'Pro Plan') : 'Tenant Account' }}</p>
                 </div>
             </div>
         </div>
@@ -802,9 +814,21 @@
             <div class="dash-hero-orb dash-hero-orb-3"></div>
 
             <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;position:relative;z-index:1;">
-                <div class="hero-avatar">{{ $nameInitial }}</div>
+                <div class="relative">
+                    <div class="hero-avatar" style="{{ $activePlan ? 'box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 0 0 6px #f59e0b, 0 8px 25px rgba(245,158,11,0.5);' : '' }}">{{ $nameInitial }}</div>
+                    @if($activePlan)
+                        <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-xs ring-2 ring-white shadow-md" title="Paid Member">
+                            <i class="ph-fill ph-crown"></i>
+                        </span>
+                    @endif
+                </div>
                 <div>
-                    <p class="hero-greeting">{{ $greetIcon }} {{ $greeting }}, {{ explode(' ', $user->name)[0] }}!</p>
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                        <p class="hero-greeting">{{ $greetIcon }} {{ $greeting }}, {{ explode(' ', $user->name)[0] }}!</p>
+                        @if($activePlan)
+                            <x-premium-badge :plan="$activePlan" size="sm" :showPlan="true" />
+                        @endif
+                    </div>
                     <p class="hero-subtitle">Ready to find your perfect home? Let's explore your dashboard.</p>
                 </div>
             </div>

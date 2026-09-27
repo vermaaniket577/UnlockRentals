@@ -793,13 +793,28 @@
                         </h3>
 
                         @if($property->owner)
+                        @php
+                            $ownerPlan = $property->owner->activePlan();
+                        @endphp
                         <div class="p-4 bg-zinc-50 border border-zinc-200/80 rounded-xl mb-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 bg-gradient-to-tr from-[#2874F0] to-[#1e40af] rounded-full flex items-center justify-center text-white text-base font-extrabold shadow-md">
-                                    {{ strtoupper(substr($property->owner->name, 0, 1)) }}
+                                <div class="relative">
+                                    <div class="w-11 h-11 {{ $ownerPlan ? 'bg-gradient-to-tr from-[#2874F0] via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-50 shadow-md shadow-amber-500/25' : 'bg-gradient-to-tr from-[#2874F0] to-[#1e40af] shadow-md' }} rounded-full flex items-center justify-center text-white text-base font-extrabold">
+                                        {{ strtoupper(substr($property->owner->name, 0, 1)) }}
+                                    </div>
+                                    @if($ownerPlan)
+                                        <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white shadow-xs" title="Paid Member">
+                                            <i class="ph-fill ph-crown"></i>
+                                        </span>
+                                    @endif
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-extrabold text-zinc-900 truncate leading-snug">{{ $property->owner->name }}</p>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <p class="text-sm font-extrabold text-zinc-900 truncate leading-snug">{{ $property->owner->name }}</p>
+                                        @if($ownerPlan)
+                                            <x-premium-badge :user="$property->owner" size="xs" :showPlan="false" />
+                                        @endif
+                                    </div>
                                     <p class="text-xs text-zinc-500 font-semibold uppercase tracking-wider mt-0.5">Property Owner</p>
                                 </div>
                             </div>

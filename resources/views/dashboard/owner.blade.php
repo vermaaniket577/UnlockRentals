@@ -12,9 +12,19 @@
             <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                 
                 {{-- User Greeting & Badge --}}
+                @php
+                    $ownerActivePlan = auth()->user()->activePlan();
+                @endphp
                 <div class="flex items-center gap-4 sm:gap-5">
-                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl sm:text-3xl font-extrabold shadow-lg shadow-blue-600/20 ring-4 ring-blue-50 dark:ring-blue-900/30 flex-shrink-0">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    <div class="relative flex-shrink-0">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl {{ $ownerActivePlan ? 'bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 ring-4 ring-amber-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 shadow-xl shadow-amber-500/30' : 'bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-lg shadow-blue-600/20 ring-4 ring-blue-50 dark:ring-blue-900/30' }} text-white flex items-center justify-center text-2xl sm:text-3xl font-extrabold">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        @if($ownerActivePlan)
+                            <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-xs ring-2 ring-white dark:ring-slate-900 shadow-md" title="Paid Member">
+                                <i class="ph-fill ph-crown"></i>
+                            </span>
+                        @endif
                     </div>
                     <div>
                         <div class="flex flex-wrap items-center gap-2 mb-1">
@@ -22,6 +32,9 @@
                             <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-full border border-blue-200/80 dark:border-blue-800">
                                 <i class="ph-fill ph-shield-check text-blue-600 dark:text-blue-400"></i> Verified Owner
                             </span>
+                            @if($ownerActivePlan)
+                                <x-premium-badge :plan="$ownerActivePlan" size="sm" :showPlan="true" />
+                            @endif
                         </div>
                         <p class="text-sm text-slate-500 dark:text-slate-400">
                             Welcome back, <span class="font-semibold text-slate-800 dark:text-slate-200">{{ auth()->user()->name }}</span>! Here is an overview of your rental properties and inquiries.

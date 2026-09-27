@@ -169,13 +169,23 @@
                     {{-- User Profile Pill --}}
                     <div class="rounded-2xl border border-slate-200/90 bg-slate-50/70 p-3.5 dark:border-slate-800 dark:bg-slate-850 flex items-center justify-between gap-2.5">
                         <div class="min-w-0">
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Account (Logged In)</span>
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">Account (Logged In)</span>
+                                @if(auth()->user()->isPaidMember())
+                                    <x-premium-badge size="xs" :showIcon="false" />
+                                @endif
+                            </div>
                             <p class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-white truncate">{{ auth()->user()->name }}</p>
                             <p class="text-xs text-slate-500 dark:text-slate-400 truncate font-normal">{{ auth()->user()->email }}</p>
                         </div>
-                        <span class="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 font-bold text-xs flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-800">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                        </span>
+                        <div class="relative shrink-0">
+                            <span class="h-8 w-8 rounded-full {{ auth()->user()->isPaidMember() ? 'ring-2 ring-amber-400 bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-900 font-extrabold shadow-sm' : 'bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 font-bold border border-blue-100 dark:border-blue-800' }} text-xs flex items-center justify-center">
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            </span>
+                            @if(auth()->user()->isPaidMember())
+                                <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-900 flex items-center justify-center text-[8px] font-black shadow-xs ring-1 ring-white dark:ring-slate-900" title="Premium Member">👑</span>
+                            @endif
+                        </div>
                     </div>
 
                     {{-- Mobile Number Input --}}

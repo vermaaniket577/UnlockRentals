@@ -10,13 +10,33 @@
             <i class="ph-bold ph-x text-lg"></i>
         </button>
 
-        {{-- Header --}}
+        {{-- Profile Header (LinkedIn Style) --}}
+        @php
+            $profileActivePlan = auth()->user()->activePlan();
+        @endphp
         <div class="text-center mb-6">
-            <div class="mx-auto w-12 h-12 rounded-2xl bg-blue-50 text-blue-650 flex items-center justify-center mb-3">
-                <i class="ph-bold ph-user-gear text-2xl"></i>
+            <div class="relative inline-block mb-3">
+                <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-white font-black text-2xl shadow-lg {{ $profileActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-4 ring-amber-400 ring-offset-2 ring-offset-white shadow-amber-500/30' : 'bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/20' }}">
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </div>
+                @if($profileActivePlan)
+                    <span class="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-xs ring-2 ring-white shadow-md" title="Paid Member">
+                        <i class="ph-fill ph-crown"></i>
+                    </span>
+                @endif
             </div>
-            <h2 class="text-xl font-extrabold tracking-tight text-slate-900">Profile Settings</h2>
-            <p class="text-xs text-slate-500 mt-1 font-medium">Update your account name and mobile number</p>
+
+            <div class="flex items-center justify-center gap-2 flex-wrap mb-1">
+                <h2 class="text-xl font-extrabold tracking-tight text-slate-900">{{ auth()->user()->name }}</h2>
+                @if($profileActivePlan)
+                    <x-premium-badge :plan="$profileActivePlan" size="sm" :showPlan="false" />
+                @endif
+            </div>
+            <p class="text-xs text-slate-500 font-medium">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
+
+            <div class="mt-4 text-left">
+                <x-premium-badge :plan="$profileActivePlan" type="card" />
+            </div>
         </div>
 
         {{-- Form --}}

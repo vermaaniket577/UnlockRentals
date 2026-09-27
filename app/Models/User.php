@@ -186,6 +186,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is a verified paid member.
+     */
+    public function isPaidMember(): bool
+    {
+        return $this->hasActivePlan();
+    }
+
+    /**
+     * Get the active plan name (e.g. Silver, Gold, Platinum).
+     */
+    public function activePlanName(): ?string
+    {
+        return $this->activePlan()?->plan?->name;
+    }
+
+    /**
      * Check if user has an active plan eligible for a specific property.
      */
     public function hasActivePlanForProperty(Property $property): bool
