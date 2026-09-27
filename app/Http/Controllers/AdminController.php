@@ -146,6 +146,23 @@ class AdminController extends Controller
             }
         }
 
+        // Paid Membership filter
+        if ($request->filled('membership')) {
+            if ($request->membership === 'paid') {
+                $query->whereHas('userPlans', function ($q) {
+                    $q->active();
+                });
+            } elseif ($request->membership === 'free') {
+                $query->whereDoesntHave('userPlans', function ($q) {
+                    $q->active();
+                });
+            } elseif (is_numeric($request->membership)) {
+                $query->whereHas('userPlans', function ($q) use ($request) {
+                    $q->active()->where('plan_id', $request->membership);
+                });
+            }
+        }
+
         // KPI Stats
         $stats = [
             'total'      => User::count(),
@@ -154,7 +171,11 @@ class AdminController extends Controller
             'admins'     => User::where('role', 'admin')->count(),
             'verified'   => User::whereNotNull('phone_verified_at')->count(),
             'unverified' => User::whereNull('phone_verified_at')->count(),
+            'paid'       => User::whereHas('userPlans', fn ($q) => $q->active())->count(),
+            'free'       => User::whereDoesntHave('userPlans', fn ($q) => $q->active())->count(),
         ];
+
+        $plans = Plan::where('is_active', true)->orderBy('price')->get();
 
         $users = $query->withCount(['properties', 'inquiries'])
             ->with(['userPlans' => function ($q) {
@@ -164,7 +185,7 @@ class AdminController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.users', compact('users', 'stats'));
+        return view('admin.users', compact('users', 'stats', 'plans'));
     }
 
     /**
