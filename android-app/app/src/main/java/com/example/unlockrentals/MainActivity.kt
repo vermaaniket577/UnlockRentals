@@ -322,9 +322,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     UrlNavigationChecker.NavigationTarget.UPI -> {
                         try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                             startActivity(intent)
                         } catch (e: Exception) {
                             Toast.makeText(this@MainActivity, "No compatible UPI app found on device", Toast.LENGTH_SHORT).show()

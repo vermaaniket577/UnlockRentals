@@ -281,15 +281,22 @@ window.UnlockSubscriptionCheckout = (config) => {
                 stopPolling();
                 clearActivePendingOrder();
 
-                showLoading('Payment verified! Plan activated! Redirecting to dashboard...');
+                try {
+                    if (data.subscription_success) {
+                        sessionStorage.setItem('ur_subscription_success', JSON.stringify(data.subscription_success));
+                        localStorage.setItem('ur_subscription_success', JSON.stringify(data.subscription_success));
+                    }
+                } catch (_) {}
+
+                showLoading('Payment verified! Plan activated! Taking you home...');
                 if (progressBar) {
                     progressBar.style.transition = 'width 0.8s ease';
                     progressBar.style.width = '100%';
                 }
 
                 setTimeout(() => {
-                    window.location.href = data.redirect_url || config.dashboardUrl || '/dashboard';
-                }, 400);
+                    window.location.href = data.redirect_url || config.homeUrl || config.dashboardUrl || '/?payment_success=1';
+                }, 350);
             }
         } catch (_) {
             // Silently retry on next tick
@@ -327,10 +334,15 @@ window.UnlockSubscriptionCheckout = (config) => {
     // Mobile App & Browser Resume Handler:
     // When returning from PhonePe, GPay, Paytm, or an external bank app, immediately check order status!
     function handlePageResume() {
-        if (currentOrderId && !paymentCompleted) {
-            checkOrderStatusOnce(currentOrderId);
+        if (paymentCompleted) return;
+
+        const pendingOrder = currentOrderId || sessionStorage.getItem('ur_pending_order_id') || localStorage.getItem('ur_pending_order_id');
+        if (pendingOrder) {
+            currentOrderId = pendingOrder;
+            showLoading('Verifying payment with your bank / UPI app... Almost done!');
+            checkOrderStatusOnce(pendingOrder);
             if (!pollingInterval) {
-                startOrderPolling(currentOrderId);
+                startOrderPolling(pendingOrder);
             }
         }
     }
@@ -511,9 +523,10 @@ window.UnlockSubscriptionCheckout = (config) => {
             razorpay.open();
         });
 
-        // Instant Direct Razorpay Launch: Auto-launch if valid phone number is available
+        // Instant Direct Razorpay Launch: Auto-launch ONLY if no pending order exists
         setTimeout(() => {
-            if (!hasDismissedModal && !paymentCompleted && !isOpeningRazorpay && !currentOrderId) {
+            const hasPendingOrder = !!(currentOrderId || sessionStorage.getItem('ur_pending_order_id') || localStorage.getItem('ur_pending_order_id'));
+            if (!hasDismissedModal && !paymentCompleted && !isOpeningRazorpay && !hasPendingOrder) {
                 const existingPhone = resolveContactNumber();
                 if (isValidIndianMobile(existingPhone)) {
                     payButton?.click();
@@ -522,7 +535,7 @@ window.UnlockSubscriptionCheckout = (config) => {
                     phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
-        }, 150);
+        }, 200);
 
     } else {
         payButton?.addEventListener('click', (event) => {

@@ -79,6 +79,12 @@ class PlanController extends Controller
 
         $activePlan = $user->activePlan($targetCategory);
         if ($activePlan && $activePlan->remaining_contacts > 0 && $activePlan->plan && (float) $plan->price <= (float) $activePlan->plan->price) {
+            if ($activePlan->plan_id === $plan->id && $activePlan->created_at && $activePlan->created_at->gt(now()->subMinutes(30))) {
+                return redirect()->route('home', ['payment_success' => 1])
+                    ->with('success', "Your \"{$plan->name}\" plan is active!")
+                    ->with('subscription_success', $this->payments->successPayload($activePlan, $activePlan->invoice_id ?? 'INV-APPROVED'));
+            }
+
             return redirect()->route('plans.index', ['billing' => $plan->isBuyPlan() ? 'yearly' : 'monthly'])
                 ->with('error', "You already have an active {$categoryName} of this tier or higher with remaining contact views. You can only upgrade to a higher plan.");
         }
@@ -273,7 +279,7 @@ class PlanController extends Controller
         // Check for duplicate activation
         $existingSubscription = $this->payments->findApprovedByTransaction($reference);
         if ($existingSubscription) {
-            return redirect()->route('dashboard')
+            return redirect()->route('home', ['payment_success' => 1])
                 ->with('success', 'This payment was already verified and your plan is active.')
                 ->with('subscription_success', $this->payments->successPayload(
                     $existingSubscription,
@@ -409,7 +415,7 @@ class PlanController extends Controller
             report($e);
         }
 
-        return redirect()->route('dashboard')
+        return redirect()->route('home', ['payment_success' => 1])
             ->with('success', "Payment successful. Your \"{$plan->name}\" plan has been activated automatically.")
             ->with('subscription_success', $this->payments->successPayload($userPlan, $invoiceId));
     }
@@ -471,7 +477,7 @@ class PlanController extends Controller
                             'payment_id' => $paymentId,
                             'order_id' => $request->order_id,
                             'amount' => $payment['amount'],
-                            'redirect_url' => route('dashboard'),
+                            'redirect_url' => route('home', ['payment_success' => 1]),
                             'subscription_success' => $successPayload,
                         ]);
                     }
@@ -521,7 +527,7 @@ class PlanController extends Controller
                             'payment_id' => $paymentId,
                             'order_id' => $request->order_id,
                             'amount' => $payment['amount'],
-                            'redirect_url' => route('dashboard'),
+                            'redirect_url' => route('home', ['payment_success' => 1]),
                             'subscription_success' => $successPayload,
                             'message' => 'Payment verified and plan activated successfully!',
                         ]);
@@ -584,7 +590,7 @@ class PlanController extends Controller
         // Check if already activated
         $existing = $this->payments->findApprovedByTransaction($paymentId);
         if ($existing) {
-            return redirect()->route('dashboard')
+            return redirect()->route('home', ['payment_success' => 1])
                 ->with('success', 'Your plan is active.')
                 ->with('subscription_success', $this->payments->successPayload($existing, $existing->invoice_id ?? 'INV-APPROVED'));
         }
@@ -641,7 +647,7 @@ class PlanController extends Controller
                 report($mailEx);
             }
 
-            return redirect()->route('dashboard')
+            return redirect()->route('home', ['payment_success' => 1])
                 ->with('success', "Payment successful. Your \"{$plan->name}\" plan has been activated automatically.")
                 ->with('subscription_success', $this->payments->successPayload($userPlan, $invoiceId));
         } catch (\Throwable $e) {

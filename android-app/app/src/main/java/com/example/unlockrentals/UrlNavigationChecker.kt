@@ -46,6 +46,7 @@ class UrlNavigationChecker(private val productionUrl: String) {
             prodHost.isNotEmpty() && (host == prodHost || host.contains(prodHost)) -> NavigationTarget.INTERNAL
             host.contains("unlockrentals") -> NavigationTarget.INTERNAL
             host.contains("10.0.2.2") || host.contains("localhost") || host.contains("127.0.0.1") -> NavigationTarget.INTERNAL
+            host.contains("razorpay.com") || host.contains("rzp.io") || host.contains("razorpay") -> NavigationTarget.INTERNAL
             else -> NavigationTarget.EXTERNAL
         }
     }

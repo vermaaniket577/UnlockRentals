@@ -3717,6 +3717,7 @@
     @endguest
 
     @include('components.idle-logout')
+    <x-subscription.payment-success-modal />
 
     <!-- Deferred Non-Critical Scripts -->
     <script defer src="{{ asset('js/otp-verification.js') }}?v=20260916"></script>
