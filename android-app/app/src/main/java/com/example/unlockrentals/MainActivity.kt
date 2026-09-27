@@ -105,9 +105,9 @@ class MainActivity : AppCompatActivity() {
             )
             setProgressBackgroundColorSchemeColor(getColor(R.color.white))
             
-            // Only trigger refresh if webView is at the very top
+            // Allow pull-to-refresh ONLY when webView is at the absolute top of the page (cannot scroll up any further)
             setOnChildScrollUpCallback { _, _ ->
-                webView.scrollY > 0
+                webView.canScrollVertically(-1)
             }
         }
 
@@ -118,8 +118,8 @@ class MainActivity : AppCompatActivity() {
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
-            isNestedScrollingEnabled = false // Disabled to eliminate touch dispatch delay and frame stutter
-            overScrollMode = View.OVER_SCROLL_NEVER
+            isNestedScrollingEnabled = true
+            overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
             isVerticalScrollBarEnabled = false
             isHorizontalScrollBarEnabled = false
             setBackgroundColor(getColor(R.color.primary_dark))
@@ -255,7 +255,7 @@ class MainActivity : AppCompatActivity() {
 
         // 60fps/120fps Hardware Acceleration & Instant Touch Performance
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-        webView.overScrollMode = View.OVER_SCROLL_NEVER
+        webView.overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
         webView.isVerticalScrollBarEnabled = false
         webView.isHorizontalScrollBarEnabled = false
         webView.isHapticFeedbackEnabled = true
@@ -530,7 +530,7 @@ class MainActivity : AppCompatActivity() {
                 if (!style) {
                     style = document.createElement('style');
                     style.id = 'ur-native-app-styles';
-                    style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section, .main-header .main-nav, #main-nav .main-nav { display: none !important; } #welcome-mobile-top-login, #nav-mobile-top-login { display: inline-flex !important; } * { -webkit-tap-highlight-color: transparent !important; } html, body { touch-action: manipulation !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: none !important; } button, a, input, select, textarea, [role="button"], [role="tab"], .ur-mc-cta-btn, .ur-hps-tab-btn, .ur-hps-arrow-btn, .ur-hps-cta-btn, .plan-cta-btn, .mobile-slider-dot { touch-action: manipulation !important; -webkit-touch-callout: none !important; user-select: none !important; cursor: pointer !important; } button:active, a:active, [role="button"]:active, [role="tab"]:active, .ur-mc-cta-btn:active, .ur-hps-tab-btn:active, .plan-cta-btn:active { transform: scale(0.96) !important; transition: transform 0.05s ease-out !important; }';
+                    style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section, .main-header .main-nav, #main-nav .main-nav { display: none !important; } #welcome-mobile-top-login, #nav-mobile-top-login { display: inline-flex !important; } * { -webkit-tap-highlight-color: transparent !important; } html, body { -webkit-overflow-scrolling: touch !important; } button, a, input, select, textarea, [role="button"], [role="tab"], .ur-mc-cta-btn, .ur-hps-tab-btn, .ur-hps-arrow-btn, .ur-hps-cta-btn, .plan-cta-btn, .mobile-slider-dot { touch-action: manipulation !important; -webkit-touch-callout: none !important; user-select: none !important; cursor: pointer !important; } button:active, a:active, [role="button"]:active, [role="tab"]:active, .ur-mc-cta-btn:active, .ur-hps-tab-btn:active, .plan-cta-btn:active { transform: scale(0.96) !important; transition: transform 0.05s ease-out !important; }';
                     document.head.appendChild(style);
                 }
                 if (!window.__urPrefetchAttached && 'fetch' in window) {

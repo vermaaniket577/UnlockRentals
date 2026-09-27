@@ -50,9 +50,7 @@
             -webkit-tap-highlight-color: transparent !important;
         }
         html, body {
-            touch-action: manipulation;
             -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: none;
         }
         button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .card, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn, .mobile-slider-dot, #mobile-bottom-nav a {
             touch-action: manipulation !important;
