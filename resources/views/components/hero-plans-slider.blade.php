@@ -3112,7 +3112,21 @@
         } catch (e) {}
 
         goToSlide(initialIndex, true);
-        startAutoPlay();
+
+        if ('IntersectionObserver' in window) {
+            const hpsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        startAutoPlay();
+                    } else {
+                        stopAutoPlay();
+                    }
+                });
+            }, { threshold: 0.2 });
+            hpsObserver.observe(slider);
+        } else {
+            startAutoPlay();
+        }
     }
 
     if (document.readyState === 'loading') {

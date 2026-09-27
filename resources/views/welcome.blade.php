@@ -32,18 +32,38 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <style>
-        /* Zero-Latency Instant Mobile Touch Performance */
+        /* Instant Mobile App Speed & Smooth Performance */
         * {
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent !important;
         }
         html, body {
             touch-action: manipulation;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: none;
         }
-        button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .card, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn {
-            touch-action: manipulation;
-            -webkit-touch-callout: none;
+        button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .card, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn, .mobile-slider-dot, #mobile-bottom-nav a {
+            touch-action: manipulation !important;
+            -webkit-touch-callout: none !important;
             cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        /* Instant Tactile Feedback without Transition Lag */
+        button:active, a:active, [role="button"]:active, [role="tab"]:active, .btn:active, .ur-hps-tab-btn:active, .ur-mc-cta-btn:active, .plan-cta-btn:active {
+            transform: scale(0.96) !important;
+            transition: transform 0.05s ease-out !important;
+            opacity: 0.9 !important;
+        }
+        /* Mobile Hardware Composite Optimization */
+        @media (max-width: 768px) {
+            #mobile-bottom-nav {
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+            }
+            .promo-slider, .ur-hps-stage, #mobileHeroSliderContainer {
+                transform: translateZ(0);
+                backface-visibility: hidden;
+            }
         }
     </style>
     <script>
@@ -56,6 +76,47 @@
             } else if (localStorage.getItem('ur-theme') === 'dark') {
                 document.documentElement.classList.add('dark');
             }
+        })();
+    </script>
+
+    <!-- Instant Single-Touch Navigation & Ultra-Fast Response Engine -->
+    <script>
+        (function() {
+            if (!('fetch' in window) || !('Promise' in window)) return;
+            var prefetched = new Set();
+            function prefetchUrl(url) {
+                if (!url || prefetched.has(url)) return;
+                try {
+                    var u = new URL(url, window.location.href);
+                    if (u.origin !== window.location.origin) return;
+                    if (u.pathname === window.location.pathname && u.search === window.location.search) return;
+                    if (/logout|login|register|delete|checkout|pay|payment|admin/i.test(u.pathname)) return;
+                    if (u.hash && u.pathname === window.location.pathname) return;
+
+                    prefetched.add(url);
+                    var link = document.createElement('link');
+                    link.rel = 'prefetch';
+                    link.href = url;
+                    link.as = 'document';
+                    document.head.appendChild(link);
+                } catch(e) {}
+            }
+
+            document.addEventListener('touchstart', function(e) {
+                var a = e.target.closest('a');
+                if (a && a.href && !a.target && !a.hasAttribute('download')) {
+                    prefetchUrl(a.href);
+                }
+            }, { passive: true });
+
+            var hoverTimer;
+            document.addEventListener('mouseover', function(e) {
+                var a = e.target.closest('a');
+                if (a && a.href && !a.target && !a.hasAttribute('download')) {
+                    clearTimeout(hoverTimer);
+                    hoverTimer = setTimeout(function() { prefetchUrl(a.href); }, 65);
+                }
+            }, { passive: true });
         })();
     </script>
     <link rel="canonical" href="{{ route('home') }}">
@@ -83,9 +144,12 @@
     <meta property="twitter:description" content="Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK flats, PGs & houses for rent near you directly from owners across India.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
-    {{-- High-Performance Deferred Google AdSense (Zero Blocking on Initial Page Load) --}}
+    {{-- High-Performance Deferred Google AdSense (Zero Blocking on Initial Page Load & Never in App) --}}
     <script>
         (function() {
+            var isApp = /UnlockRentals|wv|Version\/[0-9.]+/i.test(navigator.userAgent) || window.isNativeApp === true || new URLSearchParams(window.location.search).get('app') === '1';
+            if (isApp) return;
+
             var adsLoaded = false;
             function loadAdSense() {
                 if (adsLoaded) return;
@@ -97,9 +161,9 @@
                 document.head.appendChild(script);
             }
             if ('requestIdleCallback' in window) {
-                requestIdleCallback(function() { setTimeout(loadAdSense, 2000); });
+                requestIdleCallback(function() { setTimeout(loadAdSense, 2500); });
             } else {
-                setTimeout(loadAdSense, 2500);
+                setTimeout(loadAdSense, 3000);
             }
             ['scroll', 'mousemove', 'touchstart', 'click', 'keydown'].forEach(function(evt) {
                 window.addEventListener(evt, loadAdSense, { once: true, passive: true });
@@ -3229,15 +3293,35 @@
             });
 
             function startPromoInterval() {
+                if (promoSlideInterval) clearInterval(promoSlideInterval);
                 promoSlideInterval = setInterval(nextPromoSlide, 5000);
             }
 
+            function stopPromoInterval() {
+                if (promoSlideInterval) {
+                    clearInterval(promoSlideInterval);
+                    promoSlideInterval = null;
+                }
+            }
+
             function resetPromoInterval() {
-                clearInterval(promoSlideInterval);
+                stopPromoInterval();
                 startPromoInterval();
             }
 
-            if (promoTotalSlides > 0) {
+            const promoContainer = document.querySelector('.promo-slider-container');
+            if (promoContainer && 'IntersectionObserver' in window) {
+                const promoObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            startPromoInterval();
+                        } else {
+                            stopPromoInterval();
+                        }
+                    });
+                }, { threshold: 0.15 });
+                promoObserver.observe(promoContainer);
+            } else if (promoTotalSlides > 0) {
                 startPromoInterval();
             }
 
@@ -3395,11 +3479,19 @@
             };
 
             window.startMobileHeroTimer = function() {
+                if (mobileHeroTimer) clearInterval(mobileHeroTimer);
                 mobileHeroTimer = setInterval(window.nextMobileHeroSlide, 4500);
             };
 
+            window.stopMobileHeroTimer = function() {
+                if (mobileHeroTimer) {
+                    clearInterval(mobileHeroTimer);
+                    mobileHeroTimer = null;
+                }
+            };
+
             window.resetMobileHeroTimer = function() {
-                if (mobileHeroTimer) clearInterval(mobileHeroTimer);
+                window.stopMobileHeroTimer();
                 window.startMobileHeroTimer();
             };
 
@@ -3407,14 +3499,27 @@
                 const container = document.getElementById('mobileHeroSliderContainer');
                 if (!container) return;
 
-                window.startMobileHeroTimer();
+                if ('IntersectionObserver' in window) {
+                    const heroObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                window.startMobileHeroTimer();
+                            } else {
+                                window.stopMobileHeroTimer();
+                            }
+                        });
+                    }, { threshold: 0.2 });
+                    heroObserver.observe(container);
+                } else {
+                    window.startMobileHeroTimer();
+                }
 
                 let touchStartX = 0;
                 let touchEndX = 0;
 
                 container.addEventListener('touchstart', (e) => {
                     touchStartX = e.touches[0].clientX;
-                    if (mobileHeroTimer) clearInterval(mobileHeroTimer);
+                    window.stopMobileHeroTimer();
                 }, { passive: true });
 
                 container.addEventListener('touchend', (e) => {

@@ -45,20 +45,77 @@
         .is-mobile-app .website-only-social {
             display: none !important;
         }
-        /* Zero-Latency Instant Mobile Touch Performance */
+        /* Instant Mobile App Speed & Smooth Performance */
         * {
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent !important;
         }
         html, body {
             touch-action: manipulation;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: none;
         }
-        button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .card, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn {
-            touch-action: manipulation;
-            -webkit-touch-callout: none;
+        button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .card, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn, .mobile-slider-dot, #mobile-bottom-nav a {
+            touch-action: manipulation !important;
+            -webkit-touch-callout: none !important;
             cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        /* Instant Tactile Feedback without Transition Lag */
+        button:active, a:active, [role="button"]:active, [role="tab"]:active, .btn:active, .ur-hps-tab-btn:active, .ur-mc-cta-btn:active, .plan-cta-btn:active {
+            transform: scale(0.96) !important;
+            transition: transform 0.05s ease-out !important;
+            opacity: 0.9 !important;
+        }
+        /* Mobile Hardware Composite Optimization */
+        @media (max-width: 768px) {
+            #mobile-bottom-nav {
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+            }
         }
     </style>
+
+    <!-- Instant Single-Touch Navigation & Ultra-Fast Response Engine -->
+    <script>
+        (function() {
+            if (!('fetch' in window) || !('Promise' in window)) return;
+            var prefetched = new Set();
+            function prefetchUrl(url) {
+                if (!url || prefetched.has(url)) return;
+                try {
+                    var u = new URL(url, window.location.href);
+                    if (u.origin !== window.location.origin) return;
+                    if (u.pathname === window.location.pathname && u.search === window.location.search) return;
+                    if (/logout|login|register|delete|checkout|pay|payment|admin/i.test(u.pathname)) return;
+                    if (u.hash && u.pathname === window.location.pathname) return;
+
+                    prefetched.add(url);
+                    var link = document.createElement('link');
+                    link.rel = 'prefetch';
+                    link.href = url;
+                    link.as = 'document';
+                    document.head.appendChild(link);
+                } catch(e) {}
+            }
+
+            document.addEventListener('touchstart', function(e) {
+                var a = e.target.closest('a');
+                if (a && a.href && !a.target && !a.hasAttribute('download')) {
+                    prefetchUrl(a.href);
+                }
+            }, { passive: true });
+
+            var hoverTimer;
+            document.addEventListener('mouseover', function(e) {
+                var a = e.target.closest('a');
+                if (a && a.href && !a.target && !a.hasAttribute('download')) {
+                    clearTimeout(hoverTimer);
+                    hoverTimer = setTimeout(function() { prefetchUrl(a.href); }, 65);
+                }
+            }, { passive: true });
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -80,9 +137,12 @@
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
 
-    {{-- High-Performance Deferred Google AdSense (Zero Blocking on Initial Page Load) --}}
+    {{-- High-Performance Deferred Google AdSense (Zero Blocking on Initial Page Load & Never in App) --}}
     <script>
         (function() {
+            var isApp = /UnlockRentals|wv|Version\/[0-9.]+/i.test(navigator.userAgent) || window.isNativeApp === true || new URLSearchParams(window.location.search).get('app') === '1';
+            if (isApp) return;
+
             var adsLoaded = false;
             function loadAdSense() {
                 if (adsLoaded) return;
@@ -94,9 +154,9 @@
                 document.head.appendChild(script);
             }
             if ('requestIdleCallback' in window) {
-                requestIdleCallback(function() { setTimeout(loadAdSense, 2000); });
+                requestIdleCallback(function() { setTimeout(loadAdSense, 2500); });
             } else {
-                setTimeout(loadAdSense, 2500);
+                setTimeout(loadAdSense, 3000);
             }
             ['scroll', 'mousemove', 'touchstart', 'click', 'keydown'].forEach(function(evt) {
                 window.addEventListener(evt, loadAdSense, { once: true, passive: true });

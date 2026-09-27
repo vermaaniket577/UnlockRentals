@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
-            isNestedScrollingEnabled = true
+            isNestedScrollingEnabled = false // Disabled to eliminate touch dispatch delay and frame stutter
             overScrollMode = View.OVER_SCROLL_NEVER
             isVerticalScrollBarEnabled = false
             isHorizontalScrollBarEnabled = false
@@ -260,6 +260,17 @@ class MainActivity : AppCompatActivity() {
         webView.isHorizontalScrollBarEnabled = false
         webView.isHapticFeedbackEnabled = true
 
+        // Enable Chromium ServiceWorker Caching for static assets (CSS, JS, Fonts, Images)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            try {
+                ServiceWorkerController.getInstance().setServiceWorkerClient(object : ServiceWorkerClient() {
+                    override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse? {
+                        return null
+                    }
+                })
+            } catch (_: Exception) {}
+        }
+
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
@@ -278,10 +289,13 @@ class MainActivity : AppCompatActivity() {
             // Blazing Fast Cache-First Mode
             cacheMode = if (isNetworkAvailable()) WebSettings.LOAD_DEFAULT else WebSettings.LOAD_CACHE_ELSE_NETWORK
 
-            // Pre-rasterize offscreen content to eliminate scroll stutter and blank tiles
+            // Viewport-only tile rendering - avoids allocating massive RAM for offscreen DOM
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                offscreenPreRaster = true
+                offscreenPreRaster = false
             }
+
+            // Normal layout algorithm for fastest layout passes
+            layoutAlgorithm = WebSettings.LayoutAlgorithm.NORMAL
 
             // High priority render thread & Google Safe Browsing overhead removal
             @Suppress("DEPRECATION")
@@ -386,6 +400,7 @@ class MainActivity : AppCompatActivity() {
                 super.onPageCommitVisible(view, url)
                 // First meaningful paint ready -> reveal immediately
                 dismissSplash()
+                injectInstantPerformanceScript(view)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -393,20 +408,7 @@ class MainActivity : AppCompatActivity() {
                 dismissSplash()
                 swipeRefresh.isRefreshing = false
                 progressBar.visibility = View.GONE
-
-                // Inject CSS to hide web-only prompts and enforce instant single-touch responsiveness
-                val hideScript = """
-                    (function() {
-                        var style = document.getElementById('ur-native-app-styles');
-                        if (!style) {
-                            style = document.createElement('style');
-                            style.id = 'ur-native-app-styles';
-                            style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section, .main-header .main-nav, #main-nav .main-nav { display: none !important; } #welcome-mobile-top-login, #nav-mobile-top-login { display: inline-flex !important; } * { -webkit-tap-highlight-color: transparent !important; } html, body { touch-action: manipulation !important; -webkit-overflow-scrolling: touch !important; } button, a, input, select, textarea, [role="button"], [role="tab"], .ur-mc-cta-btn, .ur-hps-tab-btn, .ur-hps-arrow-btn, .ur-hps-cta-btn, .plan-cta-btn { touch-action: manipulation !important; -webkit-touch-callout: none !important; user-select: none !important; cursor: pointer !important; }';
-                            document.head.appendChild(style);
-                        }
-                    })();
-                """.trimIndent()
-                webView.evaluateJavascript(hideScript, null)
+                injectInstantPerformanceScript(view)
             }
 
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
@@ -519,6 +521,40 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Download failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun injectInstantPerformanceScript(view: WebView?) {
+        val script = """
+            (function() {
+                var style = document.getElementById('ur-native-app-styles');
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'ur-native-app-styles';
+                    style.innerHTML = '#pwa-install-drawer, .pwa-install-prompt, .app-download-section, .app-dl-section, .main-header .main-nav, #main-nav .main-nav { display: none !important; } #welcome-mobile-top-login, #nav-mobile-top-login { display: inline-flex !important; } * { -webkit-tap-highlight-color: transparent !important; } html, body { touch-action: manipulation !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior-y: none !important; } button, a, input, select, textarea, [role="button"], [role="tab"], .ur-mc-cta-btn, .ur-hps-tab-btn, .ur-hps-arrow-btn, .ur-hps-cta-btn, .plan-cta-btn, .mobile-slider-dot { touch-action: manipulation !important; -webkit-touch-callout: none !important; user-select: none !important; cursor: pointer !important; } button:active, a:active, [role="button"]:active, [role="tab"]:active, .ur-mc-cta-btn:active, .ur-hps-tab-btn:active, .plan-cta-btn:active { transform: scale(0.96) !important; transition: transform 0.05s ease-out !important; }';
+                    document.head.appendChild(style);
+                }
+                if (!window.__urPrefetchAttached && 'fetch' in window) {
+                    window.__urPrefetchAttached = true;
+                    var prefetched = new Set();
+                    document.addEventListener('touchstart', function(e) {
+                        var a = e.target.closest('a');
+                        if (a && a.href && !a.target && !a.hasAttribute('download')) {
+                            try {
+                                var u = new URL(a.href, window.location.href);
+                                if (u.origin === window.location.origin && !prefetched.has(u.href) && !/logout|delete|pay|admin/i.test(u.pathname)) {
+                                    prefetched.add(u.href);
+                                    var link = document.createElement('link');
+                                    link.rel = 'prefetch';
+                                    link.href = u.href;
+                                    document.head.appendChild(link);
+                                }
+                            } catch (_) {}
+                        }
+                    }, { passive: true });
+                }
+            })();
+        """.trimIndent()
+        view?.evaluateJavascript(script, null)
     }
 
     private fun showErrorPage() {
