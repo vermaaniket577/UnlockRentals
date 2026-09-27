@@ -11,6 +11,14 @@ use App\Models\UserPlan;
 use App\Models\Feedback;
 use App\Models\ProcessStep;
 use App\Models\Blog;
+use App\Models\Lead;
+use App\Models\LeadFollowUp;
+use App\Models\CallbackRequest;
+use App\Models\Visitor;
+use App\Models\VisitorSession;
+use App\Models\Professional;
+use App\Models\ProfessionalLead;
+use App\Models\ChatbotMessage;
 use App\Mail\SubscriptionActivated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -47,6 +55,151 @@ class AdminController extends Controller
             ];
         });
 
+        // Comprehensive Real-time CRM Pipeline & Analytics Summary
+        $crmStats = Cache::remember('admin_crm_summary_stats', 60, function () {
+            $hasLeads = Schema::hasTable('leads');
+            $hasFollowUps = Schema::hasTable('lead_follow_ups');
+            $hasCallbacks = Schema::hasTable('callback_requests');
+            $hasVisitors = Schema::hasTable('visitors');
+            $hasSessions = Schema::hasTable('visitor_sessions');
+            $hasProf = Schema::hasTable('professionals');
+            $hasProfLeads = Schema::hasTable('professional_leads');
+            $hasPlans = Schema::hasTable('user_plans');
+            $hasInquiries = Schema::hasTable('inquiries');
+            $hasChats = Schema::hasTable('chatbot_messages');
+
+            $totalLeads = $hasLeads ? Lead::count() : 0;
+            $newLeads = $hasLeads ? Lead::where('lead_status', 'new')->count() : 0;
+            $todayLeads = $hasLeads ? Lead::whereDate('created_at', Carbon::today())->count() : 0;
+            $inProgressLeads = $hasLeads ? Lead::whereIn('lead_status', ['contacted', 'interested', 'follow_up', 'visit_scheduled', 'negotiation'])->count() : 0;
+            $convertedLeads = $hasLeads ? Lead::where('lead_status', 'converted')->count() : 0;
+            $lostLeads = $hasLeads ? Lead::whereIn('lead_status', ['lost', 'invalid'])->count() : 0;
+            $whatsappLeads = $hasLeads ? Lead::where('whatsapp_opt_in', true)->count() : 0;
+
+            $leadFunnel = [
+                'new' => $newLeads,
+                'contacted' => $hasLeads ? Lead::where('lead_status', 'contacted')->count() : 0,
+                'interested' => $hasLeads ? Lead::where('lead_status', 'interested')->count() : 0,
+                'visit_scheduled' => $hasLeads ? Lead::where('lead_status', 'visit_scheduled')->count() : 0,
+                'negotiation' => $hasLeads ? Lead::where('lead_status', 'negotiation')->count() : 0,
+                'converted' => $convertedLeads,
+                'lost' => $lostLeads,
+            ];
+
+            $leadConversionRate = $totalLeads > 0 ? round(($convertedLeads / $totalLeads) * 100, 1) : 0;
+
+            // Follow-ups
+            $totalFollowUps = $hasFollowUps ? LeadFollowUp::count() : 0;
+            $pendingFollowUps = $hasFollowUps ? LeadFollowUp::where('status', 'pending')->count() : 0;
+            $dueTodayFollowUps = $hasFollowUps ? LeadFollowUp::where('status', 'pending')->where('scheduled_at', '<=', Carbon::now()->endOfDay())->count() : 0;
+            $overdueFollowUps = $hasFollowUps ? LeadFollowUp::where('status', 'pending')->where('scheduled_at', '<', Carbon::now())->count() : 0;
+
+            // Callbacks
+            $totalCallbacks = $hasCallbacks ? CallbackRequest::count() : 0;
+            $pendingCallbacks = $hasCallbacks ? CallbackRequest::whereIn('status', ['new', 'pending'])->count() : 0;
+            $handledCallbacks = $hasCallbacks ? CallbackRequest::whereIn('status', ['called', 'completed', 'interested'])->count() : 0;
+
+            // Visitors & Traffic CRM
+            $totalVisitors = $hasVisitors ? Visitor::count() : 0;
+            $todayVisitors = $hasVisitors ? Visitor::whereDate('created_at', Carbon::today())->count() : 0;
+            $todaySessions = $hasSessions ? VisitorSession::whereDate('started_at', Carbon::today())->count() : 0;
+            $visitorToLeadRate = $totalVisitors > 0 ? round(($totalLeads / $totalVisitors) * 100, 1) : 0;
+
+            // Monetization CRM (Paid Members & Revenue)
+            $activePaidMembers = $hasPlans ? UserPlan::active()->count() : 0;
+            $pendingPlanApprovals = $hasPlans ? UserPlan::pending()->count() : 0;
+            $expiringSoonSubscriptions = $hasPlans ? UserPlan::active()->whereBetween('expires_at', [Carbon::now(), Carbon::now()->addDays(7)])->count() : 0;
+            
+            $totalRevenue = 0;
+            if ($hasPlans) {
+                try {
+                    $totalRevenue = (float) UserPlan::where('status', 'approved')->sum('final_amount');
+                    if ($totalRevenue <= 0) {
+                        $totalRevenue = (float) UserPlan::where('status', 'approved')->sum('amount_paid');
+                    }
+                } catch (\Throwable $e) {
+                    $totalRevenue = 0;
+                }
+            }
+
+            // Local Professionals Marketplace CRM
+            $totalProfessionals = $hasProf ? Professional::where('status', 'approved')->count() : 0;
+            $pendingProfessionals = $hasProf ? Professional::where('status', 'pending')->count() : 0;
+            $totalProfLeads = $hasProfLeads ? ProfessionalLead::count() : 0;
+
+            // Inquiries & Chats
+            $totalInquiries = $hasInquiries ? Inquiry::count() : 0;
+            $unreadInquiries = $hasInquiries ? Inquiry::unread()->count() : 0;
+            $unreadChats = 0;
+            if ($hasChats) {
+                try {
+                    $unreadChats = ChatbotMessage::where('is_read', false)->count();
+                } catch (\Throwable $e) {
+                    $unreadChats = 0;
+                }
+            }
+
+            return [
+                'total_leads' => $totalLeads,
+                'new_leads' => $newLeads,
+                'today_leads' => $todayLeads,
+                'in_progress_leads' => $inProgressLeads,
+                'converted_leads' => $convertedLeads,
+                'lost_leads' => $lostLeads,
+                'whatsapp_leads' => $whatsappLeads,
+                'conversion_rate' => $leadConversionRate,
+                'lead_funnel' => $leadFunnel,
+                'total_follow_ups' => $totalFollowUps,
+                'pending_follow_ups' => $pendingFollowUps,
+                'due_today_follow_ups' => $dueTodayFollowUps,
+                'overdue_follow_ups' => $overdueFollowUps,
+                'total_callbacks' => $totalCallbacks,
+                'pending_callbacks' => $pendingCallbacks,
+                'handled_callbacks' => $handledCallbacks,
+                'total_visitors' => $totalVisitors,
+                'today_visitors' => $todayVisitors,
+                'today_sessions' => $todaySessions,
+                'visitor_to_lead_rate' => $visitorToLeadRate,
+                'active_paid_members' => $activePaidMembers,
+                'pending_plan_approvals' => $pendingPlanApprovals,
+                'expiring_soon_subscriptions' => $expiringSoonSubscriptions,
+                'total_revenue' => $totalRevenue,
+                'total_professionals' => $totalProfessionals,
+                'pending_professionals' => $pendingProfessionals,
+                'total_prof_leads' => $totalProfLeads,
+                'total_inquiries' => $totalInquiries,
+                'unread_inquiries' => $unreadInquiries,
+                'unread_chats' => $unreadChats,
+            ];
+        });
+
+        // Recent high-intent CRM leads
+        $recentCrmLeads = collect();
+        if (Schema::hasTable('leads')) {
+            try {
+                $recentCrmLeads = Lead::with(['property', 'assignedTo'])
+                    ->latest()
+                    ->take(5)
+                    ->get();
+            } catch (\Throwable $e) {
+                $recentCrmLeads = collect();
+            }
+        }
+
+        // Recent urgent callbacks awaiting action
+        $recentCallbacks = collect();
+        if (Schema::hasTable('callback_requests')) {
+            try {
+                $recentCallbacks = CallbackRequest::with(['property', 'user'])
+                    ->whereIn('status', ['new', 'pending', 'called', 'interested'])
+                    ->latest()
+                    ->take(5)
+                    ->get();
+            } catch (\Throwable $e) {
+                $recentCallbacks = collect();
+            }
+        }
+
         $pendingProperties = Property::pending()
             ->with(['owner', 'primaryImage', 'category'])
             ->latest()
@@ -59,7 +212,14 @@ class AdminController extends Controller
             ->take(10)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'pendingProperties', 'pendingSubscriptions'));
+        return view('admin.dashboard', compact(
+            'stats',
+            'crmStats',
+            'recentCrmLeads',
+            'recentCallbacks',
+            'pendingProperties',
+            'pendingSubscriptions'
+        ));
     }
 
     /**
