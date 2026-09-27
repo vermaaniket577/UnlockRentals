@@ -49,10 +49,23 @@
         * {
             -webkit-tap-highlight-color: transparent !important;
         }
-        html, body {
+        html {
+            overflow-x: clip;
+            overflow-y: auto !important;
+            height: auto !important;
+            min-height: 100% !important;
+            scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
         }
-        button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .card, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn, .mobile-slider-dot, #mobile-bottom-nav a {
+        body {
+            overflow-x: clip;
+            overflow-y: visible !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+        button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn, .mobile-slider-dot, #mobile-bottom-nav a {
             touch-action: manipulation !important;
             -webkit-touch-callout: none !important;
             cursor: pointer;

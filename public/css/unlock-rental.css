@@ -28,11 +28,22 @@
     -webkit-font-smoothing: antialiased;
 }
 
-html, body {
+html {
     max-width: 100%;
     width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
+    overflow-y: auto !important;
     position: relative;
+    scroll-behavior: smooth;
+}
+
+body {
+    max-width: 100%;
+    width: 100%;
+    overflow-x: clip;
+    overflow-y: visible !important;
+    position: relative;
+    min-height: 100vh;
 }
 
 body {
@@ -247,7 +258,7 @@ a { text-decoration: none; color: inherit; }
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow: clip;
     background: #020b18;
 }
 
