@@ -30,6 +30,56 @@
         $allBuyPlans = collect();
     }
 
+    // Ensure active user offers are available for this user
+    if (!isset($userOffers)) {
+        $userOffers = collect();
+        if (auth()->check()) {
+            try {
+                $userOffers = \App\Models\PrivateUserOffer::where('user_id', auth()->id())
+                    ->where('status', 'active')
+                    ->where(function ($q) {
+                        $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                    })
+                    ->get();
+            } catch (\Throwable $e) {
+                $userOffers = collect();
+            }
+        }
+    }
+
+    // If an offer is assigned on a private plan, include it in the available plans
+    if (isset($userOffers) && $userOffers->isNotEmpty()) {
+        foreach ($userOffers as $uo) {
+            try {
+                if ($uo->plan && in_array($uo->plan->purpose, ['rent', 'both', null]) && !$allRentPlans->contains('id', $uo->plan->id)) {
+                    $allRentPlans->push($uo->plan);
+                } elseif ($uo->plan && in_array($uo->plan->purpose, ['buy', 'sale']) && !$allBuyPlans->contains('id', $uo->plan->id)) {
+                    $allBuyPlans->push($uo->plan);
+                }
+            } catch (\Throwable $e) {}
+        }
+    }
+
+    // Helper to find any active user offer assigned to a plan
+    $resolvePlanOffer = function ($plan, $billingPeriod = 'monthly') use ($userOffers) {
+        if (!$plan || !isset($userOffers) || $userOffers->isEmpty()) {
+            return null;
+        }
+
+        return $userOffers->first(function ($o) use ($plan, $billingPeriod) {
+            $periodMatch = empty($o->billing_period) || $o->billing_period === $billingPeriod;
+            if (!$periodMatch) return false;
+
+            if (isset($plan->id) && (string)$o->plan_id === (string)$plan->id) return true;
+            if (isset($o->plan) && isset($plan->name) && strtolower($o->plan->name) === strtolower($plan->name)) return true;
+            return false;
+        }) ?? $userOffers->first(function ($o) use ($plan) {
+            if (isset($plan->id) && (string)$o->plan_id === (string)$plan->id) return true;
+            if (isset($o->plan) && isset($plan->name) && strtolower($o->plan->name) === strtolower($plan->name)) return true;
+            return false;
+        });
+    };
+
     // High quality fallback plans matching prompt requirements
     if ($allRentPlans->isEmpty()) {
         $allRentPlans = collect([
@@ -142,6 +192,51 @@
         'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80'
     );
 
+    // Pricing & offer calculations for Gold
+    $goldOffer = $resolvePlanOffer($goldRent, 'monthly');
+    $goldBasePrice = (float) ($goldRent && $goldRent->price > 0 ? $goldRent->price : 999);
+    $hasGoldOffer = ($goldOffer && $goldOffer->discounted_price !== null) || ($goldBasePrice <= 100 && $goldBasePrice > 0);
+    $goldPrice = ($goldOffer && $goldOffer->discounted_price !== null) 
+        ? (float) $goldOffer->discounted_price 
+        : (($goldBasePrice <= 100 && $goldBasePrice > 0) ? $goldBasePrice : ($goldRent && $goldRent->price > 499 ? (float)$goldRent->price : 999));
+    $goldRegularPrice = ($goldBasePrice <= 100) ? 999.0 : $goldBasePrice;
+    $goldOrigPrice = $hasGoldOffer ? $goldRegularPrice : 2797;
+    $goldSavingsPct = $hasGoldOffer 
+        ? max(1, min(99, (int) round((1 - ($goldPrice / max(1, $goldRegularPrice))) * 100))) 
+        : 65;
+    $goldDays = max(1, (int) ($goldRent->duration_days ?? 150));
+    $goldPerDay = $goldPrice < 5 ? round($goldPrice / $goldDays, 2) : round($goldPrice / $goldDays, 1);
+
+    // Pricing & offer calculations for Platinum
+    $platOffer = $resolvePlanOffer($platRent, 'monthly');
+    $platBasePrice = (float) ($platRent->price ?? 1999);
+    $hasPlatOffer = ($platOffer && $platOffer->discounted_price !== null) || ($platBasePrice <= 100 && $platBasePrice > 0);
+    $platPrice = ($platOffer && $platOffer->discounted_price !== null) 
+        ? (float) $platOffer->discounted_price 
+        : (($platBasePrice <= 100 && $platBasePrice > 0) ? $platBasePrice : $platBasePrice);
+    $platRegularPrice = ($platBasePrice <= 100) ? 1999.0 : $platBasePrice;
+    $platOrigPrice = $hasPlatOffer ? $platRegularPrice : round($platRegularPrice * 2.8);
+    $platSavingsPct = $hasPlatOffer 
+        ? max(1, min(99, (int) round((1 - ($platPrice / max(1, $platRegularPrice))) * 100))) 
+        : 65;
+    $platDays = max(1, (int) ($platRent->duration_days ?? 180));
+    $platPerDay = $platPrice < 5 ? round($platPrice / $platDays, 2) : round($platPrice / $platDays, 1);
+
+    // Pricing & offer calculations for Silver
+    $silverOffer = $resolvePlanOffer($silverRent, 'monthly');
+    $silverBasePrice = (float) ($silverRent->price ?? 399);
+    $hasSilverOffer = ($silverOffer && $silverOffer->discounted_price !== null) || ($silverBasePrice <= 10 && $silverBasePrice > 0);
+    $silverPrice = ($silverOffer && $silverOffer->discounted_price !== null) 
+        ? (float) $silverOffer->discounted_price 
+        : $silverBasePrice;
+    $silverRegularPrice = ($silverBasePrice <= 10) ? 399.0 : $silverBasePrice;
+    $silverOrigPrice = $hasSilverOffer ? $silverRegularPrice : round($silverRegularPrice * 2.5);
+    $silverSavingsPct = $hasSilverOffer 
+        ? max(1, min(99, (int) round((1 - ($silverPrice / max(1, $silverRegularPrice))) * 100))) 
+        : 60;
+    $silverDays = max(1, (int) ($silverRent->duration_days ?? 60));
+    $silverPerDay = $silverPrice < 5 ? round($silverPrice / $silverDays, 2) : round($silverPrice / $silverDays, 1);
+
     $heroSlides = collect([
         [
             'plan' => $goldRent,
@@ -149,29 +244,34 @@
             'theme' => 'gold',
             'tab_label' => 'Gold Pass',
             'tab_icon' => 'ph-crown',
-            'tab_badge' => 'Most Popular',
-            'badge' => '👑 MOST POPULAR · 84% OF TENANTS CHOOSE THIS',
+            'tab_badge' => $hasGoldOffer ? ('₹' . number_format($goldPrice, 0) . ' Offer') : 'Most Popular',
+            'has_offer' => $hasGoldOffer,
+            'offer' => $goldOffer,
+            'regular_price' => $goldRegularPrice,
+            'badge' => $hasGoldOffer 
+                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($goldPrice, 0) . ' EXCLUSIVE PASS'
+                : '👑 MOST POPULAR · 84% OF TENANTS CHOOSE THIS',
             'title_prefix' => 'Unlock Verified Owners With',
             'title_highlight' => 'Gold Direct Pass',
             'title_suffix' => '',
             'tagline' => 'Best value for 1BHK, 2BHK & 3BHK home hunters. Directly call & WhatsApp owners with 0% middleman brokerage.',
-            'original_price' => 2797,
-            'price' => (float) ($goldRent && $goldRent->price > 499 ? $goldRent->price : 999),
-            'savings_pct' => 65,
-            'per_day' => 6.7,
+            'original_price' => $goldOrigPrice,
+            'price' => $goldPrice,
+            'savings_pct' => $goldSavingsPct,
+            'per_day' => $goldPerDay,
             'highlights' => [
-                ['icon' => 'ph-phone-call', 'title' => '75 Verified Owner Contacts', 'desc' => 'Direct phone & WhatsApp numbers'],
+                ['icon' => 'ph-phone-call', 'title' => ($goldRent->contact_limit ?? 75) . ' Verified Owner Contacts', 'desc' => 'Direct phone & WhatsApp numbers'],
                 ['icon' => 'ph-shield-check', 'title' => 'Zero Brokerage Guaranteed', 'desc' => 'Save ₹15,000 to ₹35,000 in fees'],
-                ['icon' => 'ph-calendar-check', 'title' => '150 Days Active Validity', 'desc' => 'Full 5 months of unlimited unlocks'],
+                ['icon' => 'ph-calendar-check', 'title' => ($goldRent->duration_days ?? 150) . ' Days Active Validity', 'desc' => 'Full 5 months of unlimited unlocks'],
                 ['icon' => 'ph-chat-circle-dots', 'title' => 'Instant WhatsApp Connect', 'desc' => 'Direct landlord chat & visit pass'],
             ],
             'specs' => [
-                ['label' => 'Direct Owner Contacts', 'value' => '75 Direct Unlocks'],
-                ['label' => 'Access Duration', 'value' => '150 Full Days'],
+                ['label' => 'Direct Owner Contacts', 'value' => ($goldRent->contact_limit ?? 75) . ' Direct Unlocks'],
+                ['label' => 'Access Duration', 'value' => ($goldRent->duration_days ?? 150) . ' Full Days'],
                 ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
             ],
             'visual' => [
-                'tag' => '100% OWNER DIRECT',
+                'tag' => $hasGoldOffer ? 'EXCLUSIVE OFFER' : '100% OWNER DIRECT',
                 'title' => 'Direct Landlords Only',
                 'sub' => 'Connect directly with genuine property owners with 0% middleman commission.',
                 'perks' => [
@@ -190,16 +290,21 @@
             'theme' => 'platinum',
             'tab_label' => 'Platinum VIP',
             'tab_icon' => 'ph-sparkle',
-            'tab_badge' => 'VIP Choice',
-            'badge' => '💎 VIP PRIVILEGE · MAXIMUM OWNER UNLOCKS',
+            'tab_badge' => $hasPlatOffer ? ('₹' . number_format($platPrice, 0) . ' Offer') : 'VIP Choice',
+            'has_offer' => $hasPlatOffer,
+            'offer' => $platOffer,
+            'regular_price' => $platRegularPrice,
+            'badge' => $hasPlatOffer 
+                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($platPrice, 0) . ' VIP PASS'
+                : '💎 VIP PRIVILEGE · MAXIMUM OWNER UNLOCKS',
             'title_prefix' => 'Experience Premium Access With',
             'title_highlight' => 'Platinum VIP Pass',
             'title_suffix' => '',
             'tagline' => 'Ultimate unrestricted pass for families, executives, and luxury home seekers. Maximum direct contacts + concierge.',
-            'original_price' => round((float) ($platRent->price ?? 1999) * 2.8),
-            'price' => (float) ($platRent->price ?? 1999),
-            'savings_pct' => 65,
-            'per_day' => round(((float) ($platRent->price ?? 1999)) / max(1, (int) ($platRent->duration_days ?? 180)), 1),
+            'original_price' => $platOrigPrice,
+            'price' => $platPrice,
+            'savings_pct' => $platSavingsPct,
+            'per_day' => $platPerDay,
             'highlights' => [
                 ['icon' => 'ph-lightning', 'title' => ($platRent->contact_limit ?? 150) . ' Verified Owner Contacts', 'desc' => 'Maximum direct contact credits'],
                 ['icon' => 'ph-shield-check', 'title' => 'Zero Brokerage Guaranteed', 'desc' => 'Save ₹30,000 to ₹60,000 in fees'],
@@ -212,7 +317,7 @@
                 ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
             ],
             'visual' => [
-                'tag' => 'VIP CONCIERGE ACCESS',
+                'tag' => $hasPlatOffer ? 'EXCLUSIVE OFFER' : 'VIP CONCIERGE ACCESS',
                 'title' => 'Exclusive Luxury Rentals',
                 'sub' => 'Direct access to high-end gated societies, penthouses, and luxury villas.',
                 'perks' => [
@@ -231,29 +336,34 @@
             'theme' => 'silver',
             'tab_label' => 'Silver Starter',
             'tab_icon' => 'ph-shield',
-            'tab_badge' => 'Budget',
-            'badge' => '🛡️ ESSENTIAL STARTER · QUICK HOUSE HUNT',
+            'tab_badge' => $hasSilverOffer ? ('₹' . number_format($silverPrice, 0) . ' Offer') : 'Budget',
+            'has_offer' => $hasSilverOffer,
+            'offer' => $silverOffer,
+            'regular_price' => $silverRegularPrice,
+            'badge' => $hasSilverOffer 
+                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($silverPrice, 0) . ' DIRECT PASS'
+                : '🛡️ ESSENTIAL STARTER · QUICK HOUSE HUNT',
             'title_prefix' => 'Find Your First Home With',
             'title_highlight' => 'Silver Starter Pass',
             'title_suffix' => '',
-            'tagline' => 'Pocket-friendly direct owner access for individual rooms, 1RK, PG stays, and quick single-neighborhood rentals.',
-            'original_price' => round((float) ($silverRent->price ?? 399) * 2.5),
-            'price' => (float) ($silverRent->price ?? 399),
-            'savings_pct' => 60,
-            'per_day' => round(((float) ($silverRent->price ?? 399)) / max(1, (int) ($silverRent->duration_days ?? 45)), 1),
+            'tagline' => $silverRent->description ?? 'Pocket-friendly direct owner access for individual rooms, 1RK, PG stays, and quick single-neighborhood rentals.',
+            'original_price' => $silverOrigPrice,
+            'price' => $silverPrice,
+            'savings_pct' => $silverSavingsPct,
+            'per_day' => $silverPerDay,
             'highlights' => [
                 ['icon' => 'ph-phone-call', 'title' => ($silverRent->contact_limit ?? 30) . ' Verified Owner Contacts', 'desc' => 'Direct phone numbers & WhatsApp'],
                 ['icon' => 'ph-shield-check', 'title' => 'Zero Brokerage Guaranteed', 'desc' => 'No commission on lease closing'],
-                ['icon' => 'ph-calendar-check', 'title' => ($silverRent->duration_days ?? 45) . ' Days Active Validity', 'desc' => 'Standard monthly house hunt'],
+                ['icon' => 'ph-calendar-check', 'title' => ($silverRent->duration_days ?? 60) . ' Days Active Validity', 'desc' => 'Standard monthly house hunt'],
                 ['icon' => 'ph-headset', 'title' => 'Standard Support', 'desc' => 'WhatsApp & email query assistance'],
             ],
             'specs' => [
                 ['label' => 'Direct Owner Contacts', 'value' => ($silverRent->contact_limit ?? 30) . ' Direct Unlocks'],
-                ['label' => 'Access Duration', 'value' => ($silverRent->duration_days ?? 45) . ' Full Days'],
+                ['label' => 'Access Duration', 'value' => ($silverRent->duration_days ?? 60) . ' Full Days'],
                 ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
             ],
             'visual' => [
-                'tag' => 'QUICK MOVE-IN',
+                'tag' => $hasSilverOffer ? 'EXCLUSIVE OFFER' : 'QUICK MOVE-IN',
                 'title' => 'Verified Starter Listings',
                 'sub' => 'Best for singles, students, and professionals searching for budget 1RK & PGs.',
                 'perks' => [
@@ -269,12 +379,19 @@
     ]);
 
     if ($buyerPlan) {
-        $buyerPrice = (float) (($buyerPlan->price && $buyerPlan->price >= 5000) ? $buyerPlan->price : 50000.00);
+        $buyerBasePrice = (float) (($buyerPlan->price && $buyerPlan->price >= 5000) ? $buyerPlan->price : 50000.00);
+        $buyerOffer = $resolvePlanOffer($buyerPlan, 'yearly');
+        $hasBuyerOffer = ($buyerOffer && $buyerOffer->discounted_price !== null) || ((float)($buyerPlan->price ?? 0) > 0 && (float)($buyerPlan->price ?? 0) < 5000);
+        $buyerPrice = ($buyerOffer && $buyerOffer->discounted_price !== null) 
+            ? (float) $buyerOffer->discounted_price 
+            : (((float)($buyerPlan->price ?? 0) > 0 && (float)($buyerPlan->price ?? 0) < 5000) ? (float)$buyerPlan->price : $buyerBasePrice);
         $buyerDays = (int) (($buyerPlan->duration_days && $buyerPlan->duration_days <= 90) ? $buyerPlan->duration_days : 60);
         $buyerContacts = (int) (($buyerPlan->contact_limit && $buyerPlan->contact_limit <= 50) ? $buyerPlan->contact_limit : 30);
-        $buyerOriginalPrice = round($buyerPrice * 3);
-        $buyerSavingsPct = 67;
-        $buyerPerDay = round($buyerPrice / max(1, $buyerDays), 1);
+        $buyerOrigPrice = $hasBuyerOffer ? $buyerBasePrice : round($buyerBasePrice * 3);
+        $buyerSavingsPct = $hasBuyerOffer 
+            ? max(1, min(99, (int) round((1 - ($buyerPrice / max(1, $buyerBasePrice))) * 100))) 
+            : 67;
+        $buyerPerDay = $buyerPrice < 5 ? round($buyerPrice / max(1, $buyerDays), 2) : round($buyerPrice / max(1, $buyerDays), 1);
 
         $heroSlides->push([
             'plan' => $buyerPlan,
@@ -282,13 +399,18 @@
             'theme' => 'buyer',
             'tab_label' => 'Buyer Pass',
             'tab_icon' => 'ph-buildings',
-            'tab_badge' => 'Home Buyers',
-            'badge' => '🏡 ZERO BROKERAGE BUYER PASS · DIRECT SELLER DEALS',
+            'tab_badge' => $hasBuyerOffer ? ('₹' . number_format($buyerPrice, 0) . ' Offer') : 'Home Buyers',
+            'has_offer' => $hasBuyerOffer,
+            'offer' => $buyerOffer,
+            'regular_price' => $buyerBasePrice,
+            'badge' => $hasBuyerOffer 
+                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($buyerPrice, 0) . ' BUYER PASS' 
+                : '🏡 ZERO BROKERAGE BUYER PASS · DIRECT SELLER DEALS',
             'title_prefix' => 'Purchase Your Dream Property With',
             'title_highlight' => 'Direct Buyer Pass',
             'title_suffix' => '',
             'tagline' => 'Buying a flat, villa, or commercial space? Skip the 1% to 2% property broker commission and negotiate directly with verified sellers.',
-            'original_price' => $buyerOriginalPrice,
+            'original_price' => $buyerOrigPrice,
             'price' => $buyerPrice,
             'savings_pct' => $buyerSavingsPct,
             'per_day' => $buyerPerDay,
@@ -304,7 +426,7 @@
                 ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
             ],
             'visual' => [
-                'tag' => 'DIRECT SELLER DEALS',
+                'tag' => $hasBuyerOffer ? 'EXCLUSIVE OFFER' : 'DIRECT SELLER DEALS',
                 'title' => 'Direct Property Purchase',
                 'sub' => 'Connect directly with genuine property sellers and save lakhs in brokerage fees.',
                 'perks' => [
@@ -326,7 +448,69 @@
    Height reduced by ~40%, tight balanced 3-part desktop layout,
    clean 2x2 benefits, prominent ₹999 price, single horizontal
    trust row, and naturally stacked responsive mobile view.
-   ============================================================ */
+/* Special User Offer Badges & Visual Enhancements */
+.ur-hps-tab-btn--has-offer {
+    border-color: rgba(16, 185, 129, 0.45) !important;
+}
+.ur-hps-tab-pill--offer {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #34d399 !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4) !important;
+    animation: urHpsOfferPulse 2s infinite ease-in-out;
+}
+@keyframes urHpsOfferPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+.ur-hps-save-chip--offer {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    color: #047857 !important;
+    border: 1px solid #34d399 !important;
+    font-weight: 900 !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.25) !important;
+}
+.ur-hps-plan-badge--offer {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    color: #047857 !important;
+    font-weight: 800 !important;
+}
+.ur-mc-badge--offer {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    color: #047857 !important;
+    border: 1px solid #a7f3d0 !important;
+    font-weight: 800 !important;
+}
+.ur-mc-save-chip--offer {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    color: #047857 !important;
+    border: 1px solid #34d399 !important;
+    font-weight: 900 !important;
+}
+.ur-mc-direct-tag--offer {
+    background: rgba(236, 253, 245, 0.95) !important;
+    color: #047857 !important;
+    border: 1px solid #86efac !important;
+    font-weight: 800 !important;
+}
+.ur-hps-cta-btn--offer {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.45) !important;
+}
+.ur-hps-cta-btn--offer:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.55) !important;
+    transform: translateY(-2px);
+}
+.ur-mc-cta-btn--offer {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
+}
 
 .ur-hero-plans-slider-section {
     position: relative;
@@ -2181,9 +2365,10 @@
                 <div class="ur-hps-tabs-bar" role="tablist" aria-label="Plans quick navigation">
                     @foreach($heroSlides as $idx => $s)
                         <button type="button" 
-                                class="ur-hps-tab-btn {{ $idx === 0 ? 'active tab--' . $s['theme'] : '' }}" 
+                                class="ur-hps-tab-btn {{ $idx === 0 ? 'active tab--' . $s['theme'] : '' }} {{ !empty($s['has_offer']) ? 'ur-hps-tab-btn--has-offer' : '' }}" 
                                 data-target-index="{{ $idx }}"
                                 data-theme="{{ $s['theme'] }}"
+                                data-has-offer="{{ !empty($s['has_offer']) ? 'true' : 'false' }}"
                                 role="tab"
                                 onclick="if(window.urGoToHeroSlide){ window.urGoToHeroSlide({{ $idx }}); }"
                                 aria-selected="{{ $idx === 0 ? 'true' : 'false' }}"
@@ -2191,7 +2376,7 @@
                             <i class="ph-bold {{ $s['tab_icon'] }}"></i>
                             <span>{{ $s['tab_label'] }}</span>
                             @if(!empty($s['tab_badge']))
-                                <span class="ur-hps-tab-pill">{{ $s['tab_badge'] }}</span>
+                                <span class="ur-hps-tab-pill {{ !empty($s['has_offer']) ? 'ur-hps-tab-pill--offer' : '' }}">{{ $s['tab_badge'] }}</span>
                             @endif
                         </button>
                     @endforeach
@@ -2224,7 +2409,7 @@
                         $planUid = 'hero_slider_plan_' . $planId . '_' . $idx;
                     @endphp
 
-                    <div class="ur-hps-slide ur-hps-slide--{{ $s['theme'] }}" data-slide-index="{{ $idx }}" data-theme="{{ $s['theme'] }}">
+                    <div class="ur-hps-slide ur-hps-slide--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-slide--has-offer' : '' }}" data-slide-index="{{ $idx }}" data-theme="{{ $s['theme'] }}" data-has-offer="{{ !empty($s['has_offer']) ? 'true' : 'false' }}">
                         @if($s['theme'] === 'buyer')
                             {{-- Layered Photorealistic Background Elements --}}
                             <div class="ur-buyer-bg-wrap" aria-hidden="true">
@@ -2245,8 +2430,12 @@
                             
                             {{-- PART 1: LEFT COLUMN (Value Proposition & Benefits 2x2) --}}
                             <div class="ur-hps-col-left">
-                                <span class="ur-hps-plan-badge ur-hps-plan-badge--{{ $s['theme'] }}">
-                                    {!! $s['badge'] !!}
+                                <span class="ur-hps-plan-badge ur-hps-plan-badge--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-plan-badge--offer' : '' }}">
+                                    @if(!empty($s['has_offer']))
+                                        <i class="ph-fill ph-tag"></i> {{ $s['offer_badge'] ?? 'EXCLUSIVE OFFER' }} · {!! $s['badge'] !!}
+                                    @else
+                                        {!! $s['badge'] !!}
+                                    @endif
                                 </span>
 
                                 <h3 class="ur-hps-slide-title">
@@ -2350,7 +2539,13 @@
                                     <div class="ur-hps-price-box">
                                         <div class="ur-hps-price-top">
                                             <span class="ur-hps-price-original">₹{{ number_format($s['original_price'], 0) }}</span>
-                                            <span class="ur-hps-save-chip">SAVE {{ $s['savings_pct'] }}%</span>
+                                            <span class="ur-hps-save-chip {{ !empty($s['has_offer']) ? 'ur-hps-save-chip--offer' : '' }}">
+                                                @if(!empty($s['has_offer']))
+                                                    <i class="ph-bold ph-seal-percent"></i> {{ $s['offer_badge'] ?? ('SAVE ' . $s['savings_pct'] . '%') }}
+                                                @else
+                                                    SAVE {{ $s['savings_pct'] }}%
+                                                @endif
+                                            </span>
                                         </div>
 
                                         <div class="ur-hps-price-main">
@@ -2360,8 +2555,13 @@
                                         </div>
 
                                         <div class="ur-hps-price-subtext">
-                                            <i class="ph-bold ph-seal-check"></i>
-                                            <span>Only ₹{{ $s['per_day'] }}/day · {{ $s['specs'][1]['value'] ?? ($plan->duration_days ?? 150) . ' Days' }} Validity</span>
+                                            @if(!empty($s['has_offer']))
+                                                <i class="ph-bold ph-lightning" style="color: #10b981;"></i>
+                                                <span style="font-weight: 700; color: #047857;">Exclusive Price ₹{{ number_format($s['price'], 0) }} · {{ $s['specs'][1]['value'] ?? ($plan->duration_days ?? 60) . ' Days' }} Validity</span>
+                                            @else
+                                                <i class="ph-bold ph-seal-check"></i>
+                                                <span>Only ₹{{ $s['per_day'] }}/day · {{ $s['specs'][1]['value'] ?? ($plan->duration_days ?? 150) . ' Days' }} Validity</span>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -2383,14 +2583,14 @@
                                     @guest
                                         <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
                                            onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
-                                           class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }}" 
+                                           class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-cta-btn--offer' : '' }}" 
                                            title="Unlock Verified Contacts">
                                             <i class="ph-fill ph-lightning"></i>
                                             <span>Unlock Contacts Now · ₹{{ number_format($s['price'], 0) }}</span>
                                         </a>
                                     @else
                                         <a href="{{ $checkoutUrl }}" 
-                                           class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }}" 
+                                           class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-cta-btn--offer' : '' }}" 
                                            title="Unlock Verified Contacts">
                                             <i class="ph-fill ph-lightning"></i>
                                             <span>Unlock Contacts Now · ₹{{ number_format($s['price'], 0) }}</span>
@@ -2479,7 +2679,7 @@
                              Reduced height in 16:9 slider format, sleek real-estate backdrop,
                              bold price, key perks, and thumb-friendly checkout CTA button.
                              ============================================================ --}}
-                        <div class="ur-hps-mobile-card ur-hps-mobile-card--{{ $s['theme'] }}">
+                        <div class="ur-hps-mobile-card ur-hps-mobile-card--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-mobile-card--offer' : '' }}">
                             {{-- Subtle 16:9 Real Estate Photographic Backdrop --}}
                             <div class="ur-mc-backdrop" aria-hidden="true">
                                 <img src="{{ $s['visual']['image'] }}" 
@@ -2494,17 +2694,17 @@
                             {{-- Row 1: Top Bar with Theme Pill + Savings Chip + 100% Genuine Tag --}}
                             <div class="ur-mc-top-row">
                                 <div class="ur-mc-badge-group">
-                                    <span class="ur-mc-badge ur-mc-badge--{{ $s['theme'] }}">
-                                        <i class="ph-bold {{ $s['tab_icon'] }}"></i>
-                                        <span>{{ $s['tab_badge'] ?? 'PASS' }}</span>
+                                    <span class="ur-mc-badge ur-mc-badge--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-mc-badge--offer' : '' }}">
+                                        <i class="ph-bold {{ !empty($s['has_offer']) ? 'ph-tag' : $s['tab_icon'] }}"></i>
+                                        <span>{{ !empty($s['has_offer']) ? 'SPECIAL OFFER' : ($s['tab_badge'] ?? 'PASS') }}</span>
                                     </span>
-                                    <span class="ur-mc-save-chip">
-                                        SAVE {{ $s['savings_pct'] }}%
+                                    <span class="ur-mc-save-chip {{ !empty($s['has_offer']) ? 'ur-mc-save-chip--offer' : '' }}">
+                                        {{ !empty($s['has_offer']) ? ($s['offer_badge'] ?? ('SAVE ' . $s['savings_pct'] . '%')) : ('SAVE ' . $s['savings_pct'] . '%') }}
                                     </span>
                                 </div>
-                                <span class="ur-mc-direct-tag">
-                                    <i class="ph-fill ph-seal-check"></i>
-                                    <span>{{ $s['visual']['tag'] ?? '100% DIRECT' }}</span>
+                                <span class="ur-mc-direct-tag {{ !empty($s['has_offer']) ? 'ur-mc-direct-tag--offer' : '' }}">
+                                    <i class="ph-fill {{ !empty($s['has_offer']) ? 'ph-lightning' : 'ph-seal-check' }}"></i>
+                                    <span>{{ !empty($s['has_offer']) ? 'UNLOCKED FOR YOU' : ($s['visual']['tag'] ?? '100% DIRECT') }}</span>
                                 </span>
                             </div>
 
@@ -2540,23 +2740,27 @@
                                     </div>
                                     <div class="ur-mc-per-day-line">
                                         <i class="ph-bold ph-lightning"></i>
-                                        <span>Only ₹{{ $s['per_day'] }}/day · Direct</span>
+                                        @if(!empty($s['has_offer']))
+                                            <span>Special ₹{{ number_format($s['price'], 0) }} · {{ $s['specs'][1]['value'] }}</span>
+                                        @else
+                                            <span>Only ₹{{ $s['per_day'] }}/day · Direct</span>
+                                        @endif
                                     </div>
                                 </div>
 
                                 @guest
                                     <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
                                        onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
-                                       class="ur-mc-cta-btn ur-mc-cta-btn--{{ $s['theme'] }}" 
+                                       class="ur-mc-cta-btn ur-mc-cta-btn--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-mc-cta-btn--offer' : '' }}" 
                                        title="Unlock Verified Contacts">
-                                        <span>Unlock Pass</span>
+                                        <span>{{ !empty($s['has_offer']) ? 'Unlock for ₹' . number_format($s['price'], 0) : 'Unlock Pass' }}</span>
                                         <i class="ph-bold ph-arrow-right"></i>
                                     </a>
                                 @else
                                     <a href="{{ $checkoutUrl }}" 
-                                       class="ur-mc-cta-btn ur-mc-cta-btn--{{ $s['theme'] }}" 
+                                       class="ur-mc-cta-btn ur-mc-cta-btn--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-mc-cta-btn--offer' : '' }}" 
                                        title="Unlock Verified Contacts">
-                                        <span>Unlock Pass</span>
+                                        <span>{{ !empty($s['has_offer']) ? 'Unlock for ₹' . number_format($s['price'], 0) : 'Unlock Pass' }}</span>
                                         <i class="ph-bold ph-arrow-right"></i>
                                     </a>
                                 @endguest
@@ -2861,11 +3065,17 @@
         // Initial Slide Selection
         let initialIndex = 0;
         try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const hash = window.location.hash.toLowerCase();
-            if (urlParams.get('tab') === 'buyer' || urlParams.get('plan') === 'buyer' || urlParams.get('type') === 'buy' || hash === '#buyer-pass' || hash === '#buyer' || hash === '#direct-buyer-pass') {
-                const buyerIdx = Array.from(slides).findIndex(s => s.getAttribute('data-theme') === 'buyer');
-                if (buyerIdx >= 0) initialIndex = buyerIdx;
+            // Priority 1: Check if any slide has an active user offer!
+            const offerIdx = Array.from(slides).findIndex(s => s.getAttribute('data-has-offer') === 'true');
+            if (offerIdx >= 0) {
+                initialIndex = offerIdx;
+            } else {
+                const urlParams = new URLSearchParams(window.location.search);
+                const hash = window.location.hash.toLowerCase();
+                if (urlParams.get('tab') === 'buyer' || urlParams.get('plan') === 'buyer' || urlParams.get('type') === 'buy' || hash === '#buyer-pass' || hash === '#buyer' || hash === '#direct-buyer-pass') {
+                    const buyerIdx = Array.from(slides).findIndex(s => s.getAttribute('data-theme') === 'buyer');
+                    if (buyerIdx >= 0) initialIndex = buyerIdx;
+                }
             }
         } catch (e) {}
 

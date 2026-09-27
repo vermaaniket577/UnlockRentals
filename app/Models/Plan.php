@@ -41,11 +41,15 @@ class Plan extends Model
         static::saved(function () {
             \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v1');
             \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
+            \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v2');
+            \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v2');
         });
 
         static::deleted(function () {
             \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v1');
             \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
+            \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v2');
+            \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v2');
         });
     }
 
