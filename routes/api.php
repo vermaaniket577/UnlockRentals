@@ -20,3 +20,12 @@ Route::prefix('v1')->group(function () {
     Route::post('/service-requests', [\App\Http\Controllers\Api\ProfessionalApiController::class, 'createServiceRequest']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| External Leads Dispatcher API
+|--------------------------------------------------------------------------
+*/
+Route::match(['get', 'post'], '/leads/send-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendAll']);
+Route::match(['get', 'post'], '/leads/send/{id}', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendSingle']);
+
+

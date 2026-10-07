@@ -671,6 +671,17 @@ Route::post('/api/consent/update', [\App\Http\Controllers\VisitorTrackingControl
 Route::post('/api/leads', [\App\Http\Controllers\LeadController::class, 'store'])->name('api.leads.store');
 Route::get('/api/leads/similar-properties/{property}', [\App\Http\Controllers\LeadController::class, 'similarProperties'])->name('api.leads.similar');
 
+// External Leads Dispatcher API (Fire-and-Forget 204 No Content)
+Route::match(['get', 'post'], '/leads/send-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendAll'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('leads.send_all');
+Route::match(['get', 'post'], '/api/leads/send-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendAll'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('api.leads.send_all');
+Route::match(['get', 'post'], '/api/leads/send/{id}', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendSingle'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('api.leads.send_single');
+
 // WhatsApp Inbound Webhook (Meta Cloud & Twilio callbacks)
 Route::match(['get', 'post'], '/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('webhook.whatsapp');
 Route::match(['get', 'post'], '/api/whatsapp/webhook', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('api.whatsapp.webhook');
