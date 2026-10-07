@@ -239,11 +239,20 @@
                 @endforeach
             </select>
 
+            {{-- Sorting dropdown (Latest First on top by default) --}}
+            <select name="sort" onchange="this.form.submit()" class="text-xs py-2 px-3 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-blue-500">
+                <option value="latest" {{ request('sort', 'latest') === 'latest' ? 'selected' : '' }}>⚡ Sort: Latest First (Top)</option>
+                <option value="recently_updated" {{ request('sort') === 'recently_updated' ? 'selected' : '' }}>🔄 Sort: Recently Updated</option>
+                <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>🕒 Sort: Oldest First</option>
+                <option value="highest_score" {{ request('sort') === 'highest_score' ? 'selected' : '' }}>⭐ Sort: Highest Score</option>
+                <option value="name_asc" {{ request('sort') === 'name_asc' ? 'selected' : '' }}>🔤 Sort: Name (A to Z)</option>
+            </select>
+
             <button type="submit" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800">
                 Filter
             </button>
 
-            @if(request()->hasAny(['search', 'status', 'intent', 'source', 'assigned_to', 'category']))
+            @if(request()->hasAny(['search', 'status', 'intent', 'source', 'assigned_to', 'category', 'sort']))
                 <a href="{{ route('admin.leads.index') }}" class="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100">Reset</a>
             @endif
         </form>

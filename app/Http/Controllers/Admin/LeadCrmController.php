@@ -22,8 +22,7 @@ class LeadCrmController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Lead::with(['assignedTo', 'property', 'visitor', 'latestFollowUp'])
-            ->latest();
+        $query = Lead::with(['assignedTo', 'property', 'visitor', 'latestFollowUp']);
 
         // 1. Category Tab Filter (all, admission, property)
         if ($request->filled('category') && $request->category !== 'all') {
@@ -95,6 +94,30 @@ class LeadCrmController extends Controller
                   ->orWhere('preferred_city', 'like', "%{$s}%")
                   ->orWhere('preferred_locality', 'like', "%{$s}%");
             });
+        }
+
+        // 7. Sorting: Default to Latest Created & Highest ID at top
+        $sort = $request->input('sort', 'latest');
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc')->orderBy('id', 'asc');
+                break;
+            case 'recently_updated':
+                $query->orderByDesc('updated_at')->orderByDesc('id');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'highest_score':
+                $query->orderByDesc('engagement_score')->orderByDesc('id');
+                break;
+            case 'latest':
+            default:
+                $query->orderByDesc('created_at')->orderByDesc('id');
+                break;
         }
 
         // Summary KPI counts
@@ -370,7 +393,9 @@ class LeadCrmController extends Controller
      */
     public function exportCsv(Request $request): StreamedResponse
     {
-        $query = Lead::with(['assignedTo', 'property'])->latest();
+        $query = Lead::with(['assignedTo', 'property'])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
 
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('lead_status', $request->status);
