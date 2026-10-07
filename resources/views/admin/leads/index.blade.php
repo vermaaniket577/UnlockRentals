@@ -285,6 +285,11 @@
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-700 border border-purple-200" title="Admission / Education Inquiry">
                                             🎓 Admission
                                         </span>
+                                        @if($lead->stream || $lead->course)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 max-w-[220px] truncate" title="Stream / Course: {{ $lead->stream ?: $lead->course }}">
+                                                <i class="ph-bold ph-graduation-cap"></i> {{ \Illuminate\Support\Str::limit($lead->stream ?: $lead->course, 26) }}
+                                            </span>
+                                        @endif
                                     @endif
                                 </div>
                                 <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
@@ -321,8 +326,14 @@
                             {{-- Requirement / Enquiry --}}
                             <td class="px-6 py-4">
                                 @if(method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead())
-                                    <div class="font-bold text-purple-900 flex items-center gap-1.5">
-                                        <span>🎓 Educational Enquiry</span>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="font-bold text-purple-900 text-xs">🎓 Educational Enquiry</span>
+                                        @if($lead->stream || $lead->course)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-900 border border-purple-200" title="Stream / Course">
+                                                <i class="ph-bold ph-book-open text-purple-700"></i>
+                                                {{ $lead->stream ?: $lead->course }}
+                                            </span>
+                                        @endif
                                     </div>
                                     @if($lead->message)
                                         <div class="text-[11px] text-slate-700 mt-1 p-2 rounded-xl bg-purple-50/80 border border-purple-200/60 line-clamp-2 max-w-xs leading-relaxed" title="{{ $lead->message }}">

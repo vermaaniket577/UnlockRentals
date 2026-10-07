@@ -213,7 +213,9 @@ class LeadController extends Controller
 
         // 4. Extract course & academic info
         $courseParts = array_filter([
+            $request->input('stream'),
             $request->input('course'),
+            $request->input('subject'),
             $request->input('program'),
             $request->input('degree'),
             $request->input('branch'),
@@ -287,6 +289,8 @@ class LeadController extends Controller
                 'id' => $lead->id,
                 'name' => $lead->name,
                 'mobile' => $lead->mobile,
+                'stream' => $lead->stream,
+                'course' => $lead->course,
                 'source' => $lead->lead_source,
                 'status' => $lead->lead_status,
                 'created_at' => $lead->created_at->toIso8601String(),

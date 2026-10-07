@@ -46,6 +46,16 @@ class Lead extends Model
         'intent',
         'bhk_preference',
         'lead_score',
+        'course',
+        'stream',
+    ];
+
+    protected $appends = [
+        'phone',
+        'source',
+        'intent',
+        'course',
+        'stream',
     ];
 
     protected function casts(): array
@@ -187,6 +197,34 @@ class Lead extends Model
     public function setLeadScoreAttribute($value)
     {
         $this->attributes['engagement_score'] = $value;
+    }
+
+    /**
+     * Get the stream or course for the lead (auto-extracted from notes or message).
+     */
+    public function getCourseAttribute(): ?string
+    {
+        // 1. Try to extract from notes if present and not a generic placeholder
+        if (!empty($this->notes) && !in_array($this->notes, ['Imported via External API Fetch', 'Admission Lead', 'Imported from external API']) && !str_starts_with($this->notes, 'Lead created') && !str_starts_with($this->notes, 'Lead updated')) {
+            return $this->notes;
+        }
+
+        // 2. Try to extract from message prefix (e.g. "Subject/Course: ...", "Course: ...", "Stream: ...")
+        if (!empty($this->message)) {
+            if (preg_match('/(?:Subject\/Course|Course \/ Program|Course|Stream|Subject|Program):\s*([^\n\r]+)/i', $this->message, $matches)) {
+                return trim($matches[1]);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Alias for course / academic stream.
+     */
+    public function getStreamAttribute(): ?string
+    {
+        return $this->course;
     }
 
     public function followUps(): HasMany

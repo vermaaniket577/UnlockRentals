@@ -37,6 +37,9 @@ class ExternalLeadApiController extends Controller
             $cleanPhone = substr($cleanPhone, -10);
         }
 
+        $course = $lead->course ?: ($lead->stream ?: '');
+        $stream = $course;
+
         return [
             'id' => $lead->id,
             'name' => $lead->name ?? '',
@@ -45,6 +48,11 @@ class ExternalLeadApiController extends Controller
             'phone' => $cleanPhone ?: ($lead->mobile ?? ''),
             'mobile' => $cleanPhone ?: ($lead->mobile ?? ''),
             'contact' => $cleanPhone ?: ($lead->mobile ?? ''),
+            'stream' => $stream,
+            'course' => $course,
+            'subject' => $course,
+            'program' => $course,
+            'academic_stream' => $stream,
             'city' => $lead->preferred_city ?? '',
             'preferred_city' => $lead->preferred_city ?? '',
             'locality' => $lead->preferred_locality ?? '',
@@ -336,13 +344,15 @@ class ExternalLeadApiController extends Controller
             // Extract email
             $email = $item['email'] ?? $item['student_email'] ?? null;
 
-            // Extract academic / subject info
+            // Extract academic / subject / stream info
             $academicParts = array_filter([
                 $item['subject'] ?? null,
                 $item['course'] ?? null,
+                $item['stream'] ?? null,
                 $item['program'] ?? null,
                 $item['degree'] ?? null,
                 $item['branch'] ?? null,
+                $item['specialization'] ?? null,
                 $item['college'] ?? null,
                 $item['university'] ?? null,
             ]);
@@ -390,6 +400,8 @@ class ExternalLeadApiController extends Controller
                     'id' => $existing->id,
                     'name' => $existing->name,
                     'mobile' => $existing->mobile,
+                    'stream' => $existing->stream,
+                    'course' => $existing->course,
                     'action' => 'updated',
                 ];
             } else {
@@ -418,6 +430,8 @@ class ExternalLeadApiController extends Controller
                     'id' => $lead->id,
                     'name' => $lead->name,
                     'mobile' => $lead->mobile,
+                    'stream' => $academicSummary ?: null,
+                    'course' => $academicSummary ?: null,
                     'action' => 'created',
                 ];
             }
