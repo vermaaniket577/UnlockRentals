@@ -174,7 +174,7 @@
         </div>
 
         {{-- Live Real-time Date, Clock & Auto-Update Controller --}}
-        <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200/90 shadow-xs self-start lg:self-auto">
+        <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200/90 shadow-xs self-start lg:self-auto flex-wrap sm:flex-nowrap">
             <span class="flex h-2 w-2 relative">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -187,6 +187,11 @@
             <button type="button" id="crmAutoRefreshToggle" onclick="toggleCrmAutoRefresh()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer" title="Auto-syncs live updates every 30s">
                 <i class="ph-bold ph-arrows-clockwise text-xs animate-spin" id="crmRefreshIcon"></i>
                 <span id="crmRefreshText">Auto-Update: 30s</span>
+            </button>
+            <span class="text-slate-200">|</span>
+            <button type="button" id="btnInstantApiSync" onclick="triggerInstantApiSync(false)" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs hover:from-blue-700 hover:to-indigo-700 active:scale-95 transition-all cursor-pointer" title="Fetch latest enquiry leads from Admission Dekho / External API right now">
+                <i class="ph-bold ph-lightning text-xs" id="syncBtnIcon"></i>
+                <span id="syncBtnText">Sync Leads Now</span>
             </button>
         </div>
     </div>
@@ -738,12 +743,13 @@
                 leads_json: rawJson || null,
             };
 
-            const response = await fetch('/admin/leads/fetch-external', {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+            const response = await fetch('{{ route('admin.leads.fetch-external') }}', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify(payload)
             });
@@ -907,6 +913,89 @@
     updateLiveTimestamps();
     updateLiveClock();
 
+    // Toast Notification Banner for CRM
+    function showCrmToast(message, type = 'success') {
+        let toast = document.getElementById('crmToastBanner');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'crmToastBanner';
+            document.body.appendChild(toast);
+        }
+        toast.className = (type === 'success')
+            ? 'fixed bottom-5 right-5 z-[9999] flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold bg-emerald-600 text-white transition-all transform duration-300 translate-y-0 opacity-100'
+            : 'fixed bottom-5 right-5 z-[9999] flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold bg-rose-600 text-white transition-all transform duration-300 translate-y-0 opacity-100';
+        toast.innerHTML = `<i class="ph-bold ${type === 'success' ? 'ph-check-circle' : 'ph-warning-circle'} text-base"></i> <span>${message}</span>`;
+        setTimeout(() => {
+            if (toast) {
+                toast.classList.add('opacity-0', 'translate-y-4');
+            }
+        }, 3500);
+    }
+
+    // Instant One-Click Lead Synchronization from Admission Dekho / External API
+    async function triggerInstantApiSync(isSilent = false) {
+        const btn = document.getElementById('btnInstantApiSync');
+        const icon = document.getElementById('syncBtnIcon');
+        const text = document.getElementById('syncBtnText');
+
+        if (!isSilent && btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+            if (icon) icon.className = 'ph-bold ph-arrows-clockwise text-xs animate-spin';
+            if (text) text.textContent = 'Syncing...';
+        }
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+            const response = await fetch('{{ route('admin.leads.fetch-external') }}', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    source_url: 'https://api.anushram.com/v1/api/general-enquiry/all',
+                    method: 'GET'
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                const countMsg = (data.imported_count > 0 || data.updated_count > 0)
+                    ? `Synced ${data.imported_count} new & ${data.updated_count} updated leads from Admission Dekho!`
+                    : 'All leads up to date with Admission Dekho!';
+                
+                if (!isSilent) {
+                    showCrmToast(countMsg, 'success');
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                if (!isSilent) {
+                    showCrmToast(data.message || 'Unable to sync leads from Admission Dekho.', 'error');
+                } else {
+                    window.location.reload();
+                }
+            }
+        } catch (err) {
+            console.error('Lead sync error:', err);
+            if (!isSilent) {
+                showCrmToast('Network error while connecting to Admission Dekho API.', 'error');
+            } else {
+                window.location.reload();
+            }
+        } finally {
+            if (!isSilent && btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+                if (icon) icon.className = 'ph-bold ph-lightning text-xs';
+                if (text) text.textContent = 'Sync Leads Now';
+            }
+        }
+    }
+
     // Auto-Refresh CRM (every 30 seconds, toggleable)
     let autoRefreshTimer = null;
     let autoRefreshCountdown = 30;
@@ -929,7 +1018,8 @@
                                  || !document.getElementById('externalSyncModal')?.classList.contains('hidden')
                                  || !document.getElementById('createLeadModal')?.classList.contains('hidden');
                 if (!isSearching && !isModalOpen) {
-                    window.location.reload();
+                    // Silently pull newest leads from API before reloading
+                    triggerInstantApiSync(true);
                 } else {
                     autoRefreshCountdown = 30; // Reset countdown without interrupting user
                 }

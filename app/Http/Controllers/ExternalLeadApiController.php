@@ -391,17 +391,32 @@ class ExternalLeadApiController extends Controller
 
             if ($existing) {
                 $existing->update([
+                    'name' => ($name && $name !== 'API Lead') ? $name : $existing->name,
+                    'email' => $email ?: $existing->email,
+                    'preferred_city' => $city ?: $existing->preferred_city,
                     'lead_source' => $leadSource,
-                    'message' => $existing->message . "\n[API Sync " . now()->format('d M H:i') . "]: " . $fullMessage,
-                    'engagement_score' => $existing->engagement_score + 10,
+                    'notes' => $academicSummary ?: $existing->notes,
+                    'message' => $existing->message ? ($existing->message . "\n[API Sync " . now()->format('d M H:i') . "]: " . $fullMessage) : $fullMessage,
+                    'engagement_score' => ($existing->engagement_score ?? 0) + 10,
                 ]);
+
+                if (!empty($item['createdAt'])) {
+                    try {
+                        $parsedDate = \Carbon\Carbon::parse($item['createdAt']);
+                        if ($parsedDate->gt($existing->created_at)) {
+                            $existing->created_at = $parsedDate;
+                            $existing->saveQuietly();
+                        }
+                    } catch (\Throwable $e) {}
+                }
+
                 $updatedCount++;
                 $storedLeads[] = [
                     'id' => $existing->id,
                     'name' => $existing->name,
                     'mobile' => $existing->mobile,
-                    'stream' => $existing->stream,
-                    'course' => $existing->course,
+                    'stream' => $academicSummary ?: ($existing->stream ?: null),
+                    'course' => $academicSummary ?: ($existing->course ?: null),
                     'action' => 'updated',
                 ];
             } else {
@@ -425,6 +440,14 @@ class ExternalLeadApiController extends Controller
                     'whatsapp_opt_in' => isset($item['whatsapp_opt_in']) ? (bool)$item['whatsapp_opt_in'] : true,
                     'next_follow_up_at' => now()->addHours(2),
                 ]);
+
+                if (!empty($item['createdAt'])) {
+                    try {
+                        $lead->created_at = \Carbon\Carbon::parse($item['createdAt']);
+                        $lead->saveQuietly();
+                    } catch (\Throwable $e) {}
+                }
+
                 $importedCount++;
                 $storedLeads[] = [
                     'id' => $lead->id,

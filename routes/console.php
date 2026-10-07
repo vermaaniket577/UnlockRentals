@@ -11,6 +11,7 @@ Artisan::command('inspire', function () {
 // Visitor CRM Scheduled Tasks
 Schedule::command('visitor:aggregate-daily')->dailyAt('00:05')->name('visitor_aggregate_daily')->withoutOverlapping();
 Schedule::command('visitor:cleanup-retention')->dailyAt('02:00')->name('visitor_cleanup_retention')->withoutOverlapping();
+Schedule::command('leads:fetch-external')->everyMinute()->name('leads_fetch_external')->withoutOverlapping();
 
 // Fetch and sync leads from external API via CLI or Scheduler
 Artisan::command('leads:fetch-external {--url=} {--token=} {--method=GET}', function () {

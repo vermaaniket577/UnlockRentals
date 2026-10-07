@@ -159,14 +159,18 @@ class Lead extends Model
         $notes = strtolower($this->notes ?? '');
         return str_contains($source, 'admission') 
             || str_contains($source, 'anushram')
+            || str_contains($source, 'education')
             || str_contains($type, 'admission')
+            || str_contains($type, 'education')
             || str_contains($msg, 'admission')
             || str_contains($notes, 'admission')
             || str_contains($msg, 'course')
+            || str_contains($msg, 'stream')
             || str_contains($msg, 'degree')
             || str_contains($msg, 'phd')
             || str_contains($msg, 'college')
-            || str_contains($msg, 'university');
+            || str_contains($msg, 'university')
+            || !empty($this->course);
     }
 
     public function getSourceAttribute()
