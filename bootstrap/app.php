@@ -36,6 +36,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'general-enquiry/*',
             'webhook/*',
             'api/whatsapp/*',
+            'api/admission-dekho',
+            'api/admission-dekho/*',
+            'admission-dekho',
+            'admission-dekho/*',
+            'api/v1/admission-enquiry',
             'plans/*/razorpay/callback',
             'plans/*/purchase/process',
         ]);

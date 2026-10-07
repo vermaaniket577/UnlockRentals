@@ -708,6 +708,25 @@ Route::match(['post', 'put'], '/api/admission-leads', [\App\Http\Controllers\Lea
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
     ->name('api.admission.leads');
 
+// Admission Dekho Form Direct Intake API
+Route::get('/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'index'])
+    ->name('admission.dekho.index');
+Route::match(['post', 'options'], '/admission-dekho/enquiry', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('admission.dekho.enquiry');
+Route::match(['post', 'options'], '/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('admission.dekho.store');
+Route::match(['post', 'options'], '/api/admission-dekho/enquiry', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('api.admission.dekho.enquiry');
+Route::match(['post', 'options'], '/api/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('api.admission.dekho.store');
+Route::match(['post', 'options'], '/api/admission-dekho/lead', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('api.admission.dekho.lead');
+
 // WhatsApp Inbound Webhook (Meta Cloud & Twilio callbacks)
 Route::match(['get', 'post'], '/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('webhook.whatsapp');
 Route::match(['get', 'post'], '/api/whatsapp/webhook', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('api.whatsapp.webhook');

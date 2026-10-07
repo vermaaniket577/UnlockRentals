@@ -40,4 +40,15 @@ Route::match(['post', 'put'], '/v1/api/general-enquiry/create', [\App\Http\Contr
 Route::match(['post', 'put'], '/leads/admission', [\App\Http\Controllers\LeadController::class, 'storeAdmissionLead']);
 Route::match(['post', 'put'], '/admission-leads', [\App\Http\Controllers\LeadController::class, 'storeAdmissionLead']);
 
+/*
+|--------------------------------------------------------------------------
+| Admission Dekho Form Intake API
+|--------------------------------------------------------------------------
+*/
+Route::get('/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'index']);
+Route::match(['post', 'options'], '/admission-dekho/enquiry', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
+Route::match(['post', 'options'], '/admission-dekho/lead', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
+Route::match(['post', 'options'], '/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
+Route::match(['post', 'options'], '/v1/admission-enquiry', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
+
 

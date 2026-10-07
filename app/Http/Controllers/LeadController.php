@@ -199,12 +199,18 @@ class LeadController extends Controller
             ], 422);
         }
 
-        // 2. Extract name
-        $name = $request->input('name') 
+        // 2. Extract name (support First + Last or combined name)
+        $firstName = trim((string) ($request->input('firstName') ?: $request->input('first_name') ?: $request->input('first') ?: ''));
+        $lastName = trim((string) ($request->input('lastName') ?: $request->input('last_name') ?: $request->input('last') ?: ''));
+        $composedName = trim("{$firstName} {$lastName}");
+
+        $name = $composedName ?: (
+            $request->input('name') 
             ?: $request->input('full_name') 
             ?: $request->input('student_name') 
             ?: $request->input('candidate_name') 
-            ?: 'Admission Enquirer';
+            ?: 'Admission Enquirer'
+        );
 
         // 3. Extract email
         $email = $request->input('email') 
@@ -227,24 +233,34 @@ class LeadController extends Controller
         $academicSummary = implode(' • ', $courseParts);
 
         // 5. Build rich message
+        $state = trim((string) ($request->input('state') ?: $request->input('region') ?: ''));
+        $city = trim((string) ($request->input('city') ?: $request->input('preferred_city') ?: ''));
+
         $userMsg = $request->input('message') 
             ?: $request->input('enquiry') 
             ?: $request->input('query') 
             ?: $request->input('notes') 
             ?: '';
 
-        $fullMessage = $academicSummary 
-            ? ($userMsg ? "Course / Program: {$academicSummary}\nEnquiry: {$userMsg}" : "Course / Program: {$academicSummary}") 
-            : ($userMsg ?: 'Admission Inquiry submitted via external portal');
+        $messageLines = [];
+        if ($academicSummary) {
+            $messageLines[] = "Course / Subject: {$academicSummary}";
+        }
+        if ($state || $city) {
+            $loc = array_filter([$city ? "City: {$city}" : null, $state ? "State: {$state}" : null]);
+            $messageLines[] = "Location: " . implode(', ', $loc);
+        }
+        if ($userMsg) {
+            $messageLines[] = "Enquiry: {$userMsg}";
+        }
 
-        $city = $request->input('city') 
-            ?: $request->input('preferred_city') 
-            ?: $request->input('state') 
-            ?: null;
+        $fullMessage = !empty($messageLines)
+            ? implode("\n", $messageLines)
+            : 'Admission Inquiry submitted via Admission Dekho form';
 
         $source = $request->input('source') 
             ?: $request->input('lead_source') 
-            ?: 'admission_portal';
+            ?: 'Admission Dekho';
 
         // 6. Deduplicate or update within 48h
         $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
@@ -295,6 +311,9 @@ class LeadController extends Controller
                 'status' => $lead->lead_status,
                 'created_at' => $lead->created_at->toIso8601String(),
             ]
-        ], 201);
+        ], 201)
+        ->header('Access-Control-Allow-Origin', '*')
+        ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
+        ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
     }
 }
