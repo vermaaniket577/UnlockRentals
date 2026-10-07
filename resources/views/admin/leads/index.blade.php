@@ -19,17 +19,20 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
-            <button type="button" onclick="openFetchLeadsModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-emerald-600/25 cursor-pointer" title="Fetch lead data from external API and store in CRM database">
-                <i class="ph-bold ph-cloud-arrow-down text-base"></i> Fetch Leads from API
+            <button type="button" onclick="openFetchLeadsModal()" style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%) !important; color: #ffffff !important;" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm shadow-emerald-600/25 cursor-pointer hover:opacity-90" title="Fetch lead data from external API and store in CRM database">
+                <i class="ph-bold ph-cloud-arrow-down text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 700;">Fetch Leads from API</span>
             </button>
-            <button type="button" onclick="openExternalSyncModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-600/25 cursor-pointer" title="Dispatch leads to external endpoint">
-                <i class="ph-bold ph-paper-plane-tilt text-base"></i> Send All to External API
+            <button type="button" onclick="openExternalSyncModal()" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important; color: #ffffff !important;" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-600/25 cursor-pointer hover:opacity-90" title="Dispatch leads to external endpoint">
+                <i class="ph-bold ph-paper-plane-tilt text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 700;">Send All to External API</span>
             </button>
             <a href="{{ route('admin.leads.export.csv', request()->all()) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all">
                 <i class="ph-bold ph-download-simple text-base"></i> Export CSV
             </a>
-            <button onclick="document.getElementById('createLeadModal').classList.remove('hidden')" class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm">
-                <i class="ph-bold ph-plus text-base"></i> Add Lead
+            <button onclick="document.getElementById('createLeadModal').classList.remove('hidden')" style="background-color: #0f172a !important; color: #ffffff !important;" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm hover:opacity-90">
+                <i class="ph-bold ph-plus text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 700;">Add Lead</span>
             </button>
         </div>
     </div>
@@ -506,9 +509,9 @@
                         <i class="ph-bold ph-magnifying-glass"></i>
                         <span>Debug / Verify Mode</span>
                     </button>
-                    <button type="button" id="btnFireForgetSync" onclick="executeExternalSync(false)" class="w-full sm:w-auto px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                        <i class="ph-bold ph-lightning"></i>
-                        <span>Send All (204 Fire-and-Forget)</span>
+                    <button type="button" id="btnFireForgetSync" onclick="executeExternalSync(false)" style="background-color: #2563eb !important; color: #ffffff !important;" class="w-full sm:w-auto px-5 py-2 text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:opacity-90">
+                        <i class="ph-bold ph-lightning" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important; font-weight: 700;">Send All (204 Fire-and-Forget)</span>
                     </button>
                 </div>
             </div>
@@ -575,9 +578,9 @@
                     <button type="button" onclick="closeFetchLeadsModal()" class="w-full sm:w-auto px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer">
                         Cancel
                     </button>
-                    <button type="button" id="btnExecuteFetch" onclick="executeFetchLeads()" class="w-full sm:w-auto px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                        <i class="ph-bold ph-download-simple"></i>
-                        <span>Fetch & Store in CRM</span>
+                    <button type="button" id="btnExecuteFetch" onclick="executeFetchLeads()" style="background-color: #059669 !important; color: #ffffff !important;" class="w-full sm:w-auto px-5 py-2 text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:opacity-90">
+                        <i class="ph-bold ph-download-simple" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important; font-weight: 700;">Fetch & Store in CRM</span>
                     </button>
                 </div>
             </div>
