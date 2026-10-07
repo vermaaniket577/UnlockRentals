@@ -32,4 +32,4 @@ Thumbs.db
 .gradle/
 **/build/
 .dart_tool/
-
+/service_account.json
