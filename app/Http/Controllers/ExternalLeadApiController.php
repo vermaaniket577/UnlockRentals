@@ -384,10 +384,24 @@ class ExternalLeadApiController extends Controller
             $budget = !empty($item['budget_max']) ? (float)$item['budget_max'] : (!empty($item['budget']) ? (float)$item['budget'] : null);
             $bedrooms = $item['bedrooms'] ?? $item['bhk_preference'] ?? null;
 
-            // Duplicate check within 48h
-            $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
-                ->where('created_at', '>=', now()->subHours(48))
-                ->first();
+            // Extract unique external ID from API (e.g. Anushram MongoDB "_id": "6ac689274f872cb4a13f2f2c")
+            $externalId = (string) ($item['_id'] ?? $item['id'] ?? '');
+
+            // 1. Precise duplicate check: Check if this specific external enquiry was already imported
+            $existing = null;
+            if (!empty($externalId)) {
+                $existing = Lead::where('consent_text', $externalId)
+                    ->orWhere('notes', 'LIKE', "%[Ref:{$externalId}]%")
+                    ->first();
+            }
+
+            // 2. Fallback duplicate check: only if no external ID, check identical mobile & identical message within 2h
+            if (!$existing && empty($externalId)) {
+                $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
+                    ->where('message', $fullMessage)
+                    ->where('created_at', '>=', now()->subHours(2))
+                    ->first();
+            }
 
             if ($existing) {
                 $existing->update([
@@ -395,7 +409,8 @@ class ExternalLeadApiController extends Controller
                     'email' => $email ?: $existing->email,
                     'preferred_city' => $city ?: $existing->preferred_city,
                     'lead_source' => $leadSource,
-                    'notes' => $academicSummary ?: $existing->notes,
+                    'consent_text' => $externalId ?: $existing->consent_text,
+                    'notes' => $academicSummary ? ($externalId ? "{$academicSummary} [Ref:{$externalId}]" : $academicSummary) : $existing->notes,
                     'message' => $existing->message ? ($existing->message . "\n[API Sync " . now()->format('d M H:i') . "]: " . $fullMessage) : $fullMessage,
                     'engagement_score' => ($existing->engagement_score ?? 0) + 10,
                 ]);
@@ -434,7 +449,10 @@ class ExternalLeadApiController extends Controller
                     'budget_max' => $budget,
                     'bedrooms' => $bedrooms,
                     'message' => $fullMessage,
-                    'notes' => $academicSummary ?: 'Imported via External API Fetch',
+                    'notes' => $academicSummary 
+                        ? ($externalId ? "{$academicSummary} [Ref:{$externalId}]" : $academicSummary)
+                        : ($externalId ? "Imported via External API Fetch [Ref:{$externalId}]" : 'Imported via External API Fetch'),
+                    'consent_text' => $externalId ?: null,
                     'assigned_to' => $assignedStaff?->id,
                     'engagement_score' => 30,
                     'whatsapp_opt_in' => isset($item['whatsapp_opt_in']) ? (bool)$item['whatsapp_opt_in'] : true,

@@ -174,22 +174,23 @@
         </div>
 
         {{-- Live Real-time Date, Clock & Auto-Update Controller --}}
-        <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200/90 shadow-xs self-start lg:self-auto flex-wrap sm:flex-nowrap">
-            <span class="flex h-2 w-2 relative">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <div class="flex items-center gap-1.5 text-xs">
-                <span class="text-[11px] font-bold text-slate-400 uppercase">Live Clock:</span>
-                <span id="crmLiveClock" class="font-mono font-extrabold text-slate-800 text-xs">{{ now()->format('d M Y, h:i:s A') }}</span>
+        <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap self-start lg:self-auto">
+            <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200/90 shadow-xs">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <div class="flex items-center gap-1.5 text-xs">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Live Clock:</span>
+                    <span id="crmLiveClock" class="font-mono font-extrabold text-slate-800 text-xs">{{ now()->format('d M Y, h:i:s A') }}</span>
+                </div>
+                <span class="text-slate-200">|</span>
+                <button type="button" id="crmAutoRefreshToggle" onclick="toggleCrmAutoRefresh()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer" title="Auto-syncs live updates every 30s">
+                    <i class="ph-bold ph-arrows-clockwise text-xs animate-spin" id="crmRefreshIcon"></i>
+                    <span id="crmRefreshText">Auto-Update: 30s</span>
+                </button>
             </div>
-            <span class="text-slate-200">|</span>
-            <button type="button" id="crmAutoRefreshToggle" onclick="toggleCrmAutoRefresh()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer" title="Auto-syncs live updates every 30s">
-                <i class="ph-bold ph-arrows-clockwise text-xs animate-spin" id="crmRefreshIcon"></i>
-                <span id="crmRefreshText">Auto-Update: 30s</span>
-            </button>
-            <span class="text-slate-200">|</span>
-            <button type="button" id="btnInstantApiSync" onclick="triggerInstantApiSync(false)" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs hover:from-blue-700 hover:to-indigo-700 active:scale-95 transition-all cursor-pointer" title="Fetch latest enquiry leads from Admission Dekho / External API right now">
+            <button type="button" id="btnInstantApiSync" onclick="triggerInstantApiSync(false)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs hover:from-blue-700 hover:to-indigo-700 active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0" title="Fetch latest enquiry leads from Admission Dekho / External API right now">
                 <i class="ph-bold ph-lightning text-xs" id="syncBtnIcon"></i>
                 <span id="syncBtnText">Sync Leads Now</span>
             </button>

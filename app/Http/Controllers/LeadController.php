@@ -262,9 +262,10 @@ class LeadController extends Controller
             ?: $request->input('lead_source') 
             ?: 'Admission Dekho';
 
-        // 6. Deduplicate or update within 48h
+        // 6. Prevent accidental rapid double-submission (within 60 seconds with identical mobile & message)
         $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
-            ->where('created_at', '>=', now()->subHours(48))
+            ->where('message', $fullMessage)
+            ->where('created_at', '>=', now()->subSeconds(60))
             ->first();
 
         if ($existing) {
