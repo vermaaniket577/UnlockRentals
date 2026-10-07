@@ -30,9 +30,9 @@
                     <i class="ph-bold ph-arrow-square-out text-sm text-blue-600"></i>
                     <span>Public Blog</span>
                 </a>
-                <a href="{{ route('admin.blogs.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold tracking-wide uppercase rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-200 transform active:scale-98" title="Write New Article">
-                    <i class="ph-bold ph-plus-circle text-base"></i>
-                    <span>Write New Article</span>
+                <a href="{{ route('admin.blogs.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white text-xs font-extrabold tracking-wide uppercase rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-200 transform active:scale-98" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;" title="Write New Article">
+                    <i class="ph-bold ph-plus-circle text-base !text-white" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;"></i>
+                    <span class="!text-white" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">Write New Article</span>
                 </a>
             </div>
         </div>
@@ -305,9 +305,9 @@
                                     </div>
                                     <h3 class="text-lg font-extrabold text-slate-800 mb-1.5">No blog posts found</h3>
                                     <p class="text-xs sm:text-sm text-slate-500 max-w-xs mx-auto mb-5 leading-relaxed">Publish rental guides, market updates, and tenant tips to boost your SEO traffic.</p>
-                                    <a href="{{ route('admin.blogs.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md shadow-blue-500/25 transition-all">
-                                        <i class="ph-bold ph-plus text-sm"></i>
-                                        <span>Write First Post</span>
+                                    <a href="{{ route('admin.blogs.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md shadow-blue-500/25 transition-all" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                                        <i class="ph-bold ph-plus text-sm !text-white" style="color: #ffffff !important;"></i>
+                                        <span class="!text-white" style="color: #ffffff !important;">Write First Post</span>
                                     </a>
                                 </div>
                             </td>

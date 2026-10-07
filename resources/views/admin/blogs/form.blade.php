@@ -333,9 +333,9 @@
 
                     {{-- Action Buttons --}}
                     <div class="pt-4 border-t border-slate-100 space-y-2.5">
-                        <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-2 transform active:scale-98">
-                            <i class="ph-bold ph-check text-sm"></i>
-                            <span>{{ $blog ? 'Save Changes' : 'Publish Article' }}</span>
+                        <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-2 transform active:scale-98" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                            <i class="ph-bold ph-check text-sm !text-white" style="color: #ffffff !important;"></i>
+                            <span class="!text-white" style="color: #ffffff !important;">{{ $blog ? 'Save Changes' : 'Publish Article' }}</span>
                         </button>
                         <a href="{{ route('admin.blogs.index') }}" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition-all text-center block" title="Cancel">
                             Cancel

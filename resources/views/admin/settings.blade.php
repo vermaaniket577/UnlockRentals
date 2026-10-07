@@ -819,9 +819,9 @@
                         <i class="ph-bold ph-newspaper text-3xl text-slate-300 mb-2"></i>
                         <p class="text-xs font-semibold text-slate-600">No custom articles created in the database yet.</p>
                         <p class="text-[11px] text-slate-400 mt-1">The homepage slider is currently displaying high-quality curated guide articles automatically.</p>
-                        <a href="{{ route('admin.blogs.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 mt-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs">
-                            <i class="ph-bold ph-plus-circle"></i>
-                            <span>Write Your First Article</span>
+                        <a href="{{ route('admin.blogs.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 mt-3 bg-blue-600 hover:bg-blue-700 !text-white rounded-xl text-xs font-bold transition-all shadow-xs" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                            <i class="ph-bold ph-plus-circle !text-white" style="color: #ffffff !important;"></i>
+                            <span class="!text-white" style="color: #ffffff !important;">Write Your First Article</span>
                         </a>
                     </div>
                 @endif
