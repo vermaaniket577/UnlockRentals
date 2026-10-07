@@ -193,10 +193,16 @@ class ExternalLeadApiController extends Controller
      */
     public function fetchAndStore(Request $request): JsonResponse
     {
-        $sourceUrl = $request->input('source_url') 
+        $rawSourceUrl = $request->input('source_url') 
             ?: $request->input('target_url') 
-            ?: env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry');
+            ?: env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry/all');
             
+        // Auto-correct common missing '/all' path for Anushram GET enquiries
+        $sourceUrl = trim($rawSourceUrl);
+        if (str_contains($sourceUrl, 'api.anushram.com/v1/api/general-enquiry') && !str_ends_with($sourceUrl, '/all') && !str_ends_with($sourceUrl, '/create')) {
+            $sourceUrl = rtrim($sourceUrl, '/') . '/all';
+        }
+
         $method = strtoupper($request->input('method', 'GET'));
         $token = $request->input('auth_token') ?: $request->input('token');
         $rawJson = $request->input('leads_json');
@@ -258,8 +264,10 @@ class ExternalLeadApiController extends Controller
         }
 
         // 3. Normalize response array
-        // Check if nested under 'leads', 'data', 'results', 'items', 'records', etc.
-        if (isset($leadsData['leads']) && is_array($leadsData['leads'])) {
+        // Check if nested under 'enquiries', 'enquiry', 'leads', 'data', 'results', 'items', 'records', etc.
+        if (isset($leadsData['enquiries']) && is_array($leadsData['enquiries'])) {
+            $items = $leadsData['enquiries'];
+        } elseif (isset($leadsData['leads']) && is_array($leadsData['leads'])) {
             $items = $leadsData['leads'];
         } elseif (isset($leadsData['data']) && is_array($leadsData['data'])) {
             $items = $leadsData['data'];
@@ -298,9 +306,9 @@ class ExternalLeadApiController extends Controller
             }
 
             // Extract phone
-            $rawPhone = $item['phone'] 
+            $rawPhone = $item['contact'] 
+                ?? $item['phone'] 
                 ?? $item['mobile'] 
-                ?? $item['contact'] 
                 ?? $item['student_mobile'] 
                 ?? $item['phone_number'] 
                 ?? '';
@@ -314,19 +322,23 @@ class ExternalLeadApiController extends Controller
                 continue;
             }
 
-            // Extract name
-            $name = $item['name'] 
+            // Extract name (supports firstName + lastName, or combined name)
+            $composedName = trim(($item['firstName'] ?? '') . ' ' . ($item['lastName'] ?? ''));
+            $name = $composedName ?: (
+                $item['name'] 
                 ?? $item['full_name'] 
                 ?? $item['student_name'] 
                 ?? $item['candidate_name'] 
                 ?? $item['client_name'] 
-                ?? 'API Lead';
+                ?? 'API Lead'
+            );
 
             // Extract email
             $email = $item['email'] ?? $item['student_email'] ?? null;
 
-            // Extract academic info
+            // Extract academic / subject info
             $academicParts = array_filter([
+                $item['subject'] ?? null,
                 $item['course'] ?? null,
                 $item['program'] ?? null,
                 $item['degree'] ?? null,
@@ -339,12 +351,14 @@ class ExternalLeadApiController extends Controller
             // Extract message
             $msg = $item['message'] ?? $item['enquiry'] ?? $item['query'] ?? $item['notes'] ?? '';
             $fullMessage = $academicSummary 
-                ? ($msg ? "Course: {$academicSummary}\n{$msg}" : "Course: {$academicSummary}") 
+                ? ($msg ? "Subject/Course: {$academicSummary}\n{$msg}" : "Subject/Course: {$academicSummary}") 
                 : ($msg ?: 'Imported from external API');
 
             // Detect source and admission flag
             $rawSource = strtolower($item['source'] ?? $item['lead_source'] ?? '');
             $isAdmission = !empty($academicSummary) 
+                || !empty($item['subject'])
+                || str_contains($sourceUrl, 'anushram')
                 || str_contains($rawSource, 'admission') 
                 || str_contains($rawSource, 'anushram') 
                 || str_contains(strtolower($msg), 'admission') 

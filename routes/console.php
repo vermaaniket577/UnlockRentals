@@ -13,12 +13,25 @@ Schedule::command('visitor:aggregate-daily')->dailyAt('00:05')->name('visitor_ag
 Schedule::command('visitor:cleanup-retention')->dailyAt('02:00')->name('visitor_cleanup_retention')->withoutOverlapping();
 
 // Fetch and sync leads from external API via CLI or Scheduler
-Artisan::command('leads:fetch-external {--url=} {--token=}', function () {
-    $url = $this->option('url') ?: env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry');
+Artisan::command('leads:fetch-external {--url=} {--token=} {--method=GET}', function () {
+    $rawUrl = $this->option('url') ?: env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry/all');
+    $method = strtoupper($this->option('method') ?: 'GET');
     $token = $this->option('token');
-    $this->info("Fetching leads from external API: {$url}");
 
-    $request = new \Illuminate\Http\Request(['source_url' => $url, 'auth_token' => $token]);
+    // Auto-fix URL if user omitted /all for Anushram
+    $url = trim($rawUrl);
+    if (str_contains($url, 'api.anushram.com/v1/api/general-enquiry') && !str_ends_with($url, '/all') && !str_ends_with($url, '/create')) {
+        $url = rtrim($url, '/') . '/all';
+        $this->warn("Note: Automatically appended '/all' to endpoint ({$url})");
+    }
+
+    $this->info("Fetching leads from external API [{$method}]: {$url}");
+
+    $request = new \Illuminate\Http\Request([
+        'source_url' => $url, 
+        'auth_token' => $token,
+        'method' => $method,
+    ]);
     $controller = app(\App\Http\Controllers\ExternalLeadApiController::class);
     $response = $controller->fetchAndStore($request);
     $data = $response->getData(true);
