@@ -23,6 +23,10 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
+            <a href="{{ route('admin.users.export.excel', request()->all()) }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 active:scale-95 transition-all cursor-pointer" title="Download users in Excel sheet format (.csv)">
+                <i class="ph-bold ph-file-xls text-base"></i>
+                <span>Download Excel Sheet</span>
+            </a>
             <a href="{{ route('admin.subscriptions.assign') }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/25 active:scale-95 transition-all">
                 <i class="ph-bold ph-plus-circle text-sm"></i>
                 <span>Assign Plan Manually</span>

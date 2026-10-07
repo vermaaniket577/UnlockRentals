@@ -526,7 +526,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/properties', [AdminController::class, 'properties'])->name('properties');
     Route::post('/properties/{property}/approve', [AdminController::class, 'approve'])->name('properties.approve');
     Route::post('/properties/{property}/reject', [AdminController::class, 'reject'])->name('properties.reject');
-    Route::post('/properties/toggle-bypass', [AdminController::class, 'toggleBypassApproval'])->name('properties.toggle-bypass');
+    Route::get('/users/export/excel', [AdminController::class, 'exportUsersExcel'])->name('users.export.excel');
+    Route::get('/users/export/csv', [AdminController::class, 'exportUsersExcel'])->name('users.export.csv');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');

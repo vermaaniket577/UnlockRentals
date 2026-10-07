@@ -349,6 +349,120 @@ class AdminController extends Controller
     }
 
     /**
+     * Export filtered users to Excel sheet format (CSV with UTF-8 BOM).
+     */
+    public function exportUsersExcel(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $query = User::query();
+
+        // Search by Name, Email, or Phone
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('phone', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Role filter
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        // Phone Verification Status filter
+        if ($request->filled('status')) {
+            if ($request->status === 'verified') {
+                $query->whereNotNull('phone_verified_at');
+            } elseif ($request->status === 'unverified') {
+                $query->whereNull('phone_verified_at');
+            }
+        }
+
+        // Paid Membership filter
+        if ($request->filled('membership')) {
+            if ($request->membership === 'paid') {
+                $query->whereHas('userPlans', function ($q) {
+                    $q->active();
+                });
+            } elseif ($request->membership === 'free') {
+                $query->whereDoesntHave('userPlans', function ($q) {
+                    $q->active();
+                });
+            } elseif (is_numeric($request->membership)) {
+                $query->whereHas('userPlans', function ($q) use ($request) {
+                    $q->active()->where('plan_id', $request->membership);
+                });
+            }
+        }
+
+        $query->withCount(['properties', 'inquiries'])
+              ->with(['userPlans' => function ($q) {
+                  $q->active()->with('plan');
+              }])
+              ->latest();
+
+        $filename = 'unlockrentals_users_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        return response()->stream(function () use ($query) {
+            $handle = fopen('php://output', 'w');
+            
+            // UTF-8 BOM so Excel opens it with proper character encoding
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Excel Column Headers
+            fputcsv($handle, [
+                'User ID',
+                'Full Name',
+                'Email Address',
+                'Phone Number',
+                'Phone Verified',
+                'Role',
+                'Membership Tier',
+                'Plan Name',
+                'Contacts Left',
+                'Properties Listed',
+                'Inquiries Made',
+                'Registered Date',
+            ]);
+
+            $query->chunk(100, function ($users) use ($handle) {
+                foreach ($users as $u) {
+                    $activePlan = $u->activePlan();
+                    $planTitle = $activePlan?->plan?->name ?? 'Free Tier';
+                    $contactsLeft = $activePlan ? $activePlan->remaining_contacts : 0;
+                    $phoneStatus = $u->phone_verified_at ? 'Verified' : 'Unverified';
+
+                    fputcsv($handle, [
+                        $u->id,
+                        $u->name,
+                        $u->email,
+                        $u->phone ? ("'" . $u->phone) : 'N/A',
+                        $phoneStatus,
+                        ucfirst($u->role),
+                        $activePlan ? 'Paid Member' : 'Free Member',
+                        $planTitle,
+                        $activePlan ? $contactsLeft : '0',
+                        $u->properties_count,
+                        $u->inquiries_count,
+                        $u->created_at ? $u->created_at->format('Y-m-d H:i:s') : 'N/A',
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        }, 200, $headers);
+    }
+
+    /**
      * Show settings page for site content and social media management.
      */
     public function settings()
