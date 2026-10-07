@@ -108,68 +108,87 @@
         </div>
     </div>
 
-    {{-- Quick Category Filter Chips --}}
+    {{-- Quick Category Filter Chips & Live Clock / Auto-Update Controller --}}
     @php
         $currentCat = request('category', 'all');
         if (empty($currentCat)) { $currentCat = 'all'; }
     @endphp
-    <div class="flex items-center gap-2.5 flex-wrap">
-        {{-- 1. All Leads --}}
-        @if($currentCat === 'all')
-            <a href="{{ route('admin.leads.index', request()->except(['category', 'page'])) }}" 
-               style="background: #0f172a !important; color: #ffffff !important; border: 1px solid #0f172a !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2) !important;"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
-                <i class="ph-bold ph-squares-four text-sm" style="color: #94a3b8 !important;"></i>
-                <span style="color: #ffffff !important; font-weight: 700;">All Leads</span>
-                <span style="background: rgba(255, 255, 255, 0.2) !important; color: #ffffff !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $totalLeadsCount }}</span>
-            </a>
-        @else
-            <a href="{{ route('admin.leads.index', request()->except(['category', 'page'])) }}" 
-               style="background: #ffffff !important; color: #334155 !important; border: 1px solid #cbd5e1 !important;"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-slate-50 hover:border-slate-400">
-                <i class="ph-bold ph-squares-four text-sm" style="color: #64748b !important;"></i>
-                <span style="color: #334155 !important; font-weight: 600;">All Leads</span>
-                <span style="background: #f1f5f9 !important; color: #475569 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $totalLeadsCount }}</span>
-            </a>
-        @endif
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <div class="flex items-center gap-2.5 flex-wrap">
+            {{-- 1. All Leads --}}
+            @if($currentCat === 'all')
+                <a href="{{ route('admin.leads.index', request()->except(['category', 'page'])) }}" 
+                   style="background: #0f172a !important; color: #ffffff !important; border: 1px solid #0f172a !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2) !important;"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
+                    <i class="ph-bold ph-squares-four text-sm" style="color: #94a3b8 !important;"></i>
+                    <span style="color: #ffffff !important; font-weight: 700;">All Leads</span>
+                    <span style="background: rgba(255, 255, 255, 0.2) !important; color: #ffffff !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $totalLeadsCount }}</span>
+                </a>
+            @else
+                <a href="{{ route('admin.leads.index', request()->except(['category', 'page'])) }}" 
+                   style="background: #ffffff !important; color: #334155 !important; border: 1px solid #cbd5e1 !important;"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-slate-50 hover:border-slate-400">
+                    <i class="ph-bold ph-squares-four text-sm" style="color: #64748b !important;"></i>
+                    <span style="color: #334155 !important; font-weight: 600;">All Leads</span>
+                    <span style="background: #f1f5f9 !important; color: #475569 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $totalLeadsCount }}</span>
+                </a>
+            @endif
 
-        {{-- 2. Admission & Education Leads --}}
-        @if($currentCat === 'admission')
-            <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'admission'])) }}" 
-               style="background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important; color: #ffffff !important; border: 1px solid #6d28d9 !important; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25) !important;"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
-                <i class="ph-bold ph-graduation-cap text-base" style="color: #ffffff !important;"></i>
-                <span style="color: #ffffff !important; font-weight: 700;">Admission & Education Leads</span>
-                <span style="background: rgba(255, 255, 255, 0.25) !important; color: #ffffff !important; font-weight: 800; padding: 2px 8px; border-radius: 9999px; font-size: 11px; border: 1px solid rgba(255,255,255,0.2) !important;">{{ $admissionLeadsCount }}</span>
-            </a>
-        @else
-            <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'admission'])) }}" 
-               style="background: #faf5ff !important; color: #6b21a8 !important; border: 1px solid #d8b4fe !important;"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-purple-100 hover:border-purple-400">
-                <i class="ph-bold ph-graduation-cap text-base" style="color: #7c3aed !important;"></i>
-                <span style="color: #6b21a8 !important; font-weight: 600;">Admission & Education Leads</span>
-                <span style="background: #ede9fe !important; color: #581c87 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $admissionLeadsCount }}</span>
-            </a>
-        @endif
+            {{-- 2. Admission & Education Leads --}}
+            @if($currentCat === 'admission')
+                <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'admission'])) }}" 
+                   style="background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important; color: #ffffff !important; border: 1px solid #6d28d9 !important; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25) !important;"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
+                    <i class="ph-bold ph-graduation-cap text-base" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important; font-weight: 700;">Admission & Education Leads</span>
+                    <span style="background: rgba(255, 255, 255, 0.25) !important; color: #ffffff !important; font-weight: 800; padding: 2px 8px; border-radius: 9999px; font-size: 11px; border: 1px solid rgba(255,255,255,0.2) !important;">{{ $admissionLeadsCount }}</span>
+                </a>
+            @else
+                <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'admission'])) }}" 
+                   style="background: #faf5ff !important; color: #6b21a8 !important; border: 1px solid #d8b4fe !important;"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-purple-100 hover:border-purple-400">
+                    <i class="ph-bold ph-graduation-cap text-base" style="color: #7c3aed !important;"></i>
+                    <span style="color: #6b21a8 !important; font-weight: 600;">Admission & Education Leads</span>
+                    <span style="background: #ede9fe !important; color: #581c87 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $admissionLeadsCount }}</span>
+                </a>
+            @endif
 
-        {{-- 3. Rental & Property Leads --}}
-        @if($currentCat === 'property')
-            <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'property'])) }}" 
-               style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important; color: #ffffff !important; border: 1px solid #0369a1 !important; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
-                <i class="ph-bold ph-buildings text-base" style="color: #ffffff !important;"></i>
-                <span style="color: #ffffff !important; font-weight: 700;">Rental & Property Leads</span>
-                <span style="background: rgba(255, 255, 255, 0.25) !important; color: #ffffff !important; font-weight: 800; padding: 2px 8px; border-radius: 9999px; font-size: 11px; border: 1px solid rgba(255,255,255,0.2) !important;">{{ max(0, $totalLeadsCount - $admissionLeadsCount) }}</span>
-            </a>
-        @else
-            <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'property'])) }}" 
-               style="background: #f0f9ff !important; color: #0369a1 !important; border: 1px solid #7dd3fc !important;"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-sky-100 hover:border-sky-400">
-                <i class="ph-bold ph-buildings text-base" style="color: #0284c7 !important;"></i>
-                <span style="color: #0369a1 !important; font-weight: 600;">Rental & Property Leads</span>
-                <span style="background: #e0f2fe !important; color: #075985 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ max(0, $totalLeadsCount - $admissionLeadsCount) }}</span>
-            </a>
-        @endif
+            {{-- 3. Rental & Property Leads --}}
+            @if($currentCat === 'property')
+                <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'property'])) }}" 
+                   style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important; color: #ffffff !important; border: 1px solid #0369a1 !important; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
+                    <i class="ph-bold ph-buildings text-base" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important; font-weight: 700;">Rental & Property Leads</span>
+                    <span style="background: rgba(255, 255, 255, 0.25) !important; color: #ffffff !important; font-weight: 800; padding: 2px 8px; border-radius: 9999px; font-size: 11px; border: 1px solid rgba(255,255,255,0.2) !important;">{{ max(0, $totalLeadsCount - $admissionLeadsCount) }}</span>
+                </a>
+            @else
+                <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'property'])) }}" 
+                   style="background: #f0f9ff !important; color: #0369a1 !important; border: 1px solid #7dd3fc !important;"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-sky-100 hover:border-sky-400">
+                    <i class="ph-bold ph-buildings text-base" style="color: #0284c7 !important;"></i>
+                    <span style="color: #0369a1 !important; font-weight: 600;">Rental & Property Leads</span>
+                    <span style="background: #e0f2fe !important; color: #075985 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ max(0, $totalLeadsCount - $admissionLeadsCount) }}</span>
+                </a>
+            @endif
+        </div>
+
+        {{-- Live Real-time Date, Clock & Auto-Update Controller --}}
+        <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200/90 shadow-xs self-start lg:self-auto">
+            <span class="flex h-2 w-2 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <div class="flex items-center gap-1.5 text-xs">
+                <span class="text-[11px] font-bold text-slate-400 uppercase">Live Clock:</span>
+                <span id="crmLiveClock" class="font-mono font-extrabold text-slate-800 text-xs">{{ now()->format('d M Y, h:i:s A') }}</span>
+            </div>
+            <span class="text-slate-200">|</span>
+            <button type="button" id="crmAutoRefreshToggle" onclick="toggleCrmAutoRefresh()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer" title="Auto-syncs live updates every 30s">
+                <i class="ph-bold ph-arrows-clockwise text-xs animate-spin" id="crmRefreshIcon"></i>
+                <span id="crmRefreshText">Auto-Update: 30s</span>
+            </button>
+        </div>
     </div>
 
     {{-- Filter Toolbar --}}
@@ -270,11 +289,22 @@
                                         <span class="text-slate-400 font-mono text-[10px] truncate max-w-[120px]">{{ $lead->email }}</span>
                                     @endif
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-2">
-                                    <span>Source: <strong class="text-slate-600 font-semibold">{{ ucfirst(str_replace('_', ' ', $lead->source)) }}</strong></span>
+                                <div class="text-[10px] text-slate-500 mt-2 flex flex-col gap-1.5">
+                                    <div class="flex items-center gap-1.5">
+                                        <span>Source: <strong class="text-slate-700 font-semibold">{{ ucfirst(str_replace('_', ' ', $lead->source)) }}</strong></span>
+                                    </div>
                                     @if($lead->created_at)
-                                        <span class="text-slate-300">•</span>
-                                        <span>{{ $lead->created_at->diffForHumans() }}</span>
+                                        <div class="inline-flex items-center gap-1.5 flex-wrap font-mono text-[10px] text-slate-600 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200/80 w-fit">
+                                            <i class="ph-bold ph-calendar-blank text-slate-400 text-xs"></i>
+                                            <span class="font-bold text-slate-800">{{ $lead->created_at->format('d M Y') }}</span>
+                                            <span class="text-slate-300">•</span>
+                                            <i class="ph-bold ph-clock text-slate-400 text-xs"></i>
+                                            <span class="font-bold text-slate-800">{{ $lead->created_at->format('h:i:s A') }}</span>
+                                            <span class="text-slate-300">•</span>
+                                            <span class="live-lead-time font-sans font-extrabold text-emerald-600" data-timestamp="{{ $lead->created_at->toIso8601String() }}" title="{{ $lead->created_at->format('l, d F Y, h:i:s A') }}">
+                                                {{ $lead->created_at->diffForHumans() }}
+                                            </span>
+                                        </div>
                                     @endif
                                 </div>
                             </td>
@@ -795,5 +825,116 @@
             alert(`Notice: ${e.message}`);
         }
     }
+
+    // ==========================================
+    // Real-Time Clock & Auto-Updating Timestamps
+    // ==========================================
+    function formatTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffSecs = Math.max(0, Math.floor(diffMs / 1000));
+        
+        if (diffSecs < 15) return 'just now';
+        if (diffSecs < 60) return `${diffSecs}s ago`;
+        
+        const diffMins = Math.floor(diffSecs / 60);
+        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+        
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours} hr${diffHours > 1 ? 's' : ''} ago`;
+        
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays < 30) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        
+        const diffMonths = Math.floor(diffDays / 30);
+        if (diffMonths < 12) return `${diffMonths} mo${diffMonths > 1 ? 's' : ''} ago`;
+        
+        return `${Math.floor(diffDays / 365)} yr${diffDays > 365 ? 's' : ''} ago`;
+    }
+
+    function updateLiveTimestamps() {
+        document.querySelectorAll('.live-lead-time').forEach(el => {
+            const rawIso = el.getAttribute('data-timestamp');
+            if (rawIso) {
+                const date = new Date(rawIso);
+                if (!isNaN(date.getTime())) {
+                    el.textContent = formatTimeAgo(date);
+                }
+            }
+        });
+    }
+
+    function updateLiveClock() {
+        const clockEl = document.getElementById('crmLiveClock');
+        if (clockEl) {
+            const now = new Date();
+            clockEl.textContent = now.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            }) + ', ' + now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+        }
+    }
+
+    // Auto-update timestamps every 10 seconds & clock every second
+    setInterval(updateLiveTimestamps, 10000);
+    setInterval(updateLiveClock, 1000);
+    updateLiveTimestamps();
+    updateLiveClock();
+
+    // Auto-Refresh CRM (every 30 seconds, toggleable)
+    let autoRefreshTimer = null;
+    let autoRefreshCountdown = 30;
+    let autoRefreshEnabled = true;
+
+    function startAutoRefresh() {
+        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+        autoRefreshCountdown = 30;
+        autoRefreshTimer = setInterval(() => {
+            if (!autoRefreshEnabled) return;
+            autoRefreshCountdown--;
+            const textEl = document.getElementById('crmRefreshText');
+            if (textEl) textEl.textContent = `Auto-Update: ${autoRefreshCountdown}s`;
+            
+            if (autoRefreshCountdown <= 0) {
+                // Don't refresh if user is currently interacting with modal or typing in search
+                const searchInput = document.querySelector('input[name="search"]');
+                const isSearching = searchInput && document.activeElement === searchInput;
+                const isModalOpen = !document.getElementById('fetchLeadsModal')?.classList.contains('hidden') 
+                                 || !document.getElementById('externalSyncModal')?.classList.contains('hidden')
+                                 || !document.getElementById('createLeadModal')?.classList.contains('hidden');
+                if (!isSearching && !isModalOpen) {
+                    window.location.reload();
+                } else {
+                    autoRefreshCountdown = 30; // Reset countdown without interrupting user
+                }
+            }
+        }, 1000);
+    }
+
+    function toggleCrmAutoRefresh() {
+        autoRefreshEnabled = !autoRefreshEnabled;
+        const icon = document.getElementById('crmRefreshIcon');
+        const text = document.getElementById('crmRefreshText');
+        const btn = document.getElementById('crmAutoRefreshToggle');
+
+        if (autoRefreshEnabled) {
+            autoRefreshCountdown = 30;
+            if (icon) icon.className = 'ph-bold ph-arrows-clockwise text-xs animate-spin';
+            if (text) text.textContent = 'Auto-Update: 30s';
+            if (btn) btn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer';
+        } else {
+            if (icon) icon.className = 'ph-bold ph-pause text-xs';
+            if (text) text.textContent = 'Auto-Update: Paused';
+            if (btn) btn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition-colors cursor-pointer';
+        }
+    }
+
+    startAutoRefresh();
 </script>
 @endsection
