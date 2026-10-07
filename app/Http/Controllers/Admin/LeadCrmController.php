@@ -25,22 +25,55 @@ class LeadCrmController extends Controller
         $query = Lead::with(['assignedTo', 'property', 'visitor', 'latestFollowUp'])
             ->latest();
 
-        // 1. Status Filter
+        // 1. Category Tab Filter (all, admission, property)
+        if ($request->filled('category') && $request->category !== 'all') {
+            if ($request->category === 'admission') {
+                $query->where(function ($q) {
+                    $q->where('lead_source', 'like', '%admission%')
+                      ->orWhere('lead_source', 'like', '%anushram%')
+                      ->orWhere('property_type', 'like', '%admission%')
+                      ->orWhere('message', 'like', '%admission%')
+                      ->orWhere('message', 'like', '%course%')
+                      ->orWhere('message', 'like', '%phd%')
+                      ->orWhere('notes', 'like', '%admission%');
+                });
+            } elseif ($request->category === 'property') {
+                $query->where(function ($q) {
+                    $q->where(function ($sub) {
+                        $sub->where('lead_source', 'not like', '%admission%')
+                            ->where('lead_source', 'not like', '%anushram%')
+                            ->where('property_type', 'not like', '%admission%');
+                    })->orWhereNull('lead_source');
+                });
+            }
+        }
+
+        // 2. Status Filter
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('lead_status', $request->status);
         }
 
-        // 2. Intent Filter
+        // 3. Intent Filter (maps to purpose column or admission)
         if ($request->filled('intent') && $request->intent !== 'all') {
-            $query->where('intent', $request->intent);
+            if (in_array($request->intent, ['rent', 'buy', 'sell'])) {
+                $query->where('purpose', $request->intent);
+            } elseif ($request->intent === 'admission') {
+                $query->where(function ($q) {
+                    $q->where('lead_source', 'like', '%admission%')
+                      ->orWhere('lead_source', 'like', '%anushram%')
+                      ->orWhere('property_type', 'like', '%admission%')
+                      ->orWhere('message', 'like', '%admission%')
+                      ->orWhere('message', 'like', '%course%');
+                });
+            }
         }
 
-        // 3. Source Filter
+        // 4. Source Filter (maps to actual lead_source column)
         if ($request->filled('source') && $request->source !== 'all') {
-            $query->where('source', $request->source);
+            $query->where('lead_source', 'like', '%' . $request->source . '%');
         }
 
-        // 4. Assigned Agent Filter
+        // 5. Assigned Agent Filter
         if ($request->filled('assigned_to') && $request->assigned_to !== 'all') {
             if ($request->assigned_to === 'unassigned') {
                 $query->whereNull('assigned_to');
@@ -49,13 +82,16 @@ class LeadCrmController extends Controller
             }
         }
 
-        // 5. Search (name, phone, email, notes)
+        // 6. Search across lead name, mobile, email, message, notes, city, source
         if ($request->filled('search')) {
             $s = trim($request->search);
             $query->where(function ($q) use ($s) {
                 $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('phone', 'like', "%{$s}%")
+                  ->orWhere('mobile', 'like', "%{$s}%")
                   ->orWhere('email', 'like', "%{$s}%")
+                  ->orWhere('message', 'like', "%{$s}%")
+                  ->orWhere('notes', 'like', "%{$s}%")
+                  ->orWhere('lead_source', 'like', "%{$s}%")
                   ->orWhere('preferred_city', 'like', "%{$s}%")
                   ->orWhere('preferred_locality', 'like', "%{$s}%");
             });
@@ -63,6 +99,14 @@ class LeadCrmController extends Controller
 
         // Summary KPI counts
         $totalLeadsCount = Lead::count();
+        $admissionLeadsCount = Lead::where(function ($q) {
+            $q->where('lead_source', 'like', '%admission%')
+              ->orWhere('lead_source', 'like', '%anushram%')
+              ->orWhere('property_type', 'like', '%admission%')
+              ->orWhere('message', 'like', '%admission%')
+              ->orWhere('message', 'like', '%course%')
+              ->orWhere('notes', 'like', '%admission%');
+        })->count();
         $newTodayCount = Lead::whereDate('created_at', Carbon::today())->count();
         $activeInProgressCount = Lead::whereIn('lead_status', ['contacted', 'interested', 'scheduled_visit', 'negotiation'])->count();
         $convertedCount = Lead::where('lead_status', 'converted')->count();
@@ -78,6 +122,7 @@ class LeadCrmController extends Controller
         return view('admin.leads.index', compact(
             'leads',
             'totalLeadsCount',
+            'admissionLeadsCount',
             'newTodayCount',
             'activeInProgressCount',
             'convertedCount',
@@ -148,7 +193,9 @@ class LeadCrmController extends Controller
             'name' => 'required|string|max:100',
             'phone' => 'required|string|regex:/^[6-9]\d{9}$/',
             'email' => 'nullable|email|max:150',
-            'intent' => 'required|in:rent,buy,sell,inquire',
+            'intent' => 'required|in:rent,buy,sell,inquire,admission',
+            'lead_source' => 'nullable|string|max:60',
+            'course' => 'nullable|string|max:200',
             'budget_min' => 'nullable|numeric|min:0',
             'budget_max' => 'nullable|numeric|min:0',
             'bhk_preference' => 'nullable|string|max:20',
@@ -156,26 +203,37 @@ class LeadCrmController extends Controller
             'preferred_locality' => 'nullable|string|max:100',
             'property_id' => 'nullable|exists:properties,id',
             'assigned_to' => 'nullable|exists:users,id',
+            'message' => 'nullable|string|max:1000',
             'notes' => 'nullable|string|max:1000',
             'whatsapp_opt_in' => 'nullable|boolean',
         ]);
 
+        $isAdmission = $validated['intent'] === 'admission' || !empty($validated['course']);
+        $leadSource = $validated['lead_source'] ?: ($isAdmission ? 'admission' : 'manual');
+        $notes = $validated['notes'] ?? '';
+        $msg = $validated['message'] ?? '';
+        if (!empty($validated['course'])) {
+            $msg = $msg ? "Course: {$validated['course']}\n{$msg}" : "Course: {$validated['course']}";
+        }
+
         $lead = Lead::create([
             'name' => $validated['name'],
-            'phone' => $validated['phone'],
+            'mobile' => $validated['phone'],
             'email' => $validated['email'] ?? null,
-            'intent' => $validated['intent'],
+            'purpose' => in_array($validated['intent'], ['rent', 'buy', 'sell']) ? $validated['intent'] : 'rent',
+            'property_type' => $isAdmission ? 'admission' : null,
             'budget_min' => $validated['budget_min'] ?? null,
             'budget_max' => $validated['budget_max'] ?? null,
-            'bhk_preference' => $validated['bhk_preference'] ?? null,
+            'bedrooms' => $validated['bhk_preference'] ?? null,
             'preferred_city' => $validated['preferred_city'] ?? null,
             'preferred_locality' => $validated['preferred_locality'] ?? null,
             'property_id' => $validated['property_id'] ?? null,
             'assigned_to' => $validated['assigned_to'] ?? Auth::id(),
-            'notes' => $validated['notes'] ?? null,
-            'source' => 'manual',
+            'message' => $msg ?: null,
+            'notes' => $notes ?: null,
+            'lead_source' => $leadSource,
             'lead_status' => 'new',
-            'lead_score' => 20,
+            'engagement_score' => 25,
             'whatsapp_opt_in' => $request->boolean('whatsapp_opt_in', true),
         ]);
 
@@ -196,7 +254,7 @@ class LeadCrmController extends Controller
     {
         $validated = $request->validate([
             'lead_status' => 'required|in:new,contacted,interested,scheduled_visit,negotiation,converted,lost,spam',
-            'intent' => 'required|in:rent,buy,sell,inquire',
+            'intent' => 'required|in:rent,buy,sell,inquire,admission',
             'assigned_to' => 'nullable|exists:users,id',
             'budget_min' => 'nullable|numeric|min:0',
             'budget_max' => 'nullable|numeric|min:0',

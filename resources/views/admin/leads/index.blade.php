@@ -61,7 +61,20 @@
     </div>
 
     {{-- Summary Counters --}}
-    <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-6 gap-3.5">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Total Leads</span>
+            <p class="text-2xl font-black text-slate-900 mt-1">{{ $totalLeadsCount }}</p>
+        </div>
+        <a href="{{ route('admin.leads.index', ['category' => 'admission']) }}" class="bg-gradient-to-br from-purple-50 to-indigo-50/50 hover:from-purple-100 hover:to-indigo-100/70 p-4 rounded-2xl border {{ request('category') === 'admission' ? 'border-purple-400 ring-2 ring-purple-400/20 shadow-md' : 'border-purple-200/70' }} shadow-xs transition-all group block">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-black text-purple-700 uppercase tracking-wider flex items-center gap-1">
+                    <i class="ph-bold ph-graduation-cap text-sm"></i> Admissions
+                </span>
+                <span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-purple-200/70 text-purple-900 uppercase">Education</span>
+            </div>
+            <p class="text-2xl font-black text-purple-900 mt-1 group-hover:scale-105 transition-transform">{{ $admissionLeadsCount }}</p>
+        </a>
         <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
             <span class="text-[11px] font-bold text-slate-400 uppercase">New Today</span>
             <p class="text-2xl font-black text-blue-600 mt-1">{{ $newTodayCount }}</p>
@@ -75,21 +88,34 @@
             <p class="text-2xl font-black text-emerald-600 mt-1">{{ $convertedCount }}</p>
         </div>
         <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-            <span class="text-[11px] font-bold text-slate-400 uppercase">Overdue Follow-ups</span>
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Overdue Action</span>
             <p class="text-2xl font-black {{ $overdueFollowUpsCount > 0 ? 'text-rose-600' : 'text-slate-900' }} mt-1">{{ $overdueFollowUpsCount }}</p>
         </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-            <span class="text-[11px] font-bold text-slate-400 uppercase">Win Rate</span>
-            <p class="text-2xl font-black text-purple-600 mt-1">{{ $totalLeadsCount > 0 ? round(($convertedCount / $totalLeadsCount) * 100, 1) : 0 }}%</p>
-        </div>
+    </div>
+
+    {{-- Quick Category Filter Chips --}}
+    <div class="flex items-center gap-2 flex-wrap">
+        <a href="{{ route('admin.leads.index', request()->except(['category', 'page'])) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all {{ !request('category') || request('category') === 'all' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
+            All Leads <span class="text-[11px] opacity-75">({{ $totalLeadsCount }})</span>
+        </a>
+        <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'admission'])) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all {{ request('category') === 'admission' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/25 ring-2 ring-purple-600/20' : 'bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100' }}">
+            <i class="ph-bold ph-graduation-cap text-sm"></i> Admission & Education Leads <span class="px-1.5 py-0.2 rounded-full text-[10px] font-black {{ request('category') === 'admission' ? 'bg-white/20 text-white' : 'bg-purple-200 text-purple-900' }}">{{ $admissionLeadsCount }}</span>
+        </a>
+        <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'property'])) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all {{ request('category') === 'property' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
+            <i class="ph-bold ph-buildings text-sm"></i> Rental & Property Leads <span class="text-[11px] opacity-75">({{ max(0, $totalLeadsCount - $admissionLeadsCount) }})</span>
+        </a>
     </div>
 
     {{-- Filter Toolbar --}}
     <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
         <form method="GET" action="{{ route('admin.leads.index') }}" class="flex flex-wrap items-center gap-3">
+            @if(request('category'))
+                <input type="hidden" name="category" value="{{ request('category') }}">
+            @endif
+
             <div class="relative flex-1 min-w-[200px]">
                 <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search lead name, phone, city..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search lead name, phone, course, city..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <select name="status" onchange="this.form.submit()" class="text-xs py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-700">
@@ -103,8 +129,18 @@
                 <option value="lost" {{ request('status') === 'lost' ? 'selected' : '' }}>Lost</option>
             </select>
 
+            <select name="source" onchange="this.form.submit()" class="text-xs py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-700">
+                <option value="all">All Sources</option>
+                <option value="admission" {{ request('source') === 'admission' ? 'selected' : '' }}>Admission Portal</option>
+                <option value="anushram" {{ request('source') === 'anushram' ? 'selected' : '' }}>Anushram</option>
+                <option value="website_lead_form" {{ request('source') === 'website_lead_form' ? 'selected' : '' }}>Website Form</option>
+                <option value="whatsapp" {{ request('source') === 'whatsapp' ? 'selected' : '' }}>WhatsApp</option>
+                <option value="manual" {{ request('source') === 'manual' ? 'selected' : '' }}>Manual Staff Entry</option>
+            </select>
+
             <select name="intent" onchange="this.form.submit()" class="text-xs py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-700">
                 <option value="all">All Intents</option>
+                <option value="admission" {{ request('intent') === 'admission' ? 'selected' : '' }}>Admission</option>
                 <option value="rent" {{ request('intent') === 'rent' ? 'selected' : '' }}>Rent</option>
                 <option value="buy" {{ request('intent') === 'buy' ? 'selected' : '' }}>Buy</option>
                 <option value="sell" {{ request('intent') === 'sell' ? 'selected' : '' }}>Sell</option>
@@ -122,7 +158,7 @@
                 Filter
             </button>
 
-            @if(request()->hasAny(['search', 'status', 'intent', 'assigned_to']))
+            @if(request()->hasAny(['search', 'status', 'intent', 'source', 'assigned_to', 'category']))
                 <a href="{{ route('admin.leads.index') }}" class="px-3 py-2 text-xs font-semibold text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100">Reset</a>
             @endif
         </form>
@@ -147,38 +183,75 @@
                         <tr class="hover:bg-slate-50/70 transition-colors">
                             {{-- Lead Contact --}}
                             <td class="px-6 py-4">
-                                <a href="{{ route('admin.leads.show', $lead->id) }}" class="font-bold text-slate-900 hover:text-blue-600 transition-colors text-sm block">
-                                    {{ $lead->name }}
-                                </a>
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <a href="{{ route('admin.leads.show', $lead->id) }}" class="font-bold text-slate-900 hover:text-blue-600 transition-colors text-sm">
+                                        {{ $lead->name }}
+                                    </a>
+                                    @if(method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead())
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-700 border border-purple-200" title="Admission / Education Inquiry">
+                                            🎓 Admission
+                                        </span>
+                                    @endif
+                                </div>
                                 <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
-                                    <span class="font-mono">{{ $lead->phone }}</span>
+                                    <span class="font-mono font-medium text-slate-700">{{ $lead->phone }}</span>
                                     @if($lead->whatsapp_opt_in)
                                         <span class="text-emerald-600 font-bold" title="WhatsApp Opted In">
                                             <i class="ph-bold ph-whatsapp-logo"></i>
                                         </span>
                                     @endif
+                                    @if($lead->email)
+                                        <span class="text-slate-400 font-mono text-[10px] truncate max-w-[120px]">{{ $lead->email }}</span>
+                                    @endif
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1">Source: {{ ucfirst(str_replace('_', ' ', $lead->source)) }}</div>
+                                <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-2">
+                                    <span>Source: <strong class="text-slate-600 font-semibold">{{ ucfirst(str_replace('_', ' ', $lead->source)) }}</strong></span>
+                                    @if($lead->created_at)
+                                        <span class="text-slate-300">•</span>
+                                        <span>{{ $lead->created_at->diffForHumans() }}</span>
+                                    @endif
+                                </div>
                             </td>
 
-                            {{-- Requirement --}}
+                            {{-- Requirement / Enquiry --}}
                             <td class="px-6 py-4">
-                                <div class="font-bold text-slate-800">
-                                    <span class="capitalize">{{ $lead->intent ?? 'Inquire' }}</span>
-                                    @if($lead->bhk_preference)
-                                        • {{ $lead->bhk_preference }}
-                                    @endif
-                                </div>
-                                <div class="text-[11px] text-slate-500 mt-0.5">
-                                    @if($lead->budget_max)
-                                        Max ₹{{ number_format($lead->budget_max) }}
-                                    @else
-                                        Flexible Budget
+                                @if(method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead())
+                                    <div class="font-bold text-purple-900 flex items-center gap-1.5">
+                                        <span>🎓 Educational Enquiry</span>
+                                    </div>
+                                    @if($lead->message)
+                                        <div class="text-[11px] text-slate-700 mt-1 p-2 rounded-xl bg-purple-50/80 border border-purple-200/60 line-clamp-2 max-w-xs leading-relaxed" title="{{ $lead->message }}">
+                                            {{ $lead->message }}
+                                        </div>
                                     @endif
                                     @if($lead->preferred_city)
-                                        in {{ $lead->preferred_city }}
+                                        <div class="text-[10px] text-slate-500 mt-1">
+                                            City: {{ $lead->preferred_city }}
+                                        </div>
                                     @endif
-                                </div>
+                                @else
+                                    <div class="font-bold text-slate-800">
+                                        <span class="capitalize">{{ $lead->intent ?? 'Inquire' }}</span>
+                                        @if($lead->bhk_preference)
+                                            • {{ $lead->bhk_preference }}
+                                        @endif
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 mt-0.5">
+                                        @if($lead->budget_max)
+                                            Max ₹{{ number_format($lead->budget_max) }}
+                                        @else
+                                            Flexible Budget
+                                        @endif
+                                        @if($lead->preferred_city)
+                                            in {{ $lead->preferred_city }}
+                                        @endif
+                                    </div>
+                                    @if($lead->message)
+                                        <div class="text-[10px] text-slate-600 mt-1 italic line-clamp-1 max-w-xs" title="{{ $lead->message }}">
+                                            "{{ \Illuminate\Support\Str::limit($lead->message, 60) }}"
+                                        </div>
+                                    @endif
+                                @endif
                             </td>
 
                             {{-- Status Badge --}}
@@ -300,10 +373,28 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Intent *</label>
                         <select name="intent" required class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                            <option value="admission">🎓 Admission / Educational Enquiry</option>
                             <option value="rent">Looking to Rent</option>
                             <option value="buy">Looking to Buy</option>
                             <option value="sell">Looking to Sell / List</option>
                             <option value="inquire">General Inquiry</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Course / Degree / Subject (if Admission)</label>
+                        <input type="text" name="course" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. B.Tech / MBA / Medical / Coaching">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Lead Source</label>
+                        <select name="lead_source" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                            <option value="admission">Admission Portal</option>
+                            <option value="anushram">Anushram</option>
+                            <option value="manual">Manual Entry</option>
+                            <option value="website_lead_form">Website Form</option>
+                            <option value="whatsapp">WhatsApp</option>
                         </select>
                     </div>
                 </div>
@@ -316,7 +407,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">BHK Preference</label>
                         <select name="bhk_preference" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                            <option value="">Any BHK</option>
+                            <option value="">Any / Not Applicable</option>
                             <option value="1 BHK">1 BHK</option>
                             <option value="2 BHK">2 BHK</option>
                             <option value="3 BHK">3 BHK</option>
@@ -324,8 +415,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Preferred City</label>
-                        <input type="text" name="preferred_city" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. Pune">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Preferred City / Campus</label>
+                        <input type="text" name="preferred_city" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. Pune, Kanpur">
                     </div>
                 </div>
 

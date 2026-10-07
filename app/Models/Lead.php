@@ -40,6 +40,12 @@ class Lead extends Model
         'engagement_score',
         'next_follow_up_at',
         'notes',
+        // Virtual / form alias fields mapped via mutators
+        'phone',
+        'source',
+        'intent',
+        'bhk_preference',
+        'lead_score',
     ];
 
     protected function casts(): array
@@ -108,12 +114,49 @@ class Lead extends Model
 
     public function getIntentAttribute()
     {
+        if ($this->isAdmissionLead()) {
+            return 'admission';
+        }
         return $this->purpose;
     }
 
     public function setIntentAttribute($value)
     {
-        $this->attributes['purpose'] = $value;
+        $allowed = ['rent', 'buy', 'sell'];
+        $clean = strtolower(trim((string)$value));
+        if (in_array($clean, $allowed)) {
+            $this->attributes['purpose'] = $clean;
+        } else {
+            // Default to 'rent' to satisfy MySQL ENUM constraint
+            $this->attributes['purpose'] = 'rent';
+            if (str_contains($clean, 'admission') || str_contains($clean, 'student') || str_contains($clean, 'study')) {
+                $this->attributes['property_type'] = 'admission';
+                if (empty($this->attributes['lead_source']) || $this->attributes['lead_source'] === 'website') {
+                    $this->attributes['lead_source'] = 'admission';
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if this lead is an educational or admission inquiry.
+     */
+    public function isAdmissionLead(): bool
+    {
+        $source = strtolower($this->lead_source ?? '');
+        $type = strtolower($this->property_type ?? '');
+        $msg = strtolower($this->message ?? '');
+        $notes = strtolower($this->notes ?? '');
+        return str_contains($source, 'admission') 
+            || str_contains($source, 'anushram')
+            || str_contains($type, 'admission')
+            || str_contains($msg, 'admission')
+            || str_contains($notes, 'admission')
+            || str_contains($msg, 'course')
+            || str_contains($msg, 'degree')
+            || str_contains($msg, 'phd')
+            || str_contains($msg, 'college')
+            || str_contains($msg, 'university');
     }
 
     public function getSourceAttribute()

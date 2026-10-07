@@ -13,8 +13,23 @@ class StoreLeadRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if ($this->has('full_name') && !$this->has('name')) {
+            $this->merge(['name' => $this->full_name]);
+        }
+        if ($this->has('student_name') && !$this->has('name')) {
+            $this->merge(['name' => $this->student_name]);
+        }
+        if ($this->has('candidate_name') && !$this->has('name')) {
+            $this->merge(['name' => $this->candidate_name]);
+        }
         if ($this->has('phone') && !$this->has('mobile')) {
             $this->merge(['mobile' => $this->phone]);
+        }
+        if ($this->has('contact') && !$this->has('mobile')) {
+            $this->merge(['mobile' => $this->contact]);
+        }
+        if ($this->has('student_mobile') && !$this->has('mobile')) {
+            $this->merge(['mobile' => $this->student_mobile]);
         }
         if ($this->has('intent') && !$this->has('purpose')) {
             $this->merge(['purpose' => $this->intent]);
@@ -25,10 +40,32 @@ class StoreLeadRequest extends FormRequest
         if ($this->has('source') && !$this->has('lead_source')) {
             $this->merge(['lead_source' => $this->source]);
         }
+
+        // Handle academic / course / admission parameters
+        if ($this->filled('course') || $this->filled('program') || $this->filled('admission') || $this->filled('college')) {
+            $academicParts = array_filter([
+                $this->input('course'),
+                $this->input('program'),
+                $this->input('degree'),
+                $this->input('college'),
+                $this->input('university'),
+            ]);
+            $academic = implode(' • ', $academicParts);
+            $existingMsg = $this->input('message') ?: $this->input('enquiry') ?: $this->input('query') ?: '';
+            $composite = $academic ? ($existingMsg ? "Course: {$academic}\nEnquiry: {$existingMsg}" : "Course: {$academic}") : $existingMsg;
+            $this->merge([
+                'message' => $composite,
+                'lead_source' => $this->input('lead_source') ?: 'admission',
+                'property_type' => $this->input('property_type') ?: 'admission',
+                'purpose' => 'rent',
+            ]);
+        }
     }
 
     public function rules(): array
     {
+        $isApi = $this->is('api/*') || $this->expectsJson() || $this->wantsJson();
+
         return [
             'name' => ['required', 'string', 'max:100'],
             'mobile' => ['required', 'string', 'min:10', 'max:20'],
@@ -38,7 +75,7 @@ class StoreLeadRequest extends FormRequest
             'preferred_city' => ['nullable', 'string', 'max:100'],
             'preferred_locality' => ['nullable', 'string', 'max:150'],
             'property_type' => ['nullable', 'string', 'max:50'],
-            'purpose' => ['nullable', 'in:rent,buy,sell'],
+            'purpose' => ['nullable', 'string', 'max:50'],
             'budget_min' => ['nullable', 'numeric', 'min:0'],
             'budget_max' => ['nullable', 'numeric', 'min:0'],
             'bedrooms' => ['nullable', 'string', 'max:20'],
@@ -47,8 +84,8 @@ class StoreLeadRequest extends FormRequest
             'message' => ['nullable', 'string', 'max:1000'],
             'whatsapp_opt_in' => ['nullable', 'boolean'],
             'marketing_opt_in' => ['nullable', 'boolean'],
-            'consent' => ['required', 'accepted'], // Explicit consent checkbox must be checked
-            'website_hp' => ['nullable', 'max:0'], // Anti-spam honeypot (bots fill this, humans don't)
+            'consent' => $isApi ? ['nullable'] : ['required', 'accepted'],
+            'website_hp' => ['nullable', 'max:0'],
         ];
     }
 

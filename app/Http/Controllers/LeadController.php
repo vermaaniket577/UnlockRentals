@@ -43,8 +43,8 @@ class LeadController extends Controller
         $purpose = $data['purpose'] ?? ($property?->purpose ?? 'rent');
         $ownerId = $property?->user_id;
 
-        // Auto-assign to available sales admin
-        $assignedStaff = User::whereIn('role', ['admin', 'sales_manager', 'sales_executive'])->first();
+        // Auto-assign to available sales admin or owner
+        $assignedStaff = User::whereIn('role', ['admin', 'owner', 'sales_manager', 'sales_executive'])->first();
 
         // Duplicate Check: same mobile + property within 48 hours
         $existingLead = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
@@ -168,5 +168,129 @@ class LeadController extends Controller
             'lead_id' => $lead->id,
             'matching_properties' => $matchingProperties,
         ]);
+    }
+
+    /**
+     * Dedicated intake endpoint for Admission and General Enquiry leads from external websites (e.g. Anushram).
+     * Accepts JSON, query params, or form data, normalizes phone/student/course, saves directly into CRM leads table.
+     * POST or PUT /api/general-enquiry/create
+     * POST or PUT /v1/api/general-enquiry/create
+     * POST or PUT /api/leads/admission
+     */
+    public function storeAdmissionLead(Request $request): JsonResponse
+    {
+        // 1. Extract contact/phone
+        $rawPhone = $request->input('phone') 
+            ?: $request->input('mobile') 
+            ?: $request->input('contact') 
+            ?: $request->input('student_mobile') 
+            ?: $request->input('phone_number')
+            ?: '';
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', (string)$rawPhone);
+        if (strlen($cleanPhone) >= 10) {
+            $cleanPhone = substr($cleanPhone, -10);
+        }
+
+        if (empty($cleanPhone) || strlen($cleanPhone) < 10) {
+            return response()->json([
+                'success' => false,
+                'message' => 'A valid 10-digit mobile number is required.',
+            ], 422);
+        }
+
+        // 2. Extract name
+        $name = $request->input('name') 
+            ?: $request->input('full_name') 
+            ?: $request->input('student_name') 
+            ?: $request->input('candidate_name') 
+            ?: 'Admission Enquirer';
+
+        // 3. Extract email
+        $email = $request->input('email') 
+            ?: $request->input('student_email') 
+            ?: null;
+
+        // 4. Extract course & academic info
+        $courseParts = array_filter([
+            $request->input('course'),
+            $request->input('program'),
+            $request->input('degree'),
+            $request->input('branch'),
+            $request->input('specialization'),
+            $request->input('college'),
+            $request->input('university'),
+            $request->input('admission_year'),
+        ]);
+        $academicSummary = implode(' • ', $courseParts);
+
+        // 5. Build rich message
+        $userMsg = $request->input('message') 
+            ?: $request->input('enquiry') 
+            ?: $request->input('query') 
+            ?: $request->input('notes') 
+            ?: '';
+
+        $fullMessage = $academicSummary 
+            ? ($userMsg ? "Course / Program: {$academicSummary}\nEnquiry: {$userMsg}" : "Course / Program: {$academicSummary}") 
+            : ($userMsg ?: 'Admission Inquiry submitted via external portal');
+
+        $city = $request->input('city') 
+            ?: $request->input('preferred_city') 
+            ?: $request->input('state') 
+            ?: null;
+
+        $source = $request->input('source') 
+            ?: $request->input('lead_source') 
+            ?: 'admission_portal';
+
+        // 6. Deduplicate or update within 48h
+        $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
+            ->where('created_at', '>=', now()->subHours(48))
+            ->first();
+
+        if ($existing) {
+            $existing->update([
+                'lead_source' => $source,
+                'message' => $existing->message . "\n[Update " . now()->format('d M H:i') . "]: " . $fullMessage,
+                'engagement_score' => $existing->engagement_score + 15,
+                'lead_status' => 'new',
+            ]);
+            $lead = $existing;
+        } else {
+            $assignedStaff = User::whereIn('role', ['admin', 'owner', 'sales_manager', 'sales_executive'])->first();
+            $lead = Lead::create([
+                'name' => $name,
+                'mobile' => $cleanPhone,
+                'email' => $email,
+                'lead_source' => $source,
+                'lead_status' => 'new',
+                'lead_stage' => 'enquiry',
+                'property_type' => 'admission',
+                'purpose' => 'rent', // Satisfies MySQL ENUM
+                'preferred_city' => $city,
+                'preferred_locality' => $request->input('locality') ?: null,
+                'message' => $fullMessage,
+                'notes' => $academicSummary ?: 'Admission Lead',
+                'assigned_to' => $assignedStaff?->id,
+                'engagement_score' => 30,
+                'whatsapp_opt_in' => $request->boolean('whatsapp_opt_in', true),
+                'next_follow_up_at' => now()->addHours(2),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Admission lead successfully recorded in UnlockRentals CRM.',
+            'lead_id' => $lead->id,
+            'lead' => [
+                'id' => $lead->id,
+                'name' => $lead->name,
+                'mobile' => $lead->mobile,
+                'source' => $lead->lead_source,
+                'status' => $lead->lead_status,
+                'created_at' => $lead->created_at->toIso8601String(),
+            ]
+        ], 201);
     }
 }

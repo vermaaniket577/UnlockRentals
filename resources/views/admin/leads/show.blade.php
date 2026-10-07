@@ -45,6 +45,11 @@
                     <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
                         Score: {{ $lead->lead_score }} pts
                     </span>
+                    @if(method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead())
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-purple-100 text-purple-700 border border-purple-200 flex items-center gap-1.5 shadow-2xs">
+                            🎓 Admission Lead
+                        </span>
+                    @endif
                 </div>
 
                 <div class="flex items-center gap-4 text-xs text-slate-600 mt-2 flex-wrap font-medium">
@@ -93,10 +98,36 @@
         {{-- Left Column: Requirements, Property, Visitor, Recommendations --}}
         <div class="lg:col-span-7 space-y-6">
 
+            {{-- Enquiry / Student Query Message Card --}}
+            @if($lead->message)
+            <div class="p-6 rounded-3xl border shadow-xs {{ method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead() ? 'bg-gradient-to-br from-purple-50/80 via-white to-indigo-50/50 border-purple-200' : 'bg-gradient-to-br from-blue-50/80 via-white to-slate-50/50 border-blue-200' }}">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">{{ method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead() ? '🎓' : '💬' }}</span>
+                        <h3 class="text-sm font-extrabold {{ method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead() ? 'text-purple-900' : 'text-slate-900' }}">
+                            {{ method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead() ? 'Student / Admission Enquiry Details' : 'Original Enquiry Message' }}
+                        </h3>
+                    </div>
+                    @if(method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead())
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+                            Admission Intake
+                        </span>
+                    @endif
+                </div>
+                <div class="p-4 rounded-2xl bg-white border {{ method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead() ? 'border-purple-100 text-purple-950' : 'border-slate-100 text-slate-800' }} text-sm font-medium whitespace-pre-line leading-relaxed shadow-xs">
+                    {{ $lead->message }}
+                </div>
+            </div>
+            @endif
+
             {{-- Requirement Specifications Card --}}
             <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
                 <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <i class="ph-bold ph-list-checks text-blue-600"></i> Property Requirement Details
+                    @if(method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead())
+                        <i class="ph-bold ph-graduation-cap text-purple-600"></i> Admission & Lead Specifications
+                    @else
+                        <i class="ph-bold ph-list-checks text-blue-600"></i> Property Requirement Details
+                    @endif
                 </h3>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -117,17 +148,17 @@
                     </div>
 
                     <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase">BHK Preference</span>
-                        <p class="text-sm font-bold text-slate-900 mt-0.5">{{ $lead->bhk_preference ?? 'Any BHK' }}</p>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">{{ method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead() ? 'Category / Type' : 'BHK Preference' }}</span>
+                        <p class="text-sm font-bold text-slate-900 mt-0.5">{{ $lead->bhk_preference ?? (method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead() ? 'Academic Enquiry' : 'Any BHK') }}</p>
                     </div>
 
                     <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase">Preferred City</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">{{ method_exists($lead, 'isAdmissionLead') && $lead->isAdmissionLead() ? 'Target City / Campus' : 'Preferred City' }}</span>
                         <p class="text-sm font-bold text-slate-900 mt-0.5">{{ $lead->preferred_city ?? 'Anywhere' }}</p>
                     </div>
 
                     <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase">Locality</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Locality / Area</span>
                         <p class="text-sm font-bold text-slate-900 mt-0.5">{{ $lead->preferred_locality ?? 'Not specified' }}</p>
                     </div>
 
@@ -265,6 +296,7 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Intent</label>
                             <select name="intent" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                                <option value="admission" {{ $lead->intent === 'admission' ? 'selected' : '' }}>🎓 Admission</option>
                                 <option value="rent" {{ $lead->intent === 'rent' ? 'selected' : '' }}>Rent</option>
                                 <option value="buy" {{ $lead->intent === 'buy' ? 'selected' : '' }}>Buy</option>
                                 <option value="sell" {{ $lead->intent === 'sell' ? 'selected' : '' }}>Sell</option>

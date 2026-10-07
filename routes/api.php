@@ -28,4 +28,15 @@ Route::prefix('v1')->group(function () {
 Route::match(['get', 'post'], '/leads/send-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendAll']);
 Route::match(['get', 'post'], '/leads/send/{id}', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendSingle']);
 
+/*
+|--------------------------------------------------------------------------
+| Incoming Leads & Admission Enquiries Intake API
+|--------------------------------------------------------------------------
+*/
+Route::post('/leads', [\App\Http\Controllers\LeadController::class, 'store']);
+Route::match(['post', 'put'], '/general-enquiry/create', [\App\Http\Controllers\LeadController::class, 'storeAdmissionLead']);
+Route::match(['post', 'put'], '/v1/api/general-enquiry/create', [\App\Http\Controllers\LeadController::class, 'storeAdmissionLead']);
+Route::match(['post', 'put'], '/leads/admission', [\App\Http\Controllers\LeadController::class, 'storeAdmissionLead']);
+Route::match(['post', 'put'], '/admission-leads', [\App\Http\Controllers\LeadController::class, 'storeAdmissionLead']);
+
 
