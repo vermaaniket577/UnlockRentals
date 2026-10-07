@@ -197,4 +197,6 @@
 
     </div>
 </div>
+
+@include('components.blog-auth-popup')
 @endsection
