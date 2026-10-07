@@ -374,7 +374,7 @@
                     style="margin-bottom: 2rem;"
                 />
                 <p class="ur-footer__brand-desc">
-                    Defining the standard of excellence in the Indian rental market. Discover handpicked luxury for discerning clients.
+                    UnlockRentals (Unlock Rent) is India's premier zero-brokerage rental platform. Unlock rent savings and rent verified flats, single rooms, PGs, houses & shops directly from property owners.
                 </p>
                 <div class="ur-footer__socials" style="margin-bottom: 2rem;">
                     @php

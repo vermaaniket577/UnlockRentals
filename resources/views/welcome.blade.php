@@ -132,9 +132,9 @@
     </script>
     <link rel="canonical" href="{{ route('home') }}">
     <meta name="robots" content="index, follow">
-    <title>Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals</title>
-    <meta name="description" content="Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK flats, PGs & houses for rent near you directly from owners across India.">
-    <meta name="keywords" content="room near my location, room for rent near me, rooms near me, single room for rent near me, rent room near me, room near my current location, pg near my location, pg near me, flat for rent near me, flats near me, house for rent near me, search house near me, search house near me for rent, search house near me by owner, unlockrentals">
+    <title>UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs</title>
+    <meta name="description" content="Unlock rent savings with UnlockRentals, India's leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.">
+    <meta name="keywords" content="unlock, unlock rent, unlock rental, unlock rentals, rental, rent, unlockrentals, rent flats, rent houses, rent rooms, zero brokerage rental, rent without broker, direct owner rent, room near my location, flat for rent near me, pg near me">
     <meta name="author" content="UnlockRentals">
     <meta name="publisher" content="UnlockRentals">
 
@@ -143,16 +143,18 @@
 
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="UnlockRentals">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals">
-    <meta property="og:description" content="Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK flats, PGs & houses for rent near you directly from owners across India.">
+    <meta property="og:title" content="UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs">
+    <meta property="og:description" content="Unlock rent savings with UnlockRentals, India's leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.">
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
 
     {{-- Twitter --}}
     <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@UnlockRentals">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals">
-    <meta property="twitter:description" content="Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK flats, PGs & houses for rent near you directly from owners across India.">
+    <meta property="twitter:title" content="UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs">
+    <meta property="twitter:description" content="Unlock rent savings with UnlockRentals, India's leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
     {{-- High-Performance Deferred Google AdSense (Zero Blocking on Initial Page Load & Never in App) --}}
@@ -202,8 +204,16 @@
                 "@@type": "WebSite",
                 "@@id": "{{ route('home') }}#website",
                 "name": "UnlockRentals",
+                "alternateName": [
+                    "Unlock Rentals",
+                    "Unlock Rent",
+                    "Unlock Rental",
+                    "Unlock",
+                    "UnlockRentals.com",
+                    "UnlockRental"
+                ],
                 "url": "{{ route('home') }}",
-                "description": "Find verified houses, flats, PGs, and rental properties near you with zero brokerage.",
+                "description": "Unlock rent savings with UnlockRentals — India's verified zero brokerage rental platform to rent flats, single rooms, 1RK, 1BHK, PGs, houses, and commercial spaces directly from owners.",
                 "potentialAction": {
                     "@@type": "SearchAction",
                     "target": {
@@ -217,10 +227,29 @@
                 "@@type": "Organization",
                 "@@id": "{{ route('home') }}#organization",
                 "name": "UnlockRentals",
+                "legalName": "UnlockRentals",
+                "alternateName": [
+                    "Unlock Rentals",
+                    "Unlock Rent",
+                    "Unlock Rental",
+                    "Unlock",
+                    "UnlockRental"
+                ],
+                "slogan": "Unlock Rent with Zero Brokerage",
+                "description": "UnlockRentals is India's leading zero-brokerage rental platform connecting tenants directly with property owners to rent flats, houses, rooms, and PGs without agent commissions.",
                 "url": "{{ route('home') }}",
                 "logo": "{{ asset('images/logo.png') }}",
                 "image": "{{ asset('images/logo.png') }}",
-                "priceRange": "₹5,000 - ₹5,00,000",
+                "priceRange": "₹3,000 - ₹5,00,000",
+                "knowsAbout": [
+                    "Rental Properties",
+                    "Rent Flats",
+                    "Rent Rooms",
+                    "Unlock Rent",
+                    "Unlock Rentals",
+                    "Zero Brokerage Rentals",
+                    "Real Estate Rentals India"
+                ],
                 "address": {
                     "@@type": "PostalAddress",
                     "addressCountry": "IN"
@@ -229,18 +258,25 @@
             {
                 "@@type": "RealEstateAgent",
                 "@@id": "{{ route('home') }}#realestateagent",
-                "name": "UnlockRentals",
+                "name": "UnlockRentals — Zero Brokerage Rental Portal",
+                "alternateName": [
+                    "Unlock Rent",
+                    "Unlock Rental",
+                    "Unlock Rentals"
+                ],
                 "url": "{{ route('home') }}",
                 "logo": "{{ asset('images/logo.png') }}",
                 "image": "{{ asset('images/logo.png') }}",
-                "priceRange": "₹5,000 - ₹5,00,000",
+                "priceRange": "₹3,000 - ₹5,00,000",
                 "areaServed": [
                     { "@@type": "City", "name": "Delhi" },
                     { "@@type": "City", "name": "Gurugram" },
                     { "@@type": "City", "name": "Gurgaon" },
                     { "@@type": "City", "name": "Noida" },
                     { "@@type": "City", "name": "Bengaluru" },
-                    { "@@type": "City", "name": "Mumbai" }
+                    { "@@type": "City", "name": "Mumbai" },
+                    { "@@type": "City", "name": "Pune" },
+                    { "@@type": "City", "name": "Hyderabad" }
                 ],
                 "address": {
                     "@@type": "PostalAddress",
@@ -250,6 +286,22 @@
             {
                 "@@type": "FAQPage",
                 "mainEntity": [
+                    {
+                        "@@type": "Question",
+                        "name": "What is UnlockRentals (Unlock Rent)?",
+                        "acceptedAnswer": {
+                            "@@type": "Answer",
+                            "text": "UnlockRentals (also known as Unlock Rent or Unlock Rental) is India's premier zero-brokerage rental platform connecting tenants and property owners directly. Whether you want to rent a flat, room, PG, house, or commercial space, UnlockRentals allows you to unlock direct owner contact numbers without paying broker commissions."
+                        }
+                    },
+                    {
+                        "@@type": "Question",
+                        "name": "How can I rent a flat, room, or PG on UnlockRentals with zero brokerage?",
+                        "acceptedAnswer": {
+                            "@@type": "Answer",
+                            "text": "Simply browse verified rental listings on UnlockRentals, filter by state, city, locality, budget, or property type (flat, room, PG, house), and connect directly with verified owners to schedule visits and rent hassle-free."
+                        }
+                    },
                     {
                         "@@type": "Question",
                         "name": "How do I search room near my location for rent with zero brokerage?",
@@ -1753,13 +1805,13 @@
                 Verified Premium Listings
             </div>
 
-            <h1 class="hero-title title-animate" style="max-width: 920px; margin-left: auto; margin-right: auto;">
-                Find Your <span style="background: linear-gradient(135deg, #93c5fd 0%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Perfect Home</span> <br class="hidden sm:inline">
-                Across <span style="background: linear-gradient(90deg, #dbeafe 0%, #60a5fa 40%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">India's Top Cities</span>
+            <h1 class="hero-title title-animate" style="max-width: 960px; margin-left: auto; margin-right: auto;">
+                <span style="background: linear-gradient(135deg, #93c5fd 0%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Unlock Rent</span> With Zero Brokerage <br class="hidden sm:inline">
+                Rent <span style="background: linear-gradient(90deg, #dbeafe 0%, #60a5fa 40%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Flats, Rooms & Houses</span> By Direct Owners
             </h1>
 
             <p class="hero-subtitle subtitle-animate">
-                Verified rooms, flats, PG stays & houses for rent near your location directly from owners.
+                UnlockRentals connects you directly with verified property owners. Rent rooms, 1RK, flats, PGs & houses across India with 100% zero brokerage.
             </p>
 
             {{-- Quick SEO Shortcuts / Near Me Badges --}}
@@ -2023,6 +2075,16 @@
             if(request()->filled('rooms') && request('rooms') !== 'any') $mobileActiveFiltersCount++;
             if(request()->filled('purpose') && request('purpose') !== 'rent') $mobileActiveFiltersCount++;
         @endphp
+
+        {{-- Mobile SEO H1 Heading --}}
+        <div class="mb-2 px-1 text-center">
+            <h1 class="text-sm font-black text-slate-900 leading-snug">
+                <span class="text-blue-600">Unlock Rent</span> with Zero Brokerage
+            </h1>
+            <p class="text-[10px] text-slate-500 font-medium">
+                Rent verified flats, single rooms, PGs & houses from direct owners.
+            </p>
+        </div>
 
         {{-- 2. Flipkart Prominent Search Bar with Filter Button --}}
         <div class="mb-2.5">

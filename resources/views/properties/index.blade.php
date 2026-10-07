@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Rooms & Flats Near My Location | Rental Properties in India - UnlockRentals')
-@section('meta_description', 'Search room near my location with zero brokerage. Find 100% verified single rooms, 1RK, 1BHK, 2BHK flats, houses, PGs & commercial spaces across India.')
-@section('meta_keywords', 'room near my location, room for rent near me, rooms near me, single room for rent near me, rent room near me, pg near my location, flats for rent near me, search house near me, rental properties in india, unlockrentals')
+@section('title', 'Rent Flats, Rooms & Houses — Zero Brokerage Rental Portal | UnlockRentals')
+@section('meta_description', 'Unlock rent savings with UnlockRentals. Explore verified rental flats, rooms, PGs, houses, and commercial properties for rent directly from owners with zero brokerage across India.')
+@section('meta_keywords', 'unlock, unlock rent, unlock rental, rental, rent, unlock rentals, rent flats, rent rooms, rooms for rent, flats for rent, zero brokerage rental, direct owner rent, unlockrentals')
+
 
 @push('head')
 <script type="application/ld+json">
@@ -93,11 +94,11 @@
                     @elseif(request('search'))
                         Results for <span class="text-blue-600">"{{ request('search') }}"</span>
                     @else
-                        Explore <span class="text-blue-600">Verified Properties</span> in India
+                        Explore <span class="text-blue-600">Rental Properties & Homes</span> in India
                     @endif
                 </h1>
                 <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal mt-1.5 leading-relaxed">
-                    Direct-owner verified houses, flats, plots, land, PGs, and commercial spaces with zero brokerage.
+                    Direct-owner verified rental flats, rooms, PGs, houses, and commercial spaces with zero brokerage. Unlock direct owner contact numbers instantly.
                 </p>
             </div>
         </div>

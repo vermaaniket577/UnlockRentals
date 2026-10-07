@@ -975,6 +975,8 @@ class SeoController extends Controller
             '/flats-near-my-location',
             '/house-for-rent-near-me',
             '/houses-near-my-location',
+            '/pg-for-girls-in-mumbai',
+            '/room-for-rent-in-noida-under-10000',
         ]);
 
         return array_values(array_unique($urls));

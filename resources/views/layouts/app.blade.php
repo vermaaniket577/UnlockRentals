@@ -131,12 +131,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta name="description" content="@yield('meta_description', 'Search room near my location, single rooms for rent, 1RK, 1BHK flats, PGs & houses with zero brokerage on UnlockRentals. 100% verified properties by direct owners.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'room near my location, room for rent near me, rooms near me, single room for rent near me, rent room near me, room near my current location, 1bhk room near me, pg near my location, pg near me, flats for rent near me, search house near me, search house near me for rent, search house near me by owner, rental properties in india, unlockrentals')">
+    <meta name="description" content="@yield('meta_description', 'Unlock rent savings with UnlockRentals, India\'s leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'unlock, unlock rent, unlock rental, unlock rentals, rental, rent, unlockrentals, rent flats, rent houses, rent rooms, zero brokerage rental, rent without broker, direct owner rent')">
     <meta name="author" content="UnlockRentals">
     <meta name="publisher" content="UnlockRentals">
     <meta name="robots" content="@yield('robots', 'index, follow')">
-    <title>@yield('title', 'Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals')</title>
+    <title>@yield('title', 'UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs')</title>
 
     {{-- Legacy & Universal Image Source --}}
     <link rel="image_src" href="@yield('og_image', asset('images/logo.png'))">
@@ -178,16 +178,18 @@
 
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="UnlockRentals">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', 'Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals')">
-    <meta property="og:description" content="@yield('meta_description', 'Search room near my location, single rooms for rent, 1RK, 1BHK flats, PGs & houses with zero brokerage on UnlockRentals.')">
+    <meta property="og:title" content="@yield('title', 'UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs')">
+    <meta property="og:description" content="@yield('meta_description', 'Unlock rent savings with UnlockRentals, India\'s leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.')">
     <meta property="og:image" content="@yield('og_image', asset('images/logo.png'))">
 
     {{-- Twitter --}}
     <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:site" content="@UnlockRentals">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="@yield('title', 'Room Near My Location | Search House & Flat For Rent Near Me - UnlockRentals')">
-    <meta property="twitter:description" content="@yield('meta_description', 'Search room near my location, single rooms for rent, 1RK, 1BHK flats, PGs & houses with zero brokerage on UnlockRentals.')">
+    <meta property="twitter:title" content="@yield('title', 'UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs')">
+    <meta property="twitter:description" content="@yield('meta_description', 'Unlock rent savings with UnlockRentals, India\'s leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.')">
     <meta property="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
 
     {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}
@@ -201,12 +203,23 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=20260831">
     <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ asset('apple-touch-icon-precomposed.png') }}?v=20260831">
 
-    {{-- Google Search & Organization Structured Data for Brand Logo --}}
+    {{-- Google Search & Organization Structured Data for Brand Knowledge Graph --}}
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
         "@@type": "Organization",
         "name": "UnlockRentals",
+        "legalName": "UnlockRentals",
+        "alternateName": [
+            "Unlock Rentals",
+            "Unlock Rent",
+            "Unlock Rental",
+            "Unlock",
+            "UnlockRentals.com",
+            "UnlockRental"
+        ],
+        "slogan": "Unlock Rent with Zero Brokerage",
+        "description": "UnlockRentals is India's direct, zero-brokerage rental platform connecting tenants directly with property owners to rent flats, houses, rooms, and PGs without broker commissions.",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('images/logo.png') }}",
         "image": "{{ asset('images/logo.png') }}",
