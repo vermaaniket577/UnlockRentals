@@ -307,6 +307,9 @@ class ExternalLeadApiController extends Controller
 
         $assignedStaff = User::whereIn('role', ['admin', 'owner', 'sales_manager', 'sales_executive'])->first();
 
+        // Run proactive deduplication cleanup on existing records
+        Lead::cleanDuplicates();
+
         foreach ($items as $item) {
             if (!is_array($item)) {
                 $skippedCount++;
@@ -387,7 +390,9 @@ class ExternalLeadApiController extends Controller
             // Extract unique external ID from API (e.g. Anushram MongoDB "_id": "6ac689274f872cb4a13f2f2c")
             $externalId = (string) ($item['_id'] ?? $item['id'] ?? '');
 
-            // 1. Precise duplicate check: Check if this specific external enquiry was already imported
+            // Strict duplicate check:
+            // 1. Check if already imported by external API ID
+            // 2. Fallback to clean 10-digit mobile number (guarantees zero duplicate leads for same person)
             $existing = null;
             if (!empty($externalId)) {
                 $existing = Lead::where('consent_text', $externalId)
@@ -395,12 +400,8 @@ class ExternalLeadApiController extends Controller
                     ->first();
             }
 
-            // 2. Fallback duplicate check: only if no external ID, check identical mobile & identical message within 2h
-            if (!$existing && empty($externalId)) {
-                $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
-                    ->where('message', $fullMessage)
-                    ->where('created_at', '>=', now()->subHours(2))
-                    ->first();
+            if (!$existing) {
+                $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)->first();
             }
 
             if ($existing) {
@@ -477,6 +478,9 @@ class ExternalLeadApiController extends Controller
                 ];
             }
         }
+
+        // Final deduplication sweep to guarantee zero duplicate phone records
+        Lead::cleanDuplicates();
 
         return response()->json([
             'success' => true,

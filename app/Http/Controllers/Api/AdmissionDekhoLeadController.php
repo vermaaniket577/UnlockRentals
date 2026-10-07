@@ -162,11 +162,8 @@ class AdmissionDekhoLeadController extends Controller
 
         $notesTag = $academicSummary ?: ($subject ?: 'Admission Dekho Lead');
 
-        // 7. Prevent accidental rapid double-submission (within 60 seconds with identical mobile & message)
-        $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
-            ->where('message', $fullMessage)
-            ->where('created_at', '>=', now()->subSeconds(60))
-            ->first();
+        // 7. Strict duplicate check by phone number (every unique phone is 1 lead)
+        $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)->first();
 
         if ($existing) {
             $existing->update([

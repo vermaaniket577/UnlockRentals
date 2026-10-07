@@ -336,4 +336,41 @@ class Lead extends Model
             default => ['bg' => 'bg-slate-100 text-slate-700', 'label' => ucfirst($this->lead_status)],
         };
     }
+
+    /**
+     * Clean and merge duplicate leads by 10-digit mobile number.
+     * Retains the primary lead, merges distinct enquiry messages, and removes duplicate rows.
+     */
+    public static function cleanDuplicates(): int
+    {
+        $deletedCount = 0;
+        $duplicates = static::select('mobile')
+            ->whereNotNull('mobile')
+            ->where('mobile', '!=', '')
+            ->groupBy('mobile')
+            ->havingRaw('COUNT(*) > 1')
+            ->pluck('mobile');
+
+        foreach ($duplicates as $mobile) {
+            $leads = static::where('mobile', $mobile)->orderBy('id', 'desc')->get();
+            if ($leads->count() > 1) {
+                $primary = $leads->first();
+                $others = $leads->slice(1);
+
+                $mergedMessages = array_filter([$primary->message]);
+                foreach ($others as $other) {
+                    if ($other->message && !str_contains($primary->message ?? '', $other->message)) {
+                        $mergedMessages[] = $other->message;
+                    }
+                    $other->delete();
+                    $deletedCount++;
+                }
+
+                $primary->message = implode("\n---\n", array_unique($mergedMessages));
+                $primary->saveQuietly();
+            }
+        }
+
+        return $deletedCount;
+    }
 }

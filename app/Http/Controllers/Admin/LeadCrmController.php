@@ -22,6 +22,9 @@ class LeadCrmController extends Controller
      */
     public function index(Request $request)
     {
+        // Proactively clean and merge any duplicate phone records
+        Lead::cleanDuplicates();
+
         $query = Lead::with(['assignedTo', 'property', 'visitor', 'latestFollowUp']);
 
         // 1. Category Tab Filter (all, admission, property)

@@ -46,3 +46,13 @@ Artisan::command('leads:fetch-external {--url=} {--token=} {--method=GET}', func
         $this->error($data['message'] ?? 'Fetch failed');
     }
 })->purpose('Fetch and store leads from external API into UnlockRentals database');
+
+// Merge and remove any duplicate lead records
+Artisan::command('leads:clean-duplicates', function () {
+    $this->info('Scanning database for duplicate leads by phone number...');
+    $cleaned = \App\Models\Lead::cleanDuplicates();
+    $this->info("Successfully merged and cleaned {$cleaned} duplicate lead records.");
+    $totalRemaining = \App\Models\Lead::count();
+    $this->info("Total unique leads in CRM database: {$totalRemaining}");
+})->purpose('Merge and clean duplicate lead records by phone number');
+
