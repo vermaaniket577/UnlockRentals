@@ -7,10 +7,10 @@
      aria-modal="true" 
      aria-labelledby="blog-auth-popup-title">
 
-    {{-- Modal Card Container --}}
-    <div class="relative w-full max-w-[380px] max-h-[92dvh] overflow-y-auto overscroll-contain bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-2xl transform scale-95 transition-all duration-300 my-auto text-center"
+    {{-- Modal Card Container: Strictly formatted in clean rectangle shape --}}
+    <div class="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 text-center"
          id="blog-reader-auth-card"
-         style="scrollbar-width: none;">
+         style="max-width: 400px; width: 92%; max-height: 90vh; margin: auto; scrollbar-width: none;">
          
         {{-- Top Accent Gradient Bar --}}
         <div class="h-1.5 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
@@ -18,47 +18,47 @@
         {{-- Close Button --}}
         <button type="button" 
                 onclick="window.closeBlogReaderPopup()" 
-                class="absolute top-2.5 right-2.5 z-20 w-7 h-7 rounded-full bg-slate-100/90 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs" 
+                class="absolute top-3 right-3 z-20 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-sm" 
                 title="Close" 
                 aria-label="Close modal">
             <i class="ph-bold ph-x text-xs"></i>
         </button>
 
-        <div class="p-4 sm:p-5">
+        <div class="p-5 sm:p-6">
             {{-- Brand / Icon Badge --}}
-            <div class="w-10 h-10 mx-auto rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/25 mb-2 ring-2 ring-blue-500/10">
+            <div class="w-10 h-10 mx-auto rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/25 mb-2.5">
                 <i class="ph-bold ph-sparkle text-lg"></i>
             </div>
 
-            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-extrabold uppercase tracking-wider mb-1.5 border border-blue-200/50 dark:border-blue-800/40">
+            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-extrabold uppercase tracking-wider mb-2 border border-blue-200/50 dark:border-blue-800/40">
                 <i class="ph-bold ph-users-three"></i> UnlockRentals Community
             </div>
 
-            <h3 id="blog-auth-popup-title" class="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-snug mb-1 font-['Playfair_Display',serif]">
+            <h3 id="blog-auth-popup-title" class="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-snug mb-1 font-['Playfair_Display',serif]">
                 Enjoying this Guide?
             </h3>
             
-            <p class="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 leading-normal max-w-xs mx-auto mb-3">
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-normal max-w-xs mx-auto mb-3.5">
                 Join UnlockRentals to connect directly with verified owners with <strong class="text-blue-600 dark:text-blue-400 font-extrabold">Zero Brokerage</strong>.
             </p>
 
             {{-- Value Proposition Bullets --}}
-            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-2.5 mb-3 text-left border border-slate-100 dark:border-slate-800/80">
-                <div class="space-y-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 mb-3.5 text-left border border-slate-100 dark:border-slate-800/80">
+                <div class="space-y-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
                     <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 text-[9px]">
+                        <span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 text-[10px]">
                             <i class="ph-bold ph-check"></i>
                         </span>
                         <span>100% Direct Owner Contacts</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 text-[9px]">
+                        <span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 text-[10px]">
                             <i class="ph-bold ph-check"></i>
                         </span>
                         <span>Zero Brokerage on Verified Flats & PGs</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 text-[9px]">
+                        <span class="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 text-[10px]">
                             <i class="ph-bold ph-check"></i>
                         </span>
                         <span>Instant Alerts for New Nearby Rentals</span>
@@ -67,7 +67,7 @@
             </div>
 
             {{-- Action Buttons --}}
-            <div class="space-y-2">
+            <div class="space-y-2.5">
                 {{-- Sign Up / Create Account --}}
                 <button type="button" 
                         onclick="window.openAuthFromBlog('register')" 
@@ -79,7 +79,7 @@
                 {{-- Sign In --}}
                 <button type="button" 
                         onclick="window.openAuthFromBlog('login')" 
-                        class="w-full py-2 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100/70 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-[11px] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-white dark:bg-slate-900 shadow-2xs">
+                        class="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100/70 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-white dark:bg-slate-900 shadow-sm">
                     <i class="ph-bold ph-sign-in text-sm text-blue-600 dark:text-blue-400"></i>
                     <span>Already have an account? Sign In</span>
                 </button>
@@ -88,9 +88,9 @@
             {{-- Continue Reading Link --}}
             <button type="button" 
                     onclick="window.closeBlogReaderPopup()" 
-                    class="mt-2.5 text-[11px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer inline-flex items-center gap-1">
+                    class="mt-3 text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer inline-flex items-center gap-1">
                 <span>Continue reading article</span>
-                <i class="ph-bold ph-arrow-right text-[9px]"></i>
+                <i class="ph-bold ph-arrow-right text-[10px]"></i>
             </button>
         </div>
     </div>
