@@ -205,6 +205,87 @@
                     </div>
                 @endif
 
+                {{-- Prominent Results Header & Sorting Toolbar --}}
+                <div class="mb-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-4 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        {{-- Left: Count & Status --}}
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shadow-xs flex-shrink-0">
+                                <i class="ph-bold ph-squares-four"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white leading-tight">
+                                    <span class="text-blue-600">{{ $properties->total() ?? $properties->count() }}</span>
+                                    <span>{{ ($properties->total() ?? $properties->count()) == 1 ? 'Property Available' : 'Properties Available' }}</span>
+                                </h2>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                                    Zero Brokerage • Direct Owner Listings
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- Right: Prominent Sort Dropdown --}}
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <label for="property-grid-sort" class="text-xs font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap flex items-center gap-1.5 flex-shrink-0">
+                                <i class="ph-bold ph-arrows-down-up text-blue-600"></i>
+                                <span>Sort By:</span>
+                            </label>
+                            <div class="relative flex-1 sm:w-56">
+                                <select id="property-grid-sort"
+                                        onchange="updatePropertySort(this.value)"
+                                        class="w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all appearance-none cursor-pointer">
+                                    <option value="latest" {{ request('sort') === 'latest' || request('sort') === 'new_to_old' || !request('sort') ? 'selected' : '' }}>⏱️ Newest First</option>
+                                    <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>💰 Price: Low to High</option>
+                                    <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>💎 Price: High to Low</option>
+                                    <option value="unbooked" {{ request('sort') === 'unbooked' ? 'selected' : '' }}>🟢 Available / Unbooked</option>
+                                    <option value="old_to_new" {{ request('sort') === 'old_to_new' || request('sort') === 'oldest' ? 'selected' : '' }}>⏳ Oldest First</option>
+                                    @if(request('near_me') || request('lat'))
+                                        <option value="nearest" {{ request('sort') === 'nearest' || request('sort') === 'distance' ? 'selected' : '' }}>📍 Nearest to Me</option>
+                                    @endif
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Quick 1-Click Sort Pills (Horizontal Scrolling) --}}
+                    <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none -mx-1 px-1">
+                        <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500 whitespace-nowrap mr-1 flex-shrink-0">
+                            Quick Sort:
+                        </span>
+                        
+                        @php
+                            $currentSort = request('sort', 'latest');
+                            if ($currentSort === 'new_to_old') $currentSort = 'latest';
+                            if ($currentSort === 'oldest') $currentSort = 'old_to_new';
+                            if ($currentSort === 'distance') $currentSort = 'nearest';
+
+                            $sortPills = [
+                                ['id' => 'latest', 'label' => 'Newest', 'icon' => 'ph-clock'],
+                                ['id' => 'price_low', 'label' => 'Price: Low to High', 'icon' => 'ph-trend-up'],
+                                ['id' => 'price_high', 'label' => 'Price: High to Low', 'icon' => 'ph-trend-down'],
+                                ['id' => 'unbooked', 'label' => 'Available First', 'icon' => 'ph-check-circle'],
+                            ];
+                            if (request('near_me') || request('lat')) {
+                                array_unshift($sortPills, ['id' => 'nearest', 'label' => 'Nearest to Me', 'icon' => 'ph-navigation-arrow']);
+                            }
+                        @endphp
+
+                        @foreach($sortPills as $sp)
+                            @php
+                                $isActive = ($currentSort === $sp['id']);
+                                $pillParams = array_merge(request()->query(), ['sort' => $sp['id']]);
+                                unset($pillParams['page']);
+                            @endphp
+                            <a href="{{ route('properties.index', $pillParams) }}"
+                               class="whitespace-nowrap px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 flex-shrink-0 {{ $isActive ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700' }}">
+                                <i class="ph-bold {{ $sp['icon'] }} text-xs"></i>
+                                <span>{{ $sp['label'] }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+
                 @if($properties->count() > 0)
                     {{-- Grid Container --}}
                     <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
@@ -251,6 +332,17 @@
             sheet.classList.remove('active');
             document.body.style.overflow = '';
         }
+    }
+
+    function updatePropertySort(sortValue) {
+        const url = new URL(window.location.href);
+        if (sortValue && sortValue !== 'latest' && sortValue !== 'new_to_old') {
+            url.searchParams.set('sort', sortValue);
+        } else {
+            url.searchParams.delete('sort');
+        }
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
     }
 </script>
 
