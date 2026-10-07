@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/consent/*',
             'api/leads',
             'api/leads/*',
+            'leads/fetch',
+            'leads/fetch/*',
             'api/admission-leads',
             'api/general-enquiry',
             'api/general-enquiry/*',
