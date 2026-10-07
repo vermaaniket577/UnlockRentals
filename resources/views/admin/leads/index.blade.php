@@ -19,10 +19,10 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
-            <button type="button" onclick="openFetchExternalModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-emerald-600/25 cursor-pointer" title="Fetch & Store Leads from External API into CRM">
-                <i class="ph-bold ph-cloud-arrow-down text-base"></i> Fetch External Leads
+            <button type="button" onclick="openFetchLeadsModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-emerald-600/25 cursor-pointer" title="Fetch lead data from external API and store in CRM database">
+                <i class="ph-bold ph-cloud-arrow-down text-base"></i> Fetch Leads from API
             </button>
-            <button type="button" onclick="openExternalSyncModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-600/25 cursor-pointer" title="Send All Leads to External API">
+            <button type="button" onclick="openExternalSyncModal()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-600/25 cursor-pointer" title="Dispatch leads to external endpoint">
                 <i class="ph-bold ph-paper-plane-tilt text-base"></i> Send All to External API
             </button>
             <a href="{{ route('admin.leads.export.csv', request()->all()) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all">
@@ -34,8 +34,8 @@
         </div>
     </div>
 
-    {{-- Live Incoming Leads Pipeline & API Dispatch Status Banner --}}
-    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-4 sm:p-5 rounded-3xl shadow-sm border border-slate-800/90 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    {{-- Live Incoming & Outgoing Leads API Gateway Status Banner --}}
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-4 sm:p-5 rounded-3xl shadow-sm border border-slate-800/90 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div class="flex items-start sm:items-center gap-3.5">
             <div class="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center flex-shrink-0 text-blue-400 shadow-inner">
                 <i class="ph-bold ph-broadcast text-xl animate-pulse"></i>
@@ -43,29 +43,29 @@
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Leads Pipeline & External Sync
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Leads Pipeline & CRM
                     </span>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 font-mono">
-                        Bi-directional Lead API
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 font-mono">
+                        Bi-Directional API Sync
                     </span>
                 </div>
                 <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-                    Website inquiries, direct owner requests, and external portal leads stream into your CRM. You can fetch leads from external endpoints or dispatch leads asynchronously via <code class="text-indigo-300 font-mono">Http::pool()</code>.
+                    Lead inquiries are saved directly to this CRM database. You can also fetch external leads or dispatch existing leads asynchronously via <code class="text-indigo-300 font-mono">Http::pool()</code>.
                 </p>
             </div>
         </div>
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 self-start md:self-auto">
-            <div class="flex items-center gap-2 text-xs font-mono bg-black/40 px-3 py-1.5 rounded-xl border border-white/10 shadow-inner">
-                <span class="text-slate-400">Fetch:</span>
-                <code class="text-emerald-300 font-bold select-all">/api/leads/fetch</code>
-                <button type="button" onclick="navigator.clipboard.writeText(window.location.origin + '/api/leads/fetch'); alert('Copied Fetch endpoint URL to clipboard!')" class="text-slate-400 hover:text-white transition-colors cursor-pointer" title="Copy fetch endpoint">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-mono self-start lg:self-auto">
+            <div class="flex items-center gap-2 bg-black/40 px-3 py-2 rounded-xl border border-white/10 shadow-inner">
+                <span class="text-slate-400 text-[11px]">Fetch In:</span>
+                <code class="text-emerald-300 font-bold select-all text-[11px]">/api/leads/fetch-all</code>
+                <button type="button" onclick="navigator.clipboard.writeText(window.location.origin + '/api/leads/fetch-all'); alert('Copied fetch endpoint URL to clipboard!')" class="text-slate-400 hover:text-white transition-colors cursor-pointer" title="Copy fetch endpoint">
                     <i class="ph-bold ph-copy text-sm"></i>
                 </button>
             </div>
-            <div class="flex items-center gap-2 text-xs font-mono bg-black/40 px-3 py-1.5 rounded-xl border border-white/10 shadow-inner">
-                <span class="text-slate-400">Send:</span>
-                <code class="text-blue-300 font-bold select-all">/api/leads/send-all</code>
-                <button type="button" onclick="navigator.clipboard.writeText(window.location.origin + '/api/leads/send-all'); alert('Copied Send endpoint URL to clipboard!')" class="text-slate-400 hover:text-white transition-colors cursor-pointer" title="Copy send endpoint">
+            <div class="flex items-center gap-2 bg-black/40 px-3 py-2 rounded-xl border border-white/10 shadow-inner">
+                <span class="text-slate-400 text-[11px]">Send Out:</span>
+                <code class="text-blue-300 font-bold select-all text-[11px]">/api/leads/send-all</code>
+                <button type="button" onclick="navigator.clipboard.writeText(window.location.origin + '/api/leads/send-all'); alert('Copied send endpoint URL to clipboard!')" class="text-slate-400 hover:text-white transition-colors cursor-pointer" title="Copy send endpoint">
                     <i class="ph-bold ph-copy text-sm"></i>
                 </button>
             </div>
@@ -515,9 +515,9 @@
         </div>
     </div>
 
-    {{-- Fetch External Leads Modal --}}
-    <div id="fetchExternalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 transform transition-all text-slate-900">
+    {{-- Fetch & Import Leads from External API Modal --}}
+    <div id="fetchLeadsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 transform transition-all text-slate-900 max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
@@ -525,10 +525,10 @@
                     </div>
                     <div>
                         <h3 class="text-base font-extrabold text-slate-900">Fetch Leads from External API</h3>
-                        <p class="text-[11px] text-slate-500">Inbound Lead Sync • Stores & Displays in CRM</p>
+                        <p class="text-[11px] text-slate-500">Pull lead records & store directly into UnlockRentals CRM</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeFetchExternalModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-colors cursor-pointer">
+                <button type="button" onclick="closeFetchLeadsModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-colors cursor-pointer">
                     <i class="ph-bold ph-x text-sm"></i>
                 </button>
             </div>
@@ -536,41 +536,48 @@
             <div class="mt-4 space-y-4">
                 {{-- Source URL --}}
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Source API Endpoint URL</label>
-                    <input type="url" id="fetchExternalSourceUrl" value="{{ env('EXTERNAL_LEAD_FETCH_API_URL', 'https://api.anushram.com/v1/api/general-enquiry/all') }}" class="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                    <p class="text-[10px] text-slate-400 mt-1">Default: <code class="text-emerald-700 font-mono">https://api.anushram.com/v1/api/general-enquiry/all</code></p>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">External API Source URL</label>
+                    <input type="url" id="fetchSourceUrl" value="{{ env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry') }}" class="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="https://api.example.com/leads">
+                    <p class="text-[10px] text-slate-400 mt-1">Default: <code class="text-emerald-700 font-mono">https://api.anushram.com/v1/api/general-enquiry</code></p>
                 </div>
 
-                {{-- Limit / Batch --}}
-                <div class="grid grid-cols-2 gap-3">
+                {{-- HTTP Method & Optional Token --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Batch Limit</label>
-                        <select id="fetchExternalLimit" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium">
-                            <option value="0">All Available (up to 100)</option>
-                            <option value="25">Latest 25 Leads</option>
-                            <option value="50">Latest 50 Leads</option>
-                            <option value="10">Latest 10 (Quick Test)</option>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">HTTP Method</label>
+                        <select id="fetchMethod" class="w-full px-3 py-2 text-xs font-bold rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="GET">GET Request</option>
+                            <option value="POST">POST Request</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Duplicate Handling</label>
-                        <div class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-200 leading-tight">
-                            Existing phone/email records are automatically updated with new notes.
-                        </div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Bearer Token / Auth (Optional)</label>
+                        <input type="text" id="fetchAuthToken" class="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="e.g. Bearer token...">
+                    </div>
+                </div>
+
+                {{-- Paste Direct JSON Toggle --}}
+                <div>
+                    <button type="button" onclick="document.getElementById('fetchJsonBox').classList.toggle('hidden')" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
+                        <i class="ph-bold ph-brackets-curly"></i> Or paste raw JSON payload directly
+                    </button>
+                    <div id="fetchJsonBox" class="hidden mt-2">
+                        <textarea id="fetchRawJson" rows="4" class="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder='[{"name":"Rahul Sharma","mobile":"9876543210","email":"rahul@gmail.com","course":"MBA","city":"Pune","message":"Interested in admission"}]'></textarea>
+                        <p class="text-[10px] text-slate-400 mt-1">Accepts array of leads or objects with name, mobile, email, course, message.</p>
                     </div>
                 </div>
 
                 {{-- Live Response / Status Area --}}
-                <div id="fetchExternalStatus" class="hidden p-3 rounded-xl text-xs font-mono border"></div>
+                <div id="fetchStatusBox" class="hidden p-3 rounded-xl text-xs font-mono border"></div>
 
                 {{-- Action Buttons --}}
                 <div class="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeFetchExternalModal()" class="w-full sm:w-auto px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer">
+                    <button type="button" onclick="closeFetchLeadsModal()" class="w-full sm:w-auto px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer">
                         Cancel
                     </button>
-                    <button type="button" id="btnExecuteFetchLeads" onclick="executeFetchExternalLeads()" class="w-full sm:w-auto px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                    <button type="button" id="btnExecuteFetch" onclick="executeFetchLeads()" class="w-full sm:w-auto px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5">
                         <i class="ph-bold ph-download-simple"></i>
-                        <span>Fetch & Store in Database</span>
+                        <span>Fetch & Store in CRM</span>
                     </button>
                 </div>
             </div>
@@ -580,69 +587,6 @@
 </div>
 
 <script>
-    function openFetchExternalModal() {
-        const modal = document.getElementById('fetchExternalModal');
-        const statusBox = document.getElementById('fetchExternalStatus');
-        if (statusBox) statusBox.classList.add('hidden');
-        if (modal) modal.classList.remove('hidden');
-    }
-
-    function closeFetchExternalModal() {
-        const modal = document.getElementById('fetchExternalModal');
-        if (modal) modal.classList.add('hidden');
-    }
-
-    async function executeFetchExternalLeads() {
-        const sourceUrl = document.getElementById('fetchExternalSourceUrl').value.trim();
-        const limit = document.getElementById('fetchExternalLimit').value;
-        const statusBox = document.getElementById('fetchExternalStatus');
-        const btnFetch = document.getElementById('btnExecuteFetchLeads');
-
-        btnFetch.disabled = true;
-        btnFetch.classList.add('opacity-50');
-
-        statusBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
-        statusBox.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200');
-        statusBox.innerHTML = '<span class="animate-pulse">⏳ Connecting to external API and importing leads into database...</span>';
-
-        try {
-            const url = new URL('/api/leads/fetch', window.location.origin);
-            if (sourceUrl) url.searchParams.set('source_url', sourceUrl);
-            if (limit) url.searchParams.set('limit', limit);
-
-            const response = await fetch(url.toString(), {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                statusBox.className = 'p-3 rounded-xl text-xs font-mono border bg-emerald-50 text-emerald-800 border-emerald-200';
-                statusBox.innerHTML = `<strong>🎉 ${data.message}</strong><br>` +
-                    `Total Processed: ${data.total_fetched} | New Stored: <strong>${data.new_leads_saved}</strong> | Existing Updated: <strong>${data.existing_leads_updated}</strong><br>` +
-                    `<span class="text-emerald-700 text-[11px] font-sans font-bold">Refreshing CRM table to display new leads...</span>`;
-
-                // Reload after short delay to show the new leads in the table
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1800);
-            } else {
-                statusBox.className = 'p-3 rounded-xl text-xs font-mono border bg-rose-50 text-rose-800 border-rose-200';
-                statusBox.innerHTML = `<strong>⚠️ Failed:</strong> ${data.message || 'Could not fetch leads.'}`;
-            }
-        } catch (err) {
-            statusBox.className = 'p-3 rounded-xl text-xs font-mono border bg-rose-50 text-rose-800 border-rose-200';
-            statusBox.innerHTML = `<strong>⚠️ Error:</strong> ${err.message}`;
-        } finally {
-            btnFetch.disabled = false;
-            btnFetch.classList.remove('opacity-50');
-        }
-    }
-
     function openExternalSyncModal() {
         const modal = document.getElementById('externalSyncModal');
         const statusBox = document.getElementById('externalSyncStatus');
@@ -653,6 +597,72 @@
     function closeExternalSyncModal() {
         const modal = document.getElementById('externalSyncModal');
         if (modal) modal.classList.add('hidden');
+    }
+
+    function openFetchLeadsModal() {
+        const modal = document.getElementById('fetchLeadsModal');
+        const statusBox = document.getElementById('fetchStatusBox');
+        if (statusBox) statusBox.classList.add('hidden');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeFetchLeadsModal() {
+        const modal = document.getElementById('fetchLeadsModal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    async function executeFetchLeads() {
+        const sourceUrl = document.getElementById('fetchSourceUrl').value.trim();
+        const method = document.getElementById('fetchMethod').value;
+        const authToken = document.getElementById('fetchAuthToken').value.trim();
+        const rawJson = document.getElementById('fetchRawJson').value.trim();
+        const statusBox = document.getElementById('fetchStatusBox');
+        const btn = document.getElementById('btnExecuteFetch');
+
+        btn.disabled = true;
+        btn.classList.add('opacity-50');
+
+        statusBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
+        statusBox.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200');
+        statusBox.innerHTML = '<span class="animate-pulse">⏳ Fetching leads and storing to CRM database...</span>';
+
+        try {
+            const payload = {
+                source_url: sourceUrl,
+                method: method,
+                auth_token: authToken || null,
+                leads_json: rawJson || null,
+            };
+
+            const response = await fetch('/admin/leads/fetch-external', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                statusBox.className = 'p-3 rounded-xl text-xs font-mono border bg-emerald-50 text-emerald-800 border-emerald-200';
+                statusBox.innerHTML = `<strong>✅ ${data.message}</strong><br>Newly Imported: ${data.imported_count} | Updated: ${data.updated_count}<br><span class="text-[11px] text-emerald-600 mt-1 block">Reloading CRM in 2 seconds to display new leads...</span>`;
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                statusBox.className = 'p-3 rounded-xl text-xs font-mono border bg-rose-50 text-rose-800 border-rose-200';
+                statusBox.innerHTML = `<strong>⚠️ ${data.message || 'Error occurred while fetching leads'}</strong>`;
+            }
+        } catch (err) {
+            statusBox.className = 'p-3 rounded-xl text-xs font-mono border bg-rose-50 text-rose-800 border-rose-200';
+            statusBox.innerHTML = `<strong>⚠️ Network Error:</strong> ${err.message}`;
+        } finally {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+        }
     }
 
     async function executeExternalSync(isDebug) {

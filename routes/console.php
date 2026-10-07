@@ -12,23 +12,23 @@ Artisan::command('inspire', function () {
 Schedule::command('visitor:aggregate-daily')->dailyAt('00:05')->name('visitor_aggregate_daily')->withoutOverlapping();
 Schedule::command('visitor:cleanup-retention')->dailyAt('02:00')->name('visitor_cleanup_retention')->withoutOverlapping();
 
-// Fetch and sync leads from external API
-Artisan::command('leads:fetch-external {--url=} {--limit=0}', function () {
-    $url = $this->option('url') ?: env('EXTERNAL_LEAD_FETCH_API_URL', 'https://api.anushram.com/v1/api/general-enquiry/all');
-    $limit = (int) $this->option('limit');
+// Fetch and sync leads from external API via CLI or Scheduler
+Artisan::command('leads:fetch-external {--url=} {--token=}', function () {
+    $url = $this->option('url') ?: env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry');
+    $token = $this->option('token');
     $this->info("Fetching leads from external API: {$url}");
 
-    $request = new \Illuminate\Http\Request(['source_url' => $url, 'limit' => $limit]);
+    $request = new \Illuminate\Http\Request(['source_url' => $url, 'auth_token' => $token]);
     $controller = app(\App\Http\Controllers\ExternalLeadApiController::class);
-    $response = $controller->fetch($request);
+    $response = $controller->fetchAndStore($request);
     $data = $response->getData(true);
 
     if ($data['success'] ?? false) {
         $this->info($data['message']);
-        $this->table(['Total Fetched', 'New Saved', 'Existing Updated', 'Skipped'], [
-            [$data['total_fetched'] ?? 0, $data['new_leads_saved'] ?? 0, $data['existing_leads_updated'] ?? 0, $data['skipped'] ?? 0]
+        $this->table(['Total Received', 'Newly Imported', 'Existing Updated', 'Skipped'], [
+            [$data['total_received'] ?? 0, $data['imported_count'] ?? 0, $data['updated_count'] ?? 0, $data['skipped_count'] ?? 0]
         ]);
     } else {
         $this->error($data['message'] ?? 'Fetch failed');
     }
-})->purpose('Fetch and sync leads from external API into UnlockRentals database');
+})->purpose('Fetch and store leads from external API into UnlockRentals database');

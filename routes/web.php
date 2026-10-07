@@ -606,12 +606,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/', [\App\Http\Controllers\Admin\LeadCrmController::class, 'index'])->name('index');
         Route::post('/', [\App\Http\Controllers\Admin\LeadCrmController::class, 'store'])->name('store');
         Route::get('/export/csv', [\App\Http\Controllers\Admin\LeadCrmController::class, 'exportCsv'])->name('export.csv');
-        Route::match(['get', 'post'], '/fetch-external', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetch'])->name('fetch_external');
         Route::get('/{lead}', [\App\Http\Controllers\Admin\LeadCrmController::class, 'show'])->name('show');
         Route::put('/{lead}', [\App\Http\Controllers\Admin\LeadCrmController::class, 'update'])->name('update');
         Route::post('/{lead}/notes', [\App\Http\Controllers\Admin\LeadCrmController::class, 'addNote'])->name('notes.store');
         Route::post('/{lead}/send-whatsapp', [\App\Http\Controllers\Admin\LeadCrmController::class, 'sendWhatsApp'])->name('send-whatsapp');
         Route::post('/{lead}/follow-ups', [\App\Http\Controllers\Admin\FollowUpController::class, 'store'])->name('follow-ups.store');
+        Route::match(['get', 'post'], '/fetch-external', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetchAndStore'])->name('fetch-external');
     });
 
     Route::prefix('follow-ups')->name('follow-ups.')->group(function () {
@@ -684,15 +684,12 @@ Route::match(['get', 'post'], '/api/leads/send-all', [\App\Http\Controllers\Exte
 Route::match(['get', 'post'], '/api/leads/send/{id}', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendSingle'])
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
     ->name('api.leads.send_single');
-Route::match(['get', 'post'], '/leads/fetch', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetch'])
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
-    ->name('leads.fetch.alias');
-Route::match(['get', 'post'], '/api/leads/fetch', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetch'])
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
-    ->name('api.leads.fetch');
-Route::match(['get', 'post'], '/api/leads/fetch-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetch'])
+Route::match(['get', 'post'], '/api/leads/fetch-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetchAndStore'])
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
     ->name('api.leads.fetch_all');
+Route::match(['get', 'post'], '/leads/fetch-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetchAndStore'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('leads.fetch_all');
 
 // Incoming Admission & General Enquiry Leads Intake API
 Route::match(['post', 'put'], '/general-enquiry/create', [\App\Http\Controllers\LeadController::class, 'storeAdmissionLead'])

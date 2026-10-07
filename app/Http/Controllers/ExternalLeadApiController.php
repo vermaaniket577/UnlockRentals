@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Lead;
 use App\Models\User;
-use App\Models\CrmAuditLog;
-use Carbon\Carbon;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -22,26 +19,12 @@ class ExternalLeadApiController extends Controller
     protected const DEFAULT_TARGET_URL = 'https://api.anushram.com/v1/api/general-enquiry/create';
 
     /**
-     * Default source endpoint for fetching external leads.
-     */
-    protected const DEFAULT_FETCH_URL = 'https://api.anushram.com/v1/api/general-enquiry/all';
-
-    /**
      * Resolve target URL from request or .env.
      */
     protected function resolveTargetUrl(Request $request): string
     {
         return $request->input('target_url')
             ?: env('EXTERNAL_LEAD_API_URL', self::DEFAULT_TARGET_URL);
-    }
-
-    /**
-     * Resolve source URL for fetching leads.
-     */
-    protected function resolveFetchUrl(Request $request): string
-    {
-        return $request->input('source_url')
-            ?: env('EXTERNAL_LEAD_FETCH_API_URL', self::DEFAULT_FETCH_URL);
     }
 
     /**
@@ -203,76 +186,110 @@ class ExternalLeadApiController extends Controller
     }
 
     /**
-     * Fetch leads from external API, store them in the database, and return live summary.
-     * GET or POST /api/leads/fetch
-     * GET or POST /leads/fetch
+     * Fetch leads from an external API or direct JSON and store/update them in the CRM database.
+     * GET or POST /api/leads/fetch-all
+     * GET or POST /leads/fetch-all
      * GET or POST /admin/leads/fetch-external
      */
-    public function fetch(Request $request): JsonResponse
+    public function fetchAndStore(Request $request): JsonResponse
     {
-        $sourceUrl = $this->resolveFetchUrl($request);
-        $limit = (int) $request->input('limit', 0); // 0 = fetch all available
-        $assignedStaff = User::whereIn('role', ['admin', 'owner', 'sales_manager', 'sales_executive'])->first();
+        $sourceUrl = $request->input('source_url') 
+            ?: $request->input('target_url') 
+            ?: env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry');
+            
+        $method = strtoupper($request->input('method', 'GET'));
+        $token = $request->input('auth_token') ?: $request->input('token');
+        $rawJson = $request->input('leads_json');
+        
+        $leadsData = [];
+        $fetchSource = 'api';
 
-        try {
-            $response = Http::timeout(20)
-                ->withHeaders([
-                    'Accept' => 'application/json',
-                    'User-Agent' => 'UnlockRentals-LeadFetcher/1.0',
-                ])
-                ->get($sourceUrl);
-
-            if (!$response->successful()) {
+        // 1. If direct raw JSON was pasted or provided in body, use it directly
+        if (!empty($rawJson)) {
+            $fetchSource = 'manual_json';
+            $decoded = is_array($rawJson) ? $rawJson : json_decode($rawJson, true);
+            if (is_array($decoded)) {
+                $leadsData = $decoded;
+            } else {
                 return response()->json([
                     'success' => false,
-                    'message' => "External API returned HTTP {$response->status()}: " . substr($response->body(), 0, 200),
-                    'source_url' => $sourceUrl,
-                ], 502);
+                    'message' => 'Invalid JSON provided in payload.',
+                ], 422);
             }
+        } else {
+            // 2. Fetch from remote API endpoint
+            try {
+                $client = Http::timeout(15)
+                    ->withHeaders([
+                        'Accept' => 'application/json',
+                        'User-Agent' => 'UnlockRentals-LeadFetcher/1.0',
+                    ]);
 
-            $body = $response->json();
-        } catch (\Throwable $e) {
-            Log::error('External lead fetch network error: ' . $e->getMessage());
+                if ($token) {
+                    $client->withToken($token);
+                }
+
+                $params = $request->input('params', []);
+                if (is_string($params)) {
+                    $params = json_decode($params, true) ?: [];
+                }
+
+                $response = ($method === 'POST')
+                    ? $client->post($sourceUrl, $params)
+                    : $client->get($sourceUrl, $params);
+
+                if (!$response->successful()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "External API returned HTTP {$response->status()}: " . \Illuminate\Support\Str::limit($response->body(), 200),
+                        'source_url' => $sourceUrl,
+                        'status_code' => $response->status(),
+                    ], 422);
+                }
+
+                $leadsData = $response->json();
+            } catch (\Throwable $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Failed to connect to external API: " . $e->getMessage(),
+                    'source_url' => $sourceUrl,
+                ], 500);
+            }
+        }
+
+        // 3. Normalize response array
+        // Check if nested under 'leads', 'data', 'results', 'items', 'records', etc.
+        if (isset($leadsData['leads']) && is_array($leadsData['leads'])) {
+            $items = $leadsData['leads'];
+        } elseif (isset($leadsData['data']) && is_array($leadsData['data'])) {
+            $items = $leadsData['data'];
+        } elseif (isset($leadsData['results']) && is_array($leadsData['results'])) {
+            $items = $leadsData['results'];
+        } elseif (isset($leadsData['items']) && is_array($leadsData['items'])) {
+            $items = $leadsData['items'];
+        } elseif (isset($leadsData['records']) && is_array($leadsData['records'])) {
+            $items = $leadsData['records'];
+        } elseif (is_array($leadsData) && array_is_list($leadsData)) {
+            $items = $leadsData;
+        } elseif (is_array($leadsData) && !empty($leadsData)) {
+            // Single lead object passed
+            $items = [$leadsData];
+        } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to connect to external API: ' . $e->getMessage(),
+                'message' => 'No lead records found in the API response.',
+                'raw_response' => $leadsData,
                 'source_url' => $sourceUrl,
-            ], 500);
+            ], 422);
         }
 
-        // Extract list from various potential JSON structures (Anushram enquiries, leads, data, or direct list)
-        $items = [];
-        if (isset($body['enquiries']) && is_array($body['enquiries'])) {
-            $items = $body['enquiries'];
-        } elseif (isset($body['leads']) && is_array($body['leads'])) {
-            $items = $body['leads'];
-        } elseif (isset($body['data']) && is_array($body['data'])) {
-            $items = $body['data'];
-        } elseif (is_array($body) && array_is_list($body)) {
-            $items = $body;
-        }
-
-        if (empty($items)) {
-            return response()->json([
-                'success' => true,
-                'message' => 'External API responded successfully, but returned 0 leads or an unfamiliar payload structure.',
-                'total_fetched' => 0,
-                'new_leads_saved' => 0,
-                'existing_leads_updated' => 0,
-                'skipped' => 0,
-                'source_url' => $sourceUrl,
-            ]);
-        }
-
-        if ($limit > 0 && count($items) > $limit) {
-            $items = array_slice($items, 0, $limit);
-        }
-
-        $totalFetched = count($items);
-        $newCount = 0;
+        // 4. Ingest and Store Each Lead into database
+        $importedCount = 0;
         $updatedCount = 0;
         $skippedCount = 0;
-        $processedLeads = [];
+        $storedLeads = [];
+
+        $assignedStaff = User::whereIn('role', ['admin', 'owner', 'sales_manager', 'sales_executive'])->first();
 
         foreach ($items as $item) {
             if (!is_array($item)) {
@@ -280,154 +297,127 @@ class ExternalLeadApiController extends Controller
                 continue;
             }
 
-            // Extract contact
-            $rawPhone = $item['contact']
-                ?? ($item['phone']
-                ?? ($item['mobile']
-                ?? ($item['phone_number']
-                ?? ($item['student_mobile'] ?? ''))));
-
+            // Extract phone
+            $rawPhone = $item['phone'] 
+                ?? $item['mobile'] 
+                ?? $item['contact'] 
+                ?? $item['student_mobile'] 
+                ?? $item['phone_number'] 
+                ?? '';
             $cleanPhone = preg_replace('/[^0-9]/', '', (string)$rawPhone);
             if (strlen($cleanPhone) >= 10) {
                 $cleanPhone = substr($cleanPhone, -10);
             }
 
-            $email = !empty($item['email']) ? trim($item['email']) : null;
-            if (strlen($cleanPhone) < 10 && empty($email)) {
+            if (empty($cleanPhone) || strlen($cleanPhone) < 10) {
                 $skippedCount++;
                 continue;
             }
 
-            // Fallback mobile if only email was provided
-            if (strlen($cleanPhone) < 10) {
-                $cleanPhone = '9999999999';
-            }
-
             // Extract name
-            $firstName = trim($item['firstName'] ?? '');
-            $lastName = trim($item['lastName'] ?? '');
-            $name = trim("{$firstName} {$lastName}");
-            if (empty($name)) {
-                $name = trim($item['name'] ?? ($item['full_name'] ?? ($item['student_name'] ?? ($item['candidate_name'] ?? 'Admission Enquirer'))));
-            }
+            $name = $item['name'] 
+                ?? $item['full_name'] 
+                ?? $item['student_name'] 
+                ?? $item['candidate_name'] 
+                ?? $item['client_name'] 
+                ?? 'API Lead';
 
-            // Academic / Course & Subject details
-            $subject = trim($item['subject'] ?? ($item['course'] ?? ($item['program'] ?? ($item['degree'] ?? ''))));
-            $userMsg = trim($item['message'] ?? ($item['query'] ?? ($item['enquiry'] ?? ($item['notes'] ?? ''))));
+            // Extract email
+            $email = $item['email'] ?? $item['student_email'] ?? null;
 
-            $fullMessage = '';
-            if ($subject && $userMsg) {
-                $fullMessage = "Subject/Course: {$subject}\nEnquiry: {$userMsg}";
-            } elseif ($subject) {
-                $fullMessage = "Subject/Course: {$subject}";
-            } elseif ($userMsg) {
-                $fullMessage = $userMsg;
-            } else {
-                $fullMessage = 'Admission inquiry fetched from external portal';
-            }
+            // Extract academic info
+            $academicParts = array_filter([
+                $item['course'] ?? null,
+                $item['program'] ?? null,
+                $item['degree'] ?? null,
+                $item['branch'] ?? null,
+                $item['college'] ?? null,
+                $item['university'] ?? null,
+            ]);
+            $academicSummary = implode(' • ', $academicParts);
 
-            $city = trim($item['city'] ?? ($item['preferred_city'] ?? ($item['location'] ?? '')));
-            $status = strtolower($item['status'] ?? 'new');
-            $allowedStatuses = ['new', 'contacted', 'interested', 'scheduled_visit', 'negotiation', 'converted', 'lost', 'spam'];
-            $leadStatus = in_array($status, $allowedStatuses) ? $status : 'new';
+            // Extract message
+            $msg = $item['message'] ?? $item['enquiry'] ?? $item['query'] ?? $item['notes'] ?? '';
+            $fullMessage = $academicSummary 
+                ? ($msg ? "Course: {$academicSummary}\n{$msg}" : "Course: {$academicSummary}") 
+                : ($msg ?: 'Imported from external API');
 
-            // Parse timestamp if available
-            $createdAt = null;
-            if (!empty($item['createdAt'])) {
-                try {
-                    $createdAt = Carbon::parse($item['createdAt']);
-                } catch (\Throwable) {}
-            }
+            // Detect source and admission flag
+            $rawSource = strtolower($item['source'] ?? $item['lead_source'] ?? '');
+            $isAdmission = !empty($academicSummary) 
+                || str_contains($rawSource, 'admission') 
+                || str_contains($rawSource, 'anushram') 
+                || str_contains(strtolower($msg), 'admission') 
+                || str_contains(strtolower($item['property_type'] ?? ''), 'admission')
+                || str_contains(strtolower($item['purpose'] ?? $item['intent'] ?? ''), 'admission');
 
-            // Deduplication: look for existing lead by phone or email
-            $existing = null;
-            if ($cleanPhone !== '9999999999') {
-                $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)->first();
-            }
-            if (!$existing && $email) {
-                $existing = Lead::where('email', $email)->first();
-            }
+            $leadSource = $item['lead_source'] 
+                ?? $item['source'] 
+                ?? ($isAdmission ? 'admission' : 'external_api');
+
+            $city = $item['city'] ?? $item['preferred_city'] ?? $item['location'] ?? null;
+            $locality = $item['locality'] ?? $item['preferred_locality'] ?? null;
+            $budget = !empty($item['budget_max']) ? (float)$item['budget_max'] : (!empty($item['budget']) ? (float)$item['budget'] : null);
+            $bedrooms = $item['bedrooms'] ?? $item['bhk_preference'] ?? null;
+
+            // Duplicate check within 48h
+            $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)
+                ->where('created_at', '>=', now()->subHours(48))
+                ->first();
 
             if ($existing) {
-                // Update existing record
-                $updateData = [
-                    'engagement_score' => ($existing->engagement_score ?? 20) + 10,
-                ];
-                if (!empty($city) && empty($existing->preferred_city)) {
-                    $updateData['preferred_city'] = $city;
-                }
-                if ($subject && !str_contains($existing->message ?? '', $subject)) {
-                    $updateData['message'] = ($existing->message ? $existing->message . "\n" : '') . "[External Sync]: " . $fullMessage;
-                }
-                if ($existing->lead_source === 'website' || empty($existing->lead_source)) {
-                    $updateData['lead_source'] = 'anushram';
-                }
-                if ($existing->property_type !== 'admission') {
-                    $updateData['property_type'] = 'admission';
-                }
-                $existing->update($updateData);
-
+                $existing->update([
+                    'lead_source' => $leadSource,
+                    'message' => $existing->message . "\n[API Sync " . now()->format('d M H:i') . "]: " . $fullMessage,
+                    'engagement_score' => $existing->engagement_score + 10,
+                ]);
                 $updatedCount++;
-                $processedLeads[] = [
+                $storedLeads[] = [
                     'id' => $existing->id,
                     'name' => $existing->name,
                     'mobile' => $existing->mobile,
-                    'status' => 'updated',
+                    'action' => 'updated',
                 ];
             } else {
-                // Create brand new Lead
                 $lead = Lead::create([
                     'name' => $name,
                     'mobile' => $cleanPhone,
                     'email' => $email,
-                    'lead_source' => 'anushram',
-                    'lead_status' => $leadStatus,
+                    'lead_source' => $leadSource,
+                    'lead_status' => 'new',
                     'lead_stage' => 'enquiry',
-                    'property_type' => 'admission',
-                    'purpose' => 'rent', // Satisfies MySQL ENUM
-                    'preferred_city' => $city ?: null,
+                    'property_type' => $isAdmission ? 'admission' : ($item['property_type'] ?? null),
+                    'purpose' => 'rent',
+                    'preferred_city' => $city,
+                    'preferred_locality' => $locality,
+                    'budget_max' => $budget,
+                    'bedrooms' => $bedrooms,
                     'message' => $fullMessage,
-                    'notes' => $subject ?: 'External Admission Lead',
+                    'notes' => $academicSummary ?: 'Imported via External API Fetch',
                     'assigned_to' => $assignedStaff?->id,
-                    'engagement_score' => 35,
-                    'whatsapp_opt_in' => true,
+                    'engagement_score' => 30,
+                    'whatsapp_opt_in' => isset($item['whatsapp_opt_in']) ? (bool)$item['whatsapp_opt_in'] : true,
+                    'next_follow_up_at' => now()->addHours(2),
                 ]);
-
-                if ($createdAt) {
-                    $lead->created_at = $createdAt;
-                    $lead->saveQuietly();
-                }
-
-                if (class_exists(CrmAuditLog::class)) {
-                    try {
-                        CrmAuditLog::create([
-                            'lead_id' => $lead->id,
-                            'user_id' => Auth::id() ?? $assignedStaff?->id,
-                            'action' => 'lead_fetched_external',
-                            'description' => "Lead fetched from external API ({$sourceUrl})",
-                        ]);
-                    } catch (\Throwable) {}
-                }
-
-                $newCount++;
-                $processedLeads[] = [
+                $importedCount++;
+                $storedLeads[] = [
                     'id' => $lead->id,
                     'name' => $lead->name,
                     'mobile' => $lead->mobile,
-                    'status' => 'created',
+                    'action' => 'created',
                 ];
             }
         }
 
         return response()->json([
             'success' => true,
-            'message' => "Successfully fetched {$totalFetched} leads from external API. {$newCount} new leads stored in database, {$updatedCount} existing leads updated.",
-            'total_fetched' => $totalFetched,
-            'new_leads_saved' => $newCount,
-            'existing_leads_updated' => $updatedCount,
-            'skipped' => $skippedCount,
+            'message' => "Successfully processed " . count($items) . " leads ({$importedCount} newly imported, {$updatedCount} updated, {$skippedCount} skipped).",
+            'total_received' => count($items),
+            'imported_count' => $importedCount,
+            'updated_count' => $updatedCount,
+            'skipped_count' => $skippedCount,
             'source_url' => $sourceUrl,
-            'sample_processed' => array_slice($processedLeads, 0, 10),
+            'leads' => $storedLeads,
         ]);
     }
 }

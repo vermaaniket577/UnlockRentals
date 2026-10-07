@@ -84,6 +84,14 @@
                     <span>Already have an account? Sign In</span>
                 </button>
             </div>
+
+            {{-- Continue Reading Link --}}
+            <button type="button" 
+                    onclick="window.closeBlogReaderPopup()" 
+                    class="mt-3 text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer inline-flex items-center gap-1">
+                <span>Continue reading article</span>
+                <i class="ph-bold ph-arrow-right text-[10px]"></i>
+            </button>
         </div>
     </div>
 </div>
