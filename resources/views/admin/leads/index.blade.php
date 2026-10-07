@@ -109,16 +109,67 @@
     </div>
 
     {{-- Quick Category Filter Chips --}}
-    <div class="flex items-center gap-2 flex-wrap">
-        <a href="{{ route('admin.leads.index', request()->except(['category', 'page'])) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all {{ !request('category') || request('category') === 'all' ? 'bg-slate-900 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
-            All Leads <span class="text-[11px] opacity-75">({{ $totalLeadsCount }})</span>
-        </a>
-        <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'admission'])) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all {{ request('category') === 'admission' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/25 ring-2 ring-purple-600/20' : 'bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100' }}">
-            <i class="ph-bold ph-graduation-cap text-sm"></i> Admission & Education Leads <span class="px-1.5 py-0.2 rounded-full text-[10px] font-black {{ request('category') === 'admission' ? 'bg-white/20 text-white' : 'bg-purple-200 text-purple-900' }}">{{ $admissionLeadsCount }}</span>
-        </a>
-        <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'property'])) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all {{ request('category') === 'property' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
-            <i class="ph-bold ph-buildings text-sm"></i> Rental & Property Leads <span class="text-[11px] opacity-75">({{ max(0, $totalLeadsCount - $admissionLeadsCount) }})</span>
-        </a>
+    @php
+        $currentCat = request('category', 'all');
+        if (empty($currentCat)) { $currentCat = 'all'; }
+    @endphp
+    <div class="flex items-center gap-2.5 flex-wrap">
+        {{-- 1. All Leads --}}
+        @if($currentCat === 'all')
+            <a href="{{ route('admin.leads.index', request()->except(['category', 'page'])) }}" 
+               style="background: #0f172a !important; color: #ffffff !important; border: 1px solid #0f172a !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2) !important;"
+               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
+                <i class="ph-bold ph-squares-four text-sm" style="color: #94a3b8 !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 700;">All Leads</span>
+                <span style="background: rgba(255, 255, 255, 0.2) !important; color: #ffffff !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $totalLeadsCount }}</span>
+            </a>
+        @else
+            <a href="{{ route('admin.leads.index', request()->except(['category', 'page'])) }}" 
+               style="background: #ffffff !important; color: #334155 !important; border: 1px solid #cbd5e1 !important;"
+               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-slate-50 hover:border-slate-400">
+                <i class="ph-bold ph-squares-four text-sm" style="color: #64748b !important;"></i>
+                <span style="color: #334155 !important; font-weight: 600;">All Leads</span>
+                <span style="background: #f1f5f9 !important; color: #475569 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $totalLeadsCount }}</span>
+            </a>
+        @endif
+
+        {{-- 2. Admission & Education Leads --}}
+        @if($currentCat === 'admission')
+            <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'admission'])) }}" 
+               style="background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important; color: #ffffff !important; border: 1px solid #6d28d9 !important; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25) !important;"
+               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
+                <i class="ph-bold ph-graduation-cap text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 700;">Admission & Education Leads</span>
+                <span style="background: rgba(255, 255, 255, 0.25) !important; color: #ffffff !important; font-weight: 800; padding: 2px 8px; border-radius: 9999px; font-size: 11px; border: 1px solid rgba(255,255,255,0.2) !important;">{{ $admissionLeadsCount }}</span>
+            </a>
+        @else
+            <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'admission'])) }}" 
+               style="background: #faf5ff !important; color: #6b21a8 !important; border: 1px solid #d8b4fe !important;"
+               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-purple-100 hover:border-purple-400">
+                <i class="ph-bold ph-graduation-cap text-base" style="color: #7c3aed !important;"></i>
+                <span style="color: #6b21a8 !important; font-weight: 600;">Admission & Education Leads</span>
+                <span style="background: #ede9fe !important; color: #581c87 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ $admissionLeadsCount }}</span>
+            </a>
+        @endif
+
+        {{-- 3. Rental & Property Leads --}}
+        @if($currentCat === 'property')
+            <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'property'])) }}" 
+               style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important; color: #ffffff !important; border: 1px solid #0369a1 !important; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;"
+               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
+                <i class="ph-bold ph-buildings text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 700;">Rental & Property Leads</span>
+                <span style="background: rgba(255, 255, 255, 0.25) !important; color: #ffffff !important; font-weight: 800; padding: 2px 8px; border-radius: 9999px; font-size: 11px; border: 1px solid rgba(255,255,255,0.2) !important;">{{ max(0, $totalLeadsCount - $admissionLeadsCount) }}</span>
+            </a>
+        @else
+            <a href="{{ route('admin.leads.index', array_merge(request()->except(['page']), ['category' => 'property'])) }}" 
+               style="background: #f0f9ff !important; color: #0369a1 !important; border: 1px solid #7dd3fc !important;"
+               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:bg-sky-100 hover:border-sky-400">
+                <i class="ph-bold ph-buildings text-base" style="color: #0284c7 !important;"></i>
+                <span style="color: #0369a1 !important; font-weight: 600;">Rental & Property Leads</span>
+                <span style="background: #e0f2fe !important; color: #075985 !important; font-weight: 700; padding: 2px 8px; border-radius: 9999px; font-size: 11px;">{{ max(0, $totalLeadsCount - $admissionLeadsCount) }}</span>
+            </a>
+        @endif
     </div>
 
     {{-- Filter Toolbar --}}
