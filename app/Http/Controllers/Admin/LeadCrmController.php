@@ -22,8 +22,12 @@ class LeadCrmController extends Controller
      */
     public function index(Request $request)
     {
-        // Proactively clean and merge any duplicate phone records
-        Lead::cleanDuplicates();
+        // Proactively clean and merge any duplicate phone records safely
+        try {
+            Lead::cleanDuplicates();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('CRM lead auto-cleanup notice: ' . $e->getMessage());
+        }
 
         $query = Lead::with(['assignedTo', 'property', 'visitor', 'latestFollowUp']);
 

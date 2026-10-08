@@ -338,37 +338,115 @@ class Lead extends Model
     }
 
     /**
+     * Mutator to safely sanitize, deduplicate, and limit message length to prevent MySQL truncation errors.
+     */
+    public function setMessageAttribute($value)
+    {
+        if ($value === null) {
+            $this->attributes['message'] = null;
+            return;
+        }
+
+        // 1. Remove repetitive API sync timestamp lines
+        $lines = preg_split('/\r\n|\r|\n/', (string)$value);
+        $cleanLines = [];
+        $seen = [];
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            $normalized = preg_replace('/\[(?:API Sync|Admission Dekho Update)[^\]]*\]:?\s*/i', '', $trimmed);
+            if (!empty($normalized)) {
+                if (!isset($seen[$normalized])) {
+                    $seen[$normalized] = true;
+                    $cleanLines[] = $trimmed;
+                }
+            } elseif (!empty($trimmed)) {
+                $cleanLines[] = $trimmed;
+            }
+        }
+        $dedupedMessage = implode("\n", $cleanLines);
+
+        // 2. Safe length limit: cap at 4,000 characters
+        if (mb_strlen($dedupedMessage) > 4000) {
+            $dedupedMessage = mb_substr($dedupedMessage, 0, 4000);
+        }
+
+        $this->attributes['message'] = $dedupedMessage;
+    }
+
+    /**
      * Clean and merge duplicate leads by 10-digit mobile number.
      * Retains the primary lead, merges distinct enquiry messages, and removes duplicate rows.
      */
     public static function cleanDuplicates(): int
     {
-        $deletedCount = 0;
-        $duplicates = static::select('mobile')
-            ->whereNotNull('mobile')
-            ->where('mobile', '!=', '')
-            ->groupBy('mobile')
-            ->havingRaw('COUNT(*) > 1')
-            ->pluck('mobile');
+        // 1. Auto-widen column to LONGTEXT and fix bloated records if on MySQL
+        try {
+            \Illuminate\Support\Facades\DB::statement('ALTER TABLE leads MODIFY message LONGTEXT NULL');
+        } catch (\Throwable $e) {}
 
-        foreach ($duplicates as $mobile) {
-            $leads = static::where('mobile', $mobile)->orderBy('id', 'desc')->get();
-            if ($leads->count() > 1) {
-                $primary = $leads->first();
-                $others = $leads->slice(1);
-
-                $mergedMessages = array_filter([$primary->message]);
-                foreach ($others as $other) {
-                    if ($other->message && !str_contains($primary->message ?? '', $other->message)) {
-                        $mergedMessages[] = $other->message;
+        try {
+            \Illuminate\Support\Facades\DB::table('leads')
+                ->where('message', 'like', '%API Sync%')
+                ->orWhere('message', 'like', '%Admission Dekho Update%')
+                ->chunkById(50, function ($rows) {
+                    foreach ($rows as $row) {
+                        if (!empty($row->message) && (strlen($row->message) > 800 || substr_count($row->message, 'API Sync') > 1)) {
+                            $lines = preg_split('/\r\n|\r|\n/', (string)$row->message);
+                            $cleanLines = [];
+                            $seen = [];
+                            foreach ($lines as $line) {
+                                $trimmed = trim($line);
+                                $normalized = preg_replace('/\[(?:API Sync|Admission Dekho Update)[^\]]*\]:?\s*/i', '', $trimmed);
+                                if (!empty($normalized)) {
+                                    if (!isset($seen[$normalized])) {
+                                        $seen[$normalized] = true;
+                                        $cleanLines[] = $trimmed;
+                                    }
+                                }
+                            }
+                            $cleanMsg = implode("\n", $cleanLines);
+                            if (mb_strlen($cleanMsg) > 3000) {
+                                $cleanMsg = mb_substr($cleanMsg, 0, 3000);
+                            }
+                            \Illuminate\Support\Facades\DB::table('leads')
+                                ->where('id', $row->id)
+                                ->update(['message' => $cleanMsg]);
+                        }
                     }
-                    $other->delete();
-                    $deletedCount++;
-                }
+                });
+        } catch (\Throwable $e) {}
 
-                $primary->message = implode("\n---\n", array_unique($mergedMessages));
-                $primary->saveQuietly();
+        // 2. Merge duplicate rows by mobile
+        $deletedCount = 0;
+        try {
+            $duplicates = static::select('mobile')
+                ->whereNotNull('mobile')
+                ->where('mobile', '!=', '')
+                ->groupBy('mobile')
+                ->havingRaw('COUNT(*) > 1')
+                ->pluck('mobile');
+
+            foreach ($duplicates as $mobile) {
+                $leads = static::where('mobile', $mobile)->orderBy('id', 'desc')->get();
+                if ($leads->count() > 1) {
+                    $primary = $leads->first();
+                    $others = $leads->slice(1);
+
+                    $mergedMessages = array_filter([$primary->message]);
+                    foreach ($others as $other) {
+                        if ($other->message && !str_contains($primary->message ?? '', $other->message)) {
+                            $mergedMessages[] = $other->message;
+                        }
+                        $other->delete();
+                        $deletedCount++;
+                    }
+
+                    $primary->message = implode("\n---\n", array_unique($mergedMessages));
+                    $primary->saveQuietly();
+                }
             }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Silent lead deduplication error: ' . $e->getMessage());
         }
 
         return $deletedCount;

@@ -272,6 +272,15 @@ class AdmissionDekhoLeadController extends Controller
         }
 
         if ($existing) {
+            $existingMsg = $existing->message ?? '';
+            $cleanNewMsg = trim($fullMessage);
+            $finalMsg = $existingMsg;
+            if (empty($finalMsg)) {
+                $finalMsg = $cleanNewMsg;
+            } elseif (!empty($cleanNewMsg) && !str_contains($finalMsg, $cleanNewMsg)) {
+                $finalMsg = $finalMsg . "\n[Admission Dekho Update " . now()->format('d M H:i') . "]:\n" . $cleanNewMsg;
+            }
+
             $existing->update([
                 'name' => ($name && $name !== 'Admission Enquirer') ? $name : $existing->name,
                 'email' => $email ?: $existing->email,
@@ -281,9 +290,7 @@ class AdmissionDekhoLeadController extends Controller
                 'lead_status' => 'new',
                 'consent_text' => $externalId ?: $existing->consent_text,
                 'notes' => $notesTag ?: $existing->notes,
-                'message' => $existing->message
-                    ? ($existing->message . "\n[Admission Dekho Update " . now()->format('d M H:i') . "]:\n" . $fullMessage)
-                    : $fullMessage,
+                'message' => $finalMsg,
                 'engagement_score' => ($existing->engagement_score ?? 20) + 15,
             ]);
 

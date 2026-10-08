@@ -812,6 +812,11 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
             '2026_09_20_110000_add_plot_to_properties_type_enum.php',
             '2026_09_20_160000_create_push_notifications_tables.php',
             '2026_09_21_120000_add_show_in_slider_to_blogs_table.php',
+            '2026_09_22_100000_add_admin_notes_to_callback_requests_table.php',
+            '2026_09_22_120000_add_slug_to_districts_and_seed_odisha_districts.php',
+            '2026_09_25_190000_create_local_professionals_marketplace_tables.php',
+            '2026_09_26_140000_add_search_and_filter_performance_indexes.php',
+            '2026_10_08_200000_widen_leads_message_column.php',
         ];
 
         // Check for leftover duplicate migration files on the server

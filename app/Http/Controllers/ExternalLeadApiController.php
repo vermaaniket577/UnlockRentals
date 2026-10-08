@@ -405,6 +405,15 @@ class ExternalLeadApiController extends Controller
             }
 
             if ($existing) {
+                $existingMsg = $existing->message ?? '';
+                $cleanNewMsg = trim($fullMessage);
+                $finalMsg = $existingMsg;
+                if (empty($finalMsg)) {
+                    $finalMsg = $cleanNewMsg;
+                } elseif (!empty($cleanNewMsg) && !str_contains($finalMsg, $cleanNewMsg)) {
+                    $finalMsg = $finalMsg . "\n[Update " . now()->format('d M H:i') . "]: " . $cleanNewMsg;
+                }
+
                 $existing->update([
                     'name' => ($name && $name !== 'API Lead') ? $name : $existing->name,
                     'email' => $email ?: $existing->email,
@@ -412,7 +421,7 @@ class ExternalLeadApiController extends Controller
                     'lead_source' => $leadSource,
                     'consent_text' => $externalId ?: $existing->consent_text,
                     'notes' => $academicSummary ? ($externalId ? "{$academicSummary} [Ref:{$externalId}]" : $academicSummary) : $existing->notes,
-                    'message' => $existing->message ? ($existing->message . "\n[API Sync " . now()->format('d M H:i') . "]: " . $fullMessage) : $fullMessage,
+                    'message' => $finalMsg,
                     'engagement_score' => ($existing->engagement_score ?? 0) + 10,
                 ]);
 
