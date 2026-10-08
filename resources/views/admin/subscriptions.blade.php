@@ -13,8 +13,12 @@
                 <p class="text-zinc-500 text-sm">Review and manage user plan purchases.</p>
             </div>
             <div class="flex gap-2 items-center">
-                <a href="{{ route('admin.subscriptions.assign') }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm bg-[#2563EB] text-white shadow-sm hover:bg-blue-700 mr-4" title="+ Assign Plan Manually">
-                    + Assign Plan Manually
+                <a href="{{ route('admin.subscriptions.assign') }}" 
+                   class="inline-flex items-center gap-1.5 h-8.5 px-3 text-xs font-semibold rounded-lg text-white transition-all shadow-xs mr-3 active:scale-[0.98]" 
+                   style="background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important; color: #ffffff !important; border: 1px solid #1e40af !important; box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.18) !important;"
+                   title="Assign Plan Manually">
+                    <i class="ph-bold ph-plus-circle text-sm" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important; font-weight: 600;">Assign Plan Manually</span>
                 </a>
                 <a href="{{ route('admin.subscriptions', ['status' => 'pending']) }}" class="px-3 py-1.5 text-xs font-semibold rounded-sm {{ request('status') === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-zinc-500' }}" title="Pending">
                     Pending

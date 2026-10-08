@@ -23,20 +23,115 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
-            <a href="{{ route('admin.users.export.excel', request()->all()) }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 active:scale-95 transition-all cursor-pointer" title="Download users in Excel sheet format (.csv)">
-                <i class="ph-bold ph-file-xls text-base"></i>
-                <span>Download Excel Sheet</span>
+            {{-- Download Excel Sheet (Standard Executive Look) --}}
+            <a href="{{ route('admin.users.export.excel', request()->all()) }}" 
+               class="ur-admin-btn ur-admin-btn-excel" 
+               style="background: linear-gradient(180deg, #059669 0%, #047857 100%) !important; color: #ffffff !important; border: 1px solid #047857 !important;"
+               title="Download users in Excel sheet format (.csv)">
+                <i class="ph-bold ph-file-xls text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 600;">Download Excel Sheet</span>
             </a>
-            <a href="{{ route('admin.subscriptions.assign') }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/25 active:scale-95 transition-all">
-                <i class="ph-bold ph-plus-circle text-sm"></i>
-                <span>Assign Plan Manually</span>
+
+            {{-- Assign Plan Manually (Standard Primary Action) --}}
+            <a href="{{ route('admin.subscriptions.assign') }}" 
+               class="ur-admin-btn ur-admin-btn-primary" 
+               style="background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important; color: #ffffff !important; border: 1px solid #1e40af !important;"
+               title="Assign Plan Manually to a User">
+                <i class="ph-bold ph-plus-circle text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 600;">Assign Plan Manually</span>
             </a>
-            <a href="{{ route('admin.users') }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-xs active:scale-95 transition-all" title="Reset Filters">
-                <i class="ph-bold ph-arrow-clockwise text-sm"></i>
-                <span>Refresh</span>
+
+            {{-- Refresh Toolbar --}}
+            <a href="{{ route('admin.users') }}" 
+               class="ur-admin-btn ur-admin-btn-secondary" 
+               style="background: #ffffff !important; color: #334155 !important; border: 1px solid #cbd5e1 !important;"
+               title="Reset Filters">
+                <i class="ph-bold ph-arrow-clockwise text-sm" style="color: #64748b !important;"></i>
+                <span style="color: #334155 !important; font-weight: 600;">Refresh</span>
             </a>
         </div>
     </div>
+
+    <style>
+    /* ── Standard Enterprise Admin Button System ──────────────────────── */
+    .ur-admin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        height: 38px;
+        padding: 0 0.95rem;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: -0.01em;
+        text-decoration: none !important;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
+        -webkit-user-select: none;
+        box-sizing: border-box;
+    }
+    .ur-admin-btn:active {
+        transform: scale(0.98);
+    }
+
+    /* Excel Export: Standard Executive Action */
+    .ur-admin-btn-excel {
+        background: linear-gradient(180deg, #059669 0%, #047857 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid #047857 !important;
+        box-shadow: 0 1px 2px 0 rgba(4, 120, 87, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.18) !important;
+    }
+    .ur-admin-btn-excel:hover {
+        background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+        border-color: #059669 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 5px 0 rgba(4, 120, 87, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.22) !important;
+    }
+    .ur-admin-btn-excel * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    /* Primary Action: Standard Enterprise Royal Blue */
+    .ur-admin-btn-primary {
+        background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid #1e40af !important;
+        box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.18) !important;
+    }
+    .ur-admin-btn-primary:hover {
+        background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%) !important;
+        border-color: #2563eb !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 5px 0 rgba(37, 99, 235, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.22) !important;
+    }
+    .ur-admin-btn-primary * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    /* Secondary / Refresh Action: Clean Neutral Slate */
+    .ur-admin-btn-secondary {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+        color: #334155 !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+    }
+    .ur-admin-btn-secondary:hover {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border-color: #94a3b8 !important;
+    }
+    .ur-admin-btn-secondary * {
+        color: #475569 !important;
+    }
+    .ur-admin-btn-secondary:hover * {
+        color: #0f172a !important;
+    }
+    </style>
 
     {{-- KPI Summary Cards --}}
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
