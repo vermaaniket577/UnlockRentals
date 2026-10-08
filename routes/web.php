@@ -726,6 +726,12 @@ Route::match(['post', 'options'], '/api/admission-dekho', [\App\Http\Controllers
 Route::match(['post', 'options'], '/api/admission-dekho/lead', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store'])
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
     ->name('api.admission.dekho.lead');
+Route::match(['post', 'options'], '/api/admission-dekho/bulk', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('api.admission.dekho.bulk');
+Route::match(['post', 'options'], '/admission-dekho/bulk', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('admission.dekho.bulk');
 
 // WhatsApp Inbound Webhook (Meta Cloud & Twilio callbacks)
 Route::match(['get', 'post'], '/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('webhook.whatsapp');

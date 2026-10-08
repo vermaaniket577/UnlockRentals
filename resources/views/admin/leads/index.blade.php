@@ -220,8 +220,9 @@
                 <option value="lost" {{ request('status') === 'lost' ? 'selected' : '' }}>Lost</option>
             </select>
 
-            <select name="source" onchange="this.form.submit()" class="text-xs py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-700">
+            <select name="source" onchange="this.form.submit()" class="text-xs py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-700 font-medium">
                 <option value="all">All Sources</option>
+                <option value="Admission Dekho" {{ request('source') === 'Admission Dekho' ? 'selected' : '' }}>🎓 Admission Dekho</option>
                 <option value="admission" {{ request('source') === 'admission' ? 'selected' : '' }}>Admission Portal</option>
                 <option value="anushram" {{ request('source') === 'anushram' ? 'selected' : '' }}>Anushram</option>
                 <option value="website_lead_form" {{ request('source') === 'website_lead_form' ? 'selected' : '' }}>Website Form</option>
@@ -310,8 +311,14 @@
                                     @endif
                                 </div>
                                 <div class="text-[10px] text-slate-500 mt-2 flex flex-col gap-1.5">
-                                    <div class="flex items-center gap-1.5">
-                                        <span>Source: <strong class="text-slate-700 font-semibold">{{ ucfirst(str_replace('_', ' ', $lead->source)) }}</strong></span>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        @if(stripos($lead->source ?? '', 'Admission Dekho') !== false)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-purple-100 text-purple-900 border border-purple-200 shadow-2xs">
+                                                <i class="ph-bold ph-graduation-cap text-purple-700"></i> Admission Dekho
+                                            </span>
+                                        @else
+                                            <span>Source: <strong class="text-slate-700 font-semibold">{{ ucfirst(str_replace('_', ' ', $lead->source)) }}</strong></span>
+                                        @endif
                                     </div>
                                     @if($lead->created_at)
                                         <div class="inline-flex items-center gap-1.5 flex-wrap font-mono text-[10px] text-slate-600 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200/80 w-fit">
@@ -512,6 +519,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Lead Source</label>
                         <select name="lead_source" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                            <option value="Admission Dekho" selected>Admission Dekho (admissionsdekho.com)</option>
                             <option value="admission">Admission Portal</option>
                             <option value="anushram">Anushram</option>
                             <option value="manual">Manual Entry</option>
@@ -646,7 +654,14 @@
             <div class="mt-4 space-y-4">
                 {{-- Source URL --}}
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">External API Source URL</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-bold text-slate-700">External API / Webhook Source URL</label>
+                        <div class="flex items-center gap-1.5 text-[10px]">
+                            <button type="button" onclick="document.getElementById('fetchSourceUrl').value='https://api.anushram.com/v1/api/general-enquiry/all'" class="text-blue-600 hover:underline font-bold cursor-pointer">Anushram</button>
+                            <span class="text-slate-300">|</span>
+                            <button type="button" onclick="document.getElementById('fetchSourceUrl').value=window.location.origin + '/api/admission-dekho'" class="text-purple-600 hover:underline font-bold cursor-pointer">Admission Dekho</button>
+                        </div>
+                    </div>
                     <input type="url" id="fetchSourceUrl" value="{{ env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry/all') }}" class="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="https://api.example.com/leads">
                     <p class="text-[10px] text-slate-400 mt-1">Default: <code class="text-emerald-700 font-mono">https://api.anushram.com/v1/api/general-enquiry/all</code></p>
                 </div>

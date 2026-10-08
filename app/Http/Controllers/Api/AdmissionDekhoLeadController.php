@@ -58,22 +58,66 @@ class AdmissionDekhoLeadController extends Controller
             return response('', 204)->withHeaders($this->corsHeaders());
         }
 
-        // 1. Extract and Clean Contact / Phone Number
-        $rawPhone = $request->input('contact')
-            ?? $request->input('phone')
-            ?? $request->input('mobile')
-            ?? $request->input('phoneNumber')
-            ?? $request->input('phone_number')
-            ?? $request->input('student_mobile')
-            ?? $request->input('tel')
-            ?? '';
+        $allData = $request->all();
 
-        $cleanPhone = preg_replace('/[^0-9]/', '', (string) $rawPhone);
-        if (strlen($cleanPhone) >= 10) {
-            $cleanPhone = substr($cleanPhone, -10);
+        // Check if incoming payload is a bulk batch of leads from database migration/sync
+        $batch = null;
+        if (is_array($allData) && array_is_list($allData)) {
+            $batch = $allData;
+        } elseif (isset($allData['leads']) && is_array($allData['leads'])) {
+            $batch = $allData['leads'];
+        } elseif (isset($allData['enquiries']) && is_array($allData['enquiries'])) {
+            $batch = $allData['enquiries'];
+        } elseif (isset($allData['data']) && is_array($allData['data']) && array_is_list($allData['data'])) {
+            $batch = $allData['data'];
         }
 
-        if (empty($cleanPhone) || strlen($cleanPhone) < 10) {
+        // --- BULK BATCH MODE (Database sync / Multi-lead migration) ---
+        if ($batch !== null && !empty($batch)) {
+            $importedCount = 0;
+            $updatedCount = 0;
+            $skippedCount = 0;
+            $processedLeads = [];
+
+            // Auto-clean duplicates before batch import
+            Lead::cleanDuplicates();
+
+            foreach ($batch as $item) {
+                if (!is_array($item)) {
+                    $skippedCount++;
+                    continue;
+                }
+                $result = $this->saveOrUpdateLead($item);
+                if ($result) {
+                    if ($result['action'] === 'created') {
+                        $importedCount++;
+                    } else {
+                        $updatedCount++;
+                    }
+                    $processedLeads[] = $result['lead_summary'];
+                } else {
+                    $skippedCount++;
+                }
+            }
+
+            // Auto-clean duplicates after batch import
+            Lead::cleanDuplicates();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully processed " . count($batch) . " Admission Dekho leads ({$importedCount} newly created, {$updatedCount} updated, {$skippedCount} skipped).",
+                'total_received' => count($batch),
+                'imported_count' => $importedCount,
+                'updated_count' => $updatedCount,
+                'skipped_count' => $skippedCount,
+                'leads' => $processedLeads,
+            ], 200)->withHeaders($this->corsHeaders());
+        }
+
+        // --- SINGLE FORM SUBMISSION MODE ---
+        $result = $this->saveOrUpdateLead($request->all());
+
+        if (!$result) {
             return response()->json([
                 'success' => false,
                 'message' => 'A valid 10-digit mobile or contact number is required.',
@@ -83,64 +127,114 @@ class AdmissionDekhoLeadController extends Controller
             ], 422)->withHeaders($this->corsHeaders());
         }
 
-        // 2. Extract Name (Supports First + Last or combined Name)
+        $lead = $result['lead'];
+        $action = $result['action'];
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Admission enquiry received and saved successfully in CRM.',
+            'action' => $action,
+            'lead_id' => $lead->id,
+            'lead' => [
+                'id' => $lead->id,
+                'name' => $lead->name,
+                'first_name' => $result['first_name'] ?: null,
+                'last_name' => $result['last_name'] ?: null,
+                'email' => $lead->email,
+                'phone' => $lead->mobile,
+                'contact' => $lead->mobile,
+                'city' => $lead->preferred_city,
+                'state' => $lead->preferred_locality,
+                'course' => $lead->course,
+                'stream' => $lead->stream,
+                'source' => $lead->lead_source,
+                'status' => $lead->lead_status,
+                'created_at' => $lead->created_at->toIso8601String(),
+            ]
+        ], $action === 'created' ? 201 : 200)->withHeaders($this->corsHeaders());
+    }
+
+    /**
+     * Parse, validate, deduplicate, and persist an admission lead enquiry into UnlockRentals database.
+     */
+    protected function saveOrUpdateLead(array $data): ?array
+    {
+        // 1. Extract and Clean Contact / Phone Number
+        $rawPhone = $data['contact']
+            ?? $data['phone']
+            ?? $data['mobile']
+            ?? $data['phoneNumber']
+            ?? $data['phone_number']
+            ?? $data['student_mobile']
+            ?? $data['tel']
+            ?? '';
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', (string) $rawPhone);
+        if (strlen($cleanPhone) >= 10) {
+            $cleanPhone = substr($cleanPhone, -10);
+        }
+
+        if (empty($cleanPhone) || strlen($cleanPhone) < 10) {
+            return null;
+        }
+
+        // 2. Extract Name
         $firstName = trim((string) (
-            $request->input('firstName') 
-            ?? $request->input('first_name') 
-            ?? $request->input('first') 
-            ?? $request->input('fname') 
+            $data['firstName'] 
+            ?? $data['first_name'] 
+            ?? $data['first'] 
+            ?? $data['fname'] 
             ?? ''
         ));
         $lastName = trim((string) (
-            $request->input('lastName') 
-            ?? $request->input('last_name') 
-            ?? $request->input('last') 
-            ?? $request->input('lname') 
+            $data['lastName'] 
+            ?? $data['last_name'] 
+            ?? $data['last'] 
+            ?? $data['lname'] 
             ?? ''
         ));
 
         $composedName = trim("{$firstName} {$lastName}");
         $name = $composedName ?: (
-            $request->input('name')
-            ?? $request->input('full_name')
-            ?? $request->input('student_name')
-            ?? $request->input('candidate_name')
+            $data['name']
+            ?? $data['full_name']
+            ?? $data['student_name']
+            ?? $data['candidate_name']
             ?? 'Admission Enquirer'
         );
 
         // 3. Extract Email
-        $email = trim((string) ($request->input('email') ?? $request->input('student_email') ?? '')) ?: null;
+        $email = trim((string) ($data['email'] ?? $data['student_email'] ?? '')) ?: null;
 
-        // 4. Extract Location: State & City
-        $state = trim((string) ($request->input('state') ?? $request->input('region') ?? $request->input('province') ?? ''));
-        $city = trim((string) ($request->input('city') ?? $request->input('preferred_city') ?? $request->input('district') ?? ''));
+        // 4. Extract Location
+        $state = trim((string) ($data['state'] ?? $data['region'] ?? $data['province'] ?? ''));
+        $city = trim((string) ($data['city'] ?? $data['preferred_city'] ?? $data['district'] ?? ''));
 
-        // 5. Extract Course / Stream / Subject / Academic Info
-        $subject = trim((string) ($request->input('subject') ?? ''));
-        $course = trim((string) ($request->input('course') ?? $request->input('stream') ?? $request->input('program') ?? ''));
-        $pageRef = trim((string) ($request->input('pageRef') ?? $request->input('page') ?? $request->input('url') ?? ''));
+        // 5. Extract Course / Stream / Academic Info
+        $subject = trim((string) ($data['subject'] ?? ''));
+        $course = trim((string) ($data['course'] ?? $data['stream'] ?? $data['program'] ?? ''));
+        $pageRef = trim((string) ($data['pageRef'] ?? $data['page'] ?? $data['url'] ?? ''));
 
         $academicParts = array_filter([
             $subject ?: null,
             $course ?: null,
-            $request->input('specialization'),
-            $request->input('degree'),
-            $request->input('college'),
-            $request->input('university'),
+            $data['specialization'] ?? null,
+            $data['degree'] ?? null,
+            $data['college'] ?? null,
+            $data['university'] ?? null,
         ]);
         $academicSummary = implode(' • ', $academicParts);
 
         // 6. Extract Message
         $userMessage = trim((string) (
-            $request->input('message')
-            ?? $request->input('enquiry')
-            ?? $request->input('query')
-            ?? $request->input('notes')
-            ?? $request->input('comments')
+            $data['message']
+            ?? $data['enquiry']
+            ?? $data['query']
+            ?? $data['notes']
+            ?? $data['comments']
             ?? ''
         ));
 
-        // Build comprehensive message for CRM notes
         $messageLines = [];
         if ($academicSummary) {
             $messageLines[] = "Subject/Course: {$academicSummary}";
@@ -162,8 +256,20 @@ class AdmissionDekhoLeadController extends Controller
 
         $notesTag = $academicSummary ?: ($subject ?: 'Admission Dekho Lead');
 
-        // 7. Strict duplicate check by phone number (every unique phone is 1 lead)
-        $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)->first();
+        // External ID reference (if provided from Admission Dekho database)
+        $externalId = (string) ($data['id'] ?? $data['_id'] ?? $data['lead_id'] ?? '');
+
+        // 7. Strict duplicate check by phone number
+        $existing = null;
+        if (!empty($externalId)) {
+            $existing = Lead::where('consent_text', $externalId)
+                ->orWhere('notes', 'LIKE', "%[Ref:{$externalId}]%")
+                ->first();
+        }
+
+        if (!$existing) {
+            $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)->first();
+        }
 
         if ($existing) {
             $existing->update([
@@ -172,17 +278,30 @@ class AdmissionDekhoLeadController extends Controller
                 'preferred_city' => $city ?: $existing->preferred_city,
                 'preferred_locality' => $state ?: $existing->preferred_locality,
                 'lead_source' => 'Admission Dekho',
-                'lead_status' => 'new', // Flag as new inquiry so agents review immediately
+                'lead_status' => 'new',
+                'consent_text' => $externalId ?: $existing->consent_text,
                 'notes' => $notesTag ?: $existing->notes,
                 'message' => $existing->message
                     ? ($existing->message . "\n[Admission Dekho Update " . now()->format('d M H:i') . "]:\n" . $fullMessage)
                     : $fullMessage,
                 'engagement_score' => ($existing->engagement_score ?? 20) + 15,
             ]);
+
+            // Preserve historical creation timestamp if provided in payload
+            $dateField = $data['created_at'] ?? $data['date'] ?? $data['createdAt'] ?? null;
+            if (!empty($dateField)) {
+                try {
+                    $parsed = Carbon::parse($dateField);
+                    if ($parsed->lt($existing->created_at)) {
+                        $existing->created_at = $parsed;
+                        $existing->saveQuietly();
+                    }
+                } catch (\Throwable $e) {}
+            }
+
             $lead = $existing;
             $action = 'updated';
         } else {
-            // Auto-assign to available sales admin or owner
             $assignedStaff = User::whereIn('role', ['admin', 'owner', 'sales_manager', 'sales_executive'])->first();
 
             $lead = Lead::create([
@@ -192,43 +311,48 @@ class AdmissionDekhoLeadController extends Controller
                 'preferred_city' => $city ?: ($state ?: null),
                 'preferred_locality' => $state ?: null,
                 'property_type' => 'admission',
-                'purpose' => 'rent', // Satisfies MySQL ENUM constraint
+                'purpose' => 'rent',
                 'lead_source' => 'Admission Dekho',
                 'lead_status' => 'new',
                 'lead_stage' => 'enquiry',
                 'message' => $fullMessage,
                 'notes' => $notesTag,
+                'consent_text' => $externalId ?: null,
                 'assigned_to' => $assignedStaff?->id,
                 'engagement_score' => 35,
                 'whatsapp_opt_in' => true,
                 'next_follow_up_at' => now()->addHours(2),
             ]);
+
+            // Preserve original database creation timestamp
+            $dateField = $data['created_at'] ?? $data['date'] ?? $data['createdAt'] ?? null;
+            if (!empty($dateField)) {
+                try {
+                    $lead->created_at = Carbon::parse($dateField);
+                    $lead->saveQuietly();
+                } catch (\Throwable $e) {}
+            }
+
             $action = 'created';
         }
 
-        // Return standard JSON response
-        return response()->json([
-            'success' => true,
-            'message' => 'Admission enquiry received and saved successfully in CRM.',
+        return [
+            'lead' => $lead,
             'action' => $action,
-            'lead_id' => $lead->id,
-            'lead' => [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'lead_summary' => [
                 'id' => $lead->id,
                 'name' => $lead->name,
-                'first_name' => $firstName ?: null,
-                'last_name' => $lastName ?: null,
-                'email' => $lead->email,
                 'phone' => $lead->mobile,
-                'contact' => $lead->mobile,
-                'city' => $lead->preferred_city,
-                'state' => $state ?: null,
+                'email' => $lead->email,
                 'course' => $lead->course,
                 'stream' => $lead->stream,
+                'city' => $lead->preferred_city,
                 'source' => $lead->lead_source,
-                'status' => $lead->lead_status,
-                'created_at' => $lead->created_at->toIso8601String(),
+                'action' => $action,
             ]
-        ], $action === 'created' ? 201 : 200)->withHeaders($this->corsHeaders());
+        ];
     }
 
     /**

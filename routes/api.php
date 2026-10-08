@@ -49,6 +49,7 @@ Route::get('/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadCont
 Route::match(['post', 'options'], '/admission-dekho/enquiry', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
 Route::match(['post', 'options'], '/admission-dekho/lead', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
 Route::match(['post', 'options'], '/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
+Route::match(['post', 'options'], '/admission-dekho/bulk', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
 Route::match(['post', 'options'], '/v1/admission-enquiry', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
 
 
