@@ -733,6 +733,12 @@ Route::match(['post', 'options'], '/admission-dekho/bulk', [\App\Http\Controller
     ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
     ->name('admission.dekho.bulk');
 
+// IndexNow Key Verification Route
+Route::get('/f6c9d8a3e7b2415089c1d4e2a7b6f3c8.txt', function () {
+    return response('f6c9d8a3e7b2415089c1d4e2a7b6f3c8', 200)
+        ->header('Content-Type', 'text/plain; charset=utf-8');
+});
+
 // WhatsApp Inbound Webhook (Meta Cloud & Twilio callbacks)
 Route::match(['get', 'post'], '/webhook/whatsapp', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('webhook.whatsapp');
 Route::match(['get', 'post'], '/api/whatsapp/webhook', [\App\Http\Controllers\WhatsAppWebhookController::class, 'handle'])->name('api.whatsapp.webhook');
