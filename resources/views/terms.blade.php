@@ -33,17 +33,28 @@
                 <p class="mb-2">Certain premium features, such as unlocking verified landlord contacts or priority property placement, require an active subscription plan.</p>
                 <ul class="list-disc pl-5 space-y-1 text-slate-600 dark:text-slate-400">
                     <li>Plans are activated immediately upon successful transaction confirmation via our secure payment gateway.</li>
-                    <li>Subscription fees and contact unlock credits are subject to the specific terms displayed during checkout.</li>
+                    <li>Subscription fees, duration, and contact unlock credits are subject to the specific terms displayed during checkout.</li>
                 </ul>
             </section>
 
             <section>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">4. User Conduct & Security</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">4. Cancellation & Refund Policy</h2>
+                <p class="mb-2">UnlockRentals maintains a transparent and fair cancellation and refund process for all digital membership passes:</p>
+                <ul class="list-disc pl-5 space-y-1 text-slate-600 dark:text-slate-400">
+                    <li>Duplicate charges or technical activation failures are fully eligible for a prompt refund review.</li>
+                    <li>Unused plans with zero revealed or unlocked contacts may be cancelled within 24 to 48 hours of purchase.</li>
+                    <li>Once contact unlock credits have been viewed or consumed, digital services are considered delivered and non-refundable.</li>
+                    <li>For complete details, timeline, and request process, please read our dedicated <a href="{{ route('refund-policy') }}" class="text-blue-600 dark:text-blue-400 font-semibold underline hover:text-blue-700">Cancellation & Refund Policy</a>.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">5. User Conduct & Security</h2>
                 <p>Users agree not to harvest data, submit fake inquiries, post defamatory content, or attempt unauthorized access to our infrastructure. Any breach will result in immediate account suspension.</p>
             </section>
 
             <section>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">5. Contact Information</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">6. Contact Information</h2>
                 <p>For questions or clarifications regarding our Terms & Conditions, please contact us:</p>
                 <p class="mt-2 font-semibold text-blue-600 dark:text-blue-400">Email: support@unlockrentals.com<br>Website: https://unlockrentals.com</p>
             </section>

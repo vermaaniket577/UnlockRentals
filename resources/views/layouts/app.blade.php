@@ -56,6 +56,7 @@
             min-height: 100% !important;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
         }
         body {
             overflow-x: clip;
@@ -64,69 +65,38 @@
             min-height: 100vh !important;
             position: relative;
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
         button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn, .mobile-slider-dot, #mobile-bottom-nav a {
             touch-action: manipulation !important;
             -webkit-touch-callout: none !important;
             cursor: pointer;
-            -webkit-user-select: none;
-            user-select: none;
         }
-        /* Instant Tactile Feedback without Transition Lag */
-        button:active, a:active, [role="button"]:active, [role="tab"]:active, .btn:active, .ur-hps-tab-btn:active, .ur-mc-cta-btn:active, .plan-cta-btn:active {
-            transform: scale(0.96) !important;
+        /* Discrete Tactile Feedback: Apply to buttons and action pills without jittering link containers during scroll */
+        button:active, .btn:active, [role="button"]:active, [role="tab"]:active, .ur-hps-tab-btn:active, .ur-mc-cta-btn:active, .plan-cta-btn:active, #mobile-bottom-nav a:active {
+            transform: scale(0.96) translateZ(0) !important;
             transition: transform 0.05s ease-out !important;
-            opacity: 0.9 !important;
+            opacity: 0.88 !important;
         }
-        /* Mobile Hardware Composite Optimization */
+        /* Mobile Hardware Composite Optimization: 60/120Hz smooth scrolling */
+        #mobile-bottom-nav {
+            transform: translateZ(0);
+            will-change: transform;
+            contain: layout style;
+        }
         @media (max-width: 768px) {
             #mobile-bottom-nav {
-                backdrop-filter: blur(10px) !important;
-                -webkit-backdrop-filter: blur(10px) !important;
+                background: rgba(255, 255, 255, 0.98) !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+            .dark #mobile-bottom-nav {
+                background: rgba(2, 6, 23, 0.98) !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
             }
         }
     </style>
-
-    <!-- Instant Single-Touch Navigation & Ultra-Fast Response Engine -->
-    <script>
-        (function() {
-            if (!('fetch' in window) || !('Promise' in window)) return;
-            var prefetched = new Set();
-            function prefetchUrl(url) {
-                if (!url || prefetched.has(url)) return;
-                try {
-                    var u = new URL(url, window.location.href);
-                    if (u.origin !== window.location.origin) return;
-                    if (u.pathname === window.location.pathname && u.search === window.location.search) return;
-                    if (/logout|login|register|delete|checkout|pay|payment|admin/i.test(u.pathname)) return;
-                    if (u.hash && u.pathname === window.location.pathname) return;
-
-                    prefetched.add(url);
-                    var link = document.createElement('link');
-                    link.rel = 'prefetch';
-                    link.href = url;
-                    link.as = 'document';
-                    document.head.appendChild(link);
-                } catch(e) {}
-            }
-
-            document.addEventListener('touchstart', function(e) {
-                var a = e.target.closest('a');
-                if (a && a.href && !a.target && !a.hasAttribute('download')) {
-                    prefetchUrl(a.href);
-                }
-            }, { passive: true });
-
-            var hoverTimer;
-            document.addEventListener('mouseover', function(e) {
-                var a = e.target.closest('a');
-                if (a && a.href && !a.target && !a.hasAttribute('download')) {
-                    clearTimeout(hoverTimer);
-                    hoverTimer = setTimeout(function() { prefetchUrl(a.href); }, 65);
-                }
-            }, { passive: true });
-        })();
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">

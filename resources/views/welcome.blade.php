@@ -43,6 +43,7 @@
             min-height: 100% !important;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
         }
         body {
             overflow-x: clip;
@@ -51,25 +52,35 @@
             min-height: 100vh !important;
             position: relative;
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
         button, a, input, select, textarea, [role="button"], [role="tab"], .btn, .ur-hps-tab-btn, .ur-mc-cta-btn, .ur-hps-cta-btn, .ur-hps-arrow-btn, .plan-cta-btn, .mobile-slider-dot, #mobile-bottom-nav a {
             touch-action: manipulation !important;
             -webkit-touch-callout: none !important;
             cursor: pointer;
-            -webkit-user-select: none;
-            user-select: none;
         }
-        /* Instant Tactile Feedback without Transition Lag */
-        button:active, a:active, [role="button"]:active, [role="tab"]:active, .btn:active, .ur-hps-tab-btn:active, .ur-mc-cta-btn:active, .plan-cta-btn:active {
-            transform: scale(0.96) !important;
+        /* Discrete Tactile Feedback: Apply to buttons and action pills without jittering link containers during scroll */
+        button:active, .btn:active, [role="button"]:active, [role="tab"]:active, .ur-hps-tab-btn:active, .ur-mc-cta-btn:active, .plan-cta-btn:active, #mobile-bottom-nav a:active {
+            transform: scale(0.96) translateZ(0) !important;
             transition: transform 0.05s ease-out !important;
-            opacity: 0.9 !important;
+            opacity: 0.88 !important;
         }
-        /* Mobile Hardware Composite Optimization */
+        /* Mobile Hardware Composite Optimization: 60/120Hz smooth scrolling */
+        #mobile-bottom-nav {
+            transform: translateZ(0);
+            will-change: transform;
+            contain: layout style;
+        }
         @media (max-width: 768px) {
             #mobile-bottom-nav {
-                backdrop-filter: blur(10px) !important;
-                -webkit-backdrop-filter: blur(10px) !important;
+                background: rgba(255, 255, 255, 0.98) !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+            .dark #mobile-bottom-nav {
+                background: rgba(2, 6, 23, 0.98) !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
             }
             .promo-slider, .ur-hps-stage, #mobileHeroSliderContainer {
                 transform: translateZ(0);
@@ -3082,202 +3093,11 @@
     {{-- Pricing Plans Section --}}
     @include('components.pricing-plans')
 
+    {{-- Why You Can Trust UnlockRentals (Master Trust Component) --}}
+    <x-plan-trust-section :feedbacks="$feedbacks ?? null" />
+
     {{-- App Download Section --}}
     @include('components.app-download')
-
-    <!-- Testimonials / Success Stories -->
-    <section class="premium-section success-stories">
-        <div class="section-container">
-            <h2 class="section-title">Trusted by <span class="text-gradient">Thousands</span></h2>
-            <p class="section-subtitle">Real experiences from customers who found their perfect rental spaces.</p>
-            
-            @php
-                $displayTestimonials = [];
-                
-                // 1. Add approved database feedbacks
-                if (isset($feedbacks) && $feedbacks->count() > 0) {
-                    foreach ($feedbacks as $fb) {
-                        $displayTestimonials[] = [
-                            'stars' => $fb->rating,
-                            'quote' => '"' . ($fb->comment ?: 'No comment provided.') . '"',
-                            'author' => $fb->user->name ?? 'Guest User',
-                            'role' => $fb->user ? ucfirst($fb->user->role) : 'Verified Customer',
-                            'image' => $fb->user && $fb->user->role === 'landlord' 
-                                ? 'https://randomuser.me/api/portraits/women/68.jpg' 
-                                : 'https://randomuser.me/api/portraits/men/' . (($fb->id % 50) + 1) . '.jpg',
-                        ];
-                    }
-                }
-                
-                // 2. Add fallback testimonials from settings if we need more to reach 3
-                if (count($displayTestimonials) < 3) {
-                    $fallbacks = [
-                        [
-                            'stars' => $site_settings['testimonial_1_stars'] ?? 5,
-                            'quote' => '"' . ($site_settings['testimonial_1_quote'] ?? "UnlockRentals made finding our company's new office space in Cyber City incredibly seamless. The verified listings and sleek UI saved us weeks of searching.") . '"',
-                            'author' => $site_settings['testimonial_1_author'] ?? 'Rahul S.',
-                            'role' => $site_settings['testimonial_1_role'] ?? 'CEO, TechFlow India',
-                            'image' => $site_settings['testimonial_1_image'] ?? 'https://randomuser.me/api/portraits/men/43.jpg',
-                        ],
-                        [
-                            'stars' => $site_settings['testimonial_2_stars'] ?? 5,
-                            'quote' => '"' . ($site_settings['testimonial_2_quote'] ?? "I listed my luxury villa in Assagao and within 48 hours I had a verified, high-quality tenant. The platform's concierge support is world-class.") . '"',
-                            'author' => $site_settings['testimonial_2_author'] ?? 'Priya D.',
-                            'role' => $site_settings['testimonial_2_role'] ?? 'Property Owner',
-                            'image' => $site_settings['testimonial_2_image'] ?? 'https://randomuser.me/api/portraits/women/68.jpg',
-                        ],
-                        [
-                            'stars' => $site_settings['testimonial_3_stars'] ?? 5,
-                            'quote' => '"' . ($site_settings['testimonial_3_quote'] ?? "The filtering is incredibly smart. We found a beautiful apartment that checked off all our boxes in South Mumbai without dealing with broker spam.") . '"',
-                            'author' => $site_settings['testimonial_3_author'] ?? 'Aditya P.',
-                            'role' => $site_settings['testimonial_3_role'] ?? 'Renter',
-                            'image' => $site_settings['testimonial_3_image'] ?? 'https://randomuser.me/api/portraits/men/57.jpg',
-                        ]
-                    ];
-                    
-                    $needed = 3 - count($displayTestimonials);
-                    for ($i = 0; $i < $needed; $i++) {
-                        $fallbackIndex = 3 - $needed + $i;
-                        if (isset($fallbacks[$fallbackIndex])) {
-                            $displayTestimonials[] = $fallbacks[$fallbackIndex];
-                        }
-                    }
-                }
-            @endphp
-
-            @php
-                $marqueeCards = array_merge($displayTestimonials, $displayTestimonials);
-            @endphp
-
-            <style>
-                .ur-testimonials-marquee-container {
-                    display: flex;
-                    overflow: hidden;
-                    user-select: none;
-                    gap: 1rem;
-                    position: relative;
-                    width: 100%;
-                    padding: 0.5rem 0 1rem;
-                    -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
-                    mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
-                }
-
-                .ur-testimonials-marquee-content {
-                    flex-shrink: 0;
-                    display: flex;
-                    align-items: stretch;
-                    gap: 1rem;
-                    min-width: 100%;
-                    animation: urMarqueeScroll 28s linear infinite;
-                    will-change: transform;
-                }
-
-                @keyframes urMarqueeScroll {
-                    0% {
-                        transform: translateX(0);
-                    }
-                    100% {
-                        transform: translateX(calc(-100% - 1rem));
-                    }
-                }
-
-                .ur-testimonials-marquee-container:hover .ur-testimonials-marquee-content,
-                .ur-testimonials-marquee-container:active .ur-testimonials-marquee-content,
-                .ur-testimonials-marquee-container.is-paused .ur-testimonials-marquee-content {
-                    animation-play-state: paused;
-                }
-
-                @media (max-width: 640px) {
-                    .ur-testimonials-marquee-container {
-                        gap: 0.75rem;
-                    }
-                    .ur-testimonials-marquee-content {
-                        gap: 0.75rem;
-                        animation-duration: 20s;
-                    }
-                    @keyframes urMarqueeScroll {
-                        0% {
-                            transform: translateX(0);
-                        }
-                        100% {
-                            transform: translateX(calc(-100% - 0.75rem));
-                        }
-                    }
-                }
-            </style>
-
-            {{-- Testimonial Marquee (Infinite Auto-Scroll Right to Left with Pause on Touch) --}}
-            <div class="ur-testimonials-marquee-container" id="testimonialsMarquee" aria-label="Customer Reviews">
-                {{-- Track 1 --}}
-                <div class="ur-testimonials-marquee-content">
-                    @foreach($marqueeCards as $t)
-                        <div class="w-[270px] sm:w-[310px] shrink-0 p-4 sm:p-5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                            <div>
-                                <div class="text-amber-400 text-sm sm:text-base mb-2 tracking-wide flex items-center">
-                                    @for($i = 0; $i < $t['stars']; $i++)★@endfor
-                                </div>
-                                <p class="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 italic line-clamp-3 mb-4 leading-relaxed">
-                                    {{ $t['quote'] }}
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
-                                <img src="{{ $t['image'] }}" alt="{{ $t['author'] }}" title="{{ $t['author'] }}"
-                                     width="36" height="36" loading="lazy" decoding="async"
-                                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($t['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
-                                     class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-blue-500/20 shadow-xs">
-                                <div class="min-w-0">
-                                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">{{ $t['author'] }}</h3>
-                                    <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold block truncate">{{ $t['role'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                {{-- Track 2 (Duplicate for Seamless Infinite Loop) --}}
-                <div class="ur-testimonials-marquee-content" aria-hidden="true">
-                    @foreach($marqueeCards as $t)
-                        <div class="w-[270px] sm:w-[310px] shrink-0 p-4 sm:p-5 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                            <div>
-                                <div class="text-amber-400 text-sm sm:text-base mb-2 tracking-wide flex items-center">
-                                    @for($i = 0; $i < $t['stars']; $i++)★@endfor
-                                </div>
-                                <p class="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 italic line-clamp-3 mb-4 leading-relaxed">
-                                    {{ $t['quote'] }}
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
-                                <img src="{{ $t['image'] }}" alt="{{ $t['author'] }}" title="{{ $t['author'] }}"
-                                     width="36" height="36" loading="lazy" decoding="async"
-                                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($t['author']) }}&background=2563EB&color=fff&rounded=true&bold=true';"
-                                     class="w-9 h-9 rounded-full object-cover shrink-0 ring-2 ring-blue-500/20 shadow-xs">
-                                <div class="min-w-0">
-                                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">{{ $t['author'] }}</h3>
-                                    <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold block truncate">{{ $t['role'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <script>
-                (function() {
-                    const marquee = document.getElementById('testimonialsMarquee');
-                    if (marquee) {
-                        marquee.addEventListener('touchstart', function() {
-                            marquee.classList.add('is-paused');
-                        }, { passive: true });
-                        marquee.addEventListener('touchend', function() {
-                            setTimeout(function() {
-                                marquee.classList.remove('is-paused');
-                            }, 1200);
-                        }, { passive: true });
-                    }
-                })();
-            </script>
-        </div>
-    </section>
 
     {{-- Resource Directory --}}
     @include('components.resource-directory')

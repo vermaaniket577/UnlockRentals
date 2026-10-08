@@ -644,6 +644,78 @@
         color: #2563eb;
     }
 
+    /* ---- Pricing Card Trust Bullets & Strip ---- */
+    .plan-trust-features-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px 12px;
+        margin: 14px 0 16px;
+        padding: 10px 14px;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+        font-size: 11px;
+        font-weight: 600;
+        color: #334155;
+    }
+    .dark .plan-trust-features-list {
+        background: #111827;
+        border-color: #1f2937;
+        color: #cbd5e1;
+    }
+    .plan-trust-features-list .pt-feat-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+    }
+    .plan-trust-features-list .pt-feat-item i {
+        color: #059669;
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+    .dark .plan-trust-features-list .pt-feat-item i {
+        color: #10b981;
+    }
+
+    .ur-pricing-trust-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        margin-bottom: 12px;
+        padding: 8px 10px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #475569;
+        flex-wrap: wrap;
+    }
+    .dark .ur-pricing-trust-strip {
+        background: #1e293b;
+        border-color: #334155;
+        color: #94a3b8;
+    }
+    .ur-pricing-trust-strip .ur-strip-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+    .ur-pricing-trust-strip a.ur-strip-link {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
+    .ur-pricing-trust-strip a.ur-strip-link:hover {
+        color: #2563eb;
+    }
+    .dark .ur-pricing-trust-strip a.ur-strip-link:hover {
+        color: #60a5fa;
+    }
+
     /* ---- Right Panel: Info Card (beside pricing) ---- */
     .plan-info-card {
         background: #ffffff;
@@ -1404,6 +1476,14 @@
                                     Only ₹{{ number_format($perDay, 1) }}/day · {{ $plan->duration_days }} Full Days Validity
                                 </div>
 
+                                {{-- Pricing Card Trust Area (Under Price) --}}
+                                <div class="plan-trust-features-list">
+                                    <div class="pt-feat-item"><i class="ph-bold ph-check-circle"></i> No hidden charges</div>
+                                    <div class="pt-feat-item"><i class="ph-bold ph-check-circle"></i> {{ $plan->duration_days }} Days Validity</div>
+                                    <div class="pt-feat-item"><i class="ph-bold ph-check-circle"></i> Secure payment</div>
+                                    <div class="pt-feat-item"><i class="ph-bold ph-check-circle"></i> Instant activation</div>
+                                </div>
+
                                 {{-- Stats --}}
                                 <div class="plan-stats">
                                     <div class="plan-stat-row">
@@ -1420,6 +1500,15 @@
                                     </div>
                                 </div>
 
+                                {{-- Trust Strip Directly Above Pricing Buttons --}}
+                                <div class="ur-pricing-trust-strip">
+                                    <span class="ur-strip-item" title="Encrypted Payment"><i class="ph-bold ph-lock-key text-blue-600"></i> Secure Checkout</span>
+                                    <span class="ur-strip-item" title="Transparent Pricing"><i class="ph-bold ph-check text-emerald-600"></i> Transparent Pricing</span>
+                                    <a href="{{ route('privacy') }}" class="ur-strip-item ur-strip-link" title="Privacy Protected"><i class="ph-bold ph-shield-check text-indigo-600"></i> Privacy Protected</a>
+                                    <a href="tel:{{ $cleanTel }}" class="ur-strip-item ur-strip-link" title="Customer Support"><i class="ph-bold ph-phone text-blue-600"></i> Support</a>
+                                    <a href="#refund-policy-summary" onclick="if(window.urScrollTo){ window.urScrollTo('refund-policy-summary'); } else { document.getElementById('refund-policy-summary')?.scrollIntoView({behavior:'smooth'}); } return false;" class="ur-strip-item ur-strip-link" title="Clear Cancellation/Refund"><i class="ph-bold ph-arrow-counter-clockwise text-amber-600"></i> Refund Policy</a>
+                                </div>
+
                                 {{-- CTA --}}
                                 @if(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0 && $activeRentPlan->plan_id === $plan->id)
                                     <button class="plan-cta-btn active-plan" disabled>
@@ -1429,7 +1518,7 @@
                                 @elseif(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0 && $activeRentPlan->plan && (float) $plan->price > (float) $activeRentPlan->plan->price)
                                     <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}" class="plan-cta-btn blue">
                                         <i class="ph-bold ph-lightning"></i>
-                                        Upgrade Plan
+                                        Upgrade Plan · ₹{{ number_format($price, 0) }}
                                     </a>
                                 @elseif(auth()->check() && $activeRentPlan && $activeRentPlan->remaining_contacts > 0)
                                     <button class="plan-cta-btn disabled" disabled>
@@ -1446,19 +1535,19 @@
                                            onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}');"
                                            class="plan-cta-btn primary">
                                             <i class="ph-bold ph-lock-key-open"></i>
-                                            Unlock Contacts Now · ₹{{ number_format($price, 0) }}
+                                            Buy Plan · ₹{{ number_format($price, 0) }}
                                         </a>
                                     @else
                                         <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]) }}"
                                            class="plan-cta-btn primary">
                                             <i class="ph-bold ph-lock-key-open"></i>
-                                            Unlock Contacts Now · ₹{{ number_format($price, 0) }}
+                                            Buy Plan · ₹{{ number_format($price, 0) }}
                                         </a>
                                     @endguest
                                 @endif
 
                                 <a href="#comparison-section" class="plan-compare-link">
-                                    Compare All Plan Details <i class="ph-bold ph-caret-down"></i>
+                                    View Full Plan Details &amp; Compare <i class="ph-bold ph-caret-down"></i>
                                 </a>
                             </div>
                         </div>
@@ -1687,6 +1776,14 @@
                                     Only ₹{{ number_format($perDay, 1) }}/day · {{ $plan->duration_days }} Full Days Validity
                                 </div>
 
+                                {{-- Pricing Card Trust Area (Under Price) --}}
+                                <div class="plan-trust-features-list">
+                                    <div class="pt-feat-item"><i class="ph-bold ph-check-circle"></i> No hidden charges</div>
+                                    <div class="pt-feat-item"><i class="ph-bold ph-check-circle"></i> {{ $plan->duration_days }} Days Priority Access</div>
+                                    <div class="pt-feat-item"><i class="ph-bold ph-check-circle"></i> Secure payment</div>
+                                    <div class="pt-feat-item"><i class="ph-bold ph-check-circle"></i> Instant activation</div>
+                                </div>
+
                                 <div class="plan-stats">
                                     <div class="plan-stat-row">
                                         <span class="stat-label"><i class="ph-bold ph-phone"></i> Direct Seller Contacts</span>
@@ -1702,6 +1799,15 @@
                                     </div>
                                 </div>
 
+                                {{-- Trust Strip Directly Above Pricing Buttons --}}
+                                <div class="ur-pricing-trust-strip">
+                                    <span class="ur-strip-item" title="Encrypted Payment"><i class="ph-bold ph-lock-key text-blue-600"></i> Secure Checkout</span>
+                                    <span class="ur-strip-item" title="Transparent Pricing"><i class="ph-bold ph-check text-emerald-600"></i> Transparent Pricing</span>
+                                    <a href="{{ route('privacy') }}" class="ur-strip-item ur-strip-link" title="Privacy Protected"><i class="ph-bold ph-shield-check text-indigo-600"></i> Privacy Protected</a>
+                                    <a href="tel:{{ $cleanTel }}" class="ur-strip-item ur-strip-link" title="Customer Support"><i class="ph-bold ph-phone text-blue-600"></i> Support</a>
+                                    <a href="#refund-policy-summary" onclick="if(window.urScrollTo){ window.urScrollTo('refund-policy-summary'); } else { document.getElementById('refund-policy-summary')?.scrollIntoView({behavior:'smooth'}); } return false;" class="ur-strip-item ur-strip-link" title="Clear Cancellation/Refund"><i class="ph-bold ph-arrow-counter-clockwise text-amber-600"></i> Refund Policy</a>
+                                </div>
+
                                 {{-- CTA --}}
                                 @if(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0 && $activeBuyPlan->plan_id === $plan->id)
                                     <button class="plan-cta-btn active-plan" disabled>
@@ -1711,7 +1817,7 @@
                                 @elseif(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0 && $activeBuyPlan->plan && (float) $plan->price > (float) $activeBuyPlan->plan->price)
                                     <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}" class="plan-cta-btn blue">
                                         <i class="ph-bold ph-lightning"></i>
-                                        Upgrade Plan
+                                        Upgrade Plan · ₹{{ number_format($price, 0) }}
                                     </a>
                                 @elseif(auth()->check() && $activeBuyPlan && $activeBuyPlan->remaining_contacts > 0)
                                     <button class="plan-cta-btn disabled" disabled>
@@ -1728,19 +1834,19 @@
                                            onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}');"
                                            class="plan-cta-btn primary">
                                             <i class="ph-bold ph-lock-key-open"></i>
-                                            Unlock Contacts Now · ₹{{ number_format($price, 0) }}
+                                            Buy Plan · ₹{{ number_format($price, 0) }}
                                         </a>
                                     @else
                                         <a href="{{ route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]) }}"
                                            class="plan-cta-btn primary">
                                             <i class="ph-bold ph-lock-key-open"></i>
-                                            Unlock Contacts Now · ₹{{ number_format($price, 0) }}
+                                            Buy Plan · ₹{{ number_format($price, 0) }}
                                         </a>
                                     @endguest
                                 @endif
 
                                 <a href="#comparison-section" class="plan-compare-link">
-                                    Compare All Plan Details <i class="ph-bold ph-caret-down"></i>
+                                    View Full Plan Details &amp; Compare <i class="ph-bold ph-caret-down"></i>
                                 </a>
                             </div>
                         </div>
@@ -1945,61 +2051,10 @@
 
 
     {{-- ============================================
-         FAQ SECTION
+         HIGH-TRUST PLAN PURCHASE SECTION
+         Transparent Pricing · 6 Trust Cards · 4 Steps · Verified Reviews · Refund Policy · 9 FAQs · Help Desk
     ============================================ --}}
-    <div class="faq-section">
-        <h2>Frequently Asked Questions</h2>
-
-        <div class="faq-item open">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                <h3>How does the direct owner contact unlock work?</h3>
-                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
-            </div>
-            <div class="faq-answer">
-                <p>Once you choose a plan and complete payment, you can click "Unlock Owner Contact" on any property. You will instantly view the landlord's verified mobile number and can directly call or message them on WhatsApp with zero broker commission.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                <h3>What is the difference between Rental Pass and Buyer Pass?</h3>
-                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
-            </div>
-            <div class="faq-answer">
-                <p>The <strong>Rental Pass</strong> is designed for quick 30-day apartment and room hunting. The <strong>Buyer Pass</strong> provides 365-day extended validity with 20% discount, designed for home buyers and real estate investors exploring properties over several months.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                <h3>Which payment methods are supported?</h3>
-                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
-            </div>
-            <div class="faq-answer">
-                <p>We support all popular Indian payment modes including UPI (Google Pay, PhonePe, Paytm), Credit/Debit cards (Visa, Mastercard, RuPay), NetBanking, and Wallets through secure encrypted payment gateways.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                <h3>Can I upgrade my plan mid-subscription?</h3>
-                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
-            </div>
-            <div class="faq-answer">
-                <p>Yes! You can upgrade to a higher plan at any time. Your remaining contacts from the current plan will carry forward, and you'll get the additional benefits of the upgraded plan immediately upon payment confirmation.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                <h3>Is my payment information secure?</h3>
-                <div class="faq-toggle"><i class="ph-bold ph-plus"></i></div>
-            </div>
-            <div class="faq-answer">
-                <p>Absolutely. All payments are processed through 256-bit SSL encrypted payment gateways. We never store your card details on our servers. Your transaction is fully secure and PCI DSS compliant.</p>
-            </div>
-        </div>
-    </div>
+    <x-plan-trust-section :feedbacks="$feedbacks ?? null" />
 
 </div>
 

@@ -543,6 +543,7 @@
             <div class="ur-footer__legal">
                 <a href="{{ route('privacy') }}" class="ur-footer__legal-link" title="Privacy Policy">Privacy Policy</a>
                 <a href="{{ route('terms') }}" class="ur-footer__legal-link" title="Terms & Conditions">Terms & Conditions</a>
+                <a href="{{ route('refund-policy') }}" class="ur-footer__legal-link" title="Cancellation & Refund Policy">Cancellation & Refund</a>
                 <a href="{{ url('/sitemap') }}" class="ur-footer__legal-link" title="HTML Site Map">Site Map</a>
                 <a href="{{ url('/sitemap.xml') }}" target="_blank" class="ur-footer__legal-link" title="XML Sitemap">XML Sitemap</a>
             </div>

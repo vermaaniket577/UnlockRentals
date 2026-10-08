@@ -652,6 +652,76 @@
     font-size: 0.82rem;
 }
 
+/* ─── TRUST BULLETS & COMPACT TRUST STRIP ─── */
+.ur-plan-card__trust-bullets {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px 6px;
+    margin: 8px 0 12px;
+    padding: 8px 10px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #f1f5f9;
+    font-size: 10px;
+    font-weight: 600;
+    color: #334155;
+    text-align: left;
+}
+.ur-plan-card__trust-bullets span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+.ur-plan-card__trust-bullets span i {
+    color: #059669;
+    font-size: 12px;
+}
+
+.ur-compact-trust-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    margin-bottom: 10px;
+    padding: 6px 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #475569;
+    flex-wrap: wrap;
+}
+.ur-compact-trust-strip span,
+.ur-compact-trust-strip a {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+    text-decoration: none;
+    color: inherit;
+}
+.ur-compact-trust-strip a:hover {
+    color: #2563eb;
+}
+
+.ur-plan-card__view-details {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+.ur-plan-card__view-details:hover {
+    color: #2563eb;
+}
+
 /* ─── VIEW ALL PLANS LINK ──────────────── */
 .ur-plans__cta-wrap {
     text-align: center;
@@ -715,6 +785,8 @@
     if ($buyPlans->isEmpty()) {
         $buyPlans = $rentPlans;
     }
+
+    $cleanTel = preg_replace('/[^0-9+]/', '', (string)($site_settings['site_phone'] ?? '+919425455499'));
 @endphp
 
 @if($rentPlans->count())
@@ -857,6 +929,14 @@
                                 <span class="price-note-text">{{ $plan->duration_days }} Days Validity · Zero Brokerage</span>
                             </div>
 
+                            {{-- High-Trust Key Attributes Under Price --}}
+                            <div class="ur-plan-card__trust-bullets">
+                                <span><i class="ph-bold ph-check"></i> No hidden charges</span>
+                                <span><i class="ph-bold ph-check"></i> {{ $plan->duration_days }}d clear validity</span>
+                                <span><i class="ph-bold ph-check"></i> Secure payment</span>
+                                <span><i class="ph-bold ph-check"></i> Instant activation</span>
+                            </div>
+
                             <div class="ur-plan-card__divider"></div>
 
                             <ul class="ur-plan-card__features">
@@ -884,8 +964,17 @@
                                 @endif
                             </ul>
 
-                            {{-- High-Impact Pay Now Button --}}
+                            {{-- High-Impact Pay Now Button with Trust Strip --}}
                             <div class="ur-plan-card__pay-cta">
+                                {{-- Compact Horizontal Trust Strip Directly Above Button --}}
+                                <div class="ur-compact-trust-strip" title="Buy with Confidence">
+                                    <span title="Secure 256-Bit SSL Checkout"><i class="ph-bold ph-lock-key"></i> Secure</span>
+                                    <span title="Transparent Pricing"><i class="ph-bold ph-check-circle"></i> Transparent</span>
+                                    <span title="Privacy Protected"><i class="ph-bold ph-shield-check"></i> Private</span>
+                                    <a href="tel:{{ $cleanTel }}" title="Support Desk: {{ $site_settings['site_phone'] ?? '+919425455499' }}"><i class="ph-bold ph-phone"></i> Support</a>
+                                    <a href="{{ route('refund-policy') }}" title="Clear Cancellation & Refund Policy"><i class="ph-bold ph-arrow-counter-clockwise"></i> Refund</a>
+                                </div>
+
                                 @php
                                     $checkoutUrl = route('plans.checkout', ['plan' => $plan, 'billing' => 'monthly', 'direct' => 1]);
                                 @endphp
@@ -893,23 +982,27 @@
                                     <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
                                        onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $checkoutUrl }}');"
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
-                                       title="Pay Now &amp; Unlock Verified Contacts">
+                                       title="Buy Plan &amp; Unlock Verified Contacts">
                                         <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
-                                        <span>Unlock Contacts</span>
+                                        <span>Buy Plan</span>
                                         <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
                                 @else
                                     <a href="{{ $checkoutUrl }}" 
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
-                                       title="Pay Now &amp; Unlock Verified Contacts">
+                                       title="Buy Plan &amp; Unlock Verified Contacts">
                                         <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
-                                        <span>Unlock Contacts</span>
+                                        <span>Buy Plan</span>
                                         <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
                                 @endguest
+                                <a href="{{ route('plans.index') }}#comparison-section" class="ur-plan-card__view-details" title="View full plan details and comparison">
+                                    <span>View Full Plan Details</span>
+                                    <i class="ph-bold ph-arrow-right"></i>
+                                </a>
                                 <div class="ur-plan-card__trust-note">
                                     <i class="ph-bold ph-shield-check"></i>
-                                    <span>100% Secure Checkout · Instant Activation</span>
+                                    <span>Processed via Secure Gateway · Instant Activation</span>
                                 </div>
                             </div>
                         </div>
@@ -1052,6 +1145,14 @@
                                 <span class="price-note-text">{{ $plan->duration_days }} Days Priority Buyer Access</span>
                             </div>
 
+                            {{-- High-Trust Key Attributes Under Price --}}
+                            <div class="ur-plan-card__trust-bullets">
+                                <span><i class="ph-bold ph-check"></i> No hidden charges</span>
+                                <span><i class="ph-bold ph-check"></i> {{ $plan->duration_days }}d clear validity</span>
+                                <span><i class="ph-bold ph-check"></i> Secure payment</span>
+                                <span><i class="ph-bold ph-check"></i> Instant activation</span>
+                            </div>
+
                             <div class="ur-plan-card__divider"></div>
 
                             <ul class="ur-plan-card__features">
@@ -1079,8 +1180,17 @@
                                 @endif
                             </ul>
 
-                            {{-- High-Impact Pay Now Button --}}
+                            {{-- High-Impact Pay Now Button with Trust Strip --}}
                             <div class="ur-plan-card__pay-cta">
+                                {{-- Compact Horizontal Trust Strip Directly Above Button --}}
+                                <div class="ur-compact-trust-strip" title="Buy with Confidence">
+                                    <span title="Secure 256-Bit SSL Checkout"><i class="ph-bold ph-lock-key"></i> Secure</span>
+                                    <span title="Transparent Pricing"><i class="ph-bold ph-check-circle"></i> Transparent</span>
+                                    <span title="Privacy Protected"><i class="ph-bold ph-shield-check"></i> Private</span>
+                                    <a href="tel:{{ $cleanTel }}" title="Support Desk: {{ $site_settings['site_phone'] ?? '+919425455499' }}"><i class="ph-bold ph-phone"></i> Support</a>
+                                    <a href="{{ route('refund-policy') }}" title="Clear Cancellation & Refund Policy"><i class="ph-bold ph-arrow-counter-clockwise"></i> Refund</a>
+                                </div>
+
                                 @php
                                     $checkoutUrl = route('plans.checkout', ['plan' => $plan, 'billing' => 'yearly', 'direct' => 1]);
                                 @endphp
@@ -1088,23 +1198,27 @@
                                     <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
                                        onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $checkoutUrl }}');"
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
-                                       title="Pay Now &amp; Unlock Verified Contacts">
+                                       title="Buy Plan &amp; Unlock Verified Contacts">
                                         <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
-                                        <span>Unlock Buyer Pass</span>
+                                        <span>Buy Plan</span>
                                         <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
                                 @else
                                     <a href="{{ $checkoutUrl }}" 
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
-                                       title="Pay Now &amp; Unlock Verified Contacts">
+                                       title="Buy Plan &amp; Unlock Verified Contacts">
                                         <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
-                                        <span>Unlock Buyer Pass</span>
+                                        <span>Buy Plan</span>
                                         <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
                                 @endguest
+                                <a href="{{ route('plans.index') }}#comparison-section" class="ur-plan-card__view-details" title="View full plan details and comparison">
+                                    <span>View Full Plan Details</span>
+                                    <i class="ph-bold ph-arrow-right"></i>
+                                </a>
                                 <div class="ur-plan-card__trust-note">
                                     <i class="ph-bold ph-shield-check"></i>
-                                    <span>100% Secure Checkout · Instant Activation</span>
+                                    <span>Processed via Secure Gateway · Instant Activation</span>
                                 </div>
                             </div>
                         </div>

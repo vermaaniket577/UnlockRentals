@@ -11,12 +11,17 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
         let webConfiguration = WKWebViewConfiguration()
         webConfiguration.allowsInlineMediaPlayback = true
         webConfiguration.preferences.javaScriptEnabled = true
+        webConfiguration.suppressesIncrementalRendering = false
         webConfiguration.applicationNameForUserAgent = "UnlockRentalsIOSApp/1.0"
         
         webView = WKWebView(frame: .zero, configuration: webConfiguration)
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.allowsBackForwardNavigationGestures = true
+        webView.scrollView.decelerationRate = .normal
+        webView.scrollView.bounces = true
+        webView.scrollView.showsVerticalScrollIndicator = false
+        webView.scrollView.showsHorizontalScrollIndicator = false
         view = webView
     }
 

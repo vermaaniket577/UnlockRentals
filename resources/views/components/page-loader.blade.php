@@ -56,9 +56,9 @@
     width: 142px;
     padding: 1.25rem 1rem 1.1rem;
     border-radius: 1.5rem;
-    background: rgba(15, 23, 42, 0.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 25px rgba(37, 99, 235, 0.22);
     display: flex;
@@ -67,6 +67,20 @@
     text-align: center;
     position: relative;
     overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    /* Mobile GPU Optimization: Disable heavy blur kernels to preserve 60/120fps touch responsiveness */
+    #ur-animated-loader {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(15, 23, 42, 0.55) !important;
+    }
+    .ur-loader-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(15, 23, 42, 0.97) !important;
+    }
 }
 </style>
 
@@ -114,42 +128,57 @@
     const line      = document.getElementById('ur-loader-progress-line');
     const textLabel = document.getElementById('ur-loader-status-text');
 
-    let timer         = null;
+    let timer            = null;
+    let overlayTimer     = null;
     let autoDismissTimer = null;
-    let fakeWidth     = 0;
-    let started       = false;
+    let fakeWidth        = 0;
+    let started          = false;
 
-    function start() {
+    // Start loading: Instantly activates slim top bar (0ms feedback), delays heavy center modal
+    function start(showCenterModalImmediate = false) {
         if (started) return;
         started   = true;
-        fakeWidth = 0;
+        fakeWidth = 15;
         
         clearInterval(timer);
+        clearTimeout(overlayTimer);
         clearTimeout(autoDismissTimer);
 
         if (bar) {
-            bar.style.width = '0%';
+            bar.style.width = '15%';
             bar.classList.add('ur-active');
         }
-        if (line) line.style.width = '0%';
-        if (overlay) overlay.classList.add('ur-loading-active');
-        if (textLabel) textLabel.textContent = "Loading...";
+        if (line) line.style.width = '15%';
+        if (textLabel) textLabel.textContent = "Opening...";
 
-        // Incremental progress
+        // Only show center modal if navigation takes longer than 650ms (or on heavy form submits)
+        // This ensures fast page opens never block user touch or flash a modal!
+        if (showCenterModalImmediate) {
+            if (overlay) overlay.classList.add('ur-loading-active');
+        } else {
+            overlayTimer = setTimeout(() => {
+                if (started && overlay) {
+                    overlay.classList.add('ur-loading-active');
+                }
+            }, 650);
+        }
+
+        // Fluid incremental progress
         timer = setInterval(() => {
             if (fakeWidth < 90) {
-                fakeWidth += (90 - fakeWidth) * 0.1 + 0.8;
+                fakeWidth += (90 - fakeWidth) * 0.12 + 0.6;
                 if (bar) bar.style.width = fakeWidth + '%';
                 if (line) line.style.width = fakeWidth + '%';
             }
-        }, 80);
+        }, 60);
 
-        // Safety auto-dismiss: never keep the loader stuck if page navigation doesn't unload (e.g. file downloads)
-        autoDismissTimer = setTimeout(done, 3000);
+        // Safety auto-dismiss
+        autoDismissTimer = setTimeout(done, 4000);
     }
 
     function done() {
         clearInterval(timer);
+        clearTimeout(overlayTimer);
         clearTimeout(autoDismissTimer);
 
         if (bar) bar.style.width = '100%';
@@ -164,12 +193,12 @@
                 if (line) line.style.width = '0%';
                 started = false;
             }, 200);
-        }, 220);
+        }, 180);
     }
 
-    window.URLoader = { show: start, hide: done };
+    window.URLoader = { show: () => start(true), start: () => start(false), hide: done };
 
-    // Dismiss overlay on click in case of edge cases
+    // Dismiss overlay on tap in case of edge cases
     if (overlay) {
         overlay.addEventListener('click', done);
     }
@@ -191,12 +220,12 @@
             link.dataset.noLoader === 'true' || 
             link.dataset.urLoaderSkip === 'true' || 
             link.getAttribute('data-no-loader') === 'true' ||
-            (link.getAttribute('onclick') && link.getAttribute('onclick').includes('openAuthModal'))) {
+            (link.getAttribute('onclick') && (link.getAttribute('onclick').includes('openAuthModal') || link.getAttribute('onclick').includes('openUserAccountModal')))) {
             return;
         }
 
         const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript') || href.startsWith('tel:') || href.startsWith('mailto:') || link.target === '_blank') return;
+        if (!href || href.startsWith('#') || href.startsWith('javascript') || href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('whatsapp:') || link.target === '_blank') return;
 
         try {
             const url = new URL(href, window.location.origin);
@@ -204,35 +233,50 @@
             if (url.pathname === window.location.pathname && url.search === window.location.search) return;
         } catch (_) { return; }
 
-        start();
+        start(false);
     }, false);
 
-    // Trigger on form submits
+    // Trigger on form submits (show center modal for forms)
     document.addEventListener('submit', function (e) {
         if (e.defaultPrevented || e.target.dataset.urLoaderSkip === 'true' || e.target.id === 'ur-modal-login-form' || e.target.id === 'ur-modal-register-form') return;
-        start();
+        start(true);
     }, false);
 
-    // Prefetch pages on hover for instant navigation
-    const prefetched = new Set();
-    document.addEventListener('mouseover', function (e) {
+    // High-Speed Predictive Touch Prefetching (runs on pointerdown / touchstart 150ms before click!)
+    const prefetchedUrls = new Set();
+    function prefetchTarget(e) {
         const link = e.target.closest('a[href]');
         if (!link) return;
         const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript') || link.target === '_blank') return;
+        if (!href || href.startsWith('#') || href.startsWith('javascript') || href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('whatsapp:') || link.target === '_blank') return;
 
         try {
             const url = new URL(href, window.location.origin);
             if (url.origin !== window.location.origin) return;
-            if (prefetched.has(url.pathname)) return;
+            if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+            if (/logout|login|register|delete|checkout|pay|payment|admin/i.test(url.pathname)) return;
+            
+            const key = url.pathname + url.search;
+            if (prefetchedUrls.has(key)) return;
+            prefetchedUrls.add(key);
 
-            prefetched.add(url.pathname);
+            // 1. Native prefetch tag
             const prefetchLink = document.createElement('link');
             prefetchLink.rel  = 'prefetch';
             prefetchLink.href = url.href;
+            prefetchLink.as   = 'document';
             document.head.appendChild(prefetchLink);
+
+            // 2. HTTP fetch prefetch (populates browser cache and ServiceWorker ahead of tap release)
+            if ('fetch' in window) {
+                fetch(url.href, { priority: 'low', credentials: 'include' }).catch(() => {});
+            }
         } catch (_) {}
-    }, { passive: true });
+    }
+
+    document.addEventListener('pointerdown', prefetchTarget, { passive: true });
+    document.addEventListener('touchstart', prefetchTarget, { passive: true });
+    document.addEventListener('mouseover', prefetchTarget, { passive: true });
 
     // Hide on page load & back/forward navigation
     window.addEventListener('pageshow', done);

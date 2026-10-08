@@ -43,7 +43,29 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         swipeRefreshLayout = findViewById(R.id.swipeRefresh);
 
-        // Configure WebSettings
+        // Window Hardware Acceleration & 60/120Hz Ultra-Smooth Pipeline
+        getWindow().setFlags(
+            android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+            android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
+        );
+
+        // Hardware Acceleration & High-Performance Touch Settings
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        webView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+        webView.setVerticalScrollBarEnabled(false);
+        webView.setHorizontalScrollBarEnabled(false);
+        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        webView.setClickable(true);
+        webView.setFocusable(true);
+        webView.setFocusableInTouchMode(true);
+        webView.setHapticFeedbackEnabled(true);
+
+        // Configure CookieManager
+        android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.setAcceptThirdPartyCookies(webView, true);
+
+        // Configure WebSettings for instant tap response and fastest page rendering
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
@@ -54,10 +76,39 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         webSettings.setGeolocationEnabled(true);
+        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        webSettings.setEnableSmoothTransition(true);
+
+        // Offscreen Pre-Raster tiles: eliminates white flashes, checkerboarding, and opens pages smoothly
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            webSettings.setOffscreenPreRaster(true);
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            webSettings.setSafeBrowsingEnabled(false);
+        }
+
+        // Enable Chromium ServiceWorker Caching
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            try {
+                android.webkit.ServiceWorkerController.getInstance().setServiceWorkerClient(new android.webkit.ServiceWorkerClient() {
+                    @Override
+                    public android.webkit.WebResourceResponse shouldInterceptRequest(WebResourceRequest request) {
+                        return null;
+                    }
+                });
+            } catch (Exception ignored) {}
+        }
+
         webSettings.setUserAgentString(webSettings.getUserAgentString() + " UnlockRentalsMobileApp/1.0");
 
-        // Swipe-to-refresh
+        // Swipe-to-refresh: prevent touch intercept conflicts during scrolling and tapping
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.primary, getTheme()));
+        swipeRefreshLayout.setOnChildScrollUpCallback((parent, child) -> {
+            if (webView != null) {
+                return webView.getScrollY() > 0;
+            }
+            return false;
+        });
         swipeRefreshLayout.setOnRefreshListener(() -> webView.reload());
 
         // WebView Client
@@ -161,10 +212,18 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                progressBar.setProgress(newProgress);
-                if (newProgress == 100) {
-                    progressBar.setVisibility(View.GONE);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    progressBar.setProgress(newProgress, true);
                 } else {
+                    progressBar.setProgress(newProgress);
+                }
+                if (newProgress >= 100) {
+                    progressBar.animate().alpha(0f).setDuration(220).withEndAction(() -> {
+                        progressBar.setVisibility(View.GONE);
+                        progressBar.setAlpha(1f);
+                    }).start();
+                } else {
+                    progressBar.setAlpha(1f);
                     progressBar.setVisibility(View.VISIBLE);
                 }
             }
@@ -328,5 +387,22 @@ public class MainActivity extends AppCompatActivity {
                 );
             } catch (Exception ignored) {}
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (webView != null) {
+            webView.onPause();
+            webView.pauseTimers();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (webView != null) {
+            webView.destroy();
+        }
+        super.onDestroy();
     }
 }

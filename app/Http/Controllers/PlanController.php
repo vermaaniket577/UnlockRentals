@@ -52,7 +52,15 @@ class PlanController extends Controller
             ? $razorpayKeyId
             : null;
 
-        return view('plans.index', compact('plans', 'activePlan', 'activeRentPlan', 'activeBuyPlan', 'pendingPlan', 'userOffers', 'activeGateway', 'razorpayKeyId'));
+        $feedbacks = \Illuminate\Support\Facades\Cache::remember('plans_approved_feedbacks_v2', 300, function () {
+            return \App\Models\Feedback::with('user')
+                ->where('status', 'approved')
+                ->latest()
+                ->take(6)
+                ->get();
+        });
+
+        return view('plans.index', compact('plans', 'activePlan', 'activeRentPlan', 'activeBuyPlan', 'pendingPlan', 'userOffers', 'activeGateway', 'razorpayKeyId', 'feedbacks'));
     }
 
     public function purchase(Plan $plan)

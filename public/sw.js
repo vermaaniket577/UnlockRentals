@@ -1,4 +1,4 @@
-const CACHE_NAME = 'unlockrentals-v1.0.3';
+const CACHE_NAME = 'unlockrentals-v1.0.4';
 const OFFLINE_URL = '/offline';
 
 const ASSETS_TO_CACHE = [
@@ -46,19 +46,59 @@ self.addEventListener('fetch', (event) => {
 
     const requestUrl = new URL(event.request.url);
 
-    // 1. Navigation requests (HTML pages)
+    // 1. Navigation requests (Instant Page Open with Stale-While-Revalidate)
     if (event.request.mode === 'navigate') {
+        const isSensitiveRoute = /logout|login|register|delete|checkout|pay|payment|admin|dashboard/i.test(requestUrl.pathname);
+
+        if (isSensitiveRoute) {
+            // Sensitive/Session routes: Always Network Only for security and fresh auth state
+            event.respondWith(
+                fetch(event.request).catch(() => caches.match(OFFLINE_URL))
+            );
+            return;
+        }
+
+        // Public browsing routes (properties, plans, search, blogs, home):
+        // Instant Cache Response (0ms page open) + background network update
         event.respondWith(
-            fetch(event.request)
-                .catch((error) => {
-                    console.log('[Service Worker] Navigation failed; serving offline fallback page.', error);
-                    return caches.match(OFFLINE_URL);
-                })
+            caches.open(CACHE_NAME).then((cache) => {
+                return cache.match(event.request).then((cachedResponse) => {
+                    const networkFetch = fetch(event.request)
+                        .then((networkResponse) => {
+                            if (networkResponse && networkResponse.status === 200) {
+                                cache.put(event.request, networkResponse.clone());
+                            }
+                            return networkResponse;
+                        })
+                        .catch(() => caches.match(OFFLINE_URL));
+
+                    // Return cached page instantly if available, otherwise wait for network
+                    return cachedResponse || networkFetch;
+                });
+            })
         );
         return;
     }
 
-    // 2. Static Assets Caching (Stale-While-Revalidate Strategy)
+    // 2. Prefetched HTML requests (Fuel for instant navigation on tap)
+    if (event.request.headers.get('Purpose') === 'prefetch' || event.request.headers.get('Sec-Purpose') === 'prefetch') {
+        const isSensitiveRoute = /logout|login|register|delete|checkout|pay|payment|admin|dashboard/i.test(requestUrl.pathname);
+        if (!isSensitiveRoute && requestUrl.origin === self.location.origin) {
+            event.respondWith(
+                caches.open(CACHE_NAME).then((cache) => {
+                    return fetch(event.request).then((response) => {
+                        if (response && response.status === 200) {
+                            cache.put(event.request, response.clone());
+                        }
+                        return response;
+                    }).catch(() => caches.match(event.request));
+                })
+            );
+            return;
+        }
+    }
+
+    // 3. Static Assets Caching (Stale-While-Revalidate Strategy)
     if (ASSETS_TO_CACHE.some(asset => event.request.url.includes(asset)) || 
         event.request.destination === 'style' || 
         event.request.destination === 'script' || 

@@ -56,6 +56,9 @@
         <a href="#section-blog-slider" class="px-4 py-2 bg-white hover:bg-blue-50 hover:text-blue-600 text-slate-700 rounded-xl border border-slate-200 shadow-2xs transition-all shrink-0 flex items-center gap-1.5">
             <i class="ph-bold ph-slideshow text-teal-600"></i> Homepage Slider (RTL)
         </a>
+        <a href="#section-trust" class="px-4 py-2 bg-white hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 rounded-xl border border-slate-200 shadow-2xs transition-all shrink-0 flex items-center gap-1.5">
+            <i class="ph-bold ph-shield-check text-emerald-600"></i> Trust &amp; Refund Policy
+        </a>
     </div>
 
     <form id="settings-main-form" action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
@@ -73,7 +76,7 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Support Email</label>
                     <div class="relative">
@@ -91,10 +94,26 @@
                     </div>
                 </div>
                 <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">WhatsApp Support Phone</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-500"><i class="ph-bold ph-whatsapp-logo"></i></span>
+                        <input type="text" name="whatsapp_phone" value="{{ $settings['whatsapp_phone'] ?? '+91 94254 55499' }}"
+                               class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                    </div>
+                </div>
+                <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Support Agent Phone (Call Agent)</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i class="ph-bold ph-headset"></i></span>
                         <input type="text" name="agent_phone" value="{{ $settings['agent_phone'] ?? '+91 94254 55499' }}"
+                               class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Support Working Hours</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"><i class="ph-bold ph-clock"></i></span>
+                        <input type="text" name="support_hours" value="{{ $settings['support_hours'] ?? 'Mon – Sat: 9:30 AM – 7:30 PM IST' }}"
                                class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                     </div>
                 </div>
@@ -825,6 +844,48 @@
                         </a>
                     </div>
                 @endif
+            </div>
+        {{-- 9. Plan Purchase Trust & Refund Policy Section --}}
+        <div id="section-trust" class="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs">
+            <div class="flex items-center gap-3 pb-5 mb-6 border-b border-slate-100">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+                    <i class="ph-bold ph-shield-check"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-extrabold text-slate-900">Plan Purchase Trust &amp; Refund Transparency</h2>
+                    <p class="text-xs text-slate-400">Manage headlines, trust strip, and refund transparency content shown on the pricing and trust pages.</p>
+                </div>
+            </div>
+
+            <div class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Trust Section Main Heading</label>
+                        <input type="text" name="trust_heading" value="{{ $settings['trust_heading'] ?? 'Buy With Confidence. Rent With Trust.' }}"
+                               class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Dedicated Refund Desk Email</label>
+                        <input type="email" name="refund_support_email" value="{{ $settings['refund_support_email'] ?? 'refunds@unlockrentals.com' }}"
+                               class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Trust Subheading</label>
+                    <textarea name="trust_subheading" rows="2" class="w-full p-3.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">{{ $settings['trust_subheading'] ?? 'Everything you need to choose your plan with confidence — transparent pricing, secure payments, clear benefits, and dedicated support.' }}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Trust Highlights Strip</label>
+                    <input type="text" name="trust_pill_message" value="{{ $settings['trust_pill_message'] ?? 'No hidden charges. Clear plans. Secure checkout. Dedicated customer support.' }}"
+                           class="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Cancellation &amp; Refund Policy Summary Notice</label>
+                    <textarea name="refund_policy_summary" rows="3" class="w-full p-3.5 bg-slate-50 focus:bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">{{ $settings['refund_policy_summary'] ?? 'Digital contact passes activate instantly upon confirmed payment. If you face technical issues or double charges, contact our support desk within 24 hours for a resolution or eligible gateway refund processed in 5–7 business days.' }}</textarea>
+                </div>
             </div>
         </div>
 

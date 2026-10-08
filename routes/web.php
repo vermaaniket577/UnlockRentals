@@ -1081,6 +1081,9 @@ Route::view('/privacy-policy', 'privacy')->name('privacy');
 Route::view('/privacy', 'privacy');
 Route::view('/terms-and-conditions', 'terms')->name('terms');
 Route::view('/terms', 'terms');
+Route::view('/cancellation-and-refund-policy', 'refund-policy')->name('refund-policy');
+Route::view('/refund-policy', 'refund-policy');
+Route::view('/cancellation-policy', 'refund-policy');
 
 // Legacy 301 Redirects to avoid 404s for search crawlers & existing links
 Route::redirect('/rental-agreement-guide', '/blog/understanding-rental-laws-and-agreements', 301);

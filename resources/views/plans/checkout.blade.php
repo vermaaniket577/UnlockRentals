@@ -156,7 +156,7 @@
 
                 {{-- Safe Guarantee Pill at bottom of left card --}}
                 <div class="relative z-10 mt-6 pt-4 border-t border-white/15 flex items-center justify-between text-xs text-blue-200/90 font-medium">
-                    <span class="flex items-center gap-1.5"><i class="ph-bold ph-shield-check text-emerald-300 text-sm"></i> RBI Verified</span>
+                    <span class="flex items-center gap-1.5"><i class="ph-bold ph-shield-check text-emerald-300 text-sm"></i> 256-Bit SSL Encrypted</span>
                     <span class="flex items-center gap-1.5"><i class="ph-bold ph-lightning text-amber-300 text-sm"></i> Instant Activation</span>
                 </div>
             </div>
@@ -249,30 +249,88 @@
                     </div>
                 </div>
 
-                {{-- 3. Price Breakdown (Compact Clean Text) --}}
-                <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2 text-xs dark:border-slate-800 dark:bg-slate-850">
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
-                        <span class="font-medium">Plan Price ({{ $billing['duration_days'] }} Days)</span>
-                        <span class="font-semibold text-slate-800 dark:text-slate-200">₹{{ number_format($billing['subtotal'], 2) }}</span>
+                {{-- 3. Checkout Confidence Section: "You're Almost There" --}}
+                <div class="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50/50 via-slate-50/70 to-emerald-50/30 p-4 sm:p-5 space-y-3 text-xs dark:border-slate-800 dark:bg-slate-850">
+                    <div class="flex items-center justify-between pb-2.5 border-b border-slate-200/80 dark:border-slate-800">
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <h3 class="text-sm font-extrabold text-slate-900 dark:text-white">You're Almost There</h3>
+                            </div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Please review your order before completing payment.</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-slate-700 shadow-2xs">
+                            Order Review
+                        </span>
                     </div>
 
-                    @if($billing['discount'] > 0)
-                        <div class="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
-                            <span>Special Discount</span>
-                            <span>- ₹{{ number_format($billing['discount'], 2) }}</span>
+                    {{-- Structured Summary Details --}}
+                    <div class="space-y-2 text-slate-600 dark:text-slate-400">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium flex items-center gap-1.5">
+                                <i class="ph-bold ph-check text-emerald-500"></i> Selected Plan
+                            </span>
+                            <span class="font-bold text-slate-900 dark:text-white">{{ $plan->name }} ({{ $billingPeriod === 'yearly' ? 'Annual Pass' : 'Rental Pass' }})</span>
                         </div>
-                    @endif
 
-                    @if($billing['gst'] > 0)
-                        <div class="flex justify-between text-slate-600 dark:text-slate-400">
-                            <span class="font-medium">GST ({{ $billing['gst_rate'] }}%)</span>
-                            <span class="font-semibold text-slate-800 dark:text-slate-200">₹{{ number_format($billing['gst'], 2) }}</span>
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium flex items-center gap-1.5">
+                                <i class="ph-bold ph-check text-emerald-500"></i> Duration
+                            </span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $billing['duration_days'] }} Full Days Validity</span>
                         </div>
-                    @endif
 
-                    <div class="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                        <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Total Amount</span>
-                        <span class="text-2xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium flex items-center gap-1.5">
+                                <i class="ph-bold ph-check text-emerald-500"></i> Features Included
+                            </span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200 text-right">{{ $plan->contact_limit }} Direct Unlocks · Zero Brokerage</span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium flex items-center gap-1.5">
+                                <i class="ph-bold ph-check text-emerald-500"></i> Plan Price
+                            </span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">₹{{ number_format($billing['subtotal'], 2) }}</span>
+                        </div>
+
+                        @if($billing['discount'] > 0)
+                            <div class="flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-semibold">
+                                <span class="flex items-center gap-1.5"><i class="ph-bold ph-tag text-emerald-500"></i> Applied Savings</span>
+                                <span>- ₹{{ number_format($billing['discount'], 2) }}</span>
+                            </div>
+                        @endif
+
+                        @if($billing['gst'] > 0)
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium flex items-center gap-1.5"><i class="ph-bold ph-receipt text-slate-400"></i> Applicable Taxes (GST {{ $billing['gst_rate'] }}%)</span>
+                                <span class="font-semibold text-slate-800 dark:text-slate-200">₹{{ number_format($billing['gst'], 2) }}</span>
+                            </div>
+                        @else
+                            <div class="flex justify-between items-center text-slate-500">
+                                <span class="font-medium flex items-center gap-1.5"><i class="ph-bold ph-receipt text-slate-400"></i> Applicable Taxes</span>
+                                <span class="font-semibold text-emerald-600 dark:text-emerald-400">Included (₹0.00)</span>
+                            </div>
+                        @endif
+
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium flex items-center gap-1.5"><i class="ph-bold ph-credit-card text-blue-500"></i> Payment Gateway</span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $isRazorpay ? 'Razorpay Secure (UPI, Cards, NetBanking)' : 'Secure UPI / Gateway' }}</span>
+                        </div>
+
+                        <div class="pt-1.5 flex justify-between items-start text-[11px] text-slate-500 dark:text-slate-400">
+                            <span class="font-medium flex items-center gap-1.5 shrink-0"><i class="ph-bold ph-arrow-counter-clockwise text-amber-500"></i> Refund Policy</span>
+                            <span class="text-right">
+                                Unused passes refundable within 24–48h.
+                                <a href="{{ route('refund-policy') }}" target="_blank" class="text-blue-600 dark:text-blue-400 font-bold underline hover:text-blue-700">Read policy →</a>
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Total Payable Highlight --}}
+                    <div class="pt-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">Final Payable Amount</span>
+                        <span class="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">
                             ₹{{ number_format($billing['final'], 2) }}
                         </span>
                     </div>
@@ -290,25 +348,28 @@
                     <button
                         type="{{ $isRazorpay ? 'button' : 'submit' }}"
                         id="pay-button"
-                        class="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] py-3.5 px-5 text-base sm:text-lg font-bold text-white shadow-md shadow-blue-600/20 transition-all disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+                        class="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] py-3.5 px-5 text-base sm:text-lg font-extrabold text-white shadow-md shadow-blue-600/20 transition-all disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                         {{ !$activeGateway ? 'disabled' : '' }}
                     >
                         <span class="btn-text flex items-center gap-2">
-                            <i class="ph-bold ph-lightning-fill text-amber-300 text-lg"></i>
-                            <span>Pay ₹{{ number_format($billing['final'], 2) }} & Activate Now</span>
+                            <i class="ph-bold ph-shield-check text-emerald-300 text-xl"></i>
+                            <span>Pay ₹{{ number_format($billing['final'], 2) }} Securely</span>
                         </span>
                         <span class="btn-loader hidden items-center gap-2">
                             <i class="ph-bold ph-circle-notch animate-spin text-lg"></i>
-                            <span>Connecting Gateway...</span>
+                            <span>Connecting Secure Gateway...</span>
                         </span>
                     </button>
                 </form>
 
                 {{-- 5. Trust Badges in Single Horizontal Line --}}
-                <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 font-medium pt-0.5 px-1">
-                    <span class="flex items-center gap-1.5"><i class="ph-bold ph-shield-check text-blue-600"></i> 256-Bit SSL</span>
+                <div class="flex items-center justify-between text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium pt-0.5 px-1 flex-wrap gap-2">
+                    <span class="flex items-center gap-1.5"><i class="ph-bold ph-lock-key text-blue-600"></i> 256-Bit SSL</span>
                     <span class="flex items-center gap-1.5"><i class="ph-bold ph-lightning text-amber-500"></i> Instant Activation</span>
                     <span class="flex items-center gap-1.5"><i class="ph-bold ph-receipt text-emerald-600"></i> Tax Invoice</span>
+                    <a href="{{ route('refund-policy') }}" target="_blank" class="flex items-center gap-1.5 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 underline font-semibold">
+                        <i class="ph-bold ph-arrow-counter-clockwise text-indigo-500"></i> Refund Policy
+                    </a>
                 </div>
 
                 {{-- 6. Mobile UPI / Post-Payment Status & Manual Verification Card --}}
