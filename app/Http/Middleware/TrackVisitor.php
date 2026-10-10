@@ -18,6 +18,11 @@ class TrackVisitor
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Enforce canonical www domain on production for SEO & Google Search Console consistency
+        if ($request->getHost() === 'unlockrentals.com') {
+            return redirect()->to('https://www.unlockrentals.com' . $request->getRequestUri(), 301);
+        }
+
         // Skip tracking on crawler/bot user-agents, non-GET public routes, or asset paths
         if ($this->shouldSkipTracking($request)) {
             return $next($request);
