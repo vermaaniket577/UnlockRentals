@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Force www on Production (Matches Google Search Console property)
+    RewriteCond %{HTTP_HOST} ^unlockrentals\.com$ [NC]
+    RewriteRule ^(.*)$ https://www.unlockrentals.com/$1 [L,R=301]
+
     # Force HTTPS (Production only)
     RewriteCond %{HTTPS} off
     RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
