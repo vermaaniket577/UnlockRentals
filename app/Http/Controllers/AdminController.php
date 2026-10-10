@@ -1442,17 +1442,24 @@ class AdminController extends Controller
 
     // ─── BLOG POST MANAGEMENT ──────────────────────
 
+    protected static bool $blogColumnsChecked = false;
+
     /**
      * Auto-ensure blogs table has required newer columns if migrations have not been run.
      */
     protected function ensureBlogColumnsExist(): void
     {
+        if (static::$blogColumnsChecked) {
+            return;
+        }
+
         try {
             if (Schema::hasTable('blogs') && !Schema::hasColumn('blogs', 'show_in_slider')) {
                 Schema::table('blogs', function (Blueprint $table) {
                     $table->boolean('show_in_slider')->default(false)->after('is_featured')->index();
                 });
             }
+            static::$blogColumnsChecked = true;
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('Blogs table show_in_slider auto-create warning: ' . $e->getMessage());
         }
@@ -1596,26 +1603,8 @@ class AdminController extends Controller
             $data['tags'] = [];
         }
 
-        // Handle Cover Image
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
-            $filename = time() . '_' . Str::random(12) . '.' . $ext;
-            $path = $file->storeAs('blogs', $filename, 'public');
-
-            // Mirror directly into public directories for bulletproof access
-            try {
-                @mkdir(public_path('blogs'), 0777, true);
-                @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
-            } catch (\Throwable $e) {}
-
-            try {
-                @mkdir(public_path('storage/blogs'), 0777, true);
-                @copy(storage_path('app/public/blogs/' . $filename), public_path('storage/blogs/' . $filename));
-            } catch (\Throwable $e) {}
-
-            $data['image'] = $path;
-        } elseif ($request->filled('image_base64') && str_starts_with($request->image_base64, 'data:image/')) {
+        // Handle Cover Image: Prioritize pre-compressed base64 for instant upload speed
+        if ($request->filled('image_base64') && str_starts_with($request->image_base64, 'data:image/')) {
             $base64Data = $request->image_base64;
             @list($type, $base64Data) = explode(';', $base64Data);
             @list(, $base64Data)      = explode(',', $base64Data);
@@ -1641,6 +1630,24 @@ class AdminController extends Controller
             } catch (\Throwable $e) {}
 
             $data['image'] = $path;
+        } elseif ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs', $filename, 'public');
+
+            // Mirror directly into public directories for bulletproof access
+            try {
+                @mkdir(public_path('blogs'), 0777, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs'), 0777, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('storage/blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            $data['image'] = $path;
         } elseif (!empty($data['image_url'])) {
             $url = trim($data['image_url']);
             if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '//')) {
@@ -1651,25 +1658,8 @@ class AdminController extends Controller
         unset($data['image_url']);
         unset($data['image_base64']);
 
-        // Handle Author Avatar
-        if ($request->hasFile('author_avatar')) {
-            $file = $request->file('author_avatar');
-            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
-            $filename = time() . '_' . Str::random(12) . '.' . $ext;
-            $path = $file->storeAs('blogs/authors', $filename, 'public');
-
-            try {
-                @mkdir(public_path('blogs/authors'), 0777, true);
-                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('blogs/authors/' . $filename));
-            } catch (\Throwable $e) {}
-
-            try {
-                @mkdir(public_path('storage/blogs/authors'), 0777, true);
-                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('storage/blogs/authors/' . $filename));
-            } catch (\Throwable $e) {}
-
-            $data['author_avatar'] = $path;
-        } elseif ($request->filled('author_avatar_base64') && str_starts_with($request->author_avatar_base64, 'data:image/')) {
+        // Handle Author Avatar: Prioritize pre-compressed base64
+        if ($request->filled('author_avatar_base64') && str_starts_with($request->author_avatar_base64, 'data:image/')) {
             $base64Data = $request->author_avatar_base64;
             @list($type, $base64Data) = explode(';', $base64Data);
             @list(, $base64Data)      = explode(',', $base64Data);
@@ -1692,6 +1682,23 @@ class AdminController extends Controller
             try {
                 @mkdir(public_path('storage/blogs/authors'), 0777, true);
                 @file_put_contents(public_path('storage/blogs/authors/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            $data['author_avatar'] = $path;
+        } elseif ($request->hasFile('author_avatar')) {
+            $file = $request->file('author_avatar');
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs/authors', $filename, 'public');
+
+            try {
+                @mkdir(public_path('blogs/authors'), 0777, true);
+                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('blogs/authors/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs/authors'), 0777, true);
+                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('storage/blogs/authors/' . $filename));
             } catch (\Throwable $e) {}
 
             $data['author_avatar'] = $path;
@@ -1809,30 +1816,8 @@ class AdminController extends Controller
             $data['tags'] = [];
         }
 
-        // Handle cover image
-        if ($request->hasFile('image')) {
-            if ($blog->image && !str_starts_with($blog->image, 'http')) {
-                Storage::disk('public')->delete($blog->image);
-                @unlink(public_path($blog->image));
-                @unlink(public_path('blogs/' . basename($blog->image)));
-            }
-            $file = $request->file('image');
-            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
-            $filename = time() . '_' . Str::random(12) . '.' . $ext;
-            $path = $file->storeAs('blogs', $filename, 'public');
-
-            try {
-                @mkdir(public_path('blogs'), 0777, true);
-                @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
-            } catch (\Throwable $e) {}
-
-            try {
-                @mkdir(public_path('storage/blogs'), 0777, true);
-                @copy(storage_path('app/public/blogs/' . $filename), public_path('storage/blogs/' . $filename));
-            } catch (\Throwable $e) {}
-
-            $data['image'] = $path;
-        } elseif ($request->filled('image_base64') && str_starts_with($request->image_base64, 'data:image/')) {
+        // Handle cover image: Prioritize pre-compressed base64
+        if ($request->filled('image_base64') && str_starts_with($request->image_base64, 'data:image/')) {
             if ($blog->image && !str_starts_with($blog->image, 'http')) {
                 Storage::disk('public')->delete($blog->image);
                 @unlink(public_path($blog->image));
@@ -1863,6 +1848,28 @@ class AdminController extends Controller
             } catch (\Throwable $e) {}
 
             $data['image'] = $path;
+        } elseif ($request->hasFile('image')) {
+            if ($blog->image && !str_starts_with($blog->image, 'http')) {
+                Storage::disk('public')->delete($blog->image);
+                @unlink(public_path($blog->image));
+                @unlink(public_path('blogs/' . basename($blog->image)));
+            }
+            $file = $request->file('image');
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs', $filename, 'public');
+
+            try {
+                @mkdir(public_path('blogs'), 0777, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs'), 0777, true);
+                @copy(storage_path('app/public/blogs/' . $filename), public_path('storage/blogs/' . $filename));
+            } catch (\Throwable $e) {}
+
+            $data['image'] = $path;
         } elseif (!empty($data['image_url'])) {
             $url = trim($data['image_url']);
             if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://') && !str_starts_with($url, '//')) {
@@ -1873,30 +1880,8 @@ class AdminController extends Controller
         unset($data['image_url']);
         unset($data['image_base64']);
 
-        // Handle author avatar
-        if ($request->hasFile('author_avatar')) {
-            if ($blog->author_avatar && !str_starts_with($blog->author_avatar, 'http')) {
-                Storage::disk('public')->delete($blog->author_avatar);
-                @unlink(public_path($blog->author_avatar));
-                @unlink(public_path('blogs/authors/' . basename($blog->author_avatar)));
-            }
-            $file = $request->file('author_avatar');
-            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
-            $filename = time() . '_' . Str::random(12) . '.' . $ext;
-            $path = $file->storeAs('blogs/authors', $filename, 'public');
-
-            try {
-                @mkdir(public_path('blogs/authors'), 0777, true);
-                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('blogs/authors/' . $filename));
-            } catch (\Throwable $e) {}
-
-            try {
-                @mkdir(public_path('storage/blogs/authors'), 0777, true);
-                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('storage/blogs/authors/' . $filename));
-            } catch (\Throwable $e) {}
-
-            $data['author_avatar'] = $path;
-        } elseif ($request->filled('author_avatar_base64') && str_starts_with($request->author_avatar_base64, 'data:image/')) {
+        // Handle author avatar: Prioritize pre-compressed base64
+        if ($request->filled('author_avatar_base64') && str_starts_with($request->author_avatar_base64, 'data:image/')) {
             if ($blog->author_avatar && !str_starts_with($blog->author_avatar, 'http')) {
                 Storage::disk('public')->delete($blog->author_avatar);
                 @unlink(public_path($blog->author_avatar));
@@ -1924,6 +1909,28 @@ class AdminController extends Controller
             try {
                 @mkdir(public_path('storage/blogs/authors'), 0777, true);
                 @file_put_contents(public_path('storage/blogs/authors/' . $filename), $decoded);
+            } catch (\Throwable $e) {}
+
+            $data['author_avatar'] = $path;
+        } elseif ($request->hasFile('author_avatar')) {
+            if ($blog->author_avatar && !str_starts_with($blog->author_avatar, 'http')) {
+                Storage::disk('public')->delete($blog->author_avatar);
+                @unlink(public_path($blog->author_avatar));
+                @unlink(public_path('blogs/authors/' . basename($blog->author_avatar)));
+            }
+            $file = $request->file('author_avatar');
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $filename = time() . '_' . Str::random(12) . '.' . $ext;
+            $path = $file->storeAs('blogs/authors', $filename, 'public');
+
+            try {
+                @mkdir(public_path('blogs/authors'), 0777, true);
+                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('blogs/authors/' . $filename));
+            } catch (\Throwable $e) {}
+
+            try {
+                @mkdir(public_path('storage/blogs/authors'), 0777, true);
+                @copy(storage_path('app/public/blogs/authors/' . $filename), public_path('storage/blogs/authors/' . $filename));
             } catch (\Throwable $e) {}
 
             $data['author_avatar'] = $path;
