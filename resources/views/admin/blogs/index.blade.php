@@ -97,64 +97,62 @@
 
         </div>
 
-        {{-- Filter & Search Toolbar (Compact) --}}
-        <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200/80 shadow-xs">
-            <form method="GET" action="{{ route('admin.blogs.index') }}" class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5">
-                <div class="flex-1 flex flex-wrap items-center gap-2">
-                    
-                    {{-- Search Input --}}
-                    <div class="relative w-full sm:w-64">
-                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                               placeholder="Search title, author, content..."
-                               class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
-                    </div>
-
-                    {{-- Category Filter --}}
-                    <div class="relative w-full sm:w-44">
-                        <select name="category" onchange="this.form.submit()"
-                                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
-                            <option value="all">All Categories</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                            @endforeach
-                        </select>
-                        <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none"></i>
-                    </div>
-
-                    {{-- Status Filter --}}
-                    <div class="relative w-full sm:w-36">
-                        <select name="status" onchange="this.form.submit()"
-                                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
-                            <option value="">All Statuses</option>
-                            <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published Only</option>
-                            <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Drafts Only</option>
-                            <option value="featured" {{ request('status') === 'featured' ? 'selected' : '' }}>Featured Only</option>
-                        </select>
-                        <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none"></i>
-                    </div>
-
-                    {{-- Sort Filter --}}
-                    <div class="relative w-full sm:w-48">
-                        <i class="ph-bold ph-arrows-down-up absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] pointer-events-none"></i>
-                        <select name="sort" onchange="this.form.submit()"
-                                class="w-full pl-7 pr-7 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
-                            <option value="latest" {{ request('sort', 'latest') === 'latest' ? 'selected' : '' }}>Date: Newest First</option>
-                            <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>Date: Oldest First</option>
-                            <option value="views_desc" {{ request('sort') === 'views_desc' ? 'selected' : '' }}>Views: High to Low</option>
-                            <option value="views_asc" {{ request('sort') === 'views_asc' ? 'selected' : '' }}>Views: Low to High</option>
-                            <option value="title_asc" {{ request('sort') === 'title_asc' ? 'selected' : '' }}>Title: A &rarr; Z</option>
-                            <option value="title_desc" {{ request('sort') === 'title_desc' ? 'selected' : '' }}>Title: Z &rarr; A</option>
-                            <option value="updated_desc" {{ request('sort') === 'updated_desc' ? 'selected' : '' }}>Recently Updated</option>
-                            <option value="read_time_desc" {{ request('sort') === 'read_time_desc' ? 'selected' : '' }}>Read Time: Longest</option>
-                            <option value="read_time_asc" {{ request('sort') === 'read_time_asc' ? 'selected' : '' }}>Read Time: Shortest</option>
-                        </select>
-                        <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none"></i>
-                    </div>
-
+        {{-- Filter & Search Toolbar (Single Row) --}}
+        <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200/80 shadow-xs overflow-x-auto">
+            <form method="GET" action="{{ route('admin.blogs.index') }}" class="flex items-center gap-2 min-w-[740px] xl:min-w-0 w-full">
+                
+                {{-- Search Input --}}
+                <div class="relative flex-1 min-w-[170px]">
+                    <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                           placeholder="Search title, author, content..."
+                           class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
                 </div>
 
-                <div class="flex items-center gap-2 justify-end shrink-0">
+                {{-- Category Filter --}}
+                <div class="relative w-36 sm:w-40 shrink-0">
+                    <select name="category" onchange="this.form.submit()"
+                            class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                        <option value="all">All Categories</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        @endforeach
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none"></i>
+                </div>
+
+                {{-- Status Filter --}}
+                <div class="relative w-32 sm:w-36 shrink-0">
+                    <select name="status" onchange="this.form.submit()"
+                            class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                        <option value="">All Statuses</option>
+                        <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published Only</option>
+                        <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Drafts Only</option>
+                        <option value="featured" {{ request('status') === 'featured' ? 'selected' : '' }}>Featured Only</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none"></i>
+                </div>
+
+                {{-- Sort Filter --}}
+                <div class="relative w-40 sm:w-44 shrink-0">
+                    <i class="ph-bold ph-arrows-down-up absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px] pointer-events-none"></i>
+                    <select name="sort" onchange="this.form.submit()"
+                            class="w-full pl-7 pr-6 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                        <option value="latest" {{ request('sort', 'latest') === 'latest' ? 'selected' : '' }}>Date: Newest</option>
+                        <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>Date: Oldest</option>
+                        <option value="views_desc" {{ request('sort') === 'views_desc' ? 'selected' : '' }}>Views: High &rarr; Low</option>
+                        <option value="views_asc" {{ request('sort') === 'views_asc' ? 'selected' : '' }}>Views: Low &rarr; High</option>
+                        <option value="title_asc" {{ request('sort') === 'title_asc' ? 'selected' : '' }}>Title: A &rarr; Z</option>
+                        <option value="title_desc" {{ request('sort') === 'title_desc' ? 'selected' : '' }}>Title: Z &rarr; A</option>
+                        <option value="updated_desc" {{ request('sort') === 'updated_desc' ? 'selected' : '' }}>Recently Updated</option>
+                        <option value="read_time_desc" {{ request('sort') === 'read_time_desc' ? 'selected' : '' }}>Read Time: Longest</option>
+                        <option value="read_time_asc" {{ request('sort') === 'read_time_asc' ? 'selected' : '' }}>Read Time: Shortest</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none"></i>
+                </div>
+
+                {{-- Actions: Reset & Filter Button --}}
+                <div class="flex items-center gap-1.5 shrink-0">
                     @if(request()->filled('search') || (request()->filled('category') && request('category') !== 'all') || request()->filled('status') || (request()->filled('sort') && request('sort') !== 'latest'))
                         <a href="{{ route('admin.blogs.index') }}" class="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all flex items-center gap-1" title="Reset Filters & Sorting">
                             <i class="ph-bold ph-x text-[11px]"></i> Reset
@@ -164,6 +162,7 @@
                         <i class="ph-bold ph-funnel text-[11px]"></i> Filter
                     </button>
                 </div>
+
             </form>
         </div>
 
