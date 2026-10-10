@@ -24,7 +24,7 @@
         }
     });
 
-    $dbLocalitiesByDistrict = \Illuminate\Support\Facades\Cache::remember('db_localities_by_district_v1', 1800, function() {
+    $dbLocalitiesByDistrict = \Illuminate\Support\Facades\Cache::remember('db_localities_by_district_v2', 1800, function() {
         try {
             if (!\Illuminate\Support\Facades\Schema::hasTable('localities') || !\Illuminate\Support\Facades\Schema::hasTable('districts')) {
                 return [];
@@ -34,6 +34,17 @@
                 ->select('districts.name as district_name', 'districts.id as district_id', 'localities.name as locality_name')
                 ->orderBy('localities.name')
                 ->get();
+
+            $cityAliases = [
+                'gurugram' => 'gurgaon',
+                'gurgaon' => 'gurugram',
+                'bengaluru' => 'bangalore',
+                'bangalore' => 'bengaluru',
+                'prayagraj' => 'allahabad',
+                'allahabad' => 'prayagraj',
+                'varanasi' => 'banaras',
+                'banaras' => 'varanasi',
+            ];
 
             $map = [];
             foreach ($records as $r) {
@@ -51,6 +62,16 @@
                 $map[$dLower] = $map[$dSlug];
                 $map[$dName] = $map[$dSlug];
                 $map[$dId] = $map[$dSlug];
+
+                if (isset($cityAliases[$dLower])) {
+                    $alias = $cityAliases[$dLower];
+                    $aliasSlug = str_replace(' ', '-', $alias);
+                    if (!isset($map[$aliasSlug])) $map[$aliasSlug] = [];
+                    if (!in_array($lName, $map[$aliasSlug])) {
+                        $map[$aliasSlug][] = $lName;
+                    }
+                    $map[$alias] = $map[$aliasSlug];
+                }
             }
             return $map;
         } catch (\Throwable $e) {

@@ -64,7 +64,10 @@
         </div>
 
         {{-- Exclusive Custom Offers Banner (If assigned by Admin) --}}
-        @if(isset($privateOffers) && $privateOffers->count() > 0)
+        @php
+            $validPrivateOffers = isset($privateOffers) ? $privateOffers->filter(fn($o) => !empty($o->plan)) : collect();
+        @endphp
+        @if($validPrivateOffers->isNotEmpty())
         <div class="relative overflow-hidden bg-gradient-to-r from-indigo-900 via-blue-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl">
             <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -84,7 +87,8 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach($privateOffers as $offer)
+                    @foreach($validPrivateOffers as $offer)
+                        @if($offer->plan)
                         <div class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/15 flex items-center justify-between gap-4 hover:bg-white/15 transition-all">
                             <div class="flex items-center gap-4 min-w-0">
                                 @if($offer->plan->image_path)
@@ -110,6 +114,7 @@
                                 <i class="ph-bold ph-arrow-right"></i>
                             </a>
                         </div>
+                        @endif
                     @endforeach
                 </div>
             </div>

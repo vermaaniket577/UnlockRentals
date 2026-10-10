@@ -133,7 +133,9 @@ Route::get('/', function(Illuminate\Http\Request $request) {
 
     $userOffers = collect();
     if (auth()->check()) {
-        $userOffers = \App\Models\PrivateUserOffer::where('user_id', auth()->id())
+        $userOffers = \App\Models\PrivateUserOffer::whereHas('plan')
+            ->with('plan')
+            ->where('user_id', auth()->id())
             ->where('status', 'active')
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
@@ -1084,6 +1086,18 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
     $dSlug = str_replace(' ', '-', strtolower($cleanDistrict));
     $dLower = strtolower($cleanDistrict);
 
+    $cityAliases = [
+        'gurugram' => 'gurgaon',
+        'gurgaon' => 'gurugram',
+        'bengaluru' => 'bangalore',
+        'bangalore' => 'bengaluru',
+        'prayagraj' => 'allahabad',
+        'allahabad' => 'prayagraj',
+        'varanasi' => 'banaras',
+        'banaras' => 'varanasi',
+    ];
+    $aliasLower = $cityAliases[$dLower] ?? null;
+
     $localities = [];
 
     // 1. Direct live query on database localities table
@@ -1091,11 +1105,16 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
         if (\Illuminate\Support\Facades\Schema::hasTable('localities')) {
             $query = \App\Models\Locality::query();
             if ($cleanDistrict !== '') {
-                $query->where(function($q) use ($cleanDistrict, $dSlug, $dLower) {
-                    $q->whereHas('district', function($dq) use ($cleanDistrict, $dSlug, $dLower) {
+                $query->where(function($q) use ($cleanDistrict, $dSlug, $dLower, $aliasLower) {
+                    $q->whereHas('district', function($dq) use ($cleanDistrict, $dSlug, $dLower, $aliasLower) {
                         $dq->where('name', $cleanDistrict)
                            ->orWhere('slug', $dSlug)
                            ->orWhereRaw('LOWER(name) = ?', [$dLower]);
+                        if ($aliasLower) {
+                            $dq->orWhere('name', $aliasLower)
+                               ->orWhere('slug', str_replace(' ', '-', $aliasLower))
+                               ->orWhereRaw('LOWER(name) = ?', [$aliasLower]);
+                        }
                     });
                     if (is_numeric($cleanDistrict)) {
                         $q->orWhere('district_id', (int)$cleanDistrict);
@@ -1133,6 +1152,7 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
                 ?? $locationData['localities'][$dLower] 
                 ?? $locationData['localities'][$cleanDistrict]
                 ?? $locationData['localities'][$districtInput]
+                ?? ($aliasLower ? ($locationData['localities'][$aliasLower] ?? ($locationData['localities'][str_replace(' ', '-', $aliasLower)] ?? [])) : [])
                 ?? [];
         } elseif ($stateInput !== '') {
             $fileLocs = $locationData['localitiesByState'][$stateInput] 

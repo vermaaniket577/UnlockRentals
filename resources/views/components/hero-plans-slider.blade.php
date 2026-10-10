@@ -35,7 +35,8 @@
         $userOffers = collect();
         if (auth()->check()) {
             try {
-                $userOffers = \App\Models\PrivateUserOffer::where('user_id', auth()->id())
+                $userOffers = \App\Models\PrivateUserOffer::whereHas('plan')
+                    ->where('user_id', auth()->id())
                     ->where('status', 'active')
                     ->where(function ($q) {
                         $q->whereNull('expires_at')->orWhere('expires_at', '>', now());

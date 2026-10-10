@@ -149,6 +149,7 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\Cache::forget('indian_location_data');
             \Illuminate\Support\Facades\Cache::forget('db_districts_by_state_v3');
             \Illuminate\Support\Facades\Cache::forget('db_localities_by_district_v1');
+            \Illuminate\Support\Facades\Cache::forget('db_localities_by_district_v2');
         } catch (\Throwable $e) {}
     }
 
@@ -288,6 +289,22 @@ class AppServiceProvider extends ServiceProvider
                             $localitiesMap[$dNameLower] = $localitiesMap[$dSlug];
                             $localitiesMap[$dName] = $localitiesMap[$dSlug];
                             $localitiesMap[(string)$l->district->id] = $localitiesMap[$dSlug];
+
+                            $cityAliases = [
+                                'gurugram' => 'gurgaon',
+                                'gurgaon' => 'gurugram',
+                                'bengaluru' => 'bangalore',
+                                'bangalore' => 'bengaluru',
+                                'prayagraj' => 'allahabad',
+                                'allahabad' => 'prayagraj',
+                                'varanasi' => 'banaras',
+                                'banaras' => 'varanasi',
+                            ];
+                            if (isset($cityAliases[$dNameLower])) {
+                                $alias = $cityAliases[$dNameLower];
+                                $localitiesMap[$alias] = $localitiesMap[$dSlug];
+                                $localitiesMap[str_replace(' ', '-', $alias)] = $localitiesMap[$dSlug];
+                            }
 
                             if ($l->district->state) {
                                 $sCode = $l->district->state->code;

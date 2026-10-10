@@ -38,7 +38,8 @@ class PlanController extends Controller
 
         $userOffers = collect();
         if ($user) {
-            $userOffers = \App\Models\PrivateUserOffer::where('user_id', $user->id)
+            $userOffers = \App\Models\PrivateUserOffer::whereHas('plan')
+                ->where('user_id', $user->id)
                 ->where('status', 'active')
                 ->where(function ($q) {
                     $q->whereNull('expires_at')->orWhere('expires_at', '>', now());

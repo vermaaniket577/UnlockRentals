@@ -27,7 +27,8 @@ class DashboardController extends Controller
             ->pluck('plan_id')
             ->toArray();
 
-        $privateOffers = \App\Models\PrivateUserOffer::with('plan')
+        $privateOffers = \App\Models\PrivateUserOffer::whereHas('plan')
+            ->with('plan')
             ->where('user_id', $user->id)
             ->where('status', 'active')
             ->where(function($q) {

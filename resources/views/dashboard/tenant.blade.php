@@ -895,7 +895,10 @@
         </div>
 
         {{-- ── Exclusive Offers ─────────────────────────────────── --}}
-        @if(isset($privateOffers) && $privateOffers->count() > 0)
+        @php
+            $validPrivateOffers = isset($privateOffers) ? $privateOffers->filter(fn($o) => !empty($o->plan)) : collect();
+        @endphp
+        @if($validPrivateOffers->isNotEmpty())
         <div class="dash-section anim-delay-1">
             <div style="background:linear-gradient(135deg,rgba(124,58,237,0.05),rgba(37,99,235,0.05));border:1px solid rgba(124,58,237,0.2);border-radius:16px;padding:1.25rem 1.5rem;position:relative;overflow:hidden;">
                 <div style="position:absolute;top:0;right:0;background:linear-gradient(135deg,#7c3aed,#2563eb);color:white;font-size:0.6rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 0.85rem;border-bottom-left-radius:10px;">
@@ -906,7 +909,8 @@
                 </h3>
                 <p style="font-size:0.78rem;color:#6d28d9;margin-bottom:1rem;">An admin has assigned a special private plan just for you.</p>
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0.75rem;">
-                    @foreach($privateOffers as $offer)
+                    @foreach($validPrivateOffers as $offer)
+                    @if($offer->plan)
                     <div class="excl-offer-card">
                         <div style="display:flex;align-items:center;gap:0.85rem;">
                             @if($offer->plan->image_path)
@@ -931,6 +935,7 @@
                             Buy Now
                         </a>
                     </div>
+                    @endif
                     @endforeach
                 </div>
             </div>

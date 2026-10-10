@@ -35,7 +35,7 @@ class PrivateUserOffer extends Model
     
     public function getEffectivePriceAttribute()
     {
-        return $this->discounted_price !== null ? $this->discounted_price : $this->plan->price;
+        return $this->discounted_price !== null ? $this->discounted_price : ($this->plan?->price ?? 0);
     }
     
     public function getFormattedEffectivePriceAttribute()

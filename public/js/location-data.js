@@ -387,7 +387,7 @@
             "MG Road", "Mianwali Colony", "Model Town", "Mohan Nagar", "Nathupur", "New Gurgaon", "New Palam Vihar", "New Railway Road", "Nirvana Country", "Old Delhi Road",
             "Old Gurgaon", "Old Railway Road", "Palam Vihar", "Palam Vihar Extension", "Pataudi", "Pataudi Road", "Patel Nagar", "Rajendra Park", "Rajiv Chowk", "Ratan Vihar",
             "Rosewood City", "Sadar Bazar", "Sector 1", "Sector 2", "Sector 3", "Sector 3A", "Sector 4", "Sector 5", "Sector 6", "Sector 7",
-            "Sector 9", "Sector 9A", "Sector 10", "Sector 10A", "Sector 11", "Sector 12", "Sector 12A", "Sector 14", "Sector 15", "Sector 15 Part 1",
+            "Sector 9", "Sector 9A", "Sector 10", "Sector 10A", "Sector 11", "Sector 12", "Sector 12A", "Sector 13", "Sector 14", "Sector 15", "Sector 15 Part 1",
             "Sector 15 Part 2", "Sector 17", "Sector 17A", "Sector 17B", "Sector 18", "Sector 21", "Sector 22", "Sector 22A", "Sector 23", "Sector 23A",
             "Sector 24", "Sector 25", "Sector 26", "Sector 27", "Sector 28", "Sector 29", "Sector 30", "Sector 31", "Sector 32", "Sector 33",
             "Sector 34", "Sector 35", "Sector 37", "Sector 37C", "Sector 37D", "Sector 38", "Sector 39", "Sector 40", "Sector 41", "Sector 42",
@@ -412,7 +412,7 @@
             "MG Road", "Mianwali Colony", "Model Town", "Mohan Nagar", "Nathupur", "New Gurgaon", "New Palam Vihar", "New Railway Road", "Nirvana Country", "Old Delhi Road",
             "Old Gurgaon", "Old Railway Road", "Palam Vihar", "Palam Vihar Extension", "Pataudi", "Pataudi Road", "Patel Nagar", "Rajendra Park", "Rajiv Chowk", "Ratan Vihar",
             "Rosewood City", "Sadar Bazar", "Sector 1", "Sector 2", "Sector 3", "Sector 3A", "Sector 4", "Sector 5", "Sector 6", "Sector 7",
-            "Sector 9", "Sector 9A", "Sector 10", "Sector 10A", "Sector 11", "Sector 12", "Sector 12A", "Sector 14", "Sector 15", "Sector 15 Part 1",
+            "Sector 9", "Sector 9A", "Sector 10", "Sector 10A", "Sector 11", "Sector 12", "Sector 12A", "Sector 13", "Sector 14", "Sector 15", "Sector 15 Part 1",
             "Sector 15 Part 2", "Sector 17", "Sector 17A", "Sector 17B", "Sector 18", "Sector 21", "Sector 22", "Sector 22A", "Sector 23", "Sector 23A",
             "Sector 24", "Sector 25", "Sector 26", "Sector 27", "Sector 28", "Sector 29", "Sector 30", "Sector 31", "Sector 32", "Sector 33",
             "Sector 34", "Sector 35", "Sector 37", "Sector 37C", "Sector 37D", "Sector 38", "Sector 39", "Sector 40", "Sector 41", "Sector 42",
@@ -585,6 +585,13 @@
             _combinedLocalities[kLower] = merged;
             _combinedLocalities[kSlug] = merged;
             _combinedLocalities[kSpaced] = merged;
+
+            // Mirror common city aliases so selecting either name works identically
+            const _aliases = { 'gurugram': 'gurgaon', 'gurgaon': 'gurugram', 'bengaluru': 'bangalore', 'bangalore': 'bengaluru', 'prayagraj': 'allahabad', 'allahabad': 'prayagraj' };
+            if (_aliases[kLower]) {
+                const alt = _aliases[kLower];
+                _combinedLocalities[alt] = mergeUniqueSorted(_combinedLocalities[alt] || [], merged);
+            }
         }
     });
 
