@@ -138,58 +138,72 @@
             <div class="lg:col-span-8 space-y-6">
 
                 {{-- Property Title, Badges & Header Card --}}
-                <div class="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
-                    <div class="flex flex-wrap items-center gap-2 mb-3">
-                        @if(($property->purpose ?? 'rent') === 'buy' || ($property->purpose ?? 'rent') === 'sell')
-                            <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-extrabold rounded-md uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                                <i class="ph-bold ph-tag"></i> For Sale
-                            </span>
-                        @else
-                            <span class="px-3 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-md uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                                <i class="ph-bold ph-key"></i> For Rent
-                            </span>
-                        @endif
-                        <span class="px-3 py-1 bg-[#2874F0]/10 text-[#2874F0] text-xs font-bold rounded-md uppercase tracking-wider flex items-center gap-1">
-                            @if($property->type === 'plot')
-                                <i class="ph-bold ph-map-trifold"></i> Plot / Land
+                <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-xs relative overflow-hidden">
+                    <div class="flex flex-wrap items-center justify-between gap-2.5 mb-3">
+                        <div class="flex flex-wrap items-center gap-2">
+                            @if(($property->purpose ?? 'rent') === 'buy' || ($property->purpose ?? 'rent') === 'sell')
+                                <span class="px-3 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold rounded-full uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                                    <i class="ph-bold ph-tag"></i> For Sale
+                                </span>
                             @else
-                                {{ ucfirst($property->type) }}
+                                <span class="px-3 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-full uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                                    <i class="ph-bold ph-key"></i> For Rent
+                                </span>
                             @endif
-                        </span>
-                        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-md flex items-center gap-1 shadow-sm">
-                            <i class="ph-bold ph-shield-check"></i> Verified Owner
-                        </span>
-                        @if($property->is_featured)
-                        <span class="px-3 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded-md flex items-center gap-1 shadow-sm">
-                            <i class="ph-bold ph-star text-amber-500"></i> Featured
-                        </span>
-                        @endif
-                        @if($property->created_at && $property->created_at->diffInDays() < 7)
-                        <span class="px-3 py-1 bg-orange-100 text-orange-850 text-xs font-bold rounded-md shadow-sm">
-                            New Listing
-                        </span>
+                            <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full border border-slate-200/80 uppercase tracking-wider flex items-center gap-1">
+                                @if($property->type === 'plot')
+                                    <i class="ph-bold ph-map-trifold text-blue-600"></i> Plot / Land
+                                @else
+                                    <i class="ph-bold ph-house-line text-blue-600"></i> {{ ucfirst($property->type) }}
+                                @endif
+                            </span>
+                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-xs font-bold rounded-full flex items-center gap-1">
+                                <i class="ph-bold ph-shield-check text-emerald-600"></i> Verified Owner
+                            </span>
+                            @if($property->is_featured)
+                            <span class="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200/80 text-xs font-bold rounded-full flex items-center gap-1">
+                                <i class="ph-bold ph-star text-amber-500"></i> Featured
+                            </span>
+                            @endif
+                            @if($property->created_at && $property->created_at->diffInDays() < 7)
+                            <span class="px-2.5 py-1 bg-orange-50 text-orange-700 border border-orange-200/80 text-xs font-semibold rounded-full">
+                                New Listing
+                            </span>
+                            @endif
+                        </div>
+
+                        {{-- Owner / Admin Quick Action Pill --}}
+                        @if(auth()->check() && (auth()->id() === $property->user_id || auth()->user()->isAdmin()))
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200/70 px-2 py-0.5 rounded-md hidden sm:inline-flex items-center gap-1">
+                                <i class="ph-bold ph-user-circle"></i> Your Listing
+                            </span>
+                            <a href="{{ route('properties.edit', $property) }}" class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-xs transition-all active:scale-95" title="Edit this property">
+                                <i class="ph-bold ph-pencil-simple text-xs"></i> Edit Property
+                            </a>
+                        </div>
                         @endif
                     </div>
 
-                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-zinc-900 mb-3 tracking-tight leading-tight">
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 mb-3 tracking-tight leading-snug">
                         {{ $property->title }}
                     </h1>
                     
-                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-zinc-650 text-xs sm:text-sm border-t border-zinc-100 pt-4 mt-3">
-                        <div class="flex items-center gap-1.5 font-medium">
-                            <i class="ph-bold ph-map-pin text-[#2874F0] text-base"></i>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-slate-600 text-xs sm:text-sm border-t border-slate-100 pt-3.5 mt-2.5">
+                        <div class="flex items-center gap-1.5 font-medium flex-wrap">
+                            <i class="ph-bold ph-map-pin text-blue-600 text-base shrink-0"></i>
                             <span>
                                 @if($isOwnerOrAdmin || $hasViewed)
-                                    {{ $property->address }}, {{ $property->location }}
+                                    <strong class="text-slate-900 font-bold">{{ $property->address }}</strong>, {{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}
                                 @else
-                                    <span class="inline-flex items-center gap-1 text-amber-600 bg-amber-50 px-2 py-0.5 rounded text-xs border border-amber-100 font-bold"><i class="ph-bold ph-lock"></i> Exact address locked</span> · {{ $property->location }}
+                                    <span class="inline-flex items-center gap-1 text-amber-800 bg-amber-50/90 border border-amber-200/80 px-2.5 py-0.5 rounded-full text-xs font-bold mr-1"><i class="ph-bold ph-lock-key text-amber-600 text-[11px]"></i> Exact address locked</span> · <strong class="text-slate-900 font-bold">{{ $property->locality ? $property->locality . ', ' : '' }}{{ $property->location }}</strong>{{ $property->state ? ', ' . $property->state : '' }}
                                 @endif
                             </span>
                         </div>
                         @if($property->category)
-                        <div class="flex items-center gap-1.5 font-medium border-l border-zinc-200 pl-5">
-                            <i class="ph-bold ph-tag text-[#2874F0] text-base"></i>
-                            <span>{{ $property->category->name }}</span>
+                        <div class="flex items-center gap-1.5 font-medium border-l border-slate-200 pl-4">
+                            <i class="ph-bold ph-buildings text-indigo-600 text-base shrink-0"></i>
+                            <span class="text-slate-700 font-semibold">{{ $property->category->name }}</span>
                         </div>
                         @endif
                     </div>
@@ -493,7 +507,11 @@
                                 @if($property->type === 'shop')
                                     Ground Floor
                                 @else
-                                    {{ ($property->id % 4) + 1 }}nd Floor
+                                    @php
+                                        $flrNum = ($property->id % 4) + 1;
+                                        $flrSuffix = match($flrNum) { 1 => 'st', 2 => 'nd', 3 => 'rd', default => 'th' };
+                                    @endphp
+                                    {{ $flrNum }}{{ $flrSuffix }} Floor
                                 @endif
                             </p>
                             <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Floor Level</p>
@@ -672,40 +690,48 @@
                 <div class="lg:sticky lg:top-24 space-y-6">
 
                     {{-- Premium Pricing & Core Financials --}}
-                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden group" style="padding: 1.5rem !important;">
-                        {{-- Flipkart-style blue subtle stripe --}}
-                        <div class="absolute top-0 left-0 w-full h-[5px] bg-[#2874F0]"></div>
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden group">
+                        {{-- Sleek top brand accent --}}
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
 
                         <div class="mb-4 pt-1">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <p class="text-slate-400 text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                                    <i class="ph-bold ph-tag text-blue-600"></i>
+                                    {{ $property->isForSale() ? 'Sale Pricing' : 'Rental Pricing' }}
+                                </p>
+                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <i class="ph-bold ph-shield-check text-emerald-600"></i> Zero Brokerage
+                                </span>
+                            </div>
+
                             @if($property->isForSale())
-                                <p class="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Sale Price</p>
                                 <div class="flex items-baseline gap-2 flex-wrap">
-                                    <span class="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
+                                    <span class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
                                         ₹{{ number_format($property->price, 0) }}
                                     </span>
                                     @if($property->price >= 10000000)
-                                        <span class="text-sm font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                                        <span class="text-xs sm:text-sm font-extrabold text-blue-700 bg-blue-50 border border-blue-200/70 px-2 py-0.5 rounded-lg">
                                             (₹{{ rtrim(rtrim(number_format($property->price / 10000000, 2), '0'), '.') }} Cr)
                                         </span>
                                     @elseif($property->price >= 100000)
-                                        <span class="text-sm font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                                        <span class="text-xs sm:text-sm font-extrabold text-blue-700 bg-blue-50 border border-blue-200/70 px-2 py-0.5 rounded-lg">
                                             (₹{{ rtrim(rtrim(number_format($property->price / 100000, 2), '0'), '.') }} Lac)
                                         </span>
                                     @endif
                                 </div>
                             @else
-                                <p class="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1">Rental Pricing</p>
-                                <div class="flex items-baseline gap-1">
-                                    <span class="text-3xl sm:text-4xl font-black text-zinc-900 tracking-tight">
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
                                         ₹{{ number_format($property->price, 0) }}
                                     </span>
-                                    <span class="text-zinc-550 text-sm font-bold">/ {{ $property->price_period ?: 'month' }}</span>
+                                    <span class="text-slate-500 text-sm font-semibold">/ {{ $property->price_period ?: 'month' }}</span>
                                 </div>
                             @endif
                         </div>
 
-                        {{-- Additional Financial breakdowns --}}
-                        <div class="border-y border-zinc-100 py-3.5 mb-5 space-y-2.5 text-xs text-zinc-650 font-medium">
+                        {{-- Structured Financial Breakdowns --}}
+                        <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-3 sm:p-3.5 mb-4 space-y-2 text-xs text-slate-600 font-medium">
                             @if($property->isForSale())
                                 @php
                                     $loanAmount = $property->price * 0.8;
@@ -717,52 +743,56 @@
                                 @endphp
                                 <div class="flex items-center justify-between">
                                     <span>Est. Home Loan EMI:</span>
-                                    <span class="font-extrabold text-zinc-800">₹{{ number_format($estEmi, 0) }}/mo*</span>
+                                    <span class="font-extrabold text-slate-900">₹{{ number_format($estEmi, 0) }}/mo*</span>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span>Brokerage Fee:</span>
-                                    <span class="font-extrabold text-emerald-600 flex items-center gap-0.5"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
+                                    <span class="font-extrabold text-emerald-600 flex items-center gap-1"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span>Stamp Duty & Reg:</span>
-                                    <span class="font-semibold text-zinc-700">Estimated ~5% - 7%</span>
+                                    <span class="font-semibold text-slate-700">Estimated ~5% - 7%</span>
                                 </div>
                             @else
                                 <div class="flex items-center justify-between">
                                     <span>Security Deposit:</span>
-                                    <span class="font-extrabold text-zinc-800">₹{{ number_format($property->price * 2, 0) }} (Refundable)</span>
+                                    <span class="font-extrabold text-slate-900 flex items-center gap-1">
+                                        ₹{{ number_format($property->price * 2, 0) }}
+                                        <span class="text-[10px] text-blue-600 font-bold bg-blue-50 border border-blue-200/60 px-1.5 py-0.2 rounded">Refundable</span>
+                                    </span>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span>Brokerage Fee:</span>
-                                    <span class="font-extrabold text-emerald-600 flex items-center gap-0.5"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
+                                    <span class="font-extrabold text-emerald-600 flex items-center gap-1"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span>EMI Starting:</span>
-                                    <span class="font-semibold text-zinc-700">₹{{ number_format($property->price * 0.15, 0) }}/mo</span>
+                                    <span class="font-semibold text-slate-700">₹{{ number_format($property->price * 0.15, 0) }}/mo</span>
                                 </div>
                             @endif
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
+                        {{-- Action Buttons Grid --}}
+                        <div class="grid grid-cols-2 gap-2.5">
                             @auth
-                            <button onclick="openCallAgentModal()" class="px-4 py-3 bg-[#2874F0]/10 hover:bg-[#2874F0]/20 text-[#2874F0] text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" id="call-agent-btn">
-                                <i class="ph-bold ph-phone-call"></i> Call Agent
+                            <button onclick="openCallAgentModal()" class="px-3.5 py-2.5 sm:py-3 bg-white hover:bg-blue-50/70 border-2 border-blue-500/30 hover:border-blue-600 text-blue-600 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95" id="call-agent-btn">
+                                <i class="ph-bold ph-phone-call text-base"></i> Call Agent
                             </button>
                             @if(auth()->user()->hasActivePlanForProperty($property))
-                            <button onclick="openBookVisitModal()" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer" style="color: #ffffff !important;" id="book-visit-btn">
-                                <i class="ph-bold ph-calendar-blank" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">Book Visit</span>
+                            <button onclick="openBookVisitModal()" class="px-3.5 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95" id="book-visit-btn">
+                                <i class="ph-bold ph-calendar-blank text-base"></i> Book Visit
                             </button>
                             @else
-                            <a href="{{ route('plans.index', ['billing' => $property->isForSale() ? 'yearly' : 'monthly', 'purpose' => $property->isForSale() ? 'buy' : 'rent']) }}#billing-toggle" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" style="color: #ffffff !important;" id="book-visit-btn" title="Book Visit">
-                                <i class="ph-bold ph-calendar-blank" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">Book Visit</span>
+                            <a href="{{ route('plans.index', ['billing' => $property->isForSale() ? 'yearly' : 'monthly', 'purpose' => $property->isForSale() ? 'buy' : 'rent']) }}#billing-toggle" class="px-3.5 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95" id="book-visit-btn" title="Book Visit">
+                                <i class="ph-bold ph-calendar-blank text-base"></i> Book Visit
                             </a>
                             @endif
                             @else
-                            <a href="tel:{{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}" class="px-4 py-3 bg-[#2874F0]/10 hover:bg-[#2874F0]/20 text-[#2874F0] text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm" title="Call Agent">
-                                <i class="ph-bold ph-phone-call"></i> Call Agent
+                            <a href="tel:{{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}" class="px-3.5 py-2.5 sm:py-3 bg-white hover:bg-blue-50/70 border-2 border-blue-500/30 hover:border-blue-600 text-blue-600 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95" title="Call Agent">
+                                <i class="ph-bold ph-phone-call text-base"></i> Call Agent
                             </a>
-                            <a href="{{ route('login') }}" class="px-4 py-3 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-sm font-bold rounded-xl shadow-md shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer" style="color: #ffffff !important;" title="Book Visit">
-                                <i class="ph-bold ph-calendar-blank" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">Book Visit</span>
+                            <a href="{{ route('login') }}" class="px-3.5 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95" title="Book Visit">
+                                <i class="ph-bold ph-calendar-blank text-base"></i> Book Visit
                             </a>
                             @endauth
                         </div>
@@ -775,20 +805,20 @@
                             $waUrl = "https://wa.me/{$cleanWa}?text={$waMessage}";
                         @endphp
 
-                        <div class="mt-3 space-y-2">
-                            <a href="{{ $waUrl }}" target="_blank" id="whatsapp-inquiry-btn" data-track-whatsapp="true" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:brightness-105 active:scale-[0.99] text-white text-sm font-extrabold rounded-xl transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer" title="Chat with Verified Agent on WhatsApp">
+                        <div class="mt-2.5 space-y-2">
+                            <a href="{{ $waUrl }}" target="_blank" id="whatsapp-inquiry-btn" data-track-whatsapp="true" class="w-full py-2.5 sm:py-3 px-4 bg-[#25D366] hover:bg-[#20bd5a] active:scale-[0.99] text-white text-xs sm:text-sm font-extrabold rounded-xl transition-all shadow-sm shadow-[#25D366]/20 flex items-center justify-center gap-2 cursor-pointer" title="Chat with Verified Agent on WhatsApp">
                                 <i class="ph-bold ph-whatsapp-logo text-lg"></i> Chat on WhatsApp
                             </a>
-                            <button type="button" onclick="window.openLeadModal('modal-similar-properties', {{ $property->id }}, '{{ addslashes($property->locality ?? $property->location) }}', {{ (int)$property->price }})" class="w-full py-2.5 px-4 bg-slate-50 hover:bg-blue-50/60 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-600 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                            <button type="button" onclick="window.openLeadModal('modal-similar-properties', {{ $property->id }}, '{{ addslashes($property->locality ?? $property->location) }}', {{ (int)$property->price }})" class="w-full py-2 px-3 bg-slate-50 hover:bg-blue-50/70 border border-slate-200 hover:border-blue-300 text-slate-600 hover:text-blue-600 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                                 <i class="ph-bold ph-sparkle text-blue-500"></i> Get Similar Properties
                             </button>
                         </div>
                     </div>
 
-                    {{-- Sticky Contact Card (Gated by Plan) --}}
-                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm relative overflow-hidden" id="property-price-card" style="padding: 1.5rem !important;">
-                        <div class="absolute top-0 left-0 w-full h-[5px] bg-amber-500"></div>
-                        <h3 class="text-zinc-900 font-extrabold text-base mb-4 flex items-center gap-2 pt-1">
+                    {{-- Standard Owner Contact Card --}}
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm relative overflow-hidden" id="owner-contact-card">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
+                        <h3 class="text-slate-900 font-extrabold text-sm sm:text-base mb-3.5 flex items-center gap-2 pt-0.5">
                             <i class="ph-bold ph-user-circle text-amber-500 text-lg"></i> Owner Contact Info
                         </h3>
 
@@ -796,10 +826,10 @@
                         @php
                             $ownerPlan = $property->owner->activePlan();
                         @endphp
-                        <div class="p-4 bg-zinc-50 border border-zinc-200/80 rounded-xl mb-4">
+                        <div class="p-3.5 sm:p-4 bg-slate-50/80 border border-slate-200/80 rounded-xl mb-3.5">
                             <div class="flex items-center gap-3">
                                 <div class="relative">
-                                    <div class="w-11 h-11 {{ $ownerPlan ? 'bg-gradient-to-tr from-[#2874F0] via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-zinc-50 shadow-md shadow-amber-500/25' : 'bg-gradient-to-tr from-[#2874F0] to-[#1e40af] shadow-md' }} rounded-full flex items-center justify-center text-white text-base font-extrabold">
+                                    <div class="w-11 h-11 {{ $ownerPlan ? 'bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-50 shadow-md shadow-amber-500/25' : 'bg-gradient-to-tr from-blue-600 to-indigo-700 shadow-md' }} rounded-full flex items-center justify-center text-white text-base font-extrabold">
                                         {{ strtoupper(substr($property->owner->name, 0, 1)) }}
                                     </div>
                                     @if($ownerPlan)
@@ -809,13 +839,13 @@
                                     @endif
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <p class="text-sm font-extrabold text-zinc-900 truncate leading-snug">{{ $property->owner->name }}</p>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <p class="text-sm font-extrabold text-slate-900 truncate leading-snug">{{ $property->owner->name }}</p>
                                         @if($ownerPlan)
                                             <x-premium-badge :user="$property->owner" size="xs" :showPlan="false" />
                                         @endif
                                     </div>
-                                    <p class="text-xs text-zinc-500 font-semibold uppercase tracking-wider mt-0.5">Property Owner</p>
+                                    <p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Verified Property Owner</p>
                                 </div>
                             </div>
 
@@ -832,28 +862,30 @@
 
                                 @if($isOwnerOrAdmin || $hasViewed)
                                     {{-- Show full contact details --}}
-                                    <div class="space-y-3 pt-4 border-t border-zinc-200 mt-4">
-                                        <div class="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 bg-white p-2.5 rounded-lg border border-zinc-150 shadow-inner">
+                                    <div class="space-y-2.5 pt-3 border-t border-slate-200 mt-3">
+                                        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
                                             @php
                                                 $displayPhone = !empty($property->contact_phone) ? $property->contact_phone : (!empty($property->owner->phone) ? $property->owner->phone : 'Not provided');
                                             @endphp
-                                            <i class="ph-bold ph-phone text-[#2874F0] text-base"></i>
-                                            <a href="tel:{{ $displayPhone !== 'Not provided' ? $displayPhone : '' }}" class="text-zinc-800 hover:text-[#2874F0] truncate flex-1" title="Call Support">
+                                            <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                                <i class="ph-bold ph-phone text-sm"></i>
+                                            </div>
+                                            <a href="tel:{{ $displayPhone !== 'Not provided' ? $displayPhone : '' }}" class="text-slate-800 hover:text-blue-600 font-bold truncate flex-1" title="Call Owner">
                                                 {{ $displayPhone }}
-                                                @if(auth()->check() && (auth()->user()->isAdmin() || auth()->id() === $property->user_id))
-                                                    <span class="text-[10px] text-zinc-400 font-normal ml-1">(Property Phone: "{{ $property->contact_phone ?? 'NULL' }}", Owner Phone: "{{ $property->owner->phone ?? 'NULL' }}")</span>
-                                                @endif
                                             </a>
+                                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Direct</span>
                                         </div>
-                                        <div class="flex items-center gap-2.5 text-sm font-semibold text-zinc-700 bg-white p-2.5 rounded-lg border border-zinc-150 shadow-inner">
-                                            <i class="ph-bold ph-envelope text-[#2874F0] text-base"></i>
-                                            <a href="mailto:{{ $property->owner->email }}" class="text-zinc-800 hover:text-[#2874F0] truncate flex-1" title="Email Support">
+                                        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
+                                            <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                                <i class="ph-bold ph-envelope text-sm"></i>
+                                            </div>
+                                            <a href="mailto:{{ $property->owner->email }}" class="text-slate-800 hover:text-blue-600 font-medium truncate flex-1" title="Email Owner">
                                                 {{ $property->owner->email }}
                                             </a>
                                         </div>
                                         @if($hasViewed && !$isOwnerOrAdmin)
-                                        <div class="text-[11px] text-emerald-600 font-bold mt-2.5 flex items-center justify-center gap-1 bg-emerald-50 py-1.5 px-3 rounded-md border border-emerald-200">
-                                            <i class="ph-bold ph-check-circle text-base"></i> Contact unlocked
+                                        <div class="text-[11px] text-emerald-700 font-bold mt-2 flex items-center justify-center gap-1 bg-emerald-50 py-1.5 px-3 rounded-lg border border-emerald-200">
+                                            <i class="ph-bold ph-check-circle text-sm"></i> Contact unlocked
                                             @if($activePlan)
                                                 · {{ $activePlan->remaining_contacts }} views remaining
                                             @endif
@@ -862,19 +894,19 @@
                                     </div>
                                 @elseif($canView)
                                     {{-- Has matching plan with remaining contacts — show unlock button --}}
-                                    <div class="space-y-3 pt-4 border-t border-zinc-200 mt-4">
-                                        <div class="flex items-center justify-between p-2.5 rounded-lg border border-dashed border-zinc-200 bg-zinc-50/80 text-zinc-400">
-                                            <div class="flex items-center gap-2.5 text-sm font-semibold">
-                                                <i class="ph-bold ph-phone text-zinc-400 text-base"></i>
+                                    <div class="space-y-2.5 pt-3 border-t border-slate-200 mt-3">
+                                        <div class="flex items-center justify-between p-2.5 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
+                                            <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold">
+                                                <i class="ph-bold ph-phone text-slate-400"></i>
                                                 <span class="tracking-widest font-mono text-xs">+91 ••••• •••••</span>
                                             </div>
                                             <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
                                                 <i class="ph-bold ph-lock text-[10px]"></i> Locked
                                             </span>
                                         </div>
-                                        <div class="flex items-center justify-between p-2.5 rounded-lg border border-dashed border-zinc-200 bg-zinc-50/80 text-zinc-400">
-                                            <div class="flex items-center gap-2.5 text-sm font-semibold">
-                                                <i class="ph-bold ph-envelope text-zinc-400 text-base"></i>
+                                        <div class="flex items-center justify-between p-2.5 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
+                                            <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold">
+                                                <i class="ph-bold ph-envelope text-slate-400"></i>
                                                 <span class="tracking-widest font-mono text-xs">•••••••@•••••.com</span>
                                             </div>
                                             <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
@@ -883,13 +915,13 @@
                                         </div>
 
                                         <div class="text-center p-3 bg-blue-50/70 rounded-xl border border-blue-100">
-                                            <p class="text-xs font-bold text-zinc-800 mb-0.5">Contact details locked</p>
-                                            <p class="text-[11px] text-zinc-500 font-medium">You have <strong class="text-blue-700 font-extrabold">{{ $activePlan->remaining_contacts }}</strong> contact {{ Str::plural('view', $activePlan->remaining_contacts) }} remaining in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}.</p>
+                                            <p class="text-xs font-bold text-slate-800 mb-0.5">Contact details locked</p>
+                                            <p class="text-[11px] text-slate-500 font-medium">You have <strong class="text-blue-700 font-extrabold">{{ $activePlan->remaining_contacts }}</strong> contact {{ Str::plural('view', $activePlan->remaining_contacts) }} remaining in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}.</p>
                                         </div>
 
                                         <form method="POST" action="{{ route('properties.unlock-contact', $property) }}">
                                             @csrf
-                                            <button type="submit" class="w-full px-4 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 active:scale-[0.99] text-white text-sm font-extrabold rounded-xl transition-all shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer" title="Unlock Contact Details">
+                                            <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white text-xs sm:text-sm font-extrabold rounded-xl transition-all shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer" title="Unlock Contact Details">
                                                 <i class="ph-bold ph-lock-key-open text-base"></i>
                                                 <span>Unlock {{ $isSale ? 'Seller' : 'Owner' }} Contact</span>
                                                 <span class="text-[10px] uppercase font-black bg-white/20 px-1.5 py-0.5 rounded-full ml-1">1 View</span>
@@ -898,46 +930,42 @@
                                     </div>
                                 @else
                                     {{-- Cannot view: determine precise reason --}}
-                                    <div class="pt-4 border-t border-zinc-200 mt-4">
-                                        <div class="text-center p-4 bg-amber-50/50 border border-amber-200 rounded-xl">
+                                    <div class="pt-3 border-t border-slate-200 mt-3">
+                                        <div class="text-center p-3.5 bg-amber-50/50 border border-amber-200 rounded-xl">
                                             @if($isSale && $hasRentPlan && !$hasBuyPlan)
-                                                {{-- User has Rent plan, but this is a Seller (Sale) post --}}
-                                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
-                                                    <i class="ph-bold ph-buildings text-xl"></i>
+                                                <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
+                                                    <i class="ph-bold ph-buildings text-lg"></i>
                                                 </div>
-                                                <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Buyer Pass Required</p>
-                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You currently hold an active Rental Plan. Rental plans only unlock rent posts. To view verified seller contact details for this property, please purchase a Buyer Pass.</p>
-                                                <a href="{{ route('plans.index', ['billing' => 'yearly', 'purpose' => 'buy']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Buyer Passes">
+                                                <p class="text-xs sm:text-sm font-extrabold text-slate-800 mb-0.5">Buyer Pass Required</p>
+                                                <p class="text-[11px] text-slate-500 mb-3 leading-normal font-medium">You hold an active Rental Plan. To view verified seller contact details for this property, please purchase a Buyer Pass.</p>
+                                                <a href="{{ route('plans.index', ['billing' => 'yearly', 'purpose' => 'buy']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="View Buyer Passes">
                                                     <i class="ph-bold ph-buildings"></i> View Buyer Passes
                                                 </a>
                                             @elseif(!$isSale && $hasBuyPlan && !$hasRentPlan)
-                                                {{-- User has Buyer pass, but this is a Rent post --}}
-                                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
-                                                    <i class="ph-bold ph-house text-xl"></i>
+                                                <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
+                                                    <i class="ph-bold ph-house text-lg"></i>
                                                 </div>
-                                                <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Rental Plan Required</p>
-                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You currently hold an active Buyer Pass. Buyer passes only unlock sale posts. To view verified owner contact details for this rental listing, please purchase a Rental Plan.</p>
-                                                <a href="{{ route('plans.index', ['billing' => 'monthly', 'purpose' => 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Rental Plans">
+                                                <p class="text-xs sm:text-sm font-extrabold text-slate-800 mb-0.5">Rental Plan Required</p>
+                                                <p class="text-[11px] text-slate-500 mb-3 leading-normal font-medium">You hold an active Buyer Pass. To view verified owner contact details for this rental listing, please purchase a Rental Plan.</p>
+                                                <a href="{{ route('plans.index', ['billing' => 'monthly', 'purpose' => 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="View Rental Plans">
                                                     <i class="ph-bold ph-house"></i> View Rental Plans
                                                 </a>
                                             @elseif($activePlan && $activePlan->remaining_contacts <= 0)
-                                                {{-- Contact views exhausted on matching plan --}}
-                                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
-                                                    <i class="ph-bold ph-lock-key text-xl"></i>
+                                                <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
+                                                    <i class="ph-bold ph-lock-key text-lg"></i>
                                                 </div>
-                                                <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Contact limit reached</p>
-                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">You have used all contact views in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}. Please upgrade your plan to unlock more contact details.</p>
-                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Upgrade Plan">
+                                                <p class="text-xs sm:text-sm font-extrabold text-slate-800 mb-0.5">Contact limit reached</p>
+                                                <p class="text-[11px] text-slate-500 mb-3 leading-normal font-medium">You have used all contact views in your active plan. Please upgrade your plan to unlock more contact details.</p>
+                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="Upgrade Plan">
                                                     <i class="ph-bold ph-crown"></i> Upgrade Plan
                                                 </a>
                                             @else
-                                                {{-- No active plan --}}
-                                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-2 shadow-inner">
-                                                    <i class="ph-bold ph-lock-key text-xl"></i>
+                                                <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
+                                                    <i class="ph-bold ph-lock-key text-lg"></i>
                                                 </div>
-                                                <p class="text-sm font-extrabold text-zinc-800 mb-0.5">Premium details locked</p>
-                                                <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Get a {{ $isSale ? 'Buyer Pass' : 'Rental Plan' }} to access the verified {{ $isSale ? 'seller\'s' : 'owner\'s' }} phone & email details.</p>
-                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="View Unlock Plans">
+                                                <p class="text-xs sm:text-sm font-extrabold text-slate-800 mb-0.5">Direct Owner Contact Locked</p>
+                                                <p class="text-[11px] text-slate-500 mb-3 leading-normal font-medium">Subscribe to a plan to access the verified {{ $isSale ? 'seller\'s' : 'owner\'s' }} phone & email details.</p>
+                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="View Unlock Plans">
                                                     <i class="ph-bold ph-crown"></i> View {{ $isSale ? 'Buyer Passes' : 'Rental Plans' }}
                                                 </a>
                                             @endif
@@ -946,14 +974,14 @@
                                 @endif
                             @else
                                 {{-- Guest — prompt to login --}}
-                                <div class="pt-4 border-t border-zinc-200 mt-4">
-                                    <div class="text-center p-4 bg-zinc-50 rounded-xl border border-zinc-200/60">
-                                        <div class="w-10 h-10 rounded-full bg-zinc-200 text-zinc-500 flex items-center justify-center mx-auto mb-2 shadow-inner">
-                                            <i class="ph-bold ph-user-lock text-xl"></i>
+                                <div class="pt-3 border-t border-slate-200 mt-3">
+                                    <div class="text-center p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                                        <div class="w-9 h-9 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
+                                            <i class="ph-bold ph-user-lock text-lg"></i>
                                         </div>
-                                        <p class="text-xs font-bold text-zinc-650 mb-3 leading-normal">Sign in with your verified profile to view full owner contact details.</p>
-                                        <a href="{{ route('login') }}" class="inline-flex items-center gap-1 px-6 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-xs font-extrabold rounded-lg shadow-md transition-all" style="color: #ffffff !important;" title="Sign In to View">
-                                            <span style="color: #ffffff !important;">Sign In to View</span>
+                                        <p class="text-xs font-bold text-slate-650 mb-2.5 leading-normal">Sign in with your verified profile to view full owner contact details.</p>
+                                        <a href="{{ route('login') }}" class="inline-flex items-center gap-1 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="Sign In to View">
+                                            Sign In to View
                                         </a>
                                     </div>
                                 </div>
@@ -961,31 +989,34 @@
                         </div>
                         @endif
 
-                        {{-- Edit/Delete for owner/admin --}}
-                        @if(auth()->check())
-                            @if(auth()->id() === $property->user_id || auth()->user()->isAdmin())
-                            <div class="flex gap-2.5 pt-3 border-t border-zinc-150 mt-3">
-                                <a href="{{ route('properties.edit', $property) }}" class="flex-1 text-center px-4 py-2.5 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-bold rounded-xl transition-all shadow-sm" title="Edit Page">
-                                    <i class="ph-bold ph-pencil-simple"></i> Edit Page
+                        {{-- Owner / Admin Controls --}}
+                        @if(auth()->check() && (auth()->id() === $property->user_id || auth()->user()->isAdmin()))
+                        <div class="p-3 bg-blue-50/70 border border-blue-200/80 rounded-xl">
+                            <p class="text-[11px] font-extrabold text-blue-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i class="ph-bold ph-shield-check text-blue-600"></i> Owner Controls
+                            </p>
+                            <div class="flex gap-2">
+                                <a href="{{ route('properties.edit', $property) }}" class="flex-1 text-center py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all shadow-xs flex items-center justify-center gap-1" title="Edit this property">
+                                    <i class="ph-bold ph-pencil-simple"></i> Edit Listing
                                 </a>
                                 <form method="POST" action="{{ route('properties.destroy', $property) }}" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this property?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="w-full px-4 py-2.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold rounded-xl transition-all shadow-sm cursor-pointer">
+                                    <button type="submit" class="w-full py-2 px-3 bg-white hover:bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-lg transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-1">
                                         <i class="ph-bold ph-trash"></i> Delete
                                     </button>
                                 </form>
                             </div>
-                            @endif
+                        </div>
                         @endif
                     </div>
 
-                    {{-- Elegant Inquiry Form Card --}}
-                    <div class="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm relative overflow-hidden" id="inquiry-form-card" style="padding: 1.5rem !important;">
-                        <div class="absolute top-0 left-0 w-full h-[5px] bg-[#2874F0]"></div>
-                        <h3 class="text-zinc-900 font-extrabold text-base mb-4 flex items-center gap-2 pt-1">
-                            <i class="ph-bold ph-envelope-simple-open text-[#2874F0] text-lg"></i>
-                            Send Inquiry
+                    {{-- Standard Inquiry Form Card --}}
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm relative overflow-hidden" id="inquiry-form-card">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
+                        <h3 class="text-slate-900 font-extrabold text-sm sm:text-base mb-3.5 flex items-center gap-2 pt-0.5">
+                            <i class="ph-bold ph-envelope-simple-open text-blue-600 text-lg"></i>
+                            Send Direct Inquiry
                         </h3>
 
                         @if(auth()->check())
@@ -993,41 +1024,37 @@
                             @csrf
                             <input type="hidden" name="property_id" value="{{ $property->id }}">
 
-                            <div class="space-y-3.5">
+                            <div class="space-y-3">
                                 <div class="relative">
-                                    <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base pointer-events-none z-10"></i>
+                                    <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none z-10"></i>
                                     <input type="text" name="name" value="{{ auth()->user()->name }}"
-                                           class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
-                                           style="padding-left: 2.85rem !important; padding-right: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; height: 2.85rem !important;"
+                                           class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                            placeholder="Your Full Name" required id="inquiry-name">
                                 </div>
                                 <div class="relative">
-                                    <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base pointer-events-none z-10"></i>
+                                    <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none z-10"></i>
                                     <input type="email" name="email" value="{{ auth()->user()->email }}"
-                                           class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
-                                           style="padding-left: 2.85rem !important; padding-right: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; height: 2.85rem !important;"
+                                           class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                            placeholder="Your Email Address" required id="inquiry-email">
                                 </div>
                                 <div class="relative">
-                                    <i class="ph-bold ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-base pointer-events-none z-10"></i>
+                                    <i class="ph-bold ph-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none z-10"></i>
                                     <input type="tel" name="phone" value="{{ auth()->user()->phone }}"
-                                           class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all font-medium"
-                                           style="padding-left: 2.85rem !important; padding-right: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; height: 2.85rem !important;"
+                                           class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                            placeholder="Phone Number (optional)" id="inquiry-phone">
                                 </div>
                                 <div class="relative">
-                                    <textarea name="message" rows="4"
-                                              class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2874F0]/15 focus:border-[#2874F0] transition-all resize-none font-medium"
-                                              style="padding: 0.85rem 1rem !important;"
+                                    <textarea name="message" rows="3"
+                                              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all resize-y"
                                               placeholder="I'm interested in this property..." required id="inquiry-message">I'm interested in "{{ $property->title }}". Please share more details.</textarea>
                                 </div>
-                                <button type="submit" class="w-full px-6 py-3.5 bg-gradient-to-r from-[#2874F0] to-[#1A5FDF] hover:brightness-105 text-white text-sm font-extrabold rounded-xl shadow-lg shadow-[#2874F0]/20 hover:shadow-[#2874F0]/30 transition-all flex items-center justify-center gap-2 cursor-pointer" id="inquiry-submit">
-                                    <i class="ph-bold ph-paper-plane-tilt"></i> Send Inquiry Details
+                                <button type="submit" class="w-full px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95" id="inquiry-submit">
+                                    <i class="ph-bold ph-paper-plane-tilt text-sm"></i> Send Inquiry to Owner
                                 </button>
                             </div>
 
                             @if($errors->any())
-                            <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+                            <div class="mt-3 p-2.5 bg-red-50 border border-red-200 rounded-xl">
                                 @foreach($errors->all() as $error)
                                     <p class="text-xs font-bold text-red-650">{{ $error }}</p>
                                 @endforeach
@@ -1035,10 +1062,10 @@
                             @endif
                         </form>
                         @else
-                        <div class="text-center py-6">
-                            <p class="text-xs font-bold text-zinc-550 mb-4 leading-normal">Please sign in with your UnlockRentals account to submit inquiries directly to the owner.</p>
-                            <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 px-6 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white text-xs font-extrabold rounded-lg shadow-md transition-all" style="color: #ffffff !important;" title="Sign In Now">
-                                <span style="color: #ffffff !important;">Sign In Now</span>
+                        <div class="text-center py-5">
+                            <p class="text-xs font-bold text-slate-500 mb-3 leading-normal">Please sign in with your UnlockRentals account to submit inquiries directly to the owner.</p>
+                            <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="Sign In Now">
+                                <span>Sign In Now</span>
                             </a>
                         </div>
                         @endif
