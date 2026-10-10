@@ -154,7 +154,7 @@
                 <div class="w-px h-8 bg-stone-100 dark:bg-slate-800"></div>
                 <div class="flex flex-col">
                     <span class="text-2xl font-black text-zinc-900 dark:text-slate-100 leading-none">
-                        {{ $properties->total() }}
+                        {{ $properties->total() > 0 ? $properties->total() : ($recommendations->count() > 0 ? $recommendations->count() : 'Verified') }}
                     </span>
                     <span class="text-[10px] font-bold text-zinc-400 dark:text-slate-500 uppercase mt-1">Available</span>
                 </div>
@@ -175,27 +175,27 @@
                     {{ $properties->links() }}
                 </div>
             @else
-                {{-- Zero Result State with recommendations --}}
+                {{-- Curated Regional Rentals (Prevents Google Soft 404) --}}
                 <div class="mb-16">
-                    <div class="text-center py-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-stone-200/60 dark:border-slate-800 rounded-3xl shadow-sm mb-16">
-                        <div class="w-16 h-16 bg-stone-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="ph ph-magnifying-glass text-3xl text-zinc-300 dark:text-slate-600"></i>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-slate-100">
+                                Verified & Featured Rentals in this Region
+                            </h2>
+                            <p class="text-zinc-500 dark:text-slate-400 text-sm mt-1">
+                                Browse 100% direct-owner rental homes and apartments with zero brokerage.
+                            </p>
                         </div>
-                        <h3 class="text-2xl font-bold text-zinc-900 dark:text-slate-100 mb-2">No listings in this specific filter</h3>
-                        <p class="text-zinc-500 dark:text-slate-400 mb-6 max-w-md mx-auto font-light">
-                            We don't have active properties matching your exact criteria right now. Check out these highly recommended properties in the region below.
-                        </p>
+                        <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2563EB] hover:underline self-start sm:self-auto">
+                            <span>Browse All Listings</span>
+                            <i class="ph-bold ph-arrow-right"></i>
+                        </a>
                     </div>
 
-                    <div class="border-t border-stone-200/60 dark:border-slate-800/60 pt-12">
-                        <h3 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-slate-100 mb-8">
-                            Recommended properties for you
-                        </h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-                            @foreach($recommendations as $recProperty)
-                                <x-property-card :property="$recProperty" />
-                            @endforeach
-                        </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                        @foreach($recommendations as $recProperty)
+                            <x-property-card :property="$recProperty" />
+                        @endforeach
                     </div>
                 </div>
             @endif

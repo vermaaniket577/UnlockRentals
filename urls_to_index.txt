@@ -2,16 +2,10 @@ https://www.unlockrentals.com/
 https://www.unlockrentals.com/sitemap
 https://www.unlockrentals.com/properties
 https://www.unlockrentals.com/services
-https://www.unlockrentals.com/services/register
-https://www.unlockrentals.com/post-free-advertise
-https://www.unlockrentals.com/post-free-property
-https://www.unlockrentals.com/properties/create
 https://www.unlockrentals.com/plans
 https://www.unlockrentals.com/how-it-works
 https://www.unlockrentals.com/app
 https://www.unlockrentals.com/blog
-https://www.unlockrentals.com/llms.txt
-https://www.unlockrentals.com/llms-full.txt
 https://www.unlockrentals.com/privacy-policy
 https://www.unlockrentals.com/terms-and-conditions
 https://www.unlockrentals.com/1-bhk-apartment-for-rent
