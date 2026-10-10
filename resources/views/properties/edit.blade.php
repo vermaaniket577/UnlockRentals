@@ -314,20 +314,80 @@
                 </div>
 
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        if (typeof window.initLocationCascading === 'function') {
-                            window.initLocationCascading({
-                                stateId: 'edit-state',
-                                cityId: 'edit-city',
-                                localityId: 'edit-locality-select',
-                                localityTextWrapId: 'locality-text-wrap',
-                                localitySelectWrapId: 'locality-select-wrap',
-                                selectedState: "{{ old('state', $property->state) }}",
-                                selectedCity: "{{ old('location', $property->location) }}",
-                                selectedLocality: "{{ old('locality', $property->locality) }}"
+                    (function() {
+                        function checkAndInjectSector13() {
+                            var cityEl = document.getElementById('edit-city');
+                            var locEl = document.getElementById('edit-locality-select');
+                            if (!cityEl || !locEl) return;
+                            var cVal = (cityEl.value || '').trim().toLowerCase();
+                            if (!cVal.includes('gurugram') && !cVal.includes('gurgaon')) return;
+                            if (locEl.options.length <= 1) return;
+
+                            var hasS13 = Array.from(locEl.options).some(function(o) {
+                                return o.value.trim().toLowerCase() === 'sector 13';
                             });
+                            if (!hasS13) {
+                                var curVal = locEl.value || "{{ old('locality', $property->locality) }}";
+                                var newOpt = new Option('\u00A0\u00A0Sector 13', 'Sector 13');
+                                var inserted = false;
+                                for (var i = 1; i < locEl.options.length; i++) {
+                                    var txt = locEl.options[i].text.trim();
+                                    if (txt.localeCompare('Sector 13', undefined, { numeric: true, sensitivity: 'base' }) > 0) {
+                                        locEl.insertBefore(newOpt, locEl.options[i]);
+                                        inserted = true;
+                                        break;
+                                    }
+                                }
+                                if (!inserted) locEl.add(newOpt);
+                                if (curVal) locEl.value = curVal;
+                            }
                         }
-                    });
+
+                        document.addEventListener('DOMContentLoaded', function() {
+                            if (typeof window.initLocationCascading === 'function') {
+                                window.initLocationCascading({
+                                    stateId: 'edit-state',
+                                    cityId: 'edit-city',
+                                    localityId: 'edit-locality-select',
+                                    localityTextWrapId: 'locality-text-wrap',
+                                    localitySelectWrapId: 'locality-select-wrap',
+                                    selectedState: "{{ old('state', $property->state) }}",
+                                    selectedCity: "{{ old('location', $property->location) }}",
+                                    selectedLocality: "{{ old('locality', $property->locality) }}"
+                                });
+                            }
+
+                            checkAndInjectSector13();
+                            setTimeout(checkAndInjectSector13, 80);
+                            setTimeout(checkAndInjectSector13, 250);
+                            setTimeout(checkAndInjectSector13, 600);
+                            setTimeout(checkAndInjectSector13, 1200);
+
+                            var locEl = document.getElementById('edit-locality-select');
+                            var cityEl = document.getElementById('edit-city');
+                            if (locEl) {
+                                locEl.addEventListener('focus', checkAndInjectSector13);
+                                locEl.addEventListener('mousedown', checkAndInjectSector13);
+                                locEl.addEventListener('click', checkAndInjectSector13);
+
+                                if (window.MutationObserver) {
+                                    var observer = new MutationObserver(function() {
+                                        observer.disconnect();
+                                        checkAndInjectSector13();
+                                        observer.observe(locEl, { childList: true });
+                                    });
+                                    observer.observe(locEl, { childList: true });
+                                }
+                            }
+                            if (cityEl) {
+                                cityEl.addEventListener('change', function() {
+                                    setTimeout(checkAndInjectSector13, 50);
+                                    setTimeout(checkAndInjectSector13, 200);
+                                    setTimeout(checkAndInjectSector13, 500);
+                                });
+                            }
+                        });
+                    })();
                 </script>
             </div>
 

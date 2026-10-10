@@ -926,13 +926,64 @@ Route::get('/run-git-pull', function (\Illuminate\Http\Request $request) {
     chdir(base_path());
     exec('git pull origin main 2>&1', $out, $ret);
 
+    $syncLog = [];
+    $sourceJs = base_path('public/js/location-data.js');
+    $syncLog[] = "Source JS exists: " . (file_exists($sourceJs) ? 'YES (size: ' . filesize($sourceJs) . ')' : 'NO');
+    $syncLog[] = "base_path: " . base_path();
+    $syncLog[] = "public_path: " . public_path();
+    $syncLog[] = "DOCUMENT_ROOT: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'not set');
+
+    $possibleDests = [
+        public_path('js/location-data.js'),
+        ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/js/location-data.js',
+        dirname(base_path()) . '/public_html/js/location-data.js',
+        dirname(base_path()) . '/public/js/location-data.js',
+    ];
+
+    // Find any additional public_html or js folders in parent directory
+    $parentDir = dirname(base_path());
+    if (is_dir($parentDir)) {
+        foreach (scandir($parentDir) as $item) {
+            if ($item === '.' || $item === '..') continue;
+            $candidatePath = $parentDir . '/' . $item . '/js/location-data.js';
+            if (is_file($candidatePath) || is_dir($parentDir . '/' . $item . '/js')) {
+                $possibleDests[] = $candidatePath;
+            }
+        }
+    }
+
+    $possibleDests = array_unique(array_filter($possibleDests));
+
+    if (file_exists($sourceJs)) {
+        $sourceContent = file_get_contents($sourceJs);
+        foreach ($possibleDests as $dest) {
+            $destDir = dirname($dest);
+            if (!is_dir($destDir)) {
+                @mkdir($destDir, 0755, true);
+            }
+            $written = @file_put_contents($dest, $sourceContent);
+            @touch($dest);
+            $syncLog[] = "Synced to $dest: " . ($written !== false ? "SUCCESS ($written bytes)" : "FAILED");
+        }
+    }
+
     try {
         \Illuminate\Support\Facades\Artisan::call('view:clear');
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
         \App\Providers\AppServiceProvider::clearLocationCache();
-    } catch (\Throwable $e) {}
+        $syncLog[] = "All artisan caches cleared.";
+    } catch (\Throwable $e) {
+        $syncLog[] = "Cache clear error: " . $e->getMessage();
+    }
 
-    return response("<pre>Git Pull (Exit: $ret):\n" . implode("\n", $out) . "\n\nCache cleared successfully!</pre>", 200)
+    if (function_exists('opcache_reset')) {
+        @opcache_reset();
+        $syncLog[] = "OPcache reset executed.";
+    }
+
+    return response("<pre>Git Pull (Exit: $ret):\n" . implode("\n", $out) . "\n\nSync Log:\n" . implode("\n", $syncLog) . "</pre>", 200)
         ->header('Content-Type', 'text/html');
 });
 

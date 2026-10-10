@@ -165,29 +165,43 @@
     patchLocalities();
     window.addEventListener('load', patchLocalities);
     document.addEventListener('DOMContentLoaded', patchLocalities);
-    var pInt = setInterval(patchLocalities, 150);
-    setTimeout(function() { clearInterval(pInt); }, 3000);
+    var pInt = setInterval(patchLocalities, 100);
+    setTimeout(function() { clearInterval(pInt); }, 4000);
+
+    window.ensureSector13InSelect = function(locSelect, cityEl) {
+        if (!locSelect) return;
+        if (!cityEl) {
+            var form = locSelect.form || document;
+            cityEl = form.querySelector('select[name="location"], select[name="district"], #create-city, #edit-city, #city-select');
+        }
+        if (!cityEl) return;
+        var cityVal = (cityEl.value || '').trim().toLowerCase();
+        if (!cityVal.includes('gurugram') && !cityVal.includes('gurgaon')) return;
+        if (locSelect.options.length <= 1) return;
+
+        var hasS13 = Array.from(locSelect.options).some(function(o) {
+            return o.value.trim().toLowerCase() === 'sector 13';
+        });
+        if (hasS13) return;
+
+        var curVal = locSelect.value;
+        var newOpt = new Option('\u00A0\u00A0Sector 13', 'Sector 13');
+        var inserted = false;
+        for (var i = 1; i < locSelect.options.length; i++) {
+            var txt = locSelect.options[i].text.trim();
+            if (txt.localeCompare('Sector 13', undefined, { numeric: true, sensitivity: 'base' }) > 0) {
+                locSelect.insertBefore(newOpt, locSelect.options[i]);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted) locSelect.add(newOpt);
+        if (curVal) locSelect.value = curVal;
+    };
 
     function syncDropdown(cityVal, locSelect) {
         if (!cityVal || !locSelect) return;
-        var isGurg = /gur/i.test(cityVal);
-
-        // Immediate injection for Gurugram if missing
-        if (isGurg) {
-            var hasS13 = Array.from(locSelect.options).some(function(o) { return o.value.trim().toLowerCase() === 'sector 13'; });
-            if (!hasS13 && locSelect.options.length > 1) {
-                var opt = new Option('\u00A0\u00A0Sector 13', 'Sector 13');
-                locSelect.add(opt);
-                var placeholder = locSelect.options[0];
-                var rest = Array.from(locSelect.options).slice(1);
-                rest.sort(function(a, b) {
-                    return a.text.trim().localeCompare(b.text.trim(), undefined, { numeric: true, sensitivity: 'base' });
-                });
-                locSelect.innerHTML = '';
-                locSelect.add(placeholder);
-                rest.forEach(function(o) { locSelect.add(o); });
-            }
-        }
+        window.ensureSector13InSelect(locSelect);
 
         // Live API fetch to sync all admin-added localities
         var cleanCity = cityVal.replace(/\s*\([A-Za-z]+\)$/, '').trim();
@@ -195,6 +209,7 @@
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (Array.isArray(data) && data.length > 0) {
+                    var curSelected = locSelect.value;
                     var existingVals = new Set(Array.from(locSelect.options).map(function(o) { return o.value.trim().toLowerCase(); }));
                     var added = false;
                     data.forEach(function(item) {
@@ -214,13 +229,36 @@
                         locSelect.innerHTML = '';
                         locSelect.add(placeholder);
                         rest.forEach(function(o) { locSelect.add(o); });
+                        if (curSelected) locSelect.value = curSelected;
                     }
+                    window.ensureSector13InSelect(locSelect);
                 }
             })
             .catch(function() {});
     }
 
-    function attachLiveSync() {
+    function hookAllLocalitySelects() {
+        var locSelects = document.querySelectorAll('select[name="locality"], #create-locality-select, #edit-locality-select, #locality-select');
+        locSelects.forEach(function(locSelect) {
+            window.ensureSector13InSelect(locSelect);
+
+            if (!locSelect.dataset.hasSector13Observer) {
+                locSelect.dataset.hasSector13Observer = 'true';
+                locSelect.addEventListener('focus', function() { window.ensureSector13InSelect(locSelect); });
+                locSelect.addEventListener('mousedown', function() { window.ensureSector13InSelect(locSelect); });
+                locSelect.addEventListener('click', function() { window.ensureSector13InSelect(locSelect); });
+
+                if (window.MutationObserver) {
+                    var observer = new MutationObserver(function() {
+                        observer.disconnect();
+                        window.ensureSector13InSelect(locSelect);
+                        observer.observe(locSelect, { childList: true });
+                    });
+                    observer.observe(locSelect, { childList: true });
+                }
+            }
+        });
+
         var citySelects = document.querySelectorAll('select[name="location"], select[name="district"], #create-city, #edit-city, #city-select');
         citySelects.forEach(function(cityEl) {
             if (cityEl.dataset.hasLiveSectorSync) return;
@@ -231,22 +269,24 @@
 
             cityEl.addEventListener('change', function() {
                 var cVal = (cityEl.value || '').trim();
-                setTimeout(function() {
-                    syncDropdown(cVal, locSelect);
-                }, 50);
+                setTimeout(function() { syncDropdown(cVal, locSelect); }, 30);
+                setTimeout(function() { syncDropdown(cVal, locSelect); }, 150);
+                setTimeout(function() { syncDropdown(cVal, locSelect); }, 400);
             });
 
-            // If city is already pre-selected on page load (e.g., validation error or edit mode)
             if (cityEl.value) {
-                setTimeout(function() {
-                    syncDropdown(cityEl.value, locSelect);
-                }, 200);
+                syncDropdown(cityEl.value, locSelect);
+                setTimeout(function() { syncDropdown(cityEl.value, locSelect); }, 150);
+                setTimeout(function() { syncDropdown(cityEl.value, locSelect); }, 500);
+                setTimeout(function() { syncDropdown(cityEl.value, locSelect); }, 1200);
             }
         });
     }
 
-    attachLiveSync();
-    document.addEventListener('DOMContentLoaded', attachLiveSync);
-    window.addEventListener('load', attachLiveSync);
+    hookAllLocalitySelects();
+    document.addEventListener('DOMContentLoaded', hookAllLocalitySelects);
+    window.addEventListener('load', hookAllLocalitySelects);
+    var hookInt = setInterval(hookAllLocalitySelects, 200);
+    setTimeout(function() { clearInterval(hookInt); }, 5000);
 })();
 </script>
