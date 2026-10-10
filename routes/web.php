@@ -891,6 +891,16 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
         echo "Output:<br><pre style='background: #f4f4f4; padding: 10px; border-radius: 5px;'>";
         echo htmlspecialchars(\Illuminate\Support\Facades\Artisan::output());
         echo "</pre>";
+
+        echo "<strong>Step 3: Clearing views, config & location cache...</strong><br>";
+        try {
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            \App\Providers\AppServiceProvider::clearLocationCache();
+            echo "Views and location cache cleared successfully!<br>";
+        } catch (\Throwable $ce) {
+            echo "Cache clear notice: " . htmlspecialchars($ce->getMessage()) . "<br>";
+        }
         
         echo "<h3 style='color: green;'>✓ Database setup completed successfully!</h3>";
         echo "</body></html>";
@@ -902,6 +912,29 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
         echo "</body></html>";
     }
 })->name('run-migrations');
+
+Route::get('/run-git-pull', function (\Illuminate\Http\Request $request) {
+    $key = $request->query('key');
+    $expectedKey = env('MIGRATION_KEY', 'UnlockRentalsSecureMigrateKey2026');
+
+    if ($key !== $expectedKey) {
+        abort(404);
+    }
+
+    $out = [];
+    $ret = 0;
+    chdir(base_path());
+    exec('git pull origin main 2>&1', $out, $ret);
+
+    try {
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \App\Providers\AppServiceProvider::clearLocationCache();
+    } catch (\Throwable $e) {}
+
+    return response("<pre>Git Pull (Exit: $ret):\n" . implode("\n", $out) . "\n\nCache cleared successfully!</pre>", 200)
+        ->header('Content-Type', 'text/html');
+});
 
 // Universal route to serve images directly from storage/app/public without a symlink
 Route::withoutMiddleware([
