@@ -31,6 +31,11 @@ class VisitorTrackingService
         'visit_scheduled' => 30,
         'phone_revealed' => 15,
         'exit_intent_submitted' => 20,
+        'auth_page_viewed' => 2,
+        'auth_abandoned' => 6,
+        'auth_exit_intent_shown' => 3,
+        'auth_exit_lead_submitted' => 25,
+        'auth_exit_whatsapp_clicked' => 15,
     ];
 
     /**

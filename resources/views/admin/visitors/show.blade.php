@@ -122,13 +122,17 @@
             @forelse($visitor->events as $event)
                 <div class="relative pl-6 group">
                     {{-- Timeline Dot --}}
-                    @if($event->event_name === 'lead_submit')
+                    @if($event->event_name === 'lead_submit' || $event->event_name === 'auth_exit_lead_submitted')
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-50"></span>
-                    @elseif($event->event_name === 'whatsapp_click')
+                    @elseif($event->event_name === 'whatsapp_click' || $event->event_name === 'auth_exit_whatsapp_clicked')
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-emerald-600 ring-4 ring-emerald-50"></span>
+                    @elseif($event->event_name === 'auth_abandoned')
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-rose-500 ring-4 ring-rose-50"></span>
+                    @elseif($event->event_name === 'auth_page_viewed' || $event->event_name === 'auth_exit_intent_shown')
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-amber-500 ring-4 ring-amber-50"></span>
                     @elseif($event->event_name === 'search')
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-violet-600 ring-4 ring-violet-50"></span>
-                    @elseif($event->event_name === 'view_property')
+                    @elseif($event->event_name === 'view_property' || $event->event_name === 'property_view')
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-600 ring-4 ring-blue-50"></span>
                     @else
                         <span class="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-slate-300"></span>
@@ -136,8 +140,8 @@
 
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                                {{ str_replace('_', ' ', $event->event_name) }}
+                            <span class="text-xs font-bold text-slate-900 tracking-wide {{ in_array($event->event_name, ['auth_abandoned', 'auth_exit_lead_submitted', 'auth_exit_whatsapp_clicked']) ? 'px-2 py-0.5 rounded-md ' . ($event->event_name === 'auth_abandoned' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200') : '' }}">
+                                {{ $event->label }}
                             </span>
                             @if($event->property)
                                 <a href="{{ route('properties.show', $event->property->id) }}" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold">

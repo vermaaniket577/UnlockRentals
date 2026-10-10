@@ -284,6 +284,8 @@
     </div>
 </div>
 
+@include('components.auth-exit-modal')
+
 @endsection
 
 @push('scripts')

@@ -86,6 +86,11 @@ class VisitorEvent extends Model
             'exit_intent_submitted' => 'Submitted Exit Intent Form',
             'login' => 'Signed In',
             'registration' => 'Registered Account',
+            'auth_page_viewed' => 'Visited Sign In Page',
+            'auth_abandoned' => 'Abandoned Sign In (High Intent)',
+            'auth_exit_intent_shown' => 'Sign In Exit Offer Shown',
+            'auth_exit_lead_submitted' => 'Recovered Sign In Lead',
+            'auth_exit_whatsapp_clicked' => 'Clicked WhatsApp on Sign In Exit',
             default => ucwords(str_replace('_', ' ', $this->event_name)),
         };
     }

@@ -260,6 +260,8 @@
     </div>
 </section>
 
+@include('components.auth-exit-modal')
+
 @endsection
 
 @push('scripts')
