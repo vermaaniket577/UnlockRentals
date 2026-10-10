@@ -767,6 +767,10 @@
                 }
             }
             locList = locList || [];
+            if ((cityKey === 'gurugram' || cityKey === 'gurgaon') && !locList.includes('Sector 13')) {
+                locList.push('Sector 13');
+                locList.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+            }
         } else if (stateCode) {
             locList = window.IndianLocationData.localitiesByState[stateCode]
                 || window.IndianLocationData.localitiesByState[stateCode.toUpperCase()]
