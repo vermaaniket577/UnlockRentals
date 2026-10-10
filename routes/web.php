@@ -1027,53 +1027,146 @@ Route::post('/property-video-upload', [App\Http\Controllers\PropertyController::
 
 // Dynamic Location API routes for AJAX cascading
 Route::get('/api/locations/districts', function(\Illuminate\Http\Request $request) {
-    $stateInput = trim($request->get('state', ''));
-    $locationData = \App\Providers\AppServiceProvider::getLocationData();
+    $stateInput = trim((string)$request->get('state', $request->get('state_id', '')));
+    $districts = [];
 
-    if (!$stateInput) {
-        return response()->json($locationData['allDistricts'] ?? []);
+    if ($stateInput) {
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('districts') && \Illuminate\Support\Facades\Schema::hasTable('states')) {
+                $dbDistricts = \App\Models\District::whereHas('state', function($q) use ($stateInput) {
+                    $q->where('code', strtoupper($stateInput))
+                      ->orWhere('name', $stateInput)
+                      ->orWhereRaw('LOWER(name) = ?', [strtolower($stateInput)]);
+                    if (is_numeric($stateInput)) {
+                        $q->orWhere('id', (int)$stateInput);
+                    }
+                })->orderBy('name')->pluck('name')->all();
+
+                foreach ($dbDistricts as $d) {
+                    $trimD = trim($d);
+                    if ($trimD !== '') $districts[] = $trimD;
+                }
+            }
+        } catch (\Throwable $e) {}
     }
 
-    $districts = $locationData['districts'][$stateInput] 
+    $locationData = \App\Providers\AppServiceProvider::getLocationData();
+    if (!$stateInput) {
+        return response()->json($locationData['allDistricts'] ?? [])->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+
+    $fileDistricts = $locationData['districts'][$stateInput] 
         ?? $locationData['districts'][strtoupper($stateInput)] 
         ?? $locationData['districts'][strtolower($stateInput)] 
         ?? [];
 
+    foreach ($fileDistricts as $fd) {
+        $trimFd = trim($fd);
+        if ($trimFd !== '') $districts[] = $trimFd;
+    }
+
+    $uniqueDistricts = array_values(array_unique($districts));
+    natcasesort($uniqueDistricts);
+    $uniqueDistricts = array_values($uniqueDistricts);
+
     $formatted = array_map(function($d) use ($stateInput) {
         return ['name' => $d, 'state' => $stateInput];
-    }, $districts);
+    }, $uniqueDistricts);
 
-    return response()->json($formatted);
+    return response()->json($formatted)->header('Cache-Control', 'no-cache, no-store, must-revalidate');
 })->name('api.locations.districts');
 
 Route::get('/api/locations/localities', function(\Illuminate\Http\Request $request) {
-    $districtInput = trim($request->get('district', ''));
-    $stateInput = trim($request->get('state', ''));
-    $locationData = \App\Providers\AppServiceProvider::getLocationData();
+    $districtInput = trim((string)$request->get('district', $request->get('district_id', '')));
+    $stateInput = trim((string)$request->get('state', $request->get('state_id', '')));
+
+    $cleanDistrict = trim(preg_replace('/ \([A-Za-z]+\)$/', '', $districtInput));
+    $dSlug = str_replace(' ', '-', strtolower($cleanDistrict));
+    $dLower = strtolower($cleanDistrict);
 
     $localities = [];
-    if ($districtInput) {
-        $cleanName = trim(preg_replace('/ \([A-Za-z]+\)$/', '', $districtInput));
-        $dSlug = str_replace(' ', '-', strtolower($cleanName));
-        $dNameLower = strtolower($cleanName);
 
-        $localities = $locationData['localities'][$dSlug] 
-            ?? $locationData['localities'][$dNameLower] 
-            ?? $locationData['localities'][$cleanName]
-            ?? $locationData['localities'][$districtInput]
-            ?? [];
-    } elseif ($stateInput) {
-        $localities = $locationData['localitiesByState'][$stateInput] 
-            ?? $locationData['localitiesByState'][strtoupper($stateInput)] 
-            ?? $locationData['localitiesByState'][strtolower($stateInput)]
-            ?? [];
+    // 1. Direct live query on database localities table
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('localities')) {
+            $query = \App\Models\Locality::query();
+            if ($cleanDistrict !== '') {
+                $query->where(function($q) use ($cleanDistrict, $dSlug, $dLower) {
+                    $q->whereHas('district', function($dq) use ($cleanDistrict, $dSlug, $dLower) {
+                        $dq->where('name', $cleanDistrict)
+                           ->orWhere('slug', $dSlug)
+                           ->orWhereRaw('LOWER(name) = ?', [$dLower]);
+                    });
+                    if (is_numeric($cleanDistrict)) {
+                        $q->orWhere('district_id', (int)$cleanDistrict);
+                    }
+                });
+            } elseif ($stateInput !== '') {
+                $query->whereHas('district.state', function($sq) use ($stateInput) {
+                    $sq->where('code', strtoupper($stateInput))
+                       ->orWhere('name', $stateInput)
+                       ->orWhereRaw('LOWER(name) = ?', [strtolower($stateInput)]);
+                    if (is_numeric($stateInput)) {
+                        $sq->orWhere('id', (int)$stateInput);
+                    }
+                });
+            }
+
+            if ($cleanDistrict !== '' || $stateInput !== '') {
+                $dbLocs = $query->orderBy('name')->pluck('name')->all();
+                foreach ($dbLocs as $l) {
+                    $trimL = trim($l);
+                    if ($trimL !== '') {
+                        $localities[] = $trimL;
+                    }
+                }
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    // 2. Also merge file dataset localities
+    try {
+        $locationData = \App\Providers\AppServiceProvider::getLocationData();
+        $fileLocs = [];
+        if ($cleanDistrict !== '') {
+            $fileLocs = $locationData['localities'][$dSlug] 
+                ?? $locationData['localities'][$dLower] 
+                ?? $locationData['localities'][$cleanDistrict]
+                ?? $locationData['localities'][$districtInput]
+                ?? [];
+        } elseif ($stateInput !== '') {
+            $fileLocs = $locationData['localitiesByState'][$stateInput] 
+                ?? $locationData['localitiesByState'][strtoupper($stateInput)] 
+                ?? $locationData['localitiesByState'][strtolower($stateInput)]
+                ?? [];
+        }
+
+        foreach ($fileLocs as $fl) {
+            $trimFl = trim($fl);
+            if ($trimFl !== '') {
+                $localities[] = $trimFl;
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    // Deduplicate case-insensitively while preserving natural casing
+    $uniqueMap = [];
+    foreach ($localities as $loc) {
+        $k = strtolower(trim($loc));
+        if (!isset($uniqueMap[$k])) {
+            $uniqueMap[$k] = trim($loc);
+        }
     }
+
+    $uniqueLocs = array_values($uniqueMap);
+    natcasesort($uniqueLocs);
+    $uniqueLocs = array_values($uniqueLocs);
 
     $formatted = array_map(function($loc) {
         return ['name' => $loc];
-    }, $localities);
+    }, $uniqueLocs);
 
-    return response()->json($formatted);
+    return response()->json($formatted)->header('Cache-Control', 'no-cache, no-store, must-revalidate');
 })->name('api.locations.localities');
 
 // Legal & Compliance Pages

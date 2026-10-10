@@ -1305,7 +1305,7 @@ class AdminController extends Controller
             'name' => trim($request->name),
         ]);
 
-        Cache::forget('indian_location_data');
+        \App\Providers\AppServiceProvider::clearLocationCache();
 
         return redirect()->route('admin.locations', ['state_id' => $state->id])
             ->with('success', "State '{$state->name}' ({$state->code}) created successfully.");
@@ -1319,7 +1319,7 @@ class AdminController extends Controller
         $name = $state->name;
         $state->delete();
 
-        Cache::forget('indian_location_data');
+        \App\Providers\AppServiceProvider::clearLocationCache();
 
         return redirect()->route('admin.locations')
             ->with('success', "State '{$name}' and its cities/localities deleted successfully.");
@@ -1340,7 +1340,7 @@ class AdminController extends Controller
             'name' => trim($request->name),
         ]);
 
-        Cache::forget('indian_location_data');
+        \App\Providers\AppServiceProvider::clearLocationCache();
 
         return redirect()->route('admin.locations', [
             'state_id' => $district->state_id,
@@ -1357,7 +1357,7 @@ class AdminController extends Controller
         $stateId = $district->state_id;
         $district->delete();
 
-        Cache::forget('indian_location_data');
+        \App\Providers\AppServiceProvider::clearLocationCache();
 
         return redirect()->route('admin.locations', ['state_id' => $stateId])
             ->with('success', "City/District '{$name}' and its localities deleted successfully.");
@@ -1378,7 +1378,7 @@ class AdminController extends Controller
             'name' => trim($request->name),
         ]);
 
-        Cache::forget('indian_location_data');
+        \App\Providers\AppServiceProvider::clearLocationCache();
 
         $district = \App\Models\District::find($request->district_id);
 
@@ -1397,7 +1397,7 @@ class AdminController extends Controller
         $district = $locality->district;
         $locality->delete();
 
-        Cache::forget('indian_location_data');
+        \App\Providers\AppServiceProvider::clearLocationCache();
 
         return redirect()->route('admin.locations', [
             'state_id' => $district ? $district->state_id : null,

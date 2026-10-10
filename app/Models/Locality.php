@@ -13,8 +13,8 @@ class Locality extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('indian_location_data'));
-        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('indian_location_data'));
+        static::saved(fn () => \App\Providers\AppServiceProvider::clearLocationCache());
+        static::deleted(fn () => \App\Providers\AppServiceProvider::clearLocationCache());
     }
 
     public function district(): BelongsTo

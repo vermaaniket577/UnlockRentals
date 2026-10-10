@@ -141,12 +141,26 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
+     * Clear all cached location data so fresh admin panel entries appear immediately.
+     */
+    public static function clearLocationCache(): void
+    {
+        try {
+            \Illuminate\Support\Facades\Cache::forget('indian_location_data');
+            \Illuminate\Support\Facades\Cache::forget('db_districts_by_state_v3');
+            \Illuminate\Support\Facades\Cache::forget('db_localities_by_district_v1');
+        } catch (\Throwable $e) {}
+    }
+
+    /**
      * Get comprehensive location data merged from local dataset files and database.
      */
-    public static function getLocationData(): array
+    public static function getLocationData(bool $forceRefresh = false): array
     {
         static $memoized = null;
-        if ($memoized !== null) {
+        if ($forceRefresh) {
+            $memoized = null;
+        } elseif ($memoized !== null) {
             return $memoized;
         }
 
@@ -260,13 +274,16 @@ class AppServiceProvider extends ServiceProvider
 
                     foreach ($dbLocalities as $l) {
                         if ($l->district) {
-                            $dSlug = str_replace(' ', '-', strtolower($l->district->name));
-                            $dNameLower = strtolower($l->district->name);
-                            $dName = $l->district->name;
+                            $dTrim = trim($l->district->name);
+                            $dSlug = str_replace(' ', '-', strtolower($dTrim));
+                            $dNameLower = strtolower($dTrim);
+                            $dName = $dTrim;
+                            $lName = trim($l->name);
+                            if ($lName === '') continue;
 
                             if (!isset($localitiesMap[$dSlug])) $localitiesMap[$dSlug] = [];
-                            if (!in_array($l->name, $localitiesMap[$dSlug])) {
-                                $localitiesMap[$dSlug][] = $l->name;
+                            if (!in_array($lName, $localitiesMap[$dSlug])) {
+                                $localitiesMap[$dSlug][] = $lName;
                             }
                             $localitiesMap[$dNameLower] = $localitiesMap[$dSlug];
                             $localitiesMap[$dName] = $localitiesMap[$dSlug];
@@ -275,8 +292,8 @@ class AppServiceProvider extends ServiceProvider
                             if ($l->district->state) {
                                 $sCode = $l->district->state->code;
                                 if (!isset($localitiesByStateMap[$sCode])) $localitiesByStateMap[$sCode] = [];
-                                if (!in_array($l->name, $localitiesByStateMap[$sCode])) {
-                                    $localitiesByStateMap[$sCode][] = $l->name;
+                                if (!in_array($lName, $localitiesByStateMap[$sCode])) {
+                                    $localitiesByStateMap[$sCode][] = $lName;
                                 }
                             }
                         }

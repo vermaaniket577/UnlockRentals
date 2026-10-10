@@ -345,7 +345,7 @@ class PropertyController extends Controller
                 'success' => true,
                 'message' => $successMsg,
                 'redirect_url' => route('dashboard'),
-                'property_id' => $prop->id
+                'property_id' => $property->id
             ]);
         }
 

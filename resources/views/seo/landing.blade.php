@@ -175,21 +175,21 @@
                     {{ $properties->links() }}
                 </div>
             @else
-                {{-- Curated Regional Rentals (Prevents Google Soft 404) --}}
+                {{-- Verified Region Listings (Prevents Google Soft 404) --}}
                 <div class="mb-16">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-stone-200/60 dark:border-slate-800/60">
                         <div>
                             <h2 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-slate-100">
-                                Verified & Featured Rentals in this Region
+                                Verified Direct Owner Rentals Available in this Area
                             </h2>
-                            <p class="text-zinc-500 dark:text-slate-400 text-sm mt-1">
-                                Browse 100% direct-owner rental homes and apartments with zero brokerage.
+                            <p class="text-xs md:text-sm text-zinc-500 dark:text-slate-400 mt-1">
+                                Discover popular 100% verified rental properties available for immediate move-in with 0% brokerage.
                             </p>
                         </div>
-                        <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#2563EB] hover:underline self-start sm:self-auto">
-                            <span>Browse All Listings</span>
-                            <i class="ph-bold ph-arrow-right"></i>
-                        </a>
+                        <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-600 text-xs font-bold rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                            Available Now
+                        </span>
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">

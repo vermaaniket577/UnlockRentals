@@ -565,15 +565,28 @@
         }
     });
 
-    const _combinedLocalities = Object.assign({}, _standardLocalities);
-    if (_dbData.localities && typeof _dbData.localities === 'object') {
-        for (const [key, val] of Object.entries(_dbData.localities)) {
-            _combinedLocalities[key] = val;
-            _combinedLocalities[key.toLowerCase()] = val;
-            _combinedLocalities[key.replace(/\s+/g, '-').toLowerCase()] = val;
-            _combinedLocalities[key.replace(/-/g, ' ').toLowerCase()] = val;
+    const _combinedLocalities = {};
+    const allCityKeys = new Set([
+        ...Object.keys(_standardLocalities),
+        ...Object.keys(_dbData.localities || {})
+    ]);
+
+    allCityKeys.forEach(rawKey => {
+        const kLower = rawKey.toLowerCase();
+        const kSlug = kLower.replace(/\s+/g, '-');
+        const kSpaced = kLower.replace(/-/g, ' ');
+
+        const std = _standardLocalities[kLower] || _standardLocalities[kSlug] || _standardLocalities[kSpaced] || _standardLocalities[rawKey] || [];
+        const db = (_dbData.localities && (_dbData.localities[kLower] || _dbData.localities[kSlug] || _dbData.localities[kSpaced] || _dbData.localities[rawKey])) || [];
+
+        const merged = mergeUniqueSorted(std, db);
+        if (merged.length > 0) {
+            _combinedLocalities[rawKey] = merged;
+            _combinedLocalities[kLower] = merged;
+            _combinedLocalities[kSlug] = merged;
+            _combinedLocalities[kSpaced] = merged;
         }
-    }
+    });
 
     window.IndianLocationData = {
         states: _allStates,
@@ -582,12 +595,6 @@
         localities: _combinedLocalities,
         localitiesByState: Object.assign({}, _dbData.localitiesByState || {})
     };
-
-    for (const [cityKey, locs] of Object.entries(_standardLocalities)) {
-        window.IndianLocationData.localities[cityKey.toLowerCase()] = locs;
-        window.IndianLocationData.localities[cityKey.replace(/\s+/g, '-').toLowerCase()] = locs;
-        window.IndianLocationData.localities[cityKey.replace(/-/g, ' ').toLowerCase()] = locs;
-    }
 
     window.resolveStateCode = function(val) {
         if (!val) return '';
@@ -670,7 +677,7 @@
         window.handleLocationCityChange(cityEl, localitySelectId, stateSelectEl.id);
     };
 
-    window.handleLocationCityChange = function(citySelectEl, localitySelectId = 'locality-select', stateSelectId = 'state-select') {
+    window.handleLocationCityChange = function(citySelectEl, localitySelectId = 'locality-select', stateSelectId = 'state-select', selectedLocality = '', config = null) {
         if (!citySelectEl) return;
         const form = citySelectEl.form || document;
         const localityEl = document.getElementById(localitySelectId) || form.querySelector(`[name="locality"]`);
@@ -683,33 +690,108 @@
         const rawState = stateEl ? (stateEl.value || '').trim() : '';
         const stateCode = window.resolveStateCode(rawState);
 
+        const textWrapId = config && config.localityTextWrapId;
+        const selectWrapId = config && config.localitySelectWrapId;
+        const textWrap = textWrapId ? document.getElementById(textWrapId) : null;
+        const selectWrap = selectWrapId ? document.getElementById(selectWrapId) : null;
+        const textInput = textWrap ? textWrap.querySelector('input[name="locality"]') : null;
+
+        const showSelectMode = function() {
+            if (selectWrap) selectWrap.style.display = '';
+            if (textWrap) textWrap.style.display = 'none';
+            localityEl.disabled = false;
+            if (textInput) textInput.disabled = true;
+        };
+
+        const showTextMode = function() {
+            if (selectWrap) selectWrap.style.display = 'none';
+            if (textWrap) textWrap.style.display = '';
+            localityEl.disabled = true;
+            if (textInput) textInput.disabled = false;
+        };
+
         localityEl.innerHTML = '';
 
-        let locList = null;
+        let locList = [];
         if (cityKey) {
             locList = window.IndianLocationData.localities[cityKey]
                 || window.IndianLocationData.localities[cityKey.replace(/\s+/g, '-')]
-                || window.IndianLocationData.localities[cityKey.replace(/-/g, ' ')];
+                || window.IndianLocationData.localities[cityKey.replace(/-/g, ' ')]
+                || [];
         } else if (stateCode) {
             locList = window.IndianLocationData.localitiesByState[stateCode]
-                || window.IndianLocationData.localitiesByState[stateCode.toUpperCase()];
+                || window.IndianLocationData.localitiesByState[stateCode.toUpperCase()]
+                || [];
         }
 
         const placeholder = cityVal ? `\u00A0\u00A0All Localities in ${cityVal}` : (stateCode ? `\u00A0\u00A0All Localities in ${rawState}` : '\u00A0\u00A0All Localities / Areas');
         localityEl.add(new Option(placeholder, ''));
 
-        if (locList && locList.length > 0) {
+        const targetLocality = (selectedLocality || localityEl.value || (config && config.selectedLocality) || '').trim();
+
+        // 1. Immediately populate from local cache if available
+        if (Array.isArray(locList) && locList.length > 0) {
+            showSelectMode();
             locList.forEach(loc => {
-                localityEl.add(new Option(`\u00A0\u00A0${loc}`, loc));
+                const opt = new Option(`\u00A0\u00A0${loc}`, loc);
+                if (targetLocality && targetLocality.toLowerCase() === loc.toLowerCase()) {
+                    opt.selected = true;
+                }
+                localityEl.add(opt);
             });
-        } else if (cityVal) {
-            fetch(`/api/locations/localities?district=${encodeURIComponent(cityVal)}`)
+        }
+
+        // 2. ALWAYS fetch live localities from backend so localities added from admin panel appear instantly
+        if (cityVal || stateCode) {
+            const queryParam = cityVal ? `district=${encodeURIComponent(cityVal)}` : `state=${encodeURIComponent(stateCode)}`;
+            fetch(`/api/locations/localities?${queryParam}`)
                 .then(r => r.json())
                 .then(data => {
                     if (Array.isArray(data) && data.length > 0) {
+                        showSelectMode();
+                        const existingValues = new Set(Array.from(localityEl.options).map(o => o.value.trim().toLowerCase()));
+                        let addedAny = false;
+
                         data.forEach(item => {
-                            localityEl.add(new Option(`\u00A0\u00A0${item.name}`, item.name));
+                            const name = (item.name || '').trim();
+                            if (name && !existingValues.has(name.toLowerCase())) {
+                                const opt = new Option(`\u00A0\u00A0${name}`, name);
+                                if (targetLocality && targetLocality.toLowerCase() === name.toLowerCase()) {
+                                    opt.selected = true;
+                                }
+                                localityEl.add(opt);
+                                existingValues.add(name.toLowerCase());
+                                addedAny = true;
+                            }
                         });
+
+                        // Naturally sort options alphabetically (keeping placeholder at index 0)
+                        if (localityEl.options.length > 2) {
+                            const placeholderOpt = localityEl.options[0];
+                            const restOpts = Array.from(localityEl.options).slice(1);
+                            restOpts.sort((a, b) => a.text.trim().localeCompare(b.text.trim(), undefined, { numeric: true, sensitivity: 'base' }));
+                            localityEl.innerHTML = '';
+                            localityEl.add(placeholderOpt);
+                            restOpts.forEach(opt => localityEl.add(opt));
+                        }
+
+                        // Cache dynamically in window.IndianLocationData
+                        if (cityKey) {
+                            const updatedList = Array.from(localityEl.options).slice(1).map(o => o.value);
+                            window.IndianLocationData.localities[cityKey] = updatedList;
+                            window.IndianLocationData.localities[cityKey.replace(/\s+/g, '-')] = updatedList;
+                            window.IndianLocationData.localities[cityKey.replace(/-/g, ' ')] = updatedList;
+                        }
+
+                        if (targetLocality) {
+                            localityEl.value = targetLocality;
+                        }
+                    } else if (localityEl.options.length <= 1) {
+                        // If no localities found, switch to text input mode if configured
+                        if (textWrap && textInput) {
+                            showTextMode();
+                            if (targetLocality) textInput.value = targetLocality;
+                        }
                     }
                 })
                 .catch(() => {});
@@ -735,7 +817,7 @@
         });
 
         cityEl.addEventListener('change', function() {
-            window.handleLocationCityChange(this, config.localityId, config.stateId);
+            window.handleLocationCityChange(this, config.localityId, config.stateId, '', config);
         });
 
         [stateEl, cityEl, localityEl].forEach(el => {
@@ -760,11 +842,8 @@
         // Initialize selected city
         if (config.selectedCity) {
             cityEl.value = config.selectedCity;
-            window.handleLocationCityChange(cityEl, config.localityId, config.stateId);
-        }
-
-        // Initialize selected locality
-        if (config.selectedLocality && localityEl) {
+            window.handleLocationCityChange(cityEl, config.localityId, config.stateId, config.selectedLocality, config);
+        } else if (config.selectedLocality && localityEl) {
             localityEl.value = config.selectedLocality;
         }
     };

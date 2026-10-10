@@ -30,7 +30,6 @@
         <changefreq>daily</changefreq>
         <priority>0.95</priority>
     </url>
-
     @if(isset($professionalCategories))
         @foreach($professionalCategories as $pCat)
             <url>

@@ -296,7 +296,7 @@
                         <div id="locality-text-wrap" style="display: none;">
                             <div class="relative">
                                 <i class="ph-bold ph-map-pin absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                                <input type="text" name="locality" id="edit-locality-text" value="{{ old('locality', $property->locality) }}" enterkeyhint="next"
+                                <input type="text" name="locality" id="edit-locality-text" value="{{ old('locality', $property->locality) }}" disabled enterkeyhint="next"
                                        class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                        placeholder="e.g. Sector 57, Sushant Lok">
                             </div>
