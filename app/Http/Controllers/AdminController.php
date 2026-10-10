@@ -1523,7 +1523,7 @@ class AdminController extends Controller
             default           => $query->orderByRaw('COALESCE(published_at, created_at) DESC')->orderBy('id', 'desc'),
         };
 
-        $blogs = $query->paginate(12)->withQueryString();
+        $blogs = $query->paginate(8)->withQueryString();
         $categories = Blog::select('category')->distinct()->pluck('category')->filter()->values();
 
         return view('admin.blogs.index', compact('blogs', 'stats', 'categories'));
