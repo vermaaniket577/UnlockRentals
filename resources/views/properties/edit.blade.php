@@ -5,127 +5,130 @@
 
 @section('content')
 
-<section class="min-h-screen pt-20 sm:pt-28 pb-32 sm:pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="edit-property">
+<section class="min-h-screen pt-14 sm:pt-18 pb-20 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="edit-property">
     <style>
         @media (max-width: 768px) {
             .chatbot-trigger, .feedback-modal-trigger {
                 display: none !important;
             }
         }
+        .edit-specs-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+        }
+        @media (min-width: 768px) {
+            .edit-specs-grid {
+                grid-template-columns: 1fr 1fr 1.2fr 1.5fr !important;
+                gap: 14px !important;
+            }
+        }
+        .edit-location-grid {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+        }
+        @media (min-width: 640px) {
+            .edit-location-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 14px !important;
+            }
+        }
     </style>
     {{-- Ambient Background Gradients --}}
-    <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-blue-500/[0.04] via-indigo-500/[0.02] to-transparent pointer-events-none"></div>
-    <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-    <div class="absolute top-1/3 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute top-0 left-0 w-full h-[350px] bg-gradient-to-b from-blue-500/[0.03] via-indigo-500/[0.015] to-transparent pointer-events-none"></div>
 
     <div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
 
-        {{-- Page Header --}}
-        <div class="mb-4 sm:mb-8 text-center">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest rounded-full mb-2 border border-blue-100 dark:border-blue-900/50">
-                <i class="ph-bold ph-pencil-simple text-xs"></i> Edit Property Listing
-            </span>
-            <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-                Edit Property
-            </h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-normal max-w-md mx-auto mt-1 leading-snug">
-                Update your listing details, photos, video walkthroughs, and pricing.
-            </p>
-        </div>
-
-        {{-- Step Navigation Indicator --}}
-        <div class="mb-4 sm:mb-8 p-3 sm:p-4 bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
-            <div class="grid grid-cols-4 gap-1.5 sm:gap-4 text-center">
-                <div class="flex flex-col items-center gap-1">
-                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-xs">1</div>
-                    <span class="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-white">Basic Info</span>
+        {{-- Compact Header & Quick Actions --}}
+        <div class="mb-3.5 sm:mb-5 flex items-center justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-slate-800">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Edit Property</h1>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-400">#{{ $property->id }}</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $property->status === 'published' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 text-amber-700 border border-amber-200' }}">{{ ucfirst($property->status) }}</span>
                 </div>
-                <div class="flex flex-col items-center gap-1">
-                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">2</div>
-                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Pricing</span>
-                </div>
-                <div class="flex flex-col items-center gap-1">
-                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">3</div>
-                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Location</span>
-                </div>
-                <div class="flex flex-col items-center gap-1">
-                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">4</div>
-                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Media</span>
-                </div>
+                <p class="text-slate-400 text-xs mt-0.5 truncate max-w-md hidden sm:block">{{ $property->title }}</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <a href="{{ route('dashboard') }}" class="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-all">Cancel</a>
+                <button type="submit" form="edit-property-form" class="px-4 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg shadow-sm shadow-blue-500/20 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95">
+                    <i class="ph-bold ph-floppy-disk text-sm"></i> Save Changes
+                </button>
             </div>
         </div>
 
-        <form method="POST" action="{{ route('properties.update', $property) }}" enctype="multipart/form-data" class="space-y-4 sm:space-y-6" id="edit-property-form" data-ur-loader-skip="true" data-no-smooth="true">
+        <form method="POST" action="{{ route('properties.update', $property) }}" enctype="multipart/form-data" class="space-y-3.5 sm:space-y-4" id="edit-property-form" data-ur-loader-skip="true" data-no-smooth="true">
             @csrf
             @method('PUT')
 
             {{-- 1. Basic Info Section --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="edit-basic-info">
-                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 lg:p-6 shadow-xs" id="edit-basic-info">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base shrink-0">
                         <i class="ph-bold ph-info"></i>
                     </div>
                     <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Basic Information</h2>
-                        <p class="text-xs text-slate-400">General property headline and listing classification</p>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Basic Information</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400">Headline, intent, property classification, and phone</p>
                     </div>
                 </div>
 
-                <div class="space-y-4 sm:space-y-6">
+                <div class="space-y-3 sm:space-y-3.5">
                     {{-- Title --}}
                     <div>
-                        <label for="edit-title" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Property Title <span class="text-red-500">*</span></label>
+                        <label for="edit-title" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">Property Title <span class="text-red-500">*</span></label>
                         <input type="text" name="title" id="edit-title" value="{{ old('title', $property->title) }}" required enterkeyhint="next"
-                               class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                               class="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                placeholder="e.g. Spacious 3 BHK Semi-Furnished Flat in Sector 57">
-                        @error('title') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                        @error('title') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Description --}}
                     <div>
-                        <label for="edit-description" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Description <span class="text-red-500">*</span></label>
-                        <textarea name="description" id="edit-description" rows="3" required
-                                  class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all resize-none"
+                        <label for="edit-description" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">Description <span class="text-red-500">*</span></label>
+                        <textarea name="description" id="edit-description" rows="2" required
+                                  class="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all resize-y"
                                   placeholder="Describe the key features, nearby amenities, sunlight, balcony view, and tenant preferences...">{{ old('description', $property->description) }}</textarea>
-                        @error('description') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                        @error('description') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Listing Purpose (Rent vs Sell) --}}
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Listing Purpose (Intent) <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 gap-2 sm:gap-3 max-w-xl">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Listing Purpose (Intent) <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3 max-w-lg">
                             @php
                                 $editPurpose = old('purpose', $property->purpose ?? 'rent');
                             @endphp
-                            <label class="relative flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3.5 rounded-xl border cursor-pointer transition-all {{ ($editPurpose === 'rent') ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-purpose-rent">
-                                <input type="radio" name="purpose" value="rent" id="edit-purpose-rent" {{ $editPurpose === 'rent' ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'); if(window.onEditPurposeChange) window.onEditPurposeChange('rent');">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
-                                    <i class="ph-bold ph-key text-sm sm:text-base"></i>
+                            <label class="relative flex items-center gap-2 sm:gap-2.5 p-2 sm:p-2.5 rounded-xl border cursor-pointer transition-all {{ ($editPurpose === 'rent') ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-xs' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-purpose-rent">
+                                <input type="radio" name="purpose" value="rent" id="edit-purpose-rent" {{ $editPurpose === 'rent' ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-xs')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-xs'); if(window.onEditPurposeChange) window.onEditPurposeChange('rent');">
+                                <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
+                                    <i class="ph-bold ph-key text-xs sm:text-sm"></i>
                                 </div>
                                 <div>
                                     <div class="text-xs sm:text-sm font-bold leading-tight">For Rent</div>
-                                    <div class="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400 font-normal">Monthly Lease / Rent</div>
+                                    <div class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Monthly Lease</div>
                                 </div>
                             </label>
 
-                            <label class="relative flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3.5 rounded-xl border cursor-pointer transition-all {{ in_array($editPurpose, ['buy', 'sell']) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-sm' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-purpose-buy">
-                                <input type="radio" name="purpose" value="buy" id="edit-purpose-buy" {{ in_array($editPurpose, ['buy', 'sell']) ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'); if(window.onEditPurposeChange) window.onEditPurposeChange('buy');">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                                    <i class="ph-bold ph-tag text-sm sm:text-base"></i>
+                            <label class="relative flex items-center gap-2 sm:gap-2.5 p-2 sm:p-2.5 rounded-xl border cursor-pointer transition-all {{ in_array($editPurpose, ['buy', 'sell']) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600 shadow-xs' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-purpose-buy">
+                                <input type="radio" name="purpose" value="buy" id="edit-purpose-buy" {{ in_array($editPurpose, ['buy', 'sell']) ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-xs')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-xs'); if(window.onEditPurposeChange) window.onEditPurposeChange('buy');">
+                                <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                                    <i class="ph-bold ph-tag text-xs sm:text-sm"></i>
                                 </div>
                                 <div>
                                     <div class="text-xs sm:text-sm font-bold leading-tight">For Sale</div>
-                                    <div class="hidden sm:block text-[11px] text-slate-500 dark:text-slate-400 font-normal">Outright Property Sale</div>
+                                    <div class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Outright Sale</div>
                                 </div>
                             </label>
                         </div>
-                        @error('purpose') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                        @error('purpose') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Property Type Selector --}}
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Property Type <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Property Type <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 sm:gap-2">
                             @php
                                 $formTypes = [
                                     'house' => ['label' => 'House / Flat', 'icon' => 'ph-bold ph-house-line'],
@@ -137,88 +140,88 @@
                                 $curType = old('type', $property->type ?? 'house');
                             @endphp
                             @foreach($formTypes as $val => $info)
-                            <label class="relative flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl border cursor-pointer transition-all {{ ($curType === $val) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-type-{{ $val }}">
+                            <label class="relative flex flex-col items-center justify-center p-2 sm:p-2 rounded-xl border cursor-pointer transition-all {{ ($curType === $val) ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="edit-type-{{ $val }}">
                                 <input type="radio" name="type" value="{{ $val }}" id="edit-type-{{ $val }}" {{ $curType === $val ? 'checked' : '' }} class="sr-only" onchange="this.closest('.grid').querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600')); this.closest('label').classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600'); if(window.onEditTypeChange) window.onEditTypeChange('{{ $val }}');">
-                                <i class="{{ $info['icon'] }} text-lg sm:text-xl mb-1 text-blue-600"></i>
-                                <span class="text-[11px] sm:text-xs text-center leading-tight">{{ $info['label'] }}</span>
+                                <i class="{{ $info['icon'] }} text-base sm:text-lg mb-0.5 text-blue-600"></i>
+                                <span class="text-[10px] sm:text-[11px] text-center leading-tight">{{ $info['label'] }}</span>
                             </label>
                             @endforeach
                         </div>
                     </div>
 
                     {{-- Category & Phone Row --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div>
-                            <label for="edit-category" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Category <span class="text-red-500">*</span></label>
+                            <label for="edit-category" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">Category <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="category_id" id="edit-category" required
-                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3 pr-8 py-2 sm:pl-3.5 sm:pr-9 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('category_id', $property->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
-                                <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                             </div>
                         </div>
 
                         <div>
-                            <label for="edit-phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Contact Phone <span class="text-red-500">*</span></label>
+                            <label for="edit-phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">Contact Phone <span class="text-red-500">*</span></label>
                             <div class="relative">
-                                <span class="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-phone"></i></span>
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-phone"></i></span>
                                 <input type="tel" name="contact_phone" id="edit-phone" value="{{ old('contact_phone', $property->contact_phone ?? $property->owner->phone ?? auth()->user()->phone) }}" required inputmode="tel" enterkeyhint="next"
-                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                       class="w-full pl-8 sm:pl-9 pr-3 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                        placeholder="+91 94254 55499">
                             </div>
-                            @error('contact_phone') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                            @error('contact_phone') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>
             </div>
 
             {{-- 2. Pricing Section --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="edit-pricing">
-                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 lg:p-6 shadow-xs" id="edit-pricing">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base shrink-0">
                         <i class="ph-bold ph-currency-inr"></i>
                     </div>
                     <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white" id="edit-pricing-title">Pricing & Financials</h2>
-                        <p class="text-xs text-slate-400" id="edit-pricing-desc">Update your expected rent or sale price</p>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white" id="edit-pricing-title">Pricing & Financials</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400" id="edit-pricing-desc">Expected rent or outright sale price</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5" id="pricing-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4" id="pricing-grid">
                     <div>
-                        <label for="edit-price" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2" id="edit-price-label">
+                        <label for="edit-price" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5" id="edit-price-label">
                             {{ ($property->purpose === 'buy' || $property->purpose === 'sell') ? 'Total Sale Price (₹) *' : 'Expected Rent (₹) *' }}
                         </label>
                         <div class="relative">
-                            <span class="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-sm">₹</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-sm">₹</span>
                             <input type="number" name="price" id="edit-price" value="{{ old('price', $property->price) }}" required min="0" step="any" inputmode="numeric" enterkeyhint="next"
-                                   class="w-full pl-8 sm:pl-9 pr-3.5 sm:pr-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                   class="w-full pl-7 sm:pl-8 pr-3 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                    placeholder="25,000">
                         </div>
-                        @error('price') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                        @error('price') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Rent Billing Cycle (Per Month / Per Year) --}}
                     <div id="edit-period-col" class="{{ ($property->purpose === 'buy' || $property->purpose === 'sell') ? 'hidden' : '' }}">
-                        <label for="edit-period" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2" id="edit-period-label">Billing Cycle <span class="text-red-500">*</span></label>
+                        <label for="edit-period" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5" id="edit-period-label">Billing Cycle <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <select name="price_period" id="edit-period" required
-                                    class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                    class="w-full pl-3 pr-8 py-2 sm:pl-3.5 sm:pr-9 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                 <option value="month" {{ old('price_period', $property->price_period) === 'month' ? 'selected' : '' }}>Per Month</option>
                                 <option value="year" {{ old('price_period', $property->price_period) === 'year' ? 'selected' : '' }}>Per Year</option>
                             </select>
-                            <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                         </div>
                     </div>
 
                     {{-- Sale Pricing Mode Badge (Shown when Selling) --}}
                     <div id="edit-sale-badge-col" class="{{ ($property->purpose === 'buy' || $property->purpose === 'sell') ? '' : 'hidden' }}">
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Payment Mode</label>
-                        <div class="h-[42px] sm:h-[46px] px-3 sm:px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 shadow-2xs">
-                            <i class="ph-bold ph-tag text-emerald-600 text-base shrink-0"></i>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">Payment Mode</label>
+                        <div class="h-[38px] sm:h-[42px] px-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 shadow-2xs">
+                            <i class="ph-bold ph-tag text-emerald-600 text-sm shrink-0"></i>
                             <span class="truncate">One-Time Total Purchase Price</span>
                         </div>
                     </div>
@@ -226,24 +229,24 @@
             </div>
 
             {{-- 3. Location Details --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="edit-location">
-                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 lg:p-6 shadow-xs" id="edit-location">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base shrink-0">
                         <i class="ph-bold ph-map-pin"></i>
                     </div>
                     <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Location Details</h2>
-                        <p class="text-xs text-slate-400">Accurate location helps verified tenants discover your listing</p>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Location Details</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400">State, city district, locality sector, and street address</p>
                     </div>
                 </div>
 
-                <div class="space-y-3.5 sm:space-y-5">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+                <div class="space-y-3 sm:space-y-3.5">
+                    <div class="edit-location-grid">
                         <div>
-                            <label for="edit-state" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">State <span class="text-red-500">*</span></label>
+                            <label for="edit-state" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">State <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="state" id="edit-state" required onchange="if(window.handleLocationStateChange) window.handleLocationStateChange(this, 'edit-city', 'edit-locality-select');"
-                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3 pr-8 py-2 sm:pl-3.5 sm:pr-9 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                     <option value="">Select State</option>
                                     @php $statesList = $globalAllStates ?? $allStates ?? []; @endphp
                                     @if(!empty($statesList))
@@ -252,16 +255,16 @@
                                         @endforeach
                                     @endif
                                 </select>
-                                <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                             </div>
-                            @error('state') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                            @error('state') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
-                            <label for="edit-city" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">City / District <span class="text-red-500">*</span></label>
+                            <label for="edit-city" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">City / District <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <select name="location" id="edit-city" required onchange="if(window.handleLocationCityChange) window.handleLocationCityChange(this, 'edit-locality-select', 'edit-state');"
-                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        class="w-full pl-3 pr-8 py-2 sm:pl-3.5 sm:pr-9 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                                     <option value="">Select District</option>
                                     @php $districtsList = $globalAllDistricts ?? $allDistricts ?? []; @endphp
                                     @if(!empty($districtsList))
@@ -276,40 +279,42 @@
                                         @endforeach
                                     @endif
                                 </select>
-                                <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                             </div>
-                            @error('location') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                            @error('location') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
                         </div>
                     </div>
                     
-                    <div>
-                        <label for="edit-locality-select" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Locality / Sector / Area <span class="text-red-500">*</span></label>
-                        <div id="locality-select-wrap">
-                            <div class="relative">
-                                <select name="locality" id="edit-locality-select"
-                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
-                                    <option value="">Select City First</option>
-                                </select>
-                                <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    <div class="edit-location-grid">
+                        <div>
+                            <label for="edit-locality-select" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">Locality / Sector / Area <span class="text-red-500">*</span></label>
+                            <div id="locality-select-wrap">
+                                <div class="relative">
+                                    <select name="locality" id="edit-locality-select"
+                                            class="w-full pl-3 pr-8 py-2 sm:pl-3.5 sm:pr-9 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                        <option value="">Select City First</option>
+                                    </select>
+                                    <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                </div>
                             </div>
-                        </div>
-                        <div id="locality-text-wrap" style="display: none;">
-                            <div class="relative">
-                                <i class="ph-bold ph-map-pin absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                                <input type="text" name="locality" id="edit-locality-text" value="{{ old('locality', $property->locality) }}" disabled enterkeyhint="next"
-                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
-                                       placeholder="e.g. Sector 57, Sushant Lok">
+                            <div id="locality-text-wrap" style="display: none;">
+                                <div class="relative">
+                                    <i class="ph-bold ph-map-pin absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"></i>
+                                    <input type="text" name="locality" id="edit-locality-text" value="{{ old('locality', $property->locality) }}" disabled enterkeyhint="next"
+                                           class="w-full pl-8 sm:pl-9 pr-3 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                           placeholder="e.g. Sector 57, Sushant Lok">
+                                </div>
                             </div>
+                            @error('locality') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
                         </div>
-                        @error('locality') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
-                    </div>
 
-                    <div>
-                        <label for="edit-address" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Complete Address <span class="text-red-500">*</span></label>
-                        <input type="text" name="address" id="edit-address" value="{{ old('address', $property->address) }}" required enterkeyhint="next"
-                               class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
-                               placeholder="Flat/House No, Building Name, Street / Landmark">
-                        @error('address') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                        <div>
+                            <label for="edit-address" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">Complete Address <span class="text-red-500">*</span></label>
+                            <input type="text" name="address" id="edit-address" value="{{ old('address', $property->address) }}" required enterkeyhint="next"
+                                   class="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                   placeholder="Flat/House No, Building, Street / Landmark">
+                            @error('address') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
+                        </div>
                     </div>
                 </div>
 
@@ -391,107 +396,106 @@
                 </script>
             </div>
 
-            {{-- 4. Key Specifications --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="edit-details">
-                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+            {{-- 4. Key Specifications (Compact 4-Column Responsive Grid) --}}
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 lg:p-6 shadow-xs" id="edit-details">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base shrink-0">
                         <i class="ph-bold ph-house-line"></i>
                     </div>
                     <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Key Specifications</h2>
-                        <p class="text-xs text-slate-400">Bedrooms, bathrooms, area, and furnishing level</p>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Key Specifications</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400">Bedrooms, bathrooms, area, and furnishing status</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2 sm:gap-5">
+                <div class="edit-specs-grid" id="edit-specs-grid">
                     <div id="edit-bedrooms-col">
-                        <label for="edit-bedrooms" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate">BHK</label>
+                        <label for="edit-bedrooms" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5 truncate">BHK</label>
                         <div class="relative">
-                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-bed"></i></span>
+                            <span class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-bed"></i></span>
                             <input type="number" name="bedrooms" id="edit-bedrooms" value="{{ old('bedrooms', $property->bedrooms) }}" min="0" max="20" inputmode="numeric" enterkeyhint="next"
-                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all text-center sm:text-left"
-                                   placeholder="3">
-                        </div>
-                    </div>
-                    <div id="edit-bathrooms-col">
-                        <label for="edit-bathrooms" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate">Baths</label>
-                        <div class="relative">
-                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-drop"></i></span>
-                            <input type="number" name="bathrooms" id="edit-bathrooms" value="{{ old('bathrooms', $property->bathrooms) }}" min="0" max="20" inputmode="numeric" enterkeyhint="next"
-                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all text-center sm:text-left"
+                                   class="w-full pl-7 sm:pl-8 pr-2 sm:pr-3 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                    placeholder="2">
                         </div>
                     </div>
-                    <div id="edit-area-col">
-                        <label for="edit-area" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2 truncate" id="edit-area-label">Area (sq.ft)</label>
+                    <div id="edit-bathrooms-col">
+                        <label for="edit-bathrooms" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5 truncate">Baths</label>
                         <div class="relative">
-                            <span class="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-square-half"></i></span>
+                            <span class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-drop"></i></span>
+                            <input type="number" name="bathrooms" id="edit-bathrooms" value="{{ old('bathrooms', $property->bathrooms) }}" min="0" max="20" inputmode="numeric" enterkeyhint="next"
+                                   class="w-full pl-7 sm:pl-8 pr-2 sm:pr-3 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                   placeholder="1">
+                        </div>
+                    </div>
+                    <div id="edit-area-col">
+                        <label for="edit-area" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5 truncate" id="edit-area-label">Area (sq.ft)</label>
+                        <div class="relative">
+                            <span class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-square-half"></i></span>
                             <input type="number" name="area_sqft" id="edit-area" value="{{ old('area_sqft', $property->area_sqft) }}" min="0" inputmode="numeric" enterkeyhint="next"
-                                   class="w-full pl-7 sm:pl-10 pr-2 sm:pr-4 py-2 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all text-center sm:text-left"
-                                   placeholder="1250">
+                                   class="w-full pl-7 sm:pl-8 pr-2 sm:pr-3 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                   placeholder="400">
+                        </div>
+                    </div>
+                    <div id="edit-furnishing-container">
+                        <label for="edit-furnishing" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5 truncate">Furnishing <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <select name="furnishing" id="edit-furnishing"
+                                    class="w-full pl-3 pr-7 py-2 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                <option value="unfurnished" {{ old('furnishing', $property->furnishing) === 'unfurnished' ? 'selected' : '' }}>Unfurnished</option>
+                                <option value="semi-furnished" {{ old('furnishing', $property->furnishing) === 'semi-furnished' ? 'selected' : '' }}>Semi-Furnished</option>
+                                <option value="fully-furnished" {{ old('furnishing', $property->furnishing) === 'fully-furnished' ? 'selected' : '' }}>Fully Furnished</option>
+                            </select>
+                            <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                         </div>
                     </div>
                 </div>
 
                 {{-- Plot Land Informational Helper --}}
-                <div id="edit-plot-helper" class="hidden mt-3.5 sm:mt-5 p-3 sm:p-4 bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5 shadow-2xs">
+                <div id="edit-plot-helper" class="hidden mt-3 p-3 bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2.5 shadow-2xs">
                     <i class="ph-bold ph-info text-amber-600 text-base shrink-0 mt-0.5"></i>
                     <div>
                         <strong class="font-bold">Plot / Land Mode:</strong>
                         <p class="mt-0.5 text-amber-700 dark:text-amber-400 font-normal">Living space specifications (BHK, Bathrooms, Furnishing) are hidden for vacant land. Enter total plot area above and specify dimensions, road frontage width, zoning, and boundary status in the description.</p>
                     </div>
                 </div>
-
-                <div class="mt-3.5 sm:mt-5" id="edit-furnishing-container">
-                    <label for="edit-furnishing" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 sm:mb-2">Furnishing Status <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <select name="furnishing" id="edit-furnishing"
-                                class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
-                            <option value="unfurnished" {{ old('furnishing', $property->furnishing) === 'unfurnished' ? 'selected' : '' }}>Unfurnished</option>
-                            <option value="semi-furnished" {{ old('furnishing', $property->furnishing) === 'semi-furnished' ? 'selected' : '' }}>Semi-Furnished</option>
-                            <option value="fully-furnished" {{ old('furnishing', $property->furnishing) === 'fully-furnished' ? 'selected' : '' }}>Fully Furnished</option>
-                        </select>
-                        <i class="ph-bold ph-caret-down absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                    </div>
-                </div>
             </div>
 
             {{-- 5. Media & Photo Gallery --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs" id="edit-images">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center">
-                            <i class="ph-bold ph-images-square text-lg"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Property Photos & Media</h2>
-                            <p class="text-xs text-slate-400">Manage existing images and add new high-resolution photos</p>
-                        </div>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 lg:p-6 shadow-xs" id="edit-images">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4 pb-2.5 sm:pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base shrink-0">
+                        <i class="ph-bold ph-images-square"></i>
                     </div>
-                    <span class="text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-lg self-start sm:self-auto border border-blue-200/60 dark:border-blue-800">Min 1 Photo or Video Tour *</span>
+                    <div class="flex-1 min-w-0 flex items-center justify-between gap-2">
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Property Photos & Media</h2>
+                            <p class="text-[11px] sm:text-xs text-slate-400">Manage existing images and add new photos</p>
+                        </div>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-md border border-blue-200/60 dark:border-blue-800 shrink-0">Min 1 Photo *</span>
+                    </div>
                 </div>
 
                 {{-- Existing Images --}}
                 @if($property->images->count() > 0)
-                <div class="mb-6 p-4 sm:p-5 bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200/70 dark:border-slate-700/60">
-                    <p class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <div class="mb-3.5 p-3 sm:p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-xl sm:rounded-2xl border border-slate-200/70 dark:border-slate-700/60">
+                    <p class="text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                         <i class="ph-bold ph-images text-blue-600"></i> Current Images ({{ $property->images->count() }})
-                        <span class="text-[11px] font-normal text-slate-400 normal-case ml-auto">Check box to delete on save</span>
+                        <span class="text-[10px] sm:text-[11px] font-normal text-slate-400 normal-case ml-auto">Check box to delete</span>
                     </p>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3.5">
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-2.5">
                         @foreach($property->images as $image)
-                        <div class="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-black aspect-square shadow-2xs">
+                        <div class="relative group rounded-lg sm:rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-black aspect-square shadow-2xs">
                             <img src="{{ $image->imageUrl() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             
                             <label class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 peer-checked:opacity-100 flex items-center justify-center cursor-pointer transition-opacity backdrop-blur-[2px]">
                                 <input type="checkbox" name="remove_images[]" value="{{ $image->id }}" class="sr-only peer">
-                                <div class="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-md scale-95 group-hover:scale-100 transition-all">
+                                <div class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-[10px] sm:text-xs font-bold rounded-md flex items-center gap-1 shadow-md scale-95 group-hover:scale-100 transition-all">
                                     <i class="ph-bold ph-trash"></i> Remove
                                 </div>
                             </label>
                             
                             @if($image->is_primary)
-                            <span class="absolute top-2 left-2 px-2 py-0.5 bg-blue-600 text-white text-[10px] font-extrabold uppercase tracking-wide rounded-md shadow-sm pointer-events-none">Primary</span>
+                            <span class="absolute top-1.5 left-1.5 px-1.5 py-0.2 bg-blue-600 text-white text-[9px] font-extrabold uppercase tracking-wide rounded shadow-xs pointer-events-none">Primary</span>
                             @endif
                         </div>
                         @endforeach
@@ -500,12 +504,12 @@
                 @endif
 
                 {{-- Add More Images Dropzone --}}
-                <div class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-7 text-center transition-all group relative bg-slate-50/50 dark:bg-slate-800/30">
-                    <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center mx-auto mb-2.5 group-hover:scale-110 transition-transform">
-                        <i class="ph-bold ph-cloud-arrow-up text-2xl"></i>
+                <div class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-500 rounded-xl sm:rounded-2xl p-4 sm:p-5 text-center transition-all group relative bg-slate-50/50 dark:bg-slate-800/30">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
+                        <i class="ph-bold ph-cloud-arrow-up text-xl"></i>
                     </div>
                     <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-0.5">Click to upload additional photos</p>
-                    <p class="text-xs text-slate-400">JPG, PNG, WebP · <span class="text-emerald-600 font-semibold">⚡ Auto-compressed for fast upload</span></p>
+                    <p class="text-[11px] sm:text-xs text-slate-400">JPG, PNG, WebP · <span class="text-emerald-600 font-semibold">⚡ Auto-compressed for fast upload</span></p>
                     
                     <input type="file" name="images[]" multiple accept="image/*"
                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -513,7 +517,7 @@
                 </div>
 
                 {{-- Image Compression Status Indicator --}}
-                <div id="edit-compression-status" class="mt-3 p-3 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-xl text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center justify-between hidden">
+                <div id="edit-compression-status" class="mt-2.5 p-2.5 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-xl text-xs font-semibold text-blue-700 dark:text-blue-300 flex items-center justify-between hidden">
                     <div class="flex items-center gap-2">
                         <i class="ph-bold ph-lightning text-amber-500 text-base"></i>
                         <span id="edit-compression-status-text">Optimizing photos for instant upload...</span>
@@ -575,106 +579,112 @@
                 }
                 </script>
 
-                {{-- Video Tour Section --}}
-                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-                    <div class="flex items-center justify-between gap-3 mb-4">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center">
-                                <i class="ph-bold ph-video-camera text-base"></i>
+                @php
+                    $existingVideos = $property->allVideoUrls();
+                    $hasVideos = !empty($existingVideos);
+                @endphp
+
+                {{-- Collapsible Video Tour Section --}}
+                <details class="group mt-3 sm:mt-4 pt-3 border-t border-slate-100 dark:border-slate-800" {{ $hasVideos ? 'open' : '' }}>
+                    <summary class="flex items-center justify-between cursor-pointer list-none py-1 select-none">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center text-sm shrink-0">
+                                <i class="ph-bold ph-video-camera"></i>
                             </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    Property Video Tours & Clips
-                                    <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-[10px] font-extrabold uppercase rounded-full">Multi-Clip & Trimmer</span>
-                                </h3>
-                                <p class="text-xs text-slate-400">Upload multiple clips, trim large videos into short clips, or add YouTube/Vimeo links</p>
+                            <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                                Video Tours & Clips
+                                <span class="text-[10px] text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-md font-bold">Optional</span>
+                                @if($hasVideos)
+                                    <span class="text-[10px] text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md font-bold">({{ count($existingVideos) }} attached)</span>
+                                @endif
                             </div>
                         </div>
-                        <span class="text-[11px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2.5 py-0.5 rounded-md border border-purple-200/60 dark:border-purple-800">3x Inquiries</span>
-                    </div>
+                        <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-500 group-hover:text-purple-600 transition-colors">
+                            <span class="hidden sm:inline text-[11px] text-slate-400">{{ $hasVideos ? 'Edit clips' : 'Add video / YouTube' }}</span>
+                            <i class="ph-bold ph-caret-down text-xs transition-transform duration-200 group-open:rotate-180"></i>
+                        </div>
+                    </summary>
 
-                    @php
-                        $existingVideos = $property->allVideoUrls();
-                    @endphp
-
-                    @if(!empty($existingVideos))
-                    <div class="mb-5 p-4 sm:p-5 bg-purple-50/40 dark:bg-purple-950/20 border border-purple-200/70 dark:border-purple-900/50 rounded-2xl">
-                        <p class="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider mb-3.5 flex items-center gap-2">
-                            <i class="ph-bold ph-film-slate text-purple-600"></i> Existing Video Tours ({{ count($existingVideos) }})
-                            <span class="text-[11px] font-normal text-slate-400 normal-case ml-auto">Check box to delete</span>
-                        </p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
-                            @foreach($existingVideos as $vIndex => $vUrl)
-                                <div class="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xs">
-                                    <div class="relative bg-black rounded-lg overflow-hidden mb-2.5 h-36 flex items-center justify-center">
-                                        @php
-                                            $isYt = preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i', $vUrl, $ytM);
-                                            $isVm = preg_match('/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i', $vUrl, $vmM);
-                                        @endphp
-                                        @if($isYt)
-                                            <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ $ytM[1] }}" frameborder="0"></iframe>
-                                        @elseif($isVm)
-                                            <iframe class="w-full h-full" src="https://player.vimeo.com/video/{{ $vmM[3] }}" frameborder="0"></iframe>
-                                        @else
-                                            <video src="{{ $vUrl }}" controls playsinline preload="metadata" class="w-full h-full object-contain"></video>
-                                        @endif
+                    <div class="pt-3 space-y-3">
+                        @if(!empty($existingVideos))
+                        <div class="p-3 sm:p-4 bg-purple-50/40 dark:bg-purple-950/20 border border-purple-200/70 dark:border-purple-900/50 rounded-xl sm:rounded-2xl">
+                            <p class="text-[11px] sm:text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider mb-2.5 flex items-center gap-2">
+                                <i class="ph-bold ph-film-slate text-purple-600"></i> Existing Video Tours ({{ count($existingVideos) }})
+                                <span class="text-[10px] sm:text-[11px] font-normal text-slate-400 normal-case ml-auto">Check box to delete</span>
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2.5">
+                                @foreach($existingVideos as $vIndex => $vUrl)
+                                    <div class="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xs">
+                                        <div class="relative bg-black rounded-lg overflow-hidden mb-2 h-28 sm:h-32 flex items-center justify-center">
+                                            @php
+                                                $isYt = preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i', $vUrl, $ytM);
+                                                $isVm = preg_match('/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i', $vUrl, $vmM);
+                                            @endphp
+                                            @if($isYt)
+                                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ $ytM[1] }}" frameborder="0"></iframe>
+                                            @elseif($isVm)
+                                                <iframe class="w-full h-full" src="https://player.vimeo.com/video/{{ $vmM[3] }}" frameborder="0"></iframe>
+                                            @else
+                                                <video src="{{ $vUrl }}" controls playsinline preload="metadata" class="w-full h-full object-contain"></video>
+                                            @endif
+                                        </div>
+                                        <label class="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-red-700 cursor-pointer">
+                                            <input type="checkbox" name="remove_video_indexes[]" value="{{ $vIndex }}" class="rounded text-red-600 focus:ring-red-500">
+                                            <span>Delete Video {{ $vIndex + 1 }}</span>
+                                        </label>
                                     </div>
-                                    <label class="inline-flex items-center gap-2 text-xs font-bold text-red-600 hover:text-red-700 cursor-pointer">
-                                        <input type="checkbox" name="remove_video_indexes[]" value="{{ $vIndex }}" class="rounded text-red-600 focus:ring-red-500">
-                                        <span>Delete Video {{ $vIndex + 1 }}</span>
-                                    </label>
-                                </div>
-                            @endforeach
-                        </div>
-                        <label class="inline-flex items-center gap-2 text-xs font-bold text-red-700 dark:text-red-400 cursor-pointer pt-2 border-t border-purple-200/60 dark:border-purple-900/60">
-                            <input type="checkbox" name="remove_video" value="1" class="rounded text-red-600 focus:ring-red-500">
-                            <span>Remove all existing videos</span>
-                        </label>
-                    </div>
-                    @endif
-
-                    {{-- Multi-Video Upload Box --}}
-                    <div id="edit-video-upload-box" class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-purple-500 rounded-2xl p-6 text-center transition-all group relative bg-slate-50/40 dark:bg-slate-800/20 cursor-pointer" onclick="document.getElementById('edit-video-input').click()">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                            <i class="ph-bold ph-film-slate text-xl"></i>
-                        </div>
-                        <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-0.5">Click to upload property videos / clips (Up to 10 videos)</p>
-                        <p class="text-xs text-slate-400">MP4, WebM, MOV, M4V · Auto-optimized for fast upload · Optional trim for long videos · Max 10 clips</p>
-                        
-                        <input type="file" id="edit-video-input" multiple accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v" class="hidden" onchange="handleEditMultipleVideoSelection(event)">
-                    </div>
-
-                    {{-- Video URL Input --}}
-                    <div class="mt-4 p-4 bg-slate-50/60 dark:bg-slate-800/40 rounded-xl border border-slate-200/70 dark:border-slate-700/60">
-                        <label for="edit-video-url-input" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                            <i class="ph-bold ph-link text-purple-600 mr-1"></i> Or Add Video Tour Link (YouTube / Vimeo / Cloud)
-                        </label>
-                        <div class="flex flex-col sm:flex-row gap-2.5">
-                            <div class="relative flex-1">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-video"></i></span>
-                                <input type="url" id="edit-video-url-input" placeholder="https://www.youtube.com/watch?v=... or Vimeo"
-                                       class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 transition-all">
+                                @endforeach
                             </div>
-                            <button type="button" onclick="addEditVideoUrlLink()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i class="ph-bold ph-plus"></i> Add Link
-                            </button>
+                            <label class="inline-flex items-center gap-1.5 text-xs font-bold text-red-700 dark:text-red-400 cursor-pointer pt-2 border-t border-purple-200/60 dark:border-purple-900/60">
+                                <input type="checkbox" name="remove_video" value="1" class="rounded text-red-600 focus:ring-red-500">
+                                <span>Remove all existing videos</span>
+                            </label>
                         </div>
-                    </div>
+                        @endif
 
-                    {{-- Compression Status Indicator --}}
-                    <div id="edit-video-compress-status" class="mt-3 p-3 bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 rounded-xl hidden">
-                        <div class="flex items-center justify-between text-xs font-bold text-purple-900 dark:text-purple-300 mb-1.5">
-                            <span class="flex items-center gap-1.5"><i class="ph-bold ph-lightning text-amber-500 animate-pulse"></i> <span id="edit-compress-status-text">Optimizing video...</span></span>
-                            <span id="edit-compress-status-pct">0%</span>
+                        {{-- Multi-Video Upload Box --}}
+                        <div id="edit-video-upload-box" class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-purple-500 rounded-xl sm:rounded-2xl p-4 sm:p-5 text-center transition-all group relative bg-slate-50/40 dark:bg-slate-800/20 cursor-pointer" onclick="document.getElementById('edit-video-input').click()">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
+                                <i class="ph-bold ph-film-slate text-xl"></i>
+                            </div>
+                            <p class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-0.5">Click to upload property videos / clips (Up to 10)</p>
+                            <p class="text-[11px] sm:text-xs text-slate-400">MP4, WebM, MOV · Auto-optimized · Optional trim · Max 10 clips</p>
+                            
+                            <input type="file" id="edit-video-input" multiple accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v" class="hidden" onchange="handleEditMultipleVideoSelection(event)">
                         </div>
-                        <div class="w-full bg-purple-200 dark:bg-purple-900 h-2 rounded-full overflow-hidden">
-                            <div id="edit-compress-progress-bar" class="bg-gradient-to-r from-purple-600 to-indigo-600 h-full w-0 transition-all duration-150"></div>
-                        </div>
-                    </div>
 
-                    {{-- Video Previews Container --}}
-                    <div id="edit-video-previews-container" class="mt-4 space-y-2.5"></div>
-                </div>
+                        {{-- Video URL Input --}}
+                        <div class="p-3 bg-slate-50/60 dark:bg-slate-800/40 rounded-xl border border-slate-200/70 dark:border-slate-700/60">
+                            <label for="edit-video-url-input" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                <i class="ph-bold ph-link text-purple-600 mr-1"></i> Or Add Video Tour Link (YouTube / Vimeo / Cloud)
+                            </label>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <div class="relative flex-1">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-video"></i></span>
+                                    <input type="url" id="edit-video-url-input" placeholder="https://www.youtube.com/watch?v=... or Vimeo"
+                                           class="w-full pl-8 sm:pl-9 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-600/20 transition-all">
+                                </div>
+                                <button type="button" onclick="addEditVideoUrlLink()" class="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <i class="ph-bold ph-plus"></i> Add Link
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Compression Status Indicator --}}
+                        <div id="edit-video-compress-status" class="p-2.5 bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 rounded-xl hidden">
+                            <div class="flex items-center justify-between text-xs font-bold text-purple-900 dark:text-purple-300 mb-1">
+                                <span class="flex items-center gap-1.5"><i class="ph-bold ph-lightning text-amber-500 animate-pulse"></i> <span id="edit-compress-status-text">Optimizing video...</span></span>
+                                <span id="edit-compress-status-pct">0%</span>
+                            </div>
+                            <div class="w-full bg-purple-200 dark:bg-purple-900 h-1.5 rounded-full overflow-hidden">
+                                <div id="edit-compress-progress-bar" class="bg-gradient-to-r from-purple-600 to-indigo-600 h-full w-0 transition-all duration-150"></div>
+                            </div>
+                        </div>
+
+                        {{-- Video Previews Container --}}
+                        <div id="edit-video-previews-container" class="space-y-2"></div>
+                    </div>
+                </details>
 
                 {{-- Interactive Video Trimmer Modal for Edit Page --}}
                 <div id="edit-video-trimmer-modal" class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md hidden" style="z-index: 99999;">
@@ -1522,7 +1532,7 @@ window.onEditTypeChange = function(type) {
 
         // Expand area column to full width
         if (areaCol) {
-            areaCol.className = 'col-span-3';
+            areaCol.style.gridColumn = '1 / -1';
         }
         if (areaLabel) areaLabel.textContent = 'Total Plot / Land Area (sq.ft) *';
         if (areaInput) areaInput.placeholder = 'e.g. 1500 (or 166 sq.yards)';
@@ -1550,7 +1560,7 @@ window.onEditTypeChange = function(type) {
         if (plotHelper) plotHelper.classList.add('hidden');
 
         if (areaCol) {
-            areaCol.className = 'col-span-1';
+            areaCol.style.gridColumn = '';
         }
         if (areaLabel) areaLabel.textContent = 'Area (sq.ft)';
         if (areaInput) areaInput.placeholder = '1250';
