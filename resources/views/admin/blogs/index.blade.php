@@ -101,10 +101,10 @@
         {{-- Filter & Search Toolbar --}}
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs">
             <form method="GET" action="{{ route('admin.blogs.index') }}" class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-                <div class="flex-1 flex flex-col sm:flex-row items-center gap-3">
+                <div class="flex-1 flex flex-wrap items-center gap-3">
                     
                     {{-- Search Input --}}
-                    <div class="relative w-full sm:w-80">
+                    <div class="relative w-full sm:w-72">
                         <i class="ph-bold ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         <input type="text" name="search" value="{{ request('search') }}"
                                placeholder="Search title, author, content..."
@@ -112,7 +112,7 @@
                     </div>
 
                     {{-- Category Filter --}}
-                    <div class="relative w-full sm:w-52">
+                    <div class="relative w-full sm:w-48">
                         <select name="category" onchange="this.form.submit()"
                                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                             <option value="all">All Categories</option>
@@ -124,7 +124,7 @@
                     </div>
 
                     {{-- Status Filter --}}
-                    <div class="relative w-full sm:w-44">
+                    <div class="relative w-full sm:w-40">
                         <select name="status" onchange="this.form.submit()"
                                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
                             <option value="">All Statuses</option>
@@ -135,11 +135,29 @@
                         <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                     </div>
 
+                    {{-- Sort Filter --}}
+                    <div class="relative w-full sm:w-52">
+                        <i class="ph-bold ph-arrows-down-up absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                        <select name="sort" onchange="this.form.submit()"
+                                class="w-full pl-8 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                            <option value="latest" {{ request('sort', 'latest') === 'latest' ? 'selected' : '' }}>Date: Newest First</option>
+                            <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>Date: Oldest First</option>
+                            <option value="views_desc" {{ request('sort') === 'views_desc' ? 'selected' : '' }}>Views: High to Low</option>
+                            <option value="views_asc" {{ request('sort') === 'views_asc' ? 'selected' : '' }}>Views: Low to High</option>
+                            <option value="title_asc" {{ request('sort') === 'title_asc' ? 'selected' : '' }}>Title: A &rarr; Z</option>
+                            <option value="title_desc" {{ request('sort') === 'title_desc' ? 'selected' : '' }}>Title: Z &rarr; A</option>
+                            <option value="updated_desc" {{ request('sort') === 'updated_desc' ? 'selected' : '' }}>Recently Updated</option>
+                            <option value="read_time_desc" {{ request('sort') === 'read_time_desc' ? 'selected' : '' }}>Read Time: Longest</option>
+                            <option value="read_time_asc" {{ request('sort') === 'read_time_asc' ? 'selected' : '' }}>Read Time: Shortest</option>
+                        </select>
+                        <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    </div>
+
                 </div>
 
-                <div class="flex items-center gap-2 justify-end">
-                    @if(request()->hasAny(['search', 'category', 'status']))
-                        <a href="{{ route('admin.blogs.index') }}" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all flex items-center gap-1.5" title="Reset Filters">
+                <div class="flex items-center gap-2 justify-end shrink-0">
+                    @if(request()->filled('search') || (request()->filled('category') && request('category') !== 'all') || request()->filled('status') || (request()->filled('sort') && request('sort') !== 'latest'))
+                        <a href="{{ route('admin.blogs.index') }}" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all flex items-center gap-1.5" title="Reset Filters & Sorting">
                             <i class="ph-bold ph-x text-xs"></i> Reset
                         </a>
                     @endif
@@ -151,17 +169,59 @@
         </div>
 
         {{-- Blog Posts Table Card --}}
+        @php
+            $currentSort = request('sort', 'latest');
+            $buildSortUrl = function($targetSort) {
+                return route('admin.blogs.index', array_merge(request()->except(['page', 'sort']), ['sort' => $targetSort]));
+            };
+            $nextTitleSort = ($currentSort === 'title_asc') ? 'title_desc' : 'title_asc';
+            $nextViewsSort = ($currentSort === 'views_desc') ? 'views_asc' : 'views_desc';
+            $nextDateSort  = ($currentSort === 'latest') ? 'oldest' : 'latest';
+        @endphp
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm border-collapse">
                     <thead>
                         <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
-                            <th class="py-4 px-5 sm:px-6 w-5/12">Article Details</th>
+                            <th class="py-4 px-5 sm:px-6 w-5/12">
+                                <a href="{{ $buildSortUrl($nextTitleSort) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 transition-colors group/sort" title="Sort by Title">
+                                    <span>Article Details</span>
+                                    @if($currentSort === 'title_asc')
+                                        <i class="ph-bold ph-arrow-up text-blue-600 text-xs"></i>
+                                    @elseif($currentSort === 'title_desc')
+                                        <i class="ph-bold ph-arrow-down text-blue-600 text-xs"></i>
+                                    @else
+                                        <i class="ph-bold ph-arrows-down-up text-slate-400 group-hover/sort:text-blue-600 text-xs opacity-70"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="py-4 px-4 text-left">Category</th>
                             <th class="py-4 px-4 text-left">Author</th>
-                            <th class="py-4 px-4 text-center">Views</th>
+                            <th class="py-4 px-4 text-center">
+                                <a href="{{ $buildSortUrl($nextViewsSort) }}" class="inline-flex items-center justify-center gap-1.5 hover:text-blue-600 transition-colors group/sort mx-auto" title="Sort by Views">
+                                    <span>Views</span>
+                                    @if($currentSort === 'views_desc')
+                                        <i class="ph-bold ph-arrow-down text-blue-600 text-xs"></i>
+                                    @elseif($currentSort === 'views_asc')
+                                        <i class="ph-bold ph-arrow-up text-blue-600 text-xs"></i>
+                                    @else
+                                        <i class="ph-bold ph-arrows-down-up text-slate-400 group-hover/sort:text-blue-600 text-xs opacity-70"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="py-4 px-4 text-center">Status</th>
-                            <th class="py-4 px-4 text-left">Date</th>
+                            <th class="py-4 px-4 text-left">
+                                <a href="{{ $buildSortUrl($nextDateSort) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 transition-colors group/sort" title="Sort by Date">
+                                    <span>Date</span>
+                                    @if($currentSort === 'latest')
+                                        <i class="ph-bold ph-arrow-down text-blue-600 text-xs"></i>
+                                    @elseif($currentSort === 'oldest')
+                                        <i class="ph-bold ph-arrow-up text-blue-600 text-xs"></i>
+                                    @else
+                                        <i class="ph-bold ph-arrows-down-up text-slate-400 group-hover/sort:text-blue-600 text-xs opacity-70"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="py-4 px-5 sm:px-6 text-right">Actions</th>
                         </tr>
                     </thead>

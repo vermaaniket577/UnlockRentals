@@ -22,14 +22,22 @@
 
         {{-- Search & Filter Bar --}}
         <div class="mb-12 bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-slate-200/80 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-            <form action="{{ route('blog.index') }}" method="GET" class="w-full md:w-auto flex-1 flex items-center gap-2">
-                <div class="relative flex-1">
+            <form action="{{ route('blog.index') }}" method="GET" class="w-full md:w-auto flex-1 flex flex-wrap sm:flex-nowrap items-center gap-2">
+                <div class="relative flex-1 min-w-[200px]">
                     <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search articles, guides, topics..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 @if(request('category'))
                     <input type="hidden" name="category" value="{{ request('category') }}">
                 @endif
+                <div class="relative min-w-[150px]">
+                    <select name="sort" onchange="this.form.submit()" class="w-full pl-3 pr-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer">
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Newest First</option>
+                        <option value="popular" {{ request('sort') == 'popular' || request('sort') == 'views_desc' ? 'selected' : '' }}>Most Popular</option>
+                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest First</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                </div>
                 <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition">
                     Search
                 </button>
@@ -37,11 +45,11 @@
 
             {{-- Categories --}}
             <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
-                <a href="{{ route('blog.index', array_filter(['search' => request('search')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ !request('category') || request('category') == 'all' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}" title="All">
+                <a href="{{ route('blog.index', array_filter(['search' => request('search'), 'sort' => request('sort')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ !request('category') || request('category') == 'all' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}" title="All">
                     All
                 </a>
                 @foreach($categories as $cat)
-                    <a href="{{ route('blog.index', array_filter(['category' => $cat, 'search' => request('search')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ request('category') == $cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}" title="Category {{ $cat }}">
+                    <a href="{{ route('blog.index', array_filter(['category' => $cat, 'search' => request('search'), 'sort' => request('sort')])) }}" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ request('category') == $cat ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}" title="Category {{ $cat }}">
                         {{ $cat }}
                     </a>
                 @endforeach

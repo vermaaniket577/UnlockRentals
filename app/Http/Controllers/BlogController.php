@@ -50,8 +50,19 @@ class BlogController extends Controller
             }
         }
 
+        // Sort results
+        $sort = $request->get('sort', 'latest');
+        match ($sort) {
+            'oldest' => $query->orderByRaw('COALESCE(published_at, created_at) ASC'),
+            'popular', 'views_desc' => $query->orderBy('views_count', 'desc')->orderByRaw('COALESCE(published_at, created_at) DESC'),
+            'views_asc' => $query->orderBy('views_count', 'asc'),
+            'title_asc' => $query->orderBy('title', 'asc'),
+            'title_desc' => $query->orderBy('title', 'desc'),
+            default => $query->orderByRaw('COALESCE(published_at, created_at) DESC'),
+        };
+
         // Paginate results
-        $posts = $query->latest('published_at')->paginate(9)->withQueryString();
+        $posts = $query->paginate(9)->withQueryString();
 
         return view('blog.index', compact('posts', 'categories', 'featuredPost'));
     }

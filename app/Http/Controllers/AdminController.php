@@ -1509,7 +1509,21 @@ class AdminController extends Controller
             }
         }
 
-        $blogs = $query->latest('updated_at')->paginate(12)->withQueryString();
+        // Sorting (Date, Views, Title, Updated, Read Time)
+        $sort = $request->get('sort', 'latest');
+        match ($sort) {
+            'oldest'          => $query->orderByRaw('COALESCE(published_at, created_at) ASC')->orderBy('id', 'asc'),
+            'views_desc'      => $query->orderBy('views_count', 'desc')->orderBy('id', 'desc'),
+            'views_asc'       => $query->orderBy('views_count', 'asc')->orderBy('id', 'desc'),
+            'title_asc'       => $query->orderBy('title', 'asc'),
+            'title_desc'      => $query->orderBy('title', 'desc'),
+            'updated_desc'    => $query->orderBy('updated_at', 'desc'),
+            'read_time_desc'  => $query->orderBy('read_time', 'desc')->orderBy('id', 'desc'),
+            'read_time_asc'   => $query->orderBy('read_time', 'asc')->orderBy('id', 'desc'),
+            default           => $query->orderByRaw('COALESCE(published_at, created_at) DESC')->orderBy('id', 'desc'),
+        };
+
+        $blogs = $query->paginate(12)->withQueryString();
         $categories = Blog::select('category')->distinct()->pluck('category')->filter()->values();
 
         return view('admin.blogs.index', compact('blogs', 'stats', 'categories'));
