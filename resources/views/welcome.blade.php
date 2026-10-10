@@ -1466,18 +1466,18 @@
                         </script>
 
                         {{-- Desktop Dropdown Backdrop --}}
-                        <div id="userDropdownBackdrop" class="fixed inset-0 z-[9998] hidden bg-black/20" onclick="window.closeUserDropdown()"></div>
+                        <div id="userDropdownBackdrop" class="fixed inset-0 z-[99999] hidden bg-black/40 backdrop-blur-[1px]" onclick="window.closeUserDropdown()"></div>
 
                         @php
                             $welcomeActivePlan = auth()->user()->activePlan();
                         @endphp
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-2 py-1 px-2 rounded-full hover:bg-white/10 transition-all border border-white/15 bg-white/5 relative z-[9999] cursor-pointer" id="userDropdownBtn" aria-label="User Account">
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-2 py-1 px-2.5 rounded-full hover:bg-white/10 transition-all border border-white/15 bg-white/5 relative z-[100000] cursor-pointer" id="userDropdownBtn" aria-label="User Account">
                             <div class="relative pointer-events-none">
                                 <div style="width:30px; height:30px; border-radius:50%; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.6), 0 2px 10px rgba(245,158,11,0.5);' : 'background:linear-gradient(135deg, #2563eb, #6366f1); box-shadow:0 2px 8px rgba(37,99,235,0.4);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0;">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
                                 @if($welcomeActivePlan)
-                                    <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[7.5px] ring-1.5 ring-slate-900 shadow-xs" title="Paid Member">
+                                    <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[7px] ring-1 ring-slate-900 shadow-xs" title="Paid Member">
                                         <i class="ph-fill ph-crown"></i>
                                     </span>
                                 @endif
@@ -1488,38 +1488,48 @@
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7; flex-shrink:0; pointer-events:none;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </button>
                         
-                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:260px; background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:14px; box-shadow:0 20px 40px rgba(0,0,0,0.5); overflow:hidden; z-index:9999;">
-                            <div style="padding:14px; border-bottom:1px solid rgba(255,255,255,0.08);">
-                                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2px; gap:8px;">
-                                    <p style="color:rgba(255,255,255,0.5); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Signed in as</p>
-                                    @if($welcomeActivePlan)
-                                        <x-premium-badge :plan="$welcomeActivePlan" size="xs" :showPlan="false" />
-                                    @endif
+                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:320px; max-width:calc(100vw - 1.5rem); background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.12); border-radius:16px; box-shadow:0 20px 50px rgba(0,0,0,0.6); overflow:hidden; z-index:100000;">
+                            <div style="padding:14px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.02);">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div style="width:36px; height:36px; border-radius:10px; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.6);' : 'background:#2563eb;' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; flex-shrink:0;">
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                    <div style="min-width:0; flex:1;">
+                                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                                            <p style="color:#fff; font-weight:700; font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:0;">{{ auth()->user()->name }}</p>
+                                            <span style="font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; padding:1.5px 6px; border-radius:4px; background:rgba(37,99,235,0.2); color:#93c5fd; border:1px solid rgba(147,197,253,0.3); flex-shrink:0;">{{ ucfirst(auth()->user()->role) }}</span>
+                                        </div>
+                                        <p style="color:rgba(255,255,255,0.55); font-size:11.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:2px 0 0 0;">{{ auth()->user()->email }}</p>
+                                    </div>
                                 </div>
-                                <p style="color:#fff; font-weight:700; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->name }}</p>
-                                <p style="color:rgba(255,255,255,0.6); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ auth()->user()->email }}</p>
                                 @if($welcomeActivePlan)
-                                    <div style="margin-top:10px;">
+                                    <div style="margin-top:12px;">
                                         <x-premium-badge :plan="$welcomeActivePlan" type="card" />
                                     </div>
                                 @endif
                             </div>
-                            <div style="padding:6px 0;">
-                                <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none; transition:all 0.2s;" title="Dashboard">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                                    Dashboard
+                            <div style="padding:6px;">
+                                <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(255,255,255,0.85); font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s;" title="Dashboard">
+                                    <div style="width:28px; height:28px; border-radius:8px; background:rgba(37,99,235,0.2); color:#60a5fa; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i class="ph-bold ph-squares-four" style="font-size:15px;"></i>
+                                    </div>
+                                    <span>Dashboard</span>
                                 </a>
-                                <a href="{{ route('plans.index') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:10px 15px; color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none; transition:all 0.2s;" title="Membership Plans">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                                    Membership Plans
+                                <a href="{{ route('plans.index') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(255,255,255,0.85); font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s;" title="Membership Plans">
+                                    <div style="width:28px; height:28px; border-radius:8px; background:rgba(245,158,11,0.2); color:#fbbf24; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i class="ph-bold ph-crown" style="font-size:15px;"></i>
+                                    </div>
+                                    <span>Membership Plans</span>
                                 </a>
                             </div>
-                            <div style="padding:6px 0; border-top:1px solid rgba(255,255,255,0.08);">
+                            <div style="padding:6px; border-top:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.02);">
                                 <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                                     @csrf
-                                    <button type="button" onclick="window.performUniversalLogout(event)" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:10px; padding:10px 15px; color:#f87171; font-size:13px; text-decoration:none; transition:all 0.2s; background:transparent; border:none; cursor:pointer; text-align:left;">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                                        Logout
+                                    <button type="button" onclick="window.performUniversalLogout(event)" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:#f87171; font-size:12.5px; font-weight:700; text-decoration:none; transition:all 0.15s; background:transparent; border:none; cursor:pointer; text-align:left;">
+                                        <div style="width:28px; height:28px; border-radius:8px; background:rgba(244,63,94,0.18); color:#fb7185; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                            <i class="ph-bold ph-sign-out" style="font-size:15px;"></i>
+                                        </div>
+                                        <span>Sign Out</span>
                                     </button>
                                 </form>
                             </div>
@@ -1727,7 +1737,7 @@
     @php
         $welcomeModalPlan = auth()->user()->activePlan();
     @endphp
-    <div id="welcome-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/40 backdrop-blur-sm" onclick="if(event.target===this) window.closeWelcomeAccountModal()">
+    <div id="welcome-account-modal" class="fixed inset-0 z-[100000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/40 backdrop-blur-sm" onclick="if(event.target===this) window.closeWelcomeAccountModal()">
         <div class="w-full sm:max-w-md bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-[slideUp_0.2s_ease-out]">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">

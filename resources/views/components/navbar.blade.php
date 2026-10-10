@@ -168,18 +168,18 @@
                         </script>
 
                         {{-- Dropdown Backdrop for Desktop --}}
-                        <div id="nav-user-backdrop" class="fixed inset-0 z-[9998] hidden bg-black/20 dark:bg-black/60" onclick="window.closeUserDropdown()"></div>
+                        <div id="nav-user-backdrop" class="fixed inset-0 z-[99999] hidden bg-black/20 dark:bg-black/60" onclick="window.closeUserDropdown()"></div>
 
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative cursor-pointer z-[9999]" id="nav-user-menu" aria-label="User Account">
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative cursor-pointer z-[100000]" id="nav-user-menu" aria-label="User Account">
                             <div class="relative pointer-events-none">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold relative overflow-hidden {{ $navActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 shadow-md shadow-amber-500/30' : 'bg-[#2563EB]' }}">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black relative overflow-hidden {{ $navActivePlan ? 'bg-gradient-to-br from-indigo-600 via-blue-600 to-amber-500 ring-2 ring-amber-400/90 shadow-sm' : 'bg-[#2563EB]' }}">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                     @if($navActivePlan)
                                         <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[premiumShine_2.6s_ease-in-out_infinite]"></span>
                                     @endif
                                 </div>
                                 @if($navActivePlan)
-                                    <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white dark:ring-slate-900 shadow-xs" title="Paid Member">
+                                    <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 text-[7px] ring-1 ring-white dark:ring-slate-900 shadow-xs" title="Paid Member">
                                         <i class="ph-fill ph-crown"></i>
                                     </span>
                                 @endif
@@ -195,106 +195,156 @@
                         </button>
 
                         {{-- Dropdown Menu --}}
-                        <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-[9999]">
-                            <div class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50">
-                                <div class="flex items-center justify-between gap-2 mb-0.5">
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white truncate">
-                                        {{ auth()->user()->name }}
-                                    </p>
-                                    @if($navActivePlan)
-                                        <x-premium-badge :plan="$navActivePlan" size="xs" :showPlan="false" />
-                                    @endif
+                        <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(15,23,42,0.18)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.6)] overflow-hidden z-[100000]">
+                            <div class="p-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-800/40">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 shadow-sm {{ $navActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400/80' : 'bg-[#2563EB]' }}">
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center justify-between gap-1.5">
+                                            <p class="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                                {{ auth()->user()->name }}
+                                            </p>
+                                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 flex-shrink-0">
+                                                {{ ucfirst(auth()->user()->role) }}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                            {{ auth()->user()->email }}
+                                        </p>
+                                    </div>
                                 </div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 capitalize">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
                                 @if($navActivePlan)
-                                    <div class="mt-2.5">
+                                    <div class="mt-3">
                                         <x-premium-badge :plan="$navActivePlan" type="card" />
                                     </div>
                                 @endif
                             </div>
 
-                            <div class="py-1">
-                                <a href="{{ route('dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-dashboard" title="Dashboard">
-                                    <i class="ph-bold ph-squares-four text-base text-blue-600"></i>
-                                    <span>Dashboard</span>
+                            <div class="p-2 space-y-0.5 max-h-[calc(100vh-280px)] overflow-y-auto">
+                                <a href="{{ route('dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-dashboard" title="Dashboard">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                        <i class="ph-bold ph-squares-four"></i>
+                                    </div>
+                                    <span class="text-sm font-semibold">Dashboard</span>
                                 </a>
-                                <a href="#" onclick="event.preventDefault(); window.closeUserDropdown(); window.openProfileModal();" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-profile-settings" title="Profile Settings">
-                                    <i class="ph-bold ph-user-gear text-base text-blue-600"></i>
-                                    <span>Profile Settings</span>
+
+                                <a href="#" onclick="event.preventDefault(); window.closeUserDropdown(); window.openProfileModal();" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-profile-settings" title="Profile Settings">
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                        <i class="ph-bold ph-user-gear"></i>
+                                    </div>
+                                    <span class="text-sm font-semibold">Profile Settings</span>
                                 </a>
+
                                 @if(auth()->user()->isProfessional())
-                                <a href="{{ route('professional.dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-prof-portal" title="Professional Dashboard">
-                                    <i class="ph-bold ph-toolbox text-base text-amber-500"></i>
-                                    <span>Professional Portal</span>
+                                <a href="{{ route('professional.dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-prof-portal" title="Professional Dashboard">
+                                    <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                        <i class="ph-bold ph-toolbox"></i>
+                                    </div>
+                                    <span class="text-sm font-semibold">Professional Portal</span>
                                 </a>
                                 @else
-                                <a href="{{ route('services.register') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-prof-reg" title="List Your Service FREE">
-                                    <i class="ph-bold ph-identification-card text-base text-emerald-500"></i>
-                                    <span>List Your Service FREE</span>
+                                <a href="{{ route('services.register') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-prof-reg" title="List Your Service FREE">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                            <i class="ph-bold ph-identification-card"></i>
+                                        </div>
+                                        <span class="text-sm font-semibold">List Your Service</span>
+                                    </div>
+                                    <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">FREE</span>
                                 </a>
                                 @endif
-                                <a href="{{ route('services.my-requests') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-cust-requests" title="My Service Requests">
-                                    <i class="ph-bold ph-clipboard-text text-base text-blue-600"></i>
-                                    <span>My Service Requests</span>
+
+                                <a href="{{ route('services.my-requests') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-cust-requests" title="My Service Requests">
+                                    <div class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                        <i class="ph-bold ph-clipboard-text"></i>
+                                    </div>
+                                    <span class="text-sm font-semibold">My Service Requests</span>
                                 </a>
+
                                 @if(auth()->user()->isOwner())
-                                <a href="{{ route('inquiries.index') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-inquiries" title="Inquiries">
-                                    <i class="ph-bold ph-chat-dots text-base text-blue-600"></i>
-                                    <span>Inquiries</span>
+                                <a href="{{ route('inquiries.index') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-inquiries" title="Inquiries">
+                                    <div class="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                        <i class="ph-bold ph-chat-dots"></i>
+                                    </div>
+                                    <span class="text-sm font-semibold">Inquiries</span>
                                 </a>
                                 @endif
+
                                 @if(auth()->user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin" title="Admin Panel">
-                                    <i class="ph-bold ph-shield-check text-base text-blue-600"></i>
-                                    <span>Admin Panel</span>
-                                </a>
-                                <a href="{{ route('admin.settings') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-settings" title="Content &amp; Settings">
-                                    <i class="ph-bold ph-gear text-base text-blue-600"></i>
-                                    <span>Content & Settings</span>
-                                </a>
-                                <a href="{{ route('admin.feedback') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-feedback" title="Customer Feedback">
-                                    <div class="flex items-center gap-3">
-                                        <i class="ph-bold ph-chat-centered-text text-base text-blue-600"></i>
-                                        <span>Customer Feedback</span>
+                                <div class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800/80">
+                                    <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                        Administration
                                     </div>
-                                    @if(isset($adminNotifications) && $adminNotifications['new_feedbacks'] > 0)
-                                        <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['new_feedbacks'] }}</span>
-                                    @endif
-                                </a>
-                                <a href="{{ route('admin.chats') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-chats" title="Chat History">
-                                    <div class="flex items-center gap-3">
-                                        <i class="ph-bold ph-chat-circle-dots text-base text-blue-600"></i>
-                                        <span>Chat History</span>
-                                    </div>
-                                    @if(isset($adminNotifications) && $adminNotifications['unread_chats'] > 0)
-                                        <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['unread_chats'] }}</span>
-                                    @endif
-                                </a>
-                                <a href="{{ route('admin.callbacks') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-callbacks" title="Callback Leads">
-                                    <div class="flex items-center gap-3">
-                                        <i class="ph-bold ph-phone-call text-base text-blue-600"></i>
-                                        <span>Callback Leads</span>
-                                    </div>
-                                    @if(isset($adminNotifications) && $adminNotifications['new_callbacks'] > 0)
-                                        <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['new_callbacks'] }}</span>
-                                    @endif
-                                </a>
-                                <a href="{{ route('admin.plans') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-plans" title="Manage Plans">
-                                    <i class="ph-bold ph-crown text-base text-blue-600"></i>
-                                    <span>Manage Plans</span>
-                                </a>
-                                <a href="{{ route('admin.subscriptions') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all" id="nav-admin-subscriptions" title="User Subscriptions">
-                                    <i class="ph-bold ph-receipt text-base text-blue-600"></i>
-                                    <span>User Subscriptions</span>
-                                </a>
+                                    <a href="{{ route('admin.dashboard') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-admin" title="Admin Panel">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                            <i class="ph-bold ph-shield-check"></i>
+                                        </div>
+                                        <span class="text-sm font-semibold">Admin Panel</span>
+                                    </a>
+                                    <a href="{{ route('admin.settings') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-admin-settings" title="Content &amp; Settings">
+                                        <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                            <i class="ph-bold ph-gear"></i>
+                                        </div>
+                                        <span class="text-sm font-semibold">Content &amp; Settings</span>
+                                    </a>
+                                    <a href="{{ route('admin.feedback') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-admin-feedback" title="Customer Feedback">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                                <i class="ph-bold ph-chat-centered-text"></i>
+                                            </div>
+                                            <span class="text-sm font-semibold">Customer Feedback</span>
+                                        </div>
+                                        @if(isset($adminNotifications) && $adminNotifications['new_feedbacks'] > 0)
+                                            <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['new_feedbacks'] }}</span>
+                                        @endif
+                                    </a>
+                                    <a href="{{ route('admin.chats') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-admin-chats" title="Chat History">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                                <i class="ph-bold ph-chat-circle-dots"></i>
+                                            </div>
+                                            <span class="text-sm font-semibold">Chat History</span>
+                                        </div>
+                                        @if(isset($adminNotifications) && $adminNotifications['unread_chats'] > 0)
+                                            <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['unread_chats'] }}</span>
+                                        @endif
+                                    </a>
+                                    <a href="{{ route('admin.callbacks') }}" onclick="window.closeUserDropdown()" class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-admin-callbacks" title="Callback Leads">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                                <i class="ph-bold ph-phone-call"></i>
+                                            </div>
+                                            <span class="text-sm font-semibold">Callback Leads</span>
+                                        </div>
+                                        @if(isset($adminNotifications) && $adminNotifications['new_callbacks'] > 0)
+                                            <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $adminNotifications['new_callbacks'] }}</span>
+                                        @endif
+                                    </a>
+                                    <a href="{{ route('admin.plans') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-admin-plans" title="Manage Plans">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                            <i class="ph-bold ph-crown"></i>
+                                        </div>
+                                        <span class="text-sm font-semibold">Manage Plans</span>
+                                    </a>
+                                    <a href="{{ route('admin.subscriptions') }}" onclick="window.closeUserDropdown()" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/70 transition-all group" id="nav-admin-subscriptions" title="User Subscriptions">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base group-hover:scale-105 transition-transform flex-shrink-0">
+                                            <i class="ph-bold ph-receipt"></i>
+                                        </div>
+                                        <span class="text-sm font-semibold">User Subscriptions</span>
+                                    </a>
+                                </div>
                                 @endif
                             </div>
 
-                            <div class="border-t border-slate-100 dark:border-slate-800 p-2">
+                            <div class="border-t border-slate-100 dark:border-slate-800/80 p-2 bg-slate-50/60 dark:bg-slate-800/30">
                                 <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                                     @csrf
-                                    <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/70 text-red-600 dark:text-red-400 font-black text-sm transition-all cursor-pointer shadow-xs" id="nav-logout">
-                                        <i class="ph-bold ph-sign-out text-lg"></i>
+                                    <button type="button" onclick="window.performUniversalLogout(event)" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-bold transition-all cursor-pointer group" id="nav-logout">
+                                        <div class="w-7 h-7 rounded-lg bg-rose-100/70 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center text-sm group-hover:scale-105 transition-transform flex-shrink-0">
+                                            <i class="ph-bold ph-sign-out"></i>
+                                        </div>
                                         <span>Sign Out</span>
                                     </button>
                                 </form>
@@ -484,7 +534,7 @@
     @php
         $modalActivePlan = auth()->user()->activePlan();
     @endphp
-    <div id="mobile-account-modal" class="fixed inset-0 z-[10000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/40 backdrop-blur-sm" onclick="if(event.target===this) window.closeUserAccountModal()">
+    <div id="mobile-account-modal" class="fixed inset-0 z-[100000] hidden flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/40 backdrop-blur-sm" onclick="if(event.target===this) window.closeUserAccountModal()">
         <div class="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-slate-200 animate-[slideUp_0.2s_ease-out]">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">
