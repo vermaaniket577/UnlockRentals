@@ -157,7 +157,7 @@ class VisitorEvent extends Model
             return implode(', ', $parts);
         }
         if (!empty($meta['search'])) {
-            return '"' . $meta['search'] . '"';
+            return trim((string) $meta['search'], " \t\n\r\0\x0B\"'");
         }
         if (!empty($meta['near_me'])) {
             return 'Near Me (GPS)';
