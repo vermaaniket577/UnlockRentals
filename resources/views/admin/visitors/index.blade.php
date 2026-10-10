@@ -346,19 +346,25 @@
                     </div>
 
                     <div class="space-y-3 mt-4">
-                        @php $maxTargetCount = !empty($topSearchTargets) ? max($topSearchTargets) : 1; @endphp
+                        @php $totalTargetRequests = !empty($topSearchTargets) ? array_sum($topSearchTargets) : 1; @endphp
                         @forelse($topSearchTargets as $targetName => $tCount)
-                            @php $pct = round(($tCount / $maxTargetCount) * 100, 1); @endphp
+                            @php
+                                $pct = round(($tCount / $totalTargetRequests) * 100, 1);
+                                $cleanTarget = trim($targetName, '"\'');
+                            @endphp
                             <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all">
                                 <div class="flex items-center justify-between text-xs mb-1.5">
                                     <div class="flex items-center gap-2 min-w-0">
                                         <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
-                                        <span class="font-extrabold text-slate-900 truncate">{{ $targetName }}</span>
+                                        <span class="font-extrabold text-slate-900 truncate" title="{{ $cleanTarget }}">{{ $cleanTarget }}</span>
                                     </div>
-                                    <span class="font-black text-slate-800 flex-shrink-0">{{ number_format($tCount) }} requests</span>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <span class="font-black text-slate-800">{{ number_format($tCount) }} {{ $tCount === 1 ? 'request' : 'requests' }}</span>
+                                        <span class="text-[11px] text-slate-400 font-semibold">({{ $pct }}%)</span>
+                                    </div>
                                 </div>
                                 <div class="w-full bg-slate-200/60 rounded-full h-1.5 overflow-hidden">
-                                    <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1.5 rounded-full" style="width: {{ $pct }}%"></div>
+                                    <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1.5 rounded-full transition-all duration-500" style="width: {{ max(4, $pct) }}%"></div>
                                 </div>
                             </div>
                         @empty

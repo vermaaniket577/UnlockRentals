@@ -151,7 +151,7 @@ class VisitorDashboardController extends Controller
             } elseif (!empty($meta['district'])) {
                 $target = ucwords(str_replace('-', ' ', $meta['district']));
             } elseif (!empty($meta['search'])) {
-                $target = '"' . \Illuminate\Support\Str::limit($meta['search'], 25) . '"';
+                $target = \Illuminate\Support\Str::limit(trim($meta['search']), 30);
             } elseif (!empty($meta['near_me'])) {
                 $target = 'Near Me (GPS)';
             }
