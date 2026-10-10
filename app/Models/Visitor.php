@@ -31,6 +31,7 @@ class Visitor extends Model
         'country',
         'state',
         'city',
+        'ip_address',
         'total_sessions',
         'total_page_views',
         'total_property_views',
@@ -84,6 +85,11 @@ class Visitor extends Model
     public function events(): HasMany
     {
         return $this->hasMany(VisitorEvent::class)->latest('created_at');
+    }
+
+    public function searchEvents(): HasMany
+    {
+        return $this->hasMany(VisitorEvent::class)->where('event_name', 'search')->latest('created_at');
     }
 
     public function leads(): HasMany

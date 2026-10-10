@@ -36,14 +36,19 @@
                 ->get();
 
             $cityAliases = [
-                'gurugram' => 'gurgaon',
-                'gurgaon' => 'gurugram',
-                'bengaluru' => 'bangalore',
-                'bangalore' => 'bengaluru',
-                'prayagraj' => 'allahabad',
-                'allahabad' => 'prayagraj',
-                'varanasi' => 'banaras',
-                'banaras' => 'varanasi',
+                'gurugram' => ['gurugram', 'gurgaon'],
+                'gurgaon' => ['gurugram', 'gurgaon'],
+                'bengaluru' => ['bengaluru', 'bangalore'],
+                'bangalore' => ['bengaluru', 'bangalore'],
+                'prayagraj' => ['prayagraj', 'allahabad'],
+                'allahabad' => ['prayagraj', 'allahabad'],
+                'varanasi' => ['varanasi', 'banaras', 'benares'],
+                'banaras' => ['varanasi', 'banaras', 'benares'],
+                'benares' => ['varanasi', 'banaras', 'benares'],
+                'puducherry' => ['puducherry', 'pondicherry'],
+                'pondicherry' => ['puducherry', 'pondicherry'],
+                'mysuru' => ['mysuru', 'mysore'],
+                'mysore' => ['mysuru', 'mysore']
             ];
 
             $map = [];
@@ -55,23 +60,26 @@
                 $lName = trim($r->locality_name);
                 if ($lName === '') continue;
 
-                if (!isset($map[$dSlug])) $map[$dSlug] = [];
-                if (!in_array($lName, $map[$dSlug])) {
-                    $map[$dSlug][] = $lName;
-                }
-                $map[$dLower] = $map[$dSlug];
-                $map[$dName] = $map[$dSlug];
-                $map[$dId] = $map[$dSlug];
-
+                $targetKeys = [$dSlug, $dLower, $dName, $dId];
                 if (isset($cityAliases[$dLower])) {
-                    $alias = $cityAliases[$dLower];
-                    $aliasSlug = str_replace(' ', '-', $alias);
-                    if (!isset($map[$aliasSlug])) $map[$aliasSlug] = [];
-                    if (!in_array($lName, $map[$aliasSlug])) {
-                        $map[$aliasSlug][] = $lName;
+                    foreach ($cityAliases[$dLower] as $alias) {
+                        $targetKeys[] = $alias;
+                        $targetKeys[] = str_replace(' ', '-', $alias);
+                        $targetKeys[] = ucwords($alias);
                     }
-                    $map[$alias] = $map[$aliasSlug];
                 }
+
+                foreach (array_unique($targetKeys) as $k) {
+                    if (!isset($map[$k])) $map[$k] = [];
+                    if (!in_array($lName, $map[$k])) {
+                        $map[$k][] = $lName;
+                    }
+                }
+            }
+
+            foreach ($map as $k => $list) {
+                natcasesort($map[$k]);
+                $map[$k] = array_values($map[$k]);
             }
             return $map;
         } catch (\Throwable $e) {

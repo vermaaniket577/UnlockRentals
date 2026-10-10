@@ -658,6 +658,148 @@
                 </div>
             </div>
 
+        {{-- Where Users Are Searching From (Live Search Origins & Queries) --}}
+        <div class="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-xs">
+            <div class="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gradient-to-r from-slate-900 to-indigo-950 text-white">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-400/30">
+                        <i class="ph-bold ph-crosshair text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-extrabold text-white">Where Users Are Searching From</h4>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                                Live Origins
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-300">Origin geo-locations & search criteria captured from active visitors</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-300 font-semibold">Total Searches: <strong class="text-white font-black">{{ number_format($totalSearches ?? 0) }}</strong></span>
+                    <a href="{{ route('admin.visitors.index') }}#search-origins-section" class="text-xs font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-xl transition-all border border-white/20">
+                        Full Search Analytics →
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+                
+                {{-- Column 1: Top Search Origin Cities --}}
+                <div class="p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="ph-bold ph-map-pin text-rose-500"></i> Top Origin Cities
+                            </span>
+                            <span class="text-[11px] text-slate-400">Past 30 Days</span>
+                        </div>
+
+                        <div class="space-y-2.5">
+                            @php $maxOriginSearches = ($topSearchOrigins ?? collect())->sum('total_searches') ?: 1; @endphp
+                            @forelse($topSearchOrigins ?? [] as $origin)
+                                @php $pct = round(($origin->total_searches / $maxOriginSearches) * 100, 1); @endphp
+                                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100/80">
+                                    <div class="flex items-center justify-between text-xs mb-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                                            <span class="font-extrabold text-slate-900">{{ $origin->city }}</span>
+                                            @if($origin->state)
+                                                <span class="text-slate-400 text-[11px]">({{ $origin->state }})</span>
+                                            @endif
+                                        </div>
+                                        <span class="font-black text-slate-800">{{ number_format($origin->total_searches) }} queries <span class="text-[10px] text-slate-400 font-normal">({{ $pct }}%)</span></span>
+                                    </div>
+                                    <div class="w-full bg-slate-200/60 rounded-full h-1 overflow-hidden">
+                                        <div class="bg-blue-600 h-1 rounded-full" style="width: {{ $pct }}%"></div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-6">
+                                    <p class="text-xs text-slate-400">No search origin data captured yet.</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Origin cities will appear here as visitors search on the website.</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>Resolved via IP GeoLocation</span>
+                        <a href="{{ route('admin.visitors.index') }}" class="text-blue-600 font-bold hover:underline">View All Locations →</a>
+                    </div>
+                </div>
+
+                {{-- Column 2: Recent Live Search Activity Stream --}}
+                <div class="p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="ph-bold ph-clock-counter-clockwise text-indigo-500"></i> Recent Search Stream
+                            </span>
+                            <span class="text-[11px] text-slate-400">Real-Time</span>
+                        </div>
+
+                        <div class="divide-y divide-slate-100">
+                            @forelse($recentSearches ?? [] as $searchItem)
+                                <div class="py-2.5 first:pt-0 last:pb-0">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs font-extrabold text-slate-900 truncate flex items-center gap-1">
+                                                    <i class="ph-bold ph-map-pin text-rose-500 text-[11px]"></i>
+                                                    {{ $searchItem->getOriginCity() }}
+                                                    @if($searchItem->getOriginState())
+                                                        <span class="text-slate-400 font-medium">({{ $searchItem->getOriginState() }})</span>
+                                                    @endif
+                                                </span>
+                                                <span class="text-slate-300">→</span>
+                                                <span class="text-xs font-bold text-blue-600 truncate">
+                                                    {{ $searchItem->getTargetLocationDisplay() }}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex flex-wrap items-center gap-1.5 mt-1 text-[10px]">
+                                                @if($searchItem->getOriginIp())
+                                                    <span class="font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-600">
+                                                        IP: {{ $searchItem->getOriginIp() }}
+                                                    </span>
+                                                @endif
+                                                @foreach(array_slice($searchItem->getSearchCriteriaList(), 0, 2) as $crit)
+                                                    <span class="px-1.5 py-0.2 rounded font-semibold {{ $crit['badge'] }}">
+                                                        {{ $crit['label'] }}: {{ $crit['value'] }}
+                                                    </span>
+                                                @endforeach
+                                                @if($searchItem->getResultsCount() > 0)
+                                                    <span class="px-1.5 py-0.2 rounded font-bold bg-emerald-50 text-emerald-700">
+                                                        {{ $searchItem->getResultsCount() }} results
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <span class="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0">
+                                            {{ $searchItem->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-6">
+                                    <p class="text-xs text-slate-400">No search activities recorded yet.</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Real-time searches will stream here automatically.</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <div class="pt-3 mt-3 border-t border-slate-100 text-center">
+                        <a href="{{ route('admin.visitors.index') }}#search-feed-table" class="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1">
+                            Explore Complete Live Search Stream →
+                        </a>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         {{-- Direct CRM Workspace Links Toolbar --}}

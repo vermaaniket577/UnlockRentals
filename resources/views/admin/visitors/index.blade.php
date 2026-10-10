@@ -237,6 +237,315 @@
     </div>
     @endif
 
+    {{-- ======================================================== --}}
+    {{-- SEARCH INTELLIGENCE & USER SEARCH ORIGINS (WHERE USERS ARE SEARCHING FROM) --}}
+    {{-- ======================================================== --}}
+    <div class="space-y-6" id="search-origins-section">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gradient-to-r from-slate-900 to-indigo-950 p-6 rounded-3xl text-white shadow-sm">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-400/30">
+                        <i class="ph-bold ph-crosshair text-lg"></i>
+                    </span>
+                    <h2 class="text-xl font-black tracking-tight text-white">Search Intelligence & Origin Locations</h2>
+                </div>
+                <p class="text-xs text-slate-300 mt-1">Geographic tracking of where users are searching from and real-time rental demands</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 text-center">
+                    <span class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Total Searches</span>
+                    <span class="text-lg font-black text-white">{{ number_format($totalSearches) }}</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 text-center">
+                    <span class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Origin Cities</span>
+                    <span class="text-lg font-black text-cyan-300">{{ $topSearchOrigins->count() }}</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- 2-Column Grid: Top Search Origins vs Top Searched Demands --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {{-- Card 1: Top Search Origin Locations (Where users are physically searching from) --}}
+            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <i class="ph-bold ph-map-pin text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900">Where Users Search From</h3>
+                                <p class="text-[11px] text-slate-500">Physical geo-location origin of searching visitors</p>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+                            {{ $topSearchOrigins->sum('total_searches') }} Queries
+                        </span>
+                    </div>
+
+                    <div class="space-y-3 mt-4">
+                        @php $sumSearches = $topSearchOrigins->sum('total_searches') ?: 1; @endphp
+                        @forelse($topSearchOrigins as $origin)
+                            @php $pct = round(($origin->total_searches / $sumSearches) * 100, 1); @endphp
+                            <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/20 transition-all">
+                                <div class="flex items-center justify-between text-xs mb-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                                        <span class="font-extrabold text-slate-900">{{ $origin->city }}</span>
+                                        @if($origin->state)
+                                            <span class="text-slate-400 font-medium">({{ $origin->state }})</span>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-black text-slate-800">{{ number_format($origin->total_searches) }} searches</span>
+                                        <span class="text-[11px] text-slate-400">({{ $pct }}%)</span>
+                                        <a href="{{ route('admin.visitors.index', ['range' => $days, 'search_origin' => $origin->city]) }}#search-feed-table" class="text-[11px] text-blue-600 hover:underline font-bold ml-1" title="Filter stream by {{ $origin->city }}">
+                                            Filter →
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-slate-200/60 rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-1.5 rounded-full" style="width: {{ $pct }}%"></div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-8">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
+                                    <i class="ph-bold ph-map-pin text-xl"></i>
+                                </div>
+                                <p class="text-xs text-slate-500 font-medium">No search origin data captured for this time window yet.</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">As visitors search for homes, their origin cities will appear here automatically.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
+                    <span>Detected via Cloudflare CDN & Fast GeoIP Resolver</span>
+                    <span class="text-blue-600 font-semibold">100% Privacy-Preserved</span>
+                </div>
+            </div>
+
+            {{-- Card 2: Top Target Demands & Localities (What they are searching for) --}}
+            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i class="ph-bold ph-magnifying-glass text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900">Top Searched Demands</h3>
+                                <p class="text-[11px] text-slate-500">Most requested localities, cities & property types</p>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+                            {{ count($topSearchTargets) }} Popular Targets
+                        </span>
+                    </div>
+
+                    <div class="space-y-3 mt-4">
+                        @php $maxTargetCount = !empty($topSearchTargets) ? max($topSearchTargets) : 1; @endphp
+                        @forelse($topSearchTargets as $targetName => $tCount)
+                            @php $pct = round(($tCount / $maxTargetCount) * 100, 1); @endphp
+                            <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all">
+                                <div class="flex items-center justify-between text-xs mb-1.5">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                                        <span class="font-extrabold text-slate-900 truncate">{{ $targetName }}</span>
+                                    </div>
+                                    <span class="font-black text-slate-800 flex-shrink-0">{{ number_format($tCount) }} requests</span>
+                                </div>
+                                <div class="w-full bg-slate-200/60 rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1.5 rounded-full" style="width: {{ $pct }}%"></div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-8">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2">
+                                    <i class="ph-bold ph-funnel text-xl"></i>
+                                </div>
+                                <p class="text-xs text-slate-500 font-medium">No target searches logged yet for this period.</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Top target localities and BHK demands will populate here as users browse.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
+                    <span>Aggregated from search parameters & filters</span>
+                    <span class="text-emerald-600 font-semibold">High Rental Demand Areas</span>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Live User Search Feed Table --}}
+        <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden" id="search-feed-table">
+            <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-slate-50/40">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+                        <h3 class="text-base font-extrabold text-slate-900">Live User Search Stream</h3>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">{{ $recentSearches->total() }}</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">Every search query logged in real-time with visitor origin location, filters applied, and property results</p>
+                </div>
+
+                {{-- Origin Filter Form --}}
+                <form method="GET" action="{{ route('admin.visitors.index') }}" class="flex flex-wrap items-center gap-2">
+                    <input type="hidden" name="range" value="{{ $days }}">
+                    @if(request('device'))
+                        <input type="hidden" name="device" value="{{ request('device') }}">
+                    @endif
+                    @if(request('filter_converted'))
+                        <input type="hidden" name="filter_converted" value="{{ request('filter_converted') }}">
+                    @endif
+
+                    <div class="relative">
+                        <i class="ph-bold ph-map-pin absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                        <input type="text" name="search_origin" value="{{ request('search_origin') }}" placeholder="Filter by Origin City (e.g. Kanpur)..." class="pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56 sm:w-64">
+                    </div>
+
+                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs">
+                        Filter Origin
+                    </button>
+
+                    @if(request('search_origin'))
+                        <a href="{{ route('admin.visitors.index', ['range' => $days]) }}#search-feed-table" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition-all" title="Clear Origin Filter">
+                            Clear Filter ✕
+                        </a>
+                    @endif
+                </form>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                            <th class="py-3.5 px-6">Origin Location (Where Searching From)</th>
+                            <th class="py-3.5 px-6">Search Query & Applied Criteria</th>
+                            <th class="py-3.5 px-6 text-center">Results Found</th>
+                            <th class="py-3.5 px-6">When</th>
+                            <th class="py-3.5 px-6 text-right">Visitor Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($recentSearches as $searchItem)
+                            <tr class="hover:bg-blue-50/30 transition-colors">
+                                {{-- Origin Location Details --}}
+                                <td class="py-4 px-6 align-top">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-1.5 font-extrabold text-slate-900 text-xs">
+                                            <i class="ph-bold ph-map-pin text-rose-500 text-sm"></i>
+                                            <span>{{ $searchItem->getOriginCity() }}</span>
+                                            @if($searchItem->getOriginState())
+                                                <span class="text-slate-400 font-semibold">, {{ $searchItem->getOriginState() }}</span>
+                                            @endif
+                                        </div>
+
+                                        <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                                            @if($searchItem->getOriginIp())
+                                                <span class="font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-medium text-[10px]" title="Visitor IP Address">
+                                                    IP: {{ $searchItem->getOriginIp() }}
+                                                </span>
+                                            @endif
+                                            <span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold text-[10px] capitalize">
+                                                {{ $searchItem->getOriginDevice() }} · {{ $searchItem->getOriginBrowser() }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                {{-- Searched Criteria --}}
+                                <td class="py-4 px-6 align-top">
+                                    <div class="space-y-1.5 max-w-md">
+                                        <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                                            <i class="ph-bold ph-magnifying-glass text-blue-600"></i>
+                                            <span>{{ $searchItem->getTargetLocationDisplay() }}</span>
+                                        </div>
+
+                                        {{-- Filter Pills --}}
+                                        @php $criteriaList = $searchItem->getSearchCriteriaList(); @endphp
+                                        @if(!empty($criteriaList))
+                                            <div class="flex flex-wrap items-center gap-1">
+                                                @foreach($criteriaList as $crit)
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border {{ $crit['badge'] }}">
+                                                        <span class="text-slate-500 font-medium">{{ $crit['label'] }}:</span>
+                                                        <span>{{ $crit['value'] }}</span>
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        @endif
+
+                                        @if($searchItem->page_url)
+                                            <p class="text-[10px] text-slate-400 font-mono truncate max-w-sm" title="{{ $searchItem->page_url }}">
+                                                {{ $searchItem->page_url }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                </td>
+
+                                {{-- Results Count --}}
+                                <td class="py-4 px-6 align-top text-center">
+                                    @php $resCount = $searchItem->getResultsCount(); @endphp
+                                    @if($resCount > 0)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <i class="ph-bold ph-check text-xs"></i> {{ $resCount }} found
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">
+                                            0 found
+                                        </span>
+                                    @endif
+                                </td>
+
+                                {{-- Timestamp --}}
+                                <td class="py-4 px-6 align-top whitespace-nowrap">
+                                    <div class="text-xs font-bold text-slate-800">
+                                        {{ $searchItem->created_at->diffForHumans() }}
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 mt-0.5">
+                                        {{ $searchItem->created_at->format('d M Y, h:i A') }}
+                                    </div>
+                                </td>
+
+                                {{-- Actions --}}
+                                <td class="py-4 px-6 align-top text-right whitespace-nowrap">
+                                    @if($searchItem->visitor_id)
+                                        <a href="{{ route('admin.visitors.show', $searchItem->visitor_id) }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-600 text-slate-700 hover:text-white font-bold text-xs transition-all shadow-xs">
+                                            <span>Visitor Journey</span>
+                                            <i class="ph-bold ph-arrow-right text-xs"></i>
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400 text-xs">—</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="py-12 text-center">
+                                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-2xl mx-auto mb-2">
+                                        <i class="ph-bold ph-magnifying-glass"></i>
+                                    </div>
+                                    <h5 class="text-xs font-bold text-slate-800">No search events recorded yet</h5>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Search queries and origin locations will automatically appear here as users search.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($recentSearches->hasPages())
+                <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+                    {{ $recentSearches->links() }}
+                </div>
+            @endif
+        </div>
+    </div>
+
     {{-- Filterable Recent Visitors Table --}}
     <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
         {{-- Table Toolbar --}}

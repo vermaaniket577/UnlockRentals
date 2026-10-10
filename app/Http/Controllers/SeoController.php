@@ -227,6 +227,18 @@ class SeoController extends Controller
         // Generate JSON-LD Schemas
         $schemas = $this->generateSchemas($seo_slug, $seoTitleStr, $metaDescription, $typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties, $isNearMe);
 
+        // Record search event with visitor physical origin geo-location
+        try {
+            app(\App\Services\VisitorTrackingService::class)->recordSearchEvent($request, (int) ($properties->total() ?? $properties->count()), [
+                'district' => $city,
+                'locality' => $locality,
+                'type' => $type,
+                'price' => $budget ? 'Under ₹' . number_format($budget) : null,
+                'search' => str_replace('-', ' ', $seo_slug),
+                'near_me' => $isNearMe,
+            ]);
+        } catch (\Throwable $e) {}
+
         return view('seo.landing', [
             'properties' => $properties,
             'recommendations' => $recommendations,
@@ -817,6 +829,18 @@ class SeoController extends Controller
         }
 
         $schemas = $this->generateSchemas($seoSlug, $metaTitle, $metaDescription, $typeDisplay, $city, $locality, $landmark, $gender, $budget, $properties, $isNearMe);
+
+        // Record search event with visitor physical origin geo-location
+        try {
+            app(\App\Services\VisitorTrackingService::class)->recordSearchEvent($request, (int) ($properties->total() ?? $properties->count()), [
+                'district' => $city,
+                'locality' => $locality,
+                'type' => $type,
+                'price' => $budget ? 'Under ₹' . number_format($budget) : null,
+                'search' => $keyword,
+                'near_me' => $isNearMe,
+            ]);
+        } catch (\Throwable $e) {}
 
         return view('seo.landing', [
             'properties' => $properties,

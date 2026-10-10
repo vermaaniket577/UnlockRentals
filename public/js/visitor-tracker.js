@@ -69,14 +69,17 @@
 
             // 2. Search Tracking Auto-Detection
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('locality') || urlParams.has('type') || urlParams.has('price') || urlParams.has('rooms') || urlParams.has('search')) {
+            if (urlParams.has('locality') || urlParams.has('district') || urlParams.has('state') || urlParams.has('location') || urlParams.has('type') || urlParams.has('price') || urlParams.has('rooms') || urlParams.has('search') || urlParams.has('near_me')) {
                 this.track('search', null, {
                     locality: urlParams.get('locality'),
+                    district: urlParams.get('district') || urlParams.get('location'),
+                    state: urlParams.get('state'),
                     type: urlParams.get('type'),
                     price: urlParams.get('price'),
                     rooms: urlParams.get('rooms'),
                     search: urlParams.get('search'),
                     purpose: urlParams.get('purpose'),
+                    near_me: urlParams.has('near_me'),
                 });
             }
 

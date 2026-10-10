@@ -533,8 +533,24 @@
                 }
             }
         });
-        return result.sort((a, b) => a.localeCompare(b));
+        return result.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
     }
+
+    const _cityAliases = {
+        'gurugram': ['gurugram', 'gurgaon'],
+        'gurgaon': ['gurugram', 'gurgaon'],
+        'bengaluru': ['bengaluru', 'bangalore'],
+        'bangalore': ['bengaluru', 'bangalore'],
+        'prayagraj': ['prayagraj', 'allahabad'],
+        'allahabad': ['prayagraj', 'allahabad'],
+        'varanasi': ['varanasi', 'banaras', 'benares'],
+        'banaras': ['varanasi', 'banaras', 'benares'],
+        'benares': ['varanasi', 'banaras', 'benares'],
+        'puducherry': ['puducherry', 'pondicherry'],
+        'pondicherry': ['puducherry', 'pondicherry'],
+        'mysuru': ['mysuru', 'mysore'],
+        'mysore': ['mysuru', 'mysore']
+    };
 
     const _dbStates = _dbData.states || {};
     const _allStates = Object.assign({}, {
@@ -571,13 +587,32 @@
         ...Object.keys(_dbData.localities || {})
     ]);
 
+    // Also include any aliases of present keys
+    Array.from(allCityKeys).forEach(k => {
+        const lower = k.toLowerCase();
+        if (_cityAliases[lower]) {
+            _cityAliases[lower].forEach(a => allCityKeys.add(a));
+        }
+    });
+
     allCityKeys.forEach(rawKey => {
         const kLower = rawKey.toLowerCase();
         const kSlug = kLower.replace(/\s+/g, '-');
         const kSpaced = kLower.replace(/-/g, ' ');
 
-        const std = _standardLocalities[kLower] || _standardLocalities[kSlug] || _standardLocalities[kSpaced] || _standardLocalities[rawKey] || [];
-        const db = (_dbData.localities && (_dbData.localities[kLower] || _dbData.localities[kSlug] || _dbData.localities[kSpaced] || _dbData.localities[rawKey])) || [];
+        let std = _standardLocalities[kLower] || _standardLocalities[kSlug] || _standardLocalities[kSpaced] || _standardLocalities[rawKey] || [];
+        let db = (_dbData.localities && (_dbData.localities[kLower] || _dbData.localities[kSlug] || _dbData.localities[kSpaced] || _dbData.localities[rawKey])) || [];
+
+        if (_cityAliases[kLower]) {
+            _cityAliases[kLower].forEach(alias => {
+                if (_standardLocalities[alias]) {
+                    std = mergeUniqueSorted(std, _standardLocalities[alias]);
+                }
+                if (_dbData.localities && (_dbData.localities[alias] || _dbData.localities[alias.replace(/-/g, ' ')])) {
+                    db = mergeUniqueSorted(db, _dbData.localities[alias] || _dbData.localities[alias.replace(/-/g, ' ')]);
+                }
+            });
+        }
 
         const merged = mergeUniqueSorted(std, db);
         if (merged.length > 0) {
@@ -585,12 +620,11 @@
             _combinedLocalities[kLower] = merged;
             _combinedLocalities[kSlug] = merged;
             _combinedLocalities[kSpaced] = merged;
-
-            // Mirror common city aliases so selecting either name works identically
-            const _aliases = { 'gurugram': 'gurgaon', 'gurgaon': 'gurugram', 'bengaluru': 'bangalore', 'bangalore': 'bengaluru', 'prayagraj': 'allahabad', 'allahabad': 'prayagraj' };
-            if (_aliases[kLower]) {
-                const alt = _aliases[kLower];
-                _combinedLocalities[alt] = mergeUniqueSorted(_combinedLocalities[alt] || [], merged);
+            if (_cityAliases[kLower]) {
+                _cityAliases[kLower].forEach(alias => {
+                    _combinedLocalities[alias] = merged;
+                    _combinedLocalities[alias.replace(/\s+/g, '-')] = merged;
+                });
             }
         }
     });
@@ -723,8 +757,16 @@
         if (cityKey) {
             locList = window.IndianLocationData.localities[cityKey]
                 || window.IndianLocationData.localities[cityKey.replace(/\s+/g, '-')]
-                || window.IndianLocationData.localities[cityKey.replace(/-/g, ' ')]
-                || [];
+                || window.IndianLocationData.localities[cityKey.replace(/-/g, ' ')];
+            if ((!locList || locList.length === 0) && _cityAliases[cityKey]) {
+                for (const alias of _cityAliases[cityKey]) {
+                    if (window.IndianLocationData.localities[alias] && window.IndianLocationData.localities[alias].length > 0) {
+                        locList = window.IndianLocationData.localities[alias];
+                        break;
+                    }
+                }
+            }
+            locList = locList || [];
         } else if (stateCode) {
             locList = window.IndianLocationData.localitiesByState[stateCode]
                 || window.IndianLocationData.localitiesByState[stateCode.toUpperCase()]
@@ -788,6 +830,12 @@
                             window.IndianLocationData.localities[cityKey] = updatedList;
                             window.IndianLocationData.localities[cityKey.replace(/\s+/g, '-')] = updatedList;
                             window.IndianLocationData.localities[cityKey.replace(/-/g, ' ')] = updatedList;
+                            if (_cityAliases[cityKey]) {
+                                _cityAliases[cityKey].forEach(alias => {
+                                    window.IndianLocationData.localities[alias] = updatedList;
+                                    window.IndianLocationData.localities[alias.replace(/\s+/g, '-')] = updatedList;
+                                });
+                            }
                         }
 
                         if (targetLocality) {

@@ -126,6 +126,8 @@
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-50"></span>
                     @elseif($event->event_name === 'whatsapp_click')
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-emerald-600 ring-4 ring-emerald-50"></span>
+                    @elseif($event->event_name === 'search')
+                        <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-violet-600 ring-4 ring-violet-50"></span>
                     @elseif($event->event_name === 'view_property')
                         <span class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-blue-600 ring-4 ring-blue-50"></span>
                     @else
@@ -146,11 +148,54 @@
                         <span class="text-[11px] text-slate-400">{{ $event->created_at->format('d M Y, h:i:s A') }}</span>
                     </div>
 
+                    @if($event->event_name === 'search')
+                        {{-- Structured Search Event Card --}}
+                        <div class="mt-2.5 p-3.5 rounded-2xl bg-violet-50/70 border border-violet-100 text-xs space-y-2">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 font-extrabold text-slate-900">
+                                    <i class="ph-bold ph-map-pin text-rose-500 text-sm"></i>
+                                    <span>Searching From: {{ $event->getOriginCity() }}</span>
+                                    @if($event->getOriginState())
+                                        <span class="text-slate-500 font-semibold">, {{ $event->getOriginState() }}</span>
+                                    @endif
+                                    @if($event->getOriginIp())
+                                        <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white border border-violet-200 text-violet-800 font-medium">
+                                            IP: {{ $event->getOriginIp() }}
+                                        </span>
+                                    @endif
+                                </div>
+
+                                @if($event->getResultsCount() > 0)
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                        {{ $event->getResultsCount() }} listings found
+                                    </span>
+                                @endif
+                            </div>
+
+                            <div class="flex items-center gap-1.5 text-slate-800 font-bold">
+                                <i class="ph-bold ph-magnifying-glass text-violet-600"></i>
+                                <span>Target: {{ $event->getTargetLocationDisplay() }}</span>
+                            </div>
+
+                            @php $critList = $event->getSearchCriteriaList(); @endphp
+                            @if(!empty($critList))
+                                <div class="flex flex-wrap items-center gap-1 pt-1">
+                                    @foreach($critList as $crit)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border {{ $crit['badge'] }}">
+                                            <span class="text-slate-500 font-medium">{{ $crit['label'] }}:</span>
+                                            <span>{{ $crit['value'] }}</span>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
                     @if($event->page_url)
                         <p class="text-xs text-slate-500 font-mono mt-1 break-all">{{ $event->page_url }}</p>
                     @endif
 
-                    @if(!empty($event->metadata))
+                    @if(!empty($event->metadata) && $event->event_name !== 'search')
                         <div class="mt-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-[11px] font-mono text-slate-600 max-w-xl overflow-x-auto">
                             @foreach($event->metadata as $key => $val)
                                 <div><span class="text-slate-400">{{ $key }}:</span> {{ is_array($val) ? json_encode($val) : $val }}</div>

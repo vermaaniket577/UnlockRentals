@@ -16,6 +16,7 @@ use App\Models\LeadFollowUp;
 use App\Models\CallbackRequest;
 use App\Models\Visitor;
 use App\Models\VisitorSession;
+use App\Models\VisitorEvent;
 use App\Models\Professional;
 use App\Models\ProfessionalLead;
 use App\Models\ChatbotMessage;
@@ -212,11 +213,45 @@ class AdminController extends Controller
             ->take(10)
             ->get();
 
+        // Recent user search activity & origin locations (Where users are searching from)
+        $recentSearches = collect();
+        $topSearchOrigins = collect();
+        $totalSearches = 0;
+        if (Schema::hasTable('visitor_events')) {
+            try {
+                $recentSearches = VisitorEvent::with('visitor')
+                    ->where('event_name', 'search')
+                    ->latest('created_at')
+                    ->take(6)
+                    ->get();
+
+                $topSearchOrigins = VisitorEvent::where('event_name', 'search')
+                    ->where('visitor_events.created_at', '>=', now()->subDays(30))
+                    ->join('visitors', 'visitor_events.visitor_id', '=', 'visitors.id')
+                    ->whereNotNull('visitors.city')
+                    ->where('visitors.city', '!=', '')
+                    ->selectRaw('visitors.city, visitors.state, COUNT(visitor_events.id) as total_searches')
+                    ->groupBy('visitors.city', 'visitors.state')
+                    ->orderByDesc('total_searches')
+                    ->take(6)
+                    ->get();
+
+                $totalSearches = VisitorEvent::where('event_name', 'search')->count();
+            } catch (\Throwable $e) {
+                $recentSearches = collect();
+                $topSearchOrigins = collect();
+                $totalSearches = 0;
+            }
+        }
+
         return view('admin.dashboard', compact(
             'stats',
             'crmStats',
             'recentCrmLeads',
             'recentCallbacks',
+            'recentSearches',
+            'topSearchOrigins',
+            'totalSearches',
             'pendingProperties',
             'pendingSubscriptions'
         ));

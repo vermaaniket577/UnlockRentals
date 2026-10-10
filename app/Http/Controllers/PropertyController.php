@@ -189,6 +189,16 @@ class PropertyController extends Controller
         }
 
         $properties = $query->paginate(12)->withQueryString();
+
+        // Record search event with visitor origin location & query filters
+        if ($request->anyFilled(['search', 'district', 'state', 'locality', 'location', 'type', 'purpose', 'rooms', 'bedrooms', 'price', 'min_price', 'max_price', 'lat', 'lng', 'latitude', 'longitude', 'near_me'])) {
+            try {
+                app(\App\Services\VisitorTrackingService::class)->recordSearchEvent($request, (int) ($properties->total() ?? $properties->count()));
+            } catch (\Throwable $e) {
+                // Ignore tracking failures to not disrupt search experience
+            }
+        }
+
         $categories = Cache::remember('all_categories', 3600, fn () => Category::all());
 
         // Get unique locations for filter dropdown (cached 30 min)

@@ -321,6 +321,41 @@ class AppServiceProvider extends ServiceProvider
             }
 
             // 3. Build aliases
+            $cityAliases = [
+                'gurugram' => ['gurugram', 'gurgaon'],
+                'gurgaon' => ['gurugram', 'gurgaon'],
+                'bengaluru' => ['bengaluru', 'bangalore'],
+                'bangalore' => ['bengaluru', 'bangalore'],
+                'prayagraj' => ['prayagraj', 'allahabad'],
+                'allahabad' => ['prayagraj', 'allahabad'],
+                'varanasi' => ['varanasi', 'banaras', 'benares'],
+                'banaras' => ['varanasi', 'banaras', 'benares'],
+                'benares' => ['varanasi', 'banaras', 'benares'],
+                'puducherry' => ['puducherry', 'pondicherry'],
+                'pondicherry' => ['puducherry', 'pondicherry'],
+                'mysuru' => ['mysuru', 'mysore'],
+                'mysore' => ['mysuru', 'mysore']
+            ];
+
+            foreach ($cityAliases as $mainCity => $aliases) {
+                $mergedLocs = [];
+                foreach ($aliases as $alias) {
+                    if (isset($localitiesMap[$alias])) {
+                        $mergedLocs = array_merge($mergedLocs, $localitiesMap[$alias]);
+                    }
+                }
+                if (!empty($mergedLocs)) {
+                    $uniqueLocs = array_values(array_unique($mergedLocs));
+                    natcasesort($uniqueLocs);
+                    $uniqueLocs = array_values($uniqueLocs);
+                    foreach ($aliases as $alias) {
+                        $localitiesMap[$alias] = $uniqueLocs;
+                        $localitiesMap[str_replace(' ', '-', $alias)] = $uniqueLocs;
+                        $localitiesMap[ucwords($alias)] = $uniqueLocs;
+                    }
+                }
+            }
+
             foreach ($statesMap as $code => $stateName) {
                 if (isset($districtsMap[$code])) {
                     $districtsMap[strtoupper($code)] = $districtsMap[$code];

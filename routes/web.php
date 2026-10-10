@@ -819,6 +819,8 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
             '2026_09_25_190000_create_local_professionals_marketplace_tables.php',
             '2026_09_26_140000_add_search_and_filter_performance_indexes.php',
             '2026_10_08_200000_widen_leads_message_column.php',
+            '2026_10_10_170000_add_ip_address_to_visitors_table.php',
+            '2026_10_10_180000_seed_sector_13_gurugram.php',
         ];
 
         // Check for leftover duplicate migration files on the server
@@ -1087,16 +1089,30 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
     $dLower = strtolower($cleanDistrict);
 
     $cityAliases = [
-        'gurugram' => 'gurgaon',
-        'gurgaon' => 'gurugram',
-        'bengaluru' => 'bangalore',
-        'bangalore' => 'bengaluru',
-        'prayagraj' => 'allahabad',
-        'allahabad' => 'prayagraj',
-        'varanasi' => 'banaras',
-        'banaras' => 'varanasi',
+        'gurugram' => ['gurugram', 'gurgaon'],
+        'gurgaon' => ['gurugram', 'gurgaon'],
+        'bengaluru' => ['bengaluru', 'bangalore'],
+        'bangalore' => ['bengaluru', 'bangalore'],
+        'prayagraj' => ['prayagraj', 'allahabad'],
+        'allahabad' => ['prayagraj', 'allahabad'],
+        'varanasi' => ['varanasi', 'banaras', 'benares'],
+        'banaras' => ['varanasi', 'banaras', 'benares'],
+        'benares' => ['varanasi', 'banaras', 'benares'],
+        'puducherry' => ['puducherry', 'pondicherry'],
+        'pondicherry' => ['puducherry', 'pondicherry'],
+        'mysuru' => ['mysuru', 'mysore'],
+        'mysore' => ['mysuru', 'mysore'],
     ];
-    $aliasLower = $cityAliases[$dLower] ?? null;
+
+    $districtCandidates = array_unique(array_filter([$cleanDistrict, $dLower, $dSlug]));
+    if (isset($cityAliases[$dLower])) {
+        foreach ($cityAliases[$dLower] as $alias) {
+            $districtCandidates[] = $alias;
+            $districtCandidates[] = str_replace(' ', '-', $alias);
+            $districtCandidates[] = ucwords($alias);
+        }
+    }
+    $districtCandidates = array_values(array_unique($districtCandidates));
 
     $localities = [];
 
@@ -1105,15 +1121,13 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
         if (\Illuminate\Support\Facades\Schema::hasTable('localities')) {
             $query = \App\Models\Locality::query();
             if ($cleanDistrict !== '') {
-                $query->where(function($q) use ($cleanDistrict, $dSlug, $dLower, $aliasLower) {
-                    $q->whereHas('district', function($dq) use ($cleanDistrict, $dSlug, $dLower, $aliasLower) {
-                        $dq->where('name', $cleanDistrict)
-                           ->orWhere('slug', $dSlug)
-                           ->orWhereRaw('LOWER(name) = ?', [$dLower]);
-                        if ($aliasLower) {
-                            $dq->orWhere('name', $aliasLower)
-                               ->orWhere('slug', str_replace(' ', '-', $aliasLower))
-                               ->orWhereRaw('LOWER(name) = ?', [$aliasLower]);
+                $hasSlugCol = \Illuminate\Support\Facades\Schema::hasColumn('districts', 'slug');
+                $query->where(function($q) use ($cleanDistrict, $districtCandidates, $hasSlugCol) {
+                    $q->whereHas('district', function($dq) use ($districtCandidates, $hasSlugCol) {
+                        $dq->whereIn('name', $districtCandidates)
+                           ->orWhereIn(\Illuminate\Support\Facades\DB::raw('LOWER(name)'), array_map('strtolower', $districtCandidates));
+                        if ($hasSlugCol) {
+                            $dq->orWhereIn('slug', array_map('strtolower', $districtCandidates));
                         }
                     });
                     if (is_numeric($cleanDistrict)) {
@@ -1148,12 +1162,14 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
         $locationData = \App\Providers\AppServiceProvider::getLocationData();
         $fileLocs = [];
         if ($cleanDistrict !== '') {
-            $fileLocs = $locationData['localities'][$dSlug] 
-                ?? $locationData['localities'][$dLower] 
-                ?? $locationData['localities'][$cleanDistrict]
-                ?? $locationData['localities'][$districtInput]
-                ?? ($aliasLower ? ($locationData['localities'][$aliasLower] ?? ($locationData['localities'][str_replace(' ', '-', $aliasLower)] ?? [])) : [])
-                ?? [];
+            foreach ($districtCandidates as $cand) {
+                if (!empty($locationData['localities'][$cand])) {
+                    $fileLocs = array_merge($fileLocs, $locationData['localities'][$cand]);
+                }
+            }
+            if (empty($fileLocs) && !empty($locationData['localities'][$districtInput])) {
+                $fileLocs = $locationData['localities'][$districtInput];
+            }
         } elseif ($stateInput !== '') {
             $fileLocs = $locationData['localitiesByState'][$stateInput] 
                 ?? $locationData['localitiesByState'][strtoupper($stateInput)] 

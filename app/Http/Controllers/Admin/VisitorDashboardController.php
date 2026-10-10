@@ -121,7 +121,65 @@ class VisitorDashboardController extends Controller
             ->limit(6)
             ->get();
 
-        // 7. Filterable Recent Visitors Table
+        // 7. Top Search Origins (From where users are searching)
+        $topSearchOrigins = VisitorEvent::where('event_name', 'search')
+            ->whereBetween('visitor_events.created_at', [$startDate, $endDate])
+            ->join('visitors', 'visitor_events.visitor_id', '=', 'visitors.id')
+            ->whereNotNull('visitors.city')
+            ->where('visitors.city', '!=', '')
+            ->selectRaw('visitors.city, visitors.state, COUNT(visitor_events.id) as total_searches, COUNT(DISTINCT visitor_events.visitor_id) as unique_searchers')
+            ->groupBy('visitors.city', 'visitors.state')
+            ->orderByDesc('total_searches')
+            ->limit(8)
+            ->get();
+
+        // 8. Top Searched Demands & Targets (What locations/keywords users search for)
+        $searchEventsForTargets = VisitorEvent::where('event_name', 'search')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->latest('created_at')
+            ->take(300)
+            ->get();
+
+        $targetCounts = [];
+        foreach ($searchEventsForTargets as $se) {
+            $meta = $se->metadata ?? [];
+            $target = null;
+            if (!empty($meta['locality']) && !empty($meta['district'])) {
+                $target = ucwords(str_replace('-', ' ', $meta['locality'])) . ', ' . ucwords(str_replace('-', ' ', $meta['district']));
+            } elseif (!empty($meta['locality'])) {
+                $target = ucwords(str_replace('-', ' ', $meta['locality']));
+            } elseif (!empty($meta['district'])) {
+                $target = ucwords(str_replace('-', ' ', $meta['district']));
+            } elseif (!empty($meta['search'])) {
+                $target = '"' . \Illuminate\Support\Str::limit($meta['search'], 25) . '"';
+            } elseif (!empty($meta['near_me'])) {
+                $target = 'Near Me (GPS)';
+            }
+
+            if ($target) {
+                $targetCounts[$target] = ($targetCounts[$target] ?? 0) + 1;
+            }
+        }
+        arsort($targetCounts);
+        $topSearchTargets = array_slice($targetCounts, 0, 8, true);
+
+        // 9. Live User Search Activity Feed with Filters
+        $searchFeedQuery = VisitorEvent::with(['visitor', 'session'])
+            ->where('event_name', 'search')
+            ->latest('created_at');
+
+        if ($request->filled('search_origin')) {
+            $so = trim($request->search_origin);
+            $searchFeedQuery->whereHas('visitor', function ($vq) use ($so) {
+                $vq->where('city', 'like', "%{$so}%")
+                   ->orWhere('state', 'like', "%{$so}%");
+            });
+        }
+
+        $recentSearches = $searchFeedQuery->paginate(15, ['*'], 'searches_page')->withQueryString();
+        $totalSearches = VisitorEvent::where('event_name', 'search')->whereBetween('created_at', [$startDate, $endDate])->count();
+
+        // 10. Filterable Recent Visitors Table
         $visitorsQuery = Visitor::with(['latestSession', 'lead', 'user'])
             ->latest('last_seen_at');
 
@@ -160,6 +218,7 @@ class VisitorDashboardController extends Controller
             'totalVisitors',
             'totalSessions',
             'totalLeads',
+            'totalSearches',
             'conversionRate',
             'avgDurationSeconds',
             'bounceRate',
@@ -171,6 +230,9 @@ class VisitorDashboardController extends Controller
             'sourceBreakdown',
             'topCities',
             'topProperties',
+            'topSearchOrigins',
+            'topSearchTargets',
+            'recentSearches',
             'visitors'
         ));
     }

@@ -29,12 +29,22 @@ class VisitorTrackingController extends Controller
         $visitor = $this->tracker->resolveVisitor($request);
         $session = $this->tracker->resolveSession($visitor, $request);
 
+        $metadata = $validated['metadata'] ?? [];
+        if ($validated['event_name'] === 'search') {
+            $metadata['visitor_city'] = $metadata['visitor_city'] ?? ($visitor->city ?: 'Location Detected');
+            $metadata['visitor_state'] = $metadata['visitor_state'] ?? ($visitor->state ?: 'India');
+            $metadata['visitor_country'] = $metadata['visitor_country'] ?? ($visitor->country ?: 'India');
+            $metadata['visitor_ip'] = $metadata['visitor_ip'] ?? $request->ip();
+            $metadata['device_type'] = $metadata['device_type'] ?? ($visitor->device_type ?? 'desktop');
+            $metadata['browser'] = $metadata['browser'] ?? ($visitor->browser ?? 'Browser');
+        }
+
         $event = $this->tracker->recordEvent(
             $visitor,
             $validated['event_name'],
             $validated['property_id'] ?? null,
             $validated['page_url'] ?? null,
-            $validated['metadata'] ?? null,
+            $metadata ?: null,
             $session
         );
 
