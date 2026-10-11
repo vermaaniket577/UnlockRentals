@@ -223,8 +223,7 @@
             <select name="source" onchange="this.form.submit()" class="text-xs py-2 px-3 rounded-xl border border-slate-200 bg-white text-slate-700 font-medium">
                 <option value="all">All Sources</option>
                 <option value="Admission Dekho" {{ request('source') === 'Admission Dekho' ? 'selected' : '' }}>🎓 Admission Dekho</option>
-                <option value="admission" {{ request('source') === 'admission' ? 'selected' : '' }}>Admission Portal</option>
-                <option value="anushram" {{ request('source') === 'anushram' ? 'selected' : '' }}>Anushram</option>
+                <option value="anushram" {{ in_array(request('source'), ['anushram', 'admission']) ? 'selected' : '' }}>Anushram</option>
                 <option value="website_lead_form" {{ request('source') === 'website_lead_form' ? 'selected' : '' }}>Website Form</option>
                 <option value="whatsapp" {{ request('source') === 'whatsapp' ? 'selected' : '' }}>WhatsApp</option>
                 <option value="manual" {{ request('source') === 'manual' ? 'selected' : '' }}>Manual Staff Entry</option>
@@ -315,6 +314,10 @@
                                         @if(stripos($lead->source ?? '', 'Admission Dekho') !== false)
                                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-purple-100 text-purple-900 border border-purple-200 shadow-2xs">
                                                 <i class="ph-bold ph-graduation-cap text-purple-700"></i> Admission Dekho
+                                            </span>
+                                        @elseif(stripos($lead->source ?? '', 'anushram') !== false || $lead->source === 'admission')
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                                Anushram
                                             </span>
                                         @else
                                             <span>Source: <strong class="text-slate-700 font-semibold">{{ ucfirst(str_replace('_', ' ', $lead->source)) }}</strong></span>
@@ -520,7 +523,6 @@
                         <label class="block text-xs font-bold text-slate-700 mb-1">Lead Source</label>
                         <select name="lead_source" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
                             <option value="Admission Dekho" selected>Admission Dekho (admissionsdekho.com)</option>
-                            <option value="admission">Admission Portal</option>
                             <option value="anushram">Anushram</option>
                             <option value="manual">Manual Entry</option>
                             <option value="website_lead_form">Website Form</option>

@@ -380,7 +380,7 @@ class ExternalLeadApiController extends Controller
 
             $leadSource = $item['lead_source'] 
                 ?? $item['source'] 
-                ?? ($isAdmission ? 'admission' : 'external_api');
+                ?? (str_contains($sourceUrl, 'anushram') || $isAdmission ? 'anushram' : 'external_api');
 
             $city = $item['city'] ?? $item['preferred_city'] ?? $item['location'] ?? null;
             $locality = $item['locality'] ?? $item['preferred_locality'] ?? null;

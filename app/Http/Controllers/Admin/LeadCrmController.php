@@ -76,7 +76,17 @@ class LeadCrmController extends Controller
 
         // 4. Source Filter (maps to actual lead_source column)
         if ($request->filled('source') && $request->source !== 'all') {
-            $query->where('lead_source', 'like', '%' . $request->source . '%');
+            if (in_array(strtolower($request->source), ['anushram', 'admission'])) {
+                $query->where(function ($q) {
+                    $q->where('lead_source', 'like', '%anushram%')
+                      ->orWhere(function ($sub) {
+                          $sub->where('lead_source', 'like', '%admission%')
+                              ->where('lead_source', 'not like', '%Admission Dekho%');
+                      });
+                });
+            } else {
+                $query->where('lead_source', 'like', '%' . $request->source . '%');
+            }
         }
 
         // 5. Assigned Agent Filter
@@ -239,7 +249,7 @@ class LeadCrmController extends Controller
         ]);
 
         $isAdmission = $validated['intent'] === 'admission' || !empty($validated['course']);
-        $leadSource = $validated['lead_source'] ?: ($isAdmission ? 'admission' : 'manual');
+        $leadSource = $validated['lead_source'] ?: ($isAdmission ? 'anushram' : 'manual');
         $notes = $validated['notes'] ?? '';
         $msg = $validated['message'] ?? '';
         if (!empty($validated['course'])) {
