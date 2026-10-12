@@ -24,6 +24,14 @@ use App\Http\Controllers\Admin\AdminProfessionalController;
 |--------------------------------------------------------------------------
 */
 
+Route::get('/mobile-preview', function () {
+    return view('mobile-preview');
+})->name('mobile.preview');
+
+Route::get('/mobile-home', function () {
+    return view('mobile-preview');
+})->name('mobile.home');
+
 Route::get('/', function(Illuminate\Http\Request $request) {
     $hasFilters = $request->hasAny(['state','district','locality','type','price','rooms','purpose','sort','availability','unbooked','media']);
 
