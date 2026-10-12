@@ -1121,25 +1121,112 @@
         .mobile-hero-banner-slide {
             flex: 0 0 100%;
             width: 100%;
-            padding: 18px 16px 20px;
+            padding: 16px 14px 18px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 185px;
+            min-height: 195px;
             position: relative;
             overflow: hidden;
             user-select: none;
+            background-color: #0f172a;
         }
 
-        .mobile-hero-banner-slide::after {
-            content: '';
+        .mobile-hero-slide-bg {
             position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background: radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.18) 0%, transparent 60%);
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .mobile-hero-slide-scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10, 15, 30, 0.65) 0%, rgba(10, 15, 30, 0.85) 55%, rgba(10, 15, 30, 0.98) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .mobile-hero-slide-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 175px;
+        }
+
+        .mobile-slider-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 25;
+            width: 28px;
+            height: 28px;
+            border-radius: 9999px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .mobile-slider-nav-btn:hover {
+            background: rgba(0, 0, 0, 0.85);
+            border-color: rgba(255, 255, 255, 0.45);
+        }
+
+        .mobile-slider-nav-btn:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+
+        .mobile-slider-nav-prev {
+            left: 8px;
+        }
+
+        .mobile-slider-nav-next {
+            right: 8px;
+        }
+
+        @keyframes badgeGlow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(251, 191, 36, 0.15), inset 0 0 4px rgba(251, 191, 36, 0.2);
+                border-color: rgba(252, 211, 77, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(251, 191, 36, 0.4), inset 0 0 10px rgba(251, 191, 36, 0.3);
+                border-color: rgba(252, 211, 77, 0.85);
+            }
+        }
+
+        .animate-badge-glow {
+            animation: badgeGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmerSweep {
+            0% { transform: translateX(-100%); }
+            50%, 100% { transform: translateX(200%); }
+        }
+
+        .shimmer-sweep::after {
+            content: "";
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%);
+            transform: translateX(-100%);
+            animation: shimmerSweep 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
             pointer-events: none;
         }
 
@@ -2368,111 +2455,159 @@
             </div>
         </div>
 
-        {{-- 4. Flipkart Hero Promotional Banner Slider (Touch Swipe & Auto Sliding) --}}
+        {{-- 4. Hero Promotional Banner Slider (Image 2 Luxury Stays Design) --}}
         <div class="mobile-hero-slider-container" id="mobileHeroSliderContainer">
+            {{-- Navigation Chevrons (Previous / Next) --}}
+            <button type="button" 
+                    onclick="prevMobileHeroSlide(); resetMobileHeroTimer();" 
+                    class="mobile-slider-nav-btn mobile-slider-nav-prev" 
+                    aria-label="Previous Slide">
+                <i class="ph-bold ph-caret-left text-xs"></i>
+            </button>
+            <button type="button" 
+                    onclick="nextMobileHeroSlide(); resetMobileHeroTimer();" 
+                    class="mobile-slider-nav-btn mobile-slider-nav-next" 
+                    aria-label="Next Slide">
+                <i class="ph-bold ph-caret-right text-xs"></i>
+            </button>
+
             <div class="mobile-hero-slider-track" id="mobileHeroSliderTrack">
                 
-                {{-- Slide 1: Rooms & 1RK Super Saver --}}
-                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 55%, #312e81 100%);">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
-                            <i class="ph-fill ph-lightning text-amber-300"></i> BIG SAVINGS • 0% BROKERAGE
-                        </span>
-                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-xs">100% Direct Owner</span>
-                    </div>
-                    <div class="my-2">
-                        <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
-                            Single Rooms & 1 RK Rentals <br>
-                            <span class="text-amber-300 font-extrabold">Starting at ₹4,999/mo</span>
-                        </h2>
-                        <p class="text-[11px] text-white/90 line-clamp-1 leading-relaxed">
-                            Verified independent rooms & studio units with direct owner contact.
-                        </p>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <a href="{{ url('/room-near-my-location') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-blue-950 font-black text-[11px] shadow-lg active:scale-95 transition-all">
-                            <span>Explore Homes</span>
-                            <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
-                        </a>
-                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-1 rounded-lg">Zero Deposit Options</span>
+                {{-- Slide 1: Luxury Stays & Designer 1RK / PGs --}}
+                <div class="mobile-hero-banner-slide">
+                    <img src="https://lh3.googleusercontent.com/aida/AEtjO1WIsrQ3esgXxm-4ezshRtil4niu--oIEtCafHv5RupyQlfXVzrE4CHYow5K_qypHUr6Lw0E9AcdkdTD2jdEKR0acms7bPQcCM3I28KCI9X1mw0gGaaFzbJ2mHA4hUnZS0bi96l1zc7hHkYHrBVouz104XU5AtBgWSOrCZ6qbCiH3jBezX1JiUDSZkxfS5eVMcDhR0oO9Ys52bCnpxTekDILrc0F3bSy_L0y6Ccj6FccSlp7zw4ysg6vaXZr" 
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80';"
+                         alt="Luxury Stays & Designer 1RK / PGs" 
+                         class="mobile-hero-slide-bg" 
+                         loading="eager">
+                    <div class="mobile-hero-slide-scrim"></div>
+
+                    <div class="mobile-hero-slide-content">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9.5px] font-extrabold tracking-wide text-amber-300 uppercase shadow-xs animate-badge-glow">
+                                <i class="ph-fill ph-star text-amber-300 text-[11px]"></i> PREMIUM LIVING • 0% BROKERAGE
+                            </span>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> 100% Direct Owner
+                            </span>
+                        </div>
+
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Luxury Stays &amp; Designer 1RK / PGs
+                            </h2>
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹5,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Fully Furnished • High-speed Wi-Fi • Housekeeping</span>
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/pg-near-me') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>Explore Stays</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ url('/room-near-my-location') }}" class="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors tracking-wide active:scale-95">
+                                Zero Deposit Options
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Slide 2: Flats & Gated Societies --}}
-                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #047857 0%, #065f46 55%, #0f172a 100%);">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
-                            <i class="ph-fill ph-shield-check text-emerald-300"></i> GATED SOCIETIES
-                        </span>
-                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-xs">Gurugram & NCR</span>
-                    </div>
-                    <div class="my-2">
-                        <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
-                            1, 2 & 3 BHK Luxury Flats <br>
-                            <span class="text-amber-300 font-extrabold">Starting at ₹14,999/mo</span>
-                        </h2>
-                        <p class="text-[11px] text-white/90 line-clamp-1 leading-relaxed">
-                            High-rise societies with gym, parking, swimming pool & 24/7 power backup.
-                        </p>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <a href="{{ url('/flat-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-emerald-950 font-black text-[11px] shadow-lg active:scale-95 transition-all">
-                            <span>Browse Flats</span>
-                            <i class="ph-bold ph-arrow-right text-emerald-600 text-xs"></i>
-                        </a>
-                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-1 rounded-lg">No Broker Fee</span>
+                {{-- Slide 2: Modern 2 & 3 BHK Flats --}}
+                <div class="mobile-hero-banner-slide">
+                    <img src="https://lh3.googleusercontent.com/aida/AEtjO1XpwMu026c87OG8bb7y5soJuK3uHi5i2HCRKTixpbsqTxuEe5rx043fm05HHy7Xz1ezX4JdhavoxN9aAetKODWeM6k7X3UNz_Texzp_HOrJDh0jSWQuDkHeE0Ig7rpR810A9sYHtoOXkD6FZv3PrtYesTO2g_-BzROnB8AHc17UghNqR1CLitACMxDv-cyIPBil86k8sew0NafC_mxscc1TW5pDSHfo8XK0Ls8YYjfXUlYsyeQ26ci5aq41" 
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80';"
+                         alt="Modern 2 & 3 BHK Flats" 
+                         class="mobile-hero-slide-bg" 
+                         loading="lazy">
+                    <div class="mobile-hero-slide-scrim"></div>
+
+                    <div class="mobile-hero-slide-content">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-blue-400/40 text-[9.5px] font-extrabold tracking-wide text-blue-300 uppercase shadow-xs">
+                                <i class="ph-bold ph-buildings text-blue-300 text-[11px]"></i> GATED SOCIETIES • NO BROKERAGE
+                            </span>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> Verified Landlords
+                            </span>
+                        </div>
+
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Modern 2 &amp; 3 BHK Flats
+                            </h2>
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹14,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Gym &amp; Pool • Power Backup • Covered Parking</span>
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/flat-for-rent-near-me') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>Browse Flats</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="text-xs font-bold text-blue-300 hover:text-white transition-colors tracking-wide active:scale-95">
+                                Schedule Visit &gt;
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Slide 3: PG & Co-Living --}}
-                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #b45309 0%, #c2410c 55%, #4c1d95 100%);">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
-                            <i class="ph-fill ph-bed text-amber-200"></i> ALL-INCLUSIVE LIVING
-                        </span>
-                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-xs">Food & Wi-Fi Included</span>
-                    </div>
-                    <div class="my-2">
-                        <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
-                            Premium PG & Hostels <br>
-                            <span class="text-amber-300 font-extrabold">Starting at ₹5,999/mo</span>
-                        </h2>
-                        <p class="text-[11px] text-white/90 line-clamp-1 leading-relaxed">
-                            Air-conditioned rooms, 3-time home meals, Wi-Fi & daily cleaning.
-                        </p>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <a href="{{ url('/pg-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-amber-950 font-black text-[11px] shadow-lg active:scale-95 transition-all">
-                            <span>Explore Stays</span>
-                            <i class="ph-bold ph-arrow-right text-amber-600 text-xs"></i>
-                        </a>
-                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-1 rounded-lg">Boys & Girls PG</span>
-                    </div>
-                </div>
+                {{-- Slide 3: Luxury Villas & Independent Houses --}}
+                <div class="mobile-hero-banner-slide">
+                    <img src="https://lh3.googleusercontent.com/aida/AEtjO1VWM4B0YRvb_LtBUAb2OOgBMYAadrEV-44ohT1XqTQsZFA4iqlX8A4CeXVUdAtam0xBNrzYenmtn4KpZC-4dZw4e8VvXOa4f56W8w1kZ5rSRT3qmwWU2_cfl4DaoYLthj6mYCrfr1R8nL4BtRnSt1UZ_QXNtRc_CpVVQYqolu2wfppQax4HK3uJZkP8kOww1XNG9_xlQGdD3gJsWtRJl97ft8FZqA1R4s7x1UBmXprufRu7njm7NIWN6gO-" 
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';"
+                         alt="Luxury Villas & Independent Houses" 
+                         class="mobile-hero-slide-bg" 
+                         loading="lazy">
+                    <div class="mobile-hero-slide-scrim"></div>
 
-                {{-- Slide 4: Free Property Listing for Owners --}}
-                <div class="mobile-hero-banner-slide" style="background: linear-gradient(135deg, #4338ca 0%, #6d28d9 55%, #0f172a 100%);">
-                    <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9.5px] font-extrabold tracking-wide text-white uppercase inline-flex items-center gap-1 shadow-xs">
-                            <i class="ph-fill ph-sparkle text-indigo-200"></i> 100% FREE ADVERTISEMENT
-                        </span>
-                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-0.5 rounded-full backdrop-blur-xs">Direct Inquiries</span>
-                    </div>
-                    <div class="my-2">
-                        <h2 class="text-lg sm:text-xl font-black text-white leading-tight tracking-tight mb-1">
-                            List Your Property Free <br>
-                            <span class="text-amber-300 font-extrabold">Rent 10x Faster Online</span>
-                        </h2>
-                        <p class="text-[11px] text-white/90 line-clamp-1 leading-relaxed">
-                            Connect directly with 10,000+ verified tenants with zero middleman commission.
-                        </p>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white text-indigo-950 font-black text-[11px] shadow-lg active:scale-95 transition-all">
-                            <span>Post Property Now</span>
-                            <i class="ph-bold ph-arrow-right text-indigo-600 text-xs"></i>
-                        </a>
-                        <span class="text-[10px] font-extrabold text-white bg-black/30 px-2.5 py-1 rounded-lg">Zero Brokerage</span>
+                    <div class="mobile-hero-slide-content">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9.5px] font-extrabold tracking-wide text-amber-300 uppercase shadow-xs animate-badge-glow">
+                                <i class="ph-fill ph-star text-amber-300 text-[11px]"></i> LUXURY LIVING • DIRECT SELLER
+                            </span>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> Instant Move-in
+                            </span>
+                        </div>
+
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Luxury Villas &amp; Independent Houses
+                            </h2>
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹24,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Private Garden • Spacious Courtyard • Prime Location</span>
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/house-for-rent-near-me') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>View Villas</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ route('properties.index', ['type' => 'villa']) }}" class="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors tracking-wide active:scale-95">
+                                Direct Owner Contact &gt;
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -2484,7 +2619,6 @@
             <button type="button" class="mobile-slider-dot active" onclick="goMobileSlide(0)" aria-label="Slide 1"></button>
             <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(1)" aria-label="Slide 2"></button>
             <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(2)" aria-label="Slide 3"></button>
-            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4"></button>
         </div>
 
         {{-- 5. Flipkart Style Quick Filter Chips --}}
@@ -3414,7 +3548,7 @@
 
             // Mobile App Hero Banner Slider Controller
             let mobileHeroCurrentSlide = 0;
-            const mobileHeroTotalSlides = 4;
+            const mobileHeroTotalSlides = 3;
             let mobileHeroTimer = null;
 
             window.updateMobileHeroSlider = function() {
