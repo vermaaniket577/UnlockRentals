@@ -1146,7 +1146,7 @@
         .mobile-hero-slide-scrim {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(10, 15, 30, 0.65) 0%, rgba(10, 15, 30, 0.85) 55%, rgba(10, 15, 30, 0.98) 100%);
+            background: linear-gradient(180deg, rgba(10, 15, 30, 0.08) 0%, rgba(10, 15, 30, 0.26) 45%, rgba(10, 15, 30, 0.68) 100%);
             pointer-events: none;
             z-index: 1;
         }
@@ -1160,6 +1160,11 @@
             justify-content: space-between;
             height: 100%;
             min-height: 175px;
+        }
+
+        .mobile-hero-slide-content h2,
+        .mobile-hero-slide-content p {
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85), 0 2px 10px rgba(0, 0, 0, 0.65);
         }
 
         .mobile-slider-nav-btn {
