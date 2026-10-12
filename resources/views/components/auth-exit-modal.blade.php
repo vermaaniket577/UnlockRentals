@@ -9,48 +9,59 @@
     $waUrl = "https://wa.me/{$cleanPhone}?text={$waText}";
 @endphp
 
-<div id="auth-exit-modal" class="fixed inset-0 z-[99999] hidden items-center justify-center bg-slate-950/75 backdrop-blur-md p-4 transition-all duration-300" role="dialog" aria-modal="true" aria-labelledby="auth-exit-title">
-    <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="auth-exit-card">
+<div id="auth-exit-modal" class="fixed inset-0 z-[99999] hidden items-center justify-center p-4 transition-all duration-300" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);" role="dialog" aria-modal="true" aria-labelledby="auth-exit-title">
+    <div class="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200/90 dark:border-slate-800 overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="auth-exit-card" style="box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);">
         
+        {{-- Top Accent Gradient Bar --}}
+        <div class="absolute top-0 left-0 right-0 h-1.5" style="background: linear-gradient(90deg, #2563eb 0%, #10b981 50%, #25D366 100%);"></div>
+
         {{-- Close button --}}
-        <button type="button" onclick="window.closeAuthExitModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white flex items-center justify-center transition-all z-10 cursor-pointer" aria-label="Close modal">
-            <i class="ph-bold ph-x text-base"></i>
+        <button type="button" onclick="window.closeAuthExitModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white flex items-center justify-center transition-all z-10 cursor-pointer" aria-label="Close modal">
+            <i class="ph-bold ph-x text-sm"></i>
         </button>
 
         {{-- Top Header Section --}}
-        <div class="p-6 sm:p-7 pb-4 text-center">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-400 text-amber-950 flex items-center justify-center mx-auto mb-3.5 shadow-lg shadow-amber-400/25 ring-4 ring-amber-50 dark:ring-amber-950/40">
-                <i class="ph-fill ph-house-line text-2xl"></i>
+        <div class="p-6 sm:p-7 pb-3 text-center">
+            {{-- Modern Concierge Badge --}}
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xl transition-transform hover:scale-105" style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); box-shadow: 0 12px 28px -6px rgba(16, 185, 129, 0.4), 0 0 0 6px rgba(16, 185, 129, 0.12);">
+                <i class="ph-fill ph-chat-circle-dots text-white" style="font-size: 28px; color: #ffffff !important;"></i>
             </div>
             
-            <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/80 text-[11px] font-extrabold uppercase tracking-wide mb-2">
-                <i class="ph-bold ph-lightning"></i> Skip the form
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider mb-2 shadow-xs" style="background: rgba(16, 185, 129, 0.1); color: #047857; border: 1px solid rgba(16, 185, 129, 0.25);">
+                <i class="ph-fill ph-lightning text-amber-500"></i>
+                <span>Fast Help • 0% Brokerage</span>
             </div>
             
             <h3 id="auth-exit-title" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
                 Having Trouble Signing In?
             </h3>
-            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                Skip passwords & forms! Connect directly with our rental advisor on WhatsApp or get handpicked 0-brokerage rentals sent to your phone.
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed max-w-sm mx-auto">
+                Skip passwords &amp; forms! Connect directly with our rental advisor on WhatsApp or get handpicked 0-brokerage rentals sent to your phone.
             </p>
         </div>
 
         {{-- Action Body --}}
-        <div class="px-6 sm:px-7 pb-7 pt-1 space-y-4">
+        <div class="px-6 sm:px-7 pb-6 pt-1 space-y-3.5">
             
-            {{-- Option 1: 1-Click WhatsApp Assistance (Instant Conversion) --}}
+            {{-- Option 1: 1-Click WhatsApp Assistance (Prominent & High-Converting) --}}
             <div>
                 <a href="{{ $waUrl }}" target="_blank" rel="noopener noreferrer" onclick="window.trackAuthWhatsAppExit()"
-                   class="w-full py-3.5 px-5 rounded-2xl bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.99] text-white font-extrabold text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 transition-all group cursor-pointer">
-                    <i class="ph-bold ph-whatsapp-logo text-xl group-hover:scale-110 transition-transform"></i>
-                    <span>Connect on WhatsApp (Instant Help)</span>
+                   style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important; color: #ffffff !important; box-shadow: 0 10px 25px -4px rgba(37, 211, 102, 0.45), 0 2px 6px rgba(0, 0, 0, 0.05); text-decoration: none;"
+                   class="w-full py-3.5 px-5 rounded-2xl active:scale-[0.98] font-black text-sm sm:text-[15px] flex items-center justify-center gap-2.5 transition-all group cursor-pointer hover:brightness-105">
+                    <i class="ph-fill ph-whatsapp-logo text-2xl" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important; font-weight: 800;">Connect on WhatsApp (Instant Help)</span>
+                    <i class="ph-bold ph-arrow-right text-xs opacity-80 group-hover:translate-x-1 transition-transform" style="color: #ffffff !important;"></i>
                 </a>
+                <div class="flex items-center justify-center gap-2 mt-2 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Live Rental Advisors Online • Response in &lt; 2 mins</span>
+                </div>
             </div>
 
             {{-- Divider --}}
-            <div class="relative flex items-center justify-center">
-                <div class="border-t border-slate-200/80 dark:border-slate-800 w-full"></div>
-                <span class="bg-white dark:bg-slate-900 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider absolute">or quick send to phone</span>
+            <div class="relative flex items-center justify-center my-3">
+                <div class="w-full border-t border-slate-200 dark:border-slate-800"></div>
+                <span class="bg-white dark:bg-slate-900 px-3 text-[10.5px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest absolute">or quick send to phone</span>
             </div>
 
             {{-- Option 2: Quick Mobile Lead Capture Form --}}
@@ -60,23 +71,26 @@
                     <input type="hidden" name="lead_source" value="auth_exit_intent">
 
                     <div>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="ph-bold ph-phone text-base"></i>
+                        <div class="relative flex items-center">
+                            <div class="absolute left-3.5 flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-bold text-xs pointer-events-none border-r border-slate-200 dark:border-slate-700 pr-2.5">
+                                <i class="ph-bold ph-phone text-blue-600 text-sm"></i>
+                                <span>+91</span>
                             </div>
                             <input type="tel" name="mobile" id="auth-exit-mobile" required
                                    pattern="[0-9]{10}" maxlength="10"
                                    placeholder="Enter 10-digit mobile number"
-                                   class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                   style="padding-left: 74px;"
+                                   class="w-full pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                         </div>
                     </div>
 
                     <div id="auth-exit-error" class="hidden p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-[11px] font-bold text-rose-600 rounded-xl"></div>
 
                     <button type="submit" id="auth-exit-submit-btn"
-                            class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="ph-bold ph-paper-plane-tilt"></i>
-                        <span>Send Matching Rentals to My WhatsApp</span>
+                            style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important; color: #ffffff !important; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);"
+                            class="w-full py-2.5 px-4 hover:bg-slate-800 active:scale-[0.99] text-xs sm:text-sm font-extrabold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="ph-bold ph-paper-plane-tilt text-blue-400"></i>
+                        <span style="color: #ffffff !important;">Send Matching Rentals to My WhatsApp</span>
                     </button>
                 </form>
             </div>
@@ -90,11 +104,19 @@
                 <p class="text-xs text-slate-500 dark:text-slate-400">A rental advisor will WhatsApp you top matching verified properties in Gurugram shortly.</p>
             </div>
 
-            {{-- Dismiss / Continue Sign In --}}
-            <div class="text-center pt-1">
-                <button type="button" onclick="window.closeAuthExitModal()" class="text-[11px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+            {{-- Dismiss / Continue Sign In & Trust Badges --}}
+            <div class="pt-2 text-center space-y-2.5">
+                <button type="button" onclick="window.closeAuthExitModal()" class="text-xs font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors cursor-pointer py-1">
                     No thanks, continue to sign in
                 </button>
+
+                <div class="flex items-center justify-center gap-3 pt-2 text-[10.5px] font-semibold text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-800">
+                    <span class="inline-flex items-center gap-1"><i class="ph-fill ph-shield-check text-emerald-500"></i> 100% Verified</span>
+                    <span>•</span>
+                    <span class="inline-flex items-center gap-1"><i class="ph-fill ph-tag text-blue-500"></i> Zero Brokerage</span>
+                    <span>•</span>
+                    <span class="inline-flex items-center gap-1"><i class="ph-fill ph-lock-key text-slate-400"></i> Privacy Safe</span>
+                </div>
             </div>
 
         </div>
