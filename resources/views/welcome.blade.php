@@ -2565,7 +2565,99 @@
                     </div>
                 </div>
 
-                {{-- Slide 3: Luxury Villas & Independent Houses --}}
+                {{-- Slide 3: Luxury Penthouses & Skyline Living --}}
+                <div class="mobile-hero-banner-slide">
+                    <img src="{{ asset('images/slider/penthouse_skyline.jpg') }}" 
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';"
+                         alt="Luxury Penthouses & Skyline Living" 
+                         class="mobile-hero-slide-bg" 
+                         loading="lazy">
+                    <div class="mobile-hero-slide-scrim"></div>
+
+                    <div class="mobile-hero-slide-content">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9.5px] font-extrabold tracking-wide text-amber-300 uppercase shadow-xs animate-badge-glow">
+                                <i class="ph-fill ph-star text-amber-300 text-[11px]"></i> SKYLINE LUXURY • 0% BROKERAGE
+                            </span>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> 100% Direct Owner
+                            </span>
+                        </div>
+
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Luxury Penthouses &amp; Skyline Living
+                            </h2>
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹34,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Panoramic City View • Private Deck • High Rise</span>
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/flat-for-rent-near-me') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>Explore Penthouses</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors tracking-wide active:scale-95">
+                                Zero Brokerage Guaranteed
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Slide 4: Sunlit Designer Studios & 1RK --}}
+                <div class="mobile-hero-banner-slide">
+                    <img src="{{ asset('images/slider/studio_designer.jpg') }}" 
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80';"
+                         alt="Sunlit Designer Studios & 1RK" 
+                         class="mobile-hero-slide-bg" 
+                         loading="lazy">
+                    <div class="mobile-hero-slide-scrim"></div>
+
+                    <div class="mobile-hero-slide-content">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9.5px] font-extrabold tracking-wide text-amber-300 uppercase shadow-xs animate-badge-glow">
+                                <i class="ph-fill ph-sun text-amber-300 text-[11px]"></i> SUNLIT LIVING • ZERO DEPOSIT
+                            </span>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> Verified Direct Owner
+                            </span>
+                        </div>
+
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Sunlit Designer Studios &amp; 1RK
+                            </h2>
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹4,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Fully Furnished • Modular Kitchen • Move-in Ready</span>
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/room-near-my-location') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>Browse Studios</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ url('/room-near-my-location') }}" class="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors tracking-wide active:scale-95">
+                                Instant Key Handover
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Slide 5: Luxury Villas & Independent Houses --}}
                 <div class="mobile-hero-banner-slide">
                     <img src="https://lh3.googleusercontent.com/aida/AEtjO1VWM4B0YRvb_LtBUAb2OOgBMYAadrEV-44ohT1XqTQsZFA4iqlX8A4CeXVUdAtam0xBNrzYenmtn4KpZC-4dZw4e8VvXOa4f56W8w1kZ5rSRT3qmwWU2_cfl4DaoYLthj6mYCrfr1R8nL4BtRnSt1UZ_QXNtRc_CpVVQYqolu2wfppQax4HK3uJZkP8kOww1XNG9_xlQGdD3gJsWtRJl97ft8FZqA1R4s7x1UBmXprufRu7njm7NIWN6gO-" 
                          onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';"
@@ -2619,6 +2711,8 @@
             <button type="button" class="mobile-slider-dot active" onclick="goMobileSlide(0)" aria-label="Slide 1"></button>
             <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(1)" aria-label="Slide 2"></button>
             <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(2)" aria-label="Slide 3"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(4)" aria-label="Slide 5"></button>
         </div>
 
         {{-- 5. Flipkart Style Quick Filter Chips --}}
@@ -3548,7 +3642,7 @@
 
             // Mobile App Hero Banner Slider Controller
             let mobileHeroCurrentSlide = 0;
-            const mobileHeroTotalSlides = 3;
+            const mobileHeroTotalSlides = 5;
             let mobileHeroTimer = null;
 
             window.updateMobileHeroSlider = function() {

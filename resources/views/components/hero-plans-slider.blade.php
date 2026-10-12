@@ -379,67 +379,75 @@
         ],
     ]);
 
-    if ($buyerPlan) {
-        $buyerBasePrice = (float) (($buyerPlan->price && $buyerPlan->price >= 5000) ? $buyerPlan->price : 50000.00);
-        $buyerOffer = $resolvePlanOffer($buyerPlan, 'yearly');
-        $hasBuyerOffer = ($buyerOffer && $buyerOffer->discounted_price !== null) || ((float)($buyerPlan->price ?? 0) > 0 && (float)($buyerPlan->price ?? 0) < 5000);
-        $buyerPrice = ($buyerOffer && $buyerOffer->discounted_price !== null) 
-            ? (float) $buyerOffer->discounted_price 
-            : (((float)($buyerPlan->price ?? 0) > 0 && (float)($buyerPlan->price ?? 0) < 5000) ? (float)$buyerPlan->price : $buyerBasePrice);
-        $buyerDays = (int) (($buyerPlan->duration_days && $buyerPlan->duration_days <= 90) ? $buyerPlan->duration_days : 60);
-        $buyerContacts = (int) (($buyerPlan->contact_limit && $buyerPlan->contact_limit <= 50) ? $buyerPlan->contact_limit : 30);
-        $buyerOrigPrice = $hasBuyerOffer ? $buyerBasePrice : round($buyerBasePrice * 3);
-        $buyerSavingsPct = $hasBuyerOffer 
-            ? max(1, min(99, (int) round((1 - ($buyerPrice / max(1, $buyerBasePrice))) * 100))) 
-            : 67;
-        $buyerPerDay = $buyerPrice < 5 ? round($buyerPrice / max(1, $buyerDays), 2) : round($buyerPrice / max(1, $buyerDays), 1);
+    if ($allBuyPlans->isNotEmpty()) {
+        foreach ($allBuyPlans as $bPlan) {
+            $buyerBasePrice = (float) (($bPlan->price && $bPlan->price > 0) ? $bPlan->price : 999.00);
+            $buyerOffer = $resolvePlanOffer($bPlan, 'yearly');
+            $hasBuyerOffer = ($buyerOffer && $buyerOffer->discounted_price !== null) || ((float)($bPlan->price ?? 0) > 0 && (float)($bPlan->price ?? 0) < 500);
+            $buyerPrice = ($buyerOffer && $buyerOffer->discounted_price !== null) 
+                ? (float) $buyerOffer->discounted_price 
+                : $buyerBasePrice;
+            $buyerDays = (int) ($bPlan->duration_days ?: 60);
+            $buyerContacts = (int) ($bPlan->contact_limit ?: 30);
+            $buyerOrigPrice = $hasBuyerOffer ? $buyerBasePrice : round($buyerBasePrice * 2.5);
+            $buyerSavingsPct = $hasBuyerOffer 
+                ? max(1, min(99, (int) round((1 - ($buyerPrice / max(1, $buyerBasePrice))) * 100))) 
+                : 65;
+            $buyerPerDay = $buyerPrice < 5 ? round($buyerPrice / max(1, $buyerDays), 2) : round($buyerPrice / max(1, $buyerDays), 1);
 
-        $heroSlides->push([
-            'plan' => $buyerPlan,
-            'type' => 'buy',
-            'theme' => 'buyer',
-            'tab_label' => 'Buyer Pass',
-            'tab_icon' => 'ph-buildings',
-            'tab_badge' => $hasBuyerOffer ? ('₹' . number_format($buyerPrice, 0) . ' Offer') : 'Home Buyers',
-            'has_offer' => $hasBuyerOffer,
-            'offer' => $buyerOffer,
-            'regular_price' => $buyerBasePrice,
-            'badge' => $hasBuyerOffer 
-                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($buyerPrice, 0) . ' BUYER PASS' 
-                : '🏡 ZERO BROKERAGE BUYER PASS · DIRECT SELLER DEALS',
-            'title_prefix' => 'Purchase Your Dream Property With',
-            'title_highlight' => 'Direct Buyer Pass',
-            'title_suffix' => '',
-            'tagline' => 'Buying a flat, villa, or commercial space? Skip the 1% to 2% property broker commission and negotiate directly with verified sellers.',
-            'original_price' => $buyerOrigPrice,
-            'price' => $buyerPrice,
-            'savings_pct' => $buyerSavingsPct,
-            'per_day' => $buyerPerDay,
-            'highlights' => [
-                ['icon' => 'ph-house-line', 'title' => $buyerContacts . ' Verified Direct Sellers', 'desc' => 'Direct owners & builder representatives'],
-                ['icon' => 'ph-money', 'title' => 'Save ₹1 Lakh to ₹5 Lakhs', 'desc' => 'Zero broker commission on buy transactions'],
-                ['icon' => 'ph-calendar-check', 'title' => $buyerDays . ' Days Buyer Validity', 'desc' => 'Extended window to evaluate deals'],
-                ['icon' => 'ph-file-text', 'title' => 'Title & Visit Assistance', 'desc' => 'Direct owner negotiation pass'],
-            ],
-            'specs' => [
-                ['label' => 'Direct Seller Contacts', 'value' => $buyerContacts . ' Direct Unlocks'],
-                ['label' => 'Access Duration', 'value' => $buyerDays . ' Full Days'],
-                ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
-            ],
-            'visual' => [
-                'tag' => $hasBuyerOffer ? 'EXCLUSIVE OFFER' : 'DIRECT SELLER DEALS',
-                'title' => 'Direct Property Purchase',
-                'sub' => 'Connect directly with genuine property sellers and save lakhs in brokerage fees.',
-                'perks' => [
-                    'Verified Direct Seller Contacts',
-                    'Save 1% to 2% Brokerage Fee',
-                    'Title Document Checklist',
+            $isGoldBuyer = str_contains(strtolower($bPlan->name), 'gold');
+            $isPlatBuyer = str_contains(strtolower($bPlan->name), 'plat');
+            $tabBadge = $hasBuyerOffer 
+                ? ('₹' . number_format($buyerPrice, 0) . ' Offer') 
+                : ($isGoldBuyer ? 'Most Popular' : ($isPlatBuyer ? 'VIP Buyer' : 'Home Buyers'));
+
+            $heroSlides->push([
+                'plan' => $bPlan,
+                'type' => 'buy',
+                'theme' => 'buyer',
+                'tab_label' => $bPlan->name,
+                'tab_icon' => 'ph-buildings',
+                'tab_badge' => $tabBadge,
+                'has_offer' => $hasBuyerOffer,
+                'offer' => $buyerOffer,
+                'regular_price' => $buyerBasePrice,
+                'badge' => $hasBuyerOffer 
+                    ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($buyerPrice, 0) . ' ' . strtoupper($bPlan->name) 
+                    : '🏡 ZERO BROKERAGE BUYER PASS · DIRECT SELLER DEALS',
+                'title_prefix' => 'Purchase Your Dream Property With',
+                'title_highlight' => $bPlan->name,
+                'title_suffix' => '',
+                'tagline' => $bPlan->description ?: 'Buying a flat, villa, or commercial space? Skip the 1% to 2% property broker commission and negotiate directly with verified sellers.',
+                'original_price' => $buyerOrigPrice,
+                'price' => $buyerPrice,
+                'savings_pct' => $buyerSavingsPct,
+                'per_day' => $buyerPerDay,
+                'highlights' => [
+                    ['icon' => 'ph-house-line', 'title' => $buyerContacts . ' Verified Direct Sellers', 'desc' => 'Direct owners & builder representatives'],
+                    ['icon' => 'ph-money', 'title' => 'Save ₹1 Lakh to ₹5 Lakhs', 'desc' => 'Zero broker commission on buy transactions'],
+                    ['icon' => 'ph-calendar-check', 'title' => $buyerDays . ' Days Buyer Validity', 'desc' => 'Extended window to evaluate deals'],
+                    ['icon' => 'ph-file-text', 'title' => 'Title & Visit Assistance', 'desc' => 'Direct owner negotiation pass'],
                 ],
-                'trust_note' => 'Direct Seller Negotiation · ₹0 Middleman',
-                'image' => $buyerImg['primary'],
-                'fallback' => $buyerImg['fallback'],
-            ],
-        ]);
+                'specs' => [
+                    ['label' => 'Direct Seller Contacts', 'value' => $buyerContacts . ' Direct Unlocks'],
+                    ['label' => 'Access Duration', 'value' => $buyerDays . ' Full Days'],
+                    ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
+                ],
+                'visual' => [
+                    'tag' => $hasBuyerOffer ? 'EXCLUSIVE OFFER' : 'DIRECT SELLER DEALS',
+                    'title' => 'Direct Property Purchase',
+                    'sub' => 'Connect directly with genuine property sellers and save lakhs in brokerage fees.',
+                    'perks' => [
+                        'Verified Direct Seller Contacts',
+                        'Save 1% to 2% Brokerage Fee',
+                        'Title Document Checklist',
+                    ],
+                    'trust_note' => 'Direct Seller Negotiation · ₹0 Middleman',
+                    'image' => $buyerImg['primary'],
+                    'fallback' => $buyerImg['fallback'],
+                ],
+            ]);
+        }
     }
 @endphp
 
@@ -3000,12 +3008,9 @@
         function userInteracted() {
             stopAutoPlay();
             if (resumeTimer) clearTimeout(resumeTimer);
-            // On mobile devices, don't jerk the card away while user is interacting
             resumeTimer = setTimeout(() => {
-                if (window.innerWidth > 768) {
-                    startAutoPlay();
-                }
-            }, 10000);
+                startAutoPlay();
+            }, 4000);
         }
 
         // Arrow Listeners
