@@ -479,6 +479,12 @@ class PropertyController extends Controller
                 }
             }
 
+            // Check if a new uploaded image was chosen as primary cover
+            $newPrimaryIndex = null;
+            if ($request->filled('primary_image') && str_starts_with((string)$request->primary_image, 'new_')) {
+                $newPrimaryIndex = (int) str_replace('new_', '', (string)$request->primary_image);
+            }
+
             // Handle new image uploads — save to disk
             if ($request->hasFile('images')) {
                 $maxOrder = $property->images()->max('sort_order') ?? -1;
@@ -486,12 +492,13 @@ class PropertyController extends Controller
 
                 foreach ($request->file('images') as $index => $image) {
                     $path = $image->store('properties/' . $property->id, 'public');
+                    $isThisPrimary = ($newPrimaryIndex !== null && $index === $newPrimaryIndex);
 
                     $newImagesData[] = [
                         'property_id' => $property->id,
                         'path'        => $path,
                         'image_data'  => null,
-                        'is_primary'  => false,
+                        'is_primary'  => $isThisPrimary,
                         'sort_order'  => $maxOrder + $index + 1,
                         'created_at'  => now(),
                         'updated_at'  => now(),
@@ -499,16 +506,24 @@ class PropertyController extends Controller
                 }
 
                 if (!empty($newImagesData)) {
+                    if ($newPrimaryIndex !== null) {
+                        $property->images()->update(['is_primary' => false]);
+                    }
                     PropertyImage::insert($newImagesData);
                 }
             }
 
-            // Update primary image if specified
-            if ($request->filled('primary_image')) {
+            // Update primary image if an existing ID was specified
+            if ($request->filled('primary_image') && is_numeric($request->primary_image)) {
                 $property->images()->update(['is_primary' => false]);
-                PropertyImage::where('id', $request->primary_image)
+                PropertyImage::where('id', (int) $request->primary_image)
                     ->where('property_id', $property->id)
                     ->update(['is_primary' => true]);
+            }
+
+            // Fallback: Ensure at least one image is primary if images exist
+            if (!$property->images()->where('is_primary', true)->exists()) {
+                $property->images()->orderBy('sort_order')->orderBy('id')->first()?->update(['is_primary' => true]);
             }
         });
 

@@ -489,8 +489,16 @@
                 {{-- Hidden input for primary image --}}
                 <input type="hidden" name="primary_image" id="primary-image-input" value="0">
 
+                {{-- Cover Photo Helper Guidance --}}
+                <div id="cover-photo-guidance" class="hidden mt-3.5 p-3 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/50 text-xs text-blue-900 dark:text-blue-200 flex items-center justify-between gap-2 shadow-2xs">
+                    <span class="flex items-center gap-2 font-medium">
+                        <i class="ph-fill ph-star text-amber-500 text-base shrink-0"></i>
+                        <span>The image with <strong class="text-blue-700 dark:text-blue-300 font-extrabold">Cover Photo</strong> will be the main display photo on search results and property cards. Click <strong>"Make Cover"</strong> on any photo to set it as your cover.</span>
+                    </span>
+                </div>
+
                 {{-- Preview Gallery Container --}}
-                <div id="image-preview-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2.5 sm:gap-3.5 mt-4 sm:mt-6 hidden">
+                <div id="image-preview-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2.5 sm:gap-3.5 mt-3 sm:mt-4 hidden">
                     {{-- Previews dynamically rendered here --}}
                 </div>
                 
@@ -835,12 +843,15 @@ function setPrimaryImage(index) {
 
 function renderPreviews() {
     const container = document.getElementById('image-preview-container');
+    const guidance = document.getElementById('cover-photo-guidance');
     container.innerHTML = ''; 
     
     if (selectedFiles.length > 0) {
         container.classList.remove('hidden');
+        if (guidance) guidance.classList.remove('hidden');
     } else {
         container.classList.add('hidden');
+        if (guidance) guidance.classList.add('hidden');
         const statusBox = document.getElementById('compression-status');
         if (statusBox) statusBox.classList.add('hidden');
     }
@@ -851,16 +862,19 @@ function renderPreviews() {
             const isPrimary = (index === primaryImageIndex);
             const sizeKB = Math.round(file.size / 1024);
             const imgBox = document.createElement('div');
-            imgBox.className = `relative aspect-square rounded-2xl overflow-hidden border ${isPrimary ? 'border-blue-600 ring-2 ring-blue-500 shadow-md' : 'border-slate-200 dark:border-slate-700 shadow-xs'} group/item`;
+            imgBox.className = `relative aspect-square rounded-2xl overflow-hidden border-2 transition-all ${isPrimary ? 'border-blue-600 ring-2 ring-blue-500 shadow-md' : 'border-slate-200 dark:border-slate-700 shadow-xs hover:border-blue-400'} group/item`;
             
             imgBox.innerHTML = `
                 <img src="${e.target.result}" class="w-full h-full object-cover transition-transform group-hover/item:scale-105">
                 
-                ${isPrimary ? '<span class="absolute top-2 left-2 px-2 py-0.5 bg-blue-600 text-white text-[10px] font-extrabold uppercase rounded-md shadow-sm flex items-center gap-1"><i class="ph-fill ph-star"></i> Cover Photo</span>' : `<button type="button" onclick="setPrimaryImage(${index})" class="absolute top-2 left-2 px-2 py-0.5 bg-black/60 hover:bg-blue-600 text-white text-[10px] font-bold rounded-md opacity-0 group-hover/item:opacity-100 transition-opacity">Set as Cover</button>`}
+                ${isPrimary 
+                    ? '<div class="absolute top-2 left-2 z-20 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-extrabold uppercase tracking-wide rounded-lg shadow-md pointer-events-none ring-1 ring-white/30"><i class="ph-fill ph-star text-amber-300 text-xs"></i> Cover Photo</div>' 
+                    : `<button type="button" onclick="setPrimaryImage(${index})" class="absolute top-2 left-2 z-20 flex items-center gap-1 px-2.5 py-1 bg-black/75 hover:bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-md transition-all cursor-pointer"><i class="ph-bold ph-star text-xs"></i> Make Cover</button>`
+                }
 
-                <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex justify-between items-center">
+                <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex justify-between items-center z-10">
                     <span class="text-white text-[10px] font-bold">${sizeKB} KB</span>
-                    <button type="button" onclick="removeImage(${index})" class="text-white bg-red-600/90 hover:bg-red-600 p-1.5 rounded-full transition-all shadow-sm" title="Remove Photo">
+                    <button type="button" onclick="removeImage(${index})" class="text-white bg-red-600/90 hover:bg-red-600 p-1.5 rounded-full transition-all shadow-sm cursor-pointer" title="Remove Photo">
                         <i class="ph-bold ph-trash text-xs"></i>
                     </button>
                 </div>

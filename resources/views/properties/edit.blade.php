@@ -478,29 +478,62 @@
                 {{-- Existing Images --}}
                 @if($property->images->count() > 0)
                 <div class="mb-3.5 p-3 sm:p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-xl sm:rounded-2xl border border-slate-200/70 dark:border-slate-700/60">
-                    <p class="text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <i class="ph-bold ph-images text-blue-600"></i> Current Images ({{ $property->images->count() }})
-                        <span class="text-[10px] sm:text-[11px] font-normal text-slate-400 normal-case ml-auto">Check box to delete</span>
-                    </p>
-                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-2.5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-3">
+                        <p class="text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="ph-bold ph-images text-blue-600"></i> Current Images ({{ $property->images->count() }})
+                        </p>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400">
+                            ⭐ Click <strong class="text-blue-600 dark:text-blue-400 font-bold">"Make Cover"</strong> on any photo to set it as main cover image
+                        </span>
+                    </div>
+
+                    {{-- Hidden input for primary image ID --}}
+                    <input type="hidden" name="primary_image" id="edit-primary-image-input" value="{{ $property->images->firstWhere('is_primary', true)?->id ?? ($property->images->first()?->id ?? '') }}">
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-2.5">
                         @foreach($property->images as $image)
-                        <div class="relative group rounded-lg sm:rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-black aspect-square shadow-2xs">
+                        @php
+                            $isPrimary = $image->is_primary || ($loop->first && !$property->images->contains('is_primary', true));
+                        @endphp
+                        <div id="image-card-{{ $image->id }}" 
+                             class="image-card relative group rounded-xl overflow-hidden border-2 transition-all aspect-square bg-slate-900 shadow-xs {{ $isPrimary ? 'border-blue-600 ring-2 ring-blue-500/50 is-primary-card' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400' }}">
                             <img src="{{ $image->imageUrl() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             
-                            <label class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 peer-checked:opacity-100 flex items-center justify-center cursor-pointer transition-opacity backdrop-blur-[2px]">
-                                <input type="checkbox" name="remove_images[]" value="{{ $image->id }}" class="sr-only peer">
-                                <div class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white text-[10px] sm:text-xs font-bold rounded-md flex items-center gap-1 shadow-md scale-95 group-hover:scale-100 transition-all">
-                                    <i class="ph-bold ph-trash"></i> Remove
-                                </div>
+                            {{-- Cover Photo Active Badge --}}
+                            <div id="cover-badge-{{ $image->id }}" class="cover-badge {{ $isPrimary ? 'flex' : 'hidden' }} absolute top-1.5 left-1.5 z-20 items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-extrabold uppercase tracking-wide shadow-md pointer-events-none ring-1 ring-white/30">
+                                <i class="ph-fill ph-star text-amber-300 text-xs"></i> Cover
+                            </div>
+
+                            {{-- Make Cover Photo Button --}}
+                            <button type="button" 
+                                    id="make-cover-btn-{{ $image->id }}" 
+                                    onclick="setEditCoverPhoto({{ $image->id }})" 
+                                    class="make-cover-btn {{ $isPrimary ? 'hidden' : 'flex' }} absolute top-1.5 left-1.5 z-20 items-center gap-1 px-2 py-0.5 rounded-md bg-black/75 hover:bg-blue-600 text-white text-[10px] font-bold shadow-md transition-all cursor-pointer">
+                                <i class="ph-bold ph-star text-xs"></i> Make Cover
+                            </button>
+
+                            {{-- Delete / Remove Checkbox Button --}}
+                            <label class="absolute top-1.5 right-1.5 z-20 cursor-pointer" title="Delete this photo">
+                                <input type="checkbox" name="remove_images[]" value="{{ $image->id }}" onchange="handleImageRemoveToggle(this, {{ $image->id }})" class="sr-only remove-checkbox">
+                                <span class="remove-btn-icon w-6 h-6 rounded-md bg-black/70 hover:bg-red-600 text-white flex items-center justify-center transition-all shadow-md">
+                                    <i class="ph-bold ph-trash text-xs"></i>
+                                </span>
                             </label>
-                            
-                            @if($image->is_primary)
-                            <span class="absolute top-1.5 left-1.5 px-1.5 py-0.2 bg-blue-600 text-white text-[9px] font-extrabold uppercase tracking-wide rounded shadow-xs pointer-events-none">Primary</span>
-                            @endif
+
+                            {{-- Overlay when marked for deletion --}}
+                            <div id="delete-overlay-{{ $image->id }}" class="delete-overlay hidden absolute inset-0 bg-red-950/85 backdrop-blur-[2px] z-15 flex flex-col items-center justify-center text-white text-center p-2">
+                                <i class="ph-bold ph-trash text-xl text-red-300 mb-1"></i>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wide text-red-200">Will be deleted</span>
+                                <button type="button" onclick="cancelImageRemove({{ $image->id }})" class="text-[10px] text-white bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded mt-1.5 transition-colors cursor-pointer">
+                                    Undo
+                                </button>
+                            </div>
                         </div>
                         @endforeach
                     </div>
                 </div>
+                @else
+                <input type="hidden" name="primary_image" id="edit-primary-image-input" value="">
                 @endif
 
                 {{-- Add More Images Dropzone --}}
@@ -525,7 +558,75 @@
                     <span id="edit-compression-saved-text" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md"></span>
                 </div>
 
+                {{-- New Additional Images Live Preview Container --}}
+                <div id="edit-new-previews-container" class="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-2.5 hidden">
+                    {{-- Dynamically rendered previews for newly selected uploads --}}
+                </div>
+
                 <script>
+                let newEditFiles = [];
+
+                function setEditCoverPhoto(imageId) {
+                    const primaryInput = document.getElementById('edit-primary-image-input');
+                    if (primaryInput) primaryInput.value = imageId;
+
+                    // Reset all existing cards
+                    document.querySelectorAll('.image-card').forEach(card => {
+                        card.classList.remove('border-blue-600', 'ring-2', 'ring-blue-500/50', 'is-primary-card');
+                        card.classList.add('border-slate-200', 'dark:border-slate-700');
+                    });
+                    document.querySelectorAll('.cover-badge').forEach(b => b.classList.add('hidden'));
+                    document.querySelectorAll('.make-cover-btn').forEach(b => b.classList.remove('hidden'));
+
+                    // Mark selected existing card
+                    const targetCard = document.getElementById(`image-card-${imageId}`);
+                    if (targetCard) {
+                        targetCard.classList.remove('border-slate-200', 'dark:border-slate-700');
+                        targetCard.classList.add('border-blue-600', 'ring-2', 'ring-blue-500/50', 'is-primary-card');
+                        const badge = document.getElementById(`cover-badge-${imageId}`);
+                        const btn = document.getElementById(`make-cover-btn-${imageId}`);
+                        if (badge) badge.classList.remove('hidden');
+                        if (btn) btn.classList.add('hidden');
+                    }
+
+                    // Reset new image preview cards
+                    document.querySelectorAll('.new-image-card').forEach(card => {
+                        card.classList.remove('border-blue-600', 'ring-2', 'ring-blue-500/50');
+                        card.classList.add('border-slate-200', 'dark:border-slate-700');
+                        const nb = card.querySelector('.new-cover-badge');
+                        const nbtn = card.querySelector('.new-make-cover-btn');
+                        if (nb) nb.classList.add('hidden');
+                        if (nbtn) nbtn.classList.remove('hidden');
+                    });
+                }
+
+                function handleImageRemoveToggle(checkbox, imageId) {
+                    const overlay = document.getElementById(`delete-overlay-${imageId}`);
+                    if (checkbox.checked) {
+                        if (overlay) overlay.classList.remove('hidden');
+                        const primaryInput = document.getElementById('edit-primary-image-input');
+                        if (primaryInput && primaryInput.value == imageId) {
+                            const nextAvailable = document.querySelector(`.image-card:not(#image-card-${imageId}) input.remove-checkbox:not(:checked)`);
+                            if (nextAvailable) {
+                                setEditCoverPhoto(nextAvailable.value);
+                            }
+                        }
+                    } else {
+                        if (overlay) overlay.classList.add('hidden');
+                    }
+                }
+
+                function cancelImageRemove(imageId) {
+                    const card = document.getElementById(`image-card-${imageId}`);
+                    if (card) {
+                        const checkbox = card.querySelector('.remove-checkbox');
+                        if (checkbox) {
+                            checkbox.checked = false;
+                            handleImageRemoveToggle(checkbox, imageId);
+                        }
+                    }
+                }
+
                 async function compressEditImage(file, maxDimension = 1600, quality = 0.85) {
                     if (file.type === 'image/svg+xml' || file.size < 150 * 1024) return file;
                     return new Promise((resolve) => {
@@ -563,19 +664,105 @@
                 async function handleEditImageSelection(event) {
                     const input = event.target;
                     const rawFiles = Array.from(input.files);
-                    if (rawFiles.length > 10) {
-                        alert('You can only upload a maximum of 10 images at a time.');
-                        input.value = '';
+                    if (newEditFiles.length + rawFiles.length > 10) {
+                        alert('You can only upload a maximum of 10 additional photos at a time.');
                         return;
                     }
                     const status = document.getElementById('edit-compression-status');
                     const statusText = document.getElementById('edit-compression-status-text');
-                    if (status) { status.classList.remove('hidden'); if(statusText) statusText.textContent = '⚡ Optimizing photos for fast upload...'; }
+                    if (status) { 
+                        status.classList.remove('hidden'); 
+                        if (statusText) statusText.textContent = `⚡ Optimizing ${rawFiles.length} photo(s) for fast upload...`; 
+                    }
                     const compressed = await Promise.all(rawFiles.map(f => compressEditImage(f)));
+                    compressed.forEach(f => newEditFiles.push(f));
+
+                    syncEditInputFiles();
+                    renderNewEditPreviews();
+
+                    if (statusText) statusText.textContent = `⚡ Ready! ${newEditFiles.length} additional photo(s) optimized.`;
+                }
+
+                function syncEditInputFiles() {
+                    const input = document.getElementById('edit-images-input');
                     const dataTransfer = new DataTransfer();
-                    compressed.forEach(f => dataTransfer.items.add(f));
+                    newEditFiles.forEach(f => dataTransfer.items.add(f));
                     input.files = dataTransfer.files;
-                    if (statusText) statusText.textContent = `⚡ Ready! ${compressed.length} photo(s) optimized.`;
+                }
+
+                function renderNewEditPreviews() {
+                    const container = document.getElementById('edit-new-previews-container');
+                    if (!container) return;
+                    container.innerHTML = '';
+                    if (newEditFiles.length === 0) {
+                        container.classList.add('hidden');
+                        return;
+                    }
+                    container.classList.remove('hidden');
+
+                    const primaryInput = document.getElementById('edit-primary-image-input');
+
+                    newEditFiles.forEach((file, index) => {
+                        const isCover = (primaryInput && primaryInput.value === `new_${index}`);
+                        const sizeKB = Math.round(file.size / 1024);
+                        const card = document.createElement('div');
+                        card.className = `new-image-card relative group rounded-xl overflow-hidden border-2 transition-all aspect-square bg-slate-900 shadow-xs ${isCover ? 'border-blue-600 ring-2 ring-blue-500/50' : 'border-slate-200 dark:border-slate-700'}`;
+                        card.id = `new-image-card-${index}`;
+
+                        const img = document.createElement('img');
+                        img.className = 'w-full h-full object-cover';
+                        img.src = URL.createObjectURL(file);
+                        card.appendChild(img);
+
+                        const actionsDiv = document.createElement('div');
+                        actionsDiv.innerHTML = `
+                            <div class="new-cover-badge ${isCover ? 'flex' : 'hidden'} absolute top-1.5 left-1.5 z-20 items-center gap-1 px-2 py-0.5 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-extrabold uppercase tracking-wide shadow-md pointer-events-none ring-1 ring-white/30">
+                                <i class="ph-fill ph-star text-amber-300 text-xs"></i> Cover
+                            </div>
+                            <button type="button" onclick="setNewEditCover(${index})" class="new-make-cover-btn ${isCover ? 'hidden' : 'flex'} absolute top-1.5 left-1.5 z-20 items-center gap-1 px-2 py-0.5 rounded-md bg-black/75 hover:bg-blue-600 text-white text-[10px] font-bold shadow-md transition-all cursor-pointer">
+                                <i class="ph-bold ph-star text-xs"></i> Make Cover
+                            </button>
+                            <button type="button" onclick="removeNewEditImage(${index})" class="absolute top-1.5 right-1.5 z-20 w-6 h-6 rounded-md bg-black/70 hover:bg-red-600 text-white flex items-center justify-center transition-all shadow-md cursor-pointer" title="Remove photo">
+                                <i class="ph-bold ph-trash text-xs"></i>
+                            </button>
+                            <div class="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex justify-between items-center text-[9px] text-white font-bold z-10">
+                                <span class="bg-emerald-600 px-1 py-0.2 rounded text-[8px] uppercase">New</span>
+                                <span>${sizeKB} KB</span>
+                            </div>
+                        `;
+                        card.appendChild(actionsDiv);
+                        container.appendChild(card);
+                    });
+                }
+
+                function setNewEditCover(index) {
+                    const primaryInput = document.getElementById('edit-primary-image-input');
+                    if (primaryInput) primaryInput.value = `new_${index}`;
+
+                    document.querySelectorAll('.image-card').forEach(card => {
+                        card.classList.remove('border-blue-600', 'ring-2', 'ring-blue-500/50', 'is-primary-card');
+                        card.classList.add('border-slate-200', 'dark:border-slate-700');
+                    });
+                    document.querySelectorAll('.cover-badge').forEach(b => b.classList.add('hidden'));
+                    document.querySelectorAll('.make-cover-btn').forEach(b => b.classList.remove('hidden'));
+
+                    renderNewEditPreviews();
+                }
+
+                function removeNewEditImage(index) {
+                    newEditFiles.splice(index, 1);
+                    const primaryInput = document.getElementById('edit-primary-image-input');
+                    if (primaryInput && primaryInput.value === `new_${index}`) {
+                        const firstExisting = document.querySelector('.image-card');
+                        if (firstExisting) {
+                            const id = firstExisting.id.replace('image-card-', '');
+                            setEditCoverPhoto(id);
+                        } else {
+                            primaryInput.value = '';
+                        }
+                    }
+                    syncEditInputFiles();
+                    renderNewEditPreviews();
                 }
                 </script>
 
