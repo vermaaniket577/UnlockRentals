@@ -234,7 +234,7 @@ class PropertyController extends Controller
                       ->orWhere('category_id', $property->category_id)
                       ->orWhere('location', $property->location);
             })
-            ->with(['primaryImage', 'category', 'owner'])
+            ->with(['primaryImage', 'images', 'category', 'owner'])
             ->take(4)
             ->get();
 

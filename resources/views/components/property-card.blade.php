@@ -63,6 +63,26 @@
 
     $isSale = ($property->purpose ?? 'rent') === 'buy' || ($property->purpose ?? 'rent') === 'sell';
     $hasFixedPrice = (float)$property->price > 0;
+
+    // Multi-Image Gallery Collection for Card Auto-Slider
+    $cardImages = collect();
+    if ($property->relationLoaded('images') && $property->images && $property->images->isNotEmpty()) {
+        $cardImages = $property->images;
+    } elseif ($property->relationLoaded('primaryImage') && $property->primaryImage) {
+        $cardImages = collect([$property->primaryImage]);
+    } else {
+        $cardImages = $property->images()->take(6)->get();
+    }
+
+    if ($cardImages->isNotEmpty()) {
+        $primaryImg = $cardImages->firstWhere('is_primary', true);
+        if ($primaryImg) {
+            $cardImages = collect([$primaryImg])->merge($cardImages->reject(fn($img) => $img->id === $primaryImg->id))->values();
+        }
+    }
+    // Limit to 6 slides max per card for optimal DOM and memory performance
+    $cardImages = $cardImages->take(6);
+    $hasMultipleImages = $cardImages->count() > 1;
 @endphp
 
 <article class="property-rental-card group relative flex flex-col h-auto sm:h-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
@@ -106,7 +126,65 @@
 
     {{-- A. Property Image Section (Responsive Aspect Ratio: 4:3 on mobile 2-col, 16:9 on sm+) --}}
     <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 img-skeleton-shimmer flex-shrink-0">
-        @if($property->primaryImageUrl())
+        @if($hasMultipleImages)
+            {{-- Multi-Image Auto-Slider (Slides Right to Left) --}}
+            <div class="card-image-slider relative w-full h-full overflow-hidden select-none"
+                 data-card-slider="{{ $property->id }}"
+                 data-total-slides="{{ $cardImages->count() }}">
+                
+                {{-- Slider Track (Translates horizontally for right-to-left slide) --}}
+                <div class="card-slider-track flex h-full w-full"
+                     style="transform: translate3d(0, 0, 0);">
+                    @foreach($cardImages as $idx => $img)
+                        <div class="card-slide flex-shrink-0 w-full h-full relative">
+                            <img src="{{ $img->imageUrl() }}"
+                                 alt="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
+                                 title="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
+                                 width="480"
+                                 height="360"
+                                 onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.webp') }}';"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out pointer-events-none"
+                                 loading="{{ $idx === 0 ? $loadingAttr : 'lazy' }}"
+                                 fetchpriority="{{ $idx === 0 ? $priorityAttr : 'low' }}"
+                                 decoding="async">
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Left & Right Navigation Chevrons (z-20 so clicks don't trigger the card link) --}}
+                <button type="button"
+                        onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderPrev({{ $property->id }});"
+                        class="card-slider-btn card-slider-prev absolute left-1.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center opacity-75 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity backdrop-blur-xs cursor-pointer shadow-md border border-white/25 active:scale-90"
+                        aria-label="Previous photo">
+                    <i class="ph-bold ph-caret-left text-xs sm:text-sm"></i>
+                </button>
+                <button type="button"
+                        onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderNext({{ $property->id }});"
+                        class="card-slider-btn card-slider-next absolute right-1.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center opacity-75 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity backdrop-blur-xs cursor-pointer shadow-md border border-white/25 active:scale-90"
+                        aria-label="Next photo">
+                    <i class="ph-bold ph-caret-right text-xs sm:text-sm"></i>
+                </button>
+
+                {{-- Micro Pagination Dots (Centered at bottom, z-20) --}}
+                <div class="card-slider-dots absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs pointer-events-auto"
+                     onclick="event.stopPropagation();">
+                    @foreach($cardImages as $idx => $img)
+                        <button type="button"
+                                onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderGoTo({{ $property->id }}, {{ $idx }});"
+                                class="card-slider-dot h-1.5 rounded-full transition-all duration-300 {{ $idx === 0 ? 'w-3.5 bg-white shadow-xs' : 'w-1.5 bg-white/50 hover:bg-white/80' }}"
+                                data-dot-index="{{ $idx }}"
+                                aria-label="Go to photo {{ $idx + 1 }}">
+                        </button>
+                    @endforeach
+                </div>
+
+                {{-- Photo Count Pill (Bottom right, z-20) --}}
+                <div class="absolute bottom-2 right-2 z-20 pointer-events-none px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-[9px] font-extrabold text-white flex items-center gap-1 shadow-xs border border-white/10">
+                    <i class="ph-bold ph-images text-[10px] text-blue-300"></i>
+                    <span class="card-slide-counter">1/{{ $cardImages->count() }}</span>
+                </div>
+            </div>
+        @elseif($property->primaryImageUrl())
             <img src="{{ $property->primaryImageUrl() }}"
                  alt="{{ $cleanTitle }}"
                  title="{{ $cleanTitle }}"
@@ -372,5 +450,220 @@
         font-size: 12px !important;
     }
 }
+
+/* ─── CARD MULTI-IMAGE AUTO-SLIDER (RIGHT-TO-LEFT) ─── */
+.card-image-slider {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: pan-y pinch-zoom;
+}
+.card-slider-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+}
+.card-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
 </style>
+
+<script>
+(function() {
+    if (window._urCardSliderLoaded) {
+        if (window._urCardSliderInit) window._urCardSliderInit();
+        return;
+    }
+    window._urCardSliderLoaded = true;
+
+    const sliderStates = new Map();
+    let cardObserver = null;
+
+    function initCardSliders() {
+        const sliders = document.querySelectorAll('[data-card-slider]');
+        sliders.forEach(slider => {
+            const id = slider.dataset.cardSlider;
+            const total = parseInt(slider.dataset.totalSlides, 10);
+            if (!id || total <= 1 || sliderStates.has(id)) return;
+
+            const state = {
+                id: id,
+                current: 0,
+                total: total,
+                element: slider,
+                track: slider.querySelector('.card-slider-track'),
+                counter: slider.querySelector('.card-slide-counter'),
+                dots: slider.querySelectorAll('.card-slider-dot'),
+                timer: null,
+                isHovered: false,
+                isVisible: false
+            };
+            sliderStates.set(id, state);
+
+            // Desktop hover pause/resume
+            slider.addEventListener('mouseenter', () => {
+                state.isHovered = true;
+                pauseSlider(state);
+            });
+            slider.addEventListener('mouseleave', () => {
+                state.isHovered = false;
+                if (state.isVisible) startSlider(state);
+            });
+
+            // Mobile touch swipe support
+            let startX = 0;
+            let startY = 0;
+            let isSwiping = false;
+
+            slider.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    isSwiping = true;
+                    pauseSlider(state);
+                }
+            }, { passive: true });
+
+            slider.addEventListener('touchend', (e) => {
+                if (!isSwiping || !e.changedTouches || e.changedTouches.length === 0) return;
+                isSwiping = false;
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                const diffX = endX - startX;
+                const diffY = endY - startY;
+
+                // Horizontal swipe detection (swipe left = next slide from right to left)
+                if (Math.abs(diffX) > 28 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX < 0) {
+                        nextSlide(state);
+                    } else {
+                        prevSlide(state);
+                    }
+                }
+                if (state.isVisible && !state.isHovered) {
+                    startSlider(state);
+                }
+            }, { passive: true });
+
+            // IntersectionObserver: auto-slide only when card is visible in viewport
+            if (!cardObserver && 'IntersectionObserver' in window) {
+                cardObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const sid = entry.target.dataset.cardSlider;
+                        const sstate = sliderStates.get(sid);
+                        if (!sstate) return;
+
+                        if (entry.isIntersecting) {
+                            sstate.isVisible = true;
+                            if (!sstate.isHovered) startSlider(sstate);
+                        } else {
+                            sstate.isVisible = false;
+                            pauseSlider(sstate);
+                        }
+                    });
+                }, { threshold: 0.25 });
+            }
+
+            if (cardObserver) {
+                cardObserver.observe(slider);
+            } else {
+                state.isVisible = true;
+                startSlider(state);
+            }
+        });
+    }
+
+    function goToSlide(state, index) {
+        state.current = (index + state.total) % state.total;
+        if (state.track) {
+            state.track.style.transform = 'translate3d(-' + (state.current * 100) + '%, 0, 0)';
+        }
+        if (state.counter) {
+            state.counter.textContent = (state.current + 1) + '/' + state.total;
+        }
+        if (state.dots && state.dots.length > 0) {
+            state.dots.forEach((dot, idx) => {
+                if (idx === state.current) {
+                    dot.className = 'card-slider-dot h-1.5 rounded-full transition-all duration-300 w-3.5 bg-white shadow-xs';
+                } else {
+                    dot.className = 'card-slider-dot h-1.5 rounded-full transition-all duration-300 w-1.5 bg-white/50 hover:bg-white/80';
+                }
+            });
+        }
+    }
+
+    function nextSlide(state) {
+        goToSlide(state, state.current + 1);
+    }
+
+    function prevSlide(state) {
+        goToSlide(state, state.current - 1);
+    }
+
+    function startSlider(state) {
+        pauseSlider(state);
+        // Stagger initial slide timing based on property ID to create natural organic motion
+        const cardIdNum = parseInt(state.id, 10) || 0;
+        const staggerDelay = (cardIdNum % 5) * 400;
+
+        setTimeout(() => {
+            if (!state.isVisible || state.isHovered || state.timer) return;
+            nextSlide(state);
+            state.timer = setInterval(() => {
+                if (state.isVisible && !state.isHovered) {
+                    nextSlide(state);
+                }
+            }, 3600);
+        }, staggerDelay + 1800);
+    }
+
+    function pauseSlider(state) {
+        if (state.timer) {
+            clearInterval(state.timer);
+            state.timer = null;
+        }
+    }
+
+    window.cardSliderNext = function(id) {
+        const state = sliderStates.get(String(id));
+        if (state) {
+            nextSlide(state);
+            startSlider(state);
+        }
+    };
+
+    window.cardSliderPrev = function(id) {
+        const state = sliderStates.get(String(id));
+        if (state) {
+            prevSlide(state);
+            startSlider(state);
+        }
+    };
+
+    window.cardSliderGoTo = function(id, index) {
+        const state = sliderStates.get(String(id));
+        if (state) {
+            goToSlide(state, index);
+            startSlider(state);
+        }
+    };
+
+    window._urCardSliderInit = initCardSliders;
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCardSliders);
+    } else {
+        initCardSliders();
+    }
+
+    document.addEventListener('ur:page-loaded', initCardSliders);
+    window.addEventListener('popstate', () => setTimeout(initCardSliders, 150));
+})();
+</script>
 @endonce

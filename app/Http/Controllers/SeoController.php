@@ -37,7 +37,7 @@ class SeoController extends Controller
             // Branch B: Rental Guide / Blog Page
             if ($recommendedPage === 'Blog / Guide') {
                 $schemas = $this->generateGuideSchemas($seo_slug, $metaTitle, $metaDescription, $keywordItem['keyword']);
-                $recommendations = Property::approved()->with(['primaryImage', 'category', 'owner'])->latest()->limit(4)->get();
+                $recommendations = Property::approved()->with(['primaryImage', 'images', 'category', 'owner'])->latest()->limit(4)->get();
                 return view('seo.guide', [
                     'keywordItem' => $keywordItem,
                     'meta_title' => $metaTitle,
@@ -99,7 +99,7 @@ class SeoController extends Controller
         }
 
         // Build database query
-        $query = Property::approved()->with(['primaryImage', 'category', 'owner']);
+        $query = Property::approved()->with(['primaryImage', 'images', 'category', 'owner']);
 
         // 1. Filter by category / type
         if ($type === 'room') {
@@ -202,7 +202,7 @@ class SeoController extends Controller
         $recommendations = collect();
         if ($properties->isEmpty()) {
             $recommendations = Property::approved()
-                ->with(['primaryImage', 'category', 'owner'])
+                ->with(['primaryImage', 'images', 'category', 'owner'])
                 ->when($city, function ($q) use ($city) {
                     $q->where('location', 'like', '%' . $city . '%');
                 })
@@ -213,7 +213,7 @@ class SeoController extends Controller
             // If still empty, get any featured or latest properties
             if ($recommendations->isEmpty()) {
                 $recommendations = Property::approved()
-                    ->with(['primaryImage', 'category', 'owner'])
+                    ->with(['primaryImage', 'images', 'category', 'owner'])
                     ->latest()
                     ->limit(4)
                     ->get();
@@ -712,7 +712,7 @@ class SeoController extends Controller
         }
 
         // Build database query
-        $query = Property::approved()->with(['primaryImage', 'category', 'owner']);
+        $query = Property::approved()->with(['primaryImage', 'images', 'category', 'owner']);
 
         // Type filtering
         if ($type === 'room') {
@@ -811,7 +811,7 @@ class SeoController extends Controller
         $recommendations = collect();
         if ($properties->isEmpty()) {
             $recommendations = Property::approved()
-                ->with(['primaryImage', 'category', 'owner'])
+                ->with(['primaryImage', 'images', 'category', 'owner'])
                 ->when($city, function ($q) use ($city) {
                     $q->where('location', 'like', '%' . $city . '%');
                 })
@@ -821,7 +821,7 @@ class SeoController extends Controller
 
             if ($recommendations->isEmpty()) {
                 $recommendations = Property::approved()
-                    ->with(['primaryImage', 'category', 'owner'])
+                    ->with(['primaryImage', 'images', 'category', 'owner'])
                     ->latest()
                     ->limit(4)
                     ->get();
