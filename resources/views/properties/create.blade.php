@@ -398,14 +398,15 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-details">
                 <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
-                        <i class="ph-bold ph-house-line"></i>
+                        <i class="ph-bold ph-house-line" id="create-details-icon"></i>
                     </div>
                     <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Key Specifications</h2>
-                        <p class="text-[11px] sm:text-xs text-slate-400">Bedrooms, bathrooms, area, and furnishing level</p>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white" id="create-details-title">Key Specifications</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400" id="create-details-desc">Bedrooms, bathrooms, area, and furnishing level</p>
                     </div>
                 </div>
 
+                {{-- Residential / Commercial Standard Specs Grid --}}
                 <div class="grid grid-cols-3 gap-2 sm:gap-5" id="create-specs-grid">
                     <div id="create-bedrooms-col">
                         <label for="create-bedrooms" class="block text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 truncate">Bedrooms (BHK)</label>
@@ -445,6 +446,202 @@
                     </div>
                 </div>
 
+                {{-- PG & Hostel Dedicated Specifications Form --}}
+                <div id="create-pg-container" class="hidden space-y-4 sm:space-y-5">
+                    {{-- PG Banner --}}
+                    <div class="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200/90 dark:border-blue-800/60 rounded-xl text-xs text-blue-900 dark:text-blue-200 flex items-start gap-2.5 shadow-2xs">
+                        <i class="ph-bold ph-buildings text-blue-600 text-lg shrink-0 mt-0.5"></i>
+                        <div>
+                            <strong class="font-bold text-blue-950 dark:text-blue-100">PG / Hostel Listing Mode:</strong>
+                            <p class="mt-0.5 text-blue-700 dark:text-blue-300 font-normal">Fill in bed sharing options, tenant rules, meal facilities, and washroom details below. Verified students & working professionals filter specifically by these details.</p>
+                        </div>
+                    </div>
+
+                    {{-- 1. Room Occupancy / Sharing Type Available --}}
+                    <div>
+                        <label class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                            Room Sharing / Occupancy Available <span class="text-red-500">*</span>
+                            <span class="text-[10px] text-slate-400 font-normal lowercase">(select all that apply)</span>
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+                            @php
+                                $pgOccupancies = [
+                                    'Single Room' => ['label' => 'Single Room', 'sub' => 'Private Room', 'icon' => 'ph-user'],
+                                    'Double Sharing' => ['label' => 'Double Sharing', 'sub' => '2 Persons in Room', 'icon' => 'ph-users'],
+                                    'Triple Sharing' => ['label' => 'Triple Sharing', 'sub' => '3 Persons in Room', 'icon' => 'ph-users-three'],
+                                    '4+ Sharing / Dorm' => ['label' => '4+ Sharing', 'sub' => 'Dormitory / 4+ Beds', 'icon' => 'ph-users-four']
+                                ];
+                            @endphp
+                            @foreach($pgOccupancies as $val => $occ)
+                            <label class="relative flex flex-col p-2.5 sm:p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 hover:border-blue-400 cursor-pointer transition-all has-checked:border-blue-600 has-checked:bg-blue-50/70 dark:has-checked:bg-blue-950/40 has-checked:ring-1 has-checked:ring-blue-600">
+                                <div class="flex items-center justify-between mb-1">
+                                    <i class="ph-bold {{ $occ['icon'] }} text-blue-600 text-base"></i>
+                                    <input type="checkbox" name="pg_occupancy[]" value="{{ $val }}" {{ (is_array(old('pg_occupancy')) && in_array($val, old('pg_occupancy'))) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                </div>
+                                <span class="text-xs font-bold text-slate-900 dark:text-white leading-tight">{{ $occ['label'] }}</span>
+                                <span class="text-[10px] text-slate-400 leading-tight mt-0.5">{{ $occ['sub'] }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- 2. Gender / Preferred Tenant & Washroom Type (2-col) --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+                        <div>
+                            <label for="create-pg-gender" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                Preferred Tenants / Gender <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <select name="pg_gender" id="create-pg-gender"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="Boys Only" {{ old('pg_gender') === 'Boys Only' ? 'selected' : '' }}>Boys Only (Male)</option>
+                                    <option value="Girls Only" {{ old('pg_gender') === 'Girls Only' ? 'selected' : '' }}>Girls Only (Female)</option>
+                                    <option value="Co-ed / Anyone" {{ old('pg_gender') === 'Co-ed / Anyone' ? 'selected' : '' }}>Co-ed / Anyone (Working Men & Women)</option>
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="create-pg-bathroom" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                Bathroom / Washroom Type <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <select name="pg_bathroom" id="create-pg-bathroom"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="attached" {{ old('pg_bathroom', 'attached') === 'attached' ? 'selected' : '' }}>Attached Washroom (Inside Room)</option>
+                                    <option value="shared" {{ old('pg_bathroom') === 'shared' ? 'selected' : '' }}>Shared / Common Washroom</option>
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 3. Food / Meal Facility & Gate Timing / Curfew (2-col) --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+                        <div>
+                            <label for="create-pg-food" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                Food & Meals Facility <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <select name="pg_food" id="create-pg-food"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="Food Included (3 Meals - Breakfast, Lunch, Dinner)" {{ old('pg_food') === 'Food Included (3 Meals - Breakfast, Lunch, Dinner)' ? 'selected' : '' }}>Food Included (3 Meals: Breakfast, Lunch, Dinner)</option>
+                                    <option value="Breakfast & Dinner Included" {{ old('pg_food') === 'Breakfast & Dinner Included' ? 'selected' : '' }}>Breakfast & Dinner Included</option>
+                                    <option value="Self-Cooking Kitchen Available" {{ old('pg_food') === 'Self-Cooking Kitchen Available' ? 'selected' : '' }}>Self-Cooking Kitchen Available</option>
+                                    <option value="Food Optional (Extra Charges)" {{ old('pg_food') === 'Food Optional (Extra Charges)' ? 'selected' : '' }}>Food Optional (Available on Extra Charges)</option>
+                                    <option value="No Food Service" {{ old('pg_food') === 'No Food Service' ? 'selected' : '' }}>No Food Provided</option>
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="create-pg-curfew" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                Gate Closing Timing / Curfew <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <select name="pg_curfew" id="create-pg-curfew"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="No Curfew (24x7 Entry / Biometric)" {{ old('pg_curfew') === 'No Curfew (24x7 Entry / Biometric)' ? 'selected' : '' }}>No Curfew (24x7 Entry / Biometric)</option>
+                                    <option value="Gate Closes at 10:30 PM" {{ old('pg_curfew') === 'Gate Closes at 10:30 PM' ? 'selected' : '' }}>Gate Closes at 10:30 PM</option>
+                                    <option value="Gate Closes at 11:00 PM" {{ old('pg_curfew') === 'Gate Closes at 11:00 PM' ? 'selected' : '' }}>Gate Closes at 11:00 PM</option>
+                                    <option value="Gate Closes at 10:00 PM" {{ old('pg_curfew') === 'Gate Closes at 10:00 PM' ? 'selected' : '' }}>Gate Closes at 10:00 PM</option>
+                                    <option value="Flexible (Night Shifts Allowed)" {{ old('pg_curfew') === 'Flexible (Night Shifts Allowed)' ? 'selected' : '' }}>Flexible (Night Shifts Allowed)</option>
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 4. Security Deposit, Notice Period & Total Beds (3-col) --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                        <div>
+                            <label for="create-pg-deposit" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                Security Deposit
+                            </label>
+                            <div class="relative">
+                                <select name="pg_deposit" id="create-pg-deposit"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-8 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="1 Month Rent" {{ old('pg_deposit', '1 Month Rent') === '1 Month Rent' ? 'selected' : '' }}>1 Month Rent</option>
+                                    <option value="2 Months Rent" {{ old('pg_deposit') === '2 Months Rent' ? 'selected' : '' }}>2 Months Rent</option>
+                                    <option value="Zero Deposit" {{ old('pg_deposit') === 'Zero Deposit' ? 'selected' : '' }}>Zero Deposit</option>
+                                    <option value="₹5,000 Fixed" {{ old('pg_deposit') === '₹5,000 Fixed' ? 'selected' : '' }}>₹5,000 Fixed</option>
+                                    <option value="₹10,000 Fixed" {{ old('pg_deposit') === '₹10,000 Fixed' ? 'selected' : '' }}>₹10,000 Fixed</option>
+                                    <option value="Negotiable" {{ old('pg_deposit') === 'Negotiable' ? 'selected' : '' }}>Negotiable</option>
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="create-pg-notice" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                Notice Period
+                            </label>
+                            <div class="relative">
+                                <select name="pg_notice" id="create-pg-notice"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-8 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="1 Month" {{ old('pg_notice', '1 Month') === '1 Month' ? 'selected' : '' }}>1 Month Notice</option>
+                                    <option value="15 Days" {{ old('pg_notice') === '15 Days' ? 'selected' : '' }}>15 Days Notice</option>
+                                    <option value="2 Months" {{ old('pg_notice') === '2 Months' ? 'selected' : '' }}>2 Months Notice</option>
+                                    <option value="No Notice Period" {{ old('pg_notice') === 'No Notice Period' ? 'selected' : '' }}>No Notice Period</option>
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="create-pg-total-beds" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                Total Beds / Capacity
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-bed"></i></span>
+                                <input type="number" name="pg_total_beds" id="create-pg-total-beds" value="{{ old('pg_total_beds', old('bedrooms')) }}" min="1" max="500" inputmode="numeric"
+                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-9 sm:pr-3.5 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
+                                       placeholder="e.g. 15 Beds">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 5. PG Amenities & Facilities --}}
+                    <div>
+                        <label class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                            Included Amenities & Facilities
+                            <span class="text-[10px] text-slate-400 font-normal lowercase">(select all that apply)</span>
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-2.5">
+                            @php
+                                $pgAmenitiesList = [
+                                    'High-Speed Wi-Fi' => ['icon' => 'ph-wifi-high', 'default' => true],
+                                    'Air Conditioner (AC)' => ['icon' => 'ph-snowflake', 'default' => false],
+                                    'Geyser / Hot Water' => ['icon' => 'ph-drop', 'default' => true],
+                                    'RO Drinking Water' => ['icon' => 'ph-drop-half-bottom', 'default' => true],
+                                    'Washing Machine' => ['icon' => 'ph-washing-machine', 'default' => true],
+                                    'Daily Housekeeping' => ['icon' => 'ph-broom', 'default' => true],
+                                    '24x7 Power Backup' => ['icon' => 'ph-lightning', 'default' => true],
+                                    'CCTV & Security' => ['icon' => 'ph-shield-check', 'default' => true],
+                                    'Refrigerator' => ['icon' => 'ph-cube', 'default' => false],
+                                    'Bed & Wardrobe' => ['icon' => 'ph-dresser', 'default' => true],
+                                    'Study Table & Chair' => ['icon' => 'ph-desk', 'default' => false],
+                                    'Two-Wheeler Parking' => ['icon' => 'ph-motorcycle', 'default' => true],
+                                    'Gym / Fitness Area' => ['icon' => 'ph-barbell', 'default' => false],
+                                    'Balcony / Terrace' => ['icon' => 'ph-sun-dim', 'default' => false],
+                                ];
+                            @endphp
+                            @foreach($pgAmenitiesList as $amenityName => $aInfo)
+                                @php
+                                    $isOldChecked = is_array(old('pg_amenities')) ? in_array($amenityName, old('pg_amenities')) : (old('type') === 'pg-hostel' ? false : $aInfo['default']);
+                                @endphp
+                                <label class="relative flex items-center gap-2 p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 hover:border-blue-400 cursor-pointer transition-all has-checked:border-blue-600 has-checked:bg-blue-50/70 dark:has-checked:bg-blue-950/40 has-checked:ring-1 has-checked:ring-blue-600">
+                                    <input type="checkbox" name="pg_amenities[]" value="{{ $amenityName }}" {{ $isOldChecked ? 'checked' : '' }} class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 shrink-0">
+                                    <i class="ph-bold {{ $aInfo['icon'] }} text-blue-600 text-sm shrink-0"></i>
+                                    <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-tight truncate">{{ $amenityName }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mt-3.5 sm:mt-5" id="create-furnishing-container">
                     <label for="create-furnishing" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Furnishing Status <span class="text-red-500">*</span></label>
                     <div class="relative">
@@ -452,7 +649,7 @@
                                 class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
                             <option value="unfurnished" {{ old('furnishing') === 'unfurnished' ? 'selected' : '' }}>Unfurnished</option>
                             <option value="semi-furnished" {{ old('furnishing') === 'semi-furnished' ? 'selected' : '' }}>Semi-Furnished</option>
-                            <option value="fully-furnished" {{ old('furnishing') === 'fully-furnished' ? 'selected' : '' }}>Fully Furnished</option>
+                            <option value="fully-furnished" {{ old('furnishing', 'fully-furnished') === 'fully-furnished' ? 'selected' : '' }}>Fully Furnished</option>
                         </select>
                         <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                     </div>
@@ -1771,6 +1968,7 @@ window.onPurposeChange = function(purpose) {
     const periodCol = document.getElementById('period-input-col');
     const saleCol = document.getElementById('sale-badge-col');
     const periodSelect = document.getElementById('create-period');
+    const checkedType = document.querySelector('input[name="type"]:checked')?.value;
 
     if (purpose === 'buy' || purpose === 'sell') {
         if (priceLabel) priceLabel.innerHTML = 'Total Sale Price (₹) <span class="text-red-500">*</span>';
@@ -1779,16 +1977,23 @@ window.onPurposeChange = function(purpose) {
         if (saleCol) saleCol.classList.remove('hidden');
         if (periodSelect) periodSelect.value = 'month'; // Default backend safe fallback
     } else {
-        if (priceLabel) priceLabel.innerHTML = 'Expected Rent (₹) <span class="text-red-500">*</span>';
-        if (priceInput) priceInput.placeholder = '25,000';
+        if (checkedType === 'pg-hostel') {
+            if (priceLabel) priceLabel.innerHTML = 'Monthly Rent per Bed / Room (₹) <span class="text-red-500">*</span>';
+            if (priceInput) priceInput.placeholder = '6,500';
+        } else {
+            if (priceLabel) priceLabel.innerHTML = 'Expected Rent (₹) <span class="text-red-500">*</span>';
+            if (priceInput) priceInput.placeholder = '25,000';
+        }
         if (periodCol) periodCol.classList.remove('hidden');
         if (saleCol) saleCol.classList.add('hidden');
     }
 };
 
-// Dynamic Property Type UI Handler (Adapts layout for Land/Plot vs Residential/Commercial)
+// Dynamic Property Type UI Handler (Adapts layout for PG/Hostel vs Land/Plot vs Residential/Commercial)
 window.onTypeChange = function(type) {
+    const isPg = (type === 'pg-hostel');
     const isPlot = (type === 'plot');
+
     const bedCol = document.getElementById('create-bedrooms-col');
     const bathCol = document.getElementById('create-bathrooms-col');
     const areaCol = document.getElementById('create-area-col');
@@ -1796,11 +2001,84 @@ window.onTypeChange = function(type) {
     const areaInput = document.getElementById('create-area');
     const furnWrap = document.getElementById('create-furnishing-container');
     const plotHelper = document.getElementById('create-plot-helper');
+    const pgContainer = document.getElementById('create-pg-container');
     const titleInput = document.getElementById('create-title');
+    const titleLabel = document.querySelector('label[for="create-title"]');
     const descInput = document.getElementById('create-description');
+    const descLabel = document.querySelector('label[for="create-description"]');
     const catSelect = document.getElementById('create-category');
+    const priceLabel = document.getElementById('create-price-label');
+    const priceInput = document.getElementById('create-price');
+    const pricingTitle = document.getElementById('create-pricing-title');
+    const pricingDesc = document.getElementById('create-pricing-desc');
+    const purposeBuyLabel = document.querySelector('label[for="create-purpose-buy"]');
+    const purposeRentRadio = document.getElementById('create-purpose-rent');
+    const purposeRentLabel = document.querySelector('label[for="create-purpose-rent"]');
+    const periodSelect = document.getElementById('create-period');
+    const specsTitle = document.getElementById('create-details-title');
+    const specsDesc = document.getElementById('create-details-desc');
+    const specsIcon = document.getElementById('create-details-icon');
 
-    if (isPlot) {
+    if (isPg) {
+        // 1. Force Purpose to "For Rent" (PGs cannot be sold outright)
+        if (purposeRentRadio) {
+            purposeRentRadio.checked = true;
+            if (window.onPurposeChange) window.onPurposeChange('rent');
+            if (purposeRentLabel) {
+                purposeRentLabel.closest('.grid')?.querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'));
+                purposeRentLabel.classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm');
+            }
+        }
+        if (purposeBuyLabel) purposeBuyLabel.classList.add('hidden');
+
+        // 2. Hide Flat specs & Plot helper, Show PG container
+        if (bedCol) bedCol.classList.add('hidden');
+        if (bathCol) bathCol.classList.add('hidden');
+        if (areaCol) areaCol.classList.add('hidden');
+        if (furnWrap) furnWrap.classList.add('hidden');
+        if (plotHelper) plotHelper.classList.add('hidden');
+        if (pgContainer) pgContainer.classList.remove('hidden');
+
+        // Update section header
+        if (specsTitle) specsTitle.textContent = 'PG & Hostel Specifications';
+        if (specsDesc) specsDesc.textContent = 'Room sharing, gender rules, food facilities, and amenities';
+        if (specsIcon) specsIcon.className = 'ph-bold ph-buildings';
+
+        // 3. Pricing Section adaptation
+        if (priceLabel) priceLabel.innerHTML = 'Monthly Rent per Bed / Room (₹) <span class="text-red-500">*</span>';
+        if (priceInput) priceInput.placeholder = '6,500';
+        if (pricingTitle) pricingTitle.textContent = 'PG Rent & Billing';
+        if (pricingDesc) pricingDesc.textContent = 'Monthly rent per bed or private room';
+        if (periodSelect) periodSelect.value = 'month';
+
+        // 4. Auto-select "PG & Hostel" category
+        if (catSelect) {
+            for (let opt of catSelect.options) {
+                if (opt.text.toLowerCase().includes('pg') || opt.text.toLowerCase().includes('hostel')) {
+                    catSelect.value = opt.value;
+                    break;
+                }
+            }
+        }
+
+        // 5. Title & Description placeholders & labels
+        if (titleLabel) titleLabel.innerHTML = 'PG / Hostel Name & Headline <span class="text-red-500">*</span>';
+        if (titleInput && (!titleInput.value || titleInput.value.includes('Flat') || titleInput.value.includes('Plot') || titleInput.value.includes('BHK'))) {
+            titleInput.placeholder = 'e.g. Luxury Single & Double Sharing PG for Boys in Koramangala with Food, Wi-Fi & AC';
+        }
+        if (descLabel) descLabel.innerHTML = 'PG Details, Food Menu & Rules <span class="text-red-500">*</span>';
+        if (descInput && (!descInput.value || descInput.value.includes('balcony') || descInput.value.includes('frontage'))) {
+            descInput.placeholder = 'Describe room sharing options (Single/Double), meal menu (North/South Indian), cleanliness, Wi-Fi speed, gate closing timings, nearby colleges/IT parks, metro distance, and house rules...';
+        }
+
+        // Pre-select furnishing as fully furnished
+        const furnSelect = document.getElementById('create-furnishing');
+        if (furnSelect) furnSelect.value = 'fully-furnished';
+
+    } else if (isPlot) {
+        // Unhide buy label
+        if (purposeBuyLabel) purposeBuyLabel.classList.remove('hidden');
+
         // Automatically default intent to "For Sale"
         const buyRadio = document.getElementById('create-purpose-buy');
         if (buyRadio && !buyRadio.checked) {
@@ -1813,13 +2091,14 @@ window.onTypeChange = function(type) {
             }
         }
 
-        // Hide bedrooms & bathrooms & furnishing
+        // Hide bedrooms & bathrooms & furnishing & pgContainer
         if (bedCol) bedCol.classList.add('hidden');
         if (bathCol) bathCol.classList.add('hidden');
         if (furnWrap) furnWrap.classList.add('hidden');
+        if (pgContainer) pgContainer.classList.add('hidden');
         if (plotHelper) plotHelper.classList.remove('hidden');
 
-        // Clear values
+        // Clear residential values
         const bedInput = document.getElementById('create-bedrooms');
         const bathInput = document.getElementById('create-bathrooms');
         if (bedInput) bedInput.value = '';
@@ -1828,9 +2107,19 @@ window.onTypeChange = function(type) {
         // Expand area column to full width
         if (areaCol) {
             areaCol.className = 'col-span-3';
+            areaCol.classList.remove('hidden');
         }
         if (areaLabel) areaLabel.textContent = 'Total Plot / Land Area (sq.ft) *';
         if (areaInput) areaInput.placeholder = 'e.g. 1500 (or 166 sq.yards)';
+
+        if (specsTitle) specsTitle.textContent = 'Key Specifications';
+        if (specsDesc) specsDesc.textContent = 'Total land area and plot details';
+        if (specsIcon) specsIcon.className = 'ph-bold ph-map-trifold';
+
+        if (priceLabel) priceLabel.innerHTML = 'Total Sale Price (₹) <span class="text-red-500">*</span>';
+        if (priceInput) priceInput.placeholder = '50,00,000';
+        if (pricingTitle) pricingTitle.textContent = 'Pricing & Financials';
+        if (pricingDesc) pricingDesc.textContent = 'Set total outright sale price';
 
         // Auto-select "Plots & Land" category if available
         if (catSelect && (!catSelect.value || catSelect.value === '')) {
@@ -1842,23 +2131,49 @@ window.onTypeChange = function(type) {
             }
         }
 
-        if (titleInput && (!titleInput.value || titleInput.value.includes('Flat') || titleInput.value.includes('BHK'))) {
+        if (titleLabel) titleLabel.innerHTML = 'Property Title <span class="text-red-500">*</span>';
+        if (titleInput && (!titleInput.value || titleInput.value.includes('Flat') || titleInput.value.includes('BHK') || titleInput.value.includes('PG'))) {
             titleInput.placeholder = 'e.g. 1500 sq.ft Residential Corner Plot in Sector 57';
         }
-        if (descInput && (!descInput.value || descInput.value.includes('balcony'))) {
+        if (descLabel) descLabel.innerHTML = 'Description <span class="text-red-500">*</span>';
+        if (descInput && (!descInput.value || descInput.value.includes('balcony') || descInput.value.includes('sharing'))) {
             descInput.placeholder = 'Describe plot dimensions, road frontage width (e.g. 30ft road), facing direction (North/East), zoning (Residential/Commercial), boundary wall, and clear title status...';
         }
     } else {
+        // Standard Residential / Commercial Shop
+        if (purposeBuyLabel) purposeBuyLabel.classList.remove('hidden');
+
         if (bedCol) bedCol.classList.remove('hidden');
         if (bathCol) bathCol.classList.remove('hidden');
         if (furnWrap) furnWrap.classList.remove('hidden');
         if (plotHelper) plotHelper.classList.add('hidden');
+        if (pgContainer) pgContainer.classList.add('hidden');
 
         if (areaCol) {
             areaCol.className = 'col-span-1';
+            areaCol.classList.remove('hidden');
         }
         if (areaLabel) areaLabel.textContent = 'Area (sq.ft)';
         if (areaInput) areaInput.placeholder = '1250';
+
+        if (specsTitle) specsTitle.textContent = 'Key Specifications';
+        if (specsDesc) specsDesc.textContent = 'Bedrooms, bathrooms, area, and furnishing level';
+        if (specsIcon) specsIcon.className = 'ph-bold ph-house-line';
+
+        if (pricingTitle) pricingTitle.textContent = 'Pricing & Billing';
+        if (pricingDesc) pricingDesc.textContent = 'Set your expected rent or sale price';
+
+        const curPurpose = document.querySelector('input[name="purpose"]:checked')?.value || 'rent';
+        if (window.onPurposeChange) window.onPurposeChange(curPurpose);
+
+        if (titleLabel) titleLabel.innerHTML = 'Property Title <span class="text-red-500">*</span>';
+        if (titleInput && (titleInput.value === '' || titleInput.placeholder.includes('Plot') || titleInput.placeholder.includes('PG'))) {
+            titleInput.placeholder = 'e.g. Spacious 3 BHK Semi-Furnished Flat in Sector 57';
+        }
+        if (descLabel) descLabel.innerHTML = 'Description <span class="text-red-500">*</span>';
+        if (descInput && (descInput.value === '' || descInput.placeholder.includes('frontage') || descInput.placeholder.includes('sharing'))) {
+            descInput.placeholder = 'Describe key features, sunlight, balcony view, and tenant preferences...';
+        }
     }
 };
 

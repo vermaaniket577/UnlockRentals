@@ -51,6 +51,62 @@ class UpdatePropertyRequest extends FormRequest
                 $merge['price_period'] = 'month';
             }
             $this->merge($merge);
+        } elseif ($this->input('type') === 'pg-hostel') {
+            $merge = [];
+            $merge['purpose'] = 'rent';
+            $merge['price_period'] = 'month';
+            if (!$this->filled('furnishing')) {
+                $merge['furnishing'] = 'fully-furnished';
+            }
+            if ($this->filled('pg_total_beds')) {
+                $merge['bedrooms'] = (int)$this->input('pg_total_beds');
+            }
+            if ($this->filled('pg_bathroom')) {
+                $merge['bathrooms'] = ($this->input('pg_bathroom') === 'attached') ? 1 : 0;
+            }
+
+            // Build structured PG details if provided
+            $pgLines = [];
+            if ($this->filled('pg_occupancy')) {
+                $occ = is_array($this->input('pg_occupancy')) ? implode(', ', $this->input('pg_occupancy')) : $this->input('pg_occupancy');
+                $pgLines[] = "• Room Sharing / Occupancy: " . trim($occ);
+            }
+            if ($this->filled('pg_gender')) {
+                $pgLines[] = "• Preferred Tenants: " . trim($this->input('pg_gender'));
+            }
+            if ($this->filled('pg_food')) {
+                $pgLines[] = "• Food & Meals: " . trim($this->input('pg_food'));
+            }
+            if ($this->filled('pg_bathroom')) {
+                $bText = ($this->input('pg_bathroom') === 'attached') ? 'Attached Washroom' : 'Shared / Common Washroom';
+                $pgLines[] = "• Washroom Type: " . $bText;
+            }
+            if ($this->filled('pg_curfew')) {
+                $pgLines[] = "• Gate Timings: " . trim($this->input('pg_curfew'));
+            }
+            if ($this->filled('pg_deposit')) {
+                $pgLines[] = "• Security Deposit: " . trim($this->input('pg_deposit'));
+            }
+            if ($this->filled('pg_notice')) {
+                $pgLines[] = "• Notice Period: " . trim($this->input('pg_notice'));
+            }
+            if ($this->filled('pg_amenities')) {
+                $amenities = is_array($this->input('pg_amenities')) ? implode(', ', $this->input('pg_amenities')) : $this->input('pg_amenities');
+                $pgLines[] = "• PG Facilities: " . trim($amenities);
+            }
+
+            if (!empty($pgLines)) {
+                $currentDesc = (string)$this->input('description', '');
+                if (str_contains($currentDesc, '=== PG & HOSTEL DETAILS ===')) {
+                    $parts = explode('=== PG & HOSTEL DETAILS ===', $currentDesc);
+                    $newDesc = trim($parts[0]) . "\n\n=== PG & HOSTEL DETAILS ===\n" . implode("\n", $pgLines);
+                } else {
+                    $newDesc = trim($currentDesc) . "\n\n=== PG & HOSTEL DETAILS ===\n" . implode("\n", $pgLines);
+                }
+                $merge['description'] = trim($newDesc);
+            }
+
+            $this->merge($merge);
         }
     }
 
@@ -72,7 +128,7 @@ class UpdatePropertyRequest extends FormRequest
             'locality' => 'nullable|string|max:255',
             'address' => 'required|string|max:500',
             'contact_phone' => 'required|string|max:20',
-            'bedrooms' => 'nullable|integer|min:0|max:20',
+            'bedrooms' => 'nullable|integer|min:0|max:500',
             'bathrooms' => 'nullable|integer|min:0|max:20',
             'area_sqft' => 'nullable|integer|min:0',
             'furnishing' => 'nullable|in:unfurnished,semi-furnished,fully-furnished',
@@ -92,6 +148,15 @@ class UpdatePropertyRequest extends FormRequest
             'remove_video' => 'nullable|boolean',
             'remove_video_indexes' => 'nullable|array',
             'remove_video_indexes.*' => 'integer',
+            'pg_occupancy' => 'nullable',
+            'pg_gender' => 'nullable|string|max:100',
+            'pg_food' => 'nullable|string|max:150',
+            'pg_bathroom' => 'nullable|string|max:100',
+            'pg_curfew' => 'nullable|string|max:150',
+            'pg_deposit' => 'nullable|string|max:100',
+            'pg_notice' => 'nullable|string|max:100',
+            'pg_amenities' => 'nullable',
+            'pg_total_beds' => 'nullable|integer|min:0|max:500',
         ];
     }
 

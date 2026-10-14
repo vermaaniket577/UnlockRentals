@@ -275,8 +275,12 @@ class PropertyController extends Controller
             }
         }
 
-        // Remove media fields from the data array before creating
-        unset($data['images'], $data['primary_image'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls']);
+        // Remove media & helper fields from the data array before creating
+        unset(
+            $data['images'], $data['primary_image'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls'],
+            $data['pg_occupancy'], $data['pg_gender'], $data['pg_food'], $data['pg_bathroom'], $data['pg_curfew'],
+            $data['pg_deposit'], $data['pg_notice'], $data['pg_amenities'], $data['pg_total_beds']
+        );
 
         $property = \Illuminate\Support\Facades\DB::transaction(function () use ($data, $request) {
             $prop = Property::create($data);
@@ -396,8 +400,12 @@ class PropertyController extends Controller
             }
         }
 
-        // Remove media fields from the data array before updating
-        unset($data['images'], $data['primary_image'], $data['remove_images'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls'], $data['remove_video'], $data['remove_video_indexes']);
+        // Remove media & helper fields from the data array before updating
+        unset(
+            $data['images'], $data['primary_image'], $data['remove_images'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls'], $data['remove_video'], $data['remove_video_indexes'],
+            $data['pg_occupancy'], $data['pg_gender'], $data['pg_food'], $data['pg_bathroom'], $data['pg_curfew'],
+            $data['pg_deposit'], $data['pg_notice'], $data['pg_amenities'], $data['pg_total_beds']
+        );
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($property, $data, $request) {
             $property->update($data);

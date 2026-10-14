@@ -457,6 +457,75 @@
                             <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">Outright Sale</p>
                             <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Transaction</p>
                         </div>
+                    @elseif($property->type === 'pg-hostel')
+                        @php
+                            $desc = $property->description ?? '';
+                            $pgOcc = 'Single & Sharing';
+                            $pgGender = 'All Welcome';
+                            $pgFood = 'Available';
+                            $pgWashroom = ($property->bathrooms == 1) ? 'Attached Washroom' : 'Common Washroom';
+                            $pgCurfew = 'Flexible';
+
+                            if (preg_match('/• Room Sharing \/ Occupancy:\s*(.+)/i', $desc, $m)) {
+                                $pgOcc = trim($m[1]);
+                            }
+                            if (preg_match('/• Preferred Tenants:\s*(.+)/i', $desc, $m)) {
+                                $pgGender = trim($m[1]);
+                            }
+                            if (preg_match('/• Food & Meals:\s*(.+)/i', $desc, $m)) {
+                                $pgFood = trim($m[1]);
+                            }
+                            if (preg_match('/• Washroom Type:\s*(.+)/i', $desc, $m)) {
+                                $pgWashroom = trim($m[1]);
+                            }
+                            if (preg_match('/• Gate Timings:\s*(.+)/i', $desc, $m)) {
+                                $pgCurfew = trim($m[1]);
+                            }
+                        @endphp
+                        {{-- PG Occupancy --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-bed text-xl"></i>
+                            </div>
+                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full" title="{{ $pgOcc }}">{{ Str::limit($pgOcc, 16) }}</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Occupancy</p>
+                        </div>
+
+                        {{-- Gender Preference --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-users text-xl"></i>
+                            </div>
+                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full">{{ $pgGender }}</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Preferred For</p>
+                        </div>
+
+                        {{-- Food & Meals --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-fork-knife text-xl"></i>
+                            </div>
+                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full" title="{{ $pgFood }}">{{ Str::limit($pgFood, 15) }}</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Food & Mess</p>
+                        </div>
+
+                        {{-- Washroom --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-drop text-xl"></i>
+                            </div>
+                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full">{{ Str::limit($pgWashroom, 16) }}</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Bathroom</p>
+                        </div>
+
+                        {{-- Gate Timing / Curfew --}}
+                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
+                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
+                                <i class="ph-bold ph-clock text-xl"></i>
+                            </div>
+                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full" title="{{ $pgCurfew }}">{{ Str::limit($pgCurfew, 15) }}</p>
+                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Gate Timing</p>
+                        </div>
                     @else
                         @if($property->bedrooms)
                         <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
@@ -543,6 +612,27 @@
                             </div>
                             <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
                                 <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Immediate Possession Available
+                            </div>
+                        </div>
+                    @elseif($property->type === 'pg-hostel')
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> High-Speed Wi-Fi & Power Backup
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Hygienic Meals & RO Purified Water
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Washing Machine & Daily Cleaning
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> 24x7 CCTV & Biometric Security
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Fully Furnished with Bed & Wardrobe
+                            </div>
+                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
+                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Close to Metro & Tech Parks / Colleges
                             </div>
                         </div>
                     @else
