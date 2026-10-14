@@ -700,12 +700,12 @@
                 <div id="cover-photo-guidance" class="hidden mt-3.5 p-3 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/50 text-xs text-blue-900 dark:text-blue-200 flex items-center justify-between gap-2 shadow-2xs">
                     <span class="flex items-center gap-2 font-medium">
                         <i class="ph-fill ph-star text-amber-500 text-base shrink-0"></i>
-                        <span>The image with <strong class="text-blue-700 dark:text-blue-300 font-extrabold">Cover Photo</strong> will be the main display photo on search results and property cards. Click <strong>"Make Cover"</strong> on any photo to set it as your cover.</span>
+                        <span>The image with <strong class="text-blue-700 dark:text-blue-300 font-extrabold">Cover</strong> will be the main display photo. Click the <strong>tick box</strong> on any photo to set it as cover.</span>
                     </span>
                 </div>
 
                 {{-- Preview Gallery Container --}}
-                <div id="image-preview-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2.5 sm:gap-3.5 mt-3 sm:mt-4 hidden">
+                <div id="image-preview-container" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-2.5 mt-3 sm:mt-4 hidden">
                     {{-- Previews dynamically rendered here --}}
                 </div>
                 
@@ -1069,19 +1069,27 @@ function renderPreviews() {
             const isPrimary = (index === primaryImageIndex);
             const sizeKB = Math.round(file.size / 1024);
             const imgBox = document.createElement('div');
-            imgBox.className = `relative aspect-square rounded-2xl overflow-hidden border-2 transition-all ${isPrimary ? 'border-blue-600 ring-2 ring-blue-500 shadow-md' : 'border-slate-200 dark:border-slate-700 shadow-xs hover:border-blue-400'} group/item`;
+            imgBox.className = `relative aspect-square max-h-36 sm:max-h-32 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${isPrimary ? 'border-blue-600 ring-2 ring-blue-500/50 is-primary-card' : 'border-slate-200 dark:border-slate-700 shadow-xs hover:border-blue-400'} group/item`;
+            imgBox.onclick = () => setPrimaryImage(index);
             
             imgBox.innerHTML = `
                 <img src="${e.target.result}" class="w-full h-full object-cover transition-transform group-hover/item:scale-105">
                 
-                ${isPrimary 
-                    ? '<div class="absolute top-2 left-2 z-20 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-extrabold uppercase tracking-wide rounded-lg shadow-md pointer-events-none ring-1 ring-white/30"><i class="ph-fill ph-star text-amber-300 text-xs"></i> Cover Photo</div>' 
-                    : `<button type="button" onclick="setPrimaryImage(${index})" class="absolute top-2 left-2 z-20 flex items-center gap-1 px-2.5 py-1 bg-black/75 hover:bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-md transition-all cursor-pointer"><i class="ph-bold ph-star text-xs"></i> Make Cover</button>`
-                }
+                <div class="absolute top-1.5 left-1.5 z-20 pointer-events-auto">
+                    <button type="button" 
+                            onclick="event.stopPropagation(); setPrimaryImage(${index})" 
+                            class="cover-tick-btn flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-md transition-all cursor-pointer ${isPrimary ? 'bg-blue-600 text-white ring-1.5 ring-white/60' : 'bg-black/65 hover:bg-black/85 text-white/90 border border-white/40'}"
+                            title="${isPrimary ? 'Current Cover Photo' : 'Click tick box to set as Cover Photo'}">
+                        <span class="cover-tick-icon w-3.5 h-3.5 rounded-full flex items-center justify-center ${isPrimary ? 'bg-white text-blue-600 font-black' : 'border-1.5 border-white/80 bg-transparent'}">
+                            <i class="ph-bold ph-check text-[10px] ${isPrimary ? '' : 'hidden'}"></i>
+                        </span>
+                        <span class="cover-tick-label font-bold tracking-tight">${isPrimary ? 'Cover' : 'Set Cover'}</span>
+                    </button>
+                </div>
 
-                <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex justify-between items-center z-10">
-                    <span class="text-white text-[10px] font-bold">${sizeKB} KB</span>
-                    <button type="button" onclick="removeImage(${index})" class="text-white bg-red-600/90 hover:bg-red-600 p-1.5 rounded-full transition-all shadow-sm cursor-pointer" title="Remove Photo">
+                <div class="absolute inset-x-0 bottom-0 p-1 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex justify-between items-center z-10 pointer-events-none">
+                    <span class="text-white text-[9px] font-bold">${sizeKB} KB</span>
+                    <button type="button" onclick="event.stopPropagation(); removeImage(${index})" class="text-white bg-red-600/90 hover:bg-red-600 p-1 rounded-full transition-all shadow-sm cursor-pointer pointer-events-auto" title="Remove Photo">
                         <i class="ph-bold ph-trash text-xs"></i>
                     </button>
                 </div>
