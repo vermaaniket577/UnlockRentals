@@ -37,6 +37,7 @@ class LeadCrmController extends Controller
                 $query->where(function ($q) {
                     $q->where('lead_source', 'like', '%admission%')
                       ->orWhere('lead_source', 'like', '%anushram%')
+                      ->orWhere('lead_source', 'like', '%phd%')
                       ->orWhere('property_type', 'like', '%admission%')
                       ->orWhere('message', 'like', '%admission%')
                       ->orWhere('message', 'like', '%course%')
@@ -48,6 +49,7 @@ class LeadCrmController extends Controller
                     $q->where(function ($sub) {
                         $sub->where('lead_source', 'not like', '%admission%')
                             ->where('lead_source', 'not like', '%anushram%')
+                            ->where('lead_source', 'not like', '%phd%')
                             ->where('property_type', 'not like', '%admission%');
                     })->orWhereNull('lead_source');
                 });
@@ -67,22 +69,32 @@ class LeadCrmController extends Controller
                 $query->where(function ($q) {
                     $q->where('lead_source', 'like', '%admission%')
                       ->orWhere('lead_source', 'like', '%anushram%')
+                      ->orWhere('lead_source', 'like', '%phd%')
                       ->orWhere('property_type', 'like', '%admission%')
                       ->orWhere('message', 'like', '%admission%')
-                      ->orWhere('message', 'like', '%course%');
+                      ->orWhere('message', 'like', '%course%')
+                      ->orWhere('message', 'like', '%phd%');
                 });
             }
         }
 
         // 4. Source Filter (maps to actual lead_source column)
         if ($request->filled('source') && $request->source !== 'all') {
-            if (in_array(strtolower($request->source), ['anushram', 'admission'])) {
+            $src = strtolower($request->source);
+            if (in_array($src, ['anushram', 'admission', 'phd_students', 'phd students', 'phd'])) {
                 $query->where(function ($q) {
                     $q->where('lead_source', 'like', '%anushram%')
+                      ->orWhere('lead_source', 'like', '%phd%')
                       ->orWhere(function ($sub) {
                           $sub->where('lead_source', 'like', '%admission%')
-                              ->where('lead_source', 'not like', '%Admission Dekho%');
+                              ->where('lead_source', 'not like', '%Admission Dekho%')
+                              ->where('lead_source', 'not like', '%Admission Search%');
                       });
+                });
+            } elseif (in_array($src, ['admission dekho', 'admission search'])) {
+                $query->where(function ($q) {
+                    $q->where('lead_source', 'like', '%Admission Dekho%')
+                      ->orWhere('lead_source', 'like', '%Admission Search%');
                 });
             } else {
                 $query->where('lead_source', 'like', '%' . $request->source . '%');
@@ -142,9 +154,11 @@ class LeadCrmController extends Controller
         $admissionLeadsCount = Lead::where(function ($q) {
             $q->where('lead_source', 'like', '%admission%')
               ->orWhere('lead_source', 'like', '%anushram%')
+              ->orWhere('lead_source', 'like', '%phd%')
               ->orWhere('property_type', 'like', '%admission%')
               ->orWhere('message', 'like', '%admission%')
               ->orWhere('message', 'like', '%course%')
+              ->orWhere('message', 'like', '%phd%')
               ->orWhere('notes', 'like', '%admission%');
         })->count();
         $newTodayCount = Lead::whereDate('created_at', Carbon::today())->count();
@@ -249,7 +263,7 @@ class LeadCrmController extends Controller
         ]);
 
         $isAdmission = $validated['intent'] === 'admission' || !empty($validated['course']);
-        $leadSource = $validated['lead_source'] ?: ($isAdmission ? 'anushram' : 'manual');
+        $leadSource = $validated['lead_source'] ?: ($isAdmission ? 'PhD Students' : 'manual');
         $notes = $validated['notes'] ?? '';
         $msg = $validated['message'] ?? '';
         if (!empty($validated['course'])) {

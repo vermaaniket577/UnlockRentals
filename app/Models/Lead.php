@@ -159,6 +159,7 @@ class Lead extends Model
         $notes = strtolower($this->notes ?? '');
         return str_contains($source, 'admission') 
             || str_contains($source, 'anushram')
+            || str_contains($source, 'phd')
             || str_contains($source, 'education')
             || str_contains($type, 'admission')
             || str_contains($type, 'education')
@@ -353,7 +354,7 @@ class Lead extends Model
         $seen = [];
         foreach ($lines as $line) {
             $trimmed = trim($line);
-            $normalized = preg_replace('/\[(?:API Sync|Admission Dekho Update)[^\]]*\]:?\s*/i', '', $trimmed);
+            $normalized = preg_replace('/\[(?:API Sync|Admission Dekho Update|Admission Search Update)[^\]]*\]:?\s*/i', '', $trimmed);
             if (!empty($normalized)) {
                 if (!isset($seen[$normalized])) {
                     $seen[$normalized] = true;
@@ -388,6 +389,7 @@ class Lead extends Model
             \Illuminate\Support\Facades\DB::table('leads')
                 ->where('message', 'like', '%API Sync%')
                 ->orWhere('message', 'like', '%Admission Dekho Update%')
+                ->orWhere('message', 'like', '%Admission Search Update%')
                 ->chunkById(50, function ($rows) {
                     foreach ($rows as $row) {
                         if (!empty($row->message) && (strlen($row->message) > 800 || substr_count($row->message, 'API Sync') > 1)) {
@@ -396,7 +398,7 @@ class Lead extends Model
                             $seen = [];
                             foreach ($lines as $line) {
                                 $trimmed = trim($line);
-                                $normalized = preg_replace('/\[(?:API Sync|Admission Dekho Update)[^\]]*\]:?\s*/i', '', $trimmed);
+                                $normalized = preg_replace('/\[(?:API Sync|Admission Dekho Update|Admission Search Update)[^\]]*\]:?\s*/i', '', $trimmed);
                                 if (!empty($normalized)) {
                                     if (!isset($seen[$normalized])) {
                                         $seen[$normalized] = true;

@@ -256,11 +256,11 @@ class LeadController extends Controller
 
         $fullMessage = !empty($messageLines)
             ? implode("\n", $messageLines)
-            : 'Admission Inquiry submitted via Admission Dekho form';
+            : 'Admission Inquiry submitted via Admission Search form';
 
         $source = $request->input('source') 
             ?: $request->input('lead_source') 
-            ?: 'Admission Dekho';
+            ?: 'Admission Search';
 
         // 6. Strict duplicate check by phone number (every unique phone is 1 lead)
         $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)->first();

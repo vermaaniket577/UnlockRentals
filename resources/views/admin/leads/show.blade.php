@@ -164,7 +164,7 @@
 
                     <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
                         <span class="text-[10px] font-bold text-slate-400 uppercase">Capture Source</span>
-                        <p class="text-sm font-bold text-slate-900 capitalize mt-0.5">{{ ($lead->source === 'admission' || stripos($lead->source ?? '', 'anushram') !== false) ? 'Anushram' : str_replace('_', ' ', $lead->source) }}</p>
+                        <p class="text-sm font-bold text-slate-900 capitalize mt-0.5">{{ ($lead->source === 'admission' || stripos($lead->source ?? '', 'anushram') !== false || stripos($lead->source ?? '', 'phd') !== false) ? 'PhD Students' : ((stripos($lead->source ?? '', 'Admission Dekho') !== false || stripos($lead->source ?? '', 'Admission Search') !== false) ? 'Admission Search' : str_replace('_', ' ', $lead->source)) }}</p>
                     </div>
                 </div>
             </div>
