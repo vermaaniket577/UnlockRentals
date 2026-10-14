@@ -126,7 +126,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: url("{{ asset('images/dashboard-hero.png') }}") center/cover no-repeat;
+    background: url("{{ asset('images/dashboard-hero.webp') }}") center/cover no-repeat;
     opacity: 0.08;
 }
 .dash-hero-orb {

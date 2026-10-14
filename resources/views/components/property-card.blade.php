@@ -98,8 +98,14 @@
         </a>
     @endguest
 
+    @php
+        $isEager = !empty($eager) || (isset($loop) && $loop->index < 4);
+        $loadingAttr = $isEager ? 'eager' : 'lazy';
+        $priorityAttr = $isEager ? 'high' : 'low';
+    @endphp
+
     {{-- A. Property Image Section (Responsive Aspect Ratio: 4:3 on mobile 2-col, 16:9 on sm+) --}}
-    <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
+    <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 img-skeleton-shimmer flex-shrink-0">
         @if($property->primaryImageUrl())
             <img src="{{ $property->primaryImageUrl() }}"
                  alt="{{ $cleanTitle }}"
@@ -108,7 +114,8 @@
                  height="360"
                  onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.webp') }}';"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                 loading="lazy"
+                 loading="{{ $loadingAttr }}"
+                 fetchpriority="{{ $priorityAttr }}"
                  decoding="async">
         @elseif($property->hasVideo())
             <div class="relative w-full h-full">
@@ -118,7 +125,8 @@
                      width="480"
                      height="360"
                      class="w-full h-full object-cover filter brightness-[0.55] group-hover:scale-105 transition-transform duration-500 ease-out"
-                     loading="lazy"
+                     loading="{{ $loadingAttr }}"
+                     fetchpriority="{{ $priorityAttr }}"
                      decoding="async">
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-white pointer-events-none">
                     <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform mb-1">
@@ -133,7 +141,8 @@
                  title="Premium Property - {{ $cleanTitle }}"
                  width="480"
                  height="360"
-                 loading="lazy"
+                 loading="{{ $loadingAttr }}"
+                 fetchpriority="{{ $priorityAttr }}"
                  decoding="async"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
         @endif

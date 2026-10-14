@@ -189,9 +189,13 @@
                     <div class="relative z-10 transition-transform duration-500 hover:scale-[1.02]">
                         <picture>
                             <source srcset="{{ asset('unlockrental_premium_mockup_1778934329998.webp') }}" type="image/webp">
-                            <img src="{{ asset('unlockrental_premium_mockup_1778934329998.png') }}" 
+                            <img src="{{ asset('unlockrental_premium_mockup_1778934329998.webp') }}" 
                                  alt="UnlockRentals Mobile App Interface" 
                                  title="UnlockRentals Mobile App Interface" 
+                                 width="512"
+                                 height="512"
+                                 loading="lazy"
+                                 decoding="async"
                                  class="w-full h-auto drop-shadow-[0_35px_35px_rgba(0,0,0,0.22)] filter">
                         </picture>
                     </div>

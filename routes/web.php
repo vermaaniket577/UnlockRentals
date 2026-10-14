@@ -39,14 +39,14 @@ Route::get('/', function(Illuminate\Http\Request $request) {
         // Cache unfiltered homepage listings for 5 minutes
         $featuredRentals = \Illuminate\Support\Facades\Cache::remember('home_featured_rentals', 300, function () {
             return \App\Models\Property::approved()
-                ->with(['primaryImage', 'owner'])
+                ->with(['primaryImage', 'images', 'owner'])
                 ->latest()
                 ->take(24)
                 ->get();
         });
     } else {
         $query = \App\Models\Property::approved()
-            ->with(['primaryImage', 'owner']);
+            ->with(['primaryImage', 'images', 'owner']);
 
         if ($request->filled('state')) {
             $query->where('state', $request->state);
@@ -154,7 +154,7 @@ Route::get('/', function(Illuminate\Http\Request $request) {
     return view('welcome', compact('featuredRentals', 'feedbacks', 'userOffers'));
 })->name('home');
 
-// Serve a property image directly from binary DB data with high-speed filesystem caching
+// Serve a property image directly from binary DB data with high-speed filesystem caching & WebP compression
 Route::withoutMiddleware([
     \Illuminate\Session\Middleware\StartSession::class,
     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
@@ -173,9 +173,10 @@ Route::withoutMiddleware([
         @mkdir($cacheDir, 0755, true);
     }
 
+    // Prioritize high-performance WebP cached file
     $candidates = [
-        'jpg'  => $cacheDir . DIRECTORY_SEPARATOR . $id . '.jpg',
         'webp' => $cacheDir . DIRECTORY_SEPARATOR . $id . '.webp',
+        'jpg'  => $cacheDir . DIRECTORY_SEPARATOR . $id . '.jpg',
         'png'  => $cacheDir . DIRECTORY_SEPARATOR . $id . '.png',
     ];
 
@@ -201,14 +202,26 @@ Route::withoutMiddleware([
         abort(404);
     }
 
-    // Detect MIME type from the binary data
+    // Auto-compress heavy BLOB to lightweight WebP using ImageOptimizer
+    $webpData = \App\Services\ImageOptimizer::optimizeBinaryToWebp($image->image_data, 1200, 80);
+    if ($webpData) {
+        $targetFile = $cacheDir . DIRECTORY_SEPARATOR . $id . '.webp';
+        @file_put_contents($targetFile, $webpData);
+
+        return response($webpData, 200)
+            ->header('Content-Type', 'image/webp')
+            ->header('ETag', $etag)
+            ->header('Cache-Control', 'public, max-age=31536000, immutable')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
+
+    // Fallback: detect MIME type and save original raw data
     $finfo = new \finfo(FILEINFO_MIME_TYPE);
     $mimeType = $finfo->buffer($image->image_data);
     if (!$mimeType || !str_starts_with($mimeType, 'image/')) {
         $mimeType = 'image/jpeg';
     }
 
-    // Write file to disk cache for fast static serving on all subsequent requests
     $fileExt = match ($mimeType) {
         'image/webp' => 'webp',
         'image/png'  => 'png',
@@ -1043,6 +1056,13 @@ Route::withoutMiddleware([
         return redirect('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80');
     }
 
+    $etag = '"pif-' . md5($foundPath . filemtime($foundPath)) . '"';
+    if (request()->header('If-None-Match') === $etag) {
+        return response('', 304)
+            ->header('ETag', $etag)
+            ->header('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+
     $ext = strtolower(pathinfo($foundPath, PATHINFO_EXTENSION));
     $mime = match($ext) {
         'png' => 'image/png',
@@ -1055,14 +1075,50 @@ Route::withoutMiddleware([
 
     return response()->file($foundPath, [
         'Content-Type' => $mime,
+        'ETag' => $etag,
         'Cache-Control' => 'public, max-age=31536000, immutable',
         'Access-Control-Allow-Origin' => '*',
     ]);
 })->where('path', '.*')->name('property.image.file');
 
-// Universal storage file serving route
-Route::get('/storage/{path}', function ($path) {
-    return redirect()->route('property.image.file', ['path' => $path]);
+// Universal high-speed storage file serving route (Direct stream, zero redirect)
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+])->get('/storage/{path}', function ($path) {
+    $cleanPath = ltrim($path, '/');
+    $directPath = storage_path('app/public/' . $cleanPath);
+
+    if (is_file($directPath)) {
+        $etag = '"st-' . md5($directPath . filemtime($directPath)) . '"';
+        if (request()->header('If-None-Match') === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+
+        $ext = strtolower(pathinfo($directPath, PATHINFO_EXTENSION));
+        $mime = match($ext) {
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            'svg' => 'image/svg+xml',
+            'avif' => 'image/avif',
+            default => 'image/jpeg'
+        };
+
+        return response()->file($directPath, [
+            'Content-Type' => $mime,
+            'ETag' => $etag,
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+            'Access-Control-Allow-Origin' => '*',
+        ]);
+    }
+
+    // Fallback to full resolver
+    return redirect()->route('property.image.file', ['path' => $cleanPath]);
 })->where('path', '.*')->name('storage.file');
 
 // Direct blogs image file route (301 Permanent Redirect)

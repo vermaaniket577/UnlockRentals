@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Services\ImageOptimizer;
 
 class PropertyController extends Controller
 {
@@ -326,7 +327,7 @@ class PropertyController extends Controller
                 $primaryIndex = (int) $request->get('primary_image', 0);
 
                 foreach ($request->file('images') as $index => $image) {
-                    $path = $image->store('properties/' . $prop->id, 'public');
+                    $path = ImageOptimizer::optimizeAndStore($image, 'properties/' . $prop->id);
 
                     $imagesData[] = [
                         'property_id' => $prop->id,
@@ -499,7 +500,7 @@ class PropertyController extends Controller
                 $newImagesData = [];
 
                 foreach ($request->file('images') as $index => $image) {
-                    $path = $image->store('properties/' . $property->id, 'public');
+                    $path = ImageOptimizer::optimizeAndStore($image, 'properties/' . $property->id);
                     $isThisPrimary = ($newPrimaryIndex !== null && $index === $newPrimaryIndex);
 
                     $newImagesData[] = [

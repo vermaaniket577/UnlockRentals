@@ -89,8 +89,8 @@ class PropertyImage extends Model
     {
         $dir = self::getCacheDir();
         $candidates = [
-            $dir . DIRECTORY_SEPARATOR . $this->id . '.jpg',
             $dir . DIRECTORY_SEPARATOR . $this->id . '.webp',
+            $dir . DIRECTORY_SEPARATOR . $this->id . '.jpg',
             $dir . DIRECTORY_SEPARATOR . $this->id . '.png',
         ];
         foreach ($candidates as $cand) {

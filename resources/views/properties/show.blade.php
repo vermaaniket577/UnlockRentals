@@ -1220,10 +1220,13 @@
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                  loading="lazy">
                         @else
-                            <img src="{{ asset('images/luxury_sunlit.png') }}"
+                            <img src="{{ asset('images/luxury_sunlit.webp') }}"
                                  alt="Placeholder"
+                                 width="400"
+                                 height="300"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                 loading="lazy">
+                                 loading="lazy"
+                                 decoding="async">
                         @endif
 
                         {{-- Category/Type Badges --}}

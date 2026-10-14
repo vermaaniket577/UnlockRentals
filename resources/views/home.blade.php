@@ -100,7 +100,7 @@
                 <div class="absolute inset-0 bg-[#2563EB]/10 rounded-sm blur-[40px] opacity-40 group-hover:opacity-60 transition-opacity duration-700"></div>
                 <div class="relative h-[450px] lg:h-[600px] w-full rounded-sm overflow-hidden shadow-2xl border border-stone-200/50 transform transition-transform duration-700 group-hover:scale-[1.02]">
                     <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-gray-50/20 to-transparent z-10"></div>
-                    <img src="{{ asset('images/luxury_sunlit.png') }}" alt="Modern Apartment Interior" class="w-full h-full object-cover">
+                    <img src="{{ asset('images/luxury_sunlit.webp') }}" alt="Modern Apartment Interior" class="w-full h-full object-cover" width="600" height="600" loading="eager" fetchpriority="high" decoding="async">
                     
                     {{-- Floating Image Cards --}}
                     <div class="absolute bottom-8 left-8 right-8 z-20 flex gap-4 overflow-hidden" style="mask-image: linear-gradient(to right, black 80%, transparent);">

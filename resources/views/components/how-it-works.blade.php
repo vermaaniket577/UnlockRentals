@@ -379,19 +379,19 @@
                 'step_number' => '01',
                 'title' => 'Discover',
                 'description' => "Explore India's most exclusive rental registry with intelligent lifestyle filters.",
-                'icon_svg' => 'images/icons/discover.png',
+                'icon_svg' => 'images/icons/discover.svg',
             ],
             (object) [
                 'step_number' => '02',
                 'title' => 'Concierge',
                 'description' => 'Connect with premium owners or leverage our elite viewing concierge support.',
-                'icon_svg' => 'images/icons/concierge.png',
+                'icon_svg' => 'images/icons/concierge.svg',
             ],
             (object) [
                 'step_number' => '03',
                 'title' => 'Finalize',
                 'description' => 'Complete secure digital legalities and move into your handpicked luxury space.',
-                'icon_svg' => 'images/icons/finalize.png',
+                'icon_svg' => 'images/icons/finalize.svg',
             ]
         ]);
     }

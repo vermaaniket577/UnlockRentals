@@ -330,7 +330,7 @@
                     {{-- Generated Mockup --}}
                     <picture>
                         <source srcset="{{ asset('unlockrental_premium_mockup_1778934329998.webp') }}" type="image/webp">
-                        <img src="{{ asset('unlockrental_premium_mockup_1778934329998.png') }}" 
+                        <img src="{{ asset('unlockrental_premium_mockup_1778934329998.webp') }}" 
                              alt="UnlockRentals Luxury App" 
                              title="UnlockRentals Luxury App" 
                              width="512" 

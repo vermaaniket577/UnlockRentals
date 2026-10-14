@@ -1900,7 +1900,7 @@
             <div class="glow-orb orb-2"></div>
             <picture>
                 <source srcset="{{ asset('images/hero-bg.webp') }}" type="image/webp">
-                <img src="{{ asset('images/hero-bg.png') }}" 
+                <img src="{{ asset('images/hero-bg.webp') }}" 
                      alt="Premium Indian City Skyline Real Estate" 
                      title="Premium Indian City Skyline Real Estate" 
                      width="1024" 
@@ -2480,11 +2480,14 @@
                 
                 {{-- Slide 1: Luxury Stays & Designer 1RK / PGs --}}
                 <div class="mobile-hero-banner-slide">
-                    <img src="https://lh3.googleusercontent.com/aida/AEtjO1WIsrQ3esgXxm-4ezshRtil4niu--oIEtCafHv5RupyQlfXVzrE4CHYow5K_qypHUr6Lw0E9AcdkdTD2jdEKR0acms7bPQcCM3I28KCI9X1mw0gGaaFzbJ2mHA4hUnZS0bi96l1zc7hHkYHrBVouz104XU5AtBgWSOrCZ6qbCiH3jBezX1JiUDSZkxfS5eVMcDhR0oO9Ys52bCnpxTekDILrc0F3bSy_L0y6Ccj6FccSlp7zw4ysg6vaXZr" 
-                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80';"
+                    <img src="{{ asset('images/hero_apartment.webp') }}" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/luxury_sunlit.webp') }}';"
                          alt="Luxury Stays & Designer 1RK / PGs" 
                          class="mobile-hero-slide-bg" 
-                         loading="eager">
+                         width="400"
+                         height="260"
+                         loading="eager"
+                         fetchpriority="high">
                     <div class="mobile-hero-slide-scrim"></div>
 
                     <div class="mobile-hero-slide-content">
@@ -2526,11 +2529,14 @@
 
                 {{-- Slide 2: Modern 2 & 3 BHK Flats --}}
                 <div class="mobile-hero-banner-slide">
-                    <img src="https://lh3.googleusercontent.com/aida/AEtjO1XpwMu026c87OG8bb7y5soJuK3uHi5i2HCRKTixpbsqTxuEe5rx043fm05HHy7Xz1ezX4JdhavoxN9aAetKODWeM6k7X3UNz_Texzp_HOrJDh0jSWQuDkHeE0Ig7rpR810A9sYHtoOXkD6FZv3PrtYesTO2g_-BzROnB8AHc17UghNqR1CLitACMxDv-cyIPBil86k8sew0NafC_mxscc1TW5pDSHfo8XK0Ls8YYjfXUlYsyeQ26ci5aq41" 
-                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80';"
+                    <img src="{{ asset('images/luxury_sunlit.webp') }}" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/hero_apartment.webp') }}';"
                          alt="Modern 2 & 3 BHK Flats" 
                          class="mobile-hero-slide-bg" 
-                         loading="lazy">
+                         width="400"
+                         height="260"
+                         loading="lazy"
+                         decoding="async">
                     <div class="mobile-hero-slide-scrim"></div>
 
                     <div class="mobile-hero-slide-content">
@@ -2572,11 +2578,14 @@
 
                 {{-- Slide 3: Luxury Penthouses & Skyline Living --}}
                 <div class="mobile-hero-banner-slide">
-                    <img src="{{ asset('images/slider/penthouse_skyline.jpg') }}" 
-                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';"
+                    <img src="{{ asset('images/slider/penthouse_skyline.webp') }}" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/luxury_sunlit.webp') }}';"
                          alt="Luxury Penthouses & Skyline Living" 
                          class="mobile-hero-slide-bg" 
-                         loading="lazy">
+                         width="400"
+                         height="260"
+                         loading="lazy"
+                         decoding="async">
                     <div class="mobile-hero-slide-scrim"></div>
 
                     <div class="mobile-hero-slide-content">
@@ -2618,11 +2627,14 @@
 
                 {{-- Slide 4: Sunlit Designer Studios & 1RK --}}
                 <div class="mobile-hero-banner-slide">
-                    <img src="{{ asset('images/slider/studio_designer.jpg') }}" 
-                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80';"
+                    <img src="{{ asset('images/slider/studio_designer.webp') }}" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/hero_apartment.webp') }}';"
                          alt="Sunlit Designer Studios & 1RK" 
                          class="mobile-hero-slide-bg" 
-                         loading="lazy">
+                         width="400"
+                         height="260"
+                         loading="lazy"
+                         decoding="async">
                     <div class="mobile-hero-slide-scrim"></div>
 
                     <div class="mobile-hero-slide-content">

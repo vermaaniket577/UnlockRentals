@@ -936,7 +936,7 @@ const MAX_CLIP_SECONDS = 60;
 // High-speed client-side image compression
 async function compressImage(file, maxDimension = 1600, quality = 0.85) {
     if (file.type === 'image/svg+xml' || file.size < 150 * 1024) {
-        return file;
+        return { file: file, originalSize: file.size, compressedSize: file.size };
     }
 
     return new Promise((resolve) => {
