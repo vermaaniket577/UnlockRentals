@@ -307,10 +307,17 @@ class Property extends Model
             return $this->memoizedPrimaryImageUrl = $this->primaryImage->imageUrl();
         }
         if ($this->relationLoaded('images') && $this->images && $this->images->isNotEmpty()) {
+            $prim = $this->images->firstWhere('is_primary', true);
+            if ($prim) {
+                return $this->memoizedPrimaryImageUrl = $prim->imageUrl();
+            }
             return $this->memoizedPrimaryImageUrl = $this->images->first()->imageUrl();
         }
         if ($this->primaryImage) {
             return $this->memoizedPrimaryImageUrl = $this->primaryImage->imageUrl();
+        }
+        if ($prim = $this->images()->where('is_primary', true)->first()) {
+            return $this->memoizedPrimaryImageUrl = $prim->imageUrl();
         }
         if ($first = $this->images()->first()) {
             return $this->memoizedPrimaryImageUrl = $first->imageUrl();

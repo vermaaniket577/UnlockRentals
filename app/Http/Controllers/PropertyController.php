@@ -334,7 +334,7 @@ class PropertyController extends Controller
                         'path'        => $path,
                         'image_data'  => null,
                         'is_primary'  => ($index === $primaryIndex),
-                        'sort_order'  => $index,
+                        'sort_order'  => ($index === $primaryIndex ? 0 : $index + 1),
                         'created_at'  => now(),
                         'updated_at'  => now(),
                     ];
@@ -508,7 +508,7 @@ class PropertyController extends Controller
                         'path'        => $path,
                         'image_data'  => null,
                         'is_primary'  => $isThisPrimary,
-                        'sort_order'  => $maxOrder + $index + 1,
+                        'sort_order'  => $isThisPrimary ? 0 : ($maxOrder + $index + 1),
                         'created_at'  => now(),
                         'updated_at'  => now(),
                     ];
@@ -524,15 +524,22 @@ class PropertyController extends Controller
 
             // Update primary image if an existing ID was specified
             if ($request->filled('primary_image') && is_numeric($request->primary_image)) {
+                $chosenId = (int) $request->primary_image;
                 $property->images()->update(['is_primary' => false]);
-                PropertyImage::where('id', (int) $request->primary_image)
+                PropertyImage::where('id', $chosenId)
                     ->where('property_id', $property->id)
-                    ->update(['is_primary' => true]);
+                    ->update([
+                        'is_primary' => true,
+                        'sort_order' => 0,
+                    ]);
             }
 
             // Fallback: Ensure at least one image is primary if images exist
             if (!$property->images()->where('is_primary', true)->exists()) {
-                $property->images()->orderBy('sort_order')->orderBy('id')->first()?->update(['is_primary' => true]);
+                $firstImg = $property->images()->orderBy('sort_order')->orderBy('id')->first();
+                if ($firstImg) {
+                    $firstImg->update(['is_primary' => true, 'sort_order' => 0]);
+                }
             }
         });
 

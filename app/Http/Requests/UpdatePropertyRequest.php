@@ -134,7 +134,7 @@ class UpdatePropertyRequest extends FormRequest
             'furnishing' => 'nullable|in:unfurnished,semi-furnished,fully-furnished',
             'images' => 'nullable|array|max:10',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
-            'primary_image' => 'nullable|integer|min:0',
+            'primary_image' => 'nullable|string|max:50',
             'remove_images' => 'nullable|array',
             'remove_images.*' => 'integer|exists:property_images,id',
             'video' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm,m4v|max:256000',

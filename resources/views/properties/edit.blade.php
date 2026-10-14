@@ -731,13 +731,13 @@
                 {{-- Existing Images --}}
                 @if($property->images->count() > 0)
                 <div class="mb-3.5 p-3 sm:p-4 bg-slate-50/70 dark:bg-slate-800/40 rounded-xl sm:rounded-2xl border border-slate-200/70 dark:border-slate-700/60">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-3">
-                        <p class="text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                            <i class="ph-bold ph-images text-blue-600"></i> Current Images ({{ $property->images->count() }})
-                        </p>
-                        <span class="text-[11px] text-slate-500 dark:text-slate-400">
-                            ⭐ Click <strong class="text-blue-600 dark:text-blue-400 font-bold">"Make Cover"</strong> on any photo to set it as main cover image
-                        </span>
+                    {{-- Super Clear Guidance Header --}}
+                    <div class="mb-3 p-2.5 rounded-xl bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 flex items-center justify-between gap-2 shadow-2xs">
+                        <div class="flex items-center gap-2 text-xs font-semibold text-blue-950 dark:text-blue-100">
+                            <i class="ph-fill ph-star text-amber-500 text-base shrink-0"></i>
+                            <span><strong>Tap or click any photo</strong> to set it as the <strong>Cover Photo</strong> (Main display photo).</span>
+                        </div>
+                        <span class="text-[10px] font-bold text-blue-700 dark:text-blue-300 bg-white/80 dark:bg-slate-900/80 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-800 shrink-0 hidden sm:inline">1 cover photo allowed</span>
                     </div>
 
                     {{-- Hidden input for primary image ID --}}
@@ -750,20 +750,26 @@
                         @endphp
                         <div id="image-card-{{ $image->id }}" 
                              onclick="setEditCoverPhoto({{ $image->id }})"
-                             class="image-card relative group rounded-xl overflow-hidden border-2 transition-all aspect-square max-h-36 sm:max-h-32 bg-slate-900 shadow-xs cursor-pointer {{ $isPrimary ? 'border-blue-600 ring-2 ring-blue-500/50 is-primary-card' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400' }}">
-                            <img src="{{ $image->imageUrl() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                             class="image-card relative group rounded-xl overflow-hidden border-2 transition-all aspect-square max-h-36 sm:max-h-32 bg-slate-900 shadow-xs cursor-pointer select-none {{ $isPrimary ? 'border-blue-600 ring-4 ring-blue-500/40 is-primary-card' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400' }}"
+                             title="{{ $isPrimary ? 'Current Cover Photo' : 'Click to make this the Cover Photo' }}">
                             
-                            {{-- Cover Photo Selection Tick Box --}}
-                            <div class="absolute top-1.5 left-1.5 z-20 pointer-events-auto">
-                                <button type="button" 
-                                        onclick="event.stopPropagation(); setEditCoverPhoto({{ $image->id }})" 
-                                        class="cover-tick-btn flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-md transition-all cursor-pointer {{ $isPrimary ? 'bg-blue-600 text-white ring-1.5 ring-white/60' : 'bg-black/65 hover:bg-black/85 text-white/90 border border-white/40' }}"
-                                        title="{{ $isPrimary ? 'Current Cover Photo' : 'Click tick box to set as Cover Photo' }}">
-                                    <span class="cover-tick-icon w-3.5 h-3.5 rounded-full flex items-center justify-center {{ $isPrimary ? 'bg-white text-blue-600 font-black' : 'border-1.5 border-white/80 bg-transparent' }}">
-                                        <i class="ph-bold ph-check text-[10px] {{ $isPrimary ? '' : 'hidden' }}"></i>
-                                    </span>
-                                    <span class="cover-tick-label font-bold tracking-tight">{{ $isPrimary ? 'Cover' : 'Set Cover' }}</span>
-                                </button>
+                            <img src="{{ $image->imageUrl() }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none">
+                            
+                            {{-- Cover Photo Visual Badge (Top-Left) --}}
+                            <div class="absolute top-1.5 left-1.5 z-20 pointer-events-none">
+                                <div class="cover-badge {{ $isPrimary ? 'flex' : 'hidden' }} items-center gap-1 px-2 py-0.5 rounded-md bg-blue-600 text-white text-[10px] font-extrabold uppercase tracking-wide shadow-md ring-1 ring-white/60">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs"></i> Cover Photo
+                                </div>
+                                <div class="make-cover-pill {{ $isPrimary ? 'hidden' : 'flex' }} items-center gap-1 px-2 py-0.5 rounded-md bg-black/70 group-hover:bg-blue-600 text-white text-[10px] font-bold shadow-md transition-all border border-white/40">
+                                    <span class="w-2 h-2 rounded-full border border-white/80"></span> Make Cover
+                                </div>
+                            </div>
+
+                            {{-- Checkmark Indicator (Top-Right when active) --}}
+                            <div class="cover-check-indicator absolute top-1.5 right-8 z-20 pointer-events-none {{ $isPrimary ? 'flex' : 'hidden' }}">
+                                <span class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md ring-1 ring-white/60">
+                                    <i class="ph-bold ph-check text-[11px]"></i>
+                                </span>
                             </div>
 
                             {{-- Delete / Remove Checkbox Button --}}
@@ -821,61 +827,51 @@
                 let newEditFiles = [];
 
                 function setEditCoverPhoto(imageId) {
+                    imageId = String(imageId);
                     const primaryInput = document.getElementById('edit-primary-image-input');
                     if (primaryInput) primaryInput.value = imageId;
 
                     // Reset all existing cards
                     document.querySelectorAll('.image-card').forEach(card => {
-                        card.classList.remove('border-blue-600', 'ring-2', 'ring-blue-500/50', 'is-primary-card');
+                        card.classList.remove('border-blue-600', 'ring-4', 'ring-blue-500/40', 'is-primary-card');
                         card.classList.add('border-slate-200', 'dark:border-slate-700');
                         
-                        const tickBtn = card.querySelector('.cover-tick-btn');
-                        if (tickBtn) {
-                            tickBtn.className = "cover-tick-btn flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-md transition-all cursor-pointer bg-black/65 hover:bg-black/85 text-white/90 border border-white/40";
-                            const icon = tickBtn.querySelector('.cover-tick-icon');
-                            if (icon) {
-                                icon.className = "cover-tick-icon w-3.5 h-3.5 rounded-full flex items-center justify-center border-1.5 border-white/80 bg-transparent";
-                                icon.innerHTML = '<i class="ph-bold ph-check text-[10px] hidden"></i>';
-                            }
-                            const label = tickBtn.querySelector('.cover-tick-label');
-                            if (label) label.textContent = 'Set Cover';
-                        }
+                        const badge = card.querySelector('.cover-badge');
+                        if (badge) { badge.classList.add('hidden'); badge.classList.remove('flex'); }
+                        
+                        const pill = card.querySelector('.make-cover-pill');
+                        if (pill) { pill.classList.remove('hidden'); pill.classList.add('flex'); }
+                        
+                        const check = card.querySelector('.cover-check-indicator');
+                        if (check) { check.classList.add('hidden'); check.classList.remove('flex'); }
                     });
 
                     // Mark selected existing card
-                    const targetCard = document.getElementById(`image-card-${imageId}`);
+                    const targetCard = document.getElementById('image-card-' + imageId);
                     if (targetCard) {
                         targetCard.classList.remove('border-slate-200', 'dark:border-slate-700');
-                        targetCard.classList.add('border-blue-600', 'ring-2', 'ring-blue-500/50', 'is-primary-card');
+                        targetCard.classList.add('border-blue-600', 'ring-4', 'ring-blue-500/40', 'is-primary-card');
                         
-                        const tickBtn = targetCard.querySelector('.cover-tick-btn');
-                        if (tickBtn) {
-                            tickBtn.className = "cover-tick-btn flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-md transition-all cursor-pointer bg-blue-600 text-white ring-1.5 ring-white/60";
-                            const icon = tickBtn.querySelector('.cover-tick-icon');
-                            if (icon) {
-                                icon.className = "cover-tick-icon w-3.5 h-3.5 rounded-full flex items-center justify-center bg-white text-blue-600 font-black";
-                                icon.innerHTML = '<i class="ph-bold ph-check text-[10px]"></i>';
-                            }
-                            const label = tickBtn.querySelector('.cover-tick-label');
-                            if (label) label.textContent = 'Cover';
-                        }
+                        const badge = targetCard.querySelector('.cover-badge');
+                        if (badge) { badge.classList.remove('hidden'); badge.classList.add('flex'); }
+                        
+                        const pill = targetCard.querySelector('.make-cover-pill');
+                        if (pill) { pill.classList.add('hidden'); pill.classList.remove('flex'); }
+                        
+                        const check = targetCard.querySelector('.cover-check-indicator');
+                        if (check) { check.classList.remove('hidden'); check.classList.add('flex'); }
                     }
 
                     // Reset new image preview cards
                     document.querySelectorAll('.new-image-card').forEach(card => {
-                        card.classList.remove('border-blue-600', 'ring-2', 'ring-blue-500/50');
+                        card.classList.remove('border-blue-600', 'ring-4', 'ring-blue-500/40');
                         card.classList.add('border-slate-200', 'dark:border-slate-700');
-                        const tickBtn = card.querySelector('.cover-tick-btn');
-                        if (tickBtn) {
-                            tickBtn.className = "cover-tick-btn flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-md transition-all cursor-pointer bg-black/65 hover:bg-black/85 text-white/90 border border-white/40";
-                            const icon = tickBtn.querySelector('.cover-tick-icon');
-                            if (icon) {
-                                icon.className = "cover-tick-icon w-3.5 h-3.5 rounded-full flex items-center justify-center border-1.5 border-white/80 bg-transparent";
-                                icon.innerHTML = '<i class="ph-bold ph-check text-[10px] hidden"></i>';
-                            }
-                            const label = tickBtn.querySelector('.cover-tick-label');
-                            if (label) label.textContent = 'Set Cover';
-                        }
+                        const badge = card.querySelector('.new-cover-badge');
+                        if (badge) { badge.classList.add('hidden'); badge.classList.remove('flex'); }
+                        const pill = card.querySelector('.new-make-cover-pill');
+                        if (pill) { pill.classList.remove('hidden'); pill.classList.add('flex'); }
+                        const check = card.querySelector('.new-cover-check-indicator');
+                        if (check) { check.classList.add('hidden'); check.classList.remove('flex'); }
                     });
                 }
 
@@ -985,33 +981,41 @@
                         const isCover = (primaryInput && primaryInput.value === `new_${index}`);
                         const sizeKB = Math.round(file.size / 1024);
                         const card = document.createElement('div');
-                        card.className = `new-image-card relative group rounded-xl overflow-hidden border-2 transition-all aspect-square max-h-36 sm:max-h-32 bg-slate-900 shadow-xs cursor-pointer ${isCover ? 'border-blue-600 ring-2 ring-blue-500/50' : 'border-slate-200 dark:border-slate-700'}`;
+                        card.className = `new-image-card relative group rounded-2xl overflow-hidden border-2 transition-all aspect-square max-h-36 sm:max-h-32 bg-slate-900 shadow-sm cursor-pointer select-none ${isCover ? 'border-blue-600 ring-4 ring-blue-500/40' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400'}`;
                         card.id = `new-image-card-${index}`;
                         card.onclick = () => setNewEditCover(index);
 
                         const img = document.createElement('img');
-                        img.className = 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300';
+                        img.className = 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none';
                         img.src = URL.createObjectURL(file);
                         card.appendChild(img);
 
                         const actionsDiv = document.createElement('div');
                         actionsDiv.innerHTML = `
-                            <div class="absolute top-1.5 left-1.5 z-20 pointer-events-auto">
-                                <button type="button" 
-                                        onclick="event.stopPropagation(); setNewEditCover(${index})" 
-                                        class="cover-tick-btn flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-md transition-all cursor-pointer ${isCover ? 'bg-blue-600 text-white ring-1.5 ring-white/60' : 'bg-black/65 hover:bg-black/85 text-white/90 border border-white/40'}"
-                                        title="${isCover ? 'Current Cover Photo' : 'Click tick box to set as Cover Photo'}">
-                                    <span class="cover-tick-icon w-3.5 h-3.5 rounded-full flex items-center justify-center ${isCover ? 'bg-white text-blue-600 font-black' : 'border-1.5 border-white/80 bg-transparent'}">
-                                        <i class="ph-bold ph-check text-[10px] ${isCover ? '' : 'hidden'}"></i>
-                                    </span>
-                                    <span class="cover-tick-label font-bold tracking-tight">${isCover ? 'Cover' : 'Set Cover'}</span>
-                                </button>
+                            <!-- Cover Indicator (Top-Left) -->
+                            <div class="absolute top-2 left-2 z-20 pointer-events-none">
+                                <div class="new-cover-badge ${isCover ? 'flex' : 'hidden'} items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-600 text-white shadow-lg ring-2 ring-white/80">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs"></i>
+                                    <span>Cover Photo</span>
+                                </div>
+                                <div class="new-make-cover-pill ${isCover ? 'hidden' : 'flex'} items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-black/60 hover:bg-blue-600 text-white border border-white/40 backdrop-blur-xs shadow-md transition-all">
+                                    <i class="ph-bold ph-circle text-[10px]"></i>
+                                    <span>Make Cover</span>
+                                </div>
                             </div>
-                            <button type="button" onclick="event.stopPropagation(); removeNewEditImage(${index})" class="absolute top-1.5 right-1.5 z-20 w-6 h-6 rounded-md bg-black/70 hover:bg-red-600 text-white flex items-center justify-center transition-all shadow-md cursor-pointer pointer-events-auto" title="Remove photo">
+
+                            <!-- Cover Checkmark (Top-Right before delete) -->
+                            <div class="new-cover-check-indicator absolute top-2 right-10 z-20 ${isCover ? 'flex' : 'hidden'} items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white shadow-md pointer-events-none ring-2 ring-white">
+                                <i class="ph-bold ph-check text-xs"></i>
+                            </div>
+
+                            <!-- Delete button -->
+                            <button type="button" onclick="event.stopPropagation(); removeNewEditImage(${index})" class="absolute top-2 right-2 z-20 w-7 h-7 rounded-lg bg-black/60 hover:bg-red-600 text-white flex items-center justify-center transition-all shadow-md cursor-pointer pointer-events-auto" title="Remove photo">
                                 <i class="ph-bold ph-trash text-xs"></i>
                             </button>
-                            <div class="absolute inset-x-0 bottom-0 p-1 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex justify-between items-center text-[9px] text-white font-bold z-10 pointer-events-none">
-                                <span class="bg-emerald-600 px-1 py-0.2 rounded text-[8px] uppercase">New</span>
+
+                            <div class="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-between items-center text-[10px] text-white font-medium z-10 pointer-events-none">
+                                <span class="bg-emerald-600 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">New</span>
                                 <span>${sizeKB} KB</span>
                             </div>
                         `;
@@ -1024,23 +1028,44 @@
                     const primaryInput = document.getElementById('edit-primary-image-input');
                     if (primaryInput) primaryInput.value = `new_${index}`;
 
+                    // Reset all existing cards
                     document.querySelectorAll('.image-card').forEach(card => {
-                        card.classList.remove('border-blue-600', 'ring-2', 'ring-blue-500/50', 'is-primary-card');
+                        card.classList.remove('border-blue-600', 'ring-4', 'ring-blue-500/40', 'is-primary-card');
                         card.classList.add('border-slate-200', 'dark:border-slate-700');
-                        const tickBtn = card.querySelector('.cover-tick-btn');
-                        if (tickBtn) {
-                            tickBtn.className = "cover-tick-btn flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-md transition-all cursor-pointer bg-black/65 hover:bg-black/85 text-white/90 border border-white/40";
-                            const icon = tickBtn.querySelector('.cover-tick-icon');
-                            if (icon) {
-                                icon.className = "cover-tick-icon w-3.5 h-3.5 rounded-full flex items-center justify-center border-1.5 border-white/80 bg-transparent";
-                                icon.innerHTML = '<i class="ph-bold ph-check text-[10px] hidden"></i>';
-                            }
-                            const label = tickBtn.querySelector('.cover-tick-label');
-                            if (label) label.textContent = 'Set Cover';
-                        }
+                        const badge = card.querySelector('.cover-badge');
+                        if (badge) { badge.classList.add('hidden'); badge.classList.remove('flex'); }
+                        const pill = card.querySelector('.make-cover-pill');
+                        if (pill) { pill.classList.remove('hidden'); pill.classList.add('flex'); }
+                        const check = card.querySelector('.cover-check-indicator');
+                        if (check) { check.classList.add('hidden'); check.classList.remove('flex'); }
                     });
 
-                    renderNewEditPreviews();
+                    // Update all new cards
+                    document.querySelectorAll('.new-image-card').forEach((card, i) => {
+                        const isMatch = (i === index);
+                        if (isMatch) {
+                            card.classList.remove('border-slate-200', 'dark:border-slate-700');
+                            card.classList.add('border-blue-600', 'ring-4', 'ring-blue-500/40');
+                        } else {
+                            card.classList.remove('border-blue-600', 'ring-4', 'ring-blue-500/40');
+                            card.classList.add('border-slate-200', 'dark:border-slate-700');
+                        }
+                        const badge = card.querySelector('.new-cover-badge');
+                        if (badge) {
+                            if (isMatch) { badge.classList.remove('hidden'); badge.classList.add('flex'); }
+                            else { badge.classList.add('hidden'); badge.classList.remove('flex'); }
+                        }
+                        const pill = card.querySelector('.new-make-cover-pill');
+                        if (pill) {
+                            if (isMatch) { pill.classList.add('hidden'); pill.classList.remove('flex'); }
+                            else { pill.classList.remove('hidden'); pill.classList.add('flex'); }
+                        }
+                        const check = card.querySelector('.new-cover-check-indicator');
+                        if (check) {
+                            if (isMatch) { check.classList.remove('hidden'); check.classList.add('flex'); }
+                            else { check.classList.add('hidden'); check.classList.remove('flex'); }
+                        }
+                    });
                 }
 
                 function removeNewEditImage(index) {

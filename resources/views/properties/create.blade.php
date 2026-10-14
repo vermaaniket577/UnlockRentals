@@ -697,11 +697,12 @@
                 <input type="hidden" name="primary_image" id="primary-image-input" value="0">
 
                 {{-- Cover Photo Helper Guidance --}}
-                <div id="cover-photo-guidance" class="hidden mt-3.5 p-3 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/50 text-xs text-blue-900 dark:text-blue-200 flex items-center justify-between gap-2 shadow-2xs">
-                    <span class="flex items-center gap-2 font-medium">
+                <div id="cover-photo-guidance" class="hidden mt-3.5 p-3.5 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200/80 dark:border-blue-900/50 text-xs text-blue-900 dark:text-blue-200 flex items-center justify-between gap-2 shadow-xs">
+                    <span class="flex items-center gap-2.5 font-medium">
                         <i class="ph-fill ph-star text-amber-500 text-base shrink-0"></i>
-                        <span>The image with <strong class="text-blue-700 dark:text-blue-300 font-extrabold">Cover</strong> will be the main display photo. Click the <strong>tick box</strong> on any photo to set it as cover.</span>
+                        <span>The photo with <strong class="text-blue-700 dark:text-blue-300 font-extrabold">⭐ Cover Photo</strong> will be the main thumbnail. <strong>Tap or click any photo</strong> to set it as cover!</span>
                     </span>
+                    <span class="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md shadow-2xs border border-blue-100 dark:border-blue-900 shrink-0">👉 Tap photo to set cover</span>
                 </div>
 
                 {{-- Preview Gallery Container --}}
@@ -1045,12 +1046,39 @@ function setPrimaryImage(index) {
     primaryImageIndex = index;
     const primaryInput = document.getElementById('primary-image-input');
     if (primaryInput) primaryInput.value = index;
-    renderPreviews();
+
+    // Instantly update DOM without re-rendering or flickering
+    document.querySelectorAll('#image-preview-container .preview-card').forEach((card, idx) => {
+        const isCover = (idx === index);
+        if (isCover) {
+            card.classList.remove('border-slate-200', 'dark:border-slate-700');
+            card.classList.add('border-blue-600', 'ring-4', 'ring-blue-500/40', 'is-primary-card');
+        } else {
+            card.classList.remove('border-blue-600', 'ring-4', 'ring-blue-500/40', 'is-primary-card');
+            card.classList.add('border-slate-200', 'dark:border-slate-700');
+        }
+        const badge = card.querySelector('.cover-badge');
+        if (badge) {
+            if (isCover) { badge.classList.remove('hidden'); badge.classList.add('flex'); }
+            else { badge.classList.add('hidden'); badge.classList.remove('flex'); }
+        }
+        const pill = card.querySelector('.make-cover-pill');
+        if (pill) {
+            if (isCover) { pill.classList.add('hidden'); pill.classList.remove('flex'); }
+            else { pill.classList.remove('hidden'); pill.classList.add('flex'); }
+        }
+        const check = card.querySelector('.cover-check-indicator');
+        if (check) {
+            if (isCover) { check.classList.remove('hidden'); check.classList.add('flex'); }
+            else { check.classList.add('hidden'); check.classList.remove('flex'); }
+        }
+    });
 }
 
 function renderPreviews() {
     const container = document.getElementById('image-preview-container');
     const guidance = document.getElementById('cover-photo-guidance');
+    if (!container) return;
     container.innerHTML = ''; 
     
     if (selectedFiles.length > 0) {
@@ -1061,49 +1089,60 @@ function renderPreviews() {
         if (guidance) guidance.classList.add('hidden');
         const statusBox = document.getElementById('compression-status');
         if (statusBox) statusBox.classList.add('hidden');
+        return;
     }
 
     selectedFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const isPrimary = (index === primaryImageIndex);
-            const sizeKB = Math.round(file.size / 1024);
-            const imgBox = document.createElement('div');
-            imgBox.className = `relative aspect-square max-h-36 sm:max-h-32 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${isPrimary ? 'border-blue-600 ring-2 ring-blue-500/50 is-primary-card' : 'border-slate-200 dark:border-slate-700 shadow-xs hover:border-blue-400'} group/item`;
-            imgBox.onclick = () => setPrimaryImage(index);
-            
-            imgBox.innerHTML = `
-                <img src="${e.target.result}" class="w-full h-full object-cover transition-transform group-hover/item:scale-105">
-                
-                <div class="absolute top-1.5 left-1.5 z-20 pointer-events-auto">
-                    <button type="button" 
-                            onclick="event.stopPropagation(); setPrimaryImage(${index})" 
-                            class="cover-tick-btn flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-md transition-all cursor-pointer ${isPrimary ? 'bg-blue-600 text-white ring-1.5 ring-white/60' : 'bg-black/65 hover:bg-black/85 text-white/90 border border-white/40'}"
-                            title="${isPrimary ? 'Current Cover Photo' : 'Click tick box to set as Cover Photo'}">
-                        <span class="cover-tick-icon w-3.5 h-3.5 rounded-full flex items-center justify-center ${isPrimary ? 'bg-white text-blue-600 font-black' : 'border-1.5 border-white/80 bg-transparent'}">
-                            <i class="ph-bold ph-check text-[10px] ${isPrimary ? '' : 'hidden'}"></i>
-                        </span>
-                        <span class="cover-tick-label font-bold tracking-tight">${isPrimary ? 'Cover' : 'Set Cover'}</span>
-                    </button>
-                </div>
+        const isPrimary = (index === primaryImageIndex);
+        const sizeKB = Math.round(file.size / 1024);
+        const imgBox = document.createElement('div');
+        imgBox.className = `preview-card relative aspect-square max-h-36 sm:max-h-32 rounded-2xl overflow-hidden border-2 transition-all cursor-pointer select-none ${isPrimary ? 'border-blue-600 ring-4 ring-blue-500/40 is-primary-card' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400'}`;
+        imgBox.id = `preview-card-${index}`;
+        imgBox.onclick = () => setPrimaryImage(index);
 
-                <div class="absolute inset-x-0 bottom-0 p-1 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex justify-between items-center z-10 pointer-events-none">
-                    <span class="text-white text-[9px] font-bold">${sizeKB} KB</span>
-                    <button type="button" onclick="event.stopPropagation(); removeImage(${index})" class="text-white bg-red-600/90 hover:bg-red-600 p-1 rounded-full transition-all shadow-sm cursor-pointer pointer-events-auto" title="Remove Photo">
-                        <i class="ph-bold ph-trash text-xs"></i>
-                    </button>
+        const img = document.createElement('img');
+        img.className = 'w-full h-full object-cover transition-transform duration-300 pointer-events-none group-hover:scale-105';
+        img.src = URL.createObjectURL(file);
+        imgBox.appendChild(img);
+
+        const actionsDiv = document.createElement('div');
+        actionsDiv.innerHTML = `
+            <!-- Cover Indicator (Top-Left) -->
+            <div class="absolute top-2 left-2 z-20 pointer-events-none">
+                <div class="cover-badge ${isPrimary ? 'flex' : 'hidden'} items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-600 text-white shadow-lg ring-2 ring-white/80">
+                    <i class="ph-fill ph-star text-amber-300 text-xs"></i>
+                    <span>Cover Photo</span>
                 </div>
-            `;
-            container.appendChild(imgBox);
-        };
-        reader.readAsDataURL(file);
+                <div class="make-cover-pill ${isPrimary ? 'hidden' : 'flex'} items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-black/60 hover:bg-blue-600 text-white border border-white/40 backdrop-blur-xs shadow-md transition-all">
+                    <i class="ph-bold ph-circle text-[10px]"></i>
+                    <span>Make Cover</span>
+                </div>
+            </div>
+
+            <!-- Active Checkmark Indicator (Top-Right before delete) -->
+            <div class="cover-check-indicator absolute top-2 right-10 z-20 ${isPrimary ? 'flex' : 'hidden'} items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white shadow-md pointer-events-none ring-2 ring-white">
+                <i class="ph-bold ph-check text-xs"></i>
+            </div>
+
+            <!-- Delete button -->
+            <button type="button" onclick="event.stopPropagation(); removeImage(${index})" class="absolute top-2 right-2 z-20 w-7 h-7 rounded-lg bg-black/60 hover:bg-red-600 text-white flex items-center justify-center transition-all shadow-md cursor-pointer pointer-events-auto" title="Remove photo">
+                <i class="ph-bold ph-trash text-xs"></i>
+            </button>
+
+            <!-- Size Badge Bottom -->
+            <div class="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-between items-center z-10 pointer-events-none">
+                <span class="text-white text-[10px] font-medium">${sizeKB} KB</span>
+            </div>
+        `;
+        imgBox.appendChild(actionsDiv);
+        container.appendChild(imgBox);
     });
 }
 
 function removeImage(index) {
     selectedFiles.splice(index, 1);
     if (primaryImageIndex >= selectedFiles.length) {
-        primaryImageIndex = 0;
+        primaryImageIndex = Math.max(0, selectedFiles.length - 1);
     }
     syncInputFiles();
     renderPreviews();
