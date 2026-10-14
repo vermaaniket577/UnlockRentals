@@ -258,17 +258,26 @@
         if (!url || url.origin !== window.location.origin) return false;
         const p = url.pathname.toLowerCase();
 
-        // Exclude admin panels, authentication POSTs, checkout gateways, downloads
+        // Standalone root homepage (welcome.blade.php has custom standalone layout without <main>)
+        if (p === '/' || p === '') return false;
+
+        // Heavy multi-step forms & wizards: must load natively with 100% fresh DOM, scripts & uploaders
+        if (p.includes('/create') ||
+            p.includes('/edit') ||
+            p.includes('/register') ||
+            p.includes('/checkout') ||
+            p.includes('/payment')) {
+            return false;
+        }
+
+        // Exclude admin panels, authentication endpoints, downloads
         if (p.startsWith('/admin') ||
             p.startsWith('/backend') ||
             p.startsWith('/api') ||
             p.startsWith('/sanctum') ||
             p.includes('/login') ||
-            p.includes('/register') ||
             p.includes('/logout') ||
             p.includes('/password') ||
-            p.includes('/checkout') ||
-            p.includes('/payment') ||
             p.endsWith('.pdf') ||
             p.endsWith('.apk') ||
             p.endsWith('.zip') ||
@@ -501,6 +510,13 @@
 
         // DOM Swap with Native View Transition API or CSS crossfade fallback
         const applySwap = () => {
+            // Verify main container exists BEFORE modifying history or DOM
+            const mainEl = document.getElementById('ur-main-container') || document.querySelector('main');
+            if (!mainEl || !pageData || !pageData.mainHtml) {
+                window.location.href = targetUrl.href;
+                return;
+            }
+
             // 1. Update Title & Meta
             if (pageData.title) document.title = pageData.title;
             if (pageData.metaDesc) {
@@ -512,19 +528,16 @@
                 if (canon) canon.setAttribute('href', pageData.canonical);
             }
 
-            // 2. Push/Replace History
+            // 2. Push/Replace History ONLY when swap is guaranteed
             if (pushState && !isPop) {
                 history.pushState({ scrollY: 0 }, '', targetUrl.href);
             }
 
             // 3. Swap <main> container content
-            const mainEl = document.getElementById('ur-main-container') || document.querySelector('main');
-            if (mainEl) {
-                mainEl.innerHTML = pageData.mainHtml;
-                mainEl.classList.remove('ur-spa-enter');
-                void mainEl.offsetWidth; // Force reflow
-                mainEl.classList.add('ur-spa-enter');
-            }
+            mainEl.innerHTML = pageData.mainHtml;
+            mainEl.classList.remove('ur-spa-enter');
+            void mainEl.offsetWidth; // Force reflow
+            mainEl.classList.add('ur-spa-enter');
 
             // 4. Update Mobile Bottom Nav active state
             if (pageData.mobileNav) {
@@ -635,7 +648,12 @@
 
         try {
             const url = new URL(href, window.location.origin);
-            if (!isSpaEligible(url)) {
+            const currentHasMain = !!(document.getElementById('ur-main-container') || document.querySelector('main'));
+
+            // If current page is a standalone view without <main> (like welcome.blade.php)
+            // OR if target route is not SPA-eligible (forms, /create, /edit, homepage, etc.),
+            // do NOT intercept! Allow natural browser navigation with top progress bar!
+            if (!currentHasMain || !isSpaEligible(url)) {
                 start(false);
                 return;
             }
@@ -651,8 +669,9 @@
     // Browser Back and Forward Button Support with 0ms Instant Cache Swap
     window.addEventListener('popstate', function () {
         try {
+            const currentHasMain = !!(document.getElementById('ur-main-container') || document.querySelector('main'));
             const url = new URL(window.location.href);
-            if (isSpaEligible(url)) {
+            if (currentHasMain && isSpaEligible(url)) {
                 urNavigateTo(window.location.href, true, false);
             }
         } catch (_) {}
@@ -660,6 +679,9 @@
 
     // Predictive Preloading On Touch & Hover
     function onInteractionPrefetch(e) {
+        const currentHasMain = !!(document.getElementById('ur-main-container') || document.querySelector('main'));
+        if (!currentHasMain) return;
+
         const link = e.target.closest('a[href]');
         if (!link) return;
         const href = link.getAttribute('href');
