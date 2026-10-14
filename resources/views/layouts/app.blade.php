@@ -445,7 +445,7 @@
     @endif
 
     {{-- Main Content --}}
-    <main>
+    <main id="ur-main-container">
         @yield('content')
     </main>
 

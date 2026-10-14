@@ -1,11 +1,12 @@
 {{-- ============================================================
-     UNLOCK RENTALS — ELEGANT COMPACT GLASS LOADER
-     A sleek, standard-sized glassmorphic loader with official
-     brand mark, smooth ambient pulse, and zero screen obstruction.
+     UNLOCK RENTALS — ULTRA-FAST REACT-STYLE SPA PAGE LOADER & ROUTER
+     Provides instantaneous client-side navigation (0ms perceived latency),
+     in-memory predictive caching, native View Transitions, smooth top
+     progress bar (Next.js/YouTube style), and instant Back/Forward history.
      ============================================================ --}}
 
 <style>
-/* ── Top Slim Accent Progress Bar ────────────────────────────── */
+/* ── Top Slim Accent Progress Bar (Next.js / YouTube / GitHub Grade) ── */
 #ur-progress-bar-top {
     position: fixed;
     top: 0;
@@ -16,13 +17,28 @@
     background-size: 200% 100%;
     z-index: 9999999;
     opacity: 0;
-    transition: opacity 0.15s ease, width 0.3s ease;
+    pointer-events: none;
+    transition: opacity 0.15s ease, width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     animation: ur-bar-shimmer 1.2s infinite linear;
-    box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.8), 0 0 5px rgba(56, 189, 248, 0.6);
 }
 
 #ur-progress-bar-top.ur-active {
     opacity: 1;
+}
+
+/* Glowing Leading Tip (NProgress / Next.js Style) */
+#ur-progress-bar-top::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100px;
+    height: 100%;
+    box-shadow: 0 0 14px #38bdf8, 0 0 8px #2563eb;
+    opacity: 1;
+    transform: rotate(3deg) translateY(-2px);
+    pointer-events: none;
 }
 
 @keyframes ur-bar-shimmer {
@@ -30,7 +46,7 @@
     100% { background-position: -200% 0; }
 }
 
-/* ── Floating Compact Glass Loader Overlay ───────────────────── */
+/* ── Floating Compact Glass Loader Overlay (For Heavy Operations & Forms) ── */
 #ur-animated-loader {
     pointer-events: none;
     transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -87,7 +103,7 @@
 {{-- Top Accent Progress Bar --}}
 <div id="ur-progress-bar-top"></div>
 
-{{-- Fullscreen Overlay with Compact Floating Glass Centerpiece --}}
+{{-- Fullscreen Overlay with Compact Floating Glass Centerpiece (Appears only on slow requests >650ms or form submits) --}}
 <div id="ur-animated-loader" class="fixed inset-0 bg-slate-950/45 backdrop-blur-[3px] z-[9999998] flex items-center justify-center opacity-0">
     <div class="ur-loader-card">
         
@@ -138,21 +154,20 @@
     function start(showCenterModalImmediate = false) {
         if (started) return;
         started   = true;
-        fakeWidth = 15;
+        fakeWidth = 20;
         
         clearInterval(timer);
         clearTimeout(overlayTimer);
         clearTimeout(autoDismissTimer);
 
         if (bar) {
-            bar.style.width = '15%';
+            bar.style.width = '20%';
             bar.classList.add('ur-active');
         }
-        if (line) line.style.width = '15%';
-        if (textLabel) textLabel.textContent = "Opening...";
+        if (line) line.style.width = '20%';
+        if (textLabel) textLabel.textContent = "Loading...";
 
         // Only show center modal if navigation takes longer than 650ms (or on heavy form submits)
-        // This ensures fast page opens never block user touch or flash a modal!
         if (showCenterModalImmediate) {
             if (overlay) overlay.classList.add('ur-loading-active');
         } else {
@@ -163,17 +178,17 @@
             }, 650);
         }
 
-        // Fluid incremental progress
+        // Fluid incremental progress simulation
         timer = setInterval(() => {
             if (fakeWidth < 90) {
-                fakeWidth += (90 - fakeWidth) * 0.12 + 0.6;
+                fakeWidth += (90 - fakeWidth) * 0.15 + 0.8;
                 if (bar) bar.style.width = fakeWidth + '%';
                 if (line) line.style.width = fakeWidth + '%';
             }
-        }, 60);
+        }, 50);
 
         // Safety auto-dismiss
-        autoDismissTimer = setTimeout(done, 4000);
+        autoDismissTimer = setTimeout(done, 5000);
     }
 
     function done() {
@@ -192,93 +207,485 @@
                 if (bar) bar.style.width = '0%';
                 if (line) line.style.width = '0%';
                 started = false;
-            }, 200);
-        }, 180);
+            }, 180);
+        }, 160);
     }
 
     window.URLoader = { show: () => start(true), start: () => start(false), hide: done };
 
-    // Dismiss overlay on tap in case of edge cases
     if (overlay) {
         overlay.addEventListener('click', done);
     }
 
-    // Trigger on internal navigation link clicks
+    // ============================================================
+    // REACT-STYLE IN-MEMORY SPA CLIENT ROUTER & INSTANT PRELOADER
+    // ============================================================
+    const urPageCache = new Map();
+    const CACHE_MAX_ENTRIES = 35;
+    const CACHE_TTL_MS = 5 * 60 * 1000; // 5-minute in-memory cache
+    const inflightFetches = new Map();
+    let currentNavController = null;
+
+    function normalizeUrlKey(url) {
+        try {
+            const u = new URL(url, window.location.origin);
+            return u.pathname + u.search;
+        } catch (_) {
+            return url;
+        }
+    }
+
+    function setCache(key, data) {
+        if (urPageCache.size >= CACHE_MAX_ENTRIES) {
+            const firstKey = urPageCache.keys().next().value;
+            urPageCache.delete(firstKey);
+        }
+        urPageCache.set(key, { ...data, timestamp: Date.now() });
+    }
+
+    function getCache(key) {
+        const item = urPageCache.get(key);
+        if (!item) return null;
+        if (Date.now() - item.timestamp > CACHE_TTL_MS) {
+            urPageCache.delete(key);
+            return null;
+        }
+        return item;
+    }
+
+    // Check if URL is safe and eligible for instant SPA navigation
+    function isSpaEligible(url) {
+        if (!url || url.origin !== window.location.origin) return false;
+        const p = url.pathname.toLowerCase();
+
+        // Exclude admin panels, authentication POSTs, checkout gateways, downloads
+        if (p.startsWith('/admin') ||
+            p.startsWith('/backend') ||
+            p.startsWith('/api') ||
+            p.startsWith('/sanctum') ||
+            p.includes('/login') ||
+            p.includes('/register') ||
+            p.includes('/logout') ||
+            p.includes('/password') ||
+            p.includes('/checkout') ||
+            p.includes('/payment') ||
+            p.endsWith('.pdf') ||
+            p.endsWith('.apk') ||
+            p.endsWith('.zip') ||
+            p.endsWith('.jpg') ||
+            p.endsWith('.jpeg') ||
+            p.endsWith('.png') ||
+            p.endsWith('.webp') ||
+            p.includes('/download/')) {
+            return false;
+        }
+        return true;
+    }
+
+    // Parse incoming HTML text into structured SPA data
+    function parsePageData(htmlText, url) {
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+
+            const main = doc.getElementById('ur-main-container') || doc.querySelector('main');
+            if (!main) return null; // Not a standard app page, fallback
+
+            const title = doc.title || '';
+            const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
+            const canonical = doc.querySelector('link[rel="canonical"]')?.getAttribute('href') || url;
+            const mobileNav = doc.getElementById('mobile-bottom-nav')?.innerHTML || null;
+
+            // Scripts inside <main>
+            const mainScripts = Array.from(main.querySelectorAll('script')).map(s => ({
+                src: s.getAttribute('src'),
+                content: s.textContent,
+                type: s.getAttribute('type') || 'text/javascript'
+            }));
+
+            // Page-specific scripts from body (e.g. from @push('scripts'))
+            const bodyScripts = [];
+            doc.querySelectorAll('body script').forEach(s => {
+                if (main.contains(s)) return;
+                const src = s.getAttribute('src');
+                const content = s.textContent.trim();
+                if (src) {
+                    if (!src.includes('googletagmanager') && !src.includes('adsbygoogle') && !src.includes('otp-verification') && !src.includes('visitor-tracker')) {
+                        bodyScripts.push({ src, type: s.getAttribute('type') || 'text/javascript' });
+                    }
+                } else if (content.length > 0) {
+                    if (!content.includes('sendSubscriptionToServer') && !content.includes('showNetworkToast') && !content.includes('btn-submitting')) {
+                        bodyScripts.push({ content, type: s.getAttribute('type') || 'text/javascript' });
+                    }
+                }
+            });
+
+            return {
+                title,
+                metaDesc,
+                canonical,
+                mainHtml: main.innerHTML,
+                mobileNav,
+                mainScripts,
+                bodyScripts
+            };
+        } catch (_) {
+            return null;
+        }
+    }
+
+    // Predictive background prefetcher (populates cache before click release!)
+    function prefetchUrl(targetHref) {
+        try {
+            const targetUrl = new URL(targetHref, window.location.origin);
+            if (!isSpaEligible(targetUrl)) return;
+            const key = normalizeUrlKey(targetUrl);
+            const currentKey = normalizeUrlKey(window.location.href);
+            if (key === currentKey || getCache(key) || inflightFetches.has(key)) return;
+
+            const fetchPromise = fetch(targetUrl.href, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-UR-SPA': '1' },
+                credentials: 'same-origin',
+                priority: 'low'
+            })
+            .then(res => {
+                if (res.ok && res.headers.get('content-type')?.includes('text/html')) {
+                    return res.text();
+                }
+                return null;
+            })
+            .then(html => {
+                inflightFetches.delete(key);
+                if (html) {
+                    const data = parsePageData(html, targetUrl.href);
+                    if (data) setCache(key, data);
+                }
+            })
+            .catch(() => {
+                inflightFetches.delete(key);
+            });
+
+            inflightFetches.set(key, fetchPromise);
+        } catch (_) {}
+    }
+
+    // Execute scripts extracted from newly mounted SPA view
+    function runPageScripts(mainScripts, bodyScripts) {
+        const allScripts = [...(mainScripts || []), ...(bodyScripts || [])];
+        allScripts.forEach(scriptObj => {
+            if (scriptObj.type && scriptObj.type !== 'text/javascript' && scriptObj.type !== 'application/javascript') return;
+            try {
+                const s = document.createElement('script');
+                if (scriptObj.src) {
+                    if (!document.querySelector(`script[src="${scriptObj.src}"]`)) {
+                        s.src = scriptObj.src;
+                        document.body.appendChild(s);
+                    }
+                } else if (scriptObj.content) {
+                    s.textContent = scriptObj.content;
+                    document.body.appendChild(s);
+                    s.remove();
+                }
+            } catch (e) {
+                console.warn('[UR-SPA] Script execution notice:', e);
+            }
+        });
+    }
+
+    // Update active highlight classes on desktop navbar links
+    function updateNavbarActiveLinks(path, search) {
+        const navLinks = document.querySelectorAll('#main-nav .ur-nav-link');
+        navLinks.forEach(link => {
+            try {
+                const linkUrl = new URL(link.getAttribute('href'), window.location.origin);
+                const linkPath = linkUrl.pathname;
+                const linkSearch = linkUrl.search;
+                
+                let isActive = false;
+                if (linkSearch) {
+                    isActive = (linkPath === path && linkSearch === search);
+                } else if (linkPath === '/') {
+                    isActive = (path === '/' && !search);
+                } else {
+                    isActive = (path === linkPath && !search);
+                }
+
+                if (isActive) {
+                    link.classList.add('active-nav-link', 'bg-blue-50/50', 'dark:bg-blue-900/20');
+                    link.classList.remove('hover:bg-stone-50', 'dark:hover:bg-slate-800');
+                } else {
+                    link.classList.remove('active-nav-link', 'bg-blue-50/50', 'dark:bg-blue-900/20');
+                    link.classList.add('hover:bg-stone-50', 'dark:hover:bg-slate-800');
+                }
+            } catch (_) {}
+        });
+    }
+
+    // Core SPA Page Navigation Engine
+    async function urNavigateTo(targetHref, isPop = false, pushState = true) {
+        const targetUrl = new URL(targetHref, window.location.origin);
+        const key = normalizeUrlKey(targetUrl);
+        const currentKey = normalizeUrlKey(window.location.href);
+
+        // Handle same-page anchor jumps
+        if (key === currentKey) {
+            if (targetUrl.hash) {
+                const el = document.getElementById(targetUrl.hash.slice(1));
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            return;
+        }
+
+        // Save current scroll position before leaving
+        if (!isPop) {
+            try {
+                history.replaceState({ scrollY: window.scrollY }, '', window.location.href);
+            } catch (_) {}
+        }
+
+        // Abort previous navigation fetch if still running
+        if (currentNavController) {
+            currentNavController.abort();
+        }
+        currentNavController = new AbortController();
+
+        // 0ms instant feedback: start glowing top loader
+        start(false);
+
+        let pageData = getCache(key);
+
+        // If not in cache, fetch immediately with top priority
+        if (!pageData) {
+            try {
+                let fetchPromise = inflightFetches.get(key);
+                if (!fetchPromise) {
+                    const res = await fetch(targetUrl.href, {
+                        signal: currentNavController.signal,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-UR-SPA': '1' },
+                        credentials: 'same-origin'
+                    });
+
+                    if (!res.ok || !res.headers.get('content-type')?.includes('text/html')) {
+                        window.location.href = targetUrl.href;
+                        return;
+                    }
+
+                    // Check if server redirected to auth or admin
+                    const finalUrl = new URL(res.url);
+                    if (finalUrl.pathname.startsWith('/admin') || finalUrl.pathname.startsWith('/login')) {
+                        window.location.href = res.url;
+                        return;
+                    }
+
+                    const html = await res.text();
+                    pageData = parsePageData(html, res.url);
+                } else {
+                    await fetchPromise;
+                    pageData = getCache(key);
+                }
+
+                if (!pageData) {
+                    window.location.href = targetUrl.href;
+                    return;
+                }
+
+                setCache(key, pageData);
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                window.location.href = targetUrl.href;
+                return;
+            }
+        }
+
+        // DOM Swap with Native View Transition API or CSS crossfade fallback
+        const applySwap = () => {
+            // 1. Update Title & Meta
+            if (pageData.title) document.title = pageData.title;
+            if (pageData.metaDesc) {
+                const metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc) metaDesc.setAttribute('content', pageData.metaDesc);
+            }
+            if (pageData.canonical) {
+                const canon = document.querySelector('link[rel="canonical"]');
+                if (canon) canon.setAttribute('href', pageData.canonical);
+            }
+
+            // 2. Push/Replace History
+            if (pushState && !isPop) {
+                history.pushState({ scrollY: 0 }, '', targetUrl.href);
+            }
+
+            // 3. Swap <main> container content
+            const mainEl = document.getElementById('ur-main-container') || document.querySelector('main');
+            if (mainEl) {
+                mainEl.innerHTML = pageData.mainHtml;
+                mainEl.classList.remove('ur-spa-enter');
+                void mainEl.offsetWidth; // Force reflow
+                mainEl.classList.add('ur-spa-enter');
+            }
+
+            // 4. Update Mobile Bottom Nav active state
+            if (pageData.mobileNav) {
+                const mobileNavEl = document.getElementById('mobile-bottom-nav');
+                if (mobileNavEl) mobileNavEl.innerHTML = pageData.mobileNav;
+            }
+
+            // 5. Update Desktop Main Nav active state
+            updateNavbarActiveLinks(targetUrl.pathname, targetUrl.search);
+
+            // 6. Execute Scripts
+            runPageScripts(pageData.mainScripts, pageData.bodyScripts);
+
+            // 7. Scroll Management (Instant scroll restore on Back/Forward, smooth on click)
+            if (targetUrl.hash) {
+                const el = document.getElementById(targetUrl.hash.slice(1));
+                if (el) el.scrollIntoView({ behavior: 'instant' });
+                else window.scrollTo(0, 0);
+            } else if (isPop && history.state && typeof history.state.scrollY === 'number') {
+                window.scrollTo(0, history.state.scrollY);
+            } else {
+                window.scrollTo(0, 0);
+            }
+
+            // 8. Google Analytics Pageview Tracking
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'page_view', {
+                    page_path: targetUrl.pathname + targetUrl.search,
+                    page_title: document.title
+                });
+            }
+
+            // 9. Dispatch custom lifecycle events for page-level components
+            window.dispatchEvent(new Event('DOMContentLoaded'));
+            document.dispatchEvent(new Event('DOMContentLoaded'));
+            window.dispatchEvent(new CustomEvent('ur:page-loaded', { detail: { url: targetUrl.href } }));
+            window.dispatchEvent(new CustomEvent('turbolinks:load'));
+
+            // 10. Complete Top Progress Bar
+            done();
+        };
+
+        if (document.startViewTransition) {
+            document.startViewTransition(applySwap);
+        } else {
+            applySwap();
+        }
+    }
+
+    // Expose SPA controls globally
+    window.URNavigate = urNavigateTo;
+    window.URCache = urPageCache;
+
+    // Cache initial boot page for instant 0ms Back-navigation
+    const initialKey = normalizeUrlKey(window.location.href);
+    const initialMain = document.getElementById('ur-main-container') || document.querySelector('main');
+    if (initialMain) {
+        setCache(initialKey, {
+            title: document.title,
+            metaDesc: document.querySelector('meta[name="description"]')?.getAttribute('content') || '',
+            canonical: document.querySelector('link[rel="canonical"]')?.getAttribute('href') || window.location.href,
+            mainHtml: initialMain.innerHTML,
+            mobileNav: document.getElementById('mobile-bottom-nav')?.innerHTML || null,
+            mainScripts: [],
+            bodyScripts: []
+        });
+    }
+
+    // Intercept Link Clicks for Instant SPA Navigation
     document.addEventListener('click', function (e) {
         if (e.defaultPrevented) return;
+        if (e.button !== 0) return; // Only left clicks
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // Allow new tab/window
 
         const link = e.target.closest('a[href]');
         if (!link) return;
 
-        // Skip loader on download links, files, modals, and special triggers
+        // Skip downloads, modals, explicit opt-outs
         if (link.hasAttribute('download') || 
             link.getAttribute('download') !== null ||
             link.href.includes('/download/') ||
             link.href.endsWith('.apk') ||
             link.href.endsWith('.pdf') ||
             link.href.endsWith('.zip') ||
+            link.dataset.noPjax === 'true' ||
             link.dataset.noLoader === 'true' || 
             link.dataset.urLoaderSkip === 'true' || 
             link.getAttribute('data-no-loader') === 'true' ||
-            (link.getAttribute('onclick') && (link.getAttribute('onclick').includes('openAuthModal') || link.getAttribute('onclick').includes('openUserAccountModal')))) {
+            link.getAttribute('data-no-pjax') !== null) {
+            return;
+        }
+
+        const onclick = link.getAttribute('onclick') || '';
+        if (onclick.includes('openAuthModal') || 
+            onclick.includes('openUserAccountModal') || 
+            onclick.includes('toggleUserDropdown') ||
+            onclick.includes('toggleSupportChat') ||
+            onclick.includes('handleMobileSupportClick')) {
             return;
         }
 
         const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript') || href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('whatsapp:') || link.target === '_blank') return;
+        if (!href || href.startsWith('#') || href.startsWith('javascript') || 
+            href.startsWith('tel:') || href.startsWith('mailto:') || 
+            href.startsWith('whatsapp:') || (link.target && link.target !== '_self')) {
+            return;
+        }
 
         try {
             const url = new URL(href, window.location.origin);
-            if (url.origin !== window.location.origin) return;
-            if (url.pathname === window.location.pathname && url.search === window.location.search) return;
-        } catch (_) { return; }
+            if (!isSpaEligible(url)) {
+                start(false);
+                return;
+            }
 
-        start(false);
+            // Stop full browser reload and run instant SPA navigation!
+            e.preventDefault();
+            urNavigateTo(url.href, false, true);
+        } catch (_) {
+            return;
+        }
     }, false);
 
-    // Trigger on form submits (show center modal for forms)
-    document.addEventListener('submit', function (e) {
-        if (e.defaultPrevented || e.target.dataset.urLoaderSkip === 'true' || e.target.id === 'ur-modal-login-form' || e.target.id === 'ur-modal-register-form') return;
-        start(true);
-    }, false);
+    // Browser Back and Forward Button Support with 0ms Instant Cache Swap
+    window.addEventListener('popstate', function () {
+        try {
+            const url = new URL(window.location.href);
+            if (isSpaEligible(url)) {
+                urNavigateTo(window.location.href, true, false);
+            }
+        } catch (_) {}
+    });
 
-    // High-Speed Predictive Touch Prefetching (runs on pointerdown / touchstart 150ms before click!)
-    const prefetchedUrls = new Set();
-    function prefetchTarget(e) {
+    // Predictive Preloading On Touch & Hover
+    function onInteractionPrefetch(e) {
         const link = e.target.closest('a[href]');
         if (!link) return;
         const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript') || href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('whatsapp:') || link.target === '_blank') return;
+        if (!href || href.startsWith('#') || href.startsWith('javascript') || href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('whatsapp:') || (link.target && link.target !== '_self')) return;
+        if (link.dataset.noPjax === 'true' || link.dataset.urLoaderSkip === 'true') return;
 
-        try {
-            const url = new URL(href, window.location.origin);
-            if (url.origin !== window.location.origin) return;
-            if (url.pathname === window.location.pathname && url.search === window.location.search) return;
-            if (/logout|login|register|delete|checkout|pay|payment|admin/i.test(url.pathname)) return;
-            
-            const key = url.pathname + url.search;
-            if (prefetchedUrls.has(key)) return;
-            prefetchedUrls.add(key);
-
-            // 1. Native prefetch tag
-            const prefetchLink = document.createElement('link');
-            prefetchLink.rel  = 'prefetch';
-            prefetchLink.href = url.href;
-            prefetchLink.as   = 'document';
-            document.head.appendChild(prefetchLink);
-
-            // 2. HTTP fetch prefetch (populates browser cache and ServiceWorker ahead of tap release)
-            if ('fetch' in window) {
-                fetch(url.href, { priority: 'low', credentials: 'include' }).catch(() => {});
-            }
-        } catch (_) {}
+        prefetchUrl(href);
     }
 
-    document.addEventListener('pointerdown', prefetchTarget, { passive: true });
-    document.addEventListener('touchstart', prefetchTarget, { passive: true });
-    document.addEventListener('mouseover', prefetchTarget, { passive: true });
+    document.addEventListener('pointerdown', onInteractionPrefetch, { passive: true });
+    document.addEventListener('touchstart', onInteractionPrefetch, { passive: true });
 
-    // Hide on page load & back/forward navigation
+    let hoverTimer = null;
+    document.addEventListener('mouseover', function (e) {
+        clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(() => onInteractionPrefetch(e), 40);
+    }, { passive: true });
+
+    // Handle Form Submissions: Show loading indicator & invalidate cache so new data shows
+    document.addEventListener('submit', function (e) {
+        if (e.defaultPrevented || e.target.dataset.urLoaderSkip === 'true' || e.target.id === 'ur-modal-login-form' || e.target.id === 'ur-modal-register-form') return;
+        start(true);
+        urPageCache.clear();
+    }, false);
+
+    // Dismiss on native page events
     window.addEventListener('pageshow', done);
     window.addEventListener('focus', done);
     if (document.readyState === 'complete') { done(); }
