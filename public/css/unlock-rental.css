@@ -2541,11 +2541,15 @@ a, button, input, select, textarea, [role="button"] {
     touch-action: manipulation;
 }
 
-/* Off-screen GPU render optimization for property lists */
+/* Off-screen GPU render optimization for property lists & compact sizing */
 @media (min-width: 641px) {
     .property-rental-card {
         content-visibility: auto;
-        contain-intrinsic-size: 380px;
+        contain-intrinsic-size: 310px;
+    }
+    .card-image-wrap {
+        aspect-ratio: 16 / 10;
+        max-height: 195px;
     }
 }
 @media (max-width: 640px) {
@@ -2553,6 +2557,10 @@ a, button, input, select, textarea, [role="button"] {
         content-visibility: visible !important;
         contain-intrinsic-size: auto none !important;
         height: auto !important;
+    }
+    .card-image-wrap {
+        aspect-ratio: 4 / 3;
+        max-height: 145px;
     }
 }
 

@@ -288,7 +288,7 @@
 
                 @if($properties->count() > 0)
                     {{-- Grid Container --}}
-                    <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                         @foreach($properties as $property)
                             <x-property-card :property="$property" />
                         @endforeach

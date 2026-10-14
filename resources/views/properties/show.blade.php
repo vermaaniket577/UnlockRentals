@@ -1209,7 +1209,7 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                 @foreach($similarProperties as $similar)
                     <x-property-card :property="$similar" />
                 @endforeach

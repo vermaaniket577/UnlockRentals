@@ -85,7 +85,7 @@
     $hasMultipleImages = $cardImages->count() > 1;
 @endphp
 
-<article class="property-rental-card group relative flex flex-col h-auto sm:h-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+<article class="property-rental-card group relative flex flex-col h-auto sm:h-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
     id="property-card-{{ $property->id }}"
     data-property-card="true"
     data-property-id="{{ $property->id }}"
@@ -124,8 +124,8 @@
         $priorityAttr = $isEager ? 'high' : 'low';
     @endphp
 
-    {{-- A. Property Image Section (Responsive Aspect Ratio: 4:3 on mobile 2-col, 16:9 on sm+) --}}
-    <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 img-skeleton-shimmer flex-shrink-0">
+    {{-- A. Property Image Section (Compact Responsive Aspect Ratio: 4:3 on mobile 2-col, 16:10 on sm+) --}}
+    <div class="card-image-wrap relative w-full overflow-hidden bg-slate-100 dark:bg-slate-800 img-skeleton-shimmer flex-shrink-0">
         @if($hasMultipleImages)
             {{-- Multi-Image Auto-Slider (Slides Right to Left) --}}
             <div class="card-image-slider relative w-full h-full overflow-hidden select-none"
@@ -154,24 +154,24 @@
                 {{-- Left & Right Navigation Chevrons (z-20 so clicks don't trigger the card link) --}}
                 <button type="button"
                         onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderPrev({{ $property->id }});"
-                        class="card-slider-btn card-slider-prev absolute left-1.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center opacity-75 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity backdrop-blur-xs cursor-pointer shadow-md border border-white/25 active:scale-90"
+                        class="card-slider-btn card-slider-prev absolute left-1.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center opacity-75 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity backdrop-blur-xs cursor-pointer shadow-md border border-white/25 active:scale-90"
                         aria-label="Previous photo">
-                    <i class="ph-bold ph-caret-left text-xs sm:text-sm"></i>
+                    <i class="ph-bold ph-caret-left text-xs"></i>
                 </button>
                 <button type="button"
                         onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderNext({{ $property->id }});"
-                        class="card-slider-btn card-slider-next absolute right-1.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center opacity-75 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity backdrop-blur-xs cursor-pointer shadow-md border border-white/25 active:scale-90"
+                        class="card-slider-btn card-slider-next absolute right-1.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center opacity-75 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity backdrop-blur-xs cursor-pointer shadow-md border border-white/25 active:scale-90"
                         aria-label="Next photo">
-                    <i class="ph-bold ph-caret-right text-xs sm:text-sm"></i>
+                    <i class="ph-bold ph-caret-right text-xs"></i>
                 </button>
 
                 {{-- Micro Pagination Dots (Centered at bottom, z-20) --}}
-                <div class="card-slider-dots absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs pointer-events-auto"
+                <div class="card-slider-dots absolute bottom-1.5 sm:bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs pointer-events-auto"
                      onclick="event.stopPropagation();">
                     @foreach($cardImages as $idx => $img)
                         <button type="button"
                                 onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderGoTo({{ $property->id }}, {{ $idx }});"
-                                class="card-slider-dot h-1.5 rounded-full transition-all duration-300 {{ $idx === 0 ? 'w-3.5 bg-white shadow-xs' : 'w-1.5 bg-white/50 hover:bg-white/80' }}"
+                                class="card-slider-dot h-1.5 rounded-full transition-all duration-300 {{ $idx === 0 ? 'w-3 bg-white shadow-xs' : 'w-1.5 bg-white/50 hover:bg-white/80' }}"
                                 data-dot-index="{{ $idx }}"
                                 aria-label="Go to photo {{ $idx + 1 }}">
                         </button>
@@ -179,8 +179,8 @@
                 </div>
 
                 {{-- Photo Count Pill (Bottom right, z-20) --}}
-                <div class="absolute bottom-2 right-2 z-20 pointer-events-none px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-[9px] font-extrabold text-white flex items-center gap-1 shadow-xs border border-white/10">
-                    <i class="ph-bold ph-images text-[10px] text-blue-300"></i>
+                <div class="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 z-20 pointer-events-none px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-[8.5px] font-extrabold text-white flex items-center gap-1 shadow-xs border border-white/10">
+                    <i class="ph-bold ph-images text-[9px] text-blue-300"></i>
                     <span class="card-slide-counter">1/{{ $cardImages->count() }}</span>
                 </div>
             </div>
@@ -207,10 +207,10 @@
                      fetchpriority="{{ $priorityAttr }}"
                      decoding="async">
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-white pointer-events-none">
-                    <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform mb-1">
-                        <i class="ph-fill ph-play text-sm sm:text-lg ml-0.5 text-white"></i>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform mb-1">
+                        <i class="ph-fill ph-play text-sm ml-0.5 text-white"></i>
                     </div>
-                    <span class="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-wider text-white drop-shadow">Video Tour</span>
+                    <span class="text-[8.5px] sm:text-[10px] font-extrabold uppercase tracking-wider text-white drop-shadow">Video Tour</span>
                 </div>
             </div>
         @else
@@ -231,38 +231,38 @@
         {{-- Diagonal BOOKED Corner Ribbon (45° Angle Crossing Image Corner) --}}
         @if($property->is_booked)
             <div class="ur-booked-ribbon-wrap absolute top-0 right-0 pointer-events-none z-30 overflow-hidden"
-                 style="position: absolute; top: 0; right: 0; width: 92px; height: 92px; overflow: hidden; pointer-events: none; z-index: 30;">
+                 style="position: absolute; top: 0; right: 0; width: 84px; height: 84px; overflow: hidden; pointer-events: none; z-index: 30;">
                 <div class="ur-booked-ribbon"
-                     style="position: absolute; top: 16px; right: -28px; width: 122px; transform: rotate(45deg); -webkit-transform: rotate(45deg); transform-origin: center center; -webkit-transform-origin: center center; background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%); color: #ffffff; font-size: 9px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; padding: 3.5px 0; line-height: 1; box-shadow: 0 4px 12px rgba(0,0,0,0.35); border-top: 1px solid rgba(255,255,255,0.4); border-bottom: 1px solid rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 3px; user-select: none; white-space: nowrap;">
-                    <i class="ph-bold ph-lock-key" style="font-size: 10px; color: #ffffff; line-height: 1;"></i>
+                     style="position: absolute; top: 14px; right: -26px; width: 115px; transform: rotate(45deg); -webkit-transform: rotate(45deg); transform-origin: center center; -webkit-transform-origin: center center; background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%); color: #ffffff; font-size: 8.5px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; padding: 3px 0; line-height: 1; box-shadow: 0 4px 12px rgba(0,0,0,0.35); border-top: 1px solid rgba(255,255,255,0.4); border-bottom: 1px solid rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 3px; user-select: none; white-space: nowrap;">
+                    <i class="ph-bold ph-lock-key" style="font-size: 9px; color: #ffffff; line-height: 1;"></i>
                     <span style="color: #ffffff; font-weight: 900; letter-spacing: 0.12em; line-height: 1;">Booked</span>
                 </div>
             </div>
         @endif
 
         {{-- Top Badges Row --}}
-        <div class="absolute top-1.5 left-1.5 right-1.5 sm:top-2.5 sm:left-2.5 sm:right-2.5 flex items-center justify-between gap-1 z-20 pointer-events-none">
+        <div class="absolute top-1.5 left-1.5 right-1.5 sm:top-2 sm:left-2 sm:right-2 flex items-center justify-between gap-1 z-20 pointer-events-none">
             {{-- Top Left: RENT / SALE & Property Type & FEATURED (when booked) --}}
             <div class="flex items-center gap-1 flex-wrap">
                 @if($isSale)
-                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-emerald-600/95 text-white shadow-xs sm:shadow-sm backdrop-blur-md">
-                        <i class="ph-bold ph-tag text-[8px] sm:text-[10px]"></i> <span class="hidden xs:inline sm:inline">For </span>Sale
+                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded sm:rounded-md text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wide bg-emerald-600/95 text-white shadow-xs backdrop-blur-md">
+                        <i class="ph-bold ph-tag text-[8px]"></i> <span class="hidden xs:inline">For </span>Sale
                     </span>
                 @else
-                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-blue-600/95 text-white shadow-xs sm:shadow-sm backdrop-blur-md">
-                        <i class="ph-bold ph-key text-[8px] sm:text-[10px]"></i> Rent
+                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded sm:rounded-md text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wide bg-blue-600/95 text-white shadow-xs backdrop-blur-md">
+                        <i class="ph-bold ph-key text-[8px]"></i> Rent
                     </span>
                 @endif
-                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-bold capitalize bg-slate-950/70 text-white/95 border border-white/15 shadow-xs sm:shadow-sm backdrop-blur-md truncate max-w-[90px] sm:max-w-none">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded sm:rounded-md text-[8px] sm:text-[9px] font-bold capitalize bg-slate-950/70 text-white/95 border border-white/15 shadow-xs backdrop-blur-md truncate max-w-[85px] sm:max-w-none">
                     @if($property->type === 'plot')
-                        <i class="ph-bold ph-map-trifold text-amber-300 text-[9px] sm:text-[11px]"></i> Plot / Land
+                        <i class="ph-bold ph-map-trifold text-amber-300 text-[8.5px] sm:text-[10px]"></i> Plot
                     @else
                         {{ ucfirst($property->type) }}
                     @endif
                 </span>
                 @if($property->is_booked && $property->is_featured)
-                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-amber-500 text-slate-950 shadow-xs sm:shadow-sm backdrop-blur-md">
-                        <i class="ph-fill ph-star text-[8px] sm:text-[10px]"></i> <span class="hidden sm:inline">Featured</span>
+                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded sm:rounded-md text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wide bg-amber-500 text-slate-950 shadow-xs backdrop-blur-md">
+                        <i class="ph-fill ph-star text-[8px]"></i> <span class="hidden sm:inline">Featured</span>
                     </span>
                 @endif
             </div>
@@ -270,14 +270,14 @@
             {{-- Top Right: DISTANCE or FEATURED --}}
             <div class="flex items-center gap-1">
                 @if(isset($property->distance_km) && $property->distance_km !== null)
-                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase bg-emerald-600/95 text-white shadow-xs backdrop-blur-md">
-                        <i class="ph-fill ph-navigation-arrow text-[8px] sm:text-[10px]"></i>
+                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded sm:rounded-md text-[8px] sm:text-[9px] font-extrabold uppercase bg-emerald-600/95 text-white shadow-xs backdrop-blur-md">
+                        <i class="ph-fill ph-navigation-arrow text-[8px]"></i>
                         <span>{{ round($property->distance_km, 1) }} km</span>
                     </span>
                 @endif
                 @if(!$property->is_booked && $property->is_featured)
-                    <span class="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wide sm:tracking-wider bg-amber-500 text-slate-950 shadow-xs sm:shadow-sm backdrop-blur-md">
-                        <i class="ph-fill ph-star text-[8px] sm:text-[10px]"></i> <span class="hidden sm:inline">Featured</span>
+                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded sm:rounded-md text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wide bg-amber-500 text-slate-950 shadow-xs backdrop-blur-md">
+                        <i class="ph-fill ph-star text-[8px]"></i> <span class="hidden sm:inline">Featured</span>
                     </span>
                 @endif
             </div>
@@ -285,92 +285,92 @@
 
         {{-- Bottom Left: Unique Post ID Badge on Image --}}
         <div class="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 z-20 pointer-events-none">
-            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/95 text-slate-800 text-[8.5px] sm:text-[9.5px] font-mono font-black shadow-xs border border-white/80 tracking-tight">
+            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/95 text-slate-800 text-[8px] sm:text-[9px] font-mono font-black shadow-xs border border-white/80 tracking-tight">
                 <span class="text-blue-600 font-bold">#</span>{{ $property->id }}
             </span>
         </div>
     </div>
 
-    {{-- B & C. Information & Action Body (Snug, Balanced Spacing Without Giant Gaps) --}}
-    <div class="p-2 sm:p-4 flex flex-col flex-1 gap-1 sm:gap-2.5 bg-white dark:bg-slate-900">
+    {{-- B & C. Information & Action Body (Compact, Proportional Spacing) --}}
+    <div class="p-2.5 sm:p-3 sm:px-3.5 flex flex-col flex-1 gap-1 sm:gap-1.5 bg-white dark:bg-slate-900">
         <div class="flex flex-col min-w-0">
-            {{-- Property Title (Line-clamp-1 on mobile 2-col, line-clamp-2 on sm+ for clean alignment) --}}
-            <h3 class="text-xs sm:text-[15px] md:text-base font-bold text-slate-900 dark:text-white line-clamp-1 sm:line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title="{{ $cleanTitle }}">
+            {{-- Property Title (Compact 1-line title for sleek card heights) --}}
+            <h3 class="text-xs sm:text-[13.5px] font-bold text-slate-900 dark:text-white line-clamp-1 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title="{{ $cleanTitle }}">
                 {{ $cleanTitle }}
             </h3>
 
             {{-- Location & Unique Post ID --}}
-            <div class="flex items-center justify-between gap-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+            <div class="flex items-center justify-between gap-1 text-[9.5px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                 <div class="flex items-center gap-1 min-w-0">
-                    <i class="ph-bold ph-map-pin text-blue-600 text-[10px] sm:text-xs shrink-0"></i>
+                    <i class="ph-bold ph-map-pin text-blue-600 text-[9.5px] sm:text-[11px] shrink-0"></i>
                     <span class="truncate capitalize">
                         {{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}
                         @if(isset($property->distance_km) && $property->distance_km !== null)
-                            <span class="text-emerald-600 font-bold text-[9.5px] sm:text-[10.5px]">({{ round($property->distance_km, 1) }} km away)</span>
+                            <span class="text-emerald-600 font-bold text-[9px] sm:text-[10px]">({{ round($property->distance_km, 1) }} km away)</span>
                         @endif
                     </span>
                 </div>
-                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 font-mono text-[8.5px] sm:text-[9.5px] font-bold shrink-0 border border-blue-100 dark:border-blue-900/60" title="Post ID: #{{ $property->id }}">
+                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 font-mono text-[8px] sm:text-[9px] font-bold shrink-0 border border-blue-100 dark:border-blue-900/60" title="Post ID: #{{ $property->id }}">
                     ID: #{{ $property->id }}
                 </span>
             </div>
 
-            {{-- Property Details / Specs Row (Single Clean Line on Mobile, Full on sm+) --}}
-            <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 mt-1 sm:mt-2.5 pt-1 sm:pt-2.5 border-t border-slate-100 dark:border-slate-800 flex-wrap overflow-hidden">
+            {{-- Property Details / Specs Row (Single Clean Line) --}}
+            <div class="flex items-center gap-1 sm:gap-1.5 text-[9.5px] sm:text-[11px] text-slate-600 dark:text-slate-300 mt-1 sm:mt-1.5 pt-1 sm:pt-1.5 border-t border-slate-100 dark:border-slate-800 flex-wrap overflow-hidden">
                 @if(count($specs) > 0)
                     @foreach($specs as $index => $spec)
                         @if($index > 0)
-                            <span class="text-slate-300 dark:text-slate-700 select-none text-[10px] {{ $index >= 2 ? 'hidden sm:inline' : '' }}">·</span>
+                            <span class="text-slate-300 dark:text-slate-700 select-none text-[9px]">·</span>
                         @endif
-                        <span class="inline-flex items-center gap-0.5 sm:gap-1 whitespace-nowrap {{ $index >= 2 ? 'hidden sm:inline-flex' : '' }}">
-                            <i class="ph-bold {{ $spec['icon'] }} text-slate-400 text-[10px] sm:text-xs"></i>
-                            <span class="font-medium text-slate-600 dark:text-slate-300 text-[9px] sm:text-[11px] md:text-xs">{{ $spec['label'] }}</span>
+                        <span class="inline-flex items-center gap-0.5 whitespace-nowrap {{ $index >= 3 ? 'hidden sm:inline-flex' : '' }}">
+                            <i class="ph-bold {{ $spec['icon'] }} text-slate-400 text-[9px] sm:text-[10.5px]"></i>
+                            <span class="font-medium text-slate-600 dark:text-slate-300 text-[8.5px] sm:text-[10px]">{{ $spec['label'] }}</span>
                         </span>
                     @endforeach
                 @else
-                    <span class="text-[9px] sm:text-[11px] md:text-xs text-slate-400 italic">Ready to Move</span>
+                    <span class="text-[8.5px] sm:text-[10px] text-slate-400 italic">Ready to Move</span>
                 @endif
             </div>
         </div>
 
-        {{-- C. Price and Action Section (Neatly Anchored at Base) --}}
-        <div class="flex items-center justify-between pt-1.5 sm:pt-3 mt-auto border-t border-slate-100 dark:border-slate-800 gap-1">
-            {{-- Prominent Price Display --}}
+        {{-- C. Price and Action Section (Compact Anchored Base) --}}
+        <div class="flex items-center justify-between pt-1.5 sm:pt-2 mt-auto border-t border-slate-100 dark:border-slate-800 gap-1">
+            {{-- Compact Price Display --}}
             <div class="flex flex-col min-w-0 flex-1">
                 @if($hasFixedPrice)
-                    <span class="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5 sm:mb-1">
+                    <span class="text-[7.5px] sm:text-[8.5px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5">
                         {{ $isSale ? 'Price' : 'Rent' }}
                     </span>
-                    <span class="text-xs sm:text-base md:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-none truncate">
+                    <span class="text-xs sm:text-sm md:text-[15px] font-black text-slate-900 dark:text-white tracking-tight leading-none truncate">
                         {{ $property->formatted_price }}
                     </span>
                 @else
-                    <span class="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5 sm:mb-1">Pricing</span>
-                    <span class="text-[10px] sm:text-xs md:text-sm font-bold text-blue-600 dark:text-blue-400 tracking-tight leading-none truncate">
+                    <span class="text-[7.5px] sm:text-[8.5px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5">Pricing</span>
+                    <span class="text-[9.5px] sm:text-xs font-bold text-blue-600 dark:text-blue-400 tracking-tight leading-none truncate">
                         On Request
                     </span>
                 @endif
             </div>
 
-            {{-- Professional Brand Blue Action Button --}}
+            {{-- Compact Action Button --}}
             @guest
                 <button type="button"
                         onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $propertyUrl }}');"
                         data-no-loader="true"
                         data-ur-loader-skip="true"
-                        class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl shadow-xs hover:shadow transition-all relative z-20 shrink-0 cursor-pointer active:scale-95"
+                        class="inline-flex items-center justify-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-[11px] font-bold rounded-lg shadow-xs hover:shadow transition-all relative z-20 shrink-0 cursor-pointer active:scale-95"
                         style="color: #ffffff !important;"
                         title="Sign in to view details">
-                    <span class="hidden sm:inline" style="color: #ffffff !important;">View Details</span>
-                    <span class="sm:hidden" style="color: #ffffff !important;">View</span>
-                    <i class="ph-bold ph-lock text-[9px] sm:text-xs" style="color: #ffffff !important;"></i>
+                    <span class="hidden xs:inline sm:inline" style="color: #ffffff !important;">View Details</span>
+                    <span class="xs:hidden sm:hidden" style="color: #ffffff !important;">View</span>
+                    <i class="ph-bold ph-lock text-[9px] sm:text-[10px]" style="color: #ffffff !important;"></i>
                 </button>
             @else
-                <span class="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-blue-600 group-hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-xs font-bold rounded-lg sm:rounded-xl shadow-xs hover:shadow transition-all shrink-0"
+                <span class="inline-flex items-center justify-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-blue-600 group-hover:bg-blue-700 active:bg-blue-800 text-white text-[10px] sm:text-[11px] font-bold rounded-lg shadow-xs hover:shadow transition-all shrink-0"
                       style="color: #ffffff !important;">
-                    <span class="hidden sm:inline" style="color: #ffffff !important;">View Details</span>
-                    <span class="sm:hidden" style="color: #ffffff !important;">View</span>
-                    <i class="ph-bold ph-arrow-right text-[9px] sm:text-xs group-hover:translate-x-0.5 transition-transform" style="color: #ffffff !important;"></i>
+                    <span class="hidden xs:inline sm:inline" style="color: #ffffff !important;">View Details</span>
+                    <span class="xs:hidden sm:hidden" style="color: #ffffff !important;">View</span>
+                    <i class="ph-bold ph-arrow-right text-[9px] sm:text-[10px] group-hover:translate-x-0.5 transition-transform" style="color: #ffffff !important;"></i>
                 </span>
             @endguest
         </div>
@@ -379,6 +379,30 @@
 
 @once
 <style>
+/* ─── CARD IMAGE WRAP & PROPORTIONAL SIZING ─── */
+.card-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    max-height: 195px;
+    overflow: hidden;
+}
+@media (min-width: 640px) {
+    .property-rental-card {
+        max-width: 100%;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .card-image-wrap {
+        aspect-ratio: 16 / 10;
+        max-height: 190px;
+    }
+}
+@media (max-width: 639px) {
+    .card-image-wrap {
+        aspect-ratio: 4 / 3;
+        max-height: 145px;
+    }
+}
 /* ─── BOOKED CORNER RIBBON (DIAGONAL 45° SASH CROSSING CORNER) ─── */
 .ur-booked-ribbon-wrap {
     position: absolute !important;
