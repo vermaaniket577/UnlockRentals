@@ -3018,3 +3018,15 @@ input[type="number"] {
     transition: transform 0.08s ease-out !important;
 }
 
+/* Universal Pure White Text Enforcement for Premium Member Badges */
+.ur-premium-member-badge,
+.ur-premium-member-badge *,
+.ur-premium-member-badge span,
+.ur-premium-member-text,
+.ur-premium-badge,
+.ur-premium-badge * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+

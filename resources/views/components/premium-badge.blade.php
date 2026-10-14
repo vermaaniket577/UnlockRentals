@@ -24,7 +24,7 @@
     <span {{ $attributes->merge(['class' => 'ur-premium-badge inline-flex items-center gap-1 font-black uppercase tracking-wider rounded-full shadow-xs whitespace-nowrap']) }}
           style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 60%, #fbbf24 100%); color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); border: 1px solid rgba(251, 191, 36, 0.45); {{ $size === 'xs' ? 'padding: 1.5px 6.5px; font-size: 8.5px;' : ($size === 'md' ? 'padding: 3px 10px; font-size: 11px;' : 'padding: 2px 8px; font-size: 9.5px;') }}">
         <i class="ph-fill ph-crown text-amber-100" style="{{ $size === 'xs' ? 'font-size: 9px;' : ($size === 'md' ? 'font-size: 13px;' : 'font-size: 11px;') }}"></i>
-        <span>{{ $showPlan ? ($planName . ' Member') : 'Premium' }}</span>
+        <span style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">{{ $showPlan ? ($planName . ' Member') : 'Premium' }}</span>
     </span>
 
 @elseif($type === 'pill')
@@ -51,14 +51,14 @@
             <div style="position: absolute; right: -25px; top: -25px; width: 110px; height: 110px; background: radial-gradient(circle, rgba(245,158,11,0.22) 0%, transparent 70%); pointer-events: none;"></div>
 
             <div class="flex items-center justify-between mb-2.5 relative z-10">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-black text-[10px] uppercase tracking-wider text-amber-200"
-                      style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); box-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                    <i class="ph-fill ph-crown text-amber-400 text-xs"></i>
-                    <span>Premium Member</span>
+                <span class="ur-premium-member-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-black text-[10px] uppercase tracking-wider text-white !text-white"
+                      style="background: rgba(245, 158, 11, 0.22); border: 1px solid rgba(245, 158, 11, 0.5); box-shadow: 0 1px 2px rgba(0,0,0,0.2); color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                    <i class="ph-fill ph-crown text-amber-400 text-xs" style="color: #fbbf24 !important; -webkit-text-fill-color: #fbbf24 !important;"></i>
+                    <span class="ur-premium-member-text" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; font-weight: 800 !important;">Premium Member</span>
                 </span>
-                <span class="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Active</span>
+                <span class="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30" style="color: #6ee7b7 !important; -webkit-text-fill-color: #6ee7b7 !important;">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" style="background-color: #34d399 !important;"></span>
+                    <span style="color: #6ee7b7 !important; -webkit-text-fill-color: #6ee7b7 !important;">Active</span>
                 </span>
             </div>
 
