@@ -522,7 +522,7 @@
     justify-content: center;
     background: linear-gradient(180deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
     color: #0f172a;
-    padding: 2.5rem 0 2rem;
+    padding: 1.25rem 0 1.25rem;
     overflow: hidden;
     overflow-x: clip;
     box-sizing: border-box;
@@ -588,7 +588,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 1.15rem;
+    margin-bottom: 0.75rem;
     flex-wrap: nowrap;
 }
 
@@ -804,7 +804,7 @@
     width: 100%;
     min-width: 100%;
     max-width: 100%;
-    padding: 2rem 2.25rem 1.6rem;
+    padding: 1.35rem 1.75rem 1.15rem;
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
@@ -958,37 +958,59 @@
     }
 }
 
-/* ─── 3-PART HORIZONTAL DESKTOP GRID ─────────────────────── */
+/* ─── STANDARD COMPACT 2-COLUMN DESKTOP GRID ─────────────── */
 .ur-hps-desktop-grid {
     display: grid;
-    grid-template-columns: 1.15fr 1fr 0.85fr;
-    gap: 1.75rem;
-    align-items: stretch;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 2rem;
+    align-items: center;
     width: 100%;
     position: relative;
     z-index: 5;
 }
 
-/* ─── 1. LEFT COLUMN: VALUE PROPOSITION & 2x2 BENEFITS ──── */
+/* Subtle Architectural Photographic Backdrop */
+.ur-hps-desktop-backdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 46%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+    mask-image: linear-gradient(to left, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.05) 55%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.05) 55%, transparent 100%);
+}
+
+.ur-hps-desktop-backdrop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: saturate(1.1);
+}
+
+/* ─── 1. LEFT COLUMN: VALUE PROPOSITION & COMPACT BENEFIT PILLS ──── */
 .ur-hps-col-left {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     z-index: 5;
-    padding-right: 0.25rem;
+    padding-right: 0.5rem;
 }
 
 .ur-hps-plan-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.38rem;
-    font-size: 0.72rem;
+    gap: 0.35rem;
+    font-size: 0.68rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: 0.32rem 0.85rem;
+    padding: 0.24rem 0.75rem;
     border-radius: 9999px;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.45rem;
     width: fit-content;
 }
 
@@ -1018,12 +1040,12 @@
 }
 
 .ur-hps-slide-title {
-    font-size: clamp(1.55rem, 2.1vw, 1.95rem);
+    font-size: clamp(1.3rem, 1.8vw, 1.62rem);
     font-weight: 900;
     color: #0f172a;
-    line-height: 1.2;
-    letter-spacing: -0.03em;
-    margin: 0 0 0.6rem;
+    line-height: 1.22;
+    letter-spacing: -0.025em;
+    margin: 0 0 0.35rem;
 }
 
 .ur-hps-slide-title .highlight-gold {
@@ -1056,100 +1078,128 @@
 }
 
 .ur-hps-slide-desc {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
     color: #475569;
-    line-height: 1.55;
-    margin: 0 0 1.15rem;
+    line-height: 1.45;
+    margin: 0 0 0.75rem;
     max-width: 520px;
 }
 
-/* Feature 2x2 Highlights Grid — Elevated Modern Cards */
+/* Feature 2x2 Highlights — Compact Modern Pills */
 .ur-hps-features-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    gap: 0.45rem;
     width: 100%;
 }
 
 .ur-hps-feature-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.8rem 0.95rem;
+    gap: 0.55rem;
+    padding: 0.42rem 0.68rem;
     background: rgba(255, 255, 255, 0.92);
     border: 1px solid #e2e8f0;
-    border-radius: 1rem;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ur-hps-feature-item:hover {
     border-color: #cbd5e1;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 .ur-hps-f-icon-box {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 0.75rem;
+    width: 1.95rem;
+    height: 1.95rem;
+    border-radius: 0.55rem;
     background: #f1f5f9;
     color: #475569;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
+    font-size: 0.98rem;
     flex-shrink: 0;
     transition: transform 0.2s ease;
 }
 
 .ur-hps-feature-item:hover .ur-hps-f-icon-box {
-    transform: scale(1.08);
+    transform: scale(1.05);
 }
 
 .ur-hps-feature-item--gold .ur-hps-f-icon-box {
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
     color: #b45309;
     border: 1px solid #fcd34d;
-    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);
 }
 .ur-hps-feature-item--platinum .ur-hps-f-icon-box {
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
     color: #2563eb;
     border: 1px solid #bfdbfe;
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
 }
 .ur-hps-feature-item--silver .ur-hps-f-icon-box {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     color: #334155;
     border: 1px solid #cbd5e1;
-    box-shadow: 0 2px 6px rgba(71, 85, 105, 0.12);
 }
 .ur-hps-feature-item--buyer .ur-hps-f-icon-box {
     background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
     color: #059669;
     border: 1px solid #a7f3d0;
-    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.15);
+}
+
+.ur-hps-f-text {
+    min-width: 0;
 }
 
 .ur-hps-f-text h4 {
-    font-size: 0.84rem;
+    font-size: 0.76rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.12rem;
+    margin: 0;
     letter-spacing: -0.01em;
-    line-height: 1.25;
+    line-height: 1.22;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .ur-hps-f-text p {
-    font-size: 0.72rem;
+    font-size: 0.66rem;
     color: #64748b;
     margin: 0;
-    line-height: 1.3;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* ─── 2. CENTER COLUMN: COMPACT HIGH-CONVERSION PASS CARD ─── */
-.ur-hps-col-center {
+/* Micro Guarantee Row */
+.ur-hps-guarantee-strip {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    margin-top: 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #047857;
+}
+
+.ur-hps-guarantee-strip span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+}
+
+.ur-hps-guarantee-strip span i {
+    font-size: 0.85rem;
+    color: #059669;
+}
+
+/* ─── 2. RIGHT COLUMN: COMPACT HIGH-CONVERSION PASS CARD ─── */
+.ur-hps-col-right {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1161,19 +1211,18 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.35rem;
-    padding: 1.45rem 1.45rem 1.2rem;
+    border-radius: 1.15rem;
+    padding: 0.95rem 1.15rem 0.75rem;
     box-sizing: border-box;
-    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.08), 0 3px 10px rgba(0, 0, 0, 0.03);
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 .ur-hps-pass-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
 }
 
 /* Top accent color bar */
@@ -1183,14 +1232,14 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    border-radius: 1.35rem 1.35rem 0 0;
+    height: 3.5px;
+    border-radius: 1.15rem 1.15rem 0 0;
 }
 
 .ur-hps-pass-card--gold {
     border-color: #f59e0b;
     background: linear-gradient(180deg, #ffffff 0%, #fffdf9 100%);
-    box-shadow: 0 20px 48px -10px rgba(245, 158, 11, 0.22), 0 4px 14px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 16px 40px -8px rgba(245, 158, 11, 0.2), 0 3px 10px rgba(15, 23, 42, 0.04);
 }
 .ur-hps-pass-card--gold::before {
     background: linear-gradient(90deg, #f59e0b, #fbbf24, #ea580c);
@@ -1199,7 +1248,7 @@
 .ur-hps-pass-card--platinum {
     border-color: #3b82f6;
     background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
-    box-shadow: 0 20px 48px -10px rgba(37, 99, 235, 0.22), 0 4px 14px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 16px 40px -8px rgba(37, 99, 235, 0.2), 0 3px 10px rgba(15, 23, 42, 0.04);
 }
 .ur-hps-pass-card--platinum::before {
     background: linear-gradient(90deg, #2563eb, #60a5fa, #1d4ed8);
@@ -1208,7 +1257,7 @@
 .ur-hps-pass-card--silver {
     border-color: #64748b;
     background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
-    box-shadow: 0 20px 48px -10px rgba(71, 85, 105, 0.18), 0 4px 14px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 16px 40px -8px rgba(71, 85, 105, 0.16), 0 3px 10px rgba(15, 23, 42, 0.04);
 }
 .ur-hps-pass-card--silver::before {
     background: linear-gradient(90deg, #334155, #64748b, #1e293b);
@@ -1217,7 +1266,7 @@
 .ur-hps-pass-card--buyer {
     border-color: #10b981;
     background: linear-gradient(180deg, #ffffff 0%, #f6fbf8 100%);
-    box-shadow: 0 20px 48px -10px rgba(5, 150, 105, 0.24), 0 4px 14px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 16px 40px -8px rgba(5, 150, 105, 0.22), 0 3px 10px rgba(15, 23, 42, 0.04);
 }
 .ur-hps-pass-card--buyer::before {
     background: linear-gradient(90deg, #059669, #34d399, #047857);
@@ -1228,24 +1277,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.42rem;
 }
 
 .ur-hps-card-title-group {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.4rem;
 }
 
 .ur-hps-card-tier-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.32rem;
-    font-size: 0.72rem;
+    gap: 0.28rem;
+    font-size: 0.68rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.22rem 0.65rem;
+    padding: 0.18rem 0.55rem;
     border-radius: 9999px;
 }
 
@@ -1271,79 +1320,78 @@
 }
 
 .ur-hps-card-brand-sub {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 700;
     color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
 }
 
 .ur-hps-card-emblem {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.65rem;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 0.55rem;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
 }
 
 .ur-emblem-svg {
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 /* Price Box */
 .ur-hps-price-box {
-    margin-bottom: 0.65rem;
-    padding-bottom: 0.6rem;
+    margin-bottom: 0.45rem;
+    padding-bottom: 0.45rem;
     border-bottom: 1px solid #f1f5f9;
 }
 
 .ur-hps-price-top {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.15rem;
+    gap: 0.45rem;
+    margin-bottom: 0.1rem;
 }
 
 .ur-hps-price-original {
-    font-size: 0.88rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #94a3b8;
     text-decoration: line-through;
 }
 
 .ur-hps-save-chip {
-    font-size: 0.66rem;
+    font-size: 0.62rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 0.14rem 0.52rem;
+    letter-spacing: 0.03em;
+    padding: 0.1rem 0.45rem;
     border-radius: 9999px;
     background: #ecfdf5;
     color: #047857;
     border: 1px solid #6ee7b7;
-    box-shadow: 0 1px 4px rgba(16, 185, 129, 0.15);
 }
 
 .ur-hps-price-main {
     display: flex;
     align-items: baseline;
-    gap: 0.2rem;
-    margin-bottom: 0.1rem;
+    gap: 0.15rem;
+    margin-bottom: 0.05rem;
 }
 
 .ur-hps-currency {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
     font-weight: 900;
     color: #0f172a;
 }
 
 .ur-hps-amount {
-    font-size: 2.85rem;
+    font-size: 2.2rem;
     font-weight: 900;
     color: #0f172a;
     line-height: 1;
@@ -1351,80 +1399,85 @@
 }
 
 .ur-hps-period {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 600;
     color: #64748b;
-    margin-left: 0.2rem;
+    margin-left: 0.15rem;
 }
 
 .ur-hps-price-subtext {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.7rem;
+    gap: 0.3rem;
+    font-size: 0.66rem;
     font-weight: 700;
     color: #047857;
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
-    padding: 0.2rem 0.6rem;
+    padding: 0.14rem 0.5rem;
     border-radius: 9999px;
-    margin-top: 0.35rem;
+    margin-top: 0.25rem;
 }
 
-/* Card Specs Pill List */
+/* Card Specs: Horizontal 3-Column Strip */
 .ur-hps-card-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.38rem;
-    margin-bottom: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    margin-bottom: 0.55rem;
     background: #f8fafc;
-    padding: 0.6rem 0.85rem;
-    border-radius: 0.85rem;
+    padding: 0.4rem 0.55rem;
+    border-radius: 0.7rem;
     border: 1px solid #e2e8f0;
 }
 
 .ur-hps-meta-row {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    font-size: 0.74rem;
-    color: #0f172a;
+    text-align: center;
 }
 
 .ur-hps-meta-row span.meta-label {
-    color: #475569;
-    display: flex;
+    color: #64748b;
+    display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-weight: 600;
+    gap: 0.2rem;
+    font-weight: 700;
+    font-size: 0.62rem;
+    line-height: 1.2;
+    margin-bottom: 0.08rem;
+    white-space: nowrap;
 }
 
 .ur-hps-meta-row span.meta-label i {
     color: #059669;
-    font-size: 0.85rem;
+    font-size: 0.72rem;
 }
 
 .ur-hps-meta-row span.meta-value {
-    font-weight: 800;
+    font-weight: 900;
     color: #0f172a;
+    font-size: 0.76rem;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .ur-hps-meta-row span.meta-value.meta-accent {
     color: #059669;
-    font-weight: 900;
 }
 
-/* Primary High-Impact Theme-Harmonized CTA Button */
+/* Primary High-Impact CTA Button */
 .ur-hps-cta-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
     width: 100%;
-    padding: 0.88rem 1.35rem;
-    border-radius: 0.95rem;
+    padding: 0.7rem 1.15rem;
+    border-radius: 0.8rem;
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     font-weight: 800;
     letter-spacing: -0.01em;
     text-decoration: none;
@@ -1433,7 +1486,7 @@
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
     border: none;
 }
 
@@ -1456,49 +1509,49 @@
 .ur-hps-cta-btn--gold {
     background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(234, 88, 12, 0.38) !important;
+    box-shadow: 0 6px 18px rgba(234, 88, 12, 0.35) !important;
 }
 .ur-hps-cta-btn--gold:hover {
     background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
-    box-shadow: 0 12px 30px rgba(234, 88, 12, 0.48) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(234, 88, 12, 0.44) !important;
+    transform: translateY(-1px);
     color: #ffffff !important;
 }
 
 .ur-hps-cta-btn--platinum {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.38) !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35) !important;
 }
 .ur-hps-cta-btn--platinum:hover {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
-    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.48) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.44) !important;
+    transform: translateY(-1px);
     color: #ffffff !important;
 }
 
 .ur-hps-cta-btn--silver {
     background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.28) !important;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25) !important;
 }
 .ur-hps-cta-btn--silver:hover {
     background: linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%) !important;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.38) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.35) !important;
+    transform: translateY(-1px);
     color: #ffffff !important;
 }
 
 .ur-hps-cta-btn--buyer {
     background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.38) !important;
+    box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35) !important;
     border: 1px solid rgba(255, 255, 255, 0.25);
 }
 .ur-hps-cta-btn--buyer:hover {
     background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
-    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.48) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(5, 150, 105, 0.44) !important;
+    transform: translateY(-1px);
     color: #ffffff !important;
 }
 
@@ -1507,242 +1560,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.35rem;
-    font-size: 0.74rem;
+    gap: 0.3rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: #64748b;
     text-decoration: none;
     transition: color 0.2s ease;
     text-align: center;
-    padding-top: 0.25rem;
+    padding-top: 0.18rem;
 }
 
 .ur-hps-compare-link:hover {
     color: #0f172a;
 }
 
-/* ─── 3. RIGHT COLUMN: UNIFIED PHOTOREALISTIC REAL ESTATE CARD ─── */
-.ur-hps-col-right {
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    z-index: 5;
-    min-width: 0;
-}
-
-.ur-hps-photo-card {
-    position: relative;
-    width: 100%;
-    background: #ffffff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 1.35rem;
-    overflow: hidden;
-    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
-}
-
-.ur-hps-photo-card:hover {
-    transform: translateY(-3px);
-}
-
-.ur-hps-photo-card--gold {
-    border-color: #fde68a;
-    box-shadow: 0 14px 32px -6px rgba(245, 158, 11, 0.18);
-}
-.ur-hps-photo-card--gold:hover {
-    border-color: #f59e0b;
-    box-shadow: 0 18px 36px -6px rgba(245, 158, 11, 0.26);
-}
-
-.ur-hps-photo-card--platinum {
-    border-color: #bfdbfe;
-    box-shadow: 0 14px 32px -6px rgba(37, 99, 235, 0.18);
-}
-.ur-hps-photo-card--platinum:hover {
-    border-color: #2563eb;
-    box-shadow: 0 18px 36px -6px rgba(37, 99, 235, 0.26);
-}
-
-.ur-hps-photo-card--silver {
-    border-color: #cbd5e1;
-    box-shadow: 0 14px 32px -6px rgba(71, 85, 105, 0.14);
-}
-.ur-hps-photo-card--silver:hover {
-    border-color: #475569;
-    box-shadow: 0 18px 36px -6px rgba(71, 85, 105, 0.22);
-}
-
-.ur-hps-photo-card--buyer {
-    border-color: rgba(167, 243, 208, 0.9);
-    box-shadow: 0 14px 32px -6px rgba(5, 150, 105, 0.18);
-}
-.ur-hps-photo-card--buyer:hover {
-    border-color: #10b981;
-    box-shadow: 0 18px 36px -6px rgba(5, 150, 105, 0.26);
-}
-
-.ur-hps-pc-photo-wrapper {
-    position: relative;
-    width: 100%;
-    height: 185px;
-    overflow: hidden;
-    background: #0f172a;
-}
-
-.ur-hps-pc-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 35%;
-    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-    display: block;
-}
-
-.ur-hps-photo-card:hover .ur-hps-pc-photo {
-    transform: scale(1.06);
-}
-
-.ur-hps-pc-scrim {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0.65) 100%);
-}
-
-.ur-hps-pc-tag-overlay {
-    position: absolute;
-    bottom: 0.55rem;
-    left: 0.75rem;
-    right: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 2;
-}
-
-.ur-hps-pc-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.28rem;
-    font-size: 0.64rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 0.2rem 0.58rem;
-    border-radius: 9999px;
-    backdrop-filter: blur(6px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-}
-
-.ur-hps-pc-badge--gold {
-    background: rgba(254, 243, 199, 0.96);
-    color: #b45309;
-    border: 1px solid #fde68a;
-}
-.ur-hps-pc-badge--platinum {
-    background: rgba(219, 234, 254, 0.96);
-    color: #1e40af;
-    border: 1px solid #bfdbfe;
-}
-.ur-hps-pc-badge--silver {
-    background: rgba(241, 245, 249, 0.96);
-    color: #334155;
-    border: 1px solid #cbd5e1;
-}
-.ur-hps-pc-badge--buyer {
-    background: rgba(209, 250, 229, 0.96);
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-}
-
-.ur-hps-pc-subtag {
-    font-size: 0.6rem;
-    font-weight: 800;
-    color: #ffffff;
-    background: rgba(5, 150, 105, 0.94);
-    padding: 0.16rem 0.52rem;
-    border-radius: 9999px;
-    backdrop-filter: blur(6px);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
-}
-
-.ur-hps-pc-body {
-    padding: 1.05rem 1.15rem 0.95rem;
-    display: flex;
-    flex-direction: column;
-    background: #ffffff;
-    flex: 1;
-    justify-content: space-between;
-}
-
-.ur-hps-pc-title {
-    font-size: 0.96rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 0.2rem;
-    letter-spacing: -0.015em;
-}
-
-.ur-hps-pc-sub {
-    font-size: 0.75rem;
-    color: #64748b;
-    line-height: 1.42;
-    margin: 0 0 0.6rem;
-}
-
-.ur-hps-pc-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.38rem;
-}
-
-.ur-hps-pc-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #1e293b;
-}
-
-.ur-hps-pc-check {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 50%;
-    background: #ecfdf5;
-    color: #059669;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    flex-shrink: 0;
-}
-
-.ur-hps-pc-trust-note {
-    margin-top: 0.55rem;
-    padding: 0.42rem 0.75rem;
-    background: #f8fafc;
-    border: 1px solid #f1f5f9;
-    border-radius: 0.6rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-.ur-hps-pc-trust-note i {
-    color: #d97706;
-    font-size: 0.78rem;
-}
-
-/* ─── 4. BOTTOM HORIZONTAL TRUST ROW (SOLID HIGH-CONTRAST BAR) ── */
+/* ─── 3. BOTTOM HORIZONTAL TRUST ROW (COMPACT HIGH-CONTRAST BAR) ── */
 .ur-hps-trust-bar {
     grid-column: 1 / -1;
     position: relative;
@@ -1750,41 +1582,41 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2.2rem;
+    gap: 1.6rem;
     flex-wrap: wrap;
     background: #ffffff !important;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
-    padding: 0.65rem 2.2rem;
-    margin-top: 1.25rem;
-    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
-    font-size: 0.82rem;
+    padding: 0.42rem 1.6rem;
+    margin-top: 0.75rem;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+    font-size: 0.74rem;
     font-weight: 700;
     color: #0f172a !important;
     transition: all 0.25s ease;
 }
 
 .ur-hps-trust-bar:hover {
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
     border-color: #cbd5e1;
 }
 
 .ur-hps-tb-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     color: #0f172a !important;
     font-weight: 700;
 }
 
 .ur-hps-tb-item i {
     color: #059669;
-    font-size: 0.9rem;
+    font-size: 0.84rem;
 }
 
 .ur-hps-tb-divider {
-    width: 4px;
-    height: 4px;
+    width: 3.5px;
+    height: 3.5px;
     border-radius: 50%;
     background: #cbd5e1;
 }
@@ -2446,9 +2278,18 @@
                             </div>
                         @endif
 
+                        {{-- Photographic Real Estate Backdrop (Desktop) --}}
+                        <div class="ur-hps-desktop-backdrop" aria-hidden="true">
+                            <img src="{{ $s['visual']['image'] }}" 
+                                 alt="" 
+                                 loading="lazy" 
+                                 decoding="async"
+                                 onerror="if(!this.dataset.triedFallback){ this.dataset.triedFallback='1'; this.src='{{ $s['visual']['fallback'] ?? '' }}'; }">
+                        </div>
+
                         <div class="ur-hps-desktop-grid">
                             
-                            {{-- PART 1: LEFT COLUMN (Value Proposition & Benefits 2x2) --}}
+                            {{-- PART 1: LEFT COLUMN (Value Proposition & Compact Benefit Pills) --}}
                             <div class="ur-hps-col-left">
                                 <span class="ur-hps-plan-badge ur-hps-plan-badge--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-plan-badge--offer' : '' }}">
                                     @if(!empty($s['has_offer']))
@@ -2467,7 +2308,7 @@
                                     {{ $s['tagline'] }}
                                 </p>
 
-                                {{-- 2x2 Highlights Grid --}}
+                                {{-- Compact 2x2 Feature Pills --}}
                                 <div class="ur-hps-features-grid">
                                     @foreach($s['highlights'] as $f)
                                         <div class="ur-hps-feature-item ur-hps-feature-item--{{ $s['theme'] }}">
@@ -2481,10 +2322,16 @@
                                         </div>
                                     @endforeach
                                 </div>
+
+                                {{-- Direct Owner Guarantee Strip --}}
+                                <div class="ur-hps-guarantee-strip">
+                                    <span><i class="ph-bold ph-shield-check"></i> 100% Verified Direct Owners</span>
+                                    <span><i class="ph-bold ph-seal-check"></i> ₹0 Brokerage Guaranteed</span>
+                                </div>
                             </div>
 
-                            {{-- PART 2: CENTER COLUMN (Compact High-Conversion Pricing Card) --}}
-                            <div class="ur-hps-col-center">
+                            {{-- PART 2: RIGHT COLUMN (Dedicated High-Conversion Pass Card) --}}
+                            <div class="ur-hps-col-right">
                                 <div class="ur-hps-pass-card ur-hps-pass-card--{{ $s['theme'] }}">
                                     {{-- Card Header with Plan Identity --}}
                                     <div class="ur-hps-card-header">
@@ -2573,7 +2420,7 @@
                                         <div class="ur-hps-price-subtext">
                                             @if(!empty($s['has_offer']))
                                                 <i class="ph-bold ph-lightning" style="color: #10b981;"></i>
-                                                <span style="font-weight: 700; color: #047857;">Exclusive Price ₹{{ number_format($s['price'], 0) }} · {{ $s['specs'][1]['value'] ?? ($plan->duration_days ?? 60) . ' Days' }} Validity</span>
+                                                <span>Exclusive Price ₹{{ number_format($s['price'], 0) }} · {{ $s['specs'][1]['value'] ?? ($plan->duration_days ?? 60) . ' Days' }} Validity</span>
                                             @else
                                                 <i class="ph-bold ph-seal-check"></i>
                                                 <span>Only ₹{{ $s['per_day'] }}/day · {{ $s['specs'][1]['value'] ?? ($plan->duration_days ?? 150) . ' Days' }} Validity</span>
@@ -2581,12 +2428,12 @@
                                         </div>
                                     </div>
 
-                                    {{-- Key Specs Pill List --}}
+                                    {{-- Key Specs: Horizontal 3-Column Strip --}}
                                     <div class="ur-hps-card-meta">
                                         @foreach($s['specs'] as $spec)
                                             <div class="ur-hps-meta-row">
                                                 <span class="meta-label">
-                                                    <i class="ph-bold {{ str_contains(strtolower($spec['label']), 'contact') || str_contains(strtolower($spec['label']), 'seller') ? 'ph-phone-call' : (str_contains(strtolower($spec['label']), 'duration') || str_contains(strtolower($spec['label']), 'validity') ? 'ph-calendar-check' : 'ph-shield-check') }}"></i> {{ $spec['label'] }}:
+                                                    <i class="ph-bold {{ str_contains(strtolower($spec['label']), 'contact') || str_contains(strtolower($spec['label']), 'seller') ? 'ph-phone-call' : (str_contains(strtolower($spec['label']), 'duration') || str_contains(strtolower($spec['label']), 'validity') ? 'ph-calendar-check' : 'ph-shield-check') }}"></i> {{ $spec['label'] }}
                                                 </span>
                                                 <span class="meta-value {{ !empty($spec['accent']) ? 'meta-accent' : '' }}">
                                                     {{ $spec['value'] }}
@@ -2595,7 +2442,7 @@
                                         @endforeach
                                     </div>
 
-                                    {{-- High-Impact Orange CTA Button --}}
+                                    {{-- High-Impact Checkout CTA Button --}}
                                     @guest
                                         <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
                                            onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
@@ -2621,51 +2468,7 @@
                                 </div>
                             </div>
 
-                            {{-- PART 3: RIGHT COLUMN (Subtle Premium Verified-Owner Visual Element) --}}
-                            <div class="ur-hps-col-right">
-                                <div class="ur-hps-photo-card ur-hps-photo-card--{{ $s['theme'] }}">
-                                    <div class="ur-hps-pc-photo-wrapper">
-                                        <img src="{{ $s['visual']['image'] }}" 
-                                             alt="{{ $s['visual']['title'] }}" 
-                                             class="ur-hps-pc-photo" 
-                                             loading="lazy" 
-                                             decoding="async"
-                                             width="400" 
-                                             height="250"
-                                             onerror="if(!this.dataset.triedFallback){ this.dataset.triedFallback='1'; this.src='{{ $s['visual']['fallback'] ?? '' }}'; }">
-                                        <div class="ur-hps-pc-scrim"></div>
-                                        <div class="ur-hps-pc-tag-overlay">
-                                            <span class="ur-hps-pc-badge ur-hps-pc-badge--{{ $s['theme'] }}">
-                                                <i class="ph-fill ph-seal-check"></i>
-                                                <span>{{ $s['visual']['tag'] }}</span>
-                                            </span>
-                                            <span class="ur-hps-pc-subtag">
-                                                <i class="ph-bold ph-shield-check"></i> 100% Genuine
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="ur-hps-pc-body">
-                                        <div>
-                                            <h5 class="ur-hps-pc-title">{{ $s['visual']['title'] }}</h5>
-                                            <p class="ur-hps-pc-sub">{{ $s['visual']['sub'] }}</p>
-                                            <div class="ur-hps-pc-list">
-                                                @foreach($s['visual']['perks'] as $perk)
-                                                    <div class="ur-hps-pc-row">
-                                                        <span class="ur-hps-pc-check"><i class="ph-bold ph-check"></i></span>
-                                                        <span>{{ $perk }}</span>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        <div class="ur-hps-pc-trust-note">
-                                            <i class="ph-fill ph-sparkle"></i>
-                                            <span>{{ $s['visual']['trust_note'] ?? 'Direct Owner Connect · ₹0 Brokerage' }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- PART 4: HORIZONTAL TRUST ROW (Spans full width underneath) --}}
+                            {{-- PART 3: HORIZONTAL TRUST ROW (Spans full width underneath) --}}
                             <div class="ur-hps-trust-bar">
                                 <div class="ur-hps-tb-item">
                                     <i class="ph-fill ph-lightning"></i>
