@@ -54,6 +54,19 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
 
+        /* Guarantee white text & icons on admin action buttons and badges */
+        .text-white,
+        .\!text-white,
+        .text-white *,
+        .\!text-white *,
+        a.text-white,
+        a.text-white *,
+        button.text-white,
+        button.text-white * {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
+
         /* ===================================================
            HOVER-EXPANDABLE MINI SIDEBAR SYSTEM
            =================================================== */

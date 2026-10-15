@@ -18,14 +18,33 @@
             <p class="text-sm text-slate-500 mt-1">Real-time platform analytics, property approvals, and monetization control.</p>
         </div>
 
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.properties', ['status' => 'pending']) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-amber-500/20 active:scale-95">
-                <i class="ph-bold ph-clock-countdown text-base"></i>
-                <span>Review Pending ({{ $stats['pending_properties'] ?? 0 }})</span>
+        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            @php
+                $pendingCount = (int)($stats['pending_properties'] ?? 0);
+            @endphp
+            {{-- Review Pending Button --}}
+            <a href="{{ route('admin.properties', ['status' => 'pending']) }}" 
+               class="inline-flex items-center gap-2.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold transition-all duration-200 border shadow-xs hover:shadow-md active:scale-95 group select-none {{ $pendingCount > 0 ? 'bg-gradient-to-r from-amber-500 via-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 border-amber-400/40 shadow-amber-500/25 ring-2 ring-amber-400/20' : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 border-amber-400/40 shadow-amber-500/20' }}"
+               style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;"
+               title="Review Pending Properties">
+                <span class="flex items-center justify-center w-5 h-5 rounded-lg bg-black/15 text-white shrink-0" style="color: #ffffff !important;">
+                    <i class="ph-bold ph-clock-countdown text-sm" style="color: #ffffff !important;"></i>
+                </span>
+                <span class="font-bold tracking-tight text-white whitespace-nowrap" style="color: #ffffff !important;">Review Pending</span>
+                <span class="inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 rounded-full text-[11px] font-black bg-white/25 text-white border border-white/30 backdrop-blur-xs shrink-0" style="color: #ffffff !important;">
+                    {{ $pendingCount }}
+                </span>
             </a>
-            <a href="{{ route('properties.create') }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-600/20 active:scale-95">
-                <i class="ph-bold ph-plus-circle text-base"></i>
-                <span>Add Property</span>
+
+            {{-- Add Property Primary Button --}}
+            <a href="{{ route('properties.create') }}" target="_blank" 
+               class="inline-flex items-center gap-2.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs font-bold transition-all duration-200 bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border border-blue-400/30 shadow-xs hover:shadow-md shadow-blue-500/25 active:scale-95 group select-none"
+               style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;"
+               title="Add New Property Listing">
+                <span class="flex items-center justify-center w-5 h-5 rounded-lg bg-white/20 text-white shrink-0" style="color: #ffffff !important;">
+                    <i class="ph-bold ph-plus text-xs" style="color: #ffffff !important;"></i>
+                </span>
+                <span class="font-bold tracking-tight text-white whitespace-nowrap" style="color: #ffffff !important;">Add Property</span>
             </a>
         </div>
     </div>
@@ -44,7 +63,7 @@
                     <p class="text-xs text-rose-700">You have <span class="font-bold">{{ $adminNotifications['new_callbacks'] }}</span> new callback leads awaiting contact.</p>
                 </div>
             </div>
-            <a href="{{ route('admin.callbacks') }}" class="text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl transition-all shadow-xs flex-shrink-0">
+            <a href="{{ route('admin.callbacks') }}" class="text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl transition-all shadow-xs flex-shrink-0" style="color: #ffffff !important;">
                 View Callbacks →
             </a>
         </div>
@@ -61,7 +80,7 @@
                     <p class="text-xs text-amber-700">You have <span class="font-bold">{{ $adminNotifications['unread_chats'] }}</span> unread chat messages.</p>
                 </div>
             </div>
-            <a href="{{ route('admin.chats') }}" class="text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl transition-all shadow-xs flex-shrink-0">
+            <a href="{{ route('admin.chats') }}" class="text-xs font-bold bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl transition-all shadow-xs flex-shrink-0" style="color: #ffffff !important;">
                 Open Chat Inbox →
             </a>
         </div>
@@ -78,7 +97,7 @@
                     <p class="text-xs text-blue-700">You have <span class="font-bold">{{ $adminNotifications['new_feedbacks'] }}</span> new feedback reviews.</p>
                 </div>
             </div>
-            <a href="{{ route('admin.feedback') }}" class="text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all shadow-xs flex-shrink-0">
+            <a href="{{ route('admin.feedback') }}" class="text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-all shadow-xs flex-shrink-0" style="color: #ffffff !important;">
                 View Feedback →
             </a>
         </div>
