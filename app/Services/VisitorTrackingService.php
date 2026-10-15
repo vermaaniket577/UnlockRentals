@@ -277,6 +277,30 @@ class VisitorTrackingService
             $priceDisplay = '₹' . ($minPrice ?: '0') . ' - ₹' . ($maxPrice ?: 'Any');
         }
 
+        $lat = $customCriteria['lat'] ?? $request->get('lat', $request->cookie('ur_user_lat'));
+        $lng = $customCriteria['lng'] ?? $request->get('lng', $request->cookie('ur_user_lng'));
+        $exactLocation = $customCriteria['exact_location'] 
+            ?? $request->get('exact_location', $request->cookie('ur_user_exact_location'));
+
+        $isNearMeSearch = $nearMe 
+            || str_contains(strtolower($searchQuery), 'near me') 
+            || str_contains(strtolower($searchQuery), 'near my location') 
+            || str_contains(strtolower($searchQuery), 'near my');
+
+        if ($isNearMeSearch) {
+            $nearMe = true;
+            if (empty($exactLocation)) {
+                $locParts = array_filter([
+                    $locality,
+                    $district ?: ($visitor->city ?: null),
+                    $state ?: ($visitor->state ?: null),
+                ]);
+                if (!empty($locParts)) {
+                    $exactLocation = implode(', ', $locParts);
+                }
+            }
+        }
+
         $metadata = [
             'search' => $searchQuery ?: null,
             'district' => $district ?: null,
@@ -286,6 +310,9 @@ class VisitorTrackingService
             'rooms' => $rooms ?: null,
             'price' => $priceDisplay ?: null,
             'near_me' => $nearMe,
+            'exact_location' => $exactLocation ?: null,
+            'lat' => $lat ?: null,
+            'lng' => $lng ?: null,
             'results_count' => $resultsCount,
             // Origin Location where the user is physically searching from:
             'visitor_city' => $visitor->city ?: 'Location Detected',

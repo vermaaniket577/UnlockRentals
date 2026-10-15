@@ -179,13 +179,29 @@
                         clearTimeout(geocodeTimeout);
                         var address = data.address || {};
                         var detectedCity = address.city || address.town || address.state_district || address.suburb || address.county || '';
-                        
+                        var detectedLocality = address.suburb || address.neighbourhood || address.residential || address.road || '';
+                        var exactAddress = [detectedLocality, detectedCity].filter(Boolean).join(', ');
+
+                        if (detectedLocality) {
+                            localStorage.setItem('ur_user_locality', detectedLocality);
+                            document.cookie = "ur_user_locality=" + encodeURIComponent(detectedLocality) + ";path=/;max-age=86400";
+                        }
                         if (detectedCity) {
                             localStorage.setItem('ur_user_city', detectedCity);
-                            window.location.href = "{{ route('properties.index') }}?district=" + encodeURIComponent(detectedCity) + "&lat=" + lat + "&lng=" + lng + "&near_me=1";
-                        } else {
-                            window.location.href = "{{ route('properties.index') }}?lat=" + lat + "&lng=" + lng + "&near_me=1";
+                            document.cookie = "ur_user_city=" + encodeURIComponent(detectedCity) + ";path=/;max-age=86400";
                         }
+                        if (exactAddress) {
+                            localStorage.setItem('ur_user_exact_location', exactAddress);
+                            document.cookie = "ur_user_exact_location=" + encodeURIComponent(exactAddress) + ";path=/;max-age=86400";
+                        }
+                        document.cookie = "ur_user_lat=" + lat + ";path=/;max-age=86400";
+                        document.cookie = "ur_user_lng=" + lng + ";path=/;max-age=86400";
+
+                        var targetUrl = "{{ route('properties.index') }}?near_me=1&lat=" + lat + "&lng=" + lng;
+                        if (detectedCity) targetUrl += "&district=" + encodeURIComponent(detectedCity);
+                        if (detectedLocality) targetUrl += "&locality=" + encodeURIComponent(detectedLocality);
+                        if (exactAddress) targetUrl += "&exact_location=" + encodeURIComponent(exactAddress);
+                        window.location.href = targetUrl;
                     })
                     .catch(function() {
                         clearTimeout(geocodeTimeout);

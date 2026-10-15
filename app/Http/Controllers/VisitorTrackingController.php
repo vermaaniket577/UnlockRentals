@@ -37,6 +37,20 @@ class VisitorTrackingController extends Controller
             $metadata['visitor_ip'] = $metadata['visitor_ip'] ?? $request->ip();
             $metadata['device_type'] = $metadata['device_type'] ?? ($visitor->device_type ?? 'desktop');
             $metadata['browser'] = $metadata['browser'] ?? ($visitor->browser ?? 'Browser');
+
+            if (!empty($metadata['near_me']) || str_contains(strtolower($metadata['search'] ?? ''), 'near me') || str_contains(strtolower($metadata['search'] ?? ''), 'near my')) {
+                $metadata['near_me'] = true;
+                if (empty($metadata['exact_location'])) {
+                    $locParts = array_filter([
+                        $metadata['locality'] ?? null,
+                        $metadata['district'] ?? ($visitor->city ?: null),
+                        $metadata['state'] ?? ($visitor->state ?: null),
+                    ]);
+                    if (!empty($locParts)) {
+                        $metadata['exact_location'] = implode(', ', $locParts);
+                    }
+                }
+            }
         }
 
         $event = $this->tracker->recordEvent(

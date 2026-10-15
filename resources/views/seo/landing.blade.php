@@ -122,12 +122,31 @@
                                     .then(res => res.json())
                                     .then(data => {
                                         const city = data.address.city || data.address.state_district || data.address.county || data.address.state || '';
-                                        const locality = data.address.suburb || data.address.neighbourhood || data.address.residential || '';
-                                        btnText.innerText = '📍 ' + (locality || city || 'Location detected');
-                                        if (city || locality) {
+                                        const locality = data.address.suburb || data.address.neighbourhood || data.address.residential || data.address.road || '';
+                                        const exactLoc = [locality, city].filter(Boolean).join(', ');
+                                        btnText.innerText = '📍 ' + (exactLoc || 'Location detected');
+
+                                        // Store for tracking & session persistence
+                                        localStorage.setItem('ur_user_lat', lat);
+                                        localStorage.setItem('ur_user_lng', lng);
+                                        if (city) localStorage.setItem('ur_user_city', city);
+                                        if (locality) localStorage.setItem('ur_user_locality', locality);
+                                        if (exactLoc) localStorage.setItem('ur_user_exact_location', exactLoc);
+
+                                        document.cookie = "ur_user_lat=" + lat + ";path=/;max-age=86400";
+                                        document.cookie = "ur_user_lng=" + lng + ";path=/;max-age=86400";
+                                        if (city) document.cookie = "ur_user_city=" + encodeURIComponent(city) + ";path=/;max-age=86400";
+                                        if (locality) document.cookie = "ur_user_locality=" + encodeURIComponent(locality) + ";path=/;max-age=86400";
+                                        if (exactLoc) document.cookie = "ur_user_exact_location=" + encodeURIComponent(exactLoc) + ";path=/;max-age=86400";
+
+                                        if (city || locality || exactLoc) {
                                             const params = new URLSearchParams(window.location.search);
                                             if (city) params.set('city', city);
                                             if (locality) params.set('locality', locality);
+                                            if (exactLoc) params.set('exact_location', exactLoc);
+                                            params.set('lat', lat);
+                                            params.set('lng', lng);
+                                            params.set('near_me', '1');
                                             window.location.search = params.toString();
                                         }
                                     })
@@ -138,6 +157,28 @@
                                 btnText.innerText = '📍 Location permission required';
                             });
                         }
+
+                        // Auto-attach stored user location if visiting near-me landing page without query params
+                        document.addEventListener('DOMContentLoaded', function() {
+                            if (!window.location.search.includes('city=') && !window.location.search.includes('locality=')) {
+                                const storedExact = localStorage.getItem('ur_user_exact_location');
+                                const storedCity = localStorage.getItem('ur_user_city');
+                                const storedLocality = localStorage.getItem('ur_user_locality');
+                                const storedLat = localStorage.getItem('ur_user_lat');
+                                const storedLng = localStorage.getItem('ur_user_lng');
+
+                                if (storedCity || storedExact) {
+                                    const p = new URLSearchParams(window.location.search);
+                                    if (storedCity) p.set('city', storedCity);
+                                    if (storedLocality) p.set('locality', storedLocality);
+                                    if (storedExact) p.set('exact_location', storedExact);
+                                    if (storedLat) p.set('lat', storedLat);
+                                    if (storedLng) p.set('lng', storedLng);
+                                    p.set('near_me', '1');
+                                    window.location.replace(window.location.pathname + '?' + p.toString());
+                                }
+                            }
+                        });
                     </script>
                 @endif
             </div>

@@ -69,17 +69,29 @@
 
             // 2. Search Tracking Auto-Detection
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('locality') || urlParams.has('district') || urlParams.has('state') || urlParams.has('location') || urlParams.has('type') || urlParams.has('price') || urlParams.has('rooms') || urlParams.has('search') || urlParams.has('near_me')) {
+            const pathName = window.location.pathname.toLowerCase();
+            const isNearMePath = pathName.includes('-near-me') || pathName.includes('-near-my-location');
+
+            if (urlParams.has('locality') || urlParams.has('district') || urlParams.has('state') || urlParams.has('location') || urlParams.has('type') || urlParams.has('price') || urlParams.has('rooms') || urlParams.has('search') || urlParams.has('near_me') || urlParams.has('lat') || isNearMePath) {
+                const storedExact = localStorage.getItem('ur_user_exact_location');
+                const storedCity = localStorage.getItem('ur_user_city');
+                const storedLocality = localStorage.getItem('ur_user_locality');
+                const storedLat = localStorage.getItem('ur_user_lat');
+                const storedLng = localStorage.getItem('ur_user_lng');
+
                 this.track('search', null, {
-                    locality: urlParams.get('locality'),
-                    district: urlParams.get('district') || urlParams.get('location'),
+                    locality: urlParams.get('locality') || storedLocality || null,
+                    district: urlParams.get('district') || urlParams.get('location') || storedCity || null,
+                    exact_location: urlParams.get('exact_location') || storedExact || null,
+                    lat: urlParams.get('lat') || storedLat || null,
+                    lng: urlParams.get('lng') || storedLng || null,
                     state: urlParams.get('state'),
                     type: urlParams.get('type'),
                     price: urlParams.get('price'),
                     rooms: urlParams.get('rooms'),
-                    search: urlParams.get('search'),
+                    search: urlParams.get('search') || (isNearMePath ? pathName.replace(/^\//, '').replace(/-/g, ' ') : null),
                     purpose: urlParams.get('purpose'),
-                    near_me: urlParams.has('near_me'),
+                    near_me: urlParams.has('near_me') || isNearMePath || !!urlParams.get('lat'),
                 });
             }
 

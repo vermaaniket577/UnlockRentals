@@ -144,6 +144,76 @@ class VisitorEvent extends Model
     }
 
     /**
+     * Check if this search is a "Near Me" / GPS search.
+     */
+    public function isNearMeSearch(): bool
+    {
+        $meta = $this->metadata ?? [];
+        if (!empty($meta['near_me'])) {
+            return true;
+        }
+        $search = strtolower($meta['search'] ?? '');
+        if (str_contains($search, 'near me') || str_contains($search, 'near my location') || str_contains($search, 'near my')) {
+            return true;
+        }
+        $url = strtolower($this->page_url ?? '');
+        if (str_contains($url, '-near-me') || str_contains($url, '-near-my-location') || str_contains($url, 'near_me=1') || str_contains($url, 'near_me=true')) {
+            return true;
+        }
+        return !empty($meta['lat']) && !empty($meta['lng']);
+    }
+
+    /**
+     * Get the exact physical / GPS location the user was searching property for.
+     */
+    public function getNearMeExactLocation(): string
+    {
+        $meta = $this->metadata ?? [];
+
+        // 1. Explicit exact location recorded in metadata
+        if (!empty($meta['exact_location'])) {
+            return trim((string) $meta['exact_location']);
+        }
+
+        // 2. Specific locality + city/district
+        $locality = !empty($meta['locality']) ? ucwords(str_replace('-', ' ', $meta['locality'])) : null;
+        $district = !empty($meta['district']) ? ucwords(str_replace('-', ' ', $meta['district'])) : null;
+        $state = !empty($meta['state']) ? ucwords(str_replace('-', ' ', $meta['state'])) : null;
+
+        $parts = array_filter([$locality, $district]);
+        if (!empty($parts)) {
+            if ($state && !in_array($state, $parts)) {
+                $parts[] = $state;
+            }
+            return implode(', ', $parts);
+        }
+
+        // 3. Coordinates formatted if present
+        $lat = $meta['lat'] ?? null;
+        $lng = $meta['lng'] ?? null;
+        $coordsStr = ($lat && $lng) ? 'GPS: ' . round((float)$lat, 4) . ', ' . round((float)$lng, 4) : null;
+
+        // 4. Physical visitor origin location detected via IP / GeoIP
+        $originCity = $this->getOriginCity();
+        $originState = $this->getOriginState();
+
+        $locDesc = [];
+        if (!empty($originCity) && $originCity !== 'Detected Location') {
+            $locDesc[] = $originCity;
+        }
+        if (!empty($originState) && $originState !== 'India') {
+            $locDesc[] = $originState;
+        }
+
+        if (!empty($locDesc)) {
+            $base = implode(', ', $locDesc);
+            return $coordsStr ? "{$base} ({$coordsStr})" : $base;
+        }
+
+        return $coordsStr ?: 'Detected Device Location';
+    }
+
+    /**
      * Get human-readable target location searched for.
      */
     public function getTargetLocationDisplay(): string
@@ -161,11 +231,22 @@ class VisitorEvent extends Model
         if (!empty($parts)) {
             return implode(', ', $parts);
         }
+
+        // If this is a near me search and no explicit locality/district was set in filters
+        if ($this->isNearMeSearch()) {
+            $exactLoc = $this->getNearMeExactLocation();
+            if (!empty($meta['search'])) {
+                $cleaned = trim((string) $meta['search'], " \t\n\r\0\x0B\"'");
+                return "{$cleaned} · {$exactLoc}";
+            }
+            return "Near Me ({$exactLoc})";
+        }
+
         if (!empty($meta['search'])) {
             return trim((string) $meta['search'], " \t\n\r\0\x0B\"'");
         }
         if (!empty($meta['near_me'])) {
-            return 'Near Me (GPS)';
+            return 'Near Me (' . $this->getNearMeExactLocation() . ')';
         }
         return 'All Listings';
     }
@@ -196,8 +277,9 @@ class VisitorEvent extends Model
         if (!empty($meta['price'])) {
             $criteria[] = ['label' => 'Budget', 'value' => $meta['price'], 'badge' => 'bg-rose-50 text-rose-700 border-rose-200'];
         }
-        if (!empty($meta['near_me'])) {
-            $criteria[] = ['label' => 'Distance', 'value' => 'Near Me (GPS)', 'badge' => 'bg-teal-50 text-teal-700 border-teal-200'];
+        if ($this->isNearMeSearch()) {
+            $exactLoc = $this->getNearMeExactLocation();
+            $criteria[] = ['label' => 'Searching Near (GPS)', 'value' => $exactLoc, 'badge' => 'bg-emerald-50 text-emerald-800 border-emerald-300 font-extrabold shadow-2xs'];
         }
 
         return $criteria;

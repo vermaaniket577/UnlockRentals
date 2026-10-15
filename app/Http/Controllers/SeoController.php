@@ -84,6 +84,13 @@ class SeoController extends Controller
             $locality = ucwords(str_replace('-', ' ', $request->locality));
         }
 
+        // If this is a near me search and no city/locality was passed in URL, check cookies and visitor geo-location
+        $visitor = app(\App\Services\VisitorTrackingService::class)->resolveVisitor($request);
+        if ($isNearMe && empty($city)) {
+            $city = $request->cookie('ur_user_city') ?: ($visitor->city ?: null);
+            $locality = $locality ?: ($request->cookie('ur_user_locality') ?: null);
+        }
+
         // Map type slug to display name
         $typeDisplay = 'Property';
         if ($type === 'room') {
@@ -229,13 +236,21 @@ class SeoController extends Controller
 
         // Record search event with visitor physical origin geo-location
         try {
+            $exactLocParts = array_filter([$locality, $city ?: $visitor->city, $visitor->state]);
+            $exactLocStr = !empty($exactLocParts) ? implode(', ', $exactLocParts) : null;
+            $lat = $request->get('lat', $request->cookie('ur_user_lat'));
+            $lng = $request->get('lng', $request->cookie('ur_user_lng'));
+
             app(\App\Services\VisitorTrackingService::class)->recordSearchEvent($request, (int) ($properties->total() ?? $properties->count()), [
-                'district' => $city,
+                'district' => $city ?: $visitor->city,
                 'locality' => $locality,
                 'type' => $type,
                 'price' => $budget ? 'Under ₹' . number_format($budget) : null,
                 'search' => str_replace('-', ' ', $seo_slug),
                 'near_me' => $isNearMe,
+                'exact_location' => $exactLocStr,
+                'lat' => $lat,
+                'lng' => $lng,
             ]);
         } catch (\Throwable $e) {}
 

@@ -460,6 +460,11 @@
                                             <span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold text-[10px] capitalize">
                                                 {{ $searchItem->getOriginDevice() }} · {{ $searchItem->getOriginBrowser() }}
                                             </span>
+                                            @if($searchItem->isNearMeSearch())
+                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[9.5px] border border-emerald-300">
+                                                    <i class="ph-fill ph-navigation-arrow text-emerald-600 text-[10px]"></i> Near Me (GPS)
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -471,6 +476,14 @@
                                             <i class="ph-bold ph-magnifying-glass text-blue-600"></i>
                                             <span>{{ $searchItem->getTargetLocationDisplay() }}</span>
                                         </div>
+
+                                        {{-- If Near Me search, show prominent Exact Target Location callout badge --}}
+                                        @if($searchItem->isNearMeSearch())
+                                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-300 text-[11px] font-bold shadow-2xs">
+                                                <i class="ph-fill ph-navigation-arrow text-emerald-600"></i>
+                                                <span>Exact Search Location: <span class="text-emerald-950 font-black underline decoration-emerald-400 decoration-2">{{ $searchItem->getNearMeExactLocation() }}</span></span>
+                                            </div>
+                                        @endif
 
                                         {{-- Filter Pills --}}
                                         @php $criteriaList = $searchItem->getSearchCriteriaList(); @endphp

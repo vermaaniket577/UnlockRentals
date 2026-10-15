@@ -181,6 +181,13 @@
                                 <span>Target: {{ $event->getTargetLocationDisplay() }}</span>
                             </div>
 
+                            @if($event->isNearMeSearch())
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-300 text-[11px] font-bold mt-1">
+                                    <i class="ph-fill ph-navigation-arrow text-emerald-600"></i>
+                                    <span>Exact Search Location: <strong class="text-emerald-950 font-black">{{ $event->getNearMeExactLocation() }}</strong></span>
+                                </div>
+                            @endif
+
                             @php $critList = $event->getSearchCriteriaList(); @endphp
                             @if(!empty($critList))
                                 <div class="flex flex-wrap items-center gap-1 pt-1">
