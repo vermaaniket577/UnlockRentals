@@ -59,107 +59,98 @@
             border: 2px solid rgba(226, 232, 240, 0.95);
         }
         .dark .preview-card:not(.is-primary-card) {
-            border: 2px solid rgba(51, 65, 85, 0.85);
+            border: 1.5px solid rgba(51, 65, 85, 0.85);
         }
         .preview-card:not(.is-primary-card):hover {
             border-color: #3b82f6 !important;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.25);
         }
+        /* 1. COVER BADGE PILL - Top Left, strictly visible ONLY on is-primary-card */
         .cover-badge-pill {
-            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #4f46e5 100%);
-            color: #ffffff;
-            font-size: 10px;
+            display: none !important;
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            color: #ffffff !important;
+            font-size: 9.5px;
             font-weight: 800;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-            padding: 3px 8px;
+            letter-spacing: 0.02em;
+            padding: 2.5px 7px;
             border-radius: 9999px;
-            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.45);
-            border: 1.5px solid rgba(255, 255, 255, 0.95);
-            display: inline-flex;
+            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.9);
             align-items: center;
-            gap: 4px;
+            gap: 3.5px;
             white-space: nowrap;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            z-index: 10;
+            pointer-events: none;
         }
+        .preview-card.is-primary-card .cover-badge-pill {
+            display: inline-flex !important;
+        }
+
+        /* 2. SET COVER PILL - Centered, visible ONLY on hover of non-primary card */
         .set-cover-pill {
-            background: rgba(15, 23, 42, 0.72);
+            display: none !important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
-            color: rgba(255, 255, 255, 0.95);
+            color: #ffffff !important;
             font-size: 10px;
             font-weight: 700;
-            padding: 3px 8px;
+            padding: 4px 9px;
             border-radius: 9999px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            display: inline-flex;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             align-items: center;
             gap: 4px;
             white-space: nowrap;
-            transition: all 0.2s ease;
+            z-index: 10;
+            pointer-events: none;
+            transition: all 0.18s ease;
         }
-        .preview-card:hover .set-cover-pill {
-            background: #2563eb;
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.75);
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        .preview-card:not(.is-primary-card):hover .set-cover-pill {
+            display: inline-flex !important;
         }
-        .cover-check-bubble {
+
+        /* 3. DELETE BUTTON - Top Right */
+        .photo-delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
             width: 22px;
             height: 22px;
-            border-radius: 9999px;
-            background: #2563eb;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 900;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
-            border: 1.5px solid rgba(255, 255, 255, 0.95);
-        }
-        .photo-delete-btn {
-            width: 24px;
-            height: 24px;
-            border-radius: 8px;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            color: #ffffff;
+            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            color: #ffffff !important;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.18s ease;
             cursor: pointer;
+            z-index: 20;
         }
         .photo-delete-btn:hover {
             background: #dc2626 !important;
             border-color: #ef4444 !important;
             transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.45);
+            box-shadow: 0 3px 8px rgba(220, 38, 38, 0.45);
         }
-        .cover-photo-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 5px 8px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 9px;
-            font-weight: 800;
-            color: #ffffff;
-            pointer-events: none;
-            z-index: 10;
+
+        /* Deprecate / Hide any legacy clutter */
+        .cover-check-indicator, .cover-photo-footer {
+            display: none !important;
         }
     </style>
     {{-- Ambient Background Gradients --}}
@@ -1306,33 +1297,12 @@ function setPrimaryImage(index) {
     const primaryInput = document.getElementById('primary-image-input');
     if (primaryInput) primaryInput.value = index;
 
-    // Instantly update DOM without re-rendering or flickering
+    // Instantly update DOM cards
     document.querySelectorAll('#image-preview-container .preview-card').forEach((card, idx) => {
-        const isCover = (idx === index);
-        if (isCover) {
+        if (idx === index) {
             card.classList.add('is-primary-card');
         } else {
             card.classList.remove('is-primary-card');
-        }
-        const badge = card.querySelector('.cover-badge');
-        if (badge) {
-            if (isCover) { badge.classList.remove('hidden'); badge.classList.add('flex'); }
-            else { badge.classList.add('hidden'); badge.classList.remove('flex'); }
-        }
-        const pill = card.querySelector('.make-cover-pill');
-        if (pill) {
-            if (isCover) { pill.classList.add('hidden'); pill.classList.remove('flex'); }
-            else { pill.classList.remove('hidden'); pill.classList.add('flex'); }
-        }
-        const check = card.querySelector('.cover-check-indicator');
-        if (check) {
-            if (isCover) { check.classList.remove('hidden'); check.classList.add('flex'); }
-            else { check.classList.add('hidden'); check.classList.remove('flex'); }
-        }
-        const footer = card.querySelector('.cover-footer-badge');
-        if (footer) {
-            if (isCover) { footer.classList.remove('hidden'); footer.classList.add('flex'); }
-            else { footer.classList.add('hidden'); footer.classList.remove('flex'); }
         }
     });
 }
@@ -1356,14 +1326,13 @@ function renderPreviews() {
 
     selectedFiles.forEach((file, index) => {
         const isPrimary = (index === primaryImageIndex);
-        const sizeKB = Math.round(file.size / 1024);
         const imgBox = document.createElement('div');
         imgBox.className = `preview-card group ${isPrimary ? 'is-primary-card' : ''}`;
         imgBox.style.aspectRatio = '1 / 1';
         imgBox.style.maxHeight = '140px';
         imgBox.id = `preview-card-${index}`;
         imgBox.onclick = () => setPrimaryImage(index);
-        imgBox.title = isPrimary ? 'Current Cover Photo' : 'Click to make this the Cover Photo';
+        imgBox.title = isPrimary ? 'Current Cover Photo' : 'Click to set as Cover Photo';
 
         const img = document.createElement('img');
         img.className = 'w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 pointer-events-none';
@@ -1372,39 +1341,21 @@ function renderPreviews() {
 
         const actionsDiv = document.createElement('div');
         actionsDiv.innerHTML = `
-            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors pointer-events-none z-1"></div>
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors pointer-events-none z-1"></div>
 
-            <!-- Cover Badge (Top-Left) -->
-            <div class="absolute top-2 left-2 z-10 pointer-events-none">
-                <div class="cover-badge cover-badge-pill ${isPrimary ? 'flex' : 'hidden'}">
-                    <i class="ph-fill ph-star text-amber-300 text-xs"></i>
-                    <span>Cover Photo</span>
-                </div>
-                <div class="make-cover-pill set-cover-pill ${isPrimary ? 'hidden' : 'flex'}">
-                    <i class="ph-bold ph-cursor-click text-[11px] text-amber-300"></i>
-                    <span>Set Cover</span>
-                </div>
+            <div class="cover-badge-pill">
+                <i class="ph-fill ph-star text-amber-300 text-xs"></i>
+                <span>Cover Photo</span>
             </div>
 
-            <!-- Active Checkmark Indicator (Top-Right) -->
-            <div class="cover-check-indicator absolute top-2 right-9 z-10 pointer-events-none ${isPrimary ? 'flex' : 'hidden'}">
-                <div class="cover-check-bubble">
-                    <i class="ph-bold ph-check text-[11px]"></i>
-                </div>
+            <div class="set-cover-pill">
+                <i class="ph-bold ph-star text-amber-300 text-xs"></i>
+                <span>Set as Cover</span>
             </div>
 
-            <!-- Delete button -->
-            <button type="button" onclick="event.stopPropagation(); removeImage(${index})" class="photo-delete-btn absolute top-2 right-2 z-20 pointer-events-auto" title="Remove photo">
-                <i class="ph-bold ph-trash"></i>
+            <button type="button" onclick="event.stopPropagation(); removeImage(${index})" class="photo-delete-btn" title="Remove photo">
+                <i class="ph-bold ph-trash text-xs"></i>
             </button>
-
-            <!-- Bottom Status Strip -->
-            <div class="cover-footer-badge cover-photo-footer ${isPrimary ? 'flex' : 'hidden'}">
-                <span class="flex items-center gap-1 text-[9px] uppercase tracking-wider text-blue-200 font-extrabold">
-                    <i class="ph-fill ph-check-circle text-blue-400"></i> Main Thumbnail
-                </span>
-                <span class="text-white text-[9px] font-medium">${sizeKB} KB</span>
-            </div>
         `;
         imgBox.appendChild(actionsDiv);
         container.appendChild(imgBox);
