@@ -170,27 +170,29 @@
                         {{-- Dropdown Backdrop for Desktop --}}
                         <div id="nav-user-backdrop" class="fixed inset-0 z-[99999] hidden bg-black/20 dark:bg-black/60" onclick="window.closeUserDropdown()"></div>
 
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-full sm:rounded-xl hover:bg-stone-100 dark:hover:bg-slate-800 transition-all relative cursor-pointer z-[100000]" id="nav-user-menu" aria-label="User Account">
-                            <div class="relative pointer-events-none">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black relative overflow-hidden {{ $navActivePlan ? 'bg-gradient-to-br from-indigo-600 via-blue-600 to-amber-500 ring-2 ring-amber-400/90 shadow-sm' : 'bg-[#2563EB]' }}">
-                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="group flex items-center gap-2 pl-1.5 pr-2.5 sm:pr-3 py-1 rounded-full bg-slate-50/90 hover:bg-slate-100/90 dark:bg-slate-800/60 dark:hover:bg-slate-800 border border-slate-200/90 hover:border-slate-300 dark:border-slate-700/80 dark:hover:border-slate-600 shadow-2xs hover:shadow-xs transition-all duration-200 relative cursor-pointer z-[100000] focus:outline-none focus:ring-2 focus:ring-blue-500/25 active:scale-[0.98]" id="nav-user-menu" aria-label="User Account">
+                            <div class="relative pointer-events-none flex-shrink-0">
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center text-white relative overflow-hidden {{ $navActivePlan ? 'bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400/95 shadow-sm shadow-amber-500/25' : 'bg-gradient-to-br from-blue-600 to-indigo-600 ring-1.5 ring-blue-500/20 shadow-xs' }}">
+                                    <span class="text-xs sm:text-[13px] font-black tracking-tight text-white select-none drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.35)]">
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    </span>
                                     @if($navActivePlan)
                                         <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[premiumShine_2.6s_ease-in-out_infinite]"></span>
                                     @endif
                                 </div>
                                 @if($navActivePlan)
-                                    <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-slate-950 text-[7px] ring-1 ring-white dark:ring-slate-900 shadow-xs" title="Paid Member">
-                                        <i class="ph-fill ph-crown"></i>
+                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white ring-2 ring-white dark:ring-slate-900 shadow-[0_2px_6px_rgba(245,158,11,0.45)]" title="{{ $navActivePlan->plan->name ?? 'Paid Member' }}">
+                                        <i class="ph-fill ph-crown text-[8.5px] drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]"></i>
                                     </span>
                                 @endif
                             </div>
-                            <span class="hidden xl:inline text-xs xl:text-sm font-semibold text-zinc-700 dark:text-slate-200 whitespace-nowrap pointer-events-none">{{ auth()->user()->name }}</span>
+                            <span class="hidden md:inline-block text-xs sm:text-[13px] font-bold text-slate-800 dark:text-slate-100 max-w-[110px] lg:max-w-[140px] truncate tracking-tight pointer-events-none">{{ auth()->user()->name }}</span>
                             @if($navActivePlan)
                                 <x-premium-badge :plan="$navActivePlan" size="xs" :showPlan="false" class="hidden sm:inline-flex pointer-events-none" />
                             @endif
-                            <i class="ph ph-caret-down text-xs text-zinc-500 dark:text-slate-400 pointer-events-none"></i>
+                            <i class="ph-bold ph-caret-down text-[10px] text-slate-400 dark:text-slate-500 transition-transform duration-200 group-hover:translate-y-0.5 pointer-events-none"></i>
                             @if(isset($adminNotifications) && $adminNotifications['total_unread'] > 0)
-                                <span class="absolute top-1 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white pointer-events-none"></span>
+                                <span class="absolute top-0.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 pointer-events-none"></span>
                             @endif
                         </button>
 
@@ -198,8 +200,15 @@
                         <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(15,23,42,0.18)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.6)] overflow-hidden z-[100000]">
                             <div class="p-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-800/40">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-base font-bold flex-shrink-0 shadow-sm {{ $navActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400/80' : 'bg-[#2563EB]' }}">
-                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    <div class="relative flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-base font-black shadow-sm {{ $navActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400/90 shadow-amber-500/20' : 'bg-gradient-to-br from-blue-600 to-indigo-600 ring-1 ring-blue-500/20' }}">
+                                            <span class="drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.35)]">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                                        </div>
+                                        @if($navActivePlan)
+                                            <span class="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white text-[9.5px] ring-2 ring-white dark:ring-slate-900 shadow-sm" title="{{ $navActivePlan->plan->name ?? 'Paid Member' }}">
+                                                <i class="ph-fill ph-crown drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]"></i>
+                                            </span>
+                                        @endif
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center justify-between gap-1.5">
@@ -395,13 +404,13 @@
                     $drawerActivePlan = auth()->user()->activePlan();
                 @endphp
                 <div class="p-3.5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-slate-900 dark:to-slate-900/80 border border-blue-100/80 dark:border-slate-800 flex items-center gap-3">
-                    <div class="relative">
-                        <div class="w-10 h-10 rounded-xl {{ $drawerActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 shadow-md shadow-amber-500/25' : 'bg-blue-600' }} text-white font-black flex items-center justify-center text-sm shadow-sm">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    <div class="relative flex-shrink-0">
+                        <div class="w-10 h-10 rounded-xl {{ $drawerActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 shadow-md shadow-amber-500/25' : 'bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/20' }} text-white font-black flex items-center justify-center text-sm shadow-sm">
+                            <span class="drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.35)]">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                         </div>
                         @if($drawerActivePlan)
-                            <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white dark:ring-slate-900 shadow-xs">
-                                <i class="ph-fill ph-crown"></i>
+                            <span class="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white text-[9.5px] ring-2 ring-white dark:ring-slate-900 shadow-xs" title="Paid Member">
+                                <i class="ph-fill ph-crown drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]"></i>
                             </span>
                         @endif
                     </div>
@@ -538,13 +547,13 @@
         <div class="w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl border border-slate-200 animate-[slideUp_0.2s_ease-out]">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <div class="relative">
+                    <div class="relative flex-shrink-0">
                         <div class="w-12 h-12 rounded-2xl {{ $modalActivePlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white shadow-lg shadow-amber-500/25' : 'bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/25' }} text-white font-black text-xl flex items-center justify-center shadow-lg">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            <span class="drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                         </div>
                         @if($modalActivePlan)
-                            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs">
-                                <i class="ph-fill ph-crown"></i>
+                            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs" title="Paid Member">
+                                <i class="ph-fill ph-crown drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]"></i>
                             </span>
                         @endif
                     </div>

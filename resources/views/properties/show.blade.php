@@ -923,8 +923,8 @@
                                         {{ strtoupper(substr($property->owner->name, 0, 1)) }}
                                     </div>
                                     @if($ownerPlan)
-                                        <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white shadow-xs" title="Paid Member">
-                                            <i class="ph-fill ph-crown"></i>
+                                        <span class="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white text-[9.5px] ring-2 ring-white shadow-xs" title="Paid Member">
+                                            <i class="ph-fill ph-crown drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]"></i>
                                         </span>
                                     @endif
                                 </div>

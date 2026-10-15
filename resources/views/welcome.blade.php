@@ -1563,21 +1563,22 @@
                         @php
                             $welcomeActivePlan = auth()->user()->activePlan();
                         @endphp
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="flex items-center gap-2 py-1 px-2.5 rounded-full hover:bg-white/10 transition-all border border-white/15 bg-white/5 relative z-[100000] cursor-pointer" id="userDropdownBtn" aria-label="User Account">
-                            <div class="relative pointer-events-none">
-                                <div style="width:30px; height:30px; border-radius:50%; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.6), 0 2px 10px rgba(245,158,11,0.5);' : 'background:linear-gradient(135deg, #2563eb, #6366f1); box-shadow:0 2px 8px rgba(37,99,235,0.4);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex-shrink:0;">
-                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="group flex items-center gap-2 pl-1.5 pr-2.5 sm:pr-3 py-1 rounded-full hover:bg-white/10 transition-all border border-white/20 bg-white/5 backdrop-blur-md shadow-2xs hover:shadow-xs relative z-[100000] cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 active:scale-[0.98]" id="userDropdownBtn" aria-label="User Account">
+                            <div class="relative pointer-events-none flex-shrink-0">
+                                <div style="width:36px; height:36px; border-radius:50%; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.8), 0 2px 10px rgba(245,158,11,0.4);' : 'background:linear-gradient(135deg, #2563eb, #6366f1); box-shadow:0 2px 8px rgba(37,99,235,0.4);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13.5px; flex-shrink:0;">
+                                    <span style="filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.35));">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                                 </div>
                                 @if($welcomeActivePlan)
-                                    <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[7px] ring-1 ring-slate-900 shadow-xs" title="Paid Member">
-                                        <i class="ph-fill ph-crown"></i>
+                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white ring-2 ring-slate-900 shadow-xs" title="{{ $welcomeActivePlan->plan->name ?? 'Paid Member' }}">
+                                        <i class="ph-fill ph-crown text-[8.5px] drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]"></i>
                                     </span>
                                 @endif
                             </div>
+                            <span class="hidden md:inline-block text-xs sm:text-[13px] font-bold text-white max-w-[110px] lg:max-w-[140px] truncate tracking-tight pointer-events-none">{{ auth()->user()->name }}</span>
                             @if($welcomeActivePlan)
                                 <x-premium-badge :plan="$welcomeActivePlan" size="xs" :showPlan="false" class="hidden sm:inline-flex pointer-events-none" />
                             @endif
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7; flex-shrink:0; pointer-events:none;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <i class="ph-bold ph-caret-down text-[10px] text-white/70 transition-transform duration-200 group-hover:translate-y-0.5 pointer-events-none"></i>
                         </button>
                         
                         <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:320px; max-width:calc(100vw - 1.5rem); background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.12); border-radius:16px; box-shadow:0 20px 50px rgba(0,0,0,0.6); overflow:hidden; z-index:100000;">
@@ -1773,13 +1774,13 @@
                         $welcomeDrawerPlan = auth()->user()->activePlan();
                     @endphp
                     <div style="padding: 12px; margin-bottom: 10px; border-radius: 14px; background: #f8fafc; border: 1px solid #e2e8f0; display:flex; align-items:center; gap:12px;">
-                        <div class="relative">
+                        <div class="relative flex-shrink-0">
                             <div style="width:40px; height:40px; border-radius:12px; {{ $welcomeDrawerPlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px #fff, 0 0 0 4px #f59e0b, 0 4px 12px rgba(245,158,11,0.3);' : 'background:#2563eb;' }} color:#fff; font-weight:900; display:flex; align-items:center; justify-content:center; font-size:16px;">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                <span style="filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.35));">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                             </div>
                             @if($welcomeDrawerPlan)
-                                <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[8px] ring-1.5 ring-white shadow-xs">
-                                    <i class="ph-fill ph-crown"></i>
+                                <span class="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white text-[9.5px] ring-2 ring-white shadow-xs" title="Paid Member">
+                                    <i class="ph-fill ph-crown drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]"></i>
                                 </span>
                             @endif
                         </div>
@@ -1833,13 +1834,13 @@
         <div class="w-full sm:max-w-md bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-[slideUp_0.2s_ease-out]">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <div class="relative">
+                    <div class="relative flex-shrink-0">
                         <div class="w-12 h-12 rounded-2xl {{ $welcomeModalPlan ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-white shadow-lg shadow-amber-500/25' : 'bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/25' }} text-white font-black text-xl flex items-center justify-center shadow-lg">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            <span class="drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                         </div>
                         @if($welcomeModalPlan)
-                            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-500 flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs">
-                                <i class="ph-fill ph-crown"></i>
+                            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white text-[10px] ring-2 ring-white shadow-xs" title="Paid Member">
+                                <i class="ph-fill ph-crown drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]"></i>
                             </span>
                         @endif
                     </div>
