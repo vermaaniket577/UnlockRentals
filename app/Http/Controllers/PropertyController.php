@@ -200,7 +200,7 @@ class PropertyController extends Controller
             }
         }
 
-        $categories = Cache::remember('all_categories', 3600, fn () => Category::all());
+        $categories = Category::getActiveCategories();
 
         // Get unique locations for filter dropdown (cached 30 min)
         $locations = Cache::remember('approved_locations', 1800, function () {
@@ -246,7 +246,7 @@ class PropertyController extends Controller
      */
     public function create()
     {
-        $categories = Cache::remember('active_categories', 86400, fn () => Category::all());
+        $categories = Category::getActiveCategories();
         return view('properties.create', compact('categories'));
     }
 
@@ -376,7 +376,7 @@ class PropertyController extends Controller
         $this->authorize('update', $property);
 
         $property->load('images');
-        $categories = Cache::remember('active_categories', 86400, fn () => Category::all());
+        $categories = Category::getActiveCategories();
         return view('properties.edit', compact('property', 'categories'));
     }
 

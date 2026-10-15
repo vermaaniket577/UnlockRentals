@@ -110,6 +110,9 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Studio Apartment', 'icon' => 'buildings', 'description' => 'Compact and modern apartments.'],
             ['name' => 'Retail Shop', 'icon' => 'storefront', 'description' => 'Perfect locations for your business.'],
             ['name' => 'Office Space', 'icon' => 'briefcase', 'description' => 'Professional working environments.'],
+            ['name' => 'Plots & Land', 'icon' => 'map-trifold', 'description' => 'Commercial, residential, and agricultural plots and land for sale.'],
+            ['name' => 'PG & Hostel', 'icon' => 'buildings', 'description' => 'Paying guest accommodations, student hostels, and co-living spaces with food and amenities.'],
+            ['name' => 'Hostel', 'icon' => 'bed', 'description' => 'Student hostels and working professionals hostels with boarding and lodging facilities.'],
         ];
 
         $createdCategories = [];
