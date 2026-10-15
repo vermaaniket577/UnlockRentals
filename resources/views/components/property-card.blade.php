@@ -151,19 +151,6 @@
                     @endforeach
                 </div>
 
-                {{-- Left & Right Navigation Chevrons (z-20 so clicks don't trigger the card link) --}}
-                <button type="button"
-                        onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderPrev({{ $property->id }});"
-                        class="card-slider-btn card-slider-prev absolute left-1.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center opacity-75 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity backdrop-blur-xs cursor-pointer shadow-md border border-white/25 active:scale-90"
-                        aria-label="Previous photo">
-                    <i class="ph-bold ph-caret-left text-xs"></i>
-                </button>
-                <button type="button"
-                        onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderNext({{ $property->id }});"
-                        class="card-slider-btn card-slider-next absolute right-1.5 top-1/2 -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center opacity-75 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity backdrop-blur-xs cursor-pointer shadow-md border border-white/25 active:scale-90"
-                        aria-label="Next photo">
-                    <i class="ph-bold ph-caret-right text-xs"></i>
-                </button>
 
                 {{-- Micro Pagination Dots (Centered at bottom, z-20) --}}
                 <div class="card-slider-dots absolute bottom-1.5 sm:bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs pointer-events-auto"
