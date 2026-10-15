@@ -7,6 +7,14 @@
 
 <section class="min-h-screen pt-20 sm:pt-28 pb-32 sm:pb-24 bg-[#f8fafc] dark:bg-slate-950 relative overflow-hidden" id="create-property">
     <style>
+        .step-pane {
+            animation: fadeInStep 0.22s ease-out;
+        }
+        @keyframes fadeInStep {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 768px) {
             .chatbot-trigger, .feedback-modal-trigger {
                 display: none !important;
@@ -43,32 +51,75 @@
             </p>
         </div>
 
-        {{-- Step Navigation Indicator --}}
-        <div class="mb-4 sm:mb-8 p-3 sm:p-4 bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+        {{-- Interactive 4-Step Navigation Indicator --}}
+        <div class="mb-5 sm:mb-8 p-3.5 sm:p-5 bg-white dark:bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs" id="stepper-container">
+            <div class="flex items-center justify-between mb-3 px-1 sm:px-2">
+                <span class="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider" id="step-badge-text">
+                    Step <span id="current-step-num" class="text-blue-600 dark:text-blue-400 font-extrabold">1</span> of 4: <span id="current-step-name" class="text-slate-900 dark:text-white font-extrabold">Basic Info</span>
+                </span>
+                <span class="text-[11px] sm:text-xs font-extrabold text-blue-600 dark:text-blue-400" id="step-pct-text">25% Completed</span>
+            </div>
+
+            {{-- Visual Progress Track --}}
+            <div class="relative mb-3.5 sm:mb-4 px-1">
+                <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 sm:h-2 rounded-full overflow-hidden">
+                    <div id="step-progress-bar" class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full w-1/4 rounded-full transition-all duration-300"></div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-4 gap-1.5 sm:gap-4 text-center">
-                <div class="flex flex-col items-center gap-1">
-                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-xs">1</div>
-                    <span class="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-white">Basic Info</span>
-                </div>
-                <div class="flex flex-col items-center gap-1">
-                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">2</div>
-                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Pricing</span>
-                </div>
-                <div class="flex flex-col items-center gap-1">
-                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">3</div>
-                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Location</span>
-                </div>
-                <div class="flex flex-col items-center gap-1">
-                    <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center">4</div>
-                    <span class="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">Photos</span>
-                </div>
+                {{-- Step 1 Indicator --}}
+                <button type="button" onclick="goToStep(1)" id="step-btn-1" class="flex flex-col items-center gap-1 group transition-all cursor-pointer">
+                    <div id="step-circle-1" class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 sm:ring-4 ring-blue-600/20 transition-all">
+                        1
+                    </div>
+                    <span id="step-label-1" class="text-[10px] sm:text-xs font-bold text-blue-600 dark:text-blue-400 transition-colors">Basic Info</span>
+                </button>
+
+                {{-- Step 2 Indicator --}}
+                <button type="button" onclick="goToStep(2)" id="step-btn-2" class="flex flex-col items-center gap-1 group transition-all cursor-pointer">
+                    <div id="step-circle-2" class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center transition-all">
+                        2
+                    </div>
+                    <span id="step-label-2" class="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors">Pricing</span>
+                </button>
+
+                {{-- Step 3 Indicator --}}
+                <button type="button" onclick="goToStep(3)" id="step-btn-3" class="flex flex-col items-center gap-1 group transition-all cursor-pointer">
+                    <div id="step-circle-3" class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center transition-all">
+                        3
+                    </div>
+                    <span id="step-label-3" class="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors">Location</span>
+                </button>
+
+                {{-- Step 4 Indicator --}}
+                <button type="button" onclick="goToStep(4)" id="step-btn-4" class="flex flex-col items-center gap-1 group transition-all cursor-pointer">
+                    <div id="step-circle-4" class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center transition-all">
+                        4
+                    </div>
+                    <span id="step-label-4" class="text-[10px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors">Photos</span>
+                </button>
             </div>
         </div>
 
-        <form method="POST" action="{{ route('properties.store') }}" enctype="multipart/form-data" class="space-y-4 sm:space-y-6" id="create-property-form" data-ur-loader-skip="true" data-no-smooth="true">
-            @csrf
+        {{-- Step Validation Alert Toast / Banner --}}
+        <div id="step-validation-alert" class="hidden mb-4 sm:mb-6 p-3.5 sm:p-4 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-red-700 dark:text-red-300 flex items-center justify-between gap-3 shadow-sm">
+            <div class="flex items-center gap-2.5">
+                <i class="ph-bold ph-warning-circle text-red-600 text-lg sm:text-xl shrink-0"></i>
+                <span id="step-validation-alert-msg">Please complete all required fields in this step.</span>
+            </div>
+            <button type="button" onclick="document.getElementById('step-validation-alert').classList.add('hidden')" class="text-red-400 hover:text-red-700 dark:hover:text-red-200 text-base">
+                <i class="ph-bold ph-x"></i>
+            </button>
+        </div>
 
-            {{-- 1. Basic Info Section --}}
+        <form method="POST" action="{{ route('properties.store') }}" enctype="multipart/form-data" class="space-y-4 sm:space-y-6" id="create-property-form" data-ur-loader-skip="true" data-no-smooth="true" novalidate>
+            @csrf
+            {{-- ======================================================== --}}
+            {{-- STEP 1: Basic Information & Key Specifications            --}}
+            {{-- ======================================================== --}}
+            <div id="step-pane-1" class="step-pane space-y-4 sm:space-y-6">
+                {{-- 1. Basic Info Section --}}
             <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-basic-info">
                 <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
@@ -184,217 +235,7 @@
                 </div>
             </div>
 
-            {{-- 2. Pricing Section --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-pricing">
-                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
-                        <i class="ph-bold ph-currency-inr"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white" id="create-pricing-title">Pricing & Billing</h2>
-                        <p class="text-[11px] sm:text-xs text-slate-400" id="create-pricing-desc">Set your expected rent or sale price</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5" id="pricing-grid">
-                    <div>
-                        <label for="create-price" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" id="create-price-label">Expected Rent (₹) <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-sm">₹</span>
-                            <input type="number" name="price" id="create-price" value="{{ old('price') }}" required min="0" step="0.01" inputmode="numeric"
-                                   class="w-full pl-8 pr-3.5 py-2.5 sm:pl-9 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
-                                   placeholder="25,000">
-                        </div>
-                        @error('price') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
-                    </div>
-
-                    {{-- Rent Billing Cycle (Per Month / Per Year) --}}
-                    <div id="period-input-col">
-                        <label for="create-period" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" id="create-period-label">Billing Cycle <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <select name="price_period" id="create-period" required
-                                    class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
-                                <option value="month" {{ old('price_period') === 'month' ? 'selected' : '' }}>Per Month</option>
-                                <option value="year" {{ old('price_period') === 'year' ? 'selected' : '' }}>Per Year</option>
-                            </select>
-                            <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                        </div>
-                    </div>
-
-                    {{-- Sale Pricing Mode Badge (Shown when Selling) --}}
-                    <div id="sale-badge-col" class="hidden">
-                        <label class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Payment Mode</label>
-                        <div class="h-[42px] sm:h-[46px] px-3.5 sm:px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 shadow-2xs">
-                            <i class="ph-bold ph-tag text-emerald-600 text-base shrink-0"></i>
-                            <span>One-Time Total Purchase Price (No recurring rent)</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 3. Location Details --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-location">
-                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
-                        <i class="ph-bold ph-map-pin"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Location Details</h2>
-                        <p class="text-[11px] sm:text-xs text-slate-400">Accurate location helps verified tenants discover your listing</p>
-                    </div>
-                </div>
-
-                <div class="space-y-3.5 sm:space-y-5">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
-                        <div>
-                            <label for="create-state" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">State <span class="text-red-500">*</span></label>
-                            <div class="relative">
-                                <select name="state" id="create-state" required onchange="if(window.handleLocationStateChange) window.handleLocationStateChange(this, 'create-city', 'create-locality-select');"
-                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
-                                    <option value="">Select State</option>
-                                    @php $statesList = $globalAllStates ?? $allStates ?? []; @endphp
-                                    @if(!empty($statesList))
-                                        @foreach($statesList as $code => $name)
-                                             <option value="{{ $code }}" {{ old('state') == $code ? 'selected' : '' }}>{{ $name }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="create-city" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">City / District <span class="text-red-500">*</span></label>
-                            <div class="relative">
-                                <select name="location" id="create-city" required onchange="if(window.handleLocationCityChange) window.handleLocationCityChange(this, 'create-locality-select', 'create-state');"
-                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
-                                    <option value="">Select District</option>
-                                    @php $districtsList = $globalAllDistricts ?? $allDistricts ?? []; @endphp
-                                    @if(!empty($districtsList))
-                                        @foreach($districtsList as $d)
-                                            @php
-                                                $dSlug = $d['slug'] ?? strtolower(str_replace(' ', '-', $d['name']));
-                                                $isSelected = (old('location') === $dSlug || old('location') === $d['name']);
-                                            @endphp
-                                            <option value="{{ $d['name'] }}" {{ $isSelected ? 'selected' : '' }}>
-                                                {{ $d['name'] }}{{ !empty($d['state_code']) ? ' (' . $d['state_code'] . ')' : '' }}
-                                            </option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label for="create-locality-select" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Locality / Sector / Area <span class="text-red-500">*</span></label>
-                        <div id="locality-select-wrap">
-                            <div class="relative">
-                                <select name="locality" id="create-locality-select"
-                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
-                                    <option value="">Select City First</option>
-                                </select>
-                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                            </div>
-                        </div>
-                        <div id="locality-text-wrap" style="display: none;">
-                            <div class="relative">
-                                <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                                <input type="text" name="locality" id="create-locality-text" value="{{ old('locality') }}" disabled 
-                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
-                                       placeholder="e.g. Sector 57, Sushant Lok">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="create-address" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Complete Address <span class="text-red-500">*</span></label>
-                        <input type="text" name="address" id="create-address" value="{{ old('address') }}" required enterkeyhint="next"
-                               class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
-                               placeholder="Flat/House No, Building Name, Street / Landmark">
-                    </div>
-                </div>
-
-                <script>
-                    (function() {
-                        function checkAndInjectSector13() {
-                            var cityEl = document.getElementById('create-city');
-                            var locEl = document.getElementById('create-locality-select');
-                            if (!cityEl || !locEl) return;
-                            var cVal = (cityEl.value || '').trim().toLowerCase();
-                            if (!cVal.includes('gurugram') && !cVal.includes('gurgaon')) return;
-                            if (locEl.options.length <= 1) return;
-
-                            var hasS13 = Array.from(locEl.options).some(function(o) {
-                                return o.value.trim().toLowerCase() === 'sector 13';
-                            });
-                            if (!hasS13) {
-                                var curVal = locEl.value || "{{ old('locality') }}";
-                                var newOpt = new Option('\u00A0\u00A0Sector 13', 'Sector 13');
-                                var inserted = false;
-                                for (var i = 1; i < locEl.options.length; i++) {
-                                    var txt = locEl.options[i].text.trim();
-                                    if (txt.localeCompare('Sector 13', undefined, { numeric: true, sensitivity: 'base' }) > 0) {
-                                        locEl.insertBefore(newOpt, locEl.options[i]);
-                                        inserted = true;
-                                        break;
-                                    }
-                                }
-                                if (!inserted) locEl.add(newOpt);
-                                if (curVal) locEl.value = curVal;
-                            }
-                        }
-
-                        document.addEventListener('DOMContentLoaded', function() {
-                            if (typeof window.initLocationCascading === 'function') {
-                                window.initLocationCascading({
-                                    stateId: 'create-state',
-                                    cityId: 'create-city',
-                                    localityId: 'create-locality-select',
-                                    localityTextWrapId: 'locality-text-wrap',
-                                    localitySelectWrapId: 'locality-select-wrap',
-                                    selectedState: "{{ old('state') }}",
-                                    selectedCity: "{{ old('location') }}",
-                                    selectedLocality: "{{ old('locality') }}"
-                                });
-                            }
-
-                            checkAndInjectSector13();
-                            setTimeout(checkAndInjectSector13, 80);
-                            setTimeout(checkAndInjectSector13, 250);
-                            setTimeout(checkAndInjectSector13, 600);
-                            setTimeout(checkAndInjectSector13, 1200);
-
-                            var locEl = document.getElementById('create-locality-select');
-                            var cityEl = document.getElementById('create-city');
-                            if (locEl) {
-                                locEl.addEventListener('focus', checkAndInjectSector13);
-                                locEl.addEventListener('mousedown', checkAndInjectSector13);
-                                locEl.addEventListener('click', checkAndInjectSector13);
-
-                                if (window.MutationObserver) {
-                                    var observer = new MutationObserver(function() {
-                                        observer.disconnect();
-                                        checkAndInjectSector13();
-                                        observer.observe(locEl, { childList: true });
-                                    });
-                                    observer.observe(locEl, { childList: true });
-                                }
-                            }
-                            if (cityEl) {
-                                cityEl.addEventListener('change', function() {
-                                    setTimeout(checkAndInjectSector13, 50);
-                                    setTimeout(checkAndInjectSector13, 200);
-                                    setTimeout(checkAndInjectSector13, 500);
-                                });
-                            }
-                        });
-                    })();
-                </script>
-            </div>
-
-            {{-- 4. Key Specifications --}}
+                {{-- 4. Key Specifications --}}
             <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-details">
                 <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
@@ -656,7 +497,264 @@
                 </div>
             </div>
 
-            {{-- 5. Media & Photo Gallery --}}
+                {{-- Step 1 Footer Navigation --}}
+                <div class="flex items-center justify-between pt-4 sm:pt-6 border-t border-slate-200/70 dark:border-slate-800">
+                    <a href="{{ route('dashboard') }}" class="px-4 sm:px-5 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm rounded-xl transition-all">
+                        Cancel
+                    </a>
+                    <button type="button" onclick="goToStep(2)" class="px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-95">
+                        <span>Continue to Pricing</span>
+                        <i class="ph-bold ph-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            {{-- ======================================================== --}}
+            {{-- STEP 2: Pricing & Billing                                 --}}
+            {{-- ======================================================== --}}
+            <div id="step-pane-2" class="step-pane space-y-4 sm:space-y-6 hidden">
+                {{-- 2. Pricing Section --}}
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-pricing">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-currency-inr"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white" id="create-pricing-title">Pricing & Billing</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400" id="create-pricing-desc">Set your expected rent or sale price</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5" id="pricing-grid">
+                    <div>
+                        <label for="create-price" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" id="create-price-label">Expected Rent (₹) <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-sm">₹</span>
+                            <input type="number" name="price" id="create-price" value="{{ old('price') }}" required min="0" step="0.01" inputmode="numeric"
+                                   class="w-full pl-8 pr-3.5 py-2.5 sm:pl-9 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
+                                   placeholder="25,000">
+                        </div>
+                        @error('price') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Rent Billing Cycle (Per Month / Per Year) --}}
+                    <div id="period-input-col">
+                        <label for="create-period" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" id="create-period-label">Billing Cycle <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <select name="price_period" id="create-period" required
+                                    class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                <option value="month" {{ old('price_period') === 'month' ? 'selected' : '' }}>Per Month</option>
+                                <option value="year" {{ old('price_period') === 'year' ? 'selected' : '' }}>Per Year</option>
+                            </select>
+                            <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    {{-- Sale Pricing Mode Badge (Shown when Selling) --}}
+                    <div id="sale-badge-col" class="hidden">
+                        <label class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Payment Mode</label>
+                        <div class="h-[42px] sm:h-[46px] px-3.5 sm:px-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 shadow-2xs">
+                            <i class="ph-bold ph-tag text-emerald-600 text-base shrink-0"></i>
+                            <span>One-Time Total Purchase Price (No recurring rent)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                {{-- Step 2 Footer Navigation --}}
+                <div class="flex items-center justify-between pt-4 sm:pt-6 border-t border-slate-200/70 dark:border-slate-800">
+                    <button type="button" onclick="goToStep(1)" class="px-4 sm:px-5 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 cursor-pointer">
+                        <i class="ph-bold ph-arrow-left"></i>
+                        <span>Back to Basic Info</span>
+                    </button>
+                    <button type="button" onclick="goToStep(3)" class="px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-95">
+                        <span>Continue to Location</span>
+                        <i class="ph-bold ph-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            {{-- ======================================================== --}}
+            {{-- STEP 3: Location Details                                  --}}
+            {{-- ======================================================== --}}
+            <div id="step-pane-3" class="step-pane space-y-4 sm:space-y-6 hidden">
+                {{-- 3. Location Details --}}
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-location">
+                <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-base sm:text-lg">
+                        <i class="ph-bold ph-map-pin"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Location Details</h2>
+                        <p class="text-[11px] sm:text-xs text-slate-400">Accurate location helps verified tenants discover your listing</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3.5 sm:space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+                        <div>
+                            <label for="create-state" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">State <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select name="state" id="create-state" required onchange="if(window.handleLocationStateChange) window.handleLocationStateChange(this, 'create-city', 'create-locality-select');"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="">Select State</option>
+                                    @php $statesList = $globalAllStates ?? $allStates ?? []; @endphp
+                                    @if(!empty($statesList))
+                                        @foreach($statesList as $code => $name)
+                                             <option value="{{ $code }}" {{ old('state') == $code ? 'selected' : '' }}>{{ $name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="create-city" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">City / District <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select name="location" id="create-city" required onchange="if(window.handleLocationCityChange) window.handleLocationCityChange(this, 'create-locality-select', 'create-state');"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="">Select District</option>
+                                    @php $districtsList = $globalAllDistricts ?? $allDistricts ?? []; @endphp
+                                    @if(!empty($districtsList))
+                                        @foreach($districtsList as $d)
+                                            @php
+                                                $dSlug = $d['slug'] ?? strtolower(str_replace(' ', '-', $d['name']));
+                                                $isSelected = (old('location') === $dSlug || old('location') === $d['name']);
+                                            @endphp
+                                            <option value="{{ $d['name'] }}" {{ $isSelected ? 'selected' : '' }}>
+                                                {{ $d['name'] }}{{ !empty($d['state_code']) ? ' (' . $d['state_code'] . ')' : '' }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="create-locality-select" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Locality / Sector / Area <span class="text-red-500">*</span></label>
+                        <div id="locality-select-wrap">
+                            <div class="relative">
+                                <select name="locality" id="create-locality-select"
+                                        class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
+                                    <option value="">Select City First</option>
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div id="locality-text-wrap" style="display: none;">
+                            <div class="relative">
+                                <i class="ph-bold ph-map-pin absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                <input type="text" name="locality" id="create-locality-text" value="{{ old('locality') }}" disabled 
+                                       class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
+                                       placeholder="e.g. Sector 57, Sushant Lok">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="create-address" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Complete Address <span class="text-red-500">*</span></label>
+                        <input type="text" name="address" id="create-address" value="{{ old('address') }}" required enterkeyhint="next"
+                               class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
+                               placeholder="Flat/House No, Building Name, Street / Landmark">
+                    </div>
+                </div>
+
+                <script>
+                    (function() {
+                        function checkAndInjectSector13() {
+                            var cityEl = document.getElementById('create-city');
+                            var locEl = document.getElementById('create-locality-select');
+                            if (!cityEl || !locEl) return;
+                            var cVal = (cityEl.value || '').trim().toLowerCase();
+                            if (!cVal.includes('gurugram') && !cVal.includes('gurgaon')) return;
+                            if (locEl.options.length <= 1) return;
+
+                            var hasS13 = Array.from(locEl.options).some(function(o) {
+                                return o.value.trim().toLowerCase() === 'sector 13';
+                            });
+                            if (!hasS13) {
+                                var curVal = locEl.value || "{{ old('locality') }}";
+                                var newOpt = new Option('\u00A0\u00A0Sector 13', 'Sector 13');
+                                var inserted = false;
+                                for (var i = 1; i < locEl.options.length; i++) {
+                                    var txt = locEl.options[i].text.trim();
+                                    if (txt.localeCompare('Sector 13', undefined, { numeric: true, sensitivity: 'base' }) > 0) {
+                                        locEl.insertBefore(newOpt, locEl.options[i]);
+                                        inserted = true;
+                                        break;
+                                    }
+                                }
+                                if (!inserted) locEl.add(newOpt);
+                                if (curVal) locEl.value = curVal;
+                            }
+                        }
+
+                        document.addEventListener('DOMContentLoaded', function() {
+                            if (typeof window.initLocationCascading === 'function') {
+                                window.initLocationCascading({
+                                    stateId: 'create-state',
+                                    cityId: 'create-city',
+                                    localityId: 'create-locality-select',
+                                    localityTextWrapId: 'locality-text-wrap',
+                                    localitySelectWrapId: 'locality-select-wrap',
+                                    selectedState: "{{ old('state') }}",
+                                    selectedCity: "{{ old('location') }}",
+                                    selectedLocality: "{{ old('locality') }}"
+                                });
+                            }
+
+                            checkAndInjectSector13();
+                            setTimeout(checkAndInjectSector13, 80);
+                            setTimeout(checkAndInjectSector13, 250);
+                            setTimeout(checkAndInjectSector13, 600);
+                            setTimeout(checkAndInjectSector13, 1200);
+
+                            var locEl = document.getElementById('create-locality-select');
+                            var cityEl = document.getElementById('create-city');
+                            if (locEl) {
+                                locEl.addEventListener('focus', checkAndInjectSector13);
+                                locEl.addEventListener('mousedown', checkAndInjectSector13);
+                                locEl.addEventListener('click', checkAndInjectSector13);
+
+                                if (window.MutationObserver) {
+                                    var observer = new MutationObserver(function() {
+                                        observer.disconnect();
+                                        checkAndInjectSector13();
+                                        observer.observe(locEl, { childList: true });
+                                    });
+                                    observer.observe(locEl, { childList: true });
+                                }
+                            }
+                            if (cityEl) {
+                                cityEl.addEventListener('change', function() {
+                                    setTimeout(checkAndInjectSector13, 50);
+                                    setTimeout(checkAndInjectSector13, 200);
+                                    setTimeout(checkAndInjectSector13, 500);
+                                });
+                            }
+                        });
+                    })();
+                </script>
+            </div>
+
+                {{-- Step 3 Footer Navigation --}}
+                <div class="flex items-center justify-between pt-4 sm:pt-6 border-t border-slate-200/70 dark:border-slate-800">
+                    <button type="button" onclick="goToStep(2)" class="px-4 sm:px-5 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 cursor-pointer">
+                        <i class="ph-bold ph-arrow-left"></i>
+                        <span>Back to Pricing</span>
+                    </button>
+                    <button type="button" onclick="goToStep(4)" class="px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-95">
+                        <span>Continue to Photos</span>
+                        <i class="ph-bold ph-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            {{-- ======================================================== --}}
+            {{-- STEP 4: Property Photos & Video Tours                     --}}
+            {{-- ======================================================== --}}
+            <div id="step-pane-4" class="step-pane space-y-4 sm:space-y-6 hidden">
+                {{-- 5. Media & Photo Gallery --}}
             <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-images">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
                     <div class="flex items-center gap-2.5 sm:gap-3">
@@ -913,17 +1011,32 @@
                 </div>
             </div>
 
-            {{-- Action Buttons --}}
-            <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 sm:gap-3 pt-4 sm:pt-6 border-t border-slate-200/70 dark:border-slate-800 mt-4 sm:mt-6">
-                <a href="{{ route('dashboard') }}" class="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm text-center rounded-xl transition-all" id="create-cancel" title="Cancel">
-                    Cancel
-                </a>
-                <button type="submit" class="w-full sm:w-auto px-6 py-3.5 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-md shadow-blue-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed" id="create-submit">
-                    <i class="ph-bold ph-paper-plane-tilt text-base" id="submit-icon"></i> 
-                    <span id="submit-label">Publish Property Listing</span>
-                </button>
+                {{-- Step 4 Quick Review Summary Card --}}
+                <div class="bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/50 rounded-xl sm:rounded-2xl p-4 sm:p-5 text-xs text-slate-700 dark:text-slate-300 shadow-xs">
+                    <div class="flex items-center gap-2.5 font-bold text-slate-900 dark:text-white text-sm mb-1.5">
+                        <i class="ph-fill ph-check-circle text-blue-600 text-lg"></i>
+                        <span>Almost Done! Review & Publish</span>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 mb-2">Double check your listing details before publishing to verified tenants.</p>
+                    <div id="step4-summary-details" class="border-t border-blue-100 dark:border-blue-900/50">
+                        {{-- Populated dynamically via JS updateStep4Summary() --}}
+                    </div>
+                </div>
+
+                {{-- Step 4 Footer Navigation --}}
+                <div class="flex items-center justify-between pt-4 sm:pt-6 border-t border-slate-200/70 dark:border-slate-800">
+                    <button type="button" onclick="goToStep(3)" class="px-4 sm:px-5 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 cursor-pointer">
+                        <i class="ph-bold ph-arrow-left"></i>
+                        <span>Back to Location</span>
+                    </button>
+                    <button type="submit" class="px-6 sm:px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm sm:text-base rounded-xl shadow-md shadow-blue-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed" id="create-submit">
+                        <i class="ph-bold ph-paper-plane-tilt text-base" id="submit-icon"></i> 
+                        <span id="submit-label">Publish Property Listing</span>
+                    </button>
+                </div>
             </div>
         </form>
+
     </div>
 </section>
 
@@ -2386,6 +2499,242 @@ document.getElementById('create-property-form')?.addEventListener('submit', asyn
 
     xhr.send(formData);
 });
+
+// ========================================================
+// 4-Step Wizard Navigation & Validation Logic
+// ========================================================
+window.currentStep = 1;
+window.maxVisitedStep = 1;
+
+const STEP_NAMES = {
+    1: 'Basic Info',
+    2: 'Pricing',
+    3: 'Location',
+    4: 'Photos'
+};
+
+function showStepError(input, message) {
+    if (!input) return;
+    
+    // Highlight input
+    input.classList.add('ring-2', 'ring-red-500', 'border-red-500');
+    setTimeout(() => {
+        input.classList.remove('ring-2', 'ring-red-500', 'border-red-500');
+    }, 4000);
+
+    // Scroll to input
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try { input.focus({ preventScroll: true }); } catch (e) {}
+
+    // Show alert banner
+    const alertBox = document.getElementById('step-validation-alert');
+    const alertMsg = document.getElementById('step-validation-alert-msg');
+    if (alertBox && alertMsg) {
+        alertMsg.textContent = message;
+        alertBox.classList.remove('hidden');
+        setTimeout(() => {
+            alertBox.classList.add('hidden');
+        }, 6000);
+    } else {
+        alert(message);
+    }
+}
+
+function validateStep(step) {
+    if (step === 1) {
+        const title = document.getElementById('create-title');
+        if (!title || !title.value.trim()) {
+            showStepError(title, 'Please enter a property title (e.g. 2 BHK Flat in Sector 57).');
+            return false;
+        }
+        if (title.value.trim().length < 10) {
+            showStepError(title, 'Property title must be at least 10 characters long.');
+            return false;
+        }
+
+        const desc = document.getElementById('create-description');
+        if (!desc || !desc.value.trim()) {
+            showStepError(desc, 'Please enter a property description (minimum 20 characters).');
+            return false;
+        }
+        if (desc.value.trim().length < 20) {
+            showStepError(desc, 'Property description must be at least 20 characters long.');
+            return false;
+        }
+
+        const cat = document.getElementById('create-category');
+        if (!cat || !cat.value) {
+            showStepError(cat, 'Please select a property category from the dropdown.');
+            return false;
+        }
+
+        const phone = document.getElementById('create-phone');
+        if (!phone || !phone.value.trim() || phone.value.trim().length < 8) {
+            showStepError(phone, 'Please enter a valid contact phone number.');
+            return false;
+        }
+
+        return true;
+    }
+
+    if (step === 2) {
+        const price = document.getElementById('create-price');
+        if (!price || !price.value || parseFloat(price.value) <= 0) {
+            showStepError(price, 'Please enter a valid price/rent amount greater than 0.');
+            return false;
+        }
+        return true;
+    }
+
+    if (step === 3) {
+        const state = document.getElementById('create-state');
+        if (!state || !state.value) {
+            showStepError(state, 'Please select a state.');
+            return false;
+        }
+
+        const city = document.getElementById('create-city');
+        if (!city || !city.value) {
+            showStepError(city, 'Please select a city/district.');
+            return false;
+        }
+
+        const addr = document.getElementById('create-address');
+        if (!addr || !addr.value.trim() || addr.value.trim().length < 4) {
+            showStepError(addr, 'Please enter the complete property address.');
+            return false;
+        }
+        return true;
+    }
+
+    return true;
+}
+
+window.goToStep = function(targetStep) {
+    if (targetStep < 1 || targetStep > 4) return;
+
+    // If moving forward, validate current step
+    if (targetStep > window.currentStep) {
+        for (let s = window.currentStep; s < targetStep; s++) {
+            if (!validateStep(s)) {
+                return;
+            }
+        }
+    }
+
+    window.currentStep = targetStep;
+    if (targetStep > window.maxVisitedStep) {
+        window.maxVisitedStep = targetStep;
+    }
+
+    // Toggle step panes
+    for (let i = 1; i <= 4; i++) {
+        const pane = document.getElementById(`step-pane-${i}`);
+        if (pane) {
+            if (i === targetStep) {
+                pane.classList.remove('hidden');
+            } else {
+                pane.classList.add('hidden');
+            }
+        }
+    }
+
+    // Update stepper UI
+    updateStepperUI(targetStep);
+
+    // If step 4, refresh summary preview
+    if (targetStep === 4) {
+        updateStep4Summary();
+    }
+
+    // Scroll to top of stepper
+    const stepperCard = document.getElementById('stepper-container');
+    if (stepperCard) {
+        stepperCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+function updateStepperUI(activeStep) {
+    const numEl = document.getElementById('current-step-num');
+    const nameEl = document.getElementById('current-step-name');
+    const pctEl = document.getElementById('step-pct-text');
+    const barEl = document.getElementById('step-progress-bar');
+
+    if (numEl) numEl.textContent = activeStep;
+    if (nameEl) nameEl.textContent = STEP_NAMES[activeStep] || '';
+    if (pctEl) pctEl.textContent = `${activeStep * 25}% Completed`;
+    if (barEl) barEl.style.width = `${activeStep * 25}%`;
+
+    for (let i = 1; i <= 4; i++) {
+        const circle = document.getElementById(`step-circle-${i}`);
+        const label = document.getElementById(`step-label-${i}`);
+        if (!circle || !label) continue;
+
+        if (i === activeStep) {
+            circle.className = 'w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-600 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-md ring-2 sm:ring-4 ring-blue-600/25 transition-all';
+            circle.innerHTML = `${i}`;
+            label.className = 'text-[10px] sm:text-xs font-bold text-blue-600 dark:text-blue-400 transition-colors';
+        } else if (i < activeStep) {
+            circle.className = 'w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-emerald-500 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-xs hover:bg-emerald-600 transition-all';
+            circle.innerHTML = '<i class="ph-bold ph-check text-xs sm:text-sm"></i>';
+            label.className = 'text-[10px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors';
+        } else {
+            circle.className = 'w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-extrabold text-xs sm:text-sm flex items-center justify-center transition-all';
+            circle.innerHTML = `${i}`;
+            label.className = 'text-[10px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500 transition-colors';
+        }
+    }
+}
+
+function updateStep4Summary() {
+    const title = document.getElementById('create-title')?.value || 'Untitled Property';
+    const typeRadio = document.querySelector('input[name="type"]:checked')?.value || 'house';
+    const purposeRadio = document.querySelector('input[name="purpose"]:checked')?.value || 'rent';
+    const rawPrice = document.getElementById('create-price')?.value;
+    const priceText = rawPrice ? ('₹' + Number(rawPrice).toLocaleString('en-IN')) : 'Not specified';
+    const city = document.getElementById('create-city')?.value || '';
+    const localitySelect = document.getElementById('create-locality-select')?.value;
+    const localityText = document.getElementById('create-locality-text')?.value;
+    const locality = localitySelect || localityText || '';
+    const address = document.getElementById('create-address')?.value || '';
+
+    const summaryEl = document.getElementById('step4-summary-details');
+    if (summaryEl) {
+        summaryEl.innerHTML = `
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2.5 text-[11px] sm:text-xs">
+                <div class="bg-white/80 dark:bg-slate-900/60 p-2.5 rounded-xl border border-blue-100 dark:border-blue-900/40">
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Property Headline</span>
+                    <strong class="text-slate-900 dark:text-white font-bold block truncate" title="${title}">${title}</strong>
+                    <span class="text-blue-600 dark:text-blue-400 text-[10px] font-semibold capitalize mt-0.5 block">${purposeRadio === 'rent' ? 'For Rent' : 'For Sale'} · ${typeRadio}</span>
+                </div>
+                <div class="bg-white/80 dark:bg-slate-900/60 p-2.5 rounded-xl border border-blue-100 dark:border-blue-900/40">
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Price & Billing</span>
+                    <strong class="text-emerald-600 dark:text-emerald-400 font-extrabold text-sm block">${priceText}</strong>
+                    <span class="text-slate-400 text-[10px] block">${purposeRadio === 'rent' ? 'Monthly Expected Rent' : 'One-Time Purchase Price'}</span>
+                </div>
+                <div class="bg-white/80 dark:bg-slate-900/60 p-2.5 rounded-xl border border-blue-100 dark:border-blue-900/40 sm:col-span-1 col-span-1">
+                    <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Location</span>
+                    <strong class="text-slate-900 dark:text-white font-bold block truncate" title="${city}">${city}${locality ? ' (' + locality + ')' : ''}</strong>
+                    <span class="text-slate-500 dark:text-slate-400 text-[10px] block truncate" title="${address}">${address || 'Address provided'}</span>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Initial step handler based on server validation errors
+document.addEventListener('DOMContentLoaded', function() {
+    @if($errors->hasAny(['images', 'images.*', 'video', 'videos', 'videos.*', 'uploaded_video_paths', 'video_url', 'video_urls']))
+        goToStep(4);
+    @elseif($errors->hasAny(['state', 'location', 'locality', 'address']))
+        goToStep(3);
+    @elseif($errors->hasAny(['price', 'price_period']))
+        goToStep(2);
+    @else
+        goToStep(1);
+    @endif
+});
+
 </script>
 
 @endsection
