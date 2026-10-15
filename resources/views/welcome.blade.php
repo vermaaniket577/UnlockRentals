@@ -721,8 +721,8 @@
                 background: #ffffff !important;
                 border-bottom: 1px solid #e2e8f0 !important;
                 box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
-                padding: calc(8px + env(safe-area-inset-top, 0px)) 14px 8px 14px !important;
-                min-height: 54px !important;
+                padding: 8px 14px !important;
+                min-height: 48px !important;
                 height: auto !important;
                 display: flex !important;
                 align-items: center !important;
@@ -872,9 +872,9 @@
 
         @media (max-width: 768px) {
             .main-header {
-                padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px 12px !important;
+                padding: 8px 12px !important;
                 gap: 8px !important;
-                min-height: 52px !important;
+                min-height: 48px !important;
                 height: auto !important;
                 display: flex !important;
                 align-items: center !important;
@@ -973,7 +973,11 @@
             }
         }
 
-        /* Native Mobile Application Header Safeguards */
+        /* Native Mobile Application Header & Spacing Safeguards */
+        .is-mobile-app .main-header {
+            padding: 8px 12px !important;
+            min-height: 48px !important;
+        }
         .is-mobile-app .main-header .main-nav,
         .is-mobile-app .main-nav,
         .is-mobile-app header.main-header nav.main-nav,
@@ -989,6 +993,16 @@
             display: inline-flex !important;
             visibility: visible !important;
             opacity: 1 !important;
+        }
+        .is-mobile-app .mobile-app-hero-slider-section {
+            padding-top: 8px !important;
+            padding-bottom: 10px !important;
+        }
+        .is-mobile-app #mobile-bottom-nav {
+            padding-bottom: 0 !important;
+        }
+        .is-mobile-app body {
+            padding-bottom: 68px !important;
         }
 
         @media (max-width: 480px) {
@@ -1015,8 +1029,8 @@
             z-index: 20;
             width: 100%;
             margin: 0 auto;
-            padding-top: calc(56px + env(safe-area-inset-top, 0px));
-            padding-bottom: 20px;
+            padding-top: 10px !important;
+            padding-bottom: 12px !important;
             background: #f8fafc;
             background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 40%, #f1f5f9 100%);
             box-sizing: border-box;

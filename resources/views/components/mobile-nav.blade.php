@@ -93,6 +93,12 @@
     body {
         padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px)) !important;
     }
+    .is-mobile-app #mobile-bottom-nav {
+        padding-bottom: 0 !important;
+    }
+    .is-mobile-app body {
+        padding-bottom: 68px !important;
+    }
     @media (min-width: 768px) {
         body {
             padding-bottom: 0 !important;

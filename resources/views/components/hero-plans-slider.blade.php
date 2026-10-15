@@ -1857,7 +1857,10 @@
 
     /* Outer Section & Container: Sleek compact vertical padding */
     .ur-hero-plans-slider-section {
-        padding: 0.65rem 0 0.85rem;
+        padding: 0.45rem 0 0.65rem !important;
+    }
+    .is-mobile-app .ur-hero-plans-slider-section {
+        padding: 0.35rem 0 0.5rem !important;
     }
 
     .ur-hps-container {
