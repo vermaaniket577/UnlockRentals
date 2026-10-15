@@ -4,6 +4,7 @@
     'plan' => null,
     'size' => 'sm',   // 'xs', 'sm', 'md', 'lg'
     'showPlan' => false,
+    'theme' => 'dark', // 'dark' or 'light'
 ])
 
 @php
@@ -45,40 +46,79 @@
 @elseif($type === 'card')
     {{-- High-End Prestige Subscription Card (Linear / Stripe Style) --}}
     @if($isPaid)
-        <div {{ $attributes->merge(['class' => 'rounded-xl p-3.5 relative overflow-hidden transition-all']) }}
-             style="background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 60%, #111827 100%); border: 1px solid rgba(245, 158, 11, 0.35); box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.35), inset 0 1px 0 rgba(251, 191, 36, 0.25);">
-            {{-- Ambient corner gold highlight (clean subtle glow without icon overlap) --}}
-            <div style="position: absolute; right: -25px; top: -25px; width: 110px; height: 110px; background: radial-gradient(circle, rgba(245,158,11,0.22) 0%, transparent 70%); pointer-events: none;"></div>
+        @if($theme === 'light')
+            {{-- Light Luxury Gold & Amber Card for White Modals & Dropdowns --}}
+            <div {{ $attributes->merge(['class' => 'rounded-xl p-3.5 relative overflow-hidden transition-all']) }}
+                 style="background: linear-gradient(135deg, #fffdf7 0%, #fef3c7 50%, #ffffff 100%); border: 1.5px solid #fcd34d; box-shadow: 0 4px 16px -2px rgba(245, 158, 11, 0.14);">
+                {{-- Ambient corner gold highlight --}}
+                <div style="position: absolute; right: -25px; top: -25px; width: 105px; height: 105px; background: radial-gradient(circle, rgba(245,158,11,0.2) 0%, transparent 70%); pointer-events: none;"></div>
 
-            <div class="flex items-center justify-between mb-2.5 relative z-10">
-                <span class="ur-premium-member-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-black text-[10px] uppercase tracking-wider text-white !text-white"
-                      style="background: rgba(245, 158, 11, 0.22); border: 1px solid rgba(245, 158, 11, 0.5); box-shadow: 0 1px 2px rgba(0,0,0,0.2); color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
-                    <i class="ph-fill ph-crown text-amber-400 text-xs" style="color: #fbbf24 !important; -webkit-text-fill-color: #fbbf24 !important;"></i>
-                    <span class="ur-premium-member-text" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; font-weight: 800 !important;">Premium Member</span>
-                </span>
-                <span class="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30" style="color: #6ee7b7 !important; -webkit-text-fill-color: #6ee7b7 !important;">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" style="background-color: #34d399 !important;"></span>
-                    <span style="color: #6ee7b7 !important; -webkit-text-fill-color: #6ee7b7 !important;">Active</span>
-                </span>
-            </div>
-
-            <div class="relative z-10">
-                <div class="flex items-center justify-between gap-2">
-                    <h4 class="text-sm font-extrabold text-white tracking-tight">
-                        {{ $planName }}
-                    </h4>
-                    <span class="text-[11px] font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/20">
-                        {{ $remaining }} unlocks left
+                <div class="flex items-center justify-between mb-2.5 relative z-10">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-black text-[10px] uppercase tracking-wider text-white"
+                          style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); box-shadow: 0 1px 3px rgba(217,119,6,0.3); color: #ffffff !important;">
+                        <i class="ph-fill ph-crown text-amber-100 text-xs"></i>
+                        <span style="color: #ffffff !important; font-weight: 800 !important;">Premium Member</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Active</span>
                     </span>
                 </div>
-                @if($expiresAt)
-                    <p class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1 font-medium">
-                        <i class="ph ph-calendar text-slate-400"></i>
-                        <span>Valid till {{ $expiresAt }}</span>
-                    </p>
-                @endif
+
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between gap-2">
+                        <h4 class="text-sm font-extrabold text-slate-900 tracking-tight">
+                            {{ $planName }}
+                        </h4>
+                        <span class="text-[11px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300">
+                            {{ $remaining }} unlocks left
+                        </span>
+                    </div>
+                    @if($expiresAt)
+                        <p class="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1 font-medium">
+                            <i class="ph ph-calendar text-slate-400"></i>
+                            <span>Valid till {{ $expiresAt }}</span>
+                        </p>
+                    @endif
+                </div>
             </div>
-        </div>
+        @else
+            {{-- Dark VIP Card --}}
+            <div {{ $attributes->merge(['class' => 'rounded-xl p-3.5 relative overflow-hidden transition-all']) }}
+                 style="background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 60%, #111827 100%); border: 1px solid rgba(245, 158, 11, 0.35); box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.35), inset 0 1px 0 rgba(251, 191, 36, 0.25);">
+                {{-- Ambient corner gold highlight (clean subtle glow without icon overlap) --}}
+                <div style="position: absolute; right: -25px; top: -25px; width: 110px; height: 110px; background: radial-gradient(circle, rgba(245,158,11,0.22) 0%, transparent 70%); pointer-events: none;"></div>
+
+                <div class="flex items-center justify-between mb-2.5 relative z-10">
+                    <span class="ur-premium-member-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-black text-[10px] uppercase tracking-wider text-white !text-white"
+                          style="background: rgba(245, 158, 11, 0.22); border: 1px solid rgba(245, 158, 11, 0.5); box-shadow: 0 1px 2px rgba(0,0,0,0.2); color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
+                        <i class="ph-fill ph-crown text-amber-400 text-xs" style="color: #fbbf24 !important; -webkit-text-fill-color: #fbbf24 !important;"></i>
+                        <span class="ur-premium-member-text" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; font-weight: 800 !important;">Premium Member</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30" style="color: #6ee7b7 !important; -webkit-text-fill-color: #6ee7b7 !important;">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" style="background-color: #34d399 !important;"></span>
+                        <span style="color: #6ee7b7 !important; -webkit-text-fill-color: #6ee7b7 !important;">Active</span>
+                    </span>
+                </div>
+
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between gap-2">
+                        <h4 class="text-sm font-extrabold text-white tracking-tight">
+                            {{ $planName }}
+                        </h4>
+                        <span class="text-[11px] font-bold text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/20">
+                            {{ $remaining }} unlocks left
+                        </span>
+                    </div>
+                    @if($expiresAt)
+                        <p class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1 font-medium">
+                            <i class="ph ph-calendar text-slate-400"></i>
+                            <span>Valid till {{ $expiresAt }}</span>
+                        </p>
+                    @endif
+                </div>
+            </div>
+        @endif
     @else
         <div {{ $attributes->merge(['class' => 'rounded-xl p-3.5 border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60']) }}>
             <div class="flex items-center justify-between gap-2">

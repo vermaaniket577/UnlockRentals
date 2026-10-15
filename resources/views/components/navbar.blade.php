@@ -226,7 +226,7 @@
                                 </div>
                                 @if($navActivePlan)
                                     <div class="mt-3">
-                                        <x-premium-badge :plan="$navActivePlan" type="card" />
+                                        <x-premium-badge :plan="$navActivePlan" type="card" theme="light" />
                                     </div>
                                 @endif
                             </div>
@@ -574,7 +574,7 @@
             
             @if($modalActivePlan)
             <div class="mt-3">
-                <x-premium-badge :plan="$modalActivePlan" type="card" />
+                <x-premium-badge :plan="$modalActivePlan" type="card" theme="light" />
             </div>
             @endif
             

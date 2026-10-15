@@ -1558,7 +1558,7 @@
                         </script>
 
                         {{-- Desktop Dropdown Backdrop --}}
-                        <div id="userDropdownBackdrop" class="fixed inset-0 z-[99999] hidden bg-black/40 backdrop-blur-[1px]" onclick="window.closeUserDropdown()"></div>
+                        <div id="userDropdownBackdrop" class="fixed inset-0 z-[99999] hidden bg-slate-950/20 backdrop-blur-[1px]" onclick="window.closeUserDropdown()"></div>
 
                         @php
                             $welcomeActivePlan = auth()->user()->activePlan();
@@ -1581,46 +1581,54 @@
                             <i class="ph-bold ph-caret-down text-[10px] text-white/70 transition-transform duration-200 group-hover:translate-y-0.5 pointer-events-none"></i>
                         </button>
                         
-                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:320px; max-width:calc(100vw - 1.5rem); background:rgba(15,15,18,0.96); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.12); border-radius:16px; box-shadow:0 20px 50px rgba(0,0,0,0.6); overflow:hidden; z-index:100000;">
-                            <div style="padding:14px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.02);">
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <div style="width:36px; height:36px; border-radius:10px; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.6);' : 'background:#2563eb;' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; flex-shrink:0;">
+                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:320px; max-width:calc(100vw - 1.5rem); background:#ffffff; border:1px solid #e2e8f0; border-radius:18px; box-shadow:0 20px 45px -10px rgba(15,23,42,0.18), 0 10px 20px -5px rgba(15,23,42,0.08); overflow:hidden; z-index:100000;">
+                            <div style="padding:14px 16px; border-bottom:1px solid #f1f5f9; background:#f8fafc;">
+                                <div style="display:flex; align-items:center; gap:11px;">
+                                    <div style="width:38px; height:38px; border-radius:12px; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.6);' : 'background:linear-gradient(135deg, #2563eb, #4f46e5);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; flex-shrink:0;">
                                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                     </div>
                                     <div style="min-width:0; flex:1;">
                                         <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
-                                            <p style="color:#fff; font-weight:700; font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:0;">{{ auth()->user()->name }}</p>
-                                            <span style="font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; padding:1.5px 6px; border-radius:4px; background:rgba(37,99,235,0.2); color:#93c5fd; border:1px solid rgba(147,197,253,0.3); flex-shrink:0;">{{ ucfirst(auth()->user()->role) }}</span>
+                                            <p style="color:#0f172a; font-weight:700; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:0;">{{ auth()->user()->name }}</p>
+                                            <span style="font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; padding:2px 7px; border-radius:6px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; flex-shrink:0;">{{ ucfirst(auth()->user()->role) }}</span>
                                         </div>
-                                        <p style="color:rgba(255,255,255,0.55); font-size:11.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:2px 0 0 0;">{{ auth()->user()->email }}</p>
+                                        <p style="color:#64748b; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:2px 0 0 0;">{{ auth()->user()->email }}</p>
                                     </div>
                                 </div>
                                 @if($welcomeActivePlan)
                                     <div style="margin-top:12px;">
-                                        <x-premium-badge :plan="$welcomeActivePlan" type="card" />
+                                        <x-premium-badge :plan="$welcomeActivePlan" type="card" theme="light" />
                                     </div>
                                 @endif
                             </div>
-                            <div style="padding:6px;">
-                                <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(255,255,255,0.85); font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s;" title="Dashboard">
-                                    <div style="width:28px; height:28px; border-radius:8px; background:rgba(37,99,235,0.2); color:#60a5fa; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                        <i class="ph-bold ph-squares-four" style="font-size:15px;"></i>
+                            <div style="padding:6px; background:#ffffff;">
+                                <a href="{{ route('dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:12px; color:#1e293b; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s;" title="Dashboard">
+                                    <div style="width:30px; height:30px; border-radius:8px; background:#eff6ff; color:#2563eb; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i class="ph-bold ph-squares-four" style="font-size:16px;"></i>
                                     </div>
                                     <span>Dashboard</span>
                                 </a>
-                                <a href="{{ route('plans.index') }}" class="dropdown-item" style="display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:rgba(255,255,255,0.85); font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s;" title="Membership Plans">
-                                    <div style="width:28px; height:28px; border-radius:8px; background:rgba(245,158,11,0.2); color:#fbbf24; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                        <i class="ph-bold ph-crown" style="font-size:15px;"></i>
+                                <a href="{{ route('plans.index') }}" class="dropdown-item" style="display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:12px; color:#1e293b; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s;" title="Membership Plans">
+                                    <div style="width:30px; height:30px; border-radius:8px; background:#fef3c7; color:#d97706; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i class="ph-bold ph-crown" style="font-size:16px;"></i>
                                     </div>
                                     <span>Membership Plans</span>
                                 </a>
+                                @if(auth()->user()->isAdmin())
+                                <a href="{{ route('admin.dashboard') }}" class="dropdown-item" style="display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:12px; color:#1e293b; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s;" title="Admin Panel">
+                                    <div style="width:30px; height:30px; border-radius:8px; background:#ecfdf5; color:#059669; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i class="ph-bold ph-shield-check" style="font-size:16px;"></i>
+                                    </div>
+                                    <span>Admin Panel</span>
+                                </a>
+                                @endif
                             </div>
-                            <div style="padding:6px; border-top:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.02);">
+                            <div style="padding:6px; border-top:1px solid #f1f5f9; background:#f8fafc;">
                                 <form method="POST" action="{{ route('logout') }}" onsubmit="window.performUniversalLogout(event)">
                                     @csrf
-                                    <button type="button" onclick="window.performUniversalLogout(event)" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; color:#f87171; font-size:12.5px; font-weight:700; text-decoration:none; transition:all 0.15s; background:transparent; border:none; cursor:pointer; text-align:left;">
-                                        <div style="width:28px; height:28px; border-radius:8px; background:rgba(244,63,94,0.18); color:#fb7185; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                            <i class="ph-bold ph-sign-out" style="font-size:15px;"></i>
+                                    <button type="button" onclick="window.performUniversalLogout(event)" class="dropdown-item" style="width:100%; display:flex; align-items:center; gap:11px; padding:9px 12px; border-radius:12px; color:#ef4444; font-size:12.5px; font-weight:700; text-decoration:none; transition:all 0.15s; background:transparent; border:none; cursor:pointer; text-align:left;">
+                                        <div style="width:30px; height:30px; border-radius:8px; background:#fee2e2; color:#dc2626; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                            <i class="ph-bold ph-sign-out" style="font-size:16px;"></i>
                                         </div>
                                         <span>Sign Out</span>
                                     </button>
@@ -1630,7 +1638,8 @@
                     </div>
                     
                     <style>
-                        .dropdown-item:hover { background: rgba(255,255,255,0.08); color: #fff !important; }
+                        #userDropdown .dropdown-item:hover { background: #f1f5f9 !important; color: #0f172a !important; }
+                        #userDropdown button.dropdown-item:hover { background: #fef2f2 !important; color: #dc2626 !important; }
                     </style>
                 @else
                     {{-- Mobile Top Login Button (Visible on Mobile & Tablet Screens < 1024px) --}}
@@ -1861,7 +1870,7 @@
             
             @if($welcomeModalPlan)
             <div class="mt-3">
-                <x-premium-badge :plan="$welcomeModalPlan" type="card" />
+                <x-premium-badge :plan="$welcomeModalPlan" type="card" theme="light" />
             </div>
             @endif
             

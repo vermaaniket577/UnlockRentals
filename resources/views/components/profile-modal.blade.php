@@ -35,7 +35,7 @@
             <p class="text-xs text-slate-500 font-medium">{{ ucfirst(auth()->user()->role) }} · {{ auth()->user()->email }}</p>
 
             <div class="mt-4 text-left">
-                <x-premium-badge :plan="$profileActivePlan" type="card" />
+                <x-premium-badge :plan="$profileActivePlan" type="card" theme="light" />
             </div>
         </div>
 
