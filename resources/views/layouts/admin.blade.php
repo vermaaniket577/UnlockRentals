@@ -51,8 +51,8 @@
         body { font-family: 'Plus Jakarta Sans', Inter, sans-serif; }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* Guarantee white text & icons on admin action buttons and badges */
         .text-white,
@@ -97,7 +97,7 @@
             .admin-sidebar.is-pinned {
                 width: 260px;
                 min-width: 260px;
-                box-shadow: 14px 0 35px -5px rgba(2, 6, 23, 0.7), 4px 0 15px -4px rgba(2, 6, 23, 0.5);
+                box-shadow: 10px 0 25px -3px rgba(15, 23, 42, 0.08), 2px 0 10px -2px rgba(15, 23, 42, 0.04);
             }
 
             .admin-sidebar.is-pinned + .admin-sidebar-spacer {
@@ -115,7 +115,7 @@
             }
             .admin-sidebar.mobile-open {
                 transform: translateX(0);
-                box-shadow: 20px 0 50px rgba(0, 0, 0, 0.8);
+                box-shadow: 20px 0 40px rgba(15, 23, 42, 0.15);
             }
             .admin-sidebar-spacer {
                 display: none;
@@ -182,7 +182,7 @@
         .sidebar-mini-divider {
             display: block;
             height: 1px;
-            background-color: rgba(51, 65, 85, 0.4);
+            background-color: rgba(226, 232, 240, 0.9);
             margin: 0.75rem 0.5rem;
             transition: opacity 0.2s ease;
         }
@@ -228,27 +228,27 @@
     @include('components.page-loader')
 
     {{-- Mobile Sidebar Overlay Backdrop --}}
-    <div id="mobileSidebarBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
+    <div id="mobileSidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity"></div>
 
     {{-- Left Sidebar Navigation (Hover Expandable / Auto-Closing) --}}
-    <aside id="admin-sidebar" class="admin-sidebar bg-slate-950 border-r border-slate-800/80 flex flex-col justify-between text-slate-400">
+    <aside id="admin-sidebar" class="admin-sidebar bg-white border-r border-slate-200/90 flex flex-col justify-between text-slate-600 shadow-xs">
         <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar">
             
             {{-- CRM Header / Branding --}}
-            <div class="px-4 py-4 border-b border-slate-800/80 flex items-center justify-between h-16 flex-shrink-0">
+            <div class="px-4 py-4 border-b border-slate-200/90 flex items-center justify-between h-16 flex-shrink-0 bg-slate-50/60">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 overflow-hidden group" title="UnlockRentals Admin CRM">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-500 flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform flex-shrink-0">
                         <i class="ph-bold ph-buildings text-lg"></i>
                     </div>
                     <div class="sidebar-brand-text">
-                        <div class="text-sm font-bold text-white tracking-tight leading-tight flex items-center gap-1.5">
+                        <div class="text-sm font-bold text-slate-900 tracking-tight leading-tight flex items-center gap-1.5">
                             UnlockRentals
-                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">CRM</span>
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-50 text-blue-700 border border-blue-200">CRM</span>
                         </div>
-                        <span class="text-[11px] text-slate-400 font-medium">Management Hub</span>
+                        <span class="text-[11px] text-slate-500 font-medium">Management Hub</span>
                     </div>
                 </a>
-                <button id="sidebarPinBtn" type="button" class="sidebar-pin-btn p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors flex-shrink-0" title="Pin Sidebar Open">
+                <button id="sidebarPinBtn" type="button" class="sidebar-pin-btn p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors flex-shrink-0" title="Pin Sidebar Open">
                     <i id="sidebarPinIcon" class="ph-bold ph-push-pin text-sm"></i>
                 </button>
             </div>
@@ -263,14 +263,14 @@
                     </div>
                     <div class="sidebar-mini-divider"></div>
                     
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.dashboard') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Dashboard">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.dashboard') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Dashboard">
                         <div class="sidebar-icon-box">
                             <i class="ph-bold ph-squares-four text-base"></i>
                         </div>
                         <span class="sidebar-item-label">Dashboard</span>
                     </a>
 
-                    <a href="{{ route('admin.properties') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.properties*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Properties Review">
+                    <a href="{{ route('admin.properties') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.properties*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Properties Review">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
                                 <i class="ph-bold ph-buildings text-base"></i>
@@ -279,21 +279,21 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.users*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Users Directory">
+                    <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.users*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Users Directory">
                         <div class="sidebar-icon-box">
                             <i class="ph-bold ph-users text-base"></i>
                         </div>
                         <span class="sidebar-item-label">Users Directory</span>
                     </a>
 
-                    <a href="{{ route('admin.locations') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.locations*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Locations & Cities">
+                    <a href="{{ route('admin.locations') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.locations*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Locations & Cities">
                         <div class="sidebar-icon-box">
                             <i class="ph-bold ph-map-pin text-base"></i>
                         </div>
                         <span class="sidebar-item-label">Locations & Cities</span>
                     </a>
 
-                    <a href="{{ route('admin.blogs.index') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.blogs*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Blog Articles">
+                    <a href="{{ route('admin.blogs.index') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.blogs*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Blog Articles">
                         <div class="sidebar-icon-box">
                             <i class="ph-bold ph-newspaper text-base"></i>
                         </div>
@@ -304,21 +304,21 @@
                 {{-- Group: Local Professionals & Home Services CRM --}}
                 <div class="space-y-1">
                     <div class="sidebar-group-title">
-                        <span class="px-3 text-[10px] font-extrabold text-amber-400 uppercase tracking-widest block">Local Professionals</span>
+                        <span class="px-3 text-[10px] font-extrabold text-amber-600 uppercase tracking-widest block">Local Professionals</span>
                     </div>
                     <div class="sidebar-mini-divider"></div>
 
-                    <a href="{{ route('admin.professionals.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.dashboard') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Professionals Dashboard">
+                    <a href="{{ route('admin.professionals.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.dashboard') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Professionals Dashboard">
                         <div class="sidebar-icon-box">
-                            <i class="ph-bold ph-toolbox text-base text-amber-400"></i>
+                            <i class="ph-bold ph-toolbox text-base text-amber-500"></i>
                         </div>
                         <span class="sidebar-item-label">Services Dashboard</span>
                     </a>
 
-                    <a href="{{ route('admin.professionals.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.index') || request()->routeIs('admin.professionals.show') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="All Professionals">
+                    <a href="{{ route('admin.professionals.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.index') || request()->routeIs('admin.professionals.show') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="All Professionals">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-identification-card text-base"></i>
+                                <i class="ph-bold ph-identification-card text-base text-slate-500"></i>
                             </div>
                             <span class="sidebar-item-label">All Professionals</span>
                         </div>
@@ -335,24 +335,24 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.professionals.categories') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.categories') || request()->routeIs('admin.professionals.services') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Categories & Services">
+                    <a href="{{ route('admin.professionals.categories') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.categories') || request()->routeIs('admin.professionals.services') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Categories & Services">
                         <div class="sidebar-icon-box">
-                            <i class="ph-bold ph-squares-four text-base"></i>
+                            <i class="ph-bold ph-squares-four text-base text-slate-500"></i>
                         </div>
                         <span class="sidebar-item-label">Categories & Services</span>
                     </a>
 
-                    <a href="{{ route('admin.professionals.leads') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.leads') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Service Leads CRM">
+                    <a href="{{ route('admin.professionals.leads') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.leads') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Service Leads CRM">
                         <div class="sidebar-icon-box">
-                            <i class="ph-bold ph-funnel text-base"></i>
+                            <i class="ph-bold ph-funnel text-base text-indigo-500"></i>
                         </div>
                         <span class="sidebar-item-label">Service Leads</span>
                     </a>
 
-                    <a href="{{ route('admin.professionals.reviews') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.reviews') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Review Moderation">
+                    <a href="{{ route('admin.professionals.reviews') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.reviews') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Review Moderation">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-star text-base text-amber-400"></i>
+                                <i class="ph-bold ph-star text-base text-amber-500"></i>
                             </div>
                             <span class="sidebar-item-label">Review Moderation</span>
                         </div>
@@ -368,10 +368,10 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.professionals.reports') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.reports') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Fraud & Abuse Reports">
+                    <a href="{{ route('admin.professionals.reports') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.professionals.reports') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Fraud & Abuse Reports">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-shield-warning text-base text-rose-400"></i>
+                                <i class="ph-bold ph-shield-warning text-base text-rose-500"></i>
                             </div>
                             <span class="sidebar-item-label">Fraud Reports</span>
                         </div>
@@ -395,19 +395,19 @@
                     </div>
                     <div class="sidebar-mini-divider"></div>
                     
-                    <a href="{{ route('admin.visitors.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.visitors*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Visitors Analytics">
+                    <a href="{{ route('admin.visitors.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.visitors*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Visitors Analytics">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-chart-polar text-base text-blue-400"></i>
+                                <i class="ph-bold ph-chart-polar text-base text-blue-600"></i>
                             </div>
                             <span class="sidebar-item-label">Visitors Analytics</span>
                         </div>
                     </a>
 
-                    <a href="{{ route('admin.leads.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.leads*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Leads CRM">
+                    <a href="{{ route('admin.leads.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.leads*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Leads CRM">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-funnel text-base text-indigo-400"></i>
+                                <i class="ph-bold ph-funnel text-base text-indigo-600"></i>
                             </div>
                             <span class="sidebar-item-label">Leads CRM</span>
                         </div>
@@ -424,10 +424,10 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.follow-ups.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.follow-ups*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Follow-ups Hub">
+                    <a href="{{ route('admin.follow-ups.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.follow-ups*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Follow-ups Hub">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-calendar-check text-base text-amber-400"></i>
+                                <i class="ph-bold ph-calendar-check text-base text-amber-500"></i>
                             </div>
                             <span class="sidebar-item-label">Follow-ups Hub</span>
                         </div>
@@ -444,10 +444,10 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.callbacks') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.callbacks*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Callback Leads">
+                    <a href="{{ route('admin.callbacks') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.callbacks*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Callback Leads">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-phone-call text-base"></i>
+                                <i class="ph-bold ph-phone-call text-base text-slate-500"></i>
                             </div>
                             <span class="sidebar-item-label">Callback Leads</span>
                         </div>
@@ -457,10 +457,10 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.chats') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.chats*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Chat Inquiries">
+                    <a href="{{ route('admin.chats') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.chats*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Chat Inquiries">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-chat-circle-dots text-base"></i>
+                                <i class="ph-bold ph-chat-circle-dots text-base text-slate-500"></i>
                             </div>
                             <span class="sidebar-item-label">Chat Inquiries</span>
                         </div>
@@ -470,10 +470,10 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.feedback') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.feedback*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="User Feedback">
+                    <a href="{{ route('admin.feedback') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.feedback*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="User Feedback">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-chat-centered-text text-base"></i>
+                                <i class="ph-bold ph-chat-centered-text text-base text-slate-500"></i>
                             </div>
                             <span class="sidebar-item-label">User Feedback</span>
                         </div>
@@ -483,19 +483,19 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.push-notifications.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.push-notifications*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Push Notifications">
+                    <a href="{{ route('admin.push-notifications.index') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.push-notifications*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Push Notifications">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-bell-ringing text-base text-blue-400"></i>
+                                <i class="ph-bold ph-bell-ringing text-base text-blue-600"></i>
                             </div>
                             <span class="sidebar-item-label">Push Alerts</span>
                         </div>
                     </a>
 
-                    <a href="{{ route('admin.resets') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.resets*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Password Resets">
+                    <a href="{{ route('admin.resets') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.resets*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Password Resets">
                         <div class="flex items-center gap-3">
                             <div class="sidebar-icon-box">
-                                <i class="ph-bold ph-key text-base"></i>
+                                <i class="ph-bold ph-key text-base text-slate-500"></i>
                             </div>
                             <span class="sidebar-item-label">Password Resets</span>
                         </div>
@@ -513,23 +513,23 @@
                     </div>
                     <div class="sidebar-mini-divider"></div>
                     
-                    <a href="{{ route('admin.plans') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.plans*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Pricing Plans">
+                    <a href="{{ route('admin.plans') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.plans*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Pricing Plans">
                         <div class="sidebar-icon-box">
-                            <i class="ph-bold ph-crown text-base"></i>
+                            <i class="ph-bold ph-crown text-base text-slate-500"></i>
                         </div>
                         <span class="sidebar-item-label">Pricing Plans</span>
                     </a>
 
-                    <a href="{{ route('admin.subscriptions') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.subscriptions*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Subscriptions">
+                    <a href="{{ route('admin.subscriptions') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.subscriptions*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Subscriptions">
                         <div class="sidebar-icon-box">
-                            <i class="ph-bold ph-receipt text-base"></i>
+                            <i class="ph-bold ph-receipt text-base text-slate-500"></i>
                         </div>
                         <span class="sidebar-item-label">Subscriptions</span>
                     </a>
 
-                    <a href="{{ route('admin.process-steps') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.process-steps*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Process Steps">
+                    <a href="{{ route('admin.process-steps') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.process-steps*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Process Steps">
                         <div class="sidebar-icon-box">
-                            <i class="ph-bold ph-git-merge text-base"></i>
+                            <i class="ph-bold ph-git-merge text-base text-slate-500"></i>
                         </div>
                         <span class="sidebar-item-label">Process Steps</span>
                     </a>
@@ -542,16 +542,16 @@
                     </div>
                     <div class="sidebar-mini-divider"></div>
                     
-                    <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.settings*') && !request()->routeIs('admin.crm-settings*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="Site Settings">
+                    <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.settings*') && !request()->routeIs('admin.crm-settings*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Site Settings">
                         <div class="sidebar-icon-box">
-                            <i class="ph-bold ph-gear text-base"></i>
+                            <i class="ph-bold ph-gear text-base text-slate-500"></i>
                         </div>
                         <span class="sidebar-item-label">Site Settings</span>
                     </a>
 
-                    <a href="{{ route('admin.crm-settings.index') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.crm-settings*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'hover:text-white hover:bg-slate-900/80 text-slate-400' }}" title="WhatsApp & CRM Settings">
+                    <a href="{{ route('admin.crm-settings.index') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.crm-settings*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="WhatsApp & CRM Settings">
                         <div class="sidebar-icon-box">
-                            <i class="ph-bold ph-whatsapp-logo text-base text-emerald-400"></i>
+                            <i class="ph-bold ph-whatsapp-logo text-base text-emerald-600"></i>
                         </div>
                         <span class="sidebar-item-label">WhatsApp & CRM Settings</span>
                     </a>
@@ -561,29 +561,29 @@
         </div>
 
         {{-- Sidebar Footer Profile & Site Link --}}
-        <div class="p-3 border-t border-slate-800/80 bg-slate-950/90 space-y-2.5 flex-shrink-0">
-            <a href="{{ route('home') }}" target="_blank" class="flex items-center justify-center gap-2.5 w-full py-2 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-850 text-slate-300 hover:text-white text-xs font-bold border border-slate-800 transition-all overflow-hidden" title="Open Live Website">
+        <div class="p-3 border-t border-slate-200/90 bg-slate-50/90 space-y-2 flex-shrink-0">
+            <a href="{{ route('home') }}" target="_blank" class="flex items-center justify-center gap-2.5 w-full py-2 px-2.5 rounded-xl bg-white hover:bg-blue-50/80 hover:border-blue-200 text-slate-700 hover:text-blue-600 text-xs font-bold border border-slate-200 shadow-2xs transition-all overflow-hidden" title="Open Live Website">
                 <div class="sidebar-icon-box">
-                    <i class="ph-bold ph-arrow-square-out text-base text-blue-400"></i>
+                    <i class="ph-bold ph-arrow-square-out text-base text-blue-600"></i>
                 </div>
                 <span class="sidebar-footer-text">Open Live Website</span>
             </a>
 
-            <div class="flex items-center justify-between p-2 bg-slate-900/70 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">
                 <div class="flex items-center gap-2.5 overflow-hidden">
                     <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs font-extrabold shadow-sm flex-shrink-0" title="{{ auth()->user()->name ?? 'Admin' }}">
                         {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                     </div>
                     <div class="sidebar-footer-text overflow-hidden">
-                        <p class="text-xs font-bold text-white truncate leading-tight">{{ auth()->user()->name ?? 'Admin' }}</p>
-                        <span class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Super Admin
+                        <p class="text-xs font-bold text-slate-900 truncate leading-tight">{{ auth()->user()->name ?? 'Admin' }}</p>
+                        <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1 mt-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Super Admin
                         </span>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('logout') }}" class="sidebar-footer-text">
                     @csrf
-                    <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors" title="Sign Out">
+                    <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Sign Out">
                         <i class="ph-bold ph-sign-out text-base"></i>
                     </button>
                 </form>
