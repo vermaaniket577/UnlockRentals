@@ -361,6 +361,9 @@
                                     <div class="flex items-center gap-2 flex-shrink-0">
                                         <span class="font-black text-slate-800">{{ number_format($tCount) }} {{ $tCount === 1 ? 'request' : 'requests' }}</span>
                                         <span class="text-[11px] text-slate-400 font-semibold">({{ $pct }}%)</span>
+                                        <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['searching_for' => $cleanTarget])) }}#search-feed-table" class="text-[11px] text-emerald-600 hover:underline font-bold ml-1" title="Filter stream by {{ $cleanTarget }}">
+                                            Filter →
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="w-full bg-slate-200/60 rounded-full h-1.5 overflow-hidden">
@@ -389,41 +392,132 @@
 
         {{-- Live User Search Feed Table --}}
         <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden" id="search-feed-table">
-            <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-slate-50/40">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
-                        <h3 class="text-base font-extrabold text-slate-900">Live User Search Stream</h3>
-                        <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">{{ $recentSearches->total() }}</span>
+            <div class="p-6 border-b border-slate-100 flex flex-col gap-4 bg-slate-50/40">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+                            <h3 class="text-base font-extrabold text-slate-900">Live User Search Stream</h3>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">{{ number_format($recentSearches->total()) }}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5">Real-time log of what visitors are searching for, their origin location, and rental property matches</p>
                     </div>
-                    <p class="text-xs text-slate-500 mt-0.5">Every search query logged in real-time with visitor origin location, filters applied, and property results</p>
+
+                    {{-- Search & Sort Filter Form --}}
+                    <form method="GET" action="{{ route('admin.visitors.index') }}" class="flex flex-wrap items-center gap-2" id="search-feed-filter-form">
+                        <input type="hidden" name="range" value="{{ $days }}">
+                        @if(request('device'))
+                            <input type="hidden" name="device" value="{{ request('device') }}">
+                        @endif
+                        @if(request('filter_converted'))
+                            <input type="hidden" name="filter_converted" value="{{ request('filter_converted') }}">
+                        @endif
+
+                        {{-- 1. Searching For (Target Property / Query / Locality / BHK) --}}
+                        <div class="relative flex-1 min-w-[200px] sm:min-w-[240px]">
+                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                            <input type="text" name="searching_for" value="{{ request('searching_for') }}" placeholder="Searching for (e.g. Guwahati, Flat, 2 BHK, Near Me)..." class="pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full font-medium shadow-2xs">
+                        </div>
+
+                        {{-- 2. Origin City (Where searching from) --}}
+                        <div class="relative min-w-[150px] sm:min-w-[170px]">
+                            <i class="ph-bold ph-map-pin absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                            <input type="text" name="search_origin" value="{{ request('search_origin') }}" placeholder="Origin City (e.g. Kanpur)..." class="pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full font-medium shadow-2xs">
+                        </div>
+
+                        {{-- 3. Sort / Group By Dropdown --}}
+                        <div class="relative min-w-[175px] sm:min-w-[195px]">
+                            <i class="ph-bold ph-arrows-down-up absolute left-3 top-2.5 text-slate-400 text-sm pointer-events-none"></i>
+                            <select name="sort" onchange="document.getElementById('search-feed-filter-form').submit()" class="pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 bg-white font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none w-full cursor-pointer shadow-2xs">
+                                <option value="recent" {{ (!request('sort') || request('sort') === 'recent') ? 'selected' : '' }}>⏱️ Most Recent First</option>
+                                <option value="mostly_searched" {{ request('sort') === 'mostly_searched' ? 'selected' : '' }}>🔥 Mostly Searched (Highest Demand)</option>
+                                <option value="zero_results" {{ request('sort') === 'zero_results' ? 'selected' : '' }}>⚠️ 0 Results Found (Demand Gap)</option>
+                                <option value="with_results" {{ request('sort') === 'with_results' ? 'selected' : '' }}>✅ Has Results Found</option>
+                                <option value="near_me" {{ request('sort') === 'near_me' ? 'selected' : '' }}>📍 Near Me (GPS) Only</option>
+                                <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>⏳ Oldest First</option>
+                            </select>
+                            <i class="ph-bold ph-caret-down absolute right-3 top-2.5 text-slate-400 text-xs pointer-events-none"></i>
+                        </div>
+
+                        <button type="submit" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 flex-shrink-0">
+                            <i class="ph-bold ph-funnel"></i>
+                            <span>Filter Stream</span>
+                        </button>
+
+                        @if(request('searching_for') || request('search_origin') || (request('sort') && request('sort') !== 'recent'))
+                            <a href="{{ route('admin.visitors.index', ['range' => $days]) }}#search-feed-table" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition-all flex items-center gap-1 flex-shrink-0" title="Reset all search filters">
+                                <i class="ph-bold ph-x"></i> Clear
+                            </a>
+                        @endif
+                    </form>
                 </div>
 
-                {{-- Origin Filter Form --}}
-                <form method="GET" action="{{ route('admin.visitors.index') }}" class="flex flex-wrap items-center gap-2">
-                    <input type="hidden" name="range" value="{{ $days }}">
-                    @if(request('device'))
-                        <input type="hidden" name="device" value="{{ request('device') }}">
-                    @endif
-                    @if(request('filter_converted'))
-                        <input type="hidden" name="filter_converted" value="{{ request('filter_converted') }}">
-                    @endif
+                {{-- Quick Sort Tabs & Active Filter Chips --}}
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-slate-200/60">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+                            <i class="ph-bold ph-sliders text-xs"></i> Quick Sort:
+                        </span>
 
-                    <div class="relative">
-                        <i class="ph-bold ph-map-pin absolute left-3 top-2.5 text-slate-400 text-sm"></i>
-                        <input type="text" name="search_origin" value="{{ request('search_origin') }}" placeholder="Filter by Origin City (e.g. Kanpur)..." class="pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56 sm:w-64">
+                        {{-- Most Recent --}}
+                        <a href="{{ route('admin.visitors.index', array_merge(request()->except(['sort', 'searches_page']))) }}#search-feed-table" 
+                           class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all {{ (!request('sort') || request('sort') === 'recent') ? 'bg-blue-600 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
+                            ⏱️ Most Recent
+                        </a>
+
+                        {{-- Mostly Searched --}}
+                        <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['sort' => 'mostly_searched'])) }}#search-feed-table" 
+                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all {{ request('sort') === 'mostly_searched' ? 'bg-amber-600 text-white shadow-xs' : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200' }}">
+                            <i class="ph-fill ph-fire {{ request('sort') === 'mostly_searched' ? 'text-white' : 'text-amber-500' }}"></i> Mostly Searched
+                        </a>
+
+                        {{-- Zero Results Found --}}
+                        <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['sort' => 'zero_results'])) }}#search-feed-table" 
+                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all {{ request('sort') === 'zero_results' ? 'bg-rose-600 text-white shadow-xs' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200' }}">
+                            <i class="ph-bold ph-warning-circle {{ request('sort') === 'zero_results' ? 'text-white' : 'text-rose-500' }}"></i> 0 Results (Demand Gap)
+                        </a>
+
+                        {{-- Near Me (GPS) --}}
+                        <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['sort' => 'near_me'])) }}#search-feed-table" 
+                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all {{ request('sort') === 'near_me' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' }}">
+                            <i class="ph-fill ph-navigation-arrow {{ request('sort') === 'near_me' ? 'text-white' : 'text-emerald-500' }}"></i> Near Me (GPS)
+                        </a>
+
+                        {{-- Has Results --}}
+                        <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['sort' => 'with_results'])) }}#search-feed-table" 
+                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all {{ request('sort') === 'with_results' ? 'bg-teal-600 text-white shadow-xs' : 'bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200' }}">
+                            <i class="ph-bold ph-check {{ request('sort') === 'with_results' ? 'text-white' : 'text-teal-500' }}"></i> Has Results
+                        </a>
                     </div>
 
-                    <button type="submit" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs">
-                        Filter Origin
-                    </button>
-
-                    @if(request('search_origin'))
-                        <a href="{{ route('admin.visitors.index', ['range' => $days]) }}#search-feed-table" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition-all" title="Clear Origin Filter">
-                            Clear Filter ✕
-                        </a>
+                    {{-- Active Filter Tags --}}
+                    @if(request('searching_for') || request('search_origin') || (request('sort') && request('sort') !== 'recent'))
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <span class="text-slate-400 font-medium text-[11px]">Active Filters:</span>
+                            @if(request('searching_for'))
+                                <a href="{{ route('admin.visitors.index', array_merge(request()->except(['searching_for', 'searches_page']))) }}#search-feed-table" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200 text-[11px] font-bold hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition-colors" title="Remove searching for filter">
+                                    <span>Target: "{{ request('searching_for') }}"</span>
+                                    <i class="ph-bold ph-x text-[10px]"></i>
+                                </a>
+                            @endif
+                            @if(request('search_origin'))
+                                <a href="{{ route('admin.visitors.index', array_merge(request()->except(['search_origin', 'searches_page']))) }}#search-feed-table" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-50 text-rose-800 border border-rose-200 text-[11px] font-bold hover:bg-slate-100 transition-colors" title="Remove origin filter">
+                                    <span>Origin: "{{ request('search_origin') }}"</span>
+                                    <i class="ph-bold ph-x text-[10px]"></i>
+                                </a>
+                            @endif
+                            @if(request('sort') && request('sort') !== 'recent')
+                                <a href="{{ route('admin.visitors.index', array_merge(request()->except(['sort', 'searches_page']))) }}#search-feed-table" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 border border-slate-200 text-[11px] font-bold hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 transition-colors" title="Reset sort">
+                                    <span>Sort: {{ ucwords(str_replace('_', ' ', request('sort'))) }}</span>
+                                    <i class="ph-bold ph-x text-[10px]"></i>
+                                </a>
+                            @endif
+                            <a href="{{ route('admin.visitors.index', ['range' => $days]) }}#search-feed-table" class="text-xs text-rose-600 hover:underline font-bold ml-1">
+                                Reset All ✕
+                            </a>
+                        </div>
                     @endif
-                </form>
+                </div>
             </div>
 
             <div class="overflow-x-auto">
@@ -472,9 +566,21 @@
                                 {{-- Searched Criteria --}}
                                 <td class="py-4 px-6 align-top">
                                     <div class="space-y-1.5 max-w-md">
-                                        <div class="font-bold text-slate-900 flex items-center gap-1.5">
-                                            <i class="ph-bold ph-magnifying-glass text-blue-600"></i>
-                                            <span>{{ $searchItem->getTargetLocationDisplay() }}</span>
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                                                <i class="ph-bold ph-magnifying-glass text-blue-600"></i>
+                                                <span>{{ $searchItem->getTargetLocationDisplay() }}</span>
+                                            </div>
+
+                                            @if(!empty($searchItem->search_freq) && $searchItem->search_freq > 1)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs" title="Requested {{ number_format($searchItem->search_freq) }} times across platform">
+                                                    <i class="ph-fill ph-fire text-amber-600"></i> {{ number_format($searchItem->search_freq) }} searches
+                                                </span>
+                                            @endif
+
+                                            <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['searching_for' => $searchItem->getTargetLocationDisplay()])) }}#search-feed-table" class="text-slate-400 hover:text-blue-600 transition-colors ml-1" title="Filter stream for this search query">
+                                                <i class="ph-bold ph-funnel text-xs"></i>
+                                            </a>
                                         </div>
 
                                         {{-- If Near Me search, show prominent Exact Target Location callout badge --}}
@@ -514,9 +620,12 @@
                                             <i class="ph-bold ph-check text-xs"></i> {{ $resCount }} found
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">
-                                            0 found
-                                        </span>
+                                        <div class="inline-flex flex-col items-center gap-1">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                                <i class="ph-bold ph-warning-circle text-rose-500 text-xs"></i> 0 found
+                                            </span>
+                                            <span class="text-[9px] font-black uppercase tracking-wider text-rose-500">Demand Gap</span>
+                                        </div>
                                     @endif
                                 </td>
 

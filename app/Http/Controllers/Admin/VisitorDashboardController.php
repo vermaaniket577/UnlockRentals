@@ -32,17 +32,22 @@ class VisitorDashboardController extends Controller
         $totalLeads = Lead::whereBetween('created_at', [$startDate, $endDate])->count();
         $conversionRate = $totalVisitors > 0 ? round(($totalLeads / $totalVisitors) * 100, 2) : 0;
 
+        $isSqlite = DB::getDriverName() === 'sqlite';
+        $diffSeconds = $isSqlite
+            ? '(strftime("%s", ended_at) - strftime("%s", started_at))'
+            : 'TIMESTAMPDIFF(SECOND, started_at, ended_at)';
+
         // Average duration of sessions with end time
         $avgDurationSeconds = (int) VisitorSession::whereBetween('started_at', [$startDate, $endDate])
             ->whereNotNull('ended_at')
-            ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, started_at, ended_at)) as avg_dur')
+            ->selectRaw("AVG({$diffSeconds}) as avg_dur")
             ->value('avg_dur');
 
         // Bounce rate (sessions with only 1 page view or duration < 10 seconds)
         $bounceSessionsCount = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
-            ->where(function ($q) {
+            ->where(function ($q) use ($diffSeconds) {
                 $q->where('page_views', '<=', 1)
-                  ->orWhereRaw('TIMESTAMPDIFF(SECOND, started_at, ended_at) <= 10');
+                  ->orWhereRaw("{$diffSeconds} <= 10");
             })->count();
 
         $bounceRate = $totalSessions > 0 ? round(($bounceSessionsCount / $totalSessions) * 100, 1) : 0;
@@ -137,7 +142,7 @@ class VisitorDashboardController extends Controller
         $searchEventsForTargets = VisitorEvent::where('event_name', 'search')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->latest('created_at')
-            ->take(300)
+            ->take(1000)
             ->get();
 
         $targetCounts = [];
@@ -163,17 +168,71 @@ class VisitorDashboardController extends Controller
         arsort($targetCounts);
         $topSearchTargets = array_slice($targetCounts, 0, 8, true);
 
-        // 9. Live User Search Activity Feed with Filters
-        $searchFeedQuery = VisitorEvent::with(['visitor', 'session'])
-            ->where('event_name', 'search')
-            ->latest('created_at');
+        // 9. Live User Search Activity Feed with Filters & Sorting
+        $sort = $request->get('sort', 'recent');
+        $searchingFor = trim((string) $request->get('searching_for', ''));
+        $searchOrigin = trim((string) $request->get('search_origin', ''));
 
-        if ($request->filled('search_origin')) {
-            $so = trim($request->search_origin);
-            $searchFeedQuery->whereHas('visitor', function ($vq) use ($so) {
-                $vq->where('city', 'like', "%{$so}%")
-                   ->orWhere('state', 'like', "%{$so}%");
+        $freqSub = VisitorEvent::where('event_name', 'search')
+            ->select('page_url', DB::raw('COUNT(*) as search_freq'))
+            ->groupBy('page_url');
+
+        $searchFeedQuery = VisitorEvent::with(['visitor', 'session'])
+            ->where('visitor_events.event_name', 'search')
+            ->leftJoinSub($freqSub, 'freq', function ($join) {
+                $join->on('visitor_events.page_url', '=', 'freq.page_url');
+            })
+            ->select('visitor_events.*', DB::raw('COALESCE(freq.search_freq, 1) as search_freq'));
+
+        // Filter: What the user is searching for (Target Query, Locality, City, Property Type, BHK, etc.)
+        if (!empty($searchingFor)) {
+            $sf = $searchingFor;
+            $searchFeedQuery->where(function ($q) use ($sf) {
+                $q->where('visitor_events.page_url', 'like', "%{$sf}%")
+                  ->orWhere('visitor_events.metadata', 'like', "%{$sf}%");
             });
+        }
+
+        // Filter: Where the user is physically searching from (Origin City / State)
+        if (!empty($searchOrigin)) {
+            $so = $searchOrigin;
+            $searchFeedQuery->where(function ($q) use ($so) {
+                $q->whereHas('visitor', function ($vq) use ($so) {
+                    $vq->where('city', 'like', "%{$so}%")
+                       ->orWhere('state', 'like', "%{$so}%");
+                })->orWhere('visitor_events.metadata', 'like', "%{$so}%");
+            });
+        }
+
+        // Quick Search Filters
+        if ($sort === 'zero_results') {
+            $searchFeedQuery->where(function ($q) {
+                $q->where('visitor_events.metadata->results_count', 0)
+                  ->orWhereNull('visitor_events.metadata->results_count')
+                  ->orWhere('visitor_events.metadata', 'like', '%"results_count":0%');
+            });
+        } elseif ($sort === 'with_results') {
+            $searchFeedQuery->where('visitor_events.metadata->results_count', '>', 0);
+        } elseif ($sort === 'near_me') {
+            $searchFeedQuery->where(function ($q) {
+                $q->where('visitor_events.metadata->near_me', true)
+                  ->orWhere('visitor_events.page_url', 'like', '%near-me%')
+                  ->orWhere('visitor_events.page_url', 'like', '%near-my-location%')
+                  ->orWhere('visitor_events.metadata', 'like', '%near me%')
+                  ->orWhere('visitor_events.metadata', 'like', '%near my%');
+            });
+        }
+
+        // Sorting Options
+        if ($sort === 'mostly_searched' || $sort === 'popular') {
+            // Sort by highest search demand / frequency first, then most recent
+            $searchFeedQuery->orderByDesc('freq.search_freq')
+                ->latest('visitor_events.created_at');
+        } elseif ($sort === 'oldest') {
+            $searchFeedQuery->oldest('visitor_events.created_at');
+        } else {
+            // Default: Most recent searches first
+            $searchFeedQuery->latest('visitor_events.created_at');
         }
 
         $recentSearches = $searchFeedQuery->paginate(15, ['*'], 'searches_page')->withQueryString();
