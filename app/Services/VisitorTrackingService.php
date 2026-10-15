@@ -67,7 +67,7 @@ class VisitorTrackingService
                 try {
                     $ctx = stream_context_create([
                         'http' => [
-                            'timeout' => 1.5,
+                            'timeout' => 0.5,
                             'header'  => "User-Agent: UnlockRentals-GeoIP/1.0\r\n"
                         ]
                     ]);
@@ -83,13 +83,17 @@ class VisitorTrackingService
                         }
                     }
                 } catch (\Throwable $e) {}
-                return null;
+                return ['city' => null, 'state' => null, 'country' => 'India'];
             });
 
-            if ($geo) {
-                $city = $geo['city'] ?? $city;
-                $state = $geo['state'] ?? $state;
-                $country = $geo['country'] ?? $country;
+            if (!empty($geo['city'])) {
+                $city = $geo['city'];
+            }
+            if (!empty($geo['state'])) {
+                $state = $geo['state'];
+            }
+            if (!empty($geo['country'])) {
+                $country = $geo['country'];
             }
         }
 
@@ -105,6 +109,16 @@ class VisitorTrackingService
             'country' => !empty($country) ? trim($country) : 'India',
             'ip' => $ip,
         ];
+    }
+
+    /**
+     * Statically cache schema column lookups to avoid repeated database metadata queries.
+     */
+    protected static function hasColumn(string $table, string $column): bool
+    {
+        static $columnCache = [];
+        $key = "{$table}.{$column}";
+        return $columnCache[$key] ??= \Illuminate\Support\Facades\Schema::hasColumn($table, $column);
     }
 
     /**
@@ -141,7 +155,7 @@ class VisitorTrackingService
             'city' => $loc['city'],
         ];
 
-        if (\Illuminate\Support\Facades\Schema::hasColumn('visitors', 'ip_address')) {
+        if (static::hasColumn('visitors', 'ip_address')) {
             $initialValues['ip_address'] = $loc['ip'];
         }
 
@@ -161,11 +175,15 @@ class VisitorTrackingService
         if (empty($visitor->country) && !empty($loc['country'])) {
             $updates['country'] = $loc['country'];
         }
-        if (\Illuminate\Support\Facades\Schema::hasColumn('visitors', 'ip_address') && empty($visitor->ip_address) && !empty($loc['ip'])) {
+        if (static::hasColumn('visitors', 'ip_address') && empty($visitor->ip_address) && !empty($loc['ip'])) {
             $updates['ip_address'] = $loc['ip'];
         }
-        $updates['last_seen_at'] = now();
-        $updates['last_url'] = Str::limit($request->fullUrl(), 500, '');
+
+        // Throttle last_seen_at updates to once every 60s to prevent locking on rapid page clicks
+        if ($visitor->last_seen_at === null || $visitor->last_seen_at->diffInSeconds(now()) >= 60) {
+            $updates['last_seen_at'] = now();
+            $updates['last_url'] = Str::limit($request->fullUrl(), 500, '');
+        }
 
         if (auth()->check() && !$visitor->user_id) {
             $updates['user_id'] = auth()->id();
@@ -188,10 +206,13 @@ class VisitorTrackingService
             ->first();
 
         if ($activeSession) {
-            $activeSession->update([
-                'last_activity_at' => now(),
-                'page_views' => $activeSession->page_views + 1,
-            ]);
+            // Throttle session update to prevent unnecessary database writes
+            if ($activeSession->last_activity_at === null || $activeSession->last_activity_at->diffInSeconds(now()) >= 30) {
+                $activeSession->update([
+                    'last_activity_at' => now(),
+                    'page_views' => $activeSession->page_views + 1,
+                ]);
+            }
             return $activeSession;
         }
 
@@ -212,13 +233,13 @@ class VisitorTrackingService
             'utm_campaign' => $request->input('utm_campaign'),
         ];
 
-        if (\Illuminate\Support\Facades\Schema::hasColumn('visitor_sessions', 'ip_address')) {
+        if (static::hasColumn('visitor_sessions', 'ip_address')) {
             $sessionData['ip_address'] = $request->ip();
         }
-        if (\Illuminate\Support\Facades\Schema::hasColumn('visitor_sessions', 'city')) {
+        if (static::hasColumn('visitor_sessions', 'city')) {
             $sessionData['city'] = $visitor->city;
         }
-        if (\Illuminate\Support\Facades\Schema::hasColumn('visitor_sessions', 'state')) {
+        if (static::hasColumn('visitor_sessions', 'state')) {
             $sessionData['state'] = $visitor->state;
         }
 

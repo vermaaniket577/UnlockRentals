@@ -54,6 +54,20 @@ class User extends Authenticatable
     }
 
     /**
+     * The booted method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('admin_dashboard_stats');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('admin_dashboard_stats');
+        });
+    }
+
+    /**
      * Get the properties owned by this user.
      */
     public function properties(): HasMany

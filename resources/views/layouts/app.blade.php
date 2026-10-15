@@ -221,11 +221,17 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     </noscript>
 
-    {{-- Phosphor Icon Systems (Bold, Regular, Fill, Duotone) --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+    {{-- Phosphor Icon Systems (Bold, Regular, Fill, Duotone) Non-blocking Optimized --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+    </noscript>
 
     {{-- Precompiled High-Performance Tailwind CSS (Zero Runtime JS Overhead) --}}
     @if(file_exists(public_path('build/manifest.json')))
@@ -597,7 +603,7 @@
     @include('components.exit-intent-modal')
     @include('components.lead-modals')
 
-    <script src="{{ asset('js/otp-verification.js') }}?v=20260916"></script>
+    <script src="{{ asset('js/otp-verification.js') }}?v=20260916" defer></script>
     <script src="{{ asset('js/visitor-tracker.js') }}?v=20260920" defer></script>
     @include('components.push-notification-deliverer')
     @stack('scripts')

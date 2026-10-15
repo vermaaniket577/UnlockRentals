@@ -27,6 +27,17 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 
+        // High-performance SQLite memory cache, memory-mapping, and temp table pragmas
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Database\Events\ConnectionEstablished::class, function ($event) {
+            if ($event->connection instanceof \Illuminate\Database\SQLiteConnection) {
+                try {
+                    $event->connection->statement('PRAGMA cache_size = -64000;');
+                    $event->connection->statement('PRAGMA mmap_size = 268435456;');
+                    $event->connection->statement('PRAGMA temp_store = MEMORY;');
+                } catch (\Throwable $e) {}
+            }
+        });
+
         // Redirect authenticated users to home instead of dashboard for guest routes
         \Illuminate\Auth\Middleware\RedirectIfAuthenticated::redirectUsing(function ($request) {
             return route('home');

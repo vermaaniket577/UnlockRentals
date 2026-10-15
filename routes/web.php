@@ -553,6 +553,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/users/export/excel', [AdminController::class, 'exportUsersExcel'])->name('users.export.excel');
     Route::get('/users/export/csv', [AdminController::class, 'exportUsersExcel'])->name('users.export.csv');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     Route::get('/feedback', [AdminController::class, 'feedback'])->name('feedback');

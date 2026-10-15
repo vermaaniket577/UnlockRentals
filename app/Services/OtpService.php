@@ -97,7 +97,7 @@ class OtpService
         $channel = Setting::get('otp_channel', config('otp.channel', 'log'));
         $response = [
             'success'      => true,
-            'message'      => $this->getSuccessMessage(),
+            'message'      => $this->getSuccessMessage($otp),
             'channel'      => $channel,
             'expires_in'   => $expiryMinutes * 60,
             'resend_after' => $resendSeconds,
@@ -220,7 +220,7 @@ class OtpService
         };
     }
 
-    private function getSuccessMessage(): string
+    private function getSuccessMessage(?string $otp = null): string
     {
         $channel = Setting::get('otp_channel', config('otp.channel', 'log'));
 
@@ -228,7 +228,9 @@ class OtpService
             'notification' => 'OTP sent via push notification to your device!',
             'whatsapp'     => 'OTP sent to your WhatsApp! Check your messages.',
             'sms'          => 'OTP sent to your phone via SMS.',
-            default        => 'OTP generated successfully (check logs in development).',
+            default        => ($otp && (app()->environment('local') || $channel === 'log'))
+                ? "Test OTP Code: {$otp} (Channel: Log)"
+                : 'OTP generated successfully (check logs in development).',
         };
     }
 }

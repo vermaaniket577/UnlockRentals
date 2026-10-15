@@ -244,6 +244,12 @@ class AdminController extends Controller
             }
         }
 
+        // Recent registered users
+        $recentUsers = User::withCount(['properties', 'inquiries'])
+            ->latest()
+            ->take(6)
+            ->get();
+
         return view('admin.dashboard', compact(
             'stats',
             'crmStats',
@@ -253,7 +259,8 @@ class AdminController extends Controller
             'topSearchOrigins',
             'totalSearches',
             'pendingProperties',
-            'pendingSubscriptions'
+            'pendingSubscriptions',
+            'recentUsers'
         ));
     }
 
@@ -381,6 +388,35 @@ class AdminController extends Controller
             ->withQueryString();
 
         return view('admin.users', compact('users', 'stats', 'plans'));
+    }
+
+    /**
+     * Create and store a new user manually from admin panel.
+     */
+    public function storeUser(Request $request)
+    {
+        $validated = $request->validate([
+            'name'           => 'required|string|max:255',
+            'email'          => 'required|string|email|max:255|unique:users,email',
+            'phone'          => 'required|string|max:20',
+            'role'           => 'required|in:tenant,owner,admin',
+            'password'       => 'required|string|min:8',
+            'phone_verified' => 'nullable',
+        ]);
+
+        $user = User::create([
+            'name'              => $validated['name'],
+            'email'             => $validated['email'],
+            'phone'             => $validated['phone'],
+            'role'              => $validated['role'],
+            'password'          => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'phone_verified_at' => $request->boolean('phone_verified', true) ? now() : null,
+        ]);
+
+        \Illuminate\Support\Facades\Cache::forget('admin_dashboard_stats');
+
+        return redirect()->route('admin.users')
+            ->with('success', "New user \"{$user->name}\" ({$user->role}) has been created successfully!");
     }
 
     /**

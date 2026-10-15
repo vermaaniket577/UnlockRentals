@@ -985,5 +985,75 @@
     </div>
     @endif
 
+    {{-- Recently Registered Users Section --}}
+    @if(isset($recentUsers) && $recentUsers->count() > 0)
+    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-soft overflow-hidden">
+        <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                    <i class="ph-bold ph-users"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-extrabold text-slate-900 tracking-tight">Recently Registered Users</h3>
+                    <p class="text-xs text-slate-500">Latest accounts registered on UnlockRentals platform</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.users') }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                    <span>View User Directory</span>
+                    <i class="ph-bold ph-arrow-right text-xs"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="divide-y divide-slate-100">
+            @foreach($recentUsers as $user)
+            <div class="p-4 sm:p-5 hover:bg-slate-50/70 transition-colors">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-blue-500 text-white font-extrabold text-sm flex items-center justify-center shadow-xs flex-shrink-0">
+                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <a href="{{ route('admin.users.activity', $user) }}" class="text-sm font-bold text-slate-900 hover:text-indigo-600 transition-colors truncate">
+                                    {{ $user->name }}
+                                </a>
+                                @if($user->role === 'admin')
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">Admin</span>
+                                @elseif($user->role === 'owner')
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200">Owner</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200">Tenant</span>
+                                @endif
+
+                                @if(!empty($user->phone_verified_at))
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-0.5">
+                                        <i class="ph-bold ph-check text-[10px]"></i> Verified
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-xs text-slate-500 truncate mt-0.5">
+                                <span>{{ $user->email }}</span>
+                                @if($user->phone)
+                                    · <span class="font-mono text-slate-600">{{ $user->phone }}</span>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 text-xs text-slate-400 self-end sm:self-center">
+                        <span class="text-[11px] font-medium">{{ $user->created_at->diffForHumans() }}</span>
+                        <a href="{{ route('admin.users.activity', $user) }}" class="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-300 font-bold text-xs transition-all">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
 </div>
 @endsection

@@ -80,8 +80,9 @@ class Category extends Model
      */
     public static function getActiveCategories()
     {
-        static::ensureCoreCategoriesExist();
         return Cache::remember('active_categories', 3600, function () {
+            static::ensureCoreCategoriesExist();
+
             $priority = [
                 'residential-house' => 1,
                 'luxury-villa' => 2,

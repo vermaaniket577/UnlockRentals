@@ -23,6 +23,16 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
+            {{-- Add New User Modal Trigger --}}
+            <button type="button" 
+                    onclick="openAddUserModal()"
+                    class="ur-admin-btn" 
+                    style="background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%) !important; color: #ffffff !important; border: 1px solid #3730a3 !important; cursor: pointer; padding: 0.5rem 0.85rem; border-radius: 0.75rem;"
+                    title="Add New User Directly">
+                <i class="ph-bold ph-user-plus text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 700;">+ Add New User</span>
+            </button>
+
             {{-- Download Excel Sheet (Standard Executive Look) --}}
             <a href="{{ route('admin.users.export.excel', request()->all()) }}" 
                class="ur-admin-btn ur-admin-btn-excel" 
@@ -501,4 +511,176 @@
     </div>
 
 </div>
+
+{{-- ========================================================================= --}}
+{{-- ADD NEW USER MODAL POPUP DIALOG --}}
+{{-- ========================================================================= --}}
+<div id="addUserModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden transition-opacity duration-200 opacity-0" role="dialog" aria-modal="true">
+    <div id="addUserModalCard" class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl w-full max-w-lg p-6 sm:p-8 transform scale-95 transition-all duration-200 relative max-h-[92vh] overflow-y-auto">
+        
+        {{-- Close Button --}}
+        <button type="button" onclick="closeAddUserModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer" aria-label="Close modal">
+            <i class="ph-bold ph-x text-lg"></i>
+        </button>
+
+        {{-- Header Icon & Title --}}
+        <div class="flex items-center gap-3.5 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl shadow-xs ring-4 ring-indigo-50/60">
+                <i class="ph-bold ph-user-plus"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-black text-slate-900 tracking-tight">Add New User Account</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Directly register a new tenant, property owner, or admin account.</p>
+            </div>
+        </div>
+
+        {{-- Create Form --}}
+        <form method="POST" action="{{ route('admin.users.store') }}" id="addUserForm" class="space-y-4">
+            @csrf
+
+            {{-- Full Name --}}
+            <div>
+                <label for="admin-user-name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Full Name <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                    <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                    <input type="text" name="name" id="admin-user-name" required placeholder="e.g. Ramesh Sharma"
+                           class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all">
+                </div>
+            </div>
+
+            {{-- Email Address --}}
+            <div>
+                <label for="admin-user-email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Email Address <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                    <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                    <input type="email" name="email" id="admin-user-email" required placeholder="e.g. ramesh@example.com"
+                           class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all">
+                </div>
+            </div>
+
+            {{-- Phone Number & Role (2 Columns) --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                    <label for="admin-user-phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Mobile Phone <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <i class="ph-bold ph-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                        <input type="tel" name="phone" id="admin-user-phone" required placeholder="e.g. 9876543210"
+                               class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="admin-user-role" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Account Role <span class="text-rose-500">*</span>
+                    </label>
+                    <select name="role" id="admin-user-role" required
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all">
+                        <option value="tenant" selected>Tenant / Customer</option>
+                        <option value="owner">Property Owner / Landlord</option>
+                        <option value="admin">Platform Administrator</option>
+                    </select>
+                </div>
+            </div>
+
+            {{-- Password --}}
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="admin-user-password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        Initial Password <span class="text-rose-500">*</span>
+                    </label>
+                    <button type="button" onclick="generateRandomPassword()" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline cursor-pointer">
+                        Generate Secure
+                    </button>
+                </div>
+                <div class="relative">
+                    <i class="ph-bold ph-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                    <input type="text" name="password" id="admin-user-password" required minlength="8" placeholder="At least 8 characters"
+                           class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all">
+                </div>
+            </div>
+
+            {{-- Verification Toggle --}}
+            <div class="pt-1">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" name="phone_verified" value="1" checked
+                           class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500/20 accent-emerald-600 cursor-pointer">
+                    <span class="text-xs font-semibold text-slate-700">
+                        Mark mobile phone number as <strong class="text-emerald-600">Verified</strong> immediately
+                    </span>
+                </label>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button type="button" onclick="closeAddUserModal()"
+                        class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100 transition-colors cursor-pointer">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-xs shadow-md shadow-indigo-600/25 transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i class="ph-bold ph-check text-sm"></i>
+                    <span>Create User</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openAddUserModal() {
+    const modal = document.getElementById('addUserModal');
+    const card = document.getElementById('addUserModalCard');
+    if (!modal || !card) return;
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+    });
+    const nameInput = document.getElementById('admin-user-name');
+    if (nameInput) setTimeout(() => nameInput.focus(), 100);
+}
+
+function closeAddUserModal() {
+    const modal = document.getElementById('addUserModal');
+    const card = document.getElementById('addUserModalCard');
+    if (!modal || !card) return;
+    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0');
+    card.classList.remove('scale-100');
+    card.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
+function generateRandomPassword() {
+    const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%';
+    let pass = '';
+    for (let i = 0; i < 10; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const input = document.getElementById('admin-user-password');
+    if (input) input.value = pass;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('addUserModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeAddUserModal();
+        });
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAddUserModal();
+    });
+});
+</script>
 @endsection

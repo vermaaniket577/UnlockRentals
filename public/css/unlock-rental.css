@@ -3078,4 +3078,137 @@ input[type="number"] {
     100% { background-position: -200% 0; }
 }
 
+/* =========================================
+   LUXURY COVER PHOTO SELECTION STYLES
+   ========================================= */
+.cover-photo-guidance-card {
+    background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(240, 249, 255, 0.95) 100%);
+    border: 1px solid rgba(191, 219, 254, 0.9);
+}
+.dark .cover-photo-guidance-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(23, 37, 84, 0.6) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.image-card, .new-image-card, .preview-card {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+    background-color: #0f172a;
+}
+.image-card.is-primary-card, .new-image-card.is-primary-card, .preview-card.is-primary-card {
+    border: 3px solid #2563eb !important;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35), 0 12px 24px -4px rgba(37, 99, 235, 0.3) !important;
+    transform: translateY(-2px);
+    z-index: 5;
+}
+.image-card:not(.is-primary-card), .new-image-card:not(.is-primary-card), .preview-card:not(.is-primary-card) {
+    border: 2px solid rgba(226, 232, 240, 0.95);
+}
+.dark .image-card:not(.is-primary-card), .dark .new-image-card:not(.is-primary-card), .dark .preview-card:not(.is-primary-card) {
+    border: 2px solid rgba(51, 65, 85, 0.85);
+}
+.image-card:not(.is-primary-card):hover, .new-image-card:not(.is-primary-card):hover, .preview-card:not(.is-primary-card):hover {
+    border-color: #3b82f6 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.25);
+}
+.cover-badge-pill {
+    background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #4f46e5 100%);
+    color: #ffffff !important;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.45);
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+.set-cover-pill {
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+.image-card:hover .set-cover-pill, .new-image-card:hover .set-cover-pill, .preview-card:hover .set-cover-pill {
+    background: #2563eb;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.75);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+.cover-check-bubble {
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: #2563eb;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+}
+.photo-delete-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.photo-delete-btn:hover {
+    background: #dc2626 !important;
+    border-color: #ef4444 !important;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.45);
+}
+.cover-photo-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px 8px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 800;
+    color: #ffffff !important;
+    pointer-events: none;
+    z-index: 10;
+}
+
 
