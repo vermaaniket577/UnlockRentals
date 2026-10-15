@@ -245,7 +245,7 @@
             'theme' => 'gold',
             'tab_label' => 'Gold Pass',
             'tab_icon' => 'ph-crown',
-            'tab_badge' => $hasGoldOffer ? ('₹' . number_format($goldPrice, 0) . ' Offer') : 'Most Popular',
+            'tab_badge' => $hasGoldOffer ? ('₹' . number_format($goldPrice, 0) . ' OFFER') : 'POPULAR',
             'has_offer' => $hasGoldOffer,
             'offer' => $goldOffer,
             'regular_price' => $goldRegularPrice,
@@ -291,7 +291,7 @@
             'theme' => 'platinum',
             'tab_label' => 'Platinum VIP',
             'tab_icon' => 'ph-sparkle',
-            'tab_badge' => $hasPlatOffer ? ('₹' . number_format($platPrice, 0) . ' Offer') : 'VIP Choice',
+            'tab_badge' => $hasPlatOffer ? ('₹' . number_format($platPrice, 0) . ' OFFER') : 'VIP CHOICE',
             'has_offer' => $hasPlatOffer,
             'offer' => $platOffer,
             'regular_price' => $platRegularPrice,
@@ -337,7 +337,7 @@
             'theme' => 'silver',
             'tab_label' => 'Silver Starter',
             'tab_icon' => 'ph-shield',
-            'tab_badge' => $hasSilverOffer ? ('₹' . number_format($silverPrice, 0) . ' Offer') : 'Budget',
+            'tab_badge' => $hasSilverOffer ? ('₹' . number_format($silverPrice, 0) . ' OFFER') : 'BUDGET',
             'has_offer' => $hasSilverOffer,
             'offer' => $silverOffer,
             'regular_price' => $silverRegularPrice,
@@ -398,14 +398,14 @@
             $isGoldBuyer = str_contains(strtolower($bPlan->name), 'gold');
             $isPlatBuyer = str_contains(strtolower($bPlan->name), 'plat');
             $tabBadge = $hasBuyerOffer 
-                ? ('₹' . number_format($buyerPrice, 0) . ' Offer') 
-                : ($isGoldBuyer ? 'Most Popular' : ($isPlatBuyer ? 'VIP Buyer' : 'Home Buyers'));
+                ? ('₹' . number_format($buyerPrice, 0) . ' OFFER') 
+                : ($isGoldBuyer ? 'POPULAR' : ($isPlatBuyer ? 'VIP BUYER' : 'BUYER'));
 
             $heroSlides->push([
                 'plan' => $bPlan,
                 'type' => 'buy',
                 'theme' => 'buyer',
-                'tab_label' => $bPlan->name,
+                'tab_label' => str_replace([' Pass', ' pass'], '', $bPlan->name),
                 'tab_icon' => 'ph-buildings',
                 'tab_badge' => $tabBadge,
                 'has_offer' => $hasBuyerOffer,
@@ -474,51 +474,40 @@
     50% { transform: scale(1.06); }
 }
 .ur-hps-save-chip--offer {
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
-    color: #047857 !important;
-    border: 1px solid #34d399 !important;
-    font-weight: 900 !important;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.25) !important;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #047857;
+    border: 1px solid #34d399;
+    font-weight: 800;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 .ur-hps-plan-badge--offer {
-    background: rgba(16, 185, 129, 0.12) !important;
-    border-color: rgba(16, 185, 129, 0.4) !important;
-    color: #047857 !important;
-    font-weight: 800 !important;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
 }
 .ur-mc-badge--offer {
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
-    color: #047857 !important;
-    border: 1px solid #a7f3d0 !important;
-    font-weight: 800 !important;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #047857;
+    border: 1px solid #a7f3d0;
+    font-weight: 800;
 }
 .ur-mc-save-chip--offer {
-    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
-    color: #047857 !important;
-    border: 1px solid #34d399 !important;
-    font-weight: 900 !important;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    color: #047857;
+    border: 1px solid #34d399;
+    font-weight: 800;
 }
 .ur-mc-direct-tag--offer {
-    background: rgba(236, 253, 245, 0.95) !important;
-    color: #047857 !important;
-    border: 1px solid #86efac !important;
-    font-weight: 800 !important;
+    background: rgba(236, 253, 245, 0.95);
+    color: #047857;
+    border: 1px solid #86efac;
+    font-weight: 800;
 }
 .ur-hps-cta-btn--offer {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-    color: #ffffff !important;
-    box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.45) !important;
-}
-.ur-hps-cta-btn--offer:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-    color: #ffffff !important;
-    box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.55) !important;
-    transform: translateY(-2px);
+    position: relative;
+    overflow: hidden;
 }
 .ur-mc-cta-btn--offer {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
+    position: relative;
+    overflow: hidden;
 }
 
 .ur-hero-plans-slider-section {
@@ -598,30 +587,32 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.15rem;
+    flex-wrap: nowrap;
 }
 
 .ur-hps-top-left {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .ur-hps-top-heading {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.82rem;
+    gap: 0.45rem;
+    font-size: 0.78rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     color: #0f172a;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    padding: 0.38rem 1rem;
+    padding: 0.4rem 0.95rem;
     border-radius: 9999px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+    white-space: nowrap;
 }
 
 .ur-hps-top-heading i {
@@ -632,37 +623,50 @@
 .ur-hps-top-right {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.55rem;
+    min-width: 0;
+    flex: 1;
+    justify-content: flex-end;
 }
 
-/* Quick Jump Plan Tabs Nav Bar */
+/* Quick Jump Plan Tabs Nav Bar — Single-row Sleek Segmented Pill */
 .ur-hps-tabs-bar {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.22rem;
-    flex-wrap: wrap;
-    padding: 0.16rem;
-    background: #f1f5f9;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.22rem 0.35rem;
+    background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+    max-width: 100%;
+}
+
+.ur-hps-tabs-bar::-webkit-scrollbar {
+    display: none;
 }
 
 .ur-hps-tab-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.32rem 0.85rem;
+    gap: 0.32rem;
+    padding: 0.36rem 0.75rem;
     border-radius: 9999px;
     border: 1px solid transparent;
     background: transparent;
     color: #64748b;
     font-family: inherit;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
+    flex-shrink: 0;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
@@ -681,28 +685,28 @@
 .ur-hps-tab-btn.active.tab--gold {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     border-color: #f59e0b;
-    box-shadow: 0 3px 10px rgba(217, 119, 6, 0.28);
+    box-shadow: 0 3px 12px rgba(217, 119, 6, 0.35);
     color: #ffffff;
 }
 
 .ur-hps-tab-btn.active.tab--platinum {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     border-color: #2563eb;
-    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
+    box-shadow: 0 3px 12px rgba(37, 99, 235, 0.35);
     color: #ffffff;
 }
 
 .ur-hps-tab-btn.active.tab--silver {
-    background: linear-gradient(135deg, #475569 0%, #334155 100%);
-    border-color: #334155;
-    box-shadow: 0 3px 10px rgba(51, 65, 85, 0.25);
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+    border-color: #1e293b;
+    box-shadow: 0 3px 12px rgba(30, 41, 59, 0.3);
     color: #ffffff;
 }
 
 .ur-hps-tab-btn.active.tab--buyer {
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     border-color: #059669;
-    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.28);
+    box-shadow: 0 3px 12px rgba(5, 150, 105, 0.35);
     color: #ffffff;
 }
 
@@ -711,36 +715,43 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.08rem 0.42rem;
+    padding: 0.1rem 0.42rem;
     border-radius: 9999px;
     background: #e2e8f0;
     color: #475569;
     transition: all 0.2s ease;
+    line-height: 1.15;
+}
+
+.ur-hps-tab-pill--offer {
+    background: #dcfce7;
+    color: #047857;
 }
 
 .ur-hps-tab-btn.active .ur-hps-tab-pill {
-    background: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
+    background: rgba(255, 255, 255, 0.28) !important;
+    color: #ffffff !important;
 }
 
 /* Integrated Top Navigation Controls Pill */
 .ur-hps-nav-arrows {
     display: inline-flex;
     align-items: center;
-    gap: 0.22rem;
-    padding: 0.2rem;
-    background: #f1f5f9;
+    gap: 0.28rem;
+    padding: 0.22rem;
+    background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+    flex-shrink: 0;
 }
 
 .ur-hps-arrow-btn {
-    width: 1.95rem;
-    height: 1.95rem;
+    width: 2.1rem;
+    height: 2.1rem;
     border-radius: 50%;
-    background: transparent;
-    border: 1px solid transparent;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     color: #475569;
     display: inline-flex;
     align-items: center;
@@ -748,13 +759,14 @@
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .ur-hps-arrow-btn:hover {
-    background: #ffffff;
-    border-color: #cbd5e1;
-    color: #0f172a;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    background: #0f172a;
+    border-color: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(15, 23, 42, 0.15);
     transform: scale(1.05);
 }
 
@@ -770,9 +782,9 @@
     margin: 0 auto;
     box-sizing: border-box;
     background: #ffffff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 1.5rem;
-    box-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.08), 0 4px 10px rgba(15, 23, 42, 0.03);
+    border: 1px solid #e2e8f0;
+    border-radius: 1.75rem;
+    box-shadow: 0 24px 64px -12px rgba(15, 23, 42, 0.08), 0 6px 18px rgba(15, 23, 42, 0.03);
     overflow: hidden;
 }
 
@@ -792,28 +804,31 @@
     width: 100%;
     min-width: 100%;
     max-width: 100%;
-    padding: 1.75rem 2.25rem 1.5rem;
+    padding: 2rem 2.25rem 1.6rem;
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
 }
 
 .ur-hps-slide--gold {
-    background: radial-gradient(ellipse at 85% 30%, rgba(245, 158, 11, 0.06) 0%, transparent 60%),
-                linear-gradient(135deg, #ffffff 0%, #fffdf8 50%, #fffbeb 100%);
+    background: radial-gradient(circle at 85% 15%, rgba(245, 158, 11, 0.08) 0%, transparent 55%), 
+                radial-gradient(circle at 10% 85%, rgba(251, 191, 36, 0.05) 0%, transparent 45%), 
+                linear-gradient(180deg, #ffffff 0%, #fffcf5 100%);
 }
 .ur-hps-slide--platinum {
-    background: radial-gradient(ellipse at 85% 30%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
-                linear-gradient(135deg, #ffffff 0%, #f8faff 50%, #eff6ff 100%);
+    background: radial-gradient(circle at 85% 15%, rgba(37, 99, 235, 0.08) 0%, transparent 55%), 
+                radial-gradient(circle at 10% 85%, rgba(96, 165, 250, 0.05) 0%, transparent 45%), 
+                linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
 }
 .ur-hps-slide--silver {
-    background: radial-gradient(ellipse at 85% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%),
-                linear-gradient(135deg, #ffffff 0%, #fbfcfd 50%, #f1f5f9 100%);
+    background: radial-gradient(circle at 85% 15%, rgba(71, 85, 105, 0.06) 0%, transparent 55%), 
+                linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 /* ─── BUYER PASS SLIDE: 5-LAYER REAL ESTATE COMPOSITION ─────── */
 .ur-hps-slide--buyer {
     position: relative;
-    background: linear-gradient(135deg, #f8fcf9 0%, #ffffff 40%, #ecfdf5 100%);
+    background: radial-gradient(circle at 85% 15%, rgba(5, 150, 105, 0.08) 0%, transparent 55%), 
+                linear-gradient(180deg, #ffffff 0%, #f6fbf8 100%);
     overflow: hidden;
 }
 
@@ -966,14 +981,14 @@
 .ur-hps-plan-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.38rem;
     font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 0.3rem 0.85rem;
+    letter-spacing: 0.05em;
+    padding: 0.32rem 0.85rem;
     border-radius: 9999px;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
     width: fit-content;
 }
 
@@ -981,59 +996,59 @@
     background: #fef3c7;
     color: #b45309;
     border: 1px solid #fde68a;
-    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.1);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
 }
 .ur-hps-plan-badge--platinum {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #bfdbfe;
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
-}
-.ur-hps-plan-badge--silver {
     background: #eff6ff;
     color: #1d4ed8;
     border: 1px solid #bfdbfe;
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+.ur-hps-plan-badge--silver {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 8px rgba(71, 85, 105, 0.1);
 }
 .ur-hps-plan-badge--buyer {
-    background: #d1fae5;
-    color: #065f46;
+    background: #ecfdf5;
+    color: #047857;
     border: 1px solid #a7f3d0;
-    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.1);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.12);
 }
 
 .ur-hps-slide-title {
-    font-size: clamp(1.5rem, 2vw, 1.85rem);
+    font-size: clamp(1.55rem, 2.1vw, 1.95rem);
     font-weight: 900;
     color: #0f172a;
-    line-height: 1.18;
+    line-height: 1.2;
     letter-spacing: -0.03em;
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.6rem;
 }
 
 .ur-hps-slide-title .highlight-gold {
-    background: linear-gradient(135deg, #d97706 0%, #b45309 60%, #ea580c 100%);
+    background: linear-gradient(135deg, #d97706 0%, #ea580c 50%, #b45309 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     display: inline-block;
 }
 .ur-hps-slide-title .highlight-platinum {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 60%, #1e40af 100%);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     display: inline-block;
 }
 .ur-hps-slide-title .highlight-silver {
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #0f172a 100%);
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     display: inline-block;
 }
 .ur-hps-slide-title .highlight-buyer {
-    background: linear-gradient(135deg, #059669 0%, #047857 60%, #064e3b 100%);
+    background: linear-gradient(135deg, #059669 0%, #047857 50%, #064e3b 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1044,15 +1059,15 @@
     font-size: 0.88rem;
     color: #475569;
     line-height: 1.55;
-    margin: 0 0 1rem;
+    margin: 0 0 1.15rem;
     max-width: 520px;
 }
 
-/* Feature 2x2 Highlights Grid — Clean, balanced chips */
+/* Feature 2x2 Highlights Grid — Elevated Modern Cards */
 .ur-hps-features-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.7rem;
+    gap: 0.75rem;
     width: 100%;
 }
 
@@ -1060,72 +1075,70 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 0.9rem;
-    background: #ffffff;
+    padding: 0.8rem 0.95rem;
+    background: rgba(255, 255, 255, 0.92);
     border: 1px solid #e2e8f0;
-    border-radius: 0.9rem;
+    border-radius: 1rem;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-    transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ur-hps-feature-item:hover {
     border-color: #cbd5e1;
     transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 .ur-hps-f-icon-box {
-    width: 2.4rem;
-    height: 2.4rem;
-    border-radius: 0.7rem;
-    background: #eff6ff;
-    color: #2563eb;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    background: #f1f5f9;
+    color: #475569;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.ur-hps-feature-item:hover .ur-hps-f-icon-box {
+    transform: scale(1.08);
 }
 
 .ur-hps-feature-item--gold .ur-hps-f-icon-box {
-    background: #fef3c7;
-    color: #d97706;
-    border: 1px solid #fde68a;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #b45309;
+    border: 1px solid #fcd34d;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);
 }
 .ur-hps-feature-item--platinum .ur-hps-f-icon-box {
-    background: #eff6ff;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
     color: #2563eb;
-    border: 1px solid #dbeafe;
+    border: 1px solid #bfdbfe;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
 }
 .ur-hps-feature-item--silver .ur-hps-f-icon-box {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
-}
-.ur-hps-feature-item--buyer {
-    background: #ffffff;
-    border: 1px solid rgba(167, 243, 208, 0.85);
-    border-radius: 0.85rem;
-    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.04);
-}
-.ur-hps-feature-item--buyer:hover {
-    border-color: #10b981;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(5, 150, 105, 0.12);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 6px rgba(71, 85, 105, 0.12);
 }
 .ur-hps-feature-item--buyer .ur-hps-f-icon-box {
-    background: #ecfdf5;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
     color: #059669;
-    border: 1px solid #d1fae5;
+    border: 1px solid #a7f3d0;
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.15);
 }
 
 .ur-hps-f-text h4 {
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 0.15rem;
+    margin: 0 0 0.12rem;
     letter-spacing: -0.01em;
-    line-height: 1.28;
+    line-height: 1.25;
 }
 
 .ur-hps-f-text p {
@@ -1135,7 +1148,7 @@
     line-height: 1.3;
 }
 
-/* ─── 2. CENTER COLUMN: COMPACT PRICING CARD ─────────────── */
+/* ─── 2. CENTER COLUMN: COMPACT HIGH-CONVERSION PASS CARD ─── */
 .ur-hps-col-center {
     display: flex;
     align-items: center;
@@ -1148,11 +1161,11 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.25rem;
-    padding: 1.35rem 1.4rem 1.15rem;
+    border-radius: 1.35rem;
+    padding: 1.45rem 1.45rem 1.2rem;
     box-sizing: border-box;
-    box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(0, 0, 0, 0.03);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1170,56 +1183,44 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 3.5px;
-    border-radius: 1.15rem 1.15rem 0 0;
+    height: 4px;
+    border-radius: 1.35rem 1.35rem 0 0;
 }
 
 .ur-hps-pass-card--gold {
-    border-color: #fde047;
-    box-shadow: 0 12px 32px -8px rgba(245, 158, 11, 0.20), 0 2px 6px rgba(0, 0, 0, 0.03);
+    border-color: #f59e0b;
+    background: linear-gradient(180deg, #ffffff 0%, #fffdf9 100%);
+    box-shadow: 0 20px 48px -10px rgba(245, 158, 11, 0.22), 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 .ur-hps-pass-card--gold::before {
     background: linear-gradient(90deg, #f59e0b, #fbbf24, #ea580c);
 }
 
 .ur-hps-pass-card--platinum {
-    border-color: #93c5fd;
-    box-shadow: 0 12px 32px -8px rgba(37, 99, 235, 0.20), 0 2px 6px rgba(0, 0, 0, 0.03);
+    border-color: #3b82f6;
+    background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+    box-shadow: 0 20px 48px -10px rgba(37, 99, 235, 0.22), 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 .ur-hps-pass-card--platinum::before {
-    background: linear-gradient(90deg, #3b82f6, #60a5fa, #1d4ed8);
+    background: linear-gradient(90deg, #2563eb, #60a5fa, #1d4ed8);
 }
 
 .ur-hps-pass-card--silver {
-    border-color: #bfdbfe;
-    box-shadow: 0 12px 32px -8px rgba(37, 99, 235, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
+    border-color: #64748b;
+    background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+    box-shadow: 0 20px 48px -10px rgba(71, 85, 105, 0.18), 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 .ur-hps-pass-card--silver::before {
-    background: linear-gradient(90deg, #2563eb, #60a5fa, #38bdf8);
+    background: linear-gradient(90deg, #334155, #64748b, #1e293b);
 }
 
 .ur-hps-pass-card--buyer {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1.5px solid #10b981;
-    border-radius: 1.15rem;
-    box-shadow: 
-        0 16px 36px -10px rgba(5, 150, 105, 0.22),
-        0 0 0 1px rgba(245, 158, 11, 0.12),
-        0 3px 10px rgba(15, 23, 42, 0.03);
-    position: relative;
-    z-index: 10;
+    border-color: #10b981;
+    background: linear-gradient(180deg, #ffffff 0%, #f6fbf8 100%);
+    box-shadow: 0 20px 48px -10px rgba(5, 150, 105, 0.24), 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 .ur-hps-pass-card--buyer::before {
     background: linear-gradient(90deg, #059669, #34d399, #047857);
-}
-.ur-hps-pass-card--buyer:hover {
-    transform: translateY(-3px);
-    box-shadow: 
-        0 20px 42px -10px rgba(5, 150, 105, 0.28),
-        0 0 0 1.5px rgba(16, 185, 129, 0.4),
-        0 6px 16px rgba(15, 23, 42, 0.05);
 }
 
 /* Card Header with Plan Identity Pill */
@@ -1244,7 +1245,7 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.22rem 0.6rem;
+    padding: 0.22rem 0.65rem;
     border-radius: 9999px;
 }
 
@@ -1259,9 +1260,9 @@
     border: 1px solid #bfdbfe;
 }
 .ur-hps-card-tier-pill--silver {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
 }
 .ur-hps-card-tier-pill--buyer {
     background: #ecfdf5;
@@ -1278,9 +1279,9 @@
 }
 
 .ur-hps-card-emblem {
-    width: 1.85rem;
-    height: 1.85rem;
-    border-radius: 0.55rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.65rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1290,14 +1291,14 @@
 }
 
 .ur-emblem-svg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.35rem;
+    height: 1.35rem;
 }
 
 /* Price Box */
 .ur-hps-price-box {
     margin-bottom: 0.65rem;
-    padding-bottom: 0.58rem;
+    padding-bottom: 0.6rem;
     border-bottom: 1px solid #f1f5f9;
 }
 
@@ -1305,26 +1306,27 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.12rem;
+    margin-bottom: 0.15rem;
 }
 
 .ur-hps-price-original {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     font-weight: 700;
     color: #94a3b8;
     text-decoration: line-through;
 }
 
 .ur-hps-save-chip {
-    font-size: 0.64rem;
+    font-size: 0.66rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.12rem 0.48rem;
+    padding: 0.14rem 0.52rem;
     border-radius: 9999px;
     background: #ecfdf5;
     color: #047857;
-    border: 1px solid #a7f3d0;
+    border: 1px solid #6ee7b7;
+    box-shadow: 0 1px 4px rgba(16, 185, 129, 0.15);
 }
 
 .ur-hps-price-main {
@@ -1335,13 +1337,13 @@
 }
 
 .ur-hps-currency {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     font-weight: 900;
     color: #0f172a;
 }
 
 .ur-hps-amount {
-    font-size: 2.6rem;
+    font-size: 2.85rem;
     font-weight: 900;
     color: #0f172a;
     line-height: 1;
@@ -1349,7 +1351,7 @@
 }
 
 .ur-hps-period {
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: #64748b;
     margin-left: 0.2rem;
@@ -1358,26 +1360,26 @@
 .ur-hps-price-subtext {
     display: inline-flex;
     align-items: center;
-    gap: 0.32rem;
-    font-size: 0.68rem;
+    gap: 0.35rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: #047857;
     background: #f0fdf4;
-    border: 1px solid #dcfce7;
-    padding: 0.16rem 0.55rem;
+    border: 1px solid #bbf7d0;
+    padding: 0.2rem 0.6rem;
     border-radius: 9999px;
-    margin-top: 0.3rem;
+    margin-top: 0.35rem;
 }
 
 /* Card Specs Pill List */
 .ur-hps-card-meta {
     display: flex;
     flex-direction: column;
-    gap: 0.32rem;
-    margin-bottom: 0.65rem;
+    gap: 0.38rem;
+    margin-bottom: 0.75rem;
     background: #f8fafc;
-    padding: 0.52rem 0.75rem;
-    border-radius: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 0.85rem;
     border: 1px solid #e2e8f0;
 }
 
@@ -1385,7 +1387,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     color: #0f172a;
 }
 
@@ -1399,7 +1401,7 @@
 
 .ur-hps-meta-row span.meta-label i {
     color: #059669;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
 }
 
 .ur-hps-meta-row span.meta-value {
@@ -1412,18 +1414,18 @@
     font-weight: 900;
 }
 
-/* Primary High-Impact CTA Button */
+/* Primary High-Impact Theme-Harmonized CTA Button */
 .ur-hps-cta-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     width: 100%;
-    padding: 0.82rem 1.25rem;
-    border-radius: 0.85rem;
+    padding: 0.88rem 1.35rem;
+    border-radius: 0.95rem;
     font-family: inherit;
     font-size: 0.95rem;
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: -0.01em;
     text-decoration: none;
     cursor: pointer;
@@ -1435,72 +1437,67 @@
     border: none;
 }
 
-.ur-hps-cta-btn--gold {
-    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-    color: #ffffff !important;
-    box-shadow: 0 8px 22px rgba(234, 88, 12, 0.35);
-}
-.ur-hps-cta-btn--gold:hover {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    box-shadow: 0 12px 28px rgba(234, 88, 12, 0.45);
-    transform: translateY(-2px);
-    color: #ffffff !important;
-}
-
-.ur-hps-cta-btn--platinum {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: #ffffff !important;
-    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
-}
-.ur-hps-cta-btn--platinum:hover {
-    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
-    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45);
-    transform: translateY(-2px);
-    color: #ffffff !important;
-}
-
-.ur-hps-cta-btn--silver {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color: #ffffff !important;
-    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.35);
-}
-.ur-hps-cta-btn--silver:hover {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45);
-    transform: translateY(-2px);
-    color: #ffffff !important;
-}
-
-.ur-hps-cta-btn--buyer {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-    color: #ffffff !important;
-    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.38), 0 2px 4px rgba(4, 120, 87, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    position: relative;
-    overflow: hidden;
-}
-.ur-hps-cta-btn--buyer::after {
+.ur-hps-cta-btn::after {
     content: '';
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-        60deg,
-        transparent,
-        rgba(255, 255, 255, 0.3),
-        transparent
-    );
-    transform: rotate(30deg) translateX(-100%);
-    transition: transform 0.75s ease;
+    background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    transform: rotate(25deg) translateX(-100%);
+    transition: transform 0.8s ease;
 }
-.ur-hps-cta-btn--buyer:hover::after {
-    transform: rotate(30deg) translateX(100%);
+
+.ur-hps-cta-btn:hover::after {
+    transform: rotate(25deg) translateX(100%);
+}
+
+.ur-hps-cta-btn--gold {
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(234, 88, 12, 0.38) !important;
+}
+.ur-hps-cta-btn--gold:hover {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
+    box-shadow: 0 12px 30px rgba(234, 88, 12, 0.48) !important;
+    transform: translateY(-2px);
+    color: #ffffff !important;
+}
+
+.ur-hps-cta-btn--platinum {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.38) !important;
+}
+.ur-hps-cta-btn--platinum:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.48) !important;
+    transform: translateY(-2px);
+    color: #ffffff !important;
+}
+
+.ur-hps-cta-btn--silver {
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.28) !important;
+}
+.ur-hps-cta-btn--silver:hover {
+    background: linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%) !important;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.38) !important;
+    transform: translateY(-2px);
+    color: #ffffff !important;
+}
+
+.ur-hps-cta-btn--buyer {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.38) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25);
 }
 .ur-hps-cta-btn--buyer:hover {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.48), 0 4px 8px rgba(4, 120, 87, 0.25);
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
+    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.48) !important;
     transform: translateY(-2px);
     color: #ffffff !important;
 }
@@ -1538,9 +1535,9 @@
     width: 100%;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 1.25rem;
+    border-radius: 1.35rem;
     overflow: hidden;
-    box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.1), 0 4px 10px rgba(15, 23, 42, 0.03);
+    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1553,44 +1550,44 @@
 
 .ur-hps-photo-card--gold {
     border-color: #fde68a;
-    box-shadow: 0 10px 26px -6px rgba(245, 158, 11, 0.16);
+    box-shadow: 0 14px 32px -6px rgba(245, 158, 11, 0.18);
 }
 .ur-hps-photo-card--gold:hover {
     border-color: #f59e0b;
-    box-shadow: 0 14px 32px -6px rgba(245, 158, 11, 0.24);
+    box-shadow: 0 18px 36px -6px rgba(245, 158, 11, 0.26);
 }
 
 .ur-hps-photo-card--platinum {
     border-color: #bfdbfe;
-    box-shadow: 0 10px 26px -6px rgba(37, 99, 235, 0.16);
+    box-shadow: 0 14px 32px -6px rgba(37, 99, 235, 0.18);
 }
 .ur-hps-photo-card--platinum:hover {
     border-color: #2563eb;
-    box-shadow: 0 14px 32px -6px rgba(37, 99, 235, 0.24);
+    box-shadow: 0 18px 36px -6px rgba(37, 99, 235, 0.26);
 }
 
 .ur-hps-photo-card--silver {
-    border-color: #bfdbfe;
-    box-shadow: 0 10px 26px -6px rgba(37, 99, 235, 0.12);
+    border-color: #cbd5e1;
+    box-shadow: 0 14px 32px -6px rgba(71, 85, 105, 0.14);
 }
 .ur-hps-photo-card--silver:hover {
-    border-color: #2563eb;
-    box-shadow: 0 14px 32px -6px rgba(37, 99, 235, 0.20);
+    border-color: #475569;
+    box-shadow: 0 18px 36px -6px rgba(71, 85, 105, 0.22);
 }
 
 .ur-hps-photo-card--buyer {
-    border-color: rgba(167, 243, 208, 0.85);
-    box-shadow: 0 10px 26px -6px rgba(5, 150, 105, 0.16);
+    border-color: rgba(167, 243, 208, 0.9);
+    box-shadow: 0 14px 32px -6px rgba(5, 150, 105, 0.18);
 }
 .ur-hps-photo-card--buyer:hover {
     border-color: #10b981;
-    box-shadow: 0 14px 32px -6px rgba(5, 150, 105, 0.24);
+    box-shadow: 0 18px 36px -6px rgba(5, 150, 105, 0.26);
 }
 
 .ur-hps-pc-photo-wrapper {
     position: relative;
     width: 100%;
-    height: 180px;
+    height: 185px;
     overflow: hidden;
     background: #0f172a;
 }
@@ -1611,14 +1608,14 @@
 .ur-hps-pc-scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0.62) 100%);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0.65) 100%);
 }
 
 .ur-hps-pc-tag-overlay {
     position: absolute;
-    bottom: 0.48rem;
-    left: 0.65rem;
-    right: 0.65rem;
+    bottom: 0.55rem;
+    left: 0.75rem;
+    right: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1629,14 +1626,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.28rem;
-    font-size: 0.62rem;
+    font-size: 0.64rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.18rem 0.52rem;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.58rem;
     border-radius: 9999px;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 .ur-hps-pc-badge--gold {
@@ -1650,9 +1647,9 @@
     border: 1px solid #bfdbfe;
 }
 .ur-hps-pc-badge--silver {
-    background: rgba(239, 246, 255, 0.96);
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
+    background: rgba(241, 245, 249, 0.96);
+    color: #334155;
+    border: 1px solid #cbd5e1;
 }
 .ur-hps-pc-badge--buyer {
     background: rgba(209, 250, 229, 0.96);
@@ -1661,21 +1658,21 @@
 }
 
 .ur-hps-pc-subtag {
-    font-size: 0.58rem;
-    font-weight: 700;
+    font-size: 0.6rem;
+    font-weight: 800;
     color: #ffffff;
-    background: rgba(5, 150, 105, 0.92);
-    padding: 0.14rem 0.46rem;
+    background: rgba(5, 150, 105, 0.94);
+    padding: 0.16rem 0.52rem;
     border-radius: 9999px;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(6px);
     display: inline-flex;
     align-items: center;
-    gap: 0.24rem;
-    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+    gap: 0.25rem;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
 }
 
 .ur-hps-pc-body {
-    padding: 0.9rem 1.1rem 0.8rem;
+    padding: 1.05rem 1.15rem 0.95rem;
     display: flex;
     flex-direction: column;
     background: #ffffff;
@@ -1684,7 +1681,7 @@
 }
 
 .ur-hps-pc-title {
-    font-size: 0.95rem;
+    font-size: 0.96rem;
     font-weight: 800;
     color: #0f172a;
     margin: 0 0 0.2rem;
@@ -1694,14 +1691,14 @@
 .ur-hps-pc-sub {
     font-size: 0.75rem;
     color: #64748b;
-    line-height: 1.4;
-    margin: 0 0 0.5rem;
+    line-height: 1.42;
+    margin: 0 0 0.6rem;
 }
 
 .ur-hps-pc-list {
     display: flex;
     flex-direction: column;
-    gap: 0.32rem;
+    gap: 0.38rem;
 }
 
 .ur-hps-pc-row {
@@ -1714,35 +1711,35 @@
 }
 
 .ur-hps-pc-check {
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 1.25rem;
+    height: 1.25rem;
     border-radius: 50%;
     background: #ecfdf5;
     color: #059669;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     flex-shrink: 0;
 }
 
 .ur-hps-pc-trust-note {
-    margin-top: 0.45rem;
-    padding: 0.38rem 0.65rem;
+    margin-top: 0.55rem;
+    padding: 0.42rem 0.75rem;
     background: #f8fafc;
     border: 1px solid #f1f5f9;
-    border-radius: 0.5rem;
-    display: flex;
+    border-radius: 0.6rem;
+    display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: #0f172a;
 }
 
 .ur-hps-pc-trust-note i {
     color: #d97706;
-    font-size: 0.75rem;
+    font-size: 0.78rem;
 }
 
 /* ─── 4. BOTTOM HORIZONTAL TRUST ROW (SOLID HIGH-CONTRAST BAR) ── */
@@ -1753,41 +1750,41 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 2.2rem;
     flex-wrap: wrap;
     background: #ffffff !important;
     border: 1px solid #e2e8f0;
     border-radius: 9999px;
-    padding: 0.6rem 2rem;
-    margin-top: 1.15rem;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
-    font-size: 0.8rem;
+    padding: 0.65rem 2.2rem;
+    margin-top: 1.25rem;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+    font-size: 0.82rem;
     font-weight: 700;
     color: #0f172a !important;
     transition: all 0.25s ease;
 }
 
 .ur-hps-trust-bar:hover {
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
     border-color: #cbd5e1;
 }
 
 .ur-hps-tb-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.38rem;
+    gap: 0.4rem;
     color: #0f172a !important;
     font-weight: 700;
 }
 
 .ur-hps-tb-item i {
     color: #059669;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
 }
 
 .ur-hps-tb-divider {
-    width: 3px;
-    height: 3px;
+    width: 4px;
+    height: 4px;
     border-radius: 50%;
     background: #cbd5e1;
 }
@@ -1930,8 +1927,7 @@
     }
 
     .ur-hps-tab-btn.active {
-        background: #ffffff;
-        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
     }
 
     .ur-hps-nav-arrows {
@@ -2453,7 +2449,7 @@
                             <div class="ur-hps-col-left">
                                 <span class="ur-hps-plan-badge ur-hps-plan-badge--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-plan-badge--offer' : '' }}">
                                     @if(!empty($s['has_offer']))
-                                        <i class="ph-fill ph-tag"></i> {{ $s['offer_badge'] ?? 'EXCLUSIVE OFFER' }} · {!! $s['badge'] !!}
+                                        <i class="ph-fill ph-lightning"></i> Special Offer Unlocked · ₹{{ number_format($s['price'], 0) }} Pass
                                     @else
                                         {!! $s['badge'] !!}
                                     @endif
@@ -2561,11 +2557,7 @@
                                         <div class="ur-hps-price-top">
                                             <span class="ur-hps-price-original">₹{{ number_format($s['original_price'], 0) }}</span>
                                             <span class="ur-hps-save-chip {{ !empty($s['has_offer']) ? 'ur-hps-save-chip--offer' : '' }}">
-                                                @if(!empty($s['has_offer']))
-                                                    <i class="ph-bold ph-seal-percent"></i> {{ $s['offer_badge'] ?? ('SAVE ' . $s['savings_pct'] . '%') }}
-                                                @else
-                                                    SAVE {{ $s['savings_pct'] }}%
-                                                @endif
+                                                <i class="ph-bold ph-seal-percent"></i> SAVE {{ $s['savings_pct'] }}%
                                             </span>
                                         </div>
 
