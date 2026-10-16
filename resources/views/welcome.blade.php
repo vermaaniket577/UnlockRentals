@@ -1059,13 +1059,103 @@
             border-color: #3b82f6;
         }
 
-        /* Search Bar */
+        /* Luxury Unified Mobile App Search Bar (Standard Modern Sizing) */
         .mobile-app-search-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 48px;
             background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 6px 8px;
-            box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+            border: 1.5px solid #e2e8f0;
+            border-radius: 9999px;
+            padding: 4px 6px 4px 14px;
+            box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.07), 0 1px 3px rgba(15, 23, 42, 0.03);
+            box-sizing: border-box;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mobile-app-search-bar:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.16), 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .mobile-search-input {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            padding: 0 6px 0 4px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #0f172a;
+            box-shadow: none !important;
+        }
+        .mobile-search-input::placeholder {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .mobile-search-near-btn {
+            height: 32px;
+            padding: 0 9px;
+            border-radius: 9999px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #2563eb;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mobile-search-near-btn:hover {
+            background: #dbeafe;
+        }
+        .mobile-search-near-btn:active {
+            transform: scale(0.94);
+            background: #bfdbfe;
+        }
+
+        .mobile-search-submit-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 9999px;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+            transition: all 0.15s ease;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mobile-search-submit-btn:hover {
+            background: #1d4ed8;
+        }
+        .mobile-search-submit-btn:active {
+            transform: scale(0.92);
+        }
+
+        @media (max-width: 359px) {
+            .mobile-near-text {
+                display: none;
+            }
+            .mobile-search-near-btn {
+                padding: 0 7px;
+            }
+            .mobile-filter-btn {
+                padding: 0 7px;
+            }
         }
 
         /* Horizontal Category Circles Rail */
@@ -1312,11 +1402,12 @@
         }
 
         .mobile-filter-btn {
+            height: 32px;
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 7px 11px;
-            border-radius: 12px;
+            padding: 0 9px;
+            border-radius: 9999px;
             background: #f1f5f9;
             border: 1px solid #e2e8f0;
             color: #334155;
@@ -1326,14 +1417,40 @@
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
+            flex-shrink: 0;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+        }
+        .mobile-filter-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
         }
         .mobile-filter-btn:active, .mobile-filter-btn.active {
             background: #2563eb;
             border-color: #2563eb;
             color: #ffffff;
-            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+        .mobile-filter-btn:active i, .mobile-filter-btn.active i {
+            color: #ffffff !important;
+        }
+        .mobile-filter-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 9999px;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
         }
 
         .mobile-filter-dropdown-panel {
@@ -1432,7 +1549,7 @@
     {{-- Premium Page Loader --}}
     @include('components.page-loader')
 
-    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; padding: 12px 24px;">
+    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px; padding: 10px 16px;">
         <div class="logo-wrapper" style="flex-shrink: 0;">
             <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
                 <div style="width: 34px; height: 34px; border-radius: 9px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
@@ -1656,9 +1773,13 @@
                         #userDropdown button.dropdown-item:hover { background: #fef2f2 !important; color: #dc2626 !important; }
                     </style>
                 @else
-                    {{-- Mobile Top Login Button (Visible on Mobile & Tablet Screens < 1024px) --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="inline-flex lg:hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="text-decoration:none; color: #ffffff !important;" id="welcome-mobile-top-login" title="Login">
-                        <i class="ph-bold ph-sign-in" style="font-size: 14px; color: #ffffff !important;"></i>
+                    {{-- Mobile Top Login Button (Standardized 34px Height, Refined Look) --}}
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" 
+                       class="inline-flex lg:hidden items-center justify-center gap-1.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 active:scale-95 transition-all whitespace-nowrap cursor-pointer" 
+                       style="height: 34px; text-decoration:none; color: #ffffff !important;" 
+                       id="welcome-mobile-top-login" 
+                       title="Login">
+                        <i class="ph-bold ph-sign-in text-sm" style="color: #ffffff !important;"></i>
                         <span style="color: #ffffff !important;">Login</span>
                     </a>
 
@@ -1675,8 +1796,8 @@
                     @endif
                 @endauth
             @endif
-            <button class="hamburger inline-flex lg:hidden" onclick="toggleMobileNav()" aria-label="Open menu" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; cursor: pointer; flex-shrink: 0;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <button class="hamburger inline-flex lg:hidden" onclick="toggleMobileNav()" aria-label="Open menu" style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; color: #334155; cursor: pointer; flex-shrink: 0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="12" x2="21" y2="12"></line>
                     <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -2215,67 +2336,76 @@
 
         {{-- Mobile SEO H1 Heading --}}
         <div class="mb-2 px-1 text-center">
-            <h1 class="text-sm font-black text-slate-900 leading-snug">
-                <span class="text-blue-600">Unlock Rent</span> with Zero Brokerage
+            <h1 class="text-[14px] xs:text-[15px] font-black text-slate-900 leading-snug tracking-tight">
+                <span class="text-blue-600 font-extrabold">Unlock Rent</span> with Zero Brokerage
             </h1>
-            <p class="text-[10px] text-slate-500 font-medium">
+            <p class="text-[10.5px] xs:text-[11px] text-slate-500 font-medium mt-0.5 tracking-tight">
                 Rent verified flats, single rooms, PGs & houses from direct owners.
             </p>
         </div>
 
-        {{-- 2. Flipkart Prominent Search Bar with Filter Button --}}
+        {{-- 2. Standard Native Mobile Search Bar (Seamless Single Container) --}}
         <div class="mb-2.5">
             <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET">
                 <input type="hidden" name="purpose" id="mobile_purpose_input" value="{{ request('purpose', 'rent') }}">
                 <input type="hidden" name="type" id="mobile_type_input" value="{{ request('type', 'all') }}">
                 <input type="hidden" name="rooms" id="mobile_rooms_input" value="{{ request('rooms', 'any') }}">
 
-                {{-- Unified Search Row --}}
-                <div class="mobile-app-search-bar flex items-center gap-1.5">
-                    <div class="relative flex-1 flex items-center min-w-0">
-                        <i class="ph-bold ph-magnifying-glass text-blue-600 text-sm absolute left-2.5 pointer-events-none"></i>
-                        <input type="text" 
-                               name="search" 
-                               id="mobile_search_input"
-                               placeholder="Search 'Rooms in Gurugram'..." 
-                               value="{{ request('search') }}"
-                               class="w-full pl-8 pr-14 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-500">
-                        
-                        {{-- Quick Near GPS inside input --}}
+                {{-- Unified Search Row (Standard 48px Height, Zero Nested Borders) --}}
+                <div class="mobile-app-search-bar">
+                    {{-- Search Icon --}}
+                    <i class="ph-bold ph-magnifying-glass text-blue-600 text-sm xs:text-base flex-shrink-0"></i>
+
+                    {{-- Search Input --}}
+                    <input type="text" 
+                           name="search" 
+                           id="mobile_search_input"
+                           placeholder="Search 'Rooms in Gurugram'..." 
+                           value="{{ request('search') }}"
+                           class="mobile-search-input"
+                           autocomplete="off">
+
+                    {{-- Action Group --}}
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        {{-- Quick Near GPS Button --}}
                         <button type="button" 
                                 id="mobileBtnNearMe" 
                                 onclick="searchNearMe()" 
-                                class="absolute right-1 px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-200 text-[10px] font-bold flex items-center gap-0.5 transition-all active:scale-95"
-                                title="Locate Near Me">
-                            <i class="ph-fill ph-navigation-arrow text-[11px] text-blue-600"></i>
-                            <span>Near</span>
+                                class="mobile-search-near-btn"
+                                title="Properties Near Me">
+                            <i class="ph-fill ph-navigation-arrow text-xs text-blue-600"></i>
+                            <span class="mobile-near-text">Near</span>
+                        </button>
+
+                        {{-- Subtle Divider --}}
+                        <div class="w-[1px] h-4.5 bg-slate-200/90 flex-shrink-0"></div>
+
+                        {{-- Dedicated Filter Toggle Button --}}
+                        <button type="button" 
+                                id="mobileFilterToggleBtn" 
+                                onclick="toggleMobileFiltersDropdown()" 
+                                class="mobile-filter-btn {{ $mobileActiveFiltersCount > 0 ? 'active' : '' }}"
+                                aria-expanded="false"
+                                aria-controls="mobileFiltersDropdownPanel"
+                                title="Filter Properties">
+                            <i class="ph-bold ph-sliders-horizontal text-xs text-blue-600"></i>
+                            <span>Filter</span>
+                            <i class="ph-bold ph-caret-down text-[9px] transition-transform duration-300" id="mobileFilterCaret"></i>
+
+                            @if($mobileActiveFiltersCount > 0)
+                                <span id="mobileFilterBadge" class="mobile-filter-badge">
+                                    {{ $mobileActiveFiltersCount }}
+                                </span>
+                            @endif
+                        </button>
+
+                        {{-- Search Submit Action --}}
+                        <button type="submit" 
+                                class="mobile-search-submit-btn"
+                                title="Search">
+                            <i class="ph-bold ph-arrow-right text-xs"></i>
                         </button>
                     </div>
-
-                    {{-- Dedicated Filter Dropdown Toggle Button --}}
-                    <button type="button" 
-                            id="mobileFilterToggleBtn" 
-                            onclick="toggleMobileFiltersDropdown()" 
-                            class="mobile-filter-btn {{ $mobileActiveFiltersCount > 0 ? 'active' : '' }}"
-                            aria-expanded="false"
-                            aria-controls="mobileFiltersDropdownPanel">
-                        <i class="ph-bold ph-sliders-horizontal text-xs text-blue-600"></i>
-                        <span>Filter</span>
-                        <i class="ph-bold ph-caret-down text-[10px] transition-transform duration-300" id="mobileFilterCaret"></i>
-
-                        @if($mobileActiveFiltersCount > 0)
-                            <span id="mobileFilterBadge" class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-md">
-                                {{ $mobileActiveFiltersCount }}
-                            </span>
-                        @endif
-                    </button>
-
-                    {{-- Search Submit Action --}}
-                    <button type="submit" 
-                            class="w-8 h-8 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/25 active:scale-95 transition-all"
-                            title="Search">
-                        <i class="ph-bold ph-arrow-right text-xs"></i>
-                    </button>
                 </div>
 
                 {{-- Collapsible Dropdown Filter Panel (Reveals on clicking Filter button) --}}

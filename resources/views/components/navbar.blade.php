@@ -54,8 +54,8 @@
             {{-- Right Side: Auth Actions & Top-Right Theme Toggle --}}
             <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
                 @guest
-                    {{-- Mobile Top Login Button --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="lg:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-blue-500/25 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="text-decoration: none; color: #ffffff !important;" id="nav-mobile-top-login" title="Login">
+                    {{-- Mobile Top Login Button (Standardized 34px Height, Refined Look) --}}
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="lg:hidden inline-flex items-center justify-center gap-1.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="height: 34px; text-decoration: none; color: #ffffff !important;" id="nav-mobile-top-login" title="Login">
                         <i class="ph-bold ph-sign-in text-sm" style="color: #ffffff !important;"></i>
                         <span style="color: #ffffff !important;">Login</span>
                     </a>
