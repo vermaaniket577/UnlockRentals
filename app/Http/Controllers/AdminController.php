@@ -398,19 +398,21 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
             'email'          => 'required|string|email|max:255|unique:users,email',
-            'phone'          => 'required|string|max:20',
+            'phone'          => 'nullable|string|max:20',
             'role'           => 'required|in:tenant,owner,admin',
             'password'       => 'required|string|min:8',
             'phone_verified' => 'nullable',
         ]);
 
+        $hasPhone = !empty(trim($validated['phone'] ?? ''));
+
         $user = User::create([
             'name'              => $validated['name'],
             'email'             => $validated['email'],
-            'phone'             => $validated['phone'],
+            'phone'             => $hasPhone ? trim($validated['phone']) : null,
             'role'              => $validated['role'],
             'password'          => \Illuminate\Support\Facades\Hash::make($validated['password']),
-            'phone_verified_at' => $request->boolean('phone_verified', true) ? now() : null,
+            'phone_verified_at' => ($hasPhone && $request->boolean('phone_verified', true)) ? now() : null,
         ]);
 
         \Illuminate\Support\Facades\Cache::forget('admin_dashboard_stats');

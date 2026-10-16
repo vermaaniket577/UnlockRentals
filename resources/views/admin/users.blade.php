@@ -566,11 +566,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
                     <label for="admin-user-phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        Mobile Phone <span class="text-rose-500">*</span>
+                        Mobile Phone <span class="text-slate-400 font-normal lowercase text-[11px]">(Optional)</span>
                     </label>
                     <div class="relative">
                         <i class="ph-bold ph-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
-                        <input type="tel" name="phone" id="admin-user-phone" required placeholder="e.g. 9876543210"
+                        <input type="tel" name="phone" id="admin-user-phone" placeholder="e.g. 9876543210 (Optional)"
                                class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all">
                     </div>
                 </div>
