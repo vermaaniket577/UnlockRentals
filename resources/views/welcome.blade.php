@@ -3096,27 +3096,21 @@
     <!-- Featured Rentals -->
     <section class="premium-section featured-rentals" id="featured-rentals-section">
         <div class="section-container">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                @if(request()->anyFilled(['state', 'district', 'locality', 'type', 'price', 'rooms', 'purpose']))
                 <div>
-                    <h2 class="section-title text-left mb-1">
-                        @if(request()->anyFilled(['state', 'district', 'locality', 'type', 'price', 'rooms', 'purpose']))
-                            Search <span class="text-gradient">Results</span>
-                            <a href="{{ route('home') }}" style="font-size: 14px; color: var(--primary); font-weight: 600; text-decoration: none; margin-left: 15px; border-bottom: 1px solid var(--primary);" title="Clear Filters">Clear Filters</a>
-                        @else
-                            Discover <span class="text-gradient">Premium</span> Rentals
-                        @endif
+                    <h2 class="section-title text-left mb-1 text-xl sm:text-2xl font-black">
+                        Search <span class="text-gradient">Results</span>
+                        <a href="{{ route('home') }}" style="font-size: 14px; color: var(--primary); font-weight: 600; text-decoration: none; margin-left: 15px; border-bottom: 1px solid var(--primary);" title="Clear Filters">Clear Filters</a>
                     </h2>
-                    <p class="section-subtitle text-left m-0">
-                        @if(request()->anyFilled(['state', 'district', 'locality', 'type', 'price', 'rooms', 'purpose']))
-                            Showing <strong>{{ $featuredRentals->count() }}</strong> {{ Str::plural('property', $featuredRentals->count()) }} matching your criteria.
-                        @else
-                            Handpicked luxury spaces from our top-rated customers and property owners.
-                        @endif
+                    <p class="section-subtitle text-left m-0 text-xs sm:text-sm">
+                        Showing <strong>{{ $featuredRentals->count() }}</strong> {{ Str::plural('property', $featuredRentals->count()) }} matching your criteria.
                     </p>
                 </div>
+                @endif
 
                 <!-- Clean Standard Custom Dropdown -->
-                <div class="flex items-center gap-2.5 flex-shrink-0 self-start md:self-auto">
+                <div class="flex items-center gap-2.5 flex-shrink-0 ml-auto">
                     <div class="relative" id="featuredCustomDropdown">
                         <button type="button" 
                                 id="featuredDropdownBtn" 
