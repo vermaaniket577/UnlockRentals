@@ -260,6 +260,26 @@ class PropertyController extends Controller
             $data['purpose'] = 'buy';
         }
         $data['purpose'] = $data['purpose'] ?? 'rent';
+
+        // Parse price and price_unit safely (convert Crore / Lakh / Thousand into raw INR)
+        $rawPrice = (float) ($data['price'] ?? 0);
+        $unit = strtolower((string) $request->input('price_unit', ''));
+        if ($unit === 'crore' && $rawPrice < 1000) {
+            $rawPrice = $rawPrice * 10000000;
+        } elseif ($unit === 'lakh' && $rawPrice < 100000) {
+            $rawPrice = $rawPrice * 100000;
+        } elseif ($unit === 'thousand' && $rawPrice < 100000) {
+            $rawPrice = $rawPrice * 1000;
+        } elseif (($data['purpose'] === 'buy' || $data['purpose'] === 'sell') && $rawPrice > 0 && $rawPrice < 500) {
+            // Heuristic safeguard if user typed 1.6 or 45 in sale form
+            if ($rawPrice < 50) {
+                $rawPrice = $rawPrice * 10000000;
+            } else {
+                $rawPrice = $rawPrice * 100000;
+            }
+        }
+        $data['price'] = $rawPrice;
+
         $data['user_id'] = auth()->id();
         $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
         $data['status'] = $bypassApproval ? 'approved' : 'pending';
@@ -278,6 +298,7 @@ class PropertyController extends Controller
 
         // Remove media & helper fields from the data array before creating
         unset(
+            $data['price_unit'],
             $data['images'], $data['primary_image'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls'],
             $data['pg_occupancy'], $data['pg_gender'], $data['pg_food'], $data['pg_bathroom'], $data['pg_curfew'],
             $data['pg_deposit'], $data['pg_notice'], $data['pg_amenities'], $data['pg_total_beds']
@@ -391,6 +412,26 @@ class PropertyController extends Controller
         if (isset($data['purpose']) && $data['purpose'] === 'sell') {
             $data['purpose'] = 'buy';
         }
+
+        // Parse price and price_unit safely (convert Crore / Lakh / Thousand into raw INR)
+        $rawPrice = (float) ($data['price'] ?? 0);
+        $unit = strtolower((string) $request->input('price_unit', ''));
+        if ($unit === 'crore' && $rawPrice < 1000) {
+            $rawPrice = $rawPrice * 10000000;
+        } elseif ($unit === 'lakh' && $rawPrice < 100000) {
+            $rawPrice = $rawPrice * 100000;
+        } elseif ($unit === 'thousand' && $rawPrice < 100000) {
+            $rawPrice = $rawPrice * 1000;
+        } elseif (($data['purpose'] === 'buy' || $data['purpose'] === 'sell') && $rawPrice > 0 && $rawPrice < 500) {
+            // Heuristic safeguard if user typed 1.6 or 45 in sale form
+            if ($rawPrice < 50) {
+                $rawPrice = $rawPrice * 10000000;
+            } else {
+                $rawPrice = $rawPrice * 100000;
+            }
+        }
+        $data['price'] = $rawPrice;
+
         $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
         $data['status'] = $bypassApproval ? 'approved' : 'pending';
 
@@ -403,6 +444,7 @@ class PropertyController extends Controller
 
         // Remove media & helper fields from the data array before updating
         unset(
+            $data['price_unit'],
             $data['images'], $data['primary_image'], $data['remove_images'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls'], $data['remove_video'], $data['remove_video_indexes'],
             $data['pg_occupancy'], $data['pg_gender'], $data['pg_food'], $data['pg_bathroom'], $data['pg_curfew'],
             $data['pg_deposit'], $data['pg_notice'], $data['pg_amenities'], $data['pg_total_beds']

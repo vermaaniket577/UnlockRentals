@@ -105,6 +105,7 @@ class StorePropertyRequest extends FormRequest
             'purpose' => 'nullable|string|in:rent,buy,sell',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'price_unit' => 'nullable|string|in:crore,lakh,thousand,rupees',
             'price_period' => 'required|in:month,year',
             'state' => 'required|string|max:255',
             'location' => 'required|string|max:255',

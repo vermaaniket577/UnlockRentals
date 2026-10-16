@@ -648,13 +648,46 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5" id="pricing-grid">
                     <div>
-                        <label for="create-price" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" id="create-price-label">Expected Rent (₹) <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-extrabold text-sm">₹</span>
-                            <input type="number" name="price" id="create-price" value="{{ old('price') }}" required min="0" step="0.01" inputmode="numeric"
-                                   class="w-full pl-8 pr-3.5 py-2.5 sm:pl-9 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
-                                   placeholder="25,000">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="create-price-input" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider" id="create-price-label">
+                                Expected Rent (₹) <span class="text-red-500">*</span>
+                            </label>
+                            <span id="create-price-unit-hint" class="text-[10px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hidden">
+                                <i class="ph-bold ph-tag"></i> Select Unit (Lakh / Crore)
+                            </span>
                         </div>
+
+                        {{-- Hidden raw price in INR submitted to backend --}}
+                        <input type="hidden" name="price" id="create-price" value="{{ old('price') }}">
+
+                        {{-- Combined Input Group with Dropdown --}}
+                        <div class="flex items-stretch rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-600/15 transition-all overflow-hidden shadow-2xs">
+                            <div class="flex items-center justify-center pl-3.5 sm:pl-4 text-slate-400 font-extrabold text-sm sm:text-base select-none">
+                                ₹
+                            </div>
+                            <input type="number" id="create-price-input" value="{{ old('price') }}" required min="0" step="any" inputmode="decimal"
+                                   class="w-full pl-2 pr-2 py-2.5 sm:py-3 bg-transparent text-sm sm:text-base font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none border-0"
+                                   placeholder="25,000">
+
+                            {{-- Unit Dropdown (Lakh, Crore, etc.) --}}
+                            <div class="relative flex items-center border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0">
+                                <select name="price_unit" id="create-price-unit"
+                                        class="h-full pl-2.5 pr-7 sm:pl-3.5 sm:pr-8 py-2 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 bg-transparent focus:outline-none cursor-pointer appearance-none">
+                                    <option value="rupees" {{ old('price_unit') === 'rupees' ? 'selected' : '' }}>₹ Full</option>
+                                    <option value="thousand" {{ old('price_unit') === 'thousand' ? 'selected' : '' }}>Thousand (K)</option>
+                                    <option value="lakh" {{ old('price_unit') === 'lakh' ? 'selected' : '' }}>Lakh (Lac)</option>
+                                    <option value="crore" {{ old('price_unit') === 'crore' ? 'selected' : '' }}>Crore (Cr)</option>
+                                </select>
+                                <i class="ph-bold ph-caret-down absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        {{-- Real-time Human Friendly Price Preview in Indian Currency --}}
+                        <div id="create-price-in-words" class="mt-1.5 flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 min-h-[18px]">
+                            <span class="text-slate-400 font-normal">Amount:</span>
+                            <span id="create-price-preview-text" class="text-emerald-600 dark:text-emerald-400 font-bold">₹0</span>
+                        </div>
+
                         @error('price') <p class="text-red-500 text-xs mt-1.5 font-semibold">{{ $message }}</p> @enderror
                     </div>
 
@@ -2234,7 +2267,9 @@ function syncVideoFormInputs() {
 // Dynamic Purpose UI Label Updater
 window.onPurposeChange = function(purpose) {
     const priceLabel = document.getElementById('create-price-label');
-    const priceInput = document.getElementById('create-price');
+    const priceInput = document.getElementById('create-price-input') || document.getElementById('create-price');
+    const priceUnit = document.getElementById('create-price-unit');
+    const priceHint = document.getElementById('create-price-unit-hint');
     const periodCol = document.getElementById('period-input-col');
     const saleCol = document.getElementById('sale-badge-col');
     const periodSelect = document.getElementById('create-period');
@@ -2242,11 +2277,20 @@ window.onPurposeChange = function(purpose) {
 
     if (purpose === 'buy' || purpose === 'sell') {
         if (priceLabel) priceLabel.innerHTML = 'Total Sale Price (₹) <span class="text-red-500">*</span>';
-        if (priceInput) priceInput.placeholder = '45,00,000';
+        if (priceHint) priceHint.classList.remove('hidden');
         if (periodCol) periodCol.classList.add('hidden');
         if (saleCol) saleCol.classList.remove('hidden');
         if (periodSelect) periodSelect.value = 'month'; // Default backend safe fallback
+
+        if (priceUnit && (priceUnit.value === 'rupees' || !priceUnit.value)) {
+            priceUnit.value = 'crore';
+            if (priceInput && (!priceInput.value || priceInput.value === '25000')) {
+                priceInput.value = '';
+                priceInput.placeholder = 'e.g. 1.6 or 45';
+            }
+        }
     } else {
+        if (priceHint) priceHint.classList.add('hidden');
         if (checkedType === 'pg-hostel') {
             if (priceLabel) priceLabel.innerHTML = 'Monthly Rent per Bed / Room (₹) <span class="text-red-500">*</span>';
             if (priceInput) priceInput.placeholder = '6,500';
@@ -2256,8 +2300,127 @@ window.onPurposeChange = function(purpose) {
         }
         if (periodCol) periodCol.classList.remove('hidden');
         if (saleCol) saleCol.classList.add('hidden');
+
+        if (priceUnit && priceUnit.value === 'crore') {
+            priceUnit.value = 'rupees';
+            if (priceInput && (priceInput.value === '1.6' || priceInput.value === '1.5')) {
+                priceInput.value = '';
+            }
+        }
+    }
+
+    if (window.urRecalculateCreatePrice) {
+        window.urRecalculateCreatePrice();
     }
 };
+
+// Price & Unit Calculator Logic (Converts Lakh / Crore / Thousand into raw INR)
+(function() {
+    function initCreatePriceCalculator() {
+        const input = document.getElementById('create-price-input');
+        const unitSelect = document.getElementById('create-price-unit');
+        const rawInput = document.getElementById('create-price');
+        const preview = document.getElementById('create-price-preview-text');
+
+        if (!input || !unitSelect || !rawInput) return;
+
+        function getMultiplier(unit) {
+            switch (unit) {
+                case 'crore': return 10000000;
+                case 'lakh': return 100000;
+                case 'thousand': return 1000;
+                default: return 1;
+            }
+        }
+
+        function formatCurrencyWithWords(num) {
+            if (!num || isNaN(num) || num <= 0) return '₹0';
+            num = Math.round(num * 100) / 100;
+            const formatted = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(num);
+
+            let desc = '';
+            if (num >= 10000000) {
+                const cr = num / 10000000;
+                desc = (Math.round(cr * 100) / 100) + ' Cr';
+            } else if (num >= 100000) {
+                const lk = num / 100000;
+                desc = (Math.round(lk * 100) / 100) + ' Lac';
+            } else if (num >= 1000) {
+                const th = num / 1000;
+                desc = (Math.round(th * 10) / 10) + ' K';
+            }
+
+            return '₹ ' + formatted + (desc ? ' (' + desc + ')' : '');
+        }
+
+        function recalculate() {
+            const val = parseFloat(input.value);
+            const unit = unitSelect.value;
+            const mult = getMultiplier(unit);
+
+            if (isNaN(val) || val <= 0) {
+                rawInput.value = '';
+                if (preview) preview.textContent = '₹0';
+                return;
+            }
+
+            const rawPrice = Math.round(val * mult * 100) / 100;
+            rawInput.value = rawPrice;
+
+            if (preview) {
+                preview.textContent = formatCurrencyWithWords(rawPrice);
+            }
+        }
+
+        window.urRecalculateCreatePrice = recalculate;
+
+        input.addEventListener('input', recalculate);
+        unitSelect.addEventListener('change', recalculate);
+
+        // Pre-fill / Auto-detect if raw value is already present
+        const initialRaw = parseFloat(rawInput.value);
+        if (!isNaN(initialRaw) && initialRaw > 0) {
+            const currentPurpose = document.querySelector('input[name="purpose"]:checked')?.value || 'rent';
+            if (currentPurpose === 'buy' || currentPurpose === 'sell') {
+                if (initialRaw >= 10000000) {
+                    unitSelect.value = 'crore';
+                    input.value = Math.round((initialRaw / 10000000) * 100) / 100;
+                } else if (initialRaw >= 100000) {
+                    unitSelect.value = 'lakh';
+                    input.value = Math.round((initialRaw / 100000) * 100) / 100;
+                } else if (initialRaw >= 1000) {
+                    unitSelect.value = 'thousand';
+                    input.value = Math.round((initialRaw / 1000) * 10) / 10;
+                } else {
+                    unitSelect.value = 'rupees';
+                    input.value = initialRaw;
+                }
+            } else {
+                if (initialRaw >= 100000 && initialRaw % 100000 === 0) {
+                    unitSelect.value = 'lakh';
+                    input.value = initialRaw / 100000;
+                } else {
+                    unitSelect.value = 'rupees';
+                    input.value = initialRaw;
+                }
+            }
+        } else if (input.value) {
+            recalculate();
+        }
+
+        recalculate();
+
+        input.closest('form')?.addEventListener('submit', function() {
+            recalculate();
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCreatePriceCalculator);
+    } else {
+        initCreatePriceCalculator();
+    }
+})();
 
 // Filter category dropdown options according to selected property type
 window.filterPropertyCategories = function(selectId, selectedType, preferredValue = null) {
