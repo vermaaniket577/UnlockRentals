@@ -336,7 +336,7 @@
                                         class="w-full pl-3.5 pr-8 py-2.5 sm:pl-4 sm:pr-9 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all appearance-none cursor-pointer">
                                     <option value="">Select Category</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}" data-type="{{ $category->getPropertyType() }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                                 <i class="ph-bold ph-caret-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
@@ -2259,10 +2259,75 @@ window.onPurposeChange = function(purpose) {
     }
 };
 
-// Dynamic Property Type UI Handler (Adapts layout for PG/Hostel vs Land/Plot vs Residential/Commercial)
+// Filter category dropdown options according to selected property type
+window.filterPropertyCategories = function(selectId, selectedType, preferredValue = null) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    // Cache the master categories list once
+    if (!select._masterCategories) {
+        select._masterCategories = [];
+        Array.from(select.options).forEach(opt => {
+            if (opt.value) {
+                select._masterCategories.push({
+                    value: opt.value,
+                    text: opt.text.trim(),
+                    type: opt.getAttribute('data-type') || 'house'
+                });
+            }
+        });
+    }
+
+    const currentVal = (preferredValue !== null && preferredValue !== undefined && preferredValue !== '') 
+        ? String(preferredValue) 
+        : String(select.value || '');
+
+    // Filter matching categories for the chosen property type
+    const matching = select._masterCategories.filter(cat => cat.type === selectedType);
+
+    select.innerHTML = '';
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = 'Select Category';
+    select.appendChild(defaultOpt);
+
+    let hasSelected = false;
+    matching.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.value;
+        opt.textContent = cat.text;
+        opt.setAttribute('data-type', cat.type);
+        if (String(cat.value) === currentVal) {
+            opt.selected = true;
+            hasSelected = true;
+        }
+        select.appendChild(opt);
+    });
+
+    // Auto-select primary category if current value is not in matching categories
+    if (!hasSelected && matching.length > 0) {
+        if (selectedType === 'pg-hostel') {
+            const pgOpt = matching.find(c => c.text.toLowerCase().includes('pg')) || matching[0];
+            select.value = pgOpt.value;
+        } else if (selectedType === 'plot') {
+            select.value = matching[0].value;
+        } else if (selectedType === 'hotel') {
+            select.value = matching[0].value;
+        } else if (selectedType === 'shop') {
+            const shopOpt = matching.find(c => c.text.toLowerCase().includes('retail') || c.text.toLowerCase().includes('shop')) || matching[0];
+            select.value = shopOpt.value;
+        } else if (selectedType === 'house') {
+            const houseOpt = matching.find(c => c.text.toLowerCase().includes('residential')) || matching[0];
+            select.value = houseOpt.value;
+        }
+    }
+};
+
+// Dynamic Property Type UI Handler (Adapts layout for PG/Hostel vs Land/Plot vs Residential/Commercial vs Hotel)
 window.onTypeChange = function(type) {
     const isPg = (type === 'pg-hostel');
     const isPlot = (type === 'plot');
+    const isHotel = (type === 'hotel');
 
     const bedCol = document.getElementById('create-bedrooms-col');
     const bathCol = document.getElementById('create-bathrooms-col');
@@ -2276,7 +2341,6 @@ window.onTypeChange = function(type) {
     const titleLabel = document.querySelector('label[for="create-title"]');
     const descInput = document.getElementById('create-description');
     const descLabel = document.querySelector('label[for="create-description"]');
-    const catSelect = document.getElementById('create-category');
     const priceLabel = document.getElementById('create-price-label');
     const priceInput = document.getElementById('create-price');
     const pricingTitle = document.getElementById('create-pricing-title');
@@ -2288,6 +2352,9 @@ window.onTypeChange = function(type) {
     const specsTitle = document.getElementById('create-details-title');
     const specsDesc = document.getElementById('create-details-desc');
     const specsIcon = document.getElementById('create-details-icon');
+
+    // 1. Dynamically filter the Category dropdown to only show categories matching this property type
+    window.filterPropertyCategories('create-category', type);
 
     if (isPg) {
         // 1. Force Purpose to "For Rent" (PGs cannot be sold outright)
@@ -2321,17 +2388,7 @@ window.onTypeChange = function(type) {
         if (pricingDesc) pricingDesc.textContent = 'Monthly rent per bed or private room';
         if (periodSelect) periodSelect.value = 'month';
 
-        // 4. Auto-select "PG & Hostel" category
-        if (catSelect) {
-            for (let opt of catSelect.options) {
-                if (opt.text.toLowerCase().includes('pg') || opt.text.toLowerCase().includes('hostel')) {
-                    catSelect.value = opt.value;
-                    break;
-                }
-            }
-        }
-
-        // 5. Title & Description placeholders & labels
+        // 4. Title & Description placeholders & labels
         if (titleLabel) titleLabel.innerHTML = 'PG / Hostel Name & Headline <span class="text-red-500">*</span>';
         if (titleInput && (!titleInput.value || titleInput.value.includes('Flat') || titleInput.value.includes('Plot') || titleInput.value.includes('BHK'))) {
             titleInput.placeholder = 'e.g. Luxury Single & Double Sharing PG for Boys in Koramangala with Food, Wi-Fi & AC';
@@ -2391,16 +2448,6 @@ window.onTypeChange = function(type) {
         if (pricingTitle) pricingTitle.textContent = 'Pricing & Financials';
         if (pricingDesc) pricingDesc.textContent = 'Set total outright sale price';
 
-        // Auto-select "Plots & Land" category if available
-        if (catSelect && (!catSelect.value || catSelect.value === '')) {
-            for (let opt of catSelect.options) {
-                if (opt.text.toLowerCase().includes('plot') || opt.text.toLowerCase().includes('land')) {
-                    catSelect.value = opt.value;
-                    break;
-                }
-            }
-        }
-
         if (titleLabel) titleLabel.innerHTML = 'Property Title <span class="text-red-500">*</span>';
         if (titleInput && (!titleInput.value || titleInput.value.includes('Flat') || titleInput.value.includes('BHK') || titleInput.value.includes('PG'))) {
             titleInput.placeholder = 'e.g. 1500 sq.ft Residential Corner Plot in Sector 57';
@@ -2409,8 +2456,54 @@ window.onTypeChange = function(type) {
         if (descInput && (!descInput.value || descInput.value.includes('balcony') || descInput.value.includes('sharing'))) {
             descInput.placeholder = 'Describe plot dimensions, road frontage width (e.g. 30ft road), facing direction (North/East), zoning (Residential/Commercial), boundary wall, and clear title status...';
         }
+    } else if (isHotel) {
+        // Hotel Room adaptation
+        if (purposeBuyLabel) purposeBuyLabel.classList.add('hidden');
+        if (purposeRentRadio) {
+            purposeRentRadio.checked = true;
+            if (window.onPurposeChange) window.onPurposeChange('rent');
+            if (purposeRentLabel) {
+                purposeRentLabel.closest('.grid')?.querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'));
+                purposeRentLabel.classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm');
+            }
+        }
+
+        if (bedCol) bedCol.classList.remove('hidden');
+        if (bathCol) bathCol.classList.remove('hidden');
+        if (furnWrap) furnWrap.classList.remove('hidden');
+        if (plotHelper) plotHelper.classList.add('hidden');
+        if (pgContainer) pgContainer.classList.add('hidden');
+
+        if (areaCol) {
+            areaCol.className = 'col-span-1';
+            areaCol.classList.remove('hidden');
+        }
+        if (areaLabel) areaLabel.textContent = 'Room Area (sq.ft)';
+        if (areaInput) areaInput.placeholder = '350';
+
+        if (specsTitle) specsTitle.textContent = 'Hotel Room Specifications';
+        if (specsDesc) specsDesc.textContent = 'Beds, attached bathrooms, area, and room amenities';
+        if (specsIcon) specsIcon.className = 'ph-bold ph-bed';
+
+        if (priceLabel) priceLabel.innerHTML = 'Nightly / Monthly Tariff (₹) <span class="text-red-500">*</span>';
+        if (priceInput) priceInput.placeholder = '2,500';
+        if (pricingTitle) pricingTitle.textContent = 'Tariff & Pricing';
+        if (pricingDesc) pricingDesc.textContent = 'Set room rate per night or month';
+
+        if (titleLabel) titleLabel.innerHTML = 'Hotel / Room Title <span class="text-red-500">*</span>';
+        if (titleInput && (!titleInput.value || titleInput.value.includes('Flat') || titleInput.value.includes('Plot') || titleInput.value.includes('PG'))) {
+            titleInput.placeholder = 'e.g. Deluxe AC King Room with Complimentary Breakfast & Free Wi-Fi';
+        }
+        if (descLabel) descLabel.innerHTML = 'Hotel Room Details <span class="text-red-500">*</span>';
+        if (descInput && (!descInput.value || descInput.value.includes('balcony') || descInput.value.includes('sharing') || descInput.value.includes('frontage'))) {
+            descInput.placeholder = 'Describe room amenities, check-in/out timings, attached bathroom, daily housekeeping, parking, AC, TV, Wi-Fi...';
+        }
+
+        const furnSelect = document.getElementById('create-furnishing');
+        if (furnSelect) furnSelect.value = 'fully-furnished';
+
     } else {
-        // Standard Residential / Commercial Shop
+        // Standard Residential House / Commercial Shop
         if (purposeBuyLabel) purposeBuyLabel.classList.remove('hidden');
 
         if (bedCol) bedCol.classList.remove('hidden');
@@ -2437,11 +2530,11 @@ window.onTypeChange = function(type) {
         if (window.onPurposeChange) window.onPurposeChange(curPurpose);
 
         if (titleLabel) titleLabel.innerHTML = 'Property Title <span class="text-red-500">*</span>';
-        if (titleInput && (titleInput.value === '' || titleInput.placeholder.includes('Plot') || titleInput.placeholder.includes('PG'))) {
+        if (titleInput && (titleInput.value === '' || titleInput.placeholder.includes('Plot') || titleInput.placeholder.includes('PG') || titleInput.placeholder.includes('Hotel'))) {
             titleInput.placeholder = 'e.g. Spacious 3 BHK Semi-Furnished Flat in Sector 57';
         }
         if (descLabel) descLabel.innerHTML = 'Description <span class="text-red-500">*</span>';
-        if (descInput && (descInput.value === '' || descInput.placeholder.includes('frontage') || descInput.placeholder.includes('sharing'))) {
+        if (descInput && (descInput.value === '' || descInput.placeholder.includes('frontage') || descInput.placeholder.includes('sharing') || descInput.placeholder.includes('housekeeping'))) {
             descInput.placeholder = 'Describe key features, sunlight, balcony view, and tenant preferences...';
         }
     }
@@ -2455,6 +2548,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const checkedType = document.querySelector('input[name="type"]:checked');
     if (checkedType) {
+        window.filterPropertyCategories('create-category', checkedType.value, '{{ old("category_id") }}');
         window.onTypeChange(checkedType.value);
     }
 });

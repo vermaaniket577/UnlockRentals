@@ -292,8 +292,9 @@
                             <div class="relative">
                                 <select name="category_id" id="edit-category" required
                                         class="w-full pl-3 pr-8 py-2 sm:pl-3.5 sm:pr-9 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all appearance-none cursor-pointer">
+                                    <option value="">Select Category</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id', $property->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                        <option value="{{ $category->id }}" data-type="{{ $category->getPropertyType() }}" {{ old('category_id', $property->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                                 <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
@@ -1404,6 +1405,188 @@
 </section>
 
 <script>
+// Filter category dropdown options according to selected property type
+window.filterPropertyCategories = function(selectId, selectedType, preferredValue = null) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    // Cache the master categories list once
+    if (!select._masterCategories) {
+        select._masterCategories = [];
+        Array.from(select.options).forEach(opt => {
+            if (opt.value) {
+                select._masterCategories.push({
+                    value: opt.value,
+                    text: opt.text.trim(),
+                    type: opt.getAttribute('data-type') || 'house'
+                });
+            }
+        });
+    }
+
+    const currentVal = (preferredValue !== null && preferredValue !== undefined && preferredValue !== '') 
+        ? String(preferredValue) 
+        : String(select.value || '');
+
+    // Filter matching categories for the chosen property type
+    const matching = select._masterCategories.filter(cat => cat.type === selectedType);
+
+    select.innerHTML = '';
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = 'Select Category';
+    select.appendChild(defaultOpt);
+
+    let hasSelected = false;
+    matching.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.value;
+        opt.textContent = cat.text;
+        opt.setAttribute('data-type', cat.type);
+        if (String(cat.value) === currentVal) {
+            opt.selected = true;
+            hasSelected = true;
+        }
+        select.appendChild(opt);
+    });
+
+    // Auto-select primary category if current value is not in matching categories
+    if (!hasSelected && matching.length > 0) {
+        if (selectedType === 'pg-hostel') {
+            const pgOpt = matching.find(c => c.text.toLowerCase().includes('pg')) || matching[0];
+            select.value = pgOpt.value;
+        } else if (selectedType === 'plot') {
+            select.value = matching[0].value;
+        } else if (selectedType === 'hotel') {
+            select.value = matching[0].value;
+        } else if (selectedType === 'shop') {
+            const shopOpt = matching.find(c => c.text.toLowerCase().includes('retail') || c.text.toLowerCase().includes('shop')) || matching[0];
+            select.value = shopOpt.value;
+        } else if (selectedType === 'house') {
+            const houseOpt = matching.find(c => c.text.toLowerCase().includes('residential')) || matching[0];
+            select.value = houseOpt.value;
+        }
+    }
+};
+
+window.onEditTypeChange = function(type) {
+    const isPg = (type === 'pg-hostel');
+    const isPlot = (type === 'plot');
+    const isHotel = (type === 'hotel');
+
+    const bedCol = document.getElementById('edit-bedrooms-col');
+    const bathCol = document.getElementById('edit-bathrooms-col');
+    const areaCol = document.getElementById('edit-area-col');
+    const areaLabel = document.getElementById('edit-area-label');
+    const furnWrap = document.getElementById('edit-furnishing-container');
+    const plotHelper = document.getElementById('edit-plot-helper');
+    const pgContainer = document.getElementById('edit-pg-container');
+    const priceLabel = document.getElementById('edit-price-label');
+    const specsTitle = document.getElementById('edit-details-title');
+    const specsDesc = document.getElementById('edit-details-desc');
+    const specsIcon = document.getElementById('edit-details-icon');
+    const purposeBuyLabel = document.querySelector('label[for="edit-purpose-buy"]');
+    const purposeRentRadio = document.getElementById('edit-purpose-rent');
+    const purposeRentLabel = document.querySelector('label[for="edit-purpose-rent"]');
+
+    // Filter categories dynamically
+    window.filterPropertyCategories('edit-category', type);
+
+    if (isPg) {
+        if (purposeRentRadio) {
+            purposeRentRadio.checked = true;
+            if (window.onPurposeChange) window.onPurposeChange('rent');
+            if (purposeRentLabel) {
+                purposeRentLabel.closest('.grid')?.querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'));
+                purposeRentLabel.classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm');
+            }
+        }
+        if (purposeBuyLabel) purposeBuyLabel.classList.add('hidden');
+
+        if (bedCol) bedCol.classList.add('hidden');
+        if (bathCol) bathCol.classList.add('hidden');
+        if (areaCol) areaCol.classList.add('hidden');
+        if (furnWrap) furnWrap.classList.add('hidden');
+        if (plotHelper) plotHelper.classList.add('hidden');
+        if (pgContainer) pgContainer.classList.remove('hidden');
+
+        if (specsTitle) specsTitle.textContent = 'PG & Hostel Specifications';
+        if (specsDesc) specsDesc.textContent = 'Room sharing, gender rules, food facilities, and amenities';
+        if (specsIcon) specsIcon.className = 'ph-bold ph-buildings';
+        if (priceLabel) priceLabel.innerHTML = 'Monthly Rent per Bed / Room (₹) <span class="text-red-500">*</span>';
+
+    } else if (isPlot) {
+        if (purposeBuyLabel) purposeBuyLabel.classList.remove('hidden');
+        if (bedCol) bedCol.classList.add('hidden');
+        if (bathCol) bathCol.classList.add('hidden');
+        if (furnWrap) furnWrap.classList.add('hidden');
+        if (pgContainer) pgContainer.classList.add('hidden');
+        if (plotHelper) plotHelper.classList.remove('hidden');
+
+        if (areaCol) {
+            areaCol.className = 'col-span-2 sm:col-span-4';
+            areaCol.classList.remove('hidden');
+        }
+        if (areaLabel) areaLabel.textContent = 'Total Plot / Land Area (sq.ft) *';
+        if (specsTitle) specsTitle.textContent = 'Key Specifications';
+        if (specsDesc) specsDesc.textContent = 'Total land area and plot details';
+        if (specsIcon) specsIcon.className = 'ph-bold ph-map-trifold';
+        if (priceLabel) priceLabel.innerHTML = 'Total Sale Price (₹) <span class="text-red-500">*</span>';
+
+    } else if (isHotel) {
+        if (purposeBuyLabel) purposeBuyLabel.classList.add('hidden');
+        if (purposeRentRadio) {
+            purposeRentRadio.checked = true;
+            if (window.onPurposeChange) window.onPurposeChange('rent');
+            if (purposeRentLabel) {
+                purposeRentLabel.closest('.grid')?.querySelectorAll('label').forEach(l => l.classList.remove('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm'));
+                purposeRentLabel.classList.add('border-blue-600','bg-blue-50/70','dark:bg-blue-950/40','text-blue-700','dark:text-blue-400','font-bold','ring-1','ring-blue-600','shadow-sm');
+            }
+        }
+        if (bedCol) bedCol.classList.remove('hidden');
+        if (bathCol) bathCol.classList.remove('hidden');
+        if (furnWrap) furnWrap.classList.remove('hidden');
+        if (plotHelper) plotHelper.classList.add('hidden');
+        if (pgContainer) pgContainer.classList.add('hidden');
+
+        if (areaCol) {
+            areaCol.className = 'col-span-1';
+            areaCol.classList.remove('hidden');
+        }
+        if (areaLabel) areaLabel.textContent = 'Room Area (sq.ft)';
+        if (specsTitle) specsTitle.textContent = 'Hotel Room Specifications';
+        if (specsDesc) specsDesc.textContent = 'Beds, bathrooms, area, and room amenities';
+        if (specsIcon) specsIcon.className = 'ph-bold ph-bed';
+        if (priceLabel) priceLabel.innerHTML = 'Nightly / Monthly Tariff (₹) <span class="text-red-500">*</span>';
+
+    } else {
+        if (purposeBuyLabel) purposeBuyLabel.classList.remove('hidden');
+        if (bedCol) bedCol.classList.remove('hidden');
+        if (bathCol) bathCol.classList.remove('hidden');
+        if (furnWrap) furnWrap.classList.remove('hidden');
+        if (plotHelper) plotHelper.classList.add('hidden');
+        if (pgContainer) pgContainer.classList.add('hidden');
+
+        if (areaCol) {
+            areaCol.className = 'col-span-1';
+            areaCol.classList.remove('hidden');
+        }
+        if (areaLabel) areaLabel.textContent = 'Area (sq.ft)';
+        if (specsTitle) specsTitle.textContent = 'Key Specifications';
+        if (specsDesc) specsDesc.textContent = 'Bedrooms, bathrooms, area, and furnishing status';
+        if (specsIcon) specsIcon.className = 'ph-bold ph-house-line';
+        if (priceLabel) priceLabel.innerHTML = 'Monthly Rent / Price (₹) <span class="text-red-500">*</span>';
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const checkedEditType = document.querySelector('input[name="type"]:checked');
+    if (checkedEditType) {
+        window.filterPropertyCategories('edit-category', checkedEditType.value, '{{ old("category_id", $property->category_id) }}');
+        if (window.onEditTypeChange) window.onEditTypeChange(checkedEditType.value);
+    }
+});
+
 let editUploadedVideoList = [];
 let activeEditTrimmerItem = null;
 let editTrimmerPlayer = null;

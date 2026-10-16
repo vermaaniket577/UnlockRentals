@@ -51,6 +51,7 @@ class Category extends Model
                 ['name' => 'Plots & Land', 'slug' => 'plots-and-land', 'icon' => 'map-trifold', 'description' => 'Commercial, residential, and agricultural plots and land for sale.'],
                 ['name' => 'PG & Hostel', 'slug' => 'pg-hostel', 'icon' => 'buildings', 'description' => 'Paying guest accommodations, student hostels, and co-living spaces with food and amenities.'],
                 ['name' => 'Hostel', 'slug' => 'hostel', 'icon' => 'bed', 'description' => 'Student hostels and working professionals hostels with boarding and lodging facilities.'],
+                ['name' => 'Hotel Room', 'slug' => 'hotel-room', 'icon' => 'bed', 'description' => 'Hotel rooms, serviced apartments, and guest houses for daily and monthly stay.'],
             ];
 
             $createdAny = false;
@@ -92,12 +93,36 @@ class Category extends Model
                 'retail-shop' => 6,
                 'office-space' => 7,
                 'plots-and-land' => 8,
+                'hotel-room' => 9,
             ];
 
             return static::all()->sortBy(function ($cat) use ($priority) {
                 return $priority[$cat->slug] ?? 99;
             })->values();
         });
+    }
+
+    /**
+     * Map category to its associated property form type (house, shop, pg-hostel, plot, hotel).
+     */
+    public function getPropertyType(): string
+    {
+        $slug = strtolower($this->slug ?? '');
+        $name = strtolower($this->name ?? '');
+
+        if (str_contains($slug, 'pg') || str_contains($slug, 'hostel') || str_contains($name, 'pg') || str_contains($name, 'hostel')) {
+            return 'pg-hostel';
+        }
+        if (str_contains($slug, 'plot') || str_contains($slug, 'land') || str_contains($name, 'plot') || str_contains($name, 'land')) {
+            return 'plot';
+        }
+        if (str_contains($slug, 'shop') || str_contains($slug, 'office') || str_contains($slug, 'commercial') || str_contains($slug, 'retail') || str_contains($name, 'shop') || str_contains($name, 'office') || str_contains($name, 'commercial')) {
+            return 'shop';
+        }
+        if (str_contains($slug, 'hotel') || str_contains($name, 'hotel') || str_contains($slug, 'resort') || str_contains($name, 'guest house') || str_contains($name, 'lodge')) {
+            return 'hotel';
+        }
+        return 'house';
     }
 
     /**
