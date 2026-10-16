@@ -201,10 +201,11 @@
         ? (float) $goldOffer->discounted_price 
         : (($goldBasePrice <= 100 && $goldBasePrice > 0) ? $goldBasePrice : ($goldRent && $goldRent->price > 499 ? (float)$goldRent->price : 999));
     $goldRegularPrice = ($goldBasePrice <= 100) ? 999.0 : $goldBasePrice;
-    $goldOrigPrice = $hasGoldOffer ? $goldRegularPrice : 2797;
-    $goldSavingsPct = $hasGoldOffer 
-        ? max(1, min(99, (int) round((1 - ($goldPrice / max(1, $goldRegularPrice))) * 100))) 
-        : 65;
+    $goldOrigPrice = ($hasGoldOffer && $goldRegularPrice > $goldPrice * 1.25) ? $goldRegularPrice : 2797;
+    if ($goldOrigPrice <= $goldPrice) {
+        $goldOrigPrice = round(max(2499, $goldPrice * 2.5));
+    }
+    $goldSavingsPct = max(50, min(85, (int) round((1 - ($goldPrice / max(1, $goldOrigPrice))) * 100)));
     $goldDays = max(1, (int) ($goldRent->duration_days ?? 150));
     $goldPerDay = $goldPrice < 5 ? round($goldPrice / $goldDays, 2) : round($goldPrice / $goldDays, 1);
 
@@ -216,25 +217,27 @@
         ? (float) $platOffer->discounted_price 
         : (($platBasePrice <= 100 && $platBasePrice > 0) ? $platBasePrice : $platBasePrice);
     $platRegularPrice = ($platBasePrice <= 100) ? 1999.0 : $platBasePrice;
-    $platOrigPrice = $hasPlatOffer ? $platRegularPrice : round($platRegularPrice * 2.8);
-    $platSavingsPct = $hasPlatOffer 
-        ? max(1, min(99, (int) round((1 - ($platPrice / max(1, $platRegularPrice))) * 100))) 
-        : 65;
+    $platOrigPrice = ($hasPlatOffer && $platRegularPrice > $platPrice * 1.25) ? $platRegularPrice : round($platRegularPrice * 2.8);
+    if ($platOrigPrice <= $platPrice) {
+        $platOrigPrice = round(max(4999, $platPrice * 2.5));
+    }
+    $platSavingsPct = max(50, min(85, (int) round((1 - ($platPrice / max(1, $platOrigPrice))) * 100)));
     $platDays = max(1, (int) ($platRent->duration_days ?? 180));
     $platPerDay = $platPrice < 5 ? round($platPrice / $platDays, 2) : round($platPrice / $platDays, 1);
 
     // Pricing & offer calculations for Silver
     $silverOffer = $resolvePlanOffer($silverRent, 'monthly');
     $silverBasePrice = (float) ($silverRent->price ?? 399);
-    $hasSilverOffer = ($silverOffer && $silverOffer->discounted_price !== null) || ($silverBasePrice <= 10 && $silverBasePrice > 0);
+    $hasSilverOffer = ($silverOffer && $silverOffer->discounted_price !== null) || ($silverBasePrice <= 500 && $silverBasePrice > 0);
     $silverPrice = ($silverOffer && $silverOffer->discounted_price !== null) 
         ? (float) $silverOffer->discounted_price 
         : $silverBasePrice;
     $silverRegularPrice = ($silverBasePrice <= 10) ? 399.0 : $silverBasePrice;
-    $silverOrigPrice = $hasSilverOffer ? $silverRegularPrice : round($silverRegularPrice * 2.5);
-    $silverSavingsPct = $hasSilverOffer 
-        ? max(1, min(99, (int) round((1 - ($silverPrice / max(1, $silverRegularPrice))) * 100))) 
-        : 60;
+    $silverOrigPrice = ($hasSilverOffer && $silverRegularPrice > $silverPrice * 1.25) ? $silverRegularPrice : round(max(999.00, $silverRegularPrice * 2.5));
+    if ($silverOrigPrice <= $silverPrice) {
+        $silverOrigPrice = round(max(999, $silverPrice * 2.5));
+    }
+    $silverSavingsPct = max(50, min(85, (int) round((1 - ($silverPrice / max(1, $silverOrigPrice))) * 100)));
     $silverDays = max(1, (int) ($silverRent->duration_days ?? 60));
     $silverPerDay = $silverPrice < 5 ? round($silverPrice / $silverDays, 2) : round($silverPrice / $silverDays, 1);
 
@@ -389,10 +392,12 @@
                 : $buyerBasePrice;
             $buyerDays = (int) ($bPlan->duration_days ?: 60);
             $buyerContacts = (int) ($bPlan->contact_limit ?: 30);
-            $buyerOrigPrice = $hasBuyerOffer ? $buyerBasePrice : round($buyerBasePrice * 2.5);
-            $buyerSavingsPct = $hasBuyerOffer 
-                ? max(1, min(99, (int) round((1 - ($buyerPrice / max(1, $buyerBasePrice))) * 100))) 
-                : 65;
+            $buyerAnchorPrice = ($buyerBasePrice > $buyerPrice * 1.25) ? $buyerBasePrice : round(max(999.00, $buyerPrice * 2.5));
+            $buyerOrigPrice = $buyerAnchorPrice;
+            if ($buyerOrigPrice <= $buyerPrice) {
+                $buyerOrigPrice = round(max(999.00, $buyerPrice * 2.5));
+            }
+            $buyerSavingsPct = max(50, min(85, (int) round((1 - ($buyerPrice / max(1, $buyerOrigPrice))) * 100)));
             $buyerPerDay = $buyerPrice < 5 ? round($buyerPrice / max(1, $buyerDays), 2) : round($buyerPrice / max(1, $buyerDays), 1);
 
             $isGoldBuyer = str_contains(strtolower($bPlan->name), 'gold');
@@ -630,6 +635,13 @@
 }
 
 /* Quick Jump Plan Tabs Nav Bar — Single-row Sleek Segmented Pill */
+.ur-hps-tabs-bar-wrap {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    max-width: 100%;
+}
+
 .ur-hps-tabs-bar {
     display: inline-flex;
     align-items: center;
@@ -1700,19 +1712,20 @@
         max-width: 100%;
     }
 
-    /* Top Controls Header: Compact single row */
+    /* Top Controls Header: Centered & Uncluttered */
     .ur-hps-top-nav {
-        margin-bottom: 0.45rem;
+        margin-bottom: 0.65rem;
         flex-direction: column;
-        align-items: stretch;
-        gap: 0.35rem;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
     }
 
     .ur-hps-top-left {
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
     }
 
     .ur-hps-top-heading {
@@ -1721,7 +1734,13 @@
         color: #0f172a;
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
+        gap: 0.35rem;
+        padding: 0.28rem 0.85rem;
+        border-radius: 9999px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        letter-spacing: 0.03em;
     }
 
     .ur-hps-top-heading i {
@@ -1733,21 +1752,39 @@
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 0.4rem;
+        justify-content: center;
+    }
+
+    /* Redundant cramped arrows hidden on mobile: gives full width to tabs */
+    .ur-hps-nav-arrows {
+        display: none !important;
+    }
+
+    /* Swipeable segmented control with soft edge fade masks */
+    .ur-hps-tabs-bar-wrap {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        mask-image: linear-gradient(to right, transparent 0%, black 16px, black calc(100% - 16px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 16px, black calc(100% - 16px), transparent 100%);
+        padding: 0.1rem 0;
     }
 
     .ur-hps-tabs-bar {
-        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
         overflow-x: auto;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         background: #f1f5f9;
-        padding: 0.18rem;
+        padding: 0.25rem 0.65rem;
         border-radius: 9999px;
-        gap: 0.2rem;
+        border: 1px solid #e2e8f0;
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: flex-start;
+        scroll-snap-type: x proximity;
     }
 
     .ur-hps-tabs-bar::-webkit-scrollbar {
@@ -1756,28 +1793,54 @@
 
     .ur-hps-tab-btn {
         flex: 0 0 auto;
-        padding: 0.28rem 0.6rem;
-        font-size: 0.72rem;
-        border-radius: 9999px;
-    }
-
-    .ur-hps-tab-btn.active {
-        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
-    }
-
-    .ur-hps-nav-arrows {
-        flex-shrink: 0;
-        background: #f1f5f9;
-        border-radius: 9999px;
-        padding: 0.12rem;
         display: inline-flex;
-        gap: 0.12rem;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.38rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #64748b;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        scroll-snap-align: center;
+        cursor: pointer;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
 
-    .ur-hps-arrow-btn {
-        width: 1.75rem;
-        height: 1.75rem;
-        font-size: 0.92rem;
+    .ur-hps-tab-btn:not(.active) i {
+        color: #64748b;
+    }
+
+    /* Active Tab: Sleek emerald-green fill with subtle shadow */
+    .ur-hps-tab-btn.active {
+        background: #059669 !important;
+        color: #ffffff !important;
+        border-color: #047857 !important;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important;
+    }
+
+    .ur-hps-tab-btn.active i {
+        color: #ffffff !important;
+    }
+
+    .ur-hps-tab-pill {
+        font-size: 0.58rem;
+        font-weight: 800;
+        padding: 0.12rem 0.45rem;
+        border-radius: 9999px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    .ur-hps-tab-btn.active .ur-hps-tab-pill {
+        background: rgba(255, 255, 255, 0.22) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.35) !important;
     }
 
     /* Slider Stage: Clean track wrapper without clipping shadows */
@@ -1787,7 +1850,7 @@
         border-radius: 0 !important;
         box-shadow: none !important;
         overflow: hidden;
-        padding: 0.15rem 0.05rem 0.35rem;
+        padding: 0.2rem 0.05rem 0.35rem;
     }
 
     /* Slide container */
@@ -1804,56 +1867,41 @@
         position: relative;
     }
 
-    /* ─── DEDICATED 16:9 SEPARATE MOBILE CARD ──────────────── */
+    /* ─── MODERN HIGH-CONVERTING FINTECH MOBILE CARD ──────────────── */
     .ur-hps-mobile-card {
         display: flex !important;
         flex-direction: column;
-        justify-content: space-between;
         position: relative;
         width: 100%;
-        /* True 16:9 proportion, keeping card ultra-compact */
-        aspect-ratio: 16 / 9.6;
-        min-height: 215px;
-        max-height: 250px;
-        border-radius: 1.25rem;
+        aspect-ratio: auto !important;
+        min-height: auto !important;
+        max-height: none !important;
+        border-radius: 1.25rem !important;
         overflow: hidden;
-        padding: 0.85rem 0.95rem 0.8rem;
+        padding: 1.25rem 1.15rem 1.15rem !important;
         box-sizing: border-box;
-        border-width: 1.5px;
-        border-style: solid;
-        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1.5px solid rgba(16, 185, 129, 0.22) !important;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(16, 185, 129, 0.08) !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Theme Card Borders, Gradients & Shadows */
     .ur-hps-mobile-card--gold {
-        border-color: #fde68a !important;
-        background: radial-gradient(circle at 100% 0%, rgba(254, 243, 199, 0.65) 0%, transparent 60%),
-                    linear-gradient(135deg, #fffefc 0%, #ffffff 50%, #fffdf4 100%) !important;
-        box-shadow: 0 10px 26px -6px rgba(245, 158, 11, 0.18), 0 2px 6px rgba(15, 23, 42, 0.03);
+        border-color: rgba(245, 158, 11, 0.3) !important;
     }
-
     .ur-hps-mobile-card--platinum {
-        border-color: #bfdbfe !important;
-        background: radial-gradient(circle at 100% 0%, rgba(219, 234, 254, 0.65) 0%, transparent 60%),
-                    linear-gradient(135deg, #f8faff 0%, #ffffff 50%, #eff6ff 100%) !important;
-        box-shadow: 0 10px 26px -6px rgba(37, 99, 235, 0.18), 0 2px 6px rgba(15, 23, 42, 0.03);
+        border-color: rgba(37, 99, 235, 0.3) !important;
     }
-
     .ur-hps-mobile-card--silver {
-        border-color: #cbd5e1 !important;
-        background: radial-gradient(circle at 100% 0%, rgba(241, 245, 249, 0.75) 0%, transparent 60%),
-                    linear-gradient(135deg, #fafbfc 0%, #ffffff 50%, #f1f5f9 100%) !important;
-        box-shadow: 0 10px 26px -6px rgba(71, 85, 105, 0.14), 0 2px 6px rgba(15, 23, 42, 0.03);
+        border-color: rgba(100, 116, 139, 0.25) !important;
     }
-
     .ur-hps-mobile-card--buyer {
-        border-color: #a7f3d0 !important;
-        background: radial-gradient(circle at 100% 0%, rgba(209, 250, 229, 0.65) 0%, transparent 60%),
-                    linear-gradient(135deg, #f8fcf9 0%, #ffffff 50%, #ecfdf5 100%) !important;
-        box-shadow: 0 10px 26px -6px rgba(5, 150, 105, 0.20), 0 2px 6px rgba(15, 23, 42, 0.03);
+        border-color: rgba(16, 185, 129, 0.3) !important;
     }
 
-    /* Subtle Real Estate Photo Backdrop in 16:9 Card */
+    /* Subtle Real Estate Photo Backdrop in Card */
     .ur-mc-backdrop {
         position: absolute;
         inset: 0;
@@ -1866,288 +1914,286 @@
         position: absolute;
         top: 0;
         right: 0;
-        width: 58%;
+        width: 48%;
         height: 100%;
         object-fit: cover;
         object-position: center 30%;
-        opacity: 0.28;
+        opacity: 0.12;
         filter: saturate(1.1);
-        mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,1) 100%);
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,1) 100%);
+        mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,1) 100%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,1) 100%);
     }
 
     .ur-mc-scrim {
         position: absolute;
         inset: 0;
-        background: linear-gradient(90deg, 
-            rgba(255, 255, 255, 0.98) 0%, 
-            rgba(255, 255, 255, 0.94) 48%, 
-            rgba(255, 255, 255, 0.72) 100%);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%);
     }
 
-    /* Card Contents (Above Backdrop) */
-    .ur-mc-top-row,
-    .ur-mc-mid-content,
-    .ur-mc-footer-row {
+    /* 1. Consolidated Header Row: Warm Discount Highlight on Left, Clean Status on Right */
+    .ur-mc-header-row {
         position: relative;
         z-index: 2;
-    }
-
-    /* 1. Top Row */
-    .ur-mc-top-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.25rem;
+        gap: 0.5rem;
+        margin-bottom: 0.85rem;
     }
 
-    .ur-mc-badge-group {
-        display: flex;
+    .ur-mc-discount-pill {
+        display: inline-flex;
         align-items: center;
         gap: 0.35rem;
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 0.22rem 0.6rem;
+        border-radius: 9999px;
+        letter-spacing: 0.02em;
     }
 
-    .ur-mc-badge {
+    .ur-mc-spark-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #f59e0b;
+        box-shadow: 0 0 6px #f59e0b;
+        flex-shrink: 0;
+        animation: urSparkPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes urSparkPulse {
+        0%, 100% { transform: scale(1); opacity: 0.9; }
+        50% { transform: scale(1.3); opacity: 1; }
+    }
+
+    .ur-mc-status-pill {
         display: inline-flex;
         align-items: center;
         gap: 0.25rem;
-        font-size: 0.6rem;
-        font-weight: 800;
-        padding: 0.16rem 0.5rem;
-        border-radius: 9999px;
-        letter-spacing: 0.03em;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #059669;
+        background: transparent;
         text-transform: uppercase;
+        letter-spacing: 0.03em;
     }
 
-    .ur-mc-badge--gold {
-        background: #fef3c7;
-        color: #b45309;
-        border: 1px solid #fde68a;
-    }
-    .ur-mc-badge--platinum {
-        background: #eff6ff;
-        color: #1e40af;
-        border: 1px solid #bfdbfe;
-    }
-    .ur-mc-badge--silver {
-        background: #f1f5f9;
-        color: #334155;
-        border: 1px solid #cbd5e1;
-    }
-    .ur-mc-badge--buyer {
-        background: #ecfdf5;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
+    .ur-mc-status-pill i {
+        font-size: 0.85rem;
     }
 
-    .ur-mc-save-chip {
-        font-size: 0.56rem;
-        font-weight: 800;
-        background: #ecfdf5;
-        color: #047857;
-        border: 1px solid #a7f3d0;
-        padding: 0.12rem 0.4rem;
-        border-radius: 9999px;
-        letter-spacing: 0.04em;
-    }
-
-    .ur-mc-direct-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.22rem;
-        font-size: 0.58rem;
-        font-weight: 800;
-        color: #047857;
-        background: rgba(236, 253, 245, 0.9);
-        padding: 0.14rem 0.45rem;
-        border-radius: 9999px;
-        border: 1px solid #a7f3d0;
-    }
-
-    /* 2. Middle Content */
-    .ur-mc-mid-content {
-        margin: 0.15rem 0 0.35rem;
+    /* 2. Main Plan Title & Subtitle Hierarchy */
+    .ur-mc-title-section {
+        position: relative;
+        z-index: 2;
+        margin-bottom: 0.85rem;
     }
 
     .ur-mc-title {
-        font-size: 1.25rem;
-        font-weight: 900;
-        line-height: 1.15;
-        margin: 0 0 0.15rem;
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
         letter-spacing: -0.025em;
+        margin: 0 0 0.25rem;
     }
 
-    .ur-mc-subtext {
-        font-size: 0.68rem;
+    .ur-mc-subtitle {
+        font-size: 0.76rem;
+        font-weight: 500;
         color: #64748b;
-        font-weight: 600;
-        margin: 0 0 0.45rem;
+        line-height: 1.35;
+        margin: 0;
+    }
+
+    /* 3. Redesigned Feature Highlights: Clean 2-column grid with soft green icon containers */
+    .ur-mc-features-grid {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.65rem;
+        margin-bottom: 0.95rem;
+    }
+
+    .ur-mc-feature-card {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        background: rgba(248, 250, 252, 0.95);
+        border: 1px solid #f1f5f9;
+        border-radius: 0.75rem;
+        padding: 0.5rem 0.65rem;
+    }
+
+    .ur-mc-f-icon {
+        width: 1.85rem;
+        height: 1.85rem;
+        border-radius: 0.5rem;
+        background: #ecfdf5;
+        color: #059669;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+
+    .ur-mc-f-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .ur-mc-f-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #1e293b;
         line-height: 1.25;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
-    /* 2 Perks Chips */
-    .ur-mc-perks-row {
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-        flex-wrap: nowrap;
-    }
-
-    .ur-mc-perk-item {
-        flex: 1;
-        min-width: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(226, 232, 240, 0.85);
-        border-radius: 0.5rem;
-        padding: 0.28rem 0.45rem;
-        font-size: 0.65rem;
-        font-weight: 700;
-        color: #1e293b;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
-    }
-
-    .ur-mc-perk-item i {
-        color: #059669;
-        font-size: 0.78rem;
-        flex-shrink: 0;
-    }
-
-    .ur-mc-perk-item span {
+    .ur-mc-f-desc {
+        font-size: 0.62rem;
+        font-weight: 500;
+        color: #64748b;
+        line-height: 1.2;
+        margin-top: 0.1rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
-    /* 3. Footer Price & Quick Action Row */
-    .ur-mc-footer-row {
+    /* 4. Pricing & CTA Dock: Subtly Contrasted Bottom Container */
+    .ur-mc-pricing-dock {
+        position: relative;
+        z-index: 2;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 0.65rem;
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(226, 232, 240, 0.85);
-        border-radius: 0.85rem;
-        padding: 0.42rem 0.65rem;
-        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+        gap: 0.75rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.95rem;
+        padding: 0.65rem 0.85rem;
     }
 
-    .ur-mc-price-wrap {
+    .ur-mc-price-group {
         display: flex;
         flex-direction: column;
+        min-width: 0;
     }
 
-    .ur-mc-price-line {
+    .ur-mc-price-row {
         display: flex;
         align-items: baseline;
         gap: 0.18rem;
         line-height: 1;
     }
 
-    .ur-mc-curr {
-        font-size: 0.92rem;
-        font-weight: 900;
+    .ur-mc-currency {
+        font-size: 0.95rem;
+        font-weight: 800;
         color: #0f172a;
     }
 
-    .ur-mc-amt {
-        font-size: 1.45rem;
+    .ur-mc-price-val {
+        font-size: 1.55rem;
         font-weight: 900;
         color: #0f172a;
         letter-spacing: -0.03em;
     }
 
-    .ur-mc-orig {
-        font-size: 0.74rem;
-        font-weight: 700;
+    .ur-mc-price-orig {
+        font-size: 0.8rem;
+        font-weight: 600;
         color: #94a3b8;
         text-decoration: line-through;
-        margin-left: 0.25rem;
+        margin-left: 0.35rem;
     }
 
-    .ur-mc-per-day-line {
-        font-size: 0.62rem;
-        font-weight: 700;
+    .ur-mc-price-caption {
+        font-size: 0.64rem;
+        font-weight: 600;
         color: #059669;
         display: inline-flex;
         align-items: center;
-        gap: 0.18rem;
-        margin-top: 0.12rem;
+        gap: 0.2rem;
+        margin-top: 0.18rem;
     }
 
-    .ur-mc-per-day-line i {
-        font-size: 0.68rem;
+    .ur-mc-price-caption i {
+        font-size: 0.7rem;
     }
 
-    /* Action Button (Thumb-Friendly, Rounded Pill) */
-    .ur-mc-cta-btn {
+    /* High-contrast, Tactile Emerald CTA Button */
+    .ur-mc-cta-action {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.35rem;
-        padding: 0.55rem 0.95rem;
+        padding: 0.62rem 1.1rem;
         border-radius: 9999px;
         font-size: 0.82rem;
         font-weight: 800;
         text-decoration: none;
-        cursor: pointer;
-        transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-        white-space: nowrap;
-        border: none;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-        user-select: none;
-        -webkit-touch-callout: none;
-    }
-
-    .ur-mc-cta-btn:active {
-        transform: scale(0.96);
-    }
-
-    .ur-mc-cta-btn--gold {
-        background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-        color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
-    }
-    .ur-mc-cta-btn--platinum {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
-    }
-    .ur-mc-cta-btn--silver {
-        background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
-        color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
-    }
-    .ur-mc-cta-btn--buyer {
         background: linear-gradient(135deg, #059669 0%, #047857 100%);
         color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.38);
+        border: none;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.32);
+        transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
+        cursor: pointer;
+        white-space: nowrap;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ur-mc-cta-action:hover {
+        box-shadow: 0 6px 18px rgba(5, 150, 105, 0.42);
+        transform: translateY(-1px);
+    }
+
+    .ur-mc-cta-action:active {
+        transform: scale(0.96);
+        box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
     }
 
     /* Compact Bottom Indicator Controls */
     .ur-hps-bottom-bar {
-        margin-top: 0.45rem;
+        margin-top: 0.65rem;
         justify-content: center;
-        gap: 0.75rem;
+        display: flex;
     }
 
     .ur-hps-dots {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         gap: 0.35rem;
     }
 
     .ur-hps-dot {
-        width: 0.45rem;
-        height: 0.45rem;
+        width: 0.35rem;
+        height: 0.35rem;
+        border-radius: 9999px;
+        background: #cbd5e1;
+        border: none;
+        padding: 0;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: pointer;
     }
 
     .ur-hps-dot.active {
-        width: 1.4rem;
+        width: 1.25rem;
+        height: 0.35rem;
+        background: #059669 !important;
+        box-shadow: 0 1px 4px rgba(5, 150, 105, 0.35);
     }
 
     .ur-hps-swipe-hint {
@@ -2159,11 +2205,11 @@
         display: flex !important;
         align-items: center;
         justify-content: center;
-        gap: 0.85rem;
+        gap: 0.65rem;
         margin-top: 0.4rem;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.65rem;
-        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        font-size: 0.68rem;
+        font-weight: 600;
         color: #64748b;
     }
 
@@ -2175,23 +2221,27 @@
 
     .ur-mc-bt-item i {
         color: #059669;
-        font-size: 0.75rem;
+        font-size: 0.78rem;
+    }
+
+    .ur-mc-bt-dot {
+        color: #cbd5e1;
+        font-size: 0.6rem;
     }
 }
 
 @media (max-width: 370px) {
     .ur-hps-mobile-card {
-        padding: 0.75rem 0.75rem 0.7rem;
-        min-height: 220px;
+        padding: 1rem 0.85rem 0.95rem !important;
     }
     .ur-mc-title {
-        font-size: 1.15rem;
+        font-size: 1.25rem;
     }
-    .ur-mc-amt {
-        font-size: 1.3rem;
+    .ur-mc-price-val {
+        font-size: 1.35rem;
     }
-    .ur-mc-cta-btn {
-        padding: 0.48rem 0.75rem;
+    .ur-mc-cta-action {
+        padding: 0.55rem 0.85rem;
         font-size: 0.78rem;
     }
 }
@@ -2215,23 +2265,25 @@
 
             <div class="ur-hps-top-right">
                 {{-- Quick Plan Switcher Tabs --}}
-                <div class="ur-hps-tabs-bar" role="tablist" aria-label="Plans quick navigation">
-                    @foreach($heroSlides as $idx => $s)
-                        <button type="button" 
-                                class="ur-hps-tab-btn {{ $idx === 0 ? 'active tab--' . $s['theme'] : '' }} {{ !empty($s['has_offer']) ? 'ur-hps-tab-btn--has-offer' : '' }}" 
-                                data-target-index="{{ $idx }}"
-                                data-theme="{{ $s['theme'] }}"
-                                data-has-offer="{{ !empty($s['has_offer']) ? 'true' : 'false' }}"
-                                role="tab"
-                                aria-selected="{{ $idx === 0 ? 'true' : 'false' }}"
-                                title="{{ $s['tab_label'] }}">
-                            <i class="ph-bold {{ $s['tab_icon'] }}"></i>
-                            <span>{{ $s['tab_label'] }}</span>
-                            @if(!empty($s['tab_badge']))
-                                <span class="ur-hps-tab-pill {{ !empty($s['has_offer']) ? 'ur-hps-tab-pill--offer' : '' }}">{{ $s['tab_badge'] }}</span>
-                            @endif
-                        </button>
-                    @endforeach
+                <div class="ur-hps-tabs-bar-wrap">
+                    <div class="ur-hps-tabs-bar" role="tablist" aria-label="Plans quick navigation">
+                        @foreach($heroSlides as $idx => $s)
+                            <button type="button" 
+                                    class="ur-hps-tab-btn {{ $idx === 0 ? 'active tab--' . $s['theme'] : '' }} {{ !empty($s['has_offer']) ? 'ur-hps-tab-btn--has-offer' : '' }}" 
+                                    data-target-index="{{ $idx }}"
+                                    data-theme="{{ $s['theme'] }}"
+                                    data-has-offer="{{ !empty($s['has_offer']) ? 'true' : 'false' }}"
+                                    role="tab"
+                                    aria-selected="{{ $idx === 0 ? 'true' : 'false' }}"
+                                    title="{{ $s['tab_label'] }}">
+                                <i class="ph-bold {{ $s['tab_icon'] }}"></i>
+                                <span>{{ $s['tab_label'] }}</span>
+                                @if(!empty($s['tab_badge']))
+                                    <span class="ur-hps-tab-pill {{ !empty($s['has_offer']) ? 'ur-hps-tab-pill--offer' : '' }}">{{ $s['tab_badge'] }}</span>
+                                @endif
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
 
                 {{-- Clean Top Slider Navigation Controls --}}
@@ -2499,7 +2551,7 @@
                              bold price, key perks, and thumb-friendly checkout CTA button.
                              ============================================================ --}}
                         <div class="ur-hps-mobile-card ur-hps-mobile-card--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-mobile-card--offer' : '' }}">
-                            {{-- Subtle 16:9 Real Estate Photographic Backdrop --}}
+                            {{-- Subtle Photographic Real Estate Backdrop with High-Fidelity Glassmorphism --}}
                             <div class="ur-mc-backdrop" aria-hidden="true">
                                 <img src="{{ $s['visual']['image'] }}" 
                                      alt="{{ $s['visual']['title'] }}" 
@@ -2510,57 +2562,75 @@
                                 <div class="ur-mc-scrim"></div>
                             </div>
 
-                            {{-- Row 1: Top Bar with Theme Pill + Savings Chip + 100% Genuine Tag --}}
-                            <div class="ur-mc-top-row">
-                                <div class="ur-mc-badge-group">
-                                    <span class="ur-mc-badge ur-mc-badge--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-mc-badge--offer' : '' }}">
-                                        <i class="ph-bold {{ !empty($s['has_offer']) ? 'ph-tag' : $s['tab_icon'] }}"></i>
-                                        <span>{{ !empty($s['has_offer']) ? 'SPECIAL OFFER' : ($s['tab_badge'] ?? 'PASS') }}</span>
-                                    </span>
-                                    <span class="ur-mc-save-chip {{ !empty($s['has_offer']) ? 'ur-mc-save-chip--offer' : '' }}">
-                                        {{ !empty($s['has_offer']) ? ($s['offer_badge'] ?? ('SAVE ' . $s['savings_pct'] . '%')) : ('SAVE ' . $s['savings_pct'] . '%') }}
-                                    </span>
+                            {{-- 1. CONSOLIDATED HEADER ROW: Warm Discount Highlight on Left, Clean Status on Right --}}
+                            <div class="ur-mc-header-row">
+                                <div class="ur-mc-discount-pill">
+                                    <span class="ur-mc-spark-dot"></span>
+                                    @if(!empty($s['has_offer']))
+                                        <span class="ur-mc-discount-text">Special Offer · Save {{ $s['savings_pct'] }}%</span>
+                                    @else
+                                        <span class="ur-mc-discount-text">{{ $s['tab_badge'] ?? 'Verified Pass' }} · Save {{ $s['savings_pct'] }}%</span>
+                                    @endif
                                 </div>
-                                <span class="ur-mc-direct-tag {{ !empty($s['has_offer']) ? 'ur-mc-direct-tag--offer' : '' }}">
-                                    <i class="ph-fill {{ !empty($s['has_offer']) ? 'ph-lightning' : 'ph-seal-check' }}"></i>
-                                    <span>{{ !empty($s['has_offer']) ? 'UNLOCKED FOR YOU' : ($s['visual']['tag'] ?? '100% DIRECT') }}</span>
-                                </span>
+                                <div class="ur-mc-status-pill">
+                                    <i class="ph-bold ph-shield-check"></i>
+                                    <span>{{ !empty($s['has_offer']) ? 'Unlocked For You' : ($s['visual']['tag'] ?? '100% Direct') }}</span>
+                                </div>
                             </div>
 
-                            {{-- Row 2: Main Plan Title & Micro Specs Tagline --}}
-                            <div class="ur-mc-mid-content">
-                                <div class="ur-mc-header-info">
-                                    <h4 class="ur-mc-title">
-                                        <span class="highlight-{{ $s['theme'] }}">{{ $s['title_highlight'] }}</span>
-                                    </h4>
-                                    <p class="ur-mc-subtext">
-                                        {{ $s['specs'][0]['value'] }} · {{ $s['specs'][1]['value'] }} · ₹0 Commission
-                                    </p>
-                                </div>
+                            {{-- 2. MAIN PLAN TITLE & SUBTITLE HIERARCHY --}}
+                            <div class="ur-mc-title-section">
+                                <h4 class="ur-mc-title">
+                                    {{ $s['title_highlight'] }}
+                                </h4>
+                                <p class="ur-mc-subtitle">
+                                    {{ $s['specs'][0]['value'] }} · {{ $s['specs'][1]['value'] }} · ₹0 Commission
+                                </p>
+                            </div>
 
-                                {{-- 2 Compact Key Feature Badges --}}
-                                <div class="ur-mc-perks-row">
-                                    @foreach(array_slice($s['highlights'], 0, 2) as $f)
-                                        <div class="ur-mc-perk-item">
+                            {{-- 3. REDESIGNED FEATURE HIGHLIGHTS: Clean 2-column grid with soft green icon containers (NOT buttons) --}}
+                            <div class="ur-mc-features-grid">
+                                @foreach(array_slice($s['highlights'], 0, 2) as $f)
+                                    <div class="ur-mc-feature-card">
+                                        <div class="ur-mc-f-icon">
                                             <i class="ph-bold {{ $f['icon'] }}"></i>
-                                            <span>{{ $f['title'] }}</span>
                                         </div>
-                                    @endforeach
-                                </div>
+                                        <div class="ur-mc-f-info">
+                                            <span class="ur-mc-f-title">{{ $f['title'] }}</span>
+                                            @if(!empty($f['desc']))
+                                                <span class="ur-mc-f-desc">{{ $f['desc'] }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
 
-                            {{-- Row 3: High-Conversion Price & Quick Unlock Action Row --}}
-                            <div class="ur-mc-footer-row">
-                                <div class="ur-mc-price-wrap">
-                                    <div class="ur-mc-price-line">
-                                        <span class="ur-mc-curr">₹</span>
-                                        <span class="ur-mc-amt">{{ number_format($s['price'], 0) }}</span>
-                                        <span class="ur-mc-orig">₹{{ number_format($s['original_price'], 0) }}</span>
+                            {{-- 4. PRICING & CTA DOCK: Subtly Contrasted Bottom Container --}}
+                            @php
+                                $curPrice = (float) $s['price'];
+                                $origPrice = (float) ($s['original_price'] ?? 0);
+                                if ($origPrice <= $curPrice) {
+                                    $origPrice = round(max($curPrice * 2.2, $curPrice + 500));
+                                }
+                                $showOrig = ($origPrice > $curPrice);
+                                $ctaText = !empty($s['has_offer']) 
+                                    ? ('Unlock for ₹' . number_format($curPrice, 0) . ' →') 
+                                    : ('Unlock Pass →');
+                            @endphp
+
+                            <div class="ur-mc-pricing-dock">
+                                <div class="ur-mc-price-group">
+                                    <div class="ur-mc-price-row">
+                                        <span class="ur-mc-currency">₹</span>
+                                        <span class="ur-mc-price-val">{{ number_format($curPrice, 0) }}</span>
+                                        @if($showOrig)
+                                            <span class="ur-mc-price-orig">₹{{ number_format($origPrice, 0) }}</span>
+                                        @endif
                                     </div>
-                                    <div class="ur-mc-per-day-line">
+                                    <div class="ur-mc-price-caption">
                                         <i class="ph-bold ph-lightning"></i>
                                         @if(!empty($s['has_offer']))
-                                            <span>Special ₹{{ number_format($s['price'], 0) }} · {{ $s['specs'][1]['value'] }}</span>
+                                            <span>Special ₹{{ number_format($curPrice, 0) }} · {{ $s['specs'][1]['value'] }}</span>
                                         @else
                                             <span>Only ₹{{ $s['per_day'] }}/day · Direct</span>
                                         @endif
@@ -2570,17 +2640,15 @@
                                 @guest
                                     <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
                                        onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
-                                       class="ur-mc-cta-btn ur-mc-cta-btn--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-mc-cta-btn--offer' : '' }}" 
+                                       class="ur-mc-cta-action" 
                                        title="Unlock Verified Contacts">
-                                        <span>{{ !empty($s['has_offer']) ? 'Unlock for ₹' . number_format($s['price'], 0) : 'Unlock Pass' }}</span>
-                                        <i class="ph-bold ph-arrow-right"></i>
+                                        <span>{{ $ctaText }}</span>
                                     </a>
                                 @else
                                     <a href="{{ $checkoutUrl }}" 
-                                       class="ur-mc-cta-btn ur-mc-cta-btn--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-mc-cta-btn--offer' : '' }}" 
+                                       class="ur-mc-cta-action" 
                                        title="Unlock Verified Contacts">
-                                        <span>{{ !empty($s['has_offer']) ? 'Unlock for ₹' . number_format($s['price'], 0) : 'Unlock Pass' }}</span>
-                                        <i class="ph-bold ph-arrow-right"></i>
+                                        <span>{{ $ctaText }}</span>
                                     </a>
                                 @endguest
                             </div>
@@ -2591,7 +2659,7 @@
             </div>
         </div>
 
-        {{-- Bottom Indicator Dots and Hint --}}
+        {{-- Bottom Indicator Dots --}}
         <div class="ur-hps-bottom-bar">
             <div class="ur-hps-dots" id="heroPlanDots">
                 @foreach($heroSlides as $idx => $s)
@@ -2603,17 +2671,14 @@
                             title="{{ $s['tab_label'] }}"></button>
                 @endforeach
             </div>
-
-            <div class="ur-hps-swipe-hint">
-                <i class="ph-bold ph-arrows-left-right"></i>
-                <span>Swipe or click tabs to explore passes</span>
-            </div>
         </div>
 
-        {{-- Mobile Single-Line Compact Trust Strip --}}
+        {{-- Mobile Single-Line Refined Trust Strip with Muted Typography & Subtle Emerald Icons --}}
         <div class="ur-mc-bottom-trust">
             <div class="ur-mc-bt-item"><i class="ph-fill ph-lightning"></i> <span>30s Activation</span></div>
+            <span class="ur-mc-bt-dot">•</span>
             <div class="ur-mc-bt-item"><i class="ph-fill ph-shield-check"></i> <span>Verified Owners</span></div>
+            <span class="ur-mc-bt-dot">•</span>
             <div class="ur-mc-bt-item"><i class="ph-fill ph-lock-key"></i> <span>Safe UPI</span></div>
         </div>
     </div>
@@ -2927,7 +2992,7 @@
                     }
                 });
             }, { threshold: 0.2 });
-            hpsObserver.observe(slider);
+            hpsObserver.observe(stage);
         } else {
             startAutoPlay();
         }
