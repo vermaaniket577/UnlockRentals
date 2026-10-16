@@ -718,6 +718,9 @@
         
         @media (max-width: 1023px) {
             .main-header {
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 9999 !important;
                 background: #ffffff !important;
                 border-bottom: 1px solid #e2e8f0 !important;
                 box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05) !important;
@@ -1029,8 +1032,10 @@
             z-index: 20;
             width: 100%;
             margin: 0 auto;
-            padding-top: 10px !important;
-            padding-bottom: 12px !important;
+            padding-top: 14px !important;
+            padding-bottom: 14px !important;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
             background: #f8fafc;
             background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 40%, #f1f5f9 100%);
             box-sizing: border-box;
@@ -2334,8 +2339,8 @@
             if(request()->filled('purpose') && request('purpose') !== 'rent') $mobileActiveFiltersCount++;
         @endphp
 
-        {{-- 2. Standard Native Mobile Search Bar (Seamless Single Container) --}}
-        <div class="mb-2.5">
+        {{-- 2. Standard Native Mobile Search Bar (Seamless Single Container with Standard Top Margin) --}}
+        <div class="mt-3 sm:mt-3.5 mb-3">
             <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET">
                 <input type="hidden" name="purpose" id="mobile_purpose_input" value="{{ request('purpose', 'rent') }}">
                 <input type="hidden" name="type" id="mobile_type_input" value="{{ request('type', 'all') }}">
