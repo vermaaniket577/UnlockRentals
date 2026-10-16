@@ -2334,16 +2334,6 @@
             if(request()->filled('purpose') && request('purpose') !== 'rent') $mobileActiveFiltersCount++;
         @endphp
 
-        {{-- Mobile SEO H1 Heading --}}
-        <div class="mb-2 px-1 text-center">
-            <h1 class="text-[14px] xs:text-[15px] font-black text-slate-900 leading-snug tracking-tight">
-                <span class="text-blue-600 font-extrabold">Unlock Rent</span> with Zero Brokerage
-            </h1>
-            <p class="text-[10.5px] xs:text-[11px] text-slate-500 font-medium mt-0.5 tracking-tight">
-                Rent verified flats, single rooms, PGs & houses from direct owners.
-            </p>
-        </div>
-
         {{-- 2. Standard Native Mobile Search Bar (Seamless Single Container) --}}
         <div class="mb-2.5">
             <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET">
