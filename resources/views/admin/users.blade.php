@@ -23,6 +23,16 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-wrap">
+            {{-- Post Property / Advertise on Behalf of User Modal Trigger --}}
+            <button type="button" 
+                    onclick="openPostAdvertiseModal()"
+                    class="ur-admin-btn" 
+                    style="background: linear-gradient(180deg, #ea580c 0%, #c2410c 100%) !important; color: #ffffff !important; border: 1px solid #9a3412 !important; cursor: pointer; padding: 0.5rem 0.95rem; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);"
+                    title="List a property advertisement on behalf of a user or client">
+                <i class="ph-bold ph-megaphone text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important; font-weight: 700;">+ Post Advertise</span>
+            </button>
+
             {{-- Add New User Modal Trigger --}}
             <button type="button" 
                     onclick="openAddUserModal()"
@@ -463,6 +473,12 @@
                                 {{-- Action Buttons --}}
                                 <td class="py-4 px-5 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ route('properties.create', ['behalf_mode' => 'existing', 'behalf_user_id' => $user->id]) }}"
+                                           class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 hover:text-orange-800 font-bold text-xs transition-all border border-orange-200/80 hover:border-orange-300 shadow-2xs"
+                                           title="Post Property / Advertise on behalf of {{ $user->name }}">
+                                            <i class="ph-bold ph-megaphone text-xs text-orange-600"></i>
+                                            <span>Post Ad</span>
+                                        </a>
                                         <a href="{{ route('admin.users.activity', $user) }}"
                                            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 font-bold text-xs transition-all border border-slate-200/80 hover:border-blue-300 shadow-2xs"
                                            title="View User Details & Activity">
@@ -632,6 +648,130 @@
     </div>
 </div>
 
+{{-- ========================================================================= --}}
+{{-- POST ADVERTISE / PROPERTY ON BEHALF OF USER MODAL POPUP                   --}}
+{{-- ========================================================================= --}}
+<div id="postAdvertiseModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden transition-opacity duration-200 opacity-0" role="dialog" aria-modal="true">
+    <div id="postAdvertiseModalCard" class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl w-full max-w-lg p-6 sm:p-8 transform scale-95 transition-all duration-200 relative max-h-[92vh] overflow-y-auto">
+        
+        {{-- Close Button --}}
+        <button type="button" onclick="closePostAdvertiseModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer" aria-label="Close modal">
+            <i class="ph-bold ph-x text-lg"></i>
+        </button>
+
+        {{-- Header Icon & Title --}}
+        <div class="flex items-center gap-3.5 mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center text-2xl shadow-md shadow-orange-500/25 ring-4 ring-orange-50 shrink-0">
+                <i class="ph-bold ph-megaphone"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-black text-slate-900 tracking-tight">Post Advertise on Behalf of User</h3>
+                <p class="text-xs text-slate-500 mt-0.5">List a property for a client. If they are new, their owner profile will be automatically created!</p>
+            </div>
+        </div>
+
+        {{-- Segmented Mode Toggle: New Client vs Existing Registered User --}}
+        <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-xl mb-5">
+            <button type="button" id="tab-ad-new" onclick="switchAdModalTab('new')"
+                    class="py-2 text-xs font-bold rounded-lg transition-all text-slate-900 bg-white shadow-xs cursor-pointer">
+                ✨ New Client (Auto-Create)
+            </button>
+            <button type="button" id="tab-ad-existing" onclick="switchAdModalTab('existing')"
+                    class="py-2 text-xs font-semibold rounded-lg transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
+                👤 Existing User
+            </button>
+        </div>
+
+        {{-- Form that redirects to properties.create with GET params --}}
+        <form method="GET" action="{{ route('properties.create') }}" id="postAdvertiseForm" class="space-y-4">
+            <input type="hidden" name="behalf_mode" id="modal_ad_behalf_mode" value="new">
+
+            {{-- SECTION: New Client Fields --}}
+            <div id="ad-section-new" class="space-y-4">
+                {{-- Client Name --}}
+                <div>
+                    <label for="ad_client_name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Client / Owner Name <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                        <input type="text" name="behalf_name" id="ad_client_name" required placeholder="e.g. Ramesh Sharma"
+                               class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all">
+                    </div>
+                </div>
+
+                {{-- Client Mobile Phone --}}
+                <div>
+                    <label for="ad_client_phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Mobile Phone Number <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <i class="ph-bold ph-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                        <input type="tel" name="behalf_phone" id="ad_client_phone" required placeholder="e.g. 9876543210"
+                               class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all">
+                    </div>
+                </div>
+
+                {{-- Client Email (Optional) --}}
+                <div>
+                    <label for="ad_client_email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Email Address <span class="text-slate-400 font-normal lowercase text-[11px]">(Optional)</span>
+                    </label>
+                    <div class="relative">
+                        <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                        <input type="email" name="behalf_email" id="ad_client_email" placeholder="e.g. ramesh@example.com (Optional)"
+                               class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all">
+                    </div>
+                </div>
+
+                {{-- Automation Info Badge --}}
+                <div class="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
+                    <i class="ph-bold ph-sparkle text-amber-600 text-base shrink-0 mt-0.5"></i>
+                    <div>
+                        <strong class="font-bold">Automatic Profile Creation:</strong>
+                        When you submit the property, an active Owner account will be created automatically in the User Directory with their phone verified!
+                    </div>
+                </div>
+            </div>
+
+            {{-- SECTION: Existing User Fields --}}
+            <div id="ad-section-existing" class="space-y-4 hidden">
+                <div>
+                    <label for="ad_existing_user" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Select Existing User Account <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <select name="behalf_user_id" id="ad_existing_user"
+                                class="w-full pl-3.5 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all cursor-pointer">
+                            <option value="">-- Choose User from Directory --</option>
+                            @php
+                                $dropdownUsers = $allUsersList ?? $users;
+                            @endphp
+                            @foreach($dropdownUsers as $u)
+                                <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->phone ?: $u->email }}) — {{ ucfirst($u->role) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">If the selected user is currently a tenant, their account will be automatically upgraded to Owner upon posting.</p>
+                </div>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button type="button" onclick="closePostAdvertiseModal()"
+                        class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100 transition-colors cursor-pointer">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold text-xs shadow-md shadow-orange-600/25 transition-all flex items-center gap-1.5 cursor-pointer">
+                    <span>Proceed to Property Form</span>
+                    <i class="ph-bold ph-arrow-right text-sm"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 function openAddUserModal() {
     const modal = document.getElementById('addUserModal');
@@ -661,6 +801,65 @@ function closeAddUserModal() {
     }, 200);
 }
 
+function openPostAdvertiseModal() {
+    const modal = document.getElementById('postAdvertiseModal');
+    const card = document.getElementById('postAdvertiseModalCard');
+    if (!modal || !card) return;
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+    });
+    const nameInput = document.getElementById('ad_client_name');
+    if (nameInput) setTimeout(() => nameInput.focus(), 100);
+}
+
+function closePostAdvertiseModal() {
+    const modal = document.getElementById('postAdvertiseModal');
+    const card = document.getElementById('postAdvertiseModalCard');
+    if (!modal || !card) return;
+    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0');
+    card.classList.remove('scale-100');
+    card.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
+function switchAdModalTab(mode) {
+    const tabNew = document.getElementById('tab-ad-new');
+    const tabExisting = document.getElementById('tab-ad-existing');
+    const secNew = document.getElementById('ad-section-new');
+    const secExisting = document.getElementById('ad-section-existing');
+    const modeInput = document.getElementById('modal_ad_behalf_mode');
+    const nameInput = document.getElementById('ad_client_name');
+    const phoneInput = document.getElementById('ad_client_phone');
+    const userInput = document.getElementById('ad_existing_user');
+
+    if (mode === 'new') {
+        if (modeInput) modeInput.value = 'new';
+        if (tabNew) tabNew.className = 'py-2 text-xs font-bold rounded-lg transition-all text-slate-900 bg-white shadow-xs cursor-pointer';
+        if (tabExisting) tabExisting.className = 'py-2 text-xs font-semibold rounded-lg transition-all text-slate-500 hover:text-slate-800 cursor-pointer';
+        if (secNew) secNew.classList.remove('hidden');
+        if (secExisting) secExisting.classList.add('hidden');
+        if (nameInput) nameInput.required = true;
+        if (phoneInput) phoneInput.required = true;
+        if (userInput) userInput.required = false;
+    } else {
+        if (modeInput) modeInput.value = 'existing';
+        if (tabNew) tabNew.className = 'py-2 text-xs font-semibold rounded-lg transition-all text-slate-500 hover:text-slate-800 cursor-pointer';
+        if (tabExisting) tabExisting.className = 'py-2 text-xs font-bold rounded-lg transition-all text-slate-900 bg-white shadow-xs cursor-pointer';
+        if (secNew) secNew.classList.add('hidden');
+        if (secExisting) secExisting.classList.remove('hidden');
+        if (nameInput) nameInput.required = false;
+        if (phoneInput) phoneInput.required = false;
+        if (userInput) userInput.required = true;
+    }
+}
+
 function generateRandomPassword() {
     const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%';
     let pass = '';
@@ -672,14 +871,25 @@ function generateRandomPassword() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('addUserModal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeAddUserModal();
+    const addModal = document.getElementById('addUserModal');
+    if (addModal) {
+        addModal.addEventListener('click', (e) => {
+            if (e.target === addModal) closeAddUserModal();
         });
     }
+
+    const adModal = document.getElementById('postAdvertiseModal');
+    if (adModal) {
+        adModal.addEventListener('click', (e) => {
+            if (e.target === adModal) closePostAdvertiseModal();
+        });
+    }
+
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeAddUserModal();
+        if (e.key === 'Escape') {
+            closeAddUserModal();
+            closePostAdvertiseModal();
+        }
     });
 });
 </script>

@@ -247,7 +247,10 @@ class PropertyController extends Controller
     public function create()
     {
         $categories = Category::getActiveCategories();
-        return view('properties.create', compact('categories'));
+        $adminUsers = (auth()->check() && auth()->user()->isAdmin())
+            ? User::orderBy('name')->select('id', 'name', 'phone', 'email', 'role')->get()
+            : collect();
+        return view('properties.create', compact('categories', 'adminUsers'));
     }
 
     /**
@@ -280,25 +283,89 @@ class PropertyController extends Controller
         }
         $data['price'] = $rawPrice;
 
-        $data['user_id'] = auth()->id();
-        $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
-        $data['status'] = $bypassApproval ? 'approved' : 'pending';
+        $targetUserId = auth()->id();
+        $ownerProfileCreated = false;
+        $ownerName = '';
 
-        // If user is a tenant, upgrade to owner upon posting a property
-        $user = auth()->user();
-        if ($user->role === 'tenant') {
-            $user->update(['role' => 'owner']);
+        // If Admin is listing on behalf of a user
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            $behalfMode = $request->input('behalf_mode', 'self');
+
+            if ($behalfMode === 'new' || ($request->filled('behalf_name') && $request->filled('behalf_phone'))) {
+                $bName = trim((string)$request->input('behalf_name'));
+                $bPhone = trim((string)$request->input('behalf_phone'));
+                $bEmail = trim((string)$request->input('behalf_email', ''));
+
+                if (!empty($bName)) {
+                    $existing = null;
+                    if (!empty($bPhone)) {
+                        $cleanPhone = preg_replace('/[^0-9]/', '', $bPhone);
+                        $existing = User::where('phone', $bPhone)
+                            ->orWhere('phone', 'LIKE', "%{$cleanPhone}%")
+                            ->first();
+                    }
+                    if (!$existing && !empty($bEmail)) {
+                        $existing = User::where('email', $bEmail)->first();
+                    }
+
+                    if ($existing) {
+                        $targetUserId = $existing->id;
+                        $ownerName = $existing->name;
+                        if ($existing->role === 'tenant') {
+                            $existing->update(['role' => 'owner']);
+                        }
+                    } else {
+                        // Automatically create owner profile for this client
+                        $cleanNum = preg_replace('/[^0-9]/', '', $bPhone) ?: time();
+                        $genEmail = !empty($bEmail) ? $bEmail : "user_{$cleanNum}@unlockrentals.in";
+                        if (User::where('email', $genEmail)->exists()) {
+                            $genEmail = "user_{$cleanNum}_" . \Illuminate\Support\Str::random(4) . "@unlockrentals.in";
+                        }
+
+                        $newUser = User::create([
+                            'name'              => $bName,
+                            'phone'             => $bPhone,
+                            'email'             => $genEmail,
+                            'role'              => 'owner',
+                            'password'          => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(12)),
+                            'phone_verified_at' => now(),
+                        ]);
+
+                        $targetUserId = $newUser->id;
+                        $ownerName = $newUser->name;
+                        $ownerProfileCreated = true;
+                    }
+                }
+            } elseif ($behalfMode === 'existing' && $request->filled('behalf_user_id')) {
+                $selUser = User::find($request->input('behalf_user_id'));
+                if ($selUser) {
+                    $targetUserId = $selUser->id;
+                    $ownerName = $selUser->name;
+                    if ($selUser->role === 'tenant') {
+                        $selUser->update(['role' => 'owner']);
+                    }
+                }
+            }
         }
 
-        if ($request->filled('contact_phone')) {
-            if (empty($user->phone)) {
-                $user->update(['phone' => $request->contact_phone]);
-            }
+        $data['user_id'] = $targetUserId;
+        $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '0') == '1';
+        $data['status'] = ($bypassApproval || auth()->user()->isAdmin()) ? 'approved' : 'pending';
+
+        // If target user is a tenant, upgrade to owner upon posting a property
+        $targetUser = User::find($targetUserId);
+        if ($targetUser && $targetUser->role === 'tenant') {
+            $targetUser->update(['role' => 'owner']);
+        }
+
+        if ($request->filled('contact_phone') && $targetUser && empty($targetUser->phone)) {
+            $targetUser->update(['phone' => $request->contact_phone]);
         }
 
         // Remove media & helper fields from the data array before creating
         unset(
             $data['price_unit'],
+            $data['behalf_mode'], $data['behalf_user_id'], $data['behalf_name'], $data['behalf_phone'], $data['behalf_email'],
             $data['images'], $data['primary_image'], $data['video'], $data['videos'], $data['video_url'], $data['video_urls'],
             $data['pg_occupancy'], $data['pg_gender'], $data['pg_food'], $data['pg_bathroom'], $data['pg_curfew'],
             $data['pg_deposit'], $data['pg_notice'], $data['pg_amenities'], $data['pg_total_beds']
@@ -372,20 +439,30 @@ class PropertyController extends Controller
         // Invalidate cached locations for search filters
         Cache::forget('approved_locations');
 
-        $successMsg = $bypassApproval 
-            ? 'Property posted successfully! It is now live on the website.' 
-            : 'Property submitted successfully! It will be visible after admin approval.';
+        if ($ownerProfileCreated) {
+            $successMsg = "Property posted and approved on behalf of {$ownerName}! New owner profile created automatically in User Directory.";
+        } elseif (!empty($ownerName)) {
+            $successMsg = "Property posted and approved on behalf of {$ownerName}!";
+        } elseif ($bypassApproval || auth()->user()->isAdmin()) {
+            $successMsg = 'Property posted successfully! It is now live on the website.';
+        } else {
+            $successMsg = 'Property submitted successfully! It will be visible after admin approval.';
+        }
+
+        $redirectUrl = (auth()->check() && auth()->user()->isAdmin()) 
+            ? route('admin.properties') 
+            : route('dashboard');
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => $successMsg,
-                'redirect_url' => route('dashboard'),
+                'redirect_url' => $redirectUrl,
                 'property_id' => $property->id
             ]);
         }
 
-        return redirect()->route('dashboard')
+        return redirect($redirectUrl)
             ->with('success', $successMsg);
     }
 

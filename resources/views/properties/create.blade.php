@@ -241,6 +241,129 @@
             {{-- STEP 1: Basic Information & Key Specifications            --}}
             {{-- ======================================================== --}}
             <div id="step-pane-1" class="step-pane space-y-4 sm:space-y-6">
+
+            @if(auth()->check() && auth()->user()->isAdmin())
+                @php
+                    $initBehalfMode = old('behalf_mode', request('behalf_mode', (request('behalf_name') || request('behalf_phone') ? 'new' : (request('behalf_user_id') ? 'existing' : 'new'))));
+                    $initBehalfName = old('behalf_name', request('behalf_name', ''));
+                    $initBehalfPhone = old('behalf_phone', request('behalf_phone', ''));
+                    $initBehalfEmail = old('behalf_email', request('behalf_email', ''));
+                    $initBehalfUserId = old('behalf_user_id', request('behalf_user_id', ''));
+                @endphp
+                {{-- Admin Mode: Listing on Behalf of Client / Owner Banner & Controls --}}
+                <div class="bg-gradient-to-br from-orange-50 via-amber-50/50 to-orange-50/30 dark:from-slate-900 dark:via-slate-900/90 dark:to-slate-900 border-2 border-orange-300 dark:border-orange-500/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm relative overflow-hidden" id="admin-behalf-card">
+                    <div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-orange-500/10 dark:bg-orange-500/5 blur-2xl pointer-events-none"></div>
+
+                    <div class="flex items-center justify-between flex-wrap gap-3 pb-3 mb-4 border-b border-orange-200/80 dark:border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-orange-600 text-white flex items-center justify-center text-lg shadow-sm shadow-orange-600/30 shrink-0">
+                                <i class="ph-bold ph-megaphone"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h2 class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">Admin Listing Mode: Post on Behalf of Client</h2>
+                                    <span class="px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/80 text-orange-700 dark:text-orange-400 font-extrabold text-[10px] uppercase tracking-wider">
+                                        Auto-Approved
+                                    </span>
+                                </div>
+                                <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">List this property for a client. If they don't have an account, their owner profile will be automatically created!</p>
+                            </div>
+                        </div>
+
+                        {{-- Mode Pill Selector --}}
+                        <div class="inline-flex p-1 bg-white/90 dark:bg-slate-800 border border-orange-200 dark:border-slate-700 rounded-xl shadow-2xs">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="behalf_mode" value="new" class="sr-only" {{ $initBehalfMode === 'new' ? 'checked' : '' }} onchange="toggleAdminBehalfMode('new')">
+                                <span class="behalf-tab px-3 py-1.5 rounded-lg text-xs font-bold transition-all block {{ $initBehalfMode === 'new' ? 'bg-orange-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900' }}" id="tab-btn-new">
+                                    ✨ New Client (Auto-Create)
+                                </span>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="behalf_mode" value="existing" class="sr-only" {{ $initBehalfMode === 'existing' ? 'checked' : '' }} onchange="toggleAdminBehalfMode('existing')">
+                                <span class="behalf-tab px-3 py-1.5 rounded-lg text-xs font-bold transition-all block {{ $initBehalfMode === 'existing' ? 'bg-orange-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900' }}" id="tab-btn-existing">
+                                    👤 Existing User
+                                </span>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="behalf_mode" value="self" class="sr-only" {{ $initBehalfMode === 'self' ? 'checked' : '' }} onchange="toggleAdminBehalfMode('self')">
+                                <span class="behalf-tab px-3 py-1.5 rounded-lg text-xs font-bold transition-all block {{ $initBehalfMode === 'self' ? 'bg-orange-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900' }}" id="tab-btn-self">
+                                    🛡️ Post for Myself
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Form Panel: New Client Profile (Auto Create) --}}
+                    <div id="panel-behalf-new" class="{{ $initBehalfMode === 'new' ? '' : 'hidden' }} space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label for="create-behalf-name" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                                    Client / Owner Name <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="ph-bold ph-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                    <input type="text" name="behalf_name" id="create-behalf-name" value="{{ $initBehalfName }}" placeholder="e.g. Ramesh Sharma"
+                                           class="w-full pl-8 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="create-behalf-phone" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                                    Client Mobile Phone <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="ph-bold ph-phone absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                    <input type="tel" name="behalf_phone" id="create-behalf-phone" value="{{ $initBehalfPhone }}" placeholder="e.g. 9876543210"
+                                           oninput="syncBehalfPhoneToProperty(this.value)"
+                                           class="w-full pl-8 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="create-behalf-email" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                                    Email Address <span class="text-slate-400 font-normal lowercase text-[10px]">(Optional)</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="ph-bold ph-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                    <input type="email" name="behalf_email" id="create-behalf-email" value="{{ $initBehalfEmail }}" placeholder="e.g. ramesh@example.com"
+                                           class="w-full pl-8 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 text-[11px] text-amber-800 dark:text-amber-300 font-medium bg-amber-100/60 dark:bg-amber-950/40 p-2.5 rounded-xl border border-amber-200/70 dark:border-amber-800/40">
+                            <i class="ph-bold ph-sparkle text-amber-600 text-sm shrink-0"></i>
+                            <span>A new <strong>Owner Profile</strong> will be automatically created in the User Directory with their phone verified upon submitting this property.</span>
+                        </div>
+                    </div>
+
+                    {{-- Form Panel: Existing Registered User --}}
+                    <div id="panel-behalf-existing" class="{{ $initBehalfMode === 'existing' ? '' : 'hidden' }} space-y-2">
+                        <label for="create-behalf-user-id" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                            Select Existing User from Directory <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <select name="behalf_user_id" id="create-behalf-user-id" onchange="onSelectExistingUserChange(this)"
+                                    class="w-full pl-3 pr-8 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 cursor-pointer">
+                                <option value="">-- Choose User --</option>
+                                @if(isset($adminUsers))
+                                    @foreach($adminUsers as $u)
+                                        <option value="{{ $u->id }}" data-phone="{{ $u->phone }}" {{ (string)$initBehalfUserId === (string)$u->id ? 'selected' : '' }}>
+                                            {{ $u->name }} ({{ $u->phone ?: $u->email }}) — {{ ucfirst($u->role) }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Form Panel: Post for Myself --}}
+                    <div id="panel-behalf-self" class="{{ $initBehalfMode === 'self' ? '' : 'hidden' }} text-xs text-slate-600 dark:text-slate-300">
+                        <p>This property will be listed directly under your administrator account (<strong>{{ auth()->user()->name }}</strong>).</p>
+                    </div>
+                </div>
+            @endif
+
                 {{-- 1. Basic Info Section --}}
             <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xs" id="create-basic-info">
                 <div class="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -347,7 +470,7 @@
                             <label for="create-phone" class="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Contact Phone Number <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"><i class="ph-bold ph-phone"></i></span>
-                                <input type="tel" name="contact_phone" id="create-phone" value="{{ old('contact_phone', auth()->user()->phone ?? '') }}" required inputmode="tel" autocomplete="tel"
+                                <input type="tel" name="contact_phone" id="create-phone" value="{{ old('contact_phone', request('behalf_phone', auth()->user()->phone ?? '')) }}" required inputmode="tel" autocomplete="tel"
                                        class="w-full pl-9 pr-3.5 py-2.5 sm:pl-10 sm:pr-4 sm:py-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
                                        placeholder="+91 94254 55499">
                             </div>
@@ -3086,6 +3209,50 @@ function updateStep4Summary() {
                 </div>
             </div>
         `;
+    }
+}
+
+// Admin Behalf Mode Helpers
+function toggleAdminBehalfMode(mode) {
+    const panelNew = document.getElementById('panel-behalf-new');
+    const panelExisting = document.getElementById('panel-behalf-existing');
+    const panelSelf = document.getElementById('panel-behalf-self');
+    const tabNew = document.getElementById('tab-btn-new');
+    const tabExisting = document.getElementById('tab-btn-existing');
+    const tabSelf = document.getElementById('tab-btn-self');
+
+    const tabs = [tabNew, tabExisting, tabSelf];
+    tabs.forEach(t => {
+        if (t) {
+            t.className = 'behalf-tab px-3 py-1.5 rounded-lg text-xs font-bold transition-all block text-slate-600 dark:text-slate-300 hover:text-slate-900';
+        }
+    });
+
+    if (panelNew) panelNew.classList.add('hidden');
+    if (panelExisting) panelExisting.classList.add('hidden');
+    if (panelSelf) panelSelf.classList.add('hidden');
+
+    const activeTab = document.getElementById('tab-btn-' + mode);
+    if (activeTab) {
+        activeTab.className = 'behalf-tab px-3 py-1.5 rounded-lg text-xs font-bold transition-all block bg-orange-600 text-white shadow-2xs';
+    }
+
+    const activePanel = document.getElementById('panel-behalf-' + mode);
+    if (activePanel) activePanel.classList.remove('hidden');
+}
+
+function syncBehalfPhoneToProperty(phoneVal) {
+    const contactInput = document.getElementById('create-phone');
+    if (contactInput && phoneVal) {
+        contactInput.value = phoneVal;
+    }
+}
+
+function onSelectExistingUserChange(selectElem) {
+    const selectedOption = selectElem.options[selectElem.selectedIndex];
+    const phone = selectedOption?.getAttribute('data-phone');
+    if (phone) {
+        syncBehalfPhoneToProperty(phone);
     }
 }
 

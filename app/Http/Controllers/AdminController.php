@@ -378,6 +378,7 @@ class AdminController extends Controller
         ];
 
         $plans = Plan::where('is_active', true)->orderBy('price')->get();
+        $allUsersList = User::orderBy('name')->select('id', 'name', 'phone', 'email', 'role')->get();
 
         $users = $query->withCount(['properties', 'inquiries'])
             ->with(['userPlans' => function ($q) {
@@ -387,7 +388,7 @@ class AdminController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.users', compact('users', 'stats', 'plans'));
+        return view('admin.users', compact('users', 'stats', 'plans', 'allUsersList'));
     }
 
     /**
