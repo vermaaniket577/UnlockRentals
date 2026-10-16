@@ -43,6 +43,7 @@ class Category extends Model
     {
         try {
             $core = [
+                ['name' => 'Flat / Apartment', 'slug' => 'flat-apartment', 'icon' => 'buildings', 'description' => 'Multi-story flats, apartments, builder floors and society apartments.'],
                 ['name' => 'Residential House', 'slug' => 'residential-house', 'icon' => 'house', 'description' => 'Great places to live with your family.'],
                 ['name' => 'Luxury Villa', 'slug' => 'luxury-villa', 'icon' => 'castle-turret', 'description' => 'Premium living experience.'],
                 ['name' => 'Studio Apartment', 'slug' => 'studio-apartment', 'icon' => 'buildings', 'description' => 'Compact and modern apartments.'],
@@ -85,15 +86,16 @@ class Category extends Model
             static::ensureCoreCategoriesExist();
 
             $priority = [
-                'residential-house' => 1,
-                'luxury-villa' => 2,
-                'studio-apartment' => 3,
-                'pg-hostel' => 4,
-                'hostel' => 5,
-                'retail-shop' => 6,
-                'office-space' => 7,
-                'plots-and-land' => 8,
-                'hotel-room' => 9,
+                'flat-apartment' => 1,
+                'residential-house' => 2,
+                'luxury-villa' => 3,
+                'studio-apartment' => 4,
+                'pg-hostel' => 5,
+                'hostel' => 6,
+                'retail-shop' => 7,
+                'office-space' => 8,
+                'plots-and-land' => 9,
+                'hotel-room' => 10,
             ];
 
             return static::all()->sortBy(function ($cat) use ($priority) {

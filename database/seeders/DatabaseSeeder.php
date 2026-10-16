@@ -105,6 +105,7 @@ class DatabaseSeeder extends Seeder
 
         // Create Categories
         $categories = [
+            ['name' => 'Flat / Apartment', 'icon' => 'buildings', 'description' => 'Multi-story flats, apartments, builder floors and society apartments.'],
             ['name' => 'Residential House', 'icon' => 'house', 'description' => 'Great places to live with your family.'],
             ['name' => 'Luxury Villa', 'icon' => 'castle-turret', 'description' => 'Premium living experience.'],
             ['name' => 'Studio Apartment', 'icon' => 'buildings', 'description' => 'Compact and modern apartments.'],
