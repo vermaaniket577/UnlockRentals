@@ -13,11 +13,11 @@
 @endphp
 
 @if($allDirectPlans->isNotEmpty())
-<section class="ur-direct-passes-section py-4 sm:py-6" id="hero-direct-passes">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="ur-direct-passes-section py-3 sm:py-5" id="hero-direct-passes">
+    <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
         
         {{-- Section Header with Purpose Filter Tabs & Slider Controls --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 sm:mb-4">
             <div>
                 <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-wider mb-1">
                     <i class="ph-bold ph-shield-check text-xs"></i>
@@ -28,35 +28,35 @@
                 </h3>
             </div>
 
-            <div class="flex items-center gap-2.5 self-start sm:self-auto">
+            <div class="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
                 {{-- Filter Pills: All / Rent / Buy --}}
                 <div class="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60" id="urDirectPassFilter">
-                    <button type="button" onclick="filterDirectPassCards('all', this)" class="ur-dp-tab active px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs">
+                    <button type="button" onclick="filterDirectPassCards('all', this)" class="ur-dp-tab active px-3 py-1.5 text-xs font-bold rounded-lg transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs">
                         All Passes
                     </button>
-                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
                         Tenant Pass
                     </button>
-                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
                         Buyer Pass
                     </button>
                 </div>
 
                 {{-- Interactive Slider Navigation Chevrons --}}
                 <div class="flex items-center gap-1.5">
-                    <button type="button" onclick="slideDirectPasses(-1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-95 shadow-xs" title="Previous Pass" aria-label="Previous Pass">
-                        <i class="ph-bold ph-caret-left text-xs"></i>
+                    <button type="button" onclick="slideDirectPasses(-1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-90 shadow-xs cursor-pointer" title="Previous Pass" aria-label="Previous Pass">
+                        <i class="ph-bold ph-caret-left text-sm"></i>
                     </button>
-                    <button type="button" onclick="slideDirectPasses(1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-95 shadow-xs" title="Next Pass" aria-label="Next Pass">
-                        <i class="ph-bold ph-caret-right text-xs"></i>
+                    <button type="button" onclick="slideDirectPasses(1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-90 shadow-xs cursor-pointer" title="Next Pass" aria-label="Next Pass">
+                        <i class="ph-bold ph-caret-right text-sm"></i>
                     </button>
                 </div>
             </div>
         </div>
 
         {{-- Cards Container: Responsive Interactive Slider on Mobile & Website --}}
-        <div class="ur-direct-slider-viewport relative overflow-hidden" id="urDirectSliderViewport">
-            <div class="ur-direct-cards-wrapper flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3 sm:pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth" id="urDirectCardsGrid">
+        <div class="ur-direct-slider-viewport relative w-full" id="urDirectSliderViewport">
+            <div class="ur-direct-cards-wrapper flex gap-3.5 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 sm:pb-3 scroll-smooth" id="urDirectCardsGrid">
                 @foreach($allDirectPlans as $idx => $plan)
                     @php
                         $isBuy = $plan->isBuyPlan();
@@ -66,16 +66,12 @@
                         // Determine tier badge & icon
                         if (str_contains($planNameLower, 'platinum') || str_contains($planNameLower, 'vip')) {
                             $tierText = 'PLATINUM VIP ACCESS';
-                            $tierIcon = 'ph-fill ph-seal-check';
                         } elseif (str_contains($planNameLower, 'gold')) {
                             $tierText = $isBuy ? 'GOLD BUYER ACCESS' : 'GOLD ACCESS';
-                            $tierIcon = 'ph-fill ph-seal-check';
                         } elseif (str_contains($planNameLower, 'silver')) {
                             $tierText = $isBuy ? 'SILVER BUYER ACCESS' : 'SILVER ACCESS';
-                            $tierIcon = 'ph-fill ph-seal-check';
                         } else {
                             $tierText = strtoupper($plan->name) . ' ACCESS';
-                            $tierIcon = 'ph-fill ph-seal-check';
                         }
 
                         // Mint badge text
@@ -97,7 +93,7 @@
                             : url('/plans');
                     @endphp
 
-                    <div class="ur-direct-card-item flex-shrink-0 w-[86vw] max-w-[340px] sm:w-[350px] lg:w-[380px] snap-start" data-purpose="{{ $planPurpose }}" data-card-index="{{ $idx }}">
+                    <div class="ur-direct-card-item flex-shrink-0 snap-center" data-purpose="{{ $planPurpose }}" data-card-index="{{ $idx }}">
                         <div class="ur-direct-card">
                             
                             {{-- Top Badges Row --}}
@@ -107,7 +103,7 @@
                                     <span>{{ $mintText }}</span>
                                 </span>
                                 <span class="ur-dc-gold-badge">
-                                    <i class="ph-bold {{ $tierIcon }}"></i>
+                                    <i class="ph-fill ph-seal-check"></i>
                                     <span>{{ $tierText }}</span>
                                 </span>
                             </div>
@@ -168,14 +164,56 @@
 
 <style>
 /* ─── DIRECT OWNER PASS CARDS (DARK LUXURY DESIGN) ─── */
+.ur-direct-slider-viewport {
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.ur-direct-cards-wrapper {
+    display: flex;
+    gap: 0.85rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    scroll-behavior: smooth;
+    padding-bottom: 0.35rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ur-direct-card-item {
+    flex: 0 0 calc(100vw - 42px);
+    max-width: 350px;
+    scroll-snap-align: center;
+    box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+    .ur-direct-card-item {
+        flex: 0 0 340px;
+        max-width: 340px;
+        scroll-snap-align: start;
+    }
+}
+
+@media (min-width: 1024px) {
+    .ur-direct-card-item {
+        flex: 0 0 calc((100% - 2rem) / 3);
+        max-width: none;
+        scroll-snap-align: start;
+    }
+}
+
 .ur-direct-card {
     position: relative;
     width: 100%;
     box-sizing: border-box;
     background: radial-gradient(130% 120% at 75% 0%, #0d1e3d 0%, #071328 65%, #050c1a 100%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 20px;
-    padding: 1.35rem 1.25rem 1.2rem;
+    padding: 1.25rem 1.15rem 1.15rem;
     box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
@@ -183,7 +221,7 @@
     color: #ffffff;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-    min-height: 200px;
+    min-height: 195px;
 }
 
 .ur-direct-card:hover {
@@ -195,73 +233,79 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
-    margin-bottom: 0.95rem;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
 .ur-dc-mint-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.28rem 0.72rem;
+    gap: 0.3rem;
+    padding: 0.24rem 0.62rem;
     border-radius: 9999px;
     border: 1.5px solid #10b981;
     background: #ecfdf5;
     color: #047857;
-    font-size: 0.7rem;
+    font-size: 0.66rem;
     font-weight: 800;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    line-height: 1.3;
+    line-height: 1.2;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .ur-dc-mint-pill i {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #10b981;
 }
 
 .ur-dc-gold-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     color: #fbbf24;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 800;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
-    line-height: 1.3;
+    line-height: 1.2;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .ur-dc-gold-badge i {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #fbbf24;
 }
 
 .ur-dc-title {
-    font-size: 1.38rem;
+    font-size: 1.35rem;
     font-weight: 800;
     color: #ffffff;
     line-height: 1.25;
-    letter-spacing: -0.025em;
-    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.3rem 0;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .ur-dc-sub {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 400;
     color: #94a3b8;
-    line-height: 1.45;
-    margin: 0 0 1.15rem 0;
+    line-height: 1.4;
+    margin: 0 0 1rem 0;
 }
 
 .ur-dc-footer {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.65rem;
     margin-top: auto;
-    padding-top: 0.35rem;
+    padding-top: 0.25rem;
 }
 
 .ur-dc-price-group {
@@ -273,12 +317,12 @@
 .ur-dc-price-row {
     display: flex;
     align-items: baseline;
-    gap: 0.4rem;
+    gap: 0.35rem;
     line-height: 1;
 }
 
 .ur-dc-val {
-    font-size: 1.85rem;
+    font-size: 1.8rem;
     font-weight: 900;
     color: #ffffff;
     letter-spacing: -0.03em;
@@ -286,30 +330,31 @@
 }
 
 .ur-dc-orig {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 500;
     color: #64748b;
     text-decoration: line-through;
 }
 
 .ur-dc-save {
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 700;
     color: #10b981;
-    margin-top: 0.3rem;
+    margin-top: 0.25rem;
     letter-spacing: 0.01em;
+    white-space: nowrap;
 }
 
 .ur-dc-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: 0.4rem;
     background: #10b981;
     color: #ffffff !important;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    padding: 0.68rem 1.35rem;
+    padding: 0.65rem 1.25rem;
     border-radius: 14px;
     text-decoration: none;
     box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
@@ -317,6 +362,7 @@
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
+    flex-shrink: 0;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -343,7 +389,7 @@
 }
 
 .ur-ds-dot.active {
-    width: 22px;
+    width: 20px;
     background: #10b981;
 }
 
@@ -355,14 +401,72 @@
         font-size: 1.65rem;
     }
     .ur-dc-btn {
-        padding: 0.62rem 1.15rem;
-        font-size: 0.86rem;
+        padding: 0.6rem 1.1rem;
+        font-size: 0.84rem;
     }
 }
 </style>
 
 <script>
-let directPassAutoTimer = null;
+let directPassCurrentIndex = 0;
+
+function getDirectPassVisibleCards() {
+    const grid = document.getElementById('urDirectCardsGrid');
+    if (!grid) return [];
+    return Array.from(grid.querySelectorAll('.ur-direct-card-item')).filter(c => c.style.display !== 'none');
+}
+
+function slideDirectPasses(direction) {
+    const grid = document.getElementById('urDirectCardsGrid');
+    const cards = getDirectPassVisibleCards();
+    if (!grid || !cards.length) return;
+
+    directPassCurrentIndex = Math.max(0, Math.min(cards.length - 1, directPassCurrentIndex + direction));
+    scrollDirectPassToIndex(directPassCurrentIndex);
+}
+
+function scrollDirectPassToIndex(index) {
+    const grid = document.getElementById('urDirectCardsGrid');
+    const cards = getDirectPassVisibleCards();
+    if (!grid || !cards.length) return;
+
+    if (index >= 0 && index < cards.length) {
+        directPassCurrentIndex = index;
+        const targetCard = cards[index];
+        const targetScrollLeft = targetCard.offsetLeft - grid.offsetLeft - (grid.clientWidth - targetCard.clientWidth) / 2;
+        grid.scrollTo({
+            left: Math.max(0, targetScrollLeft),
+            behavior: 'smooth'
+        });
+        updateDirectPassDots();
+    }
+}
+
+function updateDirectPassDots() {
+    const grid = document.getElementById('urDirectCardsGrid');
+    const cards = getDirectPassVisibleCards();
+    const dots = document.querySelectorAll('#urDirectSliderDots .ur-ds-dot');
+    if (!grid || !cards.length || !dots.length) return;
+
+    const scrollLeft = grid.scrollLeft;
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    cards.forEach((c, idx) => {
+        const cardCenter = c.offsetLeft - grid.offsetLeft + (c.clientWidth / 2);
+        const viewCenter = scrollLeft + (grid.clientWidth / 2);
+        const distance = Math.abs(cardCenter - viewCenter);
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestIndex = idx;
+        }
+    });
+
+    directPassCurrentIndex = closestIndex;
+    dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === closestIndex);
+    });
+}
 
 function filterDirectPassCards(purpose, btn) {
     // Update active tab style
@@ -375,7 +479,10 @@ function filterDirectPassCards(purpose, btn) {
     btn.classList.remove('text-slate-600', 'dark:text-slate-300');
 
     // Filter cards
-    const cards = document.querySelectorAll('#urDirectCardsGrid .ur-direct-card-item');
+    const grid = document.getElementById('urDirectCardsGrid');
+    if (!grid) return;
+
+    const cards = grid.querySelectorAll('.ur-direct-card-item');
     cards.forEach(card => {
         const cardPurpose = card.getAttribute('data-purpose');
         if (purpose === 'all' || cardPurpose === purpose) {
@@ -385,58 +492,60 @@ function filterDirectPassCards(purpose, btn) {
         }
     });
 
-    // Reset grid scroll to 0
-    const grid = document.getElementById('urDirectCardsGrid');
-    if (grid) grid.scrollTo({ left: 0, behavior: 'smooth' });
-    updateDirectPassDots();
-    resetDirectPassTimer();
-}
+    directPassCurrentIndex = 0;
+    grid.scrollTo({ left: 0, behavior: 'smooth' });
 
-function slideDirectPasses(direction) {
-    const grid = document.getElementById('urDirectCardsGrid');
-    if (!grid) return;
-    const card = grid.querySelector('.ur-direct-card-item:not([style*="display: none"])');
-    const scrollAmount = card ? (card.offsetWidth + 18) : 340;
-    grid.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-    resetDirectPassTimer();
-}
-
-function scrollDirectPassToIndex(index) {
-    const grid = document.getElementById('urDirectCardsGrid');
-    if (!grid) return;
-    const visibleCards = Array.from(grid.querySelectorAll('.ur-direct-card-item')).filter(c => c.style.display !== 'none');
-    if (visibleCards[index]) {
-        visibleCards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    // Update dots count
+    const visibleCards = getDirectPassVisibleCards();
+    const dotsContainer = document.getElementById('urDirectSliderDots');
+    if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        visibleCards.forEach((c, idx) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'ur-ds-dot' + (idx === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Go to pass ' + (idx + 1));
+            dot.onclick = () => scrollDirectPassToIndex(idx);
+            dotsContainer.appendChild(dot);
+        });
     }
-    resetDirectPassTimer();
-}
 
-function updateDirectPassDots() {
-    const grid = document.getElementById('urDirectCardsGrid');
-    if (!grid) return;
-    const visibleCards = Array.from(grid.querySelectorAll('.ur-direct-card-item')).filter(c => c.style.display !== 'none');
-    const dots = document.querySelectorAll('#urDirectSliderDots .ur-ds-dot');
-    if (!visibleCards.length || !dots.length) return;
-
-    const scrollLeft = grid.scrollLeft;
-    let activeIdx = 0;
-    visibleCards.forEach((c, idx) => {
-        if (c.offsetLeft - grid.offsetLeft <= scrollLeft + 60) {
-            activeIdx = idx;
-        }
-    });
-
-    dots.forEach((d, idx) => {
-        d.classList.toggle('active', idx === activeIdx);
-    });
+    updateDirectPassDots();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('urDirectCardsGrid');
-    if (grid) {
-        grid.addEventListener('scroll', updateDirectPassDots, { passive: true });
-        updateDirectPassDots();
-    }
+    if (!grid) return;
+
+    grid.addEventListener('scroll', () => {
+        requestAnimationFrame(updateDirectPassDots);
+    }, { passive: true });
+
+    // Touch swipe gesture listeners
+    let touchStartX = 0;
+    let isSwiping = false;
+
+    grid.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        isSwiping = true;
+    }, { passive: true });
+
+    grid.addEventListener('touchend', (e) => {
+        if (!isSwiping) return;
+        const touchEndX = e.changedTouches[0].clientX;
+        const diffX = touchStartX - touchEndX;
+
+        if (Math.abs(diffX) > 35) {
+            if (diffX > 0) {
+                slideDirectPasses(1);
+            } else {
+                slideDirectPasses(-1);
+            }
+        }
+        isSwiping = false;
+    }, { passive: true });
+
+    updateDirectPassDots();
 });
 </script>
 @endif
