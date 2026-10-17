@@ -2625,9 +2625,74 @@
                 <i class="ph-bold ph-caret-right text-xs"></i>
             </button>
 
+            @php
+                $mobileSilverPlan = \App\Models\Plan::active()->where('purpose', 'rent')->where('price', '<=', 300)->orderBy('price', 'asc')->first()
+                    ?? \App\Models\Plan::find(4)
+                    ?? \App\Models\Plan::active()->where('purpose', 'rent')->first();
+                $mobileCheckoutUrl = Route::has('plans.checkout') && $mobileSilverPlan
+                    ? route('plans.checkout', ['plan' => $mobileSilverPlan->id, 'direct' => 1])
+                    : url('/plans');
+            @endphp
+
             <div class="mobile-hero-slider-track" id="mobileHeroSliderTrack">
                 
-                {{-- Slide 1: Luxury Stays & Designer 1RK / PGs --}}
+                {{-- Slide 1: Direct Owner Silver Pass (Image 2 Dark Card from Screenshot) --}}
+                <div class="mobile-hero-banner-slide mobile-hero-direct-pass-slide" style="background: radial-gradient(130% 120% at 75% 0%, #0d1e3d 0%, #071328 65%, #050c1a 100%); border: 1px solid rgba(255, 255, 255, 0.12); padding: 18px 16px 16px; display: flex; flex-direction: column; justify-content: space-between;">
+                    
+                    {{-- Top Badges Row --}}
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <span class="ur-dc-mint-pill">
+                            <i class="ph-bold ph-shield-check"></i>
+                            <span>BUYER &amp; TENANT PASS</span>
+                        </span>
+                        <span class="ur-dc-gold-badge">
+                            <i class="ph-fill ph-seal-check"></i>
+                            <span>{{ strtoupper($mobileSilverPlan->name ?? 'SILVER ACCESS') }}</span>
+                        </span>
+                    </div>
+
+                    {{-- Title & Subtitle --}}
+                    <div style="margin: 8px 0 6px;">
+                        <h2 style="font-size: 1.35rem; font-weight: 800; color: #ffffff; line-height: 1.25; margin: 0 0 3px 0; font-family: 'Outfit', 'Inter', sans-serif;">
+                            Unlock {{ $mobileSilverPlan->contact_limit ?? 5 }}+ Direct Landlords
+                        </h2>
+                        <p style="font-size: 0.8rem; font-weight: 400; color: #94a3b8; line-height: 1.4; margin: 0;">
+                            Skip brokerage charges completely. Instant contact numbers.
+                        </p>
+                    </div>
+
+                    {{-- Footer: Price, Savings & Unlock CTA --}}
+                    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: auto;">
+                        <div>
+                            <div style="display: flex; align-items: baseline; gap: 6px; line-height: 1;">
+                                <span style="font-size: 1.85rem; font-weight: 900; color: #ffffff; font-family: 'Outfit', 'Inter', sans-serif;">₹{{ number_format($mobileSilverPlan->price ?? 199, 0) }}</span>
+                                @if(!empty($mobileSilverPlan->original_price) && (float)$mobileSilverPlan->original_price > (float)$mobileSilverPlan->price)
+                                    <span style="font-size: 0.95rem; font-weight: 500; color: #64748b; text-decoration: line-through;">₹{{ number_format($mobileSilverPlan->original_price, 0) }}</span>
+                                @endif
+                            </div>
+                            <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #10b981; margin-top: 4px;">Save ₹35,000+ Average</span>
+                        </div>
+
+                        @guest
+                            <a href="{{ route('login', ['redirect' => $mobileCheckoutUrl]) }}" 
+                               onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $mobileCheckoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $mobileCheckoutUrl]) }}'; }"
+                               class="ur-dc-btn" 
+                               title="Unlock Direct Contacts">
+                                <span>Unlock Now</span>
+                                <i class="ph-bold ph-arrow-right"></i>
+                            </a>
+                        @else
+                            <a href="{{ $mobileCheckoutUrl }}" 
+                               class="ur-dc-btn" 
+                               title="Unlock Direct Contacts">
+                                <span>Unlock Now</span>
+                                <i class="ph-bold ph-arrow-right"></i>
+                            </a>
+                        @endguest
+                    </div>
+                </div>
+
+                {{-- Slide 2: Luxury Stays & Designer 1RK / PGs --}}
                 <div class="mobile-hero-banner-slide">
                     <img src="{{ asset('images/hero_apartment.webp') }}" 
                          onerror="this.onerror=null;this.src='{{ asset('images/luxury_sunlit.webp') }}';"
@@ -2879,6 +2944,7 @@
             <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(2)" aria-label="Slide 3"></button>
             <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4"></button>
             <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(4)" aria-label="Slide 5"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(5)" aria-label="Slide 6"></button>
         </div>
 
         {{-- 5. Flipkart Style Quick Filter Chips --}}
@@ -3061,20 +3127,102 @@
                     </div>
                 </div>
 
-                <!-- Slide 3: Direct Owner Plans -->
-                <div class="promo-slide slide-commercial">
-                    <div class="promo-slide-content">
-                        <span class="promo-badge">Direct Owner Passes</span>
-                        <h2 class="promo-title">Zero Brokerage Membership Plans</h2>
-                        <p class="promo-desc">Skip brokerage charges completely. Get direct phone &amp; WhatsApp access to 100% verified owners starting at just ₹199.</p>
-                        <a href="{{ route('plans.index') }}" onclick="if(document.getElementById('pricing-plans')){ document.getElementById('pricing-plans').scrollIntoView({behavior:'smooth'}); return false; }" class="promo-btn" title="Explore Membership Plans">
-                            <span>Explore Plans</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                        </a>
+                <!-- Slide 3: Direct Owner Passes (Dark Luxury Pass with Dynamic Admin Price) -->
+                @php
+                    $desktopHeroPlan = $mobileSilverPlan ?? \App\Models\Plan::find(4);
+                    $desktopGoldPlan = \App\Models\Plan::active()->where('purpose', 'rent')->where('name', 'like', '%gold%')->first()
+                        ?? \App\Models\Plan::find(5);
+                    $desktopCheckoutUrl = Route::has('plans.checkout') && $desktopHeroPlan
+                        ? route('plans.checkout', ['plan' => $desktopHeroPlan->id, 'direct' => 1])
+                        : url('/plans');
+                @endphp
+                <div class="promo-slide slide-commercial" style="background: radial-gradient(130% 120% at 85% 20%, #0d1e3d 0%, #071328 65%, #050c1a 100%);">
+                    <div class="promo-slide-content" style="z-index: 2; max-width: 560px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <span class="ur-dc-mint-pill">
+                                <i class="ph-bold ph-shield-check"></i>
+                                <span>BUYER &amp; TENANT PASS</span>
+                            </span>
+                            <span class="ur-dc-gold-badge">
+                                <i class="ph-fill ph-seal-check"></i>
+                                <span>{{ strtoupper($desktopHeroPlan->name ?? 'SILVER ACCESS') }}</span>
+                            </span>
+                        </div>
+                        <h2 class="promo-title" style="color: #ffffff; font-family: 'Outfit', 'Inter', sans-serif; font-size: 2.1rem; line-height: 1.2; margin-bottom: 8px;">
+                            Unlock {{ $desktopHeroPlan->contact_limit ?? 5 }}+ Direct Landlords
+                        </h2>
+                        <p class="promo-desc" style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 0;">
+                            Skip brokerage charges completely. Instant phone &amp; WhatsApp contact numbers directly from verified property owners.
+                        </p>
+                        <div style="display: flex; align-items: center; gap: 24px; margin-top: 18px;">
+                            <div>
+                                <div style="display: flex; align-items: baseline; gap: 8px; line-height: 1;">
+                                    <span style="font-size: 2.3rem; font-weight: 900; color: #ffffff; font-family: 'Outfit', sans-serif;">₹{{ number_format($desktopHeroPlan->price ?? 199, 0) }}</span>
+                                    @if(!empty($desktopHeroPlan->original_price) && (float)$desktopHeroPlan->original_price > (float)$desktopHeroPlan->price)
+                                        <span style="font-size: 1.05rem; font-weight: 500; color: #64748b; text-decoration: line-through;">₹{{ number_format($desktopHeroPlan->original_price, 0) }}</span>
+                                    @endif
+                                </div>
+                                <span style="display: block; font-size: 0.78rem; font-weight: 700; color: #10b981; margin-top: 4px;">Save ₹35,000+ Average</span>
+                            </div>
+
+                            @guest
+                                <a href="{{ route('login', ['redirect' => $desktopCheckoutUrl]) }}" 
+                                   onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $desktopCheckoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $desktopCheckoutUrl]) }}'; }"
+                                   class="ur-dc-btn" 
+                                   style="padding: 0.75rem 1.65rem; font-size: 0.95rem;"
+                                   title="Unlock Direct Contacts">
+                                    <span>Unlock Now</span>
+                                    <i class="ph-bold ph-arrow-right"></i>
+                                </a>
+                            @else
+                                <a href="{{ $desktopCheckoutUrl }}" 
+                                   class="ur-dc-btn" 
+                                   style="padding: 0.75rem 1.65rem; font-size: 0.95rem;"
+                                   title="Unlock Direct Contacts">
+                                    <span>Unlock Now</span>
+                                    <i class="ph-bold ph-arrow-right"></i>
+                                </a>
+                            @endguest
+                        </div>
                     </div>
-                    <div class="promo-image-side">
-                        <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80" alt="Zero Brokerage Plans" title="Zero Brokerage Plans" width="600" height="330" loading="lazy" decoding="async">
+                    <div class="promo-image-side" style="display: flex; align-items: center; justify-content: center; padding: 20px 24px;">
+                        <div class="promo-gradient-overlay" style="opacity: 0.1;"></div>
+                        {{-- Luxury Pass Card Preview --}}
+                        <div style="width: 100%; max-width: 350px;">
+                            <div class="ur-direct-card" style="box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 35px rgba(16, 185, 129, 0.2);">
+                                <div class="ur-dc-badges">
+                                    <span class="ur-dc-mint-pill">
+                                        <i class="ph-bold ph-shield-check"></i>
+                                        <span>BUYER &amp; TENANT PASS</span>
+                                    </span>
+                                    <span class="ur-dc-gold-badge">
+                                        <i class="ph-fill ph-seal-check"></i>
+                                        <span>GOLD ACCESS</span>
+                                    </span>
+                                </div>
+                                <h4 class="ur-dc-title">
+                                    Unlock {{ $desktopGoldPlan->contact_limit ?? 75 }}+ Direct Landlords
+                                </h4>
+                                <p class="ur-dc-sub">
+                                    Skip brokerage charges completely. Instant contact numbers.
+                                </p>
+                                <div class="ur-dc-footer">
+                                    <div class="ur-dc-price-group">
+                                        <div class="ur-dc-price-row">
+                                            <span class="ur-dc-val">₹{{ number_format($desktopGoldPlan->price ?? 499, 0) }}</span>
+                                            @if(!empty($desktopGoldPlan->original_price) && (float)$desktopGoldPlan->original_price > (float)$desktopGoldPlan->price)
+                                                <span class="ur-dc-orig">₹{{ number_format($desktopGoldPlan->original_price, 0) }}</span>
+                                            @endif
+                                        </div>
+                                        <span class="ur-dc-save">Save ₹60,000+ Average</span>
+                                    </div>
+                                    <a href="{{ route('plans.index') }}" class="ur-dc-btn">
+                                        <span>Unlock Now</span>
+                                        <i class="ph-bold ph-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -3801,7 +3949,7 @@
 
             // Mobile App Hero Banner Slider Controller
             let mobileHeroCurrentSlide = 0;
-            const mobileHeroTotalSlides = 5;
+            const getMobileHeroTotalSlides = () => document.querySelectorAll('#mobileHeroSliderTrack .mobile-hero-banner-slide').length || 6;
             let mobileHeroTimer = null;
 
             window.updateMobileHeroSlider = function() {
@@ -3822,12 +3970,14 @@
             };
 
             window.nextMobileHeroSlide = function() {
-                mobileHeroCurrentSlide = (mobileHeroCurrentSlide + 1) % mobileHeroTotalSlides;
+                const total = getMobileHeroTotalSlides();
+                mobileHeroCurrentSlide = (mobileHeroCurrentSlide + 1) % total;
                 window.updateMobileHeroSlider();
             };
 
             window.prevMobileHeroSlide = function() {
-                mobileHeroCurrentSlide = (mobileHeroCurrentSlide - 1 + mobileHeroTotalSlides) % mobileHeroTotalSlides;
+                const total = getMobileHeroTotalSlides();
+                mobileHeroCurrentSlide = (mobileHeroCurrentSlide - 1 + total) % total;
                 window.updateMobileHeroSlider();
             };
 

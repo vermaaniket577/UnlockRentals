@@ -16,7 +16,7 @@
 <section class="ur-direct-passes-section py-4 sm:py-6" id="hero-direct-passes">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {{-- Section Header with Purpose Filter Tabs --}}
+        {{-- Section Header with Purpose Filter Tabs & Slider Controls --}}
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-5">
             <div>
                 <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-wider mb-1">
@@ -28,117 +28,138 @@
                 </h3>
             </div>
 
-            {{-- Filter Pills: All / Rent / Buy --}}
-            <div class="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60 self-start sm:self-auto" id="urDirectPassFilter">
-                <button type="button" onclick="filterDirectPassCards('all', this)" class="ur-dp-tab active px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs">
-                    All Passes
-                </button>
-                <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
-                    Tenant Pass
-                </button>
-                <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
-                    Buyer Pass
-                </button>
+            <div class="flex items-center gap-2.5 self-start sm:self-auto">
+                {{-- Filter Pills: All / Rent / Buy --}}
+                <div class="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60" id="urDirectPassFilter">
+                    <button type="button" onclick="filterDirectPassCards('all', this)" class="ur-dp-tab active px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs">
+                        All Passes
+                    </button>
+                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                        Tenant Pass
+                    </button>
+                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                        Buyer Pass
+                    </button>
+                </div>
+
+                {{-- Interactive Slider Navigation Chevrons --}}
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="slideDirectPasses(-1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-95 shadow-xs" title="Previous Pass" aria-label="Previous Pass">
+                        <i class="ph-bold ph-caret-left text-xs"></i>
+                    </button>
+                    <button type="button" onclick="slideDirectPasses(1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-95 shadow-xs" title="Next Pass" aria-label="Next Pass">
+                        <i class="ph-bold ph-caret-right text-xs"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
-        {{-- Cards Container: Responsive Grid on Desktop, Swipeable Reel on Mobile --}}
-        <div class="ur-direct-cards-wrapper flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 overflow-x-auto md:overflow-visible snap-x snap-mandatory no-scrollbar pb-3 md:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0" id="urDirectCardsGrid">
-            @foreach($allDirectPlans as $plan)
-                @php
-                    $isBuy = $plan->isBuyPlan();
-                    $planPurpose = $isBuy ? 'buy' : 'rent';
-                    $planNameLower = strtolower($plan->name);
-                    
-                    // Determine tier badge & icon
-                    if (str_contains($planNameLower, 'platinum') || str_contains($planNameLower, 'vip')) {
-                        $tierText = 'PLATINUM VIP ACCESS';
-                        $tierIcon = 'ph-fill ph-seal-check';
-                    } elseif (str_contains($planNameLower, 'gold')) {
-                        $tierText = $isBuy ? 'GOLD BUYER ACCESS' : 'GOLD ACCESS';
-                        $tierIcon = 'ph-fill ph-seal-check';
-                    } elseif (str_contains($planNameLower, 'silver')) {
-                        $tierText = $isBuy ? 'SILVER BUYER ACCESS' : 'SILVER ACCESS';
-                        $tierIcon = 'ph-fill ph-seal-check';
-                    } else {
-                        $tierText = strtoupper($plan->name) . ' ACCESS';
-                        $tierIcon = 'ph-fill ph-seal-check';
-                    }
-
-                    // Mint badge text
-                    $mintText = $isBuy ? 'BUYER & TENANT PASS' : 'BUYER & TENANT PASS';
-
-                    // Estimated brokerage savings text
-                    if ($isBuy) {
-                        $savingsText = 'Save ₹1,50,000+ Average';
-                    } elseif ($plan->price >= 900) {
-                        $savingsText = 'Save ₹1,00,000+ Average';
-                    } elseif ($plan->price >= 400) {
-                        $savingsText = 'Save ₹60,000+ Average';
-                    } else {
-                        $savingsText = 'Save ₹35,000+ Average';
-                    }
-
-                    $checkoutUrl = Route::has('plans.checkout') 
-                        ? route('plans.checkout', ['plan' => $plan->id, 'direct' => 1]) 
-                        : url('/plans');
-                @endphp
-
-                <div class="ur-direct-card-item flex-shrink-0 w-[86vw] max-w-[340px] md:w-auto md:max-w-none snap-center" data-purpose="{{ $planPurpose }}">
-                    <div class="ur-direct-card">
+        {{-- Cards Container: Responsive Interactive Slider on Mobile & Website --}}
+        <div class="ur-direct-slider-viewport relative overflow-hidden" id="urDirectSliderViewport">
+            <div class="ur-direct-cards-wrapper flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-3 sm:pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth" id="urDirectCardsGrid">
+                @foreach($allDirectPlans as $idx => $plan)
+                    @php
+                        $isBuy = $plan->isBuyPlan();
+                        $planPurpose = $isBuy ? 'buy' : 'rent';
+                        $planNameLower = strtolower($plan->name);
                         
-                        {{-- Top Badges Row --}}
-                        <div class="ur-dc-badges">
-                            <span class="ur-dc-mint-pill">
-                                <i class="ph-bold ph-shield-check"></i>
-                                <span>{{ $mintText }}</span>
-                            </span>
-                            <span class="ur-dc-gold-badge">
-                                <i class="ph-bold {{ $tierIcon }}"></i>
-                                <span>{{ $tierText }}</span>
-                            </span>
-                        </div>
+                        // Determine tier badge & icon
+                        if (str_contains($planNameLower, 'platinum') || str_contains($planNameLower, 'vip')) {
+                            $tierText = 'PLATINUM VIP ACCESS';
+                            $tierIcon = 'ph-fill ph-seal-check';
+                        } elseif (str_contains($planNameLower, 'gold')) {
+                            $tierText = $isBuy ? 'GOLD BUYER ACCESS' : 'GOLD ACCESS';
+                            $tierIcon = 'ph-fill ph-seal-check';
+                        } elseif (str_contains($planNameLower, 'silver')) {
+                            $tierText = $isBuy ? 'SILVER BUYER ACCESS' : 'SILVER ACCESS';
+                            $tierIcon = 'ph-fill ph-seal-check';
+                        } else {
+                            $tierText = strtoupper($plan->name) . ' ACCESS';
+                            $tierIcon = 'ph-fill ph-seal-check';
+                        }
 
-                        {{-- Main Title & Subtitle --}}
-                        <h4 class="ur-dc-title">
-                            Unlock {{ $plan->contact_limit }}+ Direct {{ $isBuy ? 'Sellers' : 'Landlords' }}
-                        </h4>
-                        <p class="ur-dc-sub">
-                            Skip brokerage charges completely. Instant contact numbers.
-                        </p>
+                        // Mint badge text
+                        $mintText = 'BUYER & TENANT PASS';
 
-                        {{-- Footer Dock: Price & Unlock CTA --}}
-                        <div class="ur-dc-footer">
-                            <div class="ur-dc-price-group">
-                                <div class="ur-dc-price-row">
-                                    <span class="ur-dc-val">₹{{ number_format($plan->price, 0) }}</span>
-                                    @if($plan->original_price && (float) $plan->original_price > (float) $plan->price)
-                                        <span class="ur-dc-orig">₹{{ number_format($plan->original_price, 0) }}</span>
-                                    @endif
-                                </div>
-                                <span class="ur-dc-save">{{ $savingsText }}</span>
+                        // Estimated brokerage savings text
+                        if ($isBuy) {
+                            $savingsText = 'Save ₹1,50,000+ Average';
+                        } elseif ($plan->price >= 900) {
+                            $savingsText = 'Save ₹1,00,000+ Average';
+                        } elseif ($plan->price >= 400) {
+                            $savingsText = 'Save ₹60,000+ Average';
+                        } else {
+                            $savingsText = 'Save ₹35,000+ Average';
+                        }
+
+                        $checkoutUrl = Route::has('plans.checkout') 
+                            ? route('plans.checkout', ['plan' => $plan->id, 'direct' => 1]) 
+                            : url('/plans');
+                    @endphp
+
+                    <div class="ur-direct-card-item flex-shrink-0 w-[86vw] max-w-[340px] sm:w-[350px] lg:w-[380px] snap-start" data-purpose="{{ $planPurpose }}" data-card-index="{{ $idx }}">
+                        <div class="ur-direct-card">
+                            
+                            {{-- Top Badges Row --}}
+                            <div class="ur-dc-badges">
+                                <span class="ur-dc-mint-pill">
+                                    <i class="ph-bold ph-shield-check"></i>
+                                    <span>{{ $mintText }}</span>
+                                </span>
+                                <span class="ur-dc-gold-badge">
+                                    <i class="ph-bold {{ $tierIcon }}"></i>
+                                    <span>{{ $tierText }}</span>
+                                </span>
                             </div>
 
-                            @guest
-                                <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
-                                   onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
-                                   class="ur-dc-btn" 
-                                   title="Unlock Direct Contacts">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right"></i>
-                                </a>
-                            @else
-                                <a href="{{ $checkoutUrl }}" 
-                                   class="ur-dc-btn" 
-                                   title="Unlock Direct Contacts">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right"></i>
-                                </a>
-                            @endguest
-                        </div>
+                            {{-- Main Title & Subtitle --}}
+                            <h4 class="ur-dc-title">
+                                Unlock {{ $plan->contact_limit }}+ Direct {{ $isBuy ? 'Sellers' : 'Landlords' }}
+                            </h4>
+                            <p class="ur-dc-sub">
+                                Skip brokerage charges completely. Instant contact numbers.
+                            </p>
 
+                            {{-- Footer Dock: Price & Unlock CTA --}}
+                            <div class="ur-dc-footer">
+                                <div class="ur-dc-price-group">
+                                    <div class="ur-dc-price-row">
+                                        <span class="ur-dc-val">₹{{ number_format($plan->price, 0) }}</span>
+                                        @if($plan->original_price && (float) $plan->original_price > (float) $plan->price)
+                                            <span class="ur-dc-orig">₹{{ number_format($plan->original_price, 0) }}</span>
+                                        @endif
+                                    </div>
+                                    <span class="ur-dc-save">{{ $savingsText }}</span>
+                                </div>
+
+                                @guest
+                                    <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
+                                       onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
+                                       class="ur-dc-btn" 
+                                       title="Unlock Direct Contacts">
+                                        <span>Unlock Now</span>
+                                        <i class="ph-bold ph-arrow-right"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ $checkoutUrl }}" 
+                                       class="ur-dc-btn" 
+                                       title="Unlock Direct Contacts">
+                                        <span>Unlock Now</span>
+                                        <i class="ph-bold ph-arrow-right"></i>
+                                    </a>
+                                @endguest
+                            </div>
+
+                        </div>
                     </div>
-                </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Slider Dot Indicators --}}
+        <div class="flex items-center justify-center gap-1.5 mt-2 sm:mt-3" id="urDirectSliderDots">
+            @foreach($allDirectPlans as $idx => $p)
+                <button type="button" onclick="scrollDirectPassToIndex({{ $idx }})" class="ur-ds-dot {{ $idx === 0 ? 'active' : '' }}" aria-label="Go to pass {{ $idx + 1 }}"></button>
             @endforeach
         </div>
 
@@ -309,6 +330,23 @@
     transform: scale(0.97);
 }
 
+/* Slider Dots */
+.ur-ds-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: #cbd5e1;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.ur-ds-dot.active {
+    width: 22px;
+    background: #10b981;
+}
+
 @media (max-width: 640px) {
     .ur-dc-title {
         font-size: 1.25rem;
@@ -324,6 +362,8 @@
 </style>
 
 <script>
+let directPassAutoTimer = null;
+
 function filterDirectPassCards(purpose, btn) {
     // Update active tab style
     const tabs = document.querySelectorAll('#urDirectPassFilter .ur-dp-tab');
@@ -344,6 +384,91 @@ function filterDirectPassCards(purpose, btn) {
             card.style.display = 'none';
         }
     });
+
+    // Reset grid scroll to 0
+    const grid = document.getElementById('urDirectCardsGrid');
+    if (grid) grid.scrollTo({ left: 0, behavior: 'smooth' });
+    updateDirectPassDots();
+    resetDirectPassTimer();
 }
+
+function slideDirectPasses(direction) {
+    const grid = document.getElementById('urDirectCardsGrid');
+    if (!grid) return;
+    const card = grid.querySelector('.ur-direct-card-item:not([style*="display: none"])');
+    const scrollAmount = card ? (card.offsetWidth + 18) : 340;
+    grid.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    resetDirectPassTimer();
+}
+
+function scrollDirectPassToIndex(index) {
+    const grid = document.getElementById('urDirectCardsGrid');
+    if (!grid) return;
+    const visibleCards = Array.from(grid.querySelectorAll('.ur-direct-card-item')).filter(c => c.style.display !== 'none');
+    if (visibleCards[index]) {
+        visibleCards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    }
+    resetDirectPassTimer();
+}
+
+function updateDirectPassDots() {
+    const grid = document.getElementById('urDirectCardsGrid');
+    if (!grid) return;
+    const visibleCards = Array.from(grid.querySelectorAll('.ur-direct-card-item')).filter(c => c.style.display !== 'none');
+    const dots = document.querySelectorAll('#urDirectSliderDots .ur-ds-dot');
+    if (!visibleCards.length || !dots.length) return;
+
+    const scrollLeft = grid.scrollLeft;
+    let activeIdx = 0;
+    visibleCards.forEach((c, idx) => {
+        if (c.offsetLeft - grid.offsetLeft <= scrollLeft + 60) {
+            activeIdx = idx;
+        }
+    });
+
+    dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === activeIdx);
+    });
+}
+
+function startDirectPassTimer() {
+    if (directPassAutoTimer) clearInterval(directPassAutoTimer);
+    directPassAutoTimer = setInterval(() => {
+        const grid = document.getElementById('urDirectCardsGrid');
+        if (!grid) return;
+        const maxScroll = grid.scrollWidth - grid.clientWidth;
+        if (grid.scrollLeft >= maxScroll - 25) {
+            grid.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            slideDirectPasses(1);
+        }
+    }, 4500);
+}
+
+function stopDirectPassTimer() {
+    if (directPassAutoTimer) {
+        clearInterval(directPassAutoTimer);
+        directPassAutoTimer = null;
+    }
+}
+
+function resetDirectPassTimer() {
+    stopDirectPassTimer();
+    startDirectPassTimer();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('urDirectCardsGrid');
+    if (grid) {
+        grid.addEventListener('scroll', updateDirectPassDots, { passive: true });
+        grid.addEventListener('mouseenter', stopDirectPassTimer);
+        grid.addEventListener('mouseleave', startDirectPassTimer);
+        grid.addEventListener('touchstart', stopDirectPassTimer, { passive: true });
+        grid.addEventListener('touchend', () => {
+            setTimeout(startDirectPassTimer, 2500);
+        }, { passive: true });
+        startDirectPassTimer();
+    }
+});
 </script>
 @endif
