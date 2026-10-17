@@ -923,6 +923,9 @@ class AdminController extends Controller
      */
     public function plans(Request $request)
     {
+        Plan::ensureRentalPlansExist();
+        Plan::ensureBuyerPlansExist();
+
         $query = Plan::query();
         if ($request->filled('purpose') && in_array($request->purpose, ['rent', 'buy'])) {
             $query->whereIn('purpose', [$request->purpose, 'both']);

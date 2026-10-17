@@ -953,18 +953,32 @@
                                 @if($isOwnerOrAdmin || $hasViewed)
                                     {{-- Show full contact details --}}
                                     <div class="space-y-2.5 pt-3 border-t border-slate-200 mt-3">
+                                        @php
+                                            $displayPhone = !empty($property->contact_phone) ? $property->contact_phone : (!empty($property->owner->phone) ? $property->owner->phone : 'Not provided');
+                                            $altNumbers = !empty($property->alternate_phone) ? array_filter(array_map('trim', explode(',', $property->alternate_phone))) : [];
+                                        @endphp
                                         <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                                            @php
-                                                $displayPhone = !empty($property->contact_phone) ? $property->contact_phone : (!empty($property->owner->phone) ? $property->owner->phone : 'Not provided');
-                                            @endphp
                                             <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                                                 <i class="ph-bold ph-phone text-sm"></i>
                                             </div>
                                             <a href="tel:{{ $displayPhone !== 'Not provided' ? $displayPhone : '' }}" class="text-slate-800 hover:text-blue-600 font-bold truncate flex-1" title="Call Owner">
                                                 {{ $displayPhone }}
                                             </a>
-                                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Direct</span>
+                                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Primary</span>
                                         </div>
+
+                                        @foreach($altNumbers as $altNum)
+                                        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
+                                            <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                                                <i class="ph-bold ph-phone-call text-sm"></i>
+                                            </div>
+                                            <a href="tel:{{ $altNum }}" class="text-slate-800 hover:text-blue-600 font-bold truncate flex-1" title="Call Alternate Number">
+                                                {{ $altNum }}
+                                            </a>
+                                            <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">Alternate</span>
+                                        </div>
+                                        @endforeach
+
                                         <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
                                             <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                                                 <i class="ph-bold ph-envelope text-sm"></i>

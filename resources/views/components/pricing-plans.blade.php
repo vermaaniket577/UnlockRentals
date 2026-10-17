@@ -762,25 +762,28 @@
 </style>
 
 @php
+    try {
+        \App\Models\Plan::ensureRentalPlansExist();
+        \App\Models\Plan::ensureBuyerPlansExist();
+    } catch (\Throwable $e) {}
+
     $rentPlans = (isset($allRentPlans) && $allRentPlans->isNotEmpty())
         ? $allRentPlans->take(3)
-        : \Illuminate\Support\Facades\Cache::remember('active_rent_plans_v1', 3600, function () {
-            return \App\Models\Plan::active()
-                ->where('is_private', false)
-                ->whereIn('purpose', ['rent', 'both', null])
-                ->orderBy('sort_order')
-                ->get();
-        })->take(3);
+        : \App\Models\Plan::active()
+            ->where('is_private', false)
+            ->whereIn('purpose', ['rent', 'both', null])
+            ->orderBy('sort_order')
+            ->take(3)
+            ->get();
 
     $buyPlans = (isset($allBuyPlans) && $allBuyPlans->isNotEmpty())
         ? $allBuyPlans->take(3)
-        : \Illuminate\Support\Facades\Cache::remember('active_buy_plans_v1', 3600, function () {
-            return \App\Models\Plan::active()
-                ->where('is_private', false)
-                ->whereIn('purpose', ['buy', 'sale'])
-                ->orderBy('sort_order')
-                ->get();
-        })->take(3);
+        : \App\Models\Plan::active()
+            ->where('is_private', false)
+            ->whereIn('purpose', ['buy', 'sale'])
+            ->orderBy('sort_order')
+            ->take(3)
+            ->get();
 
     if ($buyPlans->isEmpty()) {
         $buyPlans = $rentPlans;

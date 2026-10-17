@@ -43,6 +43,8 @@ class Plan extends Model
             \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
             \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v2');
             \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v2');
+            \Illuminate\Support\Facades\Cache::forget('rental_plans_ensured_v1');
+            \Illuminate\Support\Facades\Cache::forget('buyer_plans_ensured_v1');
         });
 
         static::deleted(function () {
@@ -50,6 +52,8 @@ class Plan extends Model
             \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
             \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v2');
             \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v2');
+            \Illuminate\Support\Facades\Cache::forget('rental_plans_ensured_v1');
+            \Illuminate\Support\Facades\Cache::forget('buyer_plans_ensured_v1');
         });
     }
 
@@ -208,6 +212,94 @@ class Plan extends Model
             \Illuminate\Support\Facades\Cache::forever('buyer_plans_ensured_v1', true);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('Auto-create buyer plans warning: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Ensure standard Rental Pass plans exist in the database.
+     */
+    public static function ensureRentalPlansExist(): void
+    {
+        if (\Illuminate\Support\Facades\Cache::has('rental_plans_ensured_v1')) {
+            return;
+        }
+
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('plans')) {
+                return;
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
+                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('purpose', 20)->default('rent')->after('description');
+                });
+            }
+
+            $count = static::whereIn('purpose', ['rent', 'both'])->orWhereNull('purpose')->count();
+            if ($count === 0) {
+                static::create([
+                    'name'          => 'Silver Starter Pass',
+                    'purpose'       => 'rent',
+                    'description'   => 'Essential direct owner contact access for verified rental listings in top localities.',
+                    'price'         => 199.00,
+                    'duration_days' => 45,
+                    'contact_limit' => 30,
+                    'features'      => [
+                        '30 Verified Owner Direct Contacts',
+                        'Instant WhatsApp & Phone Call Unlock',
+                        'Zero Brokerage Guaranteed',
+                        '45 Days Validity',
+                        'Standard Online Support',
+                    ],
+                    'is_active'     => true,
+                    'sort_order'    => 1,
+                ]);
+
+                static::create([
+                    'name'          => 'Gold Direct Pass',
+                    'purpose'       => 'rent',
+                    'description'   => 'Best value for 1BHK, 2BHK & 3BHK home hunters. Directly call & WhatsApp owners with 0% middleman brokerage.',
+                    'price'         => 499.00,
+                    'duration_days' => 150,
+                    'contact_limit' => 75,
+                    'features'      => [
+                        '75 Verified Owner Contacts',
+                        'Zero Brokerage Guaranteed',
+                        '150 Days Active Validity',
+                        'Instant WhatsApp Connect',
+                    ],
+                    'is_active'     => true,
+                    'sort_order'    => 2,
+                ]);
+
+                static::create([
+                    'name'          => 'Platinum VIP Pass',
+                    'purpose'       => 'rent',
+                    'description'   => 'Ultimate VIP pass with maximum direct owner unlocks, concierge support, and lease assistance.',
+                    'price'         => 999.00,
+                    'duration_days' => 180,
+                    'contact_limit' => 150,
+                    'features'      => [
+                        '150 Verified Owner Direct Contacts',
+                        'Instant WhatsApp & Phone Call Unlock',
+                        'Zero Brokerage Guaranteed (Save ₹50,000+)',
+                        '180 Days VIP Access (6 Months)',
+                        'Dedicated Relationship Manager',
+                        'Free Rental Agreement Draft Template',
+                    ],
+                    'is_active'     => true,
+                    'sort_order'    => 3,
+                ]);
+
+                \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v1');
+                \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
+                \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v2');
+                \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v2');
+            }
+
+            \Illuminate\Support\Facades\Cache::forever('rental_plans_ensured_v1', true);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Auto-create rental plans warning: ' . $e->getMessage());
         }
     }
 }

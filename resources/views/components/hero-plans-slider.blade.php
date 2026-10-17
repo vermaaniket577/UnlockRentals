@@ -8,23 +8,20 @@
 
 @php
     try {
+        \App\Models\Plan::ensureRentalPlansExist();
         \App\Models\Plan::ensureBuyerPlansExist();
 
-        $allRentPlans = \Illuminate\Support\Facades\Cache::remember('active_rent_plans_v2', 3600, function () {
-            return \App\Models\Plan::active()
-                ->where('is_private', false)
-                ->whereIn('purpose', ['rent', 'both', null])
-                ->orderBy('sort_order')
-                ->get();
-        });
+        $allRentPlans = \App\Models\Plan::active()
+            ->where('is_private', false)
+            ->whereIn('purpose', ['rent', 'both', null])
+            ->orderBy('sort_order')
+            ->get();
 
-        $allBuyPlans = \Illuminate\Support\Facades\Cache::remember('active_buy_plans_v2', 3600, function () {
-            return \App\Models\Plan::active()
-                ->where('is_private', false)
-                ->whereIn('purpose', ['buy', 'sale'])
-                ->orderBy('sort_order')
-                ->get();
-        });
+        $allBuyPlans = \App\Models\Plan::active()
+            ->where('is_private', false)
+            ->whereIn('purpose', ['buy', 'sale'])
+            ->orderBy('sort_order')
+            ->get();
     } catch (\Throwable $e) {
         $allRentPlans = collect();
         $allBuyPlans = collect();
@@ -195,50 +192,44 @@
 
     // Pricing & offer calculations for Gold
     $goldOffer = $resolvePlanOffer($goldRent, 'monthly');
-    $goldBasePrice = (float) ($goldRent && $goldRent->price > 0 ? $goldRent->price : 999);
-    $hasGoldOffer = ($goldOffer && $goldOffer->discounted_price !== null) || ($goldBasePrice <= 100 && $goldBasePrice > 0);
-    $goldPrice = ($goldOffer && $goldOffer->discounted_price !== null) 
-        ? (float) $goldOffer->discounted_price 
-        : (($goldBasePrice <= 100 && $goldBasePrice > 0) ? $goldBasePrice : ($goldRent && $goldRent->price > 499 ? (float)$goldRent->price : 999));
-    $goldRegularPrice = ($goldBasePrice <= 100) ? 999.0 : $goldBasePrice;
-    $goldOrigPrice = ($hasGoldOffer && $goldRegularPrice > $goldPrice * 1.25) ? $goldRegularPrice : 2797;
+    $goldBasePrice = (float) ($goldRent && $goldRent->price > 0 ? $goldRent->price : 499);
+    $hasGoldOffer = ($goldOffer && $goldOffer->discounted_price !== null);
+    $goldPrice = $hasGoldOffer ? (float) $goldOffer->discounted_price : $goldBasePrice;
+    $goldRegularPrice = $goldBasePrice;
+    $goldOrigPrice = $hasGoldOffer ? $goldRegularPrice : round(max($goldPrice * 2, $goldPrice * 2.5));
     if ($goldOrigPrice <= $goldPrice) {
-        $goldOrigPrice = round(max(2499, $goldPrice * 2.5));
+        $goldOrigPrice = round(max($goldPrice + 500, $goldPrice * 2));
     }
-    $goldSavingsPct = max(50, min(85, (int) round((1 - ($goldPrice / max(1, $goldOrigPrice))) * 100)));
+    $goldSavingsPct = max(30, min(85, (int) round((1 - ($goldPrice / max(1, $goldOrigPrice))) * 100)));
     $goldDays = max(1, (int) ($goldRent->duration_days ?? 150));
     $goldPerDay = $goldPrice < 5 ? round($goldPrice / $goldDays, 2) : round($goldPrice / $goldDays, 1);
 
     // Pricing & offer calculations for Platinum
     $platOffer = $resolvePlanOffer($platRent, 'monthly');
-    $platBasePrice = (float) ($platRent->price ?? 1999);
-    $hasPlatOffer = ($platOffer && $platOffer->discounted_price !== null) || ($platBasePrice <= 100 && $platBasePrice > 0);
-    $platPrice = ($platOffer && $platOffer->discounted_price !== null) 
-        ? (float) $platOffer->discounted_price 
-        : (($platBasePrice <= 100 && $platBasePrice > 0) ? $platBasePrice : $platBasePrice);
-    $platRegularPrice = ($platBasePrice <= 100) ? 1999.0 : $platBasePrice;
-    $platOrigPrice = ($hasPlatOffer && $platRegularPrice > $platPrice * 1.25) ? $platRegularPrice : round($platRegularPrice * 2.8);
+    $platBasePrice = (float) ($platRent && $platRent->price > 0 ? $platRent->price : 999);
+    $hasPlatOffer = ($platOffer && $platOffer->discounted_price !== null);
+    $platPrice = $hasPlatOffer ? (float) $platOffer->discounted_price : $platBasePrice;
+    $platRegularPrice = $platBasePrice;
+    $platOrigPrice = $hasPlatOffer ? $platRegularPrice : round(max($platPrice * 2, $platPrice * 2.5));
     if ($platOrigPrice <= $platPrice) {
-        $platOrigPrice = round(max(4999, $platPrice * 2.5));
+        $platOrigPrice = round(max($platPrice + 1000, $platPrice * 2));
     }
-    $platSavingsPct = max(50, min(85, (int) round((1 - ($platPrice / max(1, $platOrigPrice))) * 100)));
+    $platSavingsPct = max(30, min(85, (int) round((1 - ($platPrice / max(1, $platOrigPrice))) * 100)));
     $platDays = max(1, (int) ($platRent->duration_days ?? 180));
     $platPerDay = $platPrice < 5 ? round($platPrice / $platDays, 2) : round($platPrice / $platDays, 1);
 
     // Pricing & offer calculations for Silver
     $silverOffer = $resolvePlanOffer($silverRent, 'monthly');
-    $silverBasePrice = (float) ($silverRent->price ?? 399);
-    $hasSilverOffer = ($silverOffer && $silverOffer->discounted_price !== null) || ($silverBasePrice <= 500 && $silverBasePrice > 0);
-    $silverPrice = ($silverOffer && $silverOffer->discounted_price !== null) 
-        ? (float) $silverOffer->discounted_price 
-        : $silverBasePrice;
-    $silverRegularPrice = ($silverBasePrice <= 10) ? 399.0 : $silverBasePrice;
-    $silverOrigPrice = ($hasSilverOffer && $silverRegularPrice > $silverPrice * 1.25) ? $silverRegularPrice : round(max(999.00, $silverRegularPrice * 2.5));
+    $silverBasePrice = (float) ($silverRent && $silverRent->price > 0 ? $silverRent->price : 199);
+    $hasSilverOffer = ($silverOffer && $silverOffer->discounted_price !== null);
+    $silverPrice = $hasSilverOffer ? (float) $silverOffer->discounted_price : $silverBasePrice;
+    $silverRegularPrice = $silverBasePrice;
+    $silverOrigPrice = $hasSilverOffer ? $silverRegularPrice : round(max($silverPrice * 2, $silverPrice * 2.5));
     if ($silverOrigPrice <= $silverPrice) {
-        $silverOrigPrice = round(max(999, $silverPrice * 2.5));
+        $silverOrigPrice = round(max($silverPrice + 300, $silverPrice * 2));
     }
-    $silverSavingsPct = max(50, min(85, (int) round((1 - ($silverPrice / max(1, $silverOrigPrice))) * 100)));
-    $silverDays = max(1, (int) ($silverRent->duration_days ?? 60));
+    $silverSavingsPct = max(30, min(85, (int) round((1 - ($silverPrice / max(1, $silverOrigPrice))) * 100)));
+    $silverDays = max(1, (int) ($silverRent->duration_days ?? 45));
     $silverPerDay = $silverPrice < 5 ? round($silverPrice / $silverDays, 2) : round($silverPrice / $silverDays, 1);
 
     $heroSlides = collect([
@@ -384,20 +375,19 @@
 
     if ($allBuyPlans->isNotEmpty()) {
         foreach ($allBuyPlans as $bPlan) {
-            $buyerBasePrice = (float) (($bPlan->price && $bPlan->price > 0) ? $bPlan->price : 999.00);
+            $buyerBasePrice = (float) (($bPlan->price && $bPlan->price > 0) ? $bPlan->price : 399.00);
             $buyerOffer = $resolvePlanOffer($bPlan, 'yearly');
-            $hasBuyerOffer = ($buyerOffer && $buyerOffer->discounted_price !== null) || ((float)($bPlan->price ?? 0) > 0 && (float)($bPlan->price ?? 0) < 500);
-            $buyerPrice = ($buyerOffer && $buyerOffer->discounted_price !== null) 
+            $hasBuyerOffer = ($buyerOffer && $buyerOffer->discounted_price !== null);
+            $buyerPrice = $hasBuyerOffer 
                 ? (float) $buyerOffer->discounted_price 
                 : $buyerBasePrice;
             $buyerDays = (int) ($bPlan->duration_days ?: 60);
             $buyerContacts = (int) ($bPlan->contact_limit ?: 30);
-            $buyerAnchorPrice = ($buyerBasePrice > $buyerPrice * 1.25) ? $buyerBasePrice : round(max(999.00, $buyerPrice * 2.5));
-            $buyerOrigPrice = $buyerAnchorPrice;
+            $buyerOrigPrice = $hasBuyerOffer ? $buyerBasePrice : round(max($buyerPrice * 2, $buyerPrice * 2.5));
             if ($buyerOrigPrice <= $buyerPrice) {
-                $buyerOrigPrice = round(max(999.00, $buyerPrice * 2.5));
+                $buyerOrigPrice = round(max($buyerPrice + 500, $buyerPrice * 2));
             }
-            $buyerSavingsPct = max(50, min(85, (int) round((1 - ($buyerPrice / max(1, $buyerOrigPrice))) * 100)));
+            $buyerSavingsPct = max(30, min(85, (int) round((1 - ($buyerPrice / max(1, $buyerOrigPrice))) * 100)));
             $buyerPerDay = $buyerPrice < 5 ? round($buyerPrice / max(1, $buyerDays), 2) : round($buyerPrice / max(1, $buyerDays), 1);
 
             $isGoldBuyer = str_contains(strtolower($bPlan->name), 'gold');
@@ -1694,8 +1684,10 @@
 
 /* ─── RESPONSIVE BEHAVIOR (MOBILE & TABLET: 16:9 SLIDER CARDS) ─── */
 @media (max-width: 1023px) {
-    /* Hide the complex tall desktop layout completely on mobile */
-    .ur-hps-desktop-grid {
+    /* Hide the complex tall desktop layout and desktop background overlays completely on mobile */
+    .ur-hps-desktop-grid,
+    .ur-buyer-bg-wrap,
+    .ur-hps-desktop-backdrop {
         display: none !important;
     }
 
@@ -1872,6 +1864,7 @@
         display: flex !important;
         flex-direction: column;
         position: relative;
+        z-index: 10 !important;
         width: 100%;
         aspect-ratio: auto !important;
         min-height: auto !important;
@@ -1880,9 +1873,7 @@
         overflow: hidden;
         padding: 1.25rem 1.15rem 1.15rem !important;
         box-sizing: border-box;
-        background: rgba(255, 255, 255, 0.98) !important;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: #ffffff !important;
         border: 1.5px solid rgba(16, 185, 129, 0.22) !important;
         box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(16, 185, 129, 0.08) !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1927,7 +1918,7 @@
     .ur-mc-scrim {
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.72) 100%);
     }
 
     /* 1. Consolidated Header Row: Warm Discount Highlight on Left, Clean Status on Right */
@@ -2615,7 +2606,7 @@
                                 $showOrig = ($origPrice > $curPrice);
                                 $ctaText = !empty($s['has_offer']) 
                                     ? ('Unlock for ₹' . number_format($curPrice, 0) . ' →') 
-                                    : ('Unlock Pass →');
+                                    : ('Unlock Pass · ₹' . number_format($curPrice, 0) . ' →');
                             @endphp
 
                             <div class="ur-mc-pricing-dock">
