@@ -400,6 +400,11 @@ window.switchAuthTab = function(tab) {
     if (alertBox) alertBox.classList.add('hidden');
 
     if (tab === 'register') {
+        const loginPhone = document.getElementById('modal-login-phone-input');
+        const regPhone = document.getElementById('modal-reg-phone-input');
+        if (loginPhone && regPhone && loginPhone.value && !regPhone.value) {
+            regPhone.value = loginPhone.value;
+        }
         if (loginContainer) loginContainer.classList.add('hidden');
         if (regContainer) regContainer.classList.remove('hidden');
         if (tabReg) {
@@ -409,6 +414,11 @@ window.switchAuthTab = function(tab) {
             tabLogin.className = "py-2 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer";
         }
     } else {
+        const loginPhone = document.getElementById('modal-login-phone-input');
+        const regPhone = document.getElementById('modal-reg-phone-input');
+        if (loginPhone && regPhone && regPhone.value && !loginPhone.value) {
+            loginPhone.value = regPhone.value;
+        }
         if (regContainer) regContainer.classList.add('hidden');
         if (loginContainer) loginContainer.classList.remove('hidden');
         if (tabLogin) {
@@ -470,6 +480,48 @@ function getModalCsrf() {
     return meta ? meta.getAttribute('content') : '{{ csrf_token() }}';
 }
 
+/* ── Helper: Safe Fetch with Auto CSRF Renewal ─────────── */
+async function modalFetch(url, options = {}) {
+    options.headers = options.headers || {};
+    options.headers['X-Requested-With'] = 'XMLHttpRequest';
+    options.headers['Accept'] = 'application/json';
+    if (!options.headers['X-CSRF-TOKEN']) {
+        options.headers['X-CSRF-TOKEN'] = getModalCsrf();
+    }
+
+    let res;
+    try {
+        res = await fetch(url, options);
+    } catch (e) {
+        throw e;
+    }
+
+    // If CSRF token mismatch (419), silently fetch a fresh token and retry once
+    if (res.status === 419) {
+        try {
+            const tokenRes = await fetch('{{ route("csrf.token") }}', {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (tokenRes.ok) {
+                const tokenData = await tokenRes.json();
+                if (tokenData && tokenData.csrf_token) {
+                    const meta = document.querySelector('meta[name="csrf-token"]');
+                    if (meta) meta.setAttribute('content', tokenData.csrf_token);
+                    options.headers['X-CSRF-TOKEN'] = tokenData.csrf_token;
+                    if (options.body instanceof FormData && options.body.has('_token')) {
+                        options.body.set('_token', tokenData.csrf_token);
+                    }
+                    res = await fetch(url, options);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to renew CSRF token:', e);
+        }
+    }
+
+    return res;
+}
+
 function showModalAlert(msg, type = 'error') {
     const alertBox = document.getElementById('ur-auth-alert');
     if (!alertBox) return;
@@ -502,13 +554,10 @@ window.modalSendLoginOtp = async function() {
     sendBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Sending...`;
 
     try {
-        const res = await fetch('{{ route("otp.send") }}', {
+        const res = await modalFetch('{{ route("otp.send") }}', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getModalCsrf(),
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ phone: phone, purpose: 'login' })
         });
@@ -542,7 +591,11 @@ window.modalSendLoginOtp = async function() {
                 }, 100);
             }
         } else {
-            showModalAlert(data.message || 'Unable to send OTP. Please check your number.');
+            let errorMsg = data.message || 'Unable to send OTP. Please check your number.';
+            if (res.status === 422 && errorMsg.toLowerCase().includes('register')) {
+                errorMsg = `No account found with this phone number. <a href="javascript:void(0)" onclick="window.switchAuthTab('register')" class="underline font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 ml-1">Create Account &rarr;</a>`;
+            }
+            showModalAlert(errorMsg);
             sendBtn.disabled = false;
             sendBtn.innerHTML = `<i class="ph-bold ph-paper-plane-tilt text-sm"></i> Send OTP`;
         }
@@ -571,13 +624,10 @@ window.modalVerifyLoginOtp = async function() {
     verifyBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Verifying...`;
 
     try {
-        const res = await fetch('{{ route("otp.login") }}', {
+        const res = await modalFetch('{{ route("otp.login") }}', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getModalCsrf(),
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ phone: phone, otp: otp })
         });
@@ -620,13 +670,10 @@ window.modalSendRegisterOtp = async function() {
     sendBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Sending...`;
 
     try {
-        const res = await fetch('{{ route("otp.send") }}', {
+        const res = await modalFetch('{{ route("otp.send") }}', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getModalCsrf(),
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ phone: phone, purpose: 'register' })
         });
@@ -722,13 +769,10 @@ window.modalSubmitRegisterWithMobile = async function() {
 
     try {
         // Step 1: Verify the registration OTP
-        const verifyRes = await fetch('{{ route("otp.verify") }}', {
+        const verifyRes = await modalFetch('{{ route("otp.verify") }}', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getModalCsrf(),
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ phone: phone, otp: otp, purpose: 'register' })
         });
@@ -742,13 +786,10 @@ window.modalSubmitRegisterWithMobile = async function() {
         }
 
         // Step 2: Register account
-        const regRes = await fetch('{{ route("register") }}', {
+        const regRes = await modalFetch('{{ route("register") }}', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': getModalCsrf(),
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 name: name,
@@ -890,13 +931,9 @@ async function handleModalAuthSubmit(event, type) {
 
     try {
         const formData = new FormData(form);
-        const response = await fetch(form.action, {
+        const response = await modalFetch(form.action, {
             method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
+            body: formData
         });
 
         const data = await response.json();

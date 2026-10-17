@@ -43,6 +43,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/v1/admission-enquiry',
             'plans/*/razorpay/callback',
             'plans/*/purchase/process',
+            'otp/*',
+            'otp/send',
+            'otp/verify',
+            'otp/login',
         ]);
         $middleware->encryptCookies(except: [
             'ur_visitor_uuid',

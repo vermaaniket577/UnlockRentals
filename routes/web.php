@@ -32,6 +32,12 @@ Route::get('/mobile-home', function () {
     return view('mobile-preview');
 })->name('mobile.home');
 
+Route::get('/csrf-token', function () {
+    return response()->json([
+        'csrf_token' => csrf_token(),
+    ]);
+})->name('csrf.token');
+
 Route::get('/', function(Illuminate\Http\Request $request) {
     $hasFilters = $request->hasAny(['state','district','locality','type','price','rooms','purpose','sort','availability','unbooked','media']);
 
