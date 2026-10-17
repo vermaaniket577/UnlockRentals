@@ -148,7 +148,7 @@
             <h3 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-slate-100 mb-6">
                 Featured Rental Properties
             </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                 @foreach($recommendations as $recProperty)
                     <x-property-card :property="$recProperty" />
                 @endforeach

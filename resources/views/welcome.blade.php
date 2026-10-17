@@ -3209,7 +3209,7 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5" id="featuredPropertiesGrid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-7" id="featuredPropertiesGrid">
                 @forelse($featuredRentals as $property)
                     <x-property-card :property="$property" />
                 @empty
@@ -3233,10 +3233,10 @@
                 </div>
             </div>
             
-            <div style="text-align: center; margin-top: 50px;">
-                <a href="{{ route('properties.index') }}" class="btn-explore-premium" title="Explore All Rentals">
-                    <span>Explore All Rentals</span>
-                    <i class="ph ph-bold ph-arrow-right"></i>
+            <div style="text-align: center; margin-top: 45px;">
+                <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-2 px-7 py-3.5 bg-[#0f172a] hover:bg-slate-800 active:bg-slate-900 text-white font-extrabold text-sm sm:text-base rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]" title="Explore All 10,000+ Direct Listings">
+                    <span>Explore All 10,000+ Direct Listings</span>
+                    <i class="ph-bold ph-arrow-right"></i>
                 </a>
             </div>
         </div>
