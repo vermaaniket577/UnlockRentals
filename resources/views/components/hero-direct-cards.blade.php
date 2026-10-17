@@ -60,12 +60,14 @@
                 @foreach($allDirectPlans as $idx => $plan)
                     @php
                         $isBuy = $plan->isBuyPlan();
-                        $planPurpose = $isBuy ? 'buy' : 'rent';
+                        $isRent = $plan->isRentPlan();
+                        $rawPurpose = $plan->purpose ?? ($isBuy ? 'buy' : 'rent');
+                        $dataPurpose = ($rawPurpose === 'both') ? 'rent buy' : $rawPurpose;
                         $planNameLower = strtolower($plan->name);
                         
                         // Determine tier badge & icon
                         if (str_contains($planNameLower, 'platinum') || str_contains($planNameLower, 'vip')) {
-                            $tierText = 'PLATINUM VIP ACCESS';
+                            $tierText = $isBuy ? 'PLATINUM VIP BUYER' : 'PLATINUM VIP ACCESS';
                         } elseif (str_contains($planNameLower, 'gold')) {
                             $tierText = $isBuy ? 'GOLD BUYER ACCESS' : 'GOLD ACCESS';
                         } elseif (str_contains($planNameLower, 'silver')) {
@@ -74,12 +76,18 @@
                             $tierText = strtoupper($plan->name) . ' ACCESS';
                         }
 
-                        // Mint badge text
-                        $mintText = 'BUYER & TENANT PASS';
+                        // Mint badge text indicating Buyer Pass or Tenant Pass
+                        if ($rawPurpose === 'buy') {
+                            $mintText = 'BUYER PASS';
+                        } elseif ($rawPurpose === 'rent') {
+                            $mintText = 'TENANT PASS';
+                        } else {
+                            $mintText = 'BUYER & TENANT PASS';
+                        }
 
                         // Estimated brokerage savings text
                         if ($isBuy) {
-                            $savingsText = 'Save ₹1,50,000+ Average';
+                            $savingsText = $plan->price >= 1500 ? 'Save ₹2,50,000+ Average' : ($plan->price >= 700 ? 'Save ₹1,50,000+ Average' : 'Save ₹75,000+ Average');
                         } elseif ($plan->price >= 900) {
                             $savingsText = 'Save ₹1,00,000+ Average';
                         } elseif ($plan->price >= 400) {
@@ -93,7 +101,7 @@
                             : url('/plans');
                     @endphp
 
-                    <div class="ur-direct-card-item flex-shrink-0 snap-center" data-purpose="{{ $planPurpose }}" data-card-index="{{ $idx }}">
+                    <div class="ur-direct-card-item flex-shrink-0 snap-center" data-purpose="{{ $dataPurpose }}" data-card-index="{{ $idx }}">
                         <div class="ur-direct-card">
                             
                             {{-- Top Badges Row --}}
@@ -113,7 +121,7 @@
                                 Unlock {{ $plan->contact_limit }}+ Direct {{ $isBuy ? 'Sellers' : 'Landlords' }}
                             </h4>
                             <p class="ur-dc-sub">
-                                Skip brokerage charges completely. Instant contact numbers.
+                                {{ $plan->description ?: 'Skip brokerage charges completely. Instant contact numbers.' }}
                             </p>
 
                             {{-- Footer Dock: Price & Unlock CTA --}}
@@ -155,7 +163,7 @@
         {{-- Slider Dot Indicators --}}
         <div class="flex items-center justify-center gap-1.5 mt-2 sm:mt-3" id="urDirectSliderDots">
             @foreach($allDirectPlans as $idx => $p)
-                <button type="button" onclick="scrollDirectPassToIndex({{ $idx }})" class="ur-ds-dot {{ $idx === 0 ? 'active' : '' }}" aria-label="Go to pass {{ $idx + 1 }}"></button>
+                <button type="button" onclick="scrollDirectPassToIndex({{ $idx }}); resetDirectPassAutoTimer();" class="ur-ds-dot {{ $idx === 0 ? 'active' : '' }}" aria-label="Go to pass {{ $idx + 1 }}"></button>
             @endforeach
         </div>
 
@@ -409,6 +417,8 @@
 
 <script>
 let directPassCurrentIndex = 0;
+let directPassAutoTimer = null;
+const DIRECT_PASS_INTERVAL = 3800; // Auto-slides every 3.8 seconds
 
 function getDirectPassVisibleCards() {
     const grid = document.getElementById('urDirectCardsGrid');
@@ -416,13 +426,33 @@ function getDirectPassVisibleCards() {
     return Array.from(grid.querySelectorAll('.ur-direct-card-item')).filter(c => c.style.display !== 'none');
 }
 
-function slideDirectPasses(direction) {
+function slideDirectPasses(direction, isAuto = false) {
     const grid = document.getElementById('urDirectCardsGrid');
     const cards = getDirectPassVisibleCards();
-    if (!grid || !cards.length) return;
+    if (!grid || cards.length <= 1) return;
 
-    directPassCurrentIndex = Math.max(0, Math.min(cards.length - 1, directPassCurrentIndex + direction));
+    const isAtEnd = (grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 20);
+    const isAtStart = (grid.scrollLeft <= 20);
+
+    if (direction > 0) {
+        if (directPassCurrentIndex >= cards.length - 1 || isAtEnd) {
+            directPassCurrentIndex = 0;
+        } else {
+            directPassCurrentIndex += 1;
+        }
+    } else {
+        if (directPassCurrentIndex <= 0 || isAtStart) {
+            directPassCurrentIndex = cards.length - 1;
+        } else {
+            directPassCurrentIndex -= 1;
+        }
+    }
+
     scrollDirectPassToIndex(directPassCurrentIndex);
+
+    if (!isAuto) {
+        resetDirectPassAutoTimer();
+    }
 }
 
 function scrollDirectPassToIndex(index) {
@@ -433,7 +463,11 @@ function scrollDirectPassToIndex(index) {
     if (index >= 0 && index < cards.length) {
         directPassCurrentIndex = index;
         const targetCard = cards[index];
-        const targetScrollLeft = targetCard.offsetLeft - grid.offsetLeft - (grid.clientWidth - targetCard.clientWidth) / 2;
+        const isMobile = window.innerWidth < 640;
+        const targetScrollLeft = isMobile
+            ? (targetCard.offsetLeft - grid.offsetLeft - (grid.clientWidth - targetCard.clientWidth) / 2)
+            : (targetCard.offsetLeft - grid.offsetLeft);
+
         grid.scrollTo({
             left: Math.max(0, targetScrollLeft),
             behavior: 'smooth'
@@ -449,13 +483,18 @@ function updateDirectPassDots() {
     if (!grid || !cards.length || !dots.length) return;
 
     const scrollLeft = grid.scrollLeft;
+    const isMobile = window.innerWidth < 640;
     let closestIndex = 0;
     let minDistance = Infinity;
 
     cards.forEach((c, idx) => {
-        const cardCenter = c.offsetLeft - grid.offsetLeft + (c.clientWidth / 2);
-        const viewCenter = scrollLeft + (grid.clientWidth / 2);
-        const distance = Math.abs(cardCenter - viewCenter);
+        const cardPos = isMobile
+            ? (c.offsetLeft - grid.offsetLeft + (c.clientWidth / 2))
+            : (c.offsetLeft - grid.offsetLeft);
+        const viewPos = isMobile
+            ? (scrollLeft + (grid.clientWidth / 2))
+            : scrollLeft;
+        const distance = Math.abs(cardPos - viewPos);
         if (distance < minDistance) {
             minDistance = distance;
             closestIndex = idx;
@@ -466,6 +505,53 @@ function updateDirectPassDots() {
     dots.forEach((d, idx) => {
         d.classList.toggle('active', idx === closestIndex);
     });
+}
+
+function buildDirectPassDots() {
+    const dotsContainer = document.getElementById('urDirectSliderDots');
+    const visibleCards = getDirectPassVisibleCards();
+    if (!dotsContainer) return;
+
+    dotsContainer.innerHTML = '';
+    if (visibleCards.length <= 1) {
+        dotsContainer.style.display = 'none';
+        return;
+    }
+    dotsContainer.style.display = 'flex';
+
+    visibleCards.forEach((c, idx) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'ur-ds-dot' + (idx === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Go to pass ' + (idx + 1));
+        dot.onclick = () => {
+            scrollDirectPassToIndex(idx);
+            resetDirectPassAutoTimer();
+        };
+        dotsContainer.appendChild(dot);
+    });
+}
+
+function startDirectPassAutoTimer() {
+    stopDirectPassAutoTimer();
+    const cards = getDirectPassVisibleCards();
+    if (cards.length <= 1) return;
+
+    directPassAutoTimer = setInterval(() => {
+        slideDirectPasses(1, true);
+    }, DIRECT_PASS_INTERVAL);
+}
+
+function stopDirectPassAutoTimer() {
+    if (directPassAutoTimer) {
+        clearInterval(directPassAutoTimer);
+        directPassAutoTimer = null;
+    }
+}
+
+function resetDirectPassAutoTimer() {
+    stopDirectPassAutoTimer();
+    startDirectPassAutoTimer();
 }
 
 function filterDirectPassCards(purpose, btn) {
@@ -484,8 +570,8 @@ function filterDirectPassCards(purpose, btn) {
 
     const cards = grid.querySelectorAll('.ur-direct-card-item');
     cards.forEach(card => {
-        const cardPurpose = card.getAttribute('data-purpose');
-        if (purpose === 'all' || cardPurpose === purpose) {
+        const cardPurpose = card.getAttribute('data-purpose') || '';
+        if (purpose === 'all' || cardPurpose.includes(purpose)) {
             card.style.display = '';
         } else {
             card.style.display = 'none';
@@ -495,47 +581,46 @@ function filterDirectPassCards(purpose, btn) {
     directPassCurrentIndex = 0;
     grid.scrollTo({ left: 0, behavior: 'smooth' });
 
-    // Update dots count
-    const visibleCards = getDirectPassVisibleCards();
-    const dotsContainer = document.getElementById('urDirectSliderDots');
-    if (dotsContainer) {
-        dotsContainer.innerHTML = '';
-        visibleCards.forEach((c, idx) => {
-            const dot = document.createElement('button');
-            dot.type = 'button';
-            dot.className = 'ur-ds-dot' + (idx === 0 ? ' active' : '');
-            dot.setAttribute('aria-label', 'Go to pass ' + (idx + 1));
-            dot.onclick = () => scrollDirectPassToIndex(idx);
-            dotsContainer.appendChild(dot);
-        });
-    }
-
+    buildDirectPassDots();
     updateDirectPassDots();
+    resetDirectPassAutoTimer();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('urDirectCardsGrid');
+    const viewport = document.getElementById('urDirectSliderViewport');
     if (!grid) return;
 
     grid.addEventListener('scroll', () => {
         requestAnimationFrame(updateDirectPassDots);
     }, { passive: true });
 
-    // Touch swipe gesture listeners
+    // Pause on hover
+    if (viewport) {
+        viewport.addEventListener('mouseenter', stopDirectPassAutoTimer);
+        viewport.addEventListener('mouseleave', startDirectPassAutoTimer);
+    }
+
+    // Touch swipe gesture listeners with pause and auto-resume
     let touchStartX = 0;
+    let touchStartY = 0;
     let isSwiping = false;
 
     grid.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
         isSwiping = true;
+        stopDirectPassAutoTimer();
     }, { passive: true });
 
     grid.addEventListener('touchend', (e) => {
         if (!isSwiping) return;
         const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
         const diffX = touchStartX - touchEndX;
+        const diffY = touchStartY - touchEndY;
 
-        if (Math.abs(diffX) > 35) {
+        if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
             if (diffX > 0) {
                 slideDirectPasses(1);
             } else {
@@ -543,9 +628,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         isSwiping = false;
+        setTimeout(startDirectPassAutoTimer, 2500);
     }, { passive: true });
 
+    // Handle tab visibility (pause when switching browser tabs)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopDirectPassAutoTimer();
+        } else {
+            startDirectPassAutoTimer();
+        }
+    });
+
+    buildDirectPassDots();
     updateDirectPassDots();
+    startDirectPassAutoTimer();
 });
 </script>
 @endif
