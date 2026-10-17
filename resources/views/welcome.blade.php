@@ -3024,13 +3024,6 @@
         </div>
     </div>
 
-    {{-- ====================================================
-         HERO PLANS SLIDER (NEW DESIGN - TOP)
-         Grand hero-scale slider directly below the Hero Section.
-         Note: The bottom pricing plans card section is fully preserved.
-         ==================================================== --}}
-    @include('components.hero-plans-slider')
-
     <!-- Premium Promo Slider Section (Desktop only to prevent duplicate sliders on mobile) -->
     <div class="promo-slider-container hidden lg:block">
         <div class="promo-slider" id="promo-slider">
