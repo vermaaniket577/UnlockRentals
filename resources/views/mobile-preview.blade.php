@@ -510,41 +510,35 @@
 <span class="bg-emerald-700 text-[10px] px-1.5 py-0.2 rounded-md font-bold">₹399 OFFER</span>
 </button>
 </div>
-<div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-700/80 shadow-sm relative transition-all duration-300" id="pass-card-box">
-<div class="flex items-start justify-between">
-<div class="space-y-1">
-<div class="flex items-center gap-1.5 flex-wrap">
-<span class="shimmer-sweep relative overflow-hidden px-2 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-[10px] font-bold border border-teal-200 dark:border-teal-800">
-                  SPECIAL OFFER
-                </span>
-<span class="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
-                  SAVE 99%
-                </span>
-<span class="animate-float-badge px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[10px] font-bold border border-blue-200/60 dark:border-blue-800/60 shadow-xs">
-                  ⚡ UNLOCKED FOR YOU
-                </span>
-</div>
-<h3 class="text-base font-extrabold text-slate-900 dark:text-white pt-1">
-                Direct Buyer Pass
-              </h3>
-<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                30 Direct Unlocks · 60 Full Days · Zero Commission
-              </p>
-</div>
-<div class="relative flex-shrink-0 group/avatar">
-<img alt="Verified Property Consultant and Owner Liaison" class="w-12 h-12 rounded-full object-cover border-2 border-emerald-500 shadow-sm transition-transform duration-300 group-hover/avatar:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ7UmyPuevSXjQeUm3xtJWhishk4NlWJia0rXb8r2BPrqL2N9H73RQVCjejLU6nFz3uA4Wc9VqY7SPonoHss_FyRKwVsE_F2suKDUFgG272gia79noCUVWW0D1X7ir6m0JUI_LO_w3q_620rsM36VDc5bCpLTJg7aqk5DCe6DH8RbgtKSTEcXH1p42VQNAXvz75gRbAPbkUiNdKU3uenQnpI0NrqujhIJ2HiAa-9ohOlzXEelpW1Ghvw"/>
-<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center">
-<span class="material-symbols-outlined text-[8px] text-white">check</span>
+<div class="rounded-[22px] p-4 text-white shadow-xl relative transition-all duration-300 overflow-hidden" style="background: radial-gradient(130% 120% at 75% 0%, #0d1e3d 0%, #071328 65%, #050c1a 100%); border: 1px solid rgba(255, 255, 255, 0.09);" id="pass-card-box">
+<div class="flex items-center justify-between mb-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500 bg-emerald-500/15 text-emerald-400 font-extrabold text-[10.5px] uppercase tracking-wider">
+<span class="material-symbols-outlined text-xs">verified_user</span>
+<span>BUYER & TENANT PASS</span>
+</span>
+<span class="inline-flex items-center gap-1.5 text-amber-400 font-extrabold text-[11px] uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">workspace_premium</span>
+<span>GOLD ACCESS</span>
 </span>
 </div>
+<h3 class="text-lg font-extrabold text-white tracking-tight leading-snug mb-1">
+Unlock 25+ Direct Landlords
+</h3>
+<p class="text-xs text-slate-400 font-normal leading-relaxed mb-4">
+Skip brokerage charges completely. Instant contact numbers.
+</p>
+<div class="flex items-center justify-between gap-3 pt-1">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-2">
+<span class="font-outfit text-2xl font-black text-white tracking-tight">₹399</span>
+<span class="text-sm font-medium text-slate-500 line-through">₹2,499</span>
 </div>
-<div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-<div class="text-[11px] text-slate-500 dark:text-slate-400">
-              Direct Verified Owner Contact Access
-            </div>
-<button class="px-3.5 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs hover:opacity-90 active:scale-95 transition-all shadow-sm" id="get-pass-btn">
-              Get Pass
-            </button>
+<span class="text-[11px] font-bold text-emerald-400 mt-0.5">Save ₹60,000+ Average</span>
+</div>
+<a href="/plans" class="inline-flex items-center justify-center gap-1 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold text-xs transition-all shadow-md shadow-emerald-500/30">
+<span>Unlock Now</span>
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
 </div>
 </div>
 </div>

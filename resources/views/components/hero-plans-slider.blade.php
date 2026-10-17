@@ -505,6 +505,208 @@
     overflow: hidden;
 }
 
+/* ─── IMAGE 2 LUXURY DARK CARD DESIGN (WEBSITE & MOBILE APP) ─── */
+.ur-dark-pass-card,
+.ur-hps-pass-card.ur-dark-pass-card,
+.ur-hps-mobile-card.ur-dark-pass-card {
+    position: relative !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: radial-gradient(130% 120% at 75% 0%, #0d1e3d 0%, #071328 65%, #050c1a 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 22px !important;
+    padding: 1.45rem 1.35rem 1.3rem !important;
+    box-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    color: #ffffff !important;
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease !important;
+}
+
+.ur-hps-pass-card.ur-dark-pass-card::before,
+.ur-hps-mobile-card.ur-dark-pass-card::before {
+    display: none !important;
+}
+
+.ur-dark-badges-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.95rem !important;
+}
+
+.ur-dark-badge-mint {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    padding: 0.28rem 0.75rem !important;
+    border-radius: 9999px !important;
+    border: 1.5px solid #10b981 !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #34d399 !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    line-height: 1.3 !important;
+}
+
+.ur-dark-badge-mint i {
+    font-size: 0.78rem !important;
+    color: #10b981 !important;
+}
+
+.ur-dark-badge-gold {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    color: #f59e0b !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    line-height: 1.3 !important;
+}
+
+.ur-dark-badge-gold i {
+    font-size: 0.88rem !important;
+    color: #f59e0b !important;
+}
+
+.ur-dark-card-title {
+    font-size: 1.45rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.025em !important;
+    margin: 0 0 0.35rem 0 !important;
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+.ur-dark-card-sub {
+    font-size: 0.84rem !important;
+    font-weight: 400 !important;
+    color: #94a3b8 !important;
+    line-height: 1.45 !important;
+    margin: 0 0 1.25rem 0 !important;
+}
+
+.ur-dark-footer-dock {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    margin-top: auto !important;
+    padding-top: 0.25rem !important;
+}
+
+.ur-dark-price-col {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+}
+
+.ur-dark-price-row {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 0.45rem !important;
+    line-height: 1 !important;
+}
+
+.ur-dark-price-val {
+    font-size: 1.75rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    letter-spacing: -0.03em !important;
+    font-family: 'Outfit', 'Inter', sans-serif !important;
+}
+
+.ur-dark-price-orig {
+    font-size: 0.92rem !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+    text-decoration: line-through !important;
+}
+
+.ur-dark-save-text {
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+    color: #10b981 !important;
+    margin-top: 0.32rem !important;
+    letter-spacing: 0.01em !important;
+}
+
+.ur-dark-unlock-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.45rem !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    padding: 0.7rem 1.35rem !important;
+    border-radius: 14px !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.ur-dark-unlock-btn:hover {
+    background: #059669 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45) !important;
+}
+
+.ur-dark-unlock-btn:active {
+    transform: scale(0.97) !important;
+}
+
+.ur-dark-unlock-btn i {
+    font-size: 0.92rem !important;
+    transition: transform 0.2s ease !important;
+}
+
+.ur-dark-unlock-btn:hover i {
+    transform: translateX(2px) !important;
+}
+
+.ur-dark-compare-link {
+    margin-top: 0.85rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    color: #94a3b8 !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease !important;
+}
+.ur-dark-compare-link:hover {
+    color: #ffffff !important;
+}
+
+@media (max-width: 480px) {
+    .ur-dark-card-title {
+        font-size: 1.32rem !important;
+    }
+    .ur-dark-price-val {
+        font-size: 1.55rem !important;
+    }
+    .ur-dark-unlock-btn {
+        padding: 0.62rem 1.15rem !important;
+        font-size: 0.86rem !important;
+    }
+}
+
 .ur-hero-plans-slider-section {
     position: relative;
     width: 100%;
@@ -2373,138 +2575,66 @@
                                 </div>
                             </div>
 
-                            {{-- PART 2: RIGHT COLUMN (Dedicated High-Conversion Pass Card) --}}
+                            {{-- PART 2: RIGHT COLUMN (Image 2 Dark Pass Card) --}}
                             <div class="ur-hps-col-right">
-                                <div class="ur-hps-pass-card ur-hps-pass-card--{{ $s['theme'] }}">
-                                    {{-- Card Header with Plan Identity --}}
-                                    <div class="ur-hps-card-header">
-                                        <div class="ur-hps-card-title-group">
-                                            <span class="ur-hps-card-tier-pill ur-hps-card-tier-pill--{{ $s['theme'] }}">
-                                                <i class="ph-fill {{ $s['theme'] === 'gold' ? 'ph-crown' : ($s['theme'] === 'platinum' ? 'ph-sparkle' : ($s['theme'] === 'buyer' ? 'ph-buildings' : 'ph-shield-check')) }}"></i>
-                                                {{ $s['tab_label'] }}
-                                            </span>
-                                            <span class="ur-hps-card-brand-sub">Direct Pass</span>
-                                        </div>
-                                        <div class="ur-hps-card-emblem">
-                                            @if($s['theme'] === 'gold')
-                                                <svg class="ur-emblem-svg" viewBox="0 0 48 48" fill="none">
-                                                    <defs>
-                                                        <linearGradient id="goldHero_{{ $planUid }}" x1="4" y1="8" x2="44" y2="40" gradientUnits="userSpaceOnUse">
-                                                            <stop offset="0%" stop-color="#FDE047"/>
-                                                            <stop offset="45%" stop-color="#F59E0B"/>
-                                                            <stop offset="100%" stop-color="#D97706"/>
-                                                        </linearGradient>
-                                                    </defs>
-                                                    <path d="M6 34L10 14L19 23L24 8L29 23L38 14L42 34H6Z" fill="url(#goldHero_{{ $planUid }})"/>
-                                                    <rect x="6" y="34" width="36" height="6" rx="3" fill="#B45309"/>
-                                                    <circle cx="24" cy="8" r="3.5" fill="#EF4444" stroke="#FFF" stroke-width="1.5"/>
-                                                    <circle cx="10" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
-                                                    <circle cx="38" cy="14" r="3" fill="#3B82F6" stroke="#FFF" stroke-width="1.5"/>
-                                                    <circle cx="24" cy="37" r="2" fill="#10B981"/>
-                                                </svg>
-                                            @elseif($s['theme'] === 'platinum')
-                                                <svg class="ur-emblem-svg" viewBox="0 0 48 48" fill="none">
-                                                    <defs>
-                                                        <linearGradient id="platHero_{{ $planUid }}" x1="6" y1="10" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-                                                            <stop offset="0%" stop-color="#93C5FD"/>
-                                                            <stop offset="50%" stop-color="#3B82F6"/>
-                                                            <stop offset="100%" stop-color="#1D4ED8"/>
-                                                        </linearGradient>
-                                                    </defs>
-                                                    <polygon points="14,10 34,10 42,20 6,20" fill="url(#platHero_{{ $planUid }})"/>
-                                                    <polygon points="6,20 42,20 24,42" fill="url(#platHero_{{ $planUid }})"/>
-                                                    <polygon points="15,20 33,20 24,42" fill="#BAE6FD" fill-opacity="0.8"/>
-                                                </svg>
-                                            @elseif($s['theme'] === 'buyer')
-                                                <svg class="ur-emblem-svg" viewBox="0 0 48 48" fill="none">
-                                                    <defs>
-                                                        <linearGradient id="buyHero_{{ $planUid }}" x1="6" y1="8" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-                                                            <stop offset="0%" stop-color="#A7F3D0"/>
-                                                            <stop offset="50%" stop-color="#10B981"/>
-                                                            <stop offset="100%" stop-color="#047857"/>
-                                                        </linearGradient>
-                                                    </defs>
-                                                    <path d="M24 6L6 20V40C6 41.1 6.9 42 8 42H40C41.1 42 42 41.1 42 40V20L24 6Z" fill="url(#buyHero_{{ $planUid }})"/>
-                                                    <rect x="20" y="26" width="8" height="16" rx="2" fill="#064E3B"/>
-                                                    <rect x="12" y="24" width="6" height="6" rx="1.5" fill="#ECFDF5"/>
-                                                    <rect x="30" y="24" width="6" height="6" rx="1.5" fill="#ECFDF5"/>
-                                                </svg>
-                                            @else
-                                                <svg class="ur-emblem-svg" viewBox="0 0 48 48" fill="none">
-                                                    <defs>
-                                                        <linearGradient id="silvHero_{{ $planUid }}" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
-                                                            <stop offset="0%" stop-color="#E2E8F0"/>
-                                                            <stop offset="50%" stop-color="#94A3B8"/>
-                                                            <stop offset="100%" stop-color="#475569"/>
-                                                        </linearGradient>
-                                                    </defs>
-                                                    <path d="M24 4L8 10V22C8 32.5 14.8 42.2 24 44C33.2 42.2 40 32.5 40 22V10L24 4Z" fill="url(#silvHero_{{ $planUid }})"/>
-                                                    <path d="M24 16L26.3 21.2L32 21.8L27.8 25.6L29 31.2L24 28.3L19 31.2L20.2 25.6L16 21.8L21.7 21.2L24 16Z" fill="#FFFFFF"/>
-                                                </svg>
-                                            @endif
-                                        </div>
+                                <div class="ur-hps-pass-card ur-dark-pass-card ur-hps-pass-card--{{ $s['theme'] }}">
+                                    {{-- Card Header: Badges Row --}}
+                                    <div class="ur-dark-badges-row">
+                                        <span class="ur-dark-badge-mint">
+                                            <i class="ph-bold ph-shield-check"></i>
+                                            <span>BUYER & TENANT PASS</span>
+                                        </span>
+                                        <span class="ur-dark-badge-gold">
+                                            <i class="ph-bold {{ $s['theme'] === 'platinum' ? 'ph-sparkle' : ($s['theme'] === 'silver' ? 'ph-shield-check' : ($s['theme'] === 'buyer' ? 'ph-buildings' : 'ph-medal')) }}"></i>
+                                            <span>{{ strtoupper($s['tab_label']) }} ACCESS</span>
+                                        </span>
                                     </div>
 
-                                    {{-- Price Block --}}
-                                    <div class="ur-hps-price-box">
-                                        <div class="ur-hps-price-top">
-                                            <span class="ur-hps-price-original">₹{{ number_format($s['original_price'], 0) }}</span>
-                                            <span class="ur-hps-save-chip {{ !empty($s['has_offer']) ? 'ur-hps-save-chip--offer' : '' }}">
-                                                <i class="ph-bold ph-seal-percent"></i> SAVE {{ $s['savings_pct'] }}%
-                                            </span>
-                                        </div>
+                                    {{-- Title & Subtitle --}}
+                                    <h4 class="ur-dark-card-title">
+                                        Unlock {{ $s['type'] === 'buy' ? '30+' : ($s['plan']->contact_limit ?? 25) . '+' }} Direct {{ $s['type'] === 'buy' ? 'Sellers' : 'Landlords' }}
+                                    </h4>
+                                    <p class="ur-dark-card-sub">
+                                        Skip brokerage charges completely. Instant contact numbers.
+                                    </p>
 
-                                        <div class="ur-hps-price-main">
-                                            <span class="ur-hps-currency">₹</span>
-                                            <span class="ur-hps-amount">{{ number_format($s['price'], 0) }}</span>
-                                            <span class="ur-hps-period">/ {{ $s['type'] === 'buy' ? 'annual pass' : 'pass' }}</span>
-                                        </div>
-
-                                        <div class="ur-hps-price-subtext">
-                                            @if(!empty($s['has_offer']))
-                                                <i class="ph-bold ph-lightning" style="color: #10b981;"></i>
-                                                <span>Exclusive Price ₹{{ number_format($s['price'], 0) }} · {{ $s['specs'][1]['value'] ?? ($plan->duration_days ?? 60) . ' Days' }} Validity</span>
-                                            @else
-                                                <i class="ph-bold ph-seal-check"></i>
-                                                <span>Only ₹{{ $s['per_day'] }}/day · {{ $s['specs'][1]['value'] ?? ($plan->duration_days ?? 150) . ' Days' }} Validity</span>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    {{-- Key Specs: Horizontal 3-Column Strip --}}
-                                    <div class="ur-hps-card-meta">
-                                        @foreach($s['specs'] as $spec)
-                                            <div class="ur-hps-meta-row">
-                                                <span class="meta-label">
-                                                    <i class="ph-bold {{ str_contains(strtolower($spec['label']), 'contact') || str_contains(strtolower($spec['label']), 'seller') ? 'ph-phone-call' : (str_contains(strtolower($spec['label']), 'duration') || str_contains(strtolower($spec['label']), 'validity') ? 'ph-calendar-check' : 'ph-shield-check') }}"></i> {{ $spec['label'] }}
-                                                </span>
-                                                <span class="meta-value {{ !empty($spec['accent']) ? 'meta-accent' : '' }}">
-                                                    {{ $spec['value'] }}
-                                                </span>
+                                    {{-- Footer Dock: Price & Unlock Now CTA --}}
+                                    @php
+                                        $desktopSavingsText = $s['type'] === 'buy' 
+                                            ? 'Save ₹1,50,000+ Average' 
+                                            : ($s['price'] > 500 ? 'Save ₹1,00,000+ Average' : 'Save ₹60,000+ Average');
+                                    @endphp
+                                    <div class="ur-dark-footer-dock">
+                                        <div class="ur-dark-price-col">
+                                            <div class="ur-dark-price-row">
+                                                <span class="ur-dark-price-val">₹{{ number_format($s['price'], 0) }}</span>
+                                                @if(($s['original_price'] ?? 0) > $s['price'])
+                                                    <span class="ur-dark-price-orig">₹{{ number_format($s['original_price'], 0) }}</span>
+                                                @endif
                                             </div>
-                                        @endforeach
-                                    </div>
+                                            <span class="ur-dark-save-text">{{ $desktopSavingsText }}</span>
+                                        </div>
 
-                                    {{-- High-Impact Checkout CTA Button --}}
-                                    @guest
-                                        <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
-                                           onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
-                                           class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-cta-btn--offer' : '' }}" 
-                                           title="Unlock Verified Contacts">
-                                            <i class="ph-fill ph-lightning"></i>
-                                            <span>Unlock Contacts Now · ₹{{ number_format($s['price'], 0) }}</span>
-                                        </a>
-                                    @else
-                                        <a href="{{ $checkoutUrl }}" 
-                                           class="ur-hps-cta-btn ur-hps-cta-btn--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-cta-btn--offer' : '' }}" 
-                                           title="Unlock Verified Contacts">
-                                            <i class="ph-fill ph-lightning"></i>
-                                            <span>Unlock Contacts Now · ₹{{ number_format($s['price'], 0) }}</span>
-                                        </a>
-                                    @endguest
+                                        @guest
+                                            <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
+                                               onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
+                                               class="ur-dark-unlock-btn" 
+                                               title="Unlock Verified Contacts">
+                                                <span>Unlock Now</span>
+                                                <i class="ph-bold ph-arrow-right"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ $checkoutUrl }}" 
+                                               class="ur-dark-unlock-btn" 
+                                               title="Unlock Verified Contacts">
+                                                <span>Unlock Now</span>
+                                                <i class="ph-bold ph-arrow-right"></i>
+                                            </a>
+                                        @endguest
+                                    </div>
 
                                     {{-- Compact Scroll Down Link --}}
-                                    <a href="#pricing-plans" class="ur-hps-compare-link" onclick="if(document.getElementById('pricing-plans')){ document.getElementById('pricing-plans').scrollIntoView({behavior:'smooth'}); return false; }">
+                                    <a href="#pricing-plans" class="ur-dark-compare-link" onclick="if(document.getElementById('pricing-plans')){ document.getElementById('pricing-plans').scrollIntoView({behavior:'smooth'}); return false; }">
                                         <span>Compare All Plan Details</span>
                                         <i class="ph-bold ph-arrow-down"></i>
                                     </a>
@@ -2537,109 +2667,62 @@
                         </div>{{-- End .ur-hps-desktop-grid --}}
 
                         {{-- ============================================================
-                             SEPARATE 16:9 ULTRA-COMPACT MOBILE CARD (VISIBLE ON MOBILE ONLY)
-                             Reduced height in 16:9 slider format, sleek real-estate backdrop,
-                             bold price, key perks, and thumb-friendly checkout CTA button.
+                             SEPARATE MOBILE SLIDER CARD (IMAGE 2 DARK PASS CARD)
+                             Deep midnight navy gradient, mint & gold badges, bold white title,
+                             soft subtitle, bold price with savings and emerald Unlock Now CTA.
                              ============================================================ --}}
-                        <div class="ur-hps-mobile-card ur-hps-mobile-card--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-mobile-card--offer' : '' }}">
-                            {{-- Subtle Photographic Real Estate Backdrop with High-Fidelity Glassmorphism --}}
-                            <div class="ur-mc-backdrop" aria-hidden="true">
-                                <img src="{{ $s['visual']['image'] }}" 
-                                     alt="{{ $s['visual']['title'] }}" 
-                                     class="ur-mc-backdrop-img" 
-                                     loading="lazy" 
-                                     decoding="async"
-                                     onerror="if(!this.dataset.triedFallback){ this.dataset.triedFallback='1'; this.src='{{ $s['visual']['fallback'] ?? '' }}'; }">
-                                <div class="ur-mc-scrim"></div>
-                            </div>
-
-                            {{-- 1. CONSOLIDATED HEADER ROW: Warm Discount Highlight on Left, Clean Status on Right --}}
-                            <div class="ur-mc-header-row">
-                                <div class="ur-mc-discount-pill">
-                                    <span class="ur-mc-spark-dot"></span>
-                                    @if(!empty($s['has_offer']))
-                                        <span class="ur-mc-discount-text">Special Offer · Save {{ $s['savings_pct'] }}%</span>
-                                    @else
-                                        <span class="ur-mc-discount-text">{{ $s['tab_badge'] ?? 'Verified Pass' }} · Save {{ $s['savings_pct'] }}%</span>
-                                    @endif
-                                </div>
-                                <div class="ur-mc-status-pill">
+                        <div class="ur-hps-mobile-card ur-dark-pass-card ur-hps-mobile-card--{{ $s['theme'] }} {{ !empty($s['has_offer']) ? 'ur-hps-mobile-card--offer' : '' }}">
+                            {{-- Card Header: Badges Row --}}
+                            <div class="ur-dark-badges-row">
+                                <span class="ur-dark-badge-mint">
                                     <i class="ph-bold ph-shield-check"></i>
-                                    <span>{{ !empty($s['has_offer']) ? 'Unlocked For You' : ($s['visual']['tag'] ?? '100% Direct') }}</span>
-                                </div>
+                                    <span>BUYER & TENANT PASS</span>
+                                </span>
+                                <span class="ur-dark-badge-gold">
+                                    <i class="ph-bold {{ $s['theme'] === 'platinum' ? 'ph-sparkle' : ($s['theme'] === 'silver' ? 'ph-shield-check' : ($s['theme'] === 'buyer' ? 'ph-buildings' : 'ph-medal')) }}"></i>
+                                    <span>{{ strtoupper($s['tab_label']) }} ACCESS</span>
+                                </span>
                             </div>
 
-                            {{-- 2. MAIN PLAN TITLE & SUBTITLE HIERARCHY --}}
-                            <div class="ur-mc-title-section">
-                                <h4 class="ur-mc-title">
-                                    {{ $s['title_highlight'] }}
-                                </h4>
-                                <p class="ur-mc-subtitle">
-                                    {{ $s['specs'][0]['value'] }} · {{ $s['specs'][1]['value'] }} · ₹0 Commission
-                                </p>
-                            </div>
+                            {{-- Title & Subtitle --}}
+                            <h4 class="ur-dark-card-title">
+                                Unlock {{ $s['type'] === 'buy' ? '30+' : ($s['plan']->contact_limit ?? 25) . '+' }} Direct {{ $s['type'] === 'buy' ? 'Sellers' : 'Landlords' }}
+                            </h4>
+                            <p class="ur-dark-card-sub">
+                                Skip brokerage charges completely. Instant contact numbers.
+                            </p>
 
-                            {{-- 3. REDESIGNED FEATURE HIGHLIGHTS: Clean 2-column grid with soft green icon containers (NOT buttons) --}}
-                            <div class="ur-mc-features-grid">
-                                @foreach(array_slice($s['highlights'], 0, 2) as $f)
-                                    <div class="ur-mc-feature-card">
-                                        <div class="ur-mc-f-icon">
-                                            <i class="ph-bold {{ $f['icon'] }}"></i>
-                                        </div>
-                                        <div class="ur-mc-f-info">
-                                            <span class="ur-mc-f-title">{{ $f['title'] }}</span>
-                                            @if(!empty($f['desc']))
-                                                <span class="ur-mc-f-desc">{{ $f['desc'] }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            {{-- 4. PRICING & CTA DOCK: Subtly Contrasted Bottom Container --}}
+                            {{-- Footer Dock: Price & Unlock Now CTA --}}
                             @php
-                                $curPrice = (float) $s['price'];
-                                $origPrice = (float) ($s['original_price'] ?? 0);
-                                if ($origPrice <= $curPrice) {
-                                    $origPrice = round(max($curPrice * 2.2, $curPrice + 500));
-                                }
-                                $showOrig = ($origPrice > $curPrice);
-                                $ctaText = !empty($s['has_offer']) 
-                                    ? ('Unlock for ₹' . number_format($curPrice, 0) . ' →') 
-                                    : ('Unlock Pass · ₹' . number_format($curPrice, 0) . ' →');
+                                $mobileSavingsText = $s['type'] === 'buy' 
+                                    ? 'Save ₹1,50,000+ Average' 
+                                    : ($s['price'] > 500 ? 'Save ₹1,00,000+ Average' : 'Save ₹60,000+ Average');
                             @endphp
-
-                            <div class="ur-mc-pricing-dock">
-                                <div class="ur-mc-price-group">
-                                    <div class="ur-mc-price-row">
-                                        <span class="ur-mc-currency">₹</span>
-                                        <span class="ur-mc-price-val">{{ number_format($curPrice, 0) }}</span>
-                                        @if($showOrig)
-                                            <span class="ur-mc-price-orig">₹{{ number_format($origPrice, 0) }}</span>
+                            <div class="ur-dark-footer-dock">
+                                <div class="ur-dark-price-col">
+                                    <div class="ur-dark-price-row">
+                                        <span class="ur-dark-price-val">₹{{ number_format($s['price'], 0) }}</span>
+                                        @if(($s['original_price'] ?? 0) > $s['price'])
+                                            <span class="ur-dark-price-orig">₹{{ number_format($s['original_price'], 0) }}</span>
                                         @endif
                                     </div>
-                                    <div class="ur-mc-price-caption">
-                                        <i class="ph-bold ph-lightning"></i>
-                                        @if(!empty($s['has_offer']))
-                                            <span>Special ₹{{ number_format($curPrice, 0) }} · {{ $s['specs'][1]['value'] }}</span>
-                                        @else
-                                            <span>Only ₹{{ $s['per_day'] }}/day · Direct</span>
-                                        @endif
-                                    </div>
+                                    <span class="ur-dark-save-text">{{ $mobileSavingsText }}</span>
                                 </div>
 
                                 @guest
                                     <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
                                        onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
-                                       class="ur-mc-cta-action" 
+                                       class="ur-dark-unlock-btn" 
                                        title="Unlock Verified Contacts">
-                                        <span>{{ $ctaText }}</span>
+                                        <span>Unlock Now</span>
+                                        <i class="ph-bold ph-arrow-right"></i>
                                     </a>
                                 @else
                                     <a href="{{ $checkoutUrl }}" 
-                                       class="ur-mc-cta-action" 
+                                       class="ur-dark-unlock-btn" 
                                        title="Unlock Verified Contacts">
-                                        <span>{{ $ctaText }}</span>
+                                        <span>Unlock Now</span>
+                                        <i class="ph-bold ph-arrow-right"></i>
                                     </a>
                                 @endguest
                             </div>
