@@ -3058,17 +3058,20 @@
                     </div>
                 </div>
 
-                <!-- Slide 3: Commercial Spaces -->
+                <!-- Slide 3: Direct Owner Plans -->
                 <div class="promo-slide slide-commercial">
                     <div class="promo-slide-content">
-                        <span class="promo-badge">Business Class</span>
-                        <h2 class="promo-title">Modern Commercial Spaces</h2>
-                        <p class="promo-desc">Find high-footfall retail shops, showrooms, and fully managed offices. Zero brokerage, maximum growth.</p>
-                        <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="promo-btn" title="View Commercial">View Commercial</a>
+                        <span class="promo-badge">Direct Owner Passes</span>
+                        <h2 class="promo-title">Zero Brokerage Membership Plans</h2>
+                        <p class="promo-desc">Skip brokerage charges completely. Get direct phone &amp; WhatsApp access to 100% verified owners starting at just ₹199.</p>
+                        <a href="{{ route('plans.index') }}" onclick="if(document.getElementById('pricing-plans')){ document.getElementById('pricing-plans').scrollIntoView({behavior:'smooth'}); return false; }" class="promo-btn" title="Explore Membership Plans">
+                            <span>Explore Plans</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </a>
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="Commercial Properties" title="Commercial Properties" width="600" height="330" loading="lazy" decoding="async">
+                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80" alt="Zero Brokerage Plans" title="Zero Brokerage Plans" width="600" height="330" loading="lazy" decoding="async">
                     </div>
                 </div>
 
