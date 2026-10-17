@@ -3024,6 +3024,9 @@
         </div>
     </div>
 
+    {{-- Direct Owner Pass Cards (Website & Mobile App - Dynamic Prices from Admin Panel) --}}
+    @include('components.hero-direct-cards')
+
     <!-- Premium Promo Slider Section (Desktop only to prevent duplicate sliders on mobile) -->
     <div class="promo-slider-container hidden lg:block">
         <div class="promo-slider" id="promo-slider">
