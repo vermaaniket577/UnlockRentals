@@ -1209,15 +1209,14 @@
             white-space: nowrap;
         }
 
-        /* Hero Banner Slider - Luxury Midnight Pass Theme */
+        /* Hero Banner Slider */
         .mobile-hero-slider-container {
             position: relative;
             width: 100%;
-            border-radius: 22px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 14px 34px -6px rgba(2, 6, 23, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
-            margin-bottom: 6px;
-            background: #071228;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+            margin-bottom: 4px;
         }
 
         .mobile-hero-slider-track {
@@ -1231,7 +1230,7 @@
         .mobile-hero-banner-slide {
             flex: 0 0 100%;
             width: 100%;
-            padding: 16px 16px 16px;
+            padding: 16px 14px 18px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -1240,9 +1239,25 @@
             position: relative;
             overflow: hidden;
             user-select: none;
-            background: radial-gradient(130% 120% at 75% 0%, #0d1e3d 0%, #071328 65%, #050c1a 100%);
-            border-radius: 22px;
-            border: 1px solid rgba(255, 255, 255, 0.09);
+            background-color: #0f172a;
+        }
+
+        .mobile-hero-slide-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .mobile-hero-slide-scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10, 15, 30, 0.08) 0%, rgba(10, 15, 30, 0.26) 45%, rgba(10, 15, 30, 0.68) 100%);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .mobile-hero-slide-content {
@@ -1253,115 +1268,12 @@
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
+            min-height: 175px;
         }
 
-        .ur-pass-badge-mint {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(52, 211, 153, 0.45);
-            color: #34d399;
-            font-weight: 800;
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-
-        .ur-pass-badge-gold {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            color: #fbbf24;
-            font-weight: 800;
-            font-size: 11.5px;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        .ur-pass-card-title {
-            color: #ffffff;
-            font-weight: 800;
-            font-size: 19.5px;
-            line-height: 1.25;
-            margin: 10px 0 4px 0;
-            letter-spacing: -0.02em;
-        }
-
-        .ur-pass-card-sub {
-            color: #94a3b8;
-            font-size: 12.5px;
-            font-weight: 400;
-            line-height: 1.4;
-            margin: 0 0 14px 0;
-        }
-
-        .ur-pass-price-box {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .ur-pass-price-row {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-            line-height: 1;
-        }
-
-        .ur-pass-price-val {
-            font-size: 27px;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: -0.03em;
-        }
-
-        .ur-pass-price-orig {
-            font-size: 13.5px;
-            font-weight: 600;
-            color: #64748b;
-            text-decoration: line-through;
-        }
-
-        .ur-pass-save-text {
-            color: #10b981;
-            font-weight: 800;
-            font-size: 11.5px;
-            margin-top: 4px;
-            display: block;
-            letter-spacing: -0.01em;
-        }
-
-        .ur-pass-unlock-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: #10b981;
-            color: #ffffff !important;
-            font-weight: 800;
-            font-size: 13.5px;
-            padding: 10px 18px;
-            border-radius: 14px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            white-space: nowrap;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .ur-pass-unlock-btn:hover {
-            background: #059669;
-            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
-            transform: translateY(-1px);
-        }
-
-        .ur-pass-unlock-btn:active {
-            transform: scale(0.97);
+        .mobile-hero-slide-content h2,
+        .mobile-hero-slide-content p {
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85), 0 2px 10px rgba(0, 0, 0, 0.65);
         }
 
         .mobile-slider-nav-btn {
@@ -2714,270 +2626,245 @@
             </button>
 
             <div class="mobile-hero-slider-track" id="mobileHeroSliderTrack">
-                @php
-                    $mCheckout1 = Route::has('plans.checkout') ? route('plans.checkout', ['plan' => 1, 'direct' => 1]) : url('/plans');
-                    $mCheckout2 = Route::has('plans.checkout') ? route('plans.checkout', ['plan' => 4, 'direct' => 1]) : url('/plans');
-                    $mCheckout3 = Route::has('plans.checkout') ? route('plans.checkout', ['plan' => 3, 'direct' => 1]) : url('/plans');
-                    $mCheckout4 = Route::has('plans.checkout') ? route('plans.checkout', ['plan' => 1, 'billing' => 'yearly', 'direct' => 1]) : url('/plans');
-                    $mCheckout5 = Route::has('plans.checkout') ? route('plans.checkout', ['plan' => 2, 'direct' => 1]) : url('/plans');
-                @endphp
                 
-                {{-- Slide 1: Flagship Gold Direct Landlords Pass --}}
+                {{-- Slide 1: Luxury Stays & Designer 1RK / PGs --}}
                 <div class="mobile-hero-banner-slide">
+                    <img src="{{ asset('images/hero_apartment.webp') }}" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/luxury_sunlit.webp') }}';"
+                         alt="Luxury Stays & Designer 1RK / PGs" 
+                         class="mobile-hero-slide-bg" 
+                         width="400"
+                         height="260"
+                         loading="eager"
+                         fetchpriority="high">
+                    <div class="mobile-hero-slide-scrim"></div>
+
                     <div class="mobile-hero-slide-content">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="ur-pass-badge-mint">
-                                <i class="ph-bold ph-shield-check text-xs"></i> BUYER &amp; TENANT PASS
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9.5px] font-extrabold tracking-wide text-amber-300 uppercase shadow-xs animate-badge-glow">
+                                <i class="ph-fill ph-star text-amber-300 text-[11px]"></i> PREMIUM LIVING • 0% BROKERAGE
                             </span>
-                            <span class="ur-pass-badge-gold">
-                                <i class="ph-bold ph-medal text-sm"></i> GOLD ACCESS
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> 100% Direct Owner
                             </span>
                         </div>
 
-                        <div>
-                            <h2 class="ur-pass-card-title">
-                                Unlock 25+ Direct Landlords
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Luxury Stays &amp; Designer 1RK / PGs
                             </h2>
-                            <p class="ur-pass-card-sub">
-                                Skip brokerage charges completely. Instant contact numbers.
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹5,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Fully Furnished • High-speed Wi-Fi • Housekeeping</span>
                             </p>
                         </div>
 
-                        <div class="flex items-end justify-between pt-1 mt-auto">
-                            <div class="ur-pass-price-box">
-                                <div class="ur-pass-price-row">
-                                    <span class="ur-pass-price-val">₹399</span>
-                                    <span class="ur-pass-price-orig">₹2,499</span>
-                                </div>
-                                <span class="ur-pass-save-text">
-                                    Save ₹60,000+ Average
-                                </span>
-                            </div>
-
-                            @guest
-                                <a href="{{ route('login', ['redirect' => $mCheckout1]) }}" 
-                                   onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $mCheckout1 }}'); } else { window.location.href='{{ route('login', ['redirect' => $mCheckout1]) }}'; }"
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Landlords">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @else
-                                <a href="{{ $mCheckout1 }}" 
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Landlords">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @endguest
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/pg-near-me') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>Explore Stays</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ url('/room-near-my-location') }}" class="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors tracking-wide active:scale-95">
+                                Zero Deposit Options
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                {{-- Slide 2: Silver Starter Pass (Budget Flats & PGs) --}}
+                {{-- Slide 2: Modern 2 & 3 BHK Flats --}}
                 <div class="mobile-hero-banner-slide">
+                    <img src="{{ asset('images/luxury_sunlit.webp') }}" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/hero_apartment.webp') }}';"
+                         alt="Modern 2 & 3 BHK Flats" 
+                         class="mobile-hero-slide-bg" 
+                         width="400"
+                         height="260"
+                         loading="lazy"
+                         decoding="async">
+                    <div class="mobile-hero-slide-scrim"></div>
+
                     <div class="mobile-hero-slide-content">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="ur-pass-badge-mint">
-                                <i class="ph-bold ph-shield-check text-xs"></i> TENANT PASS
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-blue-400/40 text-[9.5px] font-extrabold tracking-wide text-blue-300 uppercase shadow-xs">
+                                <i class="ph-bold ph-buildings text-blue-300 text-[11px]"></i> GATED SOCIETIES • NO BROKERAGE
                             </span>
-                            <span class="ur-pass-badge-gold" style="color: #cbd5e1;">
-                                <i class="ph-bold ph-medal text-sm text-slate-400"></i> SILVER ACCESS
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> Verified Landlords
                             </span>
                         </div>
 
-                        <div>
-                            <h2 class="ur-pass-card-title">
-                                Unlock 30+ Direct Landlords
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Modern 2 &amp; 3 BHK Flats
                             </h2>
-                            <p class="ur-pass-card-sub">
-                                Direct numbers for 1RK, PG &amp; budget flats with zero commission.
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹14,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Gym &amp; Pool • Power Backup • Covered Parking</span>
                             </p>
                         </div>
 
-                        <div class="flex items-end justify-between pt-1 mt-auto">
-                            <div class="ur-pass-price-box">
-                                <div class="ur-pass-price-row">
-                                    <span class="ur-pass-price-val">₹199</span>
-                                    <span class="ur-pass-price-orig">₹1,499</span>
-                                </div>
-                                <span class="ur-pass-save-text">
-                                    Save ₹30,000+ Average
-                                </span>
-                            </div>
-
-                            @guest
-                                <a href="{{ route('login', ['redirect' => $mCheckout2]) }}" 
-                                   onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $mCheckout2 }}'); } else { window.location.href='{{ route('login', ['redirect' => $mCheckout2]) }}'; }"
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Landlords">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @else
-                                <a href="{{ $mCheckout2 }}" 
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Landlords">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @endguest
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/flat-for-rent-near-me') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>Browse Flats</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="text-xs font-bold text-blue-300 hover:text-white transition-colors tracking-wide active:scale-95">
+                                Schedule Visit &gt;
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                {{-- Slide 3: Platinum VIP Pass (Luxury & Maximum Unlocks) --}}
+                {{-- Slide 3: Luxury Penthouses & Skyline Living --}}
                 <div class="mobile-hero-banner-slide">
+                    <img src="{{ asset('images/slider/penthouse_skyline.webp') }}" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/luxury_sunlit.webp') }}';"
+                         alt="Luxury Penthouses & Skyline Living" 
+                         class="mobile-hero-slide-bg" 
+                         width="400"
+                         height="260"
+                         loading="lazy"
+                         decoding="async">
+                    <div class="mobile-hero-slide-scrim"></div>
+
                     <div class="mobile-hero-slide-content">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="ur-pass-badge-mint">
-                                <i class="ph-bold ph-shield-check text-xs"></i> BUYER &amp; TENANT PASS
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9.5px] font-extrabold tracking-wide text-amber-300 uppercase shadow-xs animate-badge-glow">
+                                <i class="ph-fill ph-star text-amber-300 text-[11px]"></i> SKYLINE LUXURY • 0% BROKERAGE
                             </span>
-                            <span class="ur-pass-badge-gold" style="color: #38bdf8;">
-                                <i class="ph-bold ph-medal text-sm text-sky-400"></i> PLATINUM ACCESS
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> 100% Direct Owner
                             </span>
                         </div>
 
-                        <div>
-                            <h2 class="ur-pass-card-title">
-                                Unlock 150+ Direct Landlords
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Luxury Penthouses &amp; Skyline Living
                             </h2>
-                            <p class="ur-pass-card-sub">
-                                VIP concierge access. Unrestricted direct contacts + lease support.
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹34,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Panoramic City View • Private Deck • High Rise</span>
                             </p>
                         </div>
 
-                        <div class="flex items-end justify-between pt-1 mt-auto">
-                            <div class="ur-pass-price-box">
-                                <div class="ur-pass-price-row">
-                                    <span class="ur-pass-price-val">₹999</span>
-                                    <span class="ur-pass-price-orig">₹4,999</span>
-                                </div>
-                                <span class="ur-pass-save-text">
-                                    Save ₹1,00,000+ Average
-                                </span>
-                            </div>
-
-                            @guest
-                                <a href="{{ route('login', ['redirect' => $mCheckout3]) }}" 
-                                   onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $mCheckout3 }}'); } else { window.location.href='{{ route('login', ['redirect' => $mCheckout3]) }}'; }"
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Landlords">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @else
-                                <a href="{{ $mCheckout3 }}" 
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Landlords">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @endguest
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/flat-for-rent-near-me') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>Explore Penthouses</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors tracking-wide active:scale-95">
+                                Zero Brokerage Guaranteed
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                {{-- Slide 4: Direct Buyer Pass (Buy Properties Without Brokerage) --}}
+                {{-- Slide 4: Sunlit Designer Studios & 1RK --}}
                 <div class="mobile-hero-banner-slide">
+                    <img src="{{ asset('images/slider/studio_designer.webp') }}" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/hero_apartment.webp') }}';"
+                         alt="Sunlit Designer Studios & 1RK" 
+                         class="mobile-hero-slide-bg" 
+                         width="400"
+                         height="260"
+                         loading="lazy"
+                         decoding="async">
+                    <div class="mobile-hero-slide-scrim"></div>
+
                     <div class="mobile-hero-slide-content">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="ur-pass-badge-mint">
-                                <i class="ph-bold ph-shield-check text-xs"></i> BUYER PASS
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9.5px] font-extrabold tracking-wide text-amber-300 uppercase shadow-xs animate-badge-glow">
+                                <i class="ph-fill ph-sun text-amber-300 text-[11px]"></i> SUNLIT LIVING • ZERO DEPOSIT
                             </span>
-                            <span class="ur-pass-badge-gold">
-                                <i class="ph-bold ph-medal text-sm"></i> BUYER ACCESS
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> Verified Direct Owner
                             </span>
                         </div>
 
-                        <div>
-                            <h2 class="ur-pass-card-title">
-                                Unlock 30+ Verified Direct Sellers
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Sunlit Designer Studios &amp; 1RK
                             </h2>
-                            <p class="ur-pass-card-sub">
-                                Buying a flat or villa? Direct negotiation with owners. Skip 2% brokerage.
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹4,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Fully Furnished • Modular Kitchen • Move-in Ready</span>
                             </p>
                         </div>
 
-                        <div class="flex items-end justify-between pt-1 mt-auto">
-                            <div class="ur-pass-price-box">
-                                <div class="ur-pass-price-row">
-                                    <span class="ur-pass-price-val">₹399</span>
-                                    <span class="ur-pass-price-orig">₹2,499</span>
-                                </div>
-                                <span class="ur-pass-save-text">
-                                    Save ₹2,00,000+ Average
-                                </span>
-                            </div>
-
-                            @guest
-                                <a href="{{ route('login', ['redirect' => $mCheckout4]) }}" 
-                                   onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $mCheckout4 }}'); } else { window.location.href='{{ route('login', ['redirect' => $mCheckout4]) }}'; }"
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Sellers">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @else
-                                <a href="{{ $mCheckout4 }}" 
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Sellers">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @endguest
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/room-near-my-location') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>Browse Studios</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ url('/room-near-my-location') }}" class="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors tracking-wide active:scale-95">
+                                Instant Key Handover
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                {{-- Slide 5: Elite Extended Pass (150 Days Validity) --}}
+                {{-- Slide 5: Luxury Villas & Independent Houses --}}
                 <div class="mobile-hero-banner-slide">
+                    <img src="https://lh3.googleusercontent.com/aida/AEtjO1VWM4B0YRvb_LtBUAb2OOgBMYAadrEV-44ohT1XqTQsZFA4iqlX8A4CeXVUdAtam0xBNrzYenmtn4KpZC-4dZw4e8VvXOa4f56W8w1kZ5rSRT3qmwWU2_cfl4DaoYLthj6mYCrfr1R8nL4BtRnSt1UZ_QXNtRc_CpVVQYqolu2wfppQax4HK3uJZkP8kOww1XNG9_xlQGdD3gJsWtRJl97ft8FZqA1R4s7x1UBmXprufRu7njm7NIWN6gO-" 
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';"
+                         alt="Luxury Villas & Independent Houses" 
+                         class="mobile-hero-slide-bg" 
+                         loading="lazy">
+                    <div class="mobile-hero-slide-scrim"></div>
+
                     <div class="mobile-hero-slide-content">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="ur-pass-badge-mint">
-                                <i class="ph-bold ph-shield-check text-xs"></i> TENANT PASS
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 text-[9.5px] font-extrabold tracking-wide text-amber-300 uppercase shadow-xs animate-badge-glow">
+                                <i class="ph-fill ph-star text-amber-300 text-[11px]"></i> LUXURY LIVING • DIRECT SELLER
                             </span>
-                            <span class="ur-pass-badge-gold" style="color: #fcd34d;">
-                                <i class="ph-bold ph-medal text-sm text-amber-300"></i> ELITE ACCESS
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-black/55 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs"></i> Instant Move-in
                             </span>
                         </div>
 
-                        <div>
-                            <h2 class="ur-pass-card-title">
-                                Unlock 75+ Direct Landlords
+                        <div class="my-2 px-1">
+                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                                Luxury Villas &amp; Independent Houses
                             </h2>
-                            <p class="ur-pass-card-sub">
-                                150 days active validity. Instant WhatsApp connect &amp; visit passes.
+                            <div class="mt-1 flex items-baseline gap-1.5">
+                                <span class="text-xs text-slate-200 font-semibold">Starting at</span>
+                                <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹24,999</span>
+                                <span class="text-xs text-amber-200/90 font-semibold">/mo</span>
+                            </div>
+                            <p class="text-[11px] text-slate-200 font-medium mt-1 leading-relaxed flex items-center gap-1.5 drop-shadow-xs">
+                                <i class="ph-fill ph-check-circle text-emerald-400 text-xs flex-shrink-0"></i>
+                                <span>Private Garden • Spacious Courtyard • Prime Location</span>
                             </p>
                         </div>
 
-                        <div class="flex items-end justify-between pt-1 mt-auto">
-                            <div class="ur-pass-price-box">
-                                <div class="ur-pass-price-row">
-                                    <span class="ur-pass-price-val">₹499</span>
-                                    <span class="ur-pass-price-orig">₹2,999</span>
-                                </div>
-                                <span class="ur-pass-save-text">
-                                    Save ₹75,000+ Average
-                                </span>
-                            </div>
-
-                            @guest
-                                <a href="{{ route('login', ['redirect' => $mCheckout5]) }}" 
-                                   onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $mCheckout5 }}'); } else { window.location.href='{{ route('login', ['redirect' => $mCheckout5]) }}'; }"
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Landlords">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @else
-                                <a href="{{ $mCheckout5 }}" 
-                                   class="ur-pass-unlock-btn" 
-                                   title="Unlock Direct Landlords">
-                                    <span>Unlock Now</span>
-                                    <i class="ph-bold ph-arrow-right text-xs"></i>
-                                </a>
-                            @endguest
+                        <div class="flex items-center justify-between pt-0.5 px-1">
+                            <a href="{{ url('/house-for-rent-near-me') }}" class="shimmer-sweep relative overflow-hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-slate-900 font-black text-xs shadow-lg active:scale-95 transition-all">
+                                <span>View Villas</span>
+                                <i class="ph-bold ph-arrow-right text-blue-600 text-xs"></i>
+                            </a>
+                            <a href="{{ route('properties.index', ['type' => 'villa']) }}" class="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors tracking-wide active:scale-95">
+                                Direct Owner Contact &gt;
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -3322,7 +3209,7 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-7" id="featuredPropertiesGrid">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5" id="featuredPropertiesGrid">
                 @forelse($featuredRentals as $property)
                     <x-property-card :property="$property" />
                 @empty
@@ -3346,10 +3233,10 @@
                 </div>
             </div>
             
-            <div style="text-align: center; margin-top: 45px;">
-                <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-2 px-7 py-3.5 bg-[#0f172a] hover:bg-slate-800 active:bg-slate-900 text-white font-extrabold text-sm sm:text-base rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]" title="Explore All 10,000+ Direct Listings">
-                    <span>Explore All 10,000+ Direct Listings</span>
-                    <i class="ph-bold ph-arrow-right"></i>
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="{{ route('properties.index') }}" class="btn-explore-premium" title="Explore All Rentals">
+                    <span>Explore All Rentals</span>
+                    <i class="ph ph-bold ph-arrow-right"></i>
                 </a>
             </div>
         </div>

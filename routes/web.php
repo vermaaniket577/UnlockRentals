@@ -45,14 +45,14 @@ Route::get('/', function(Illuminate\Http\Request $request) {
         // Cache unfiltered homepage listings for 5 minutes
         $featuredRentals = \Illuminate\Support\Facades\Cache::remember('home_featured_rentals', 300, function () {
             return \App\Models\Property::approved()
-                ->with(['primaryImage', 'images', 'owner', 'category'])
+                ->with(['primaryImage', 'images', 'owner'])
                 ->latest()
                 ->take(24)
                 ->get();
         });
     } else {
         $query = \App\Models\Property::approved()
-            ->with(['primaryImage', 'images', 'owner', 'category']);
+            ->with(['primaryImage', 'images', 'owner']);
 
         if ($request->filled('state')) {
             $query->where('state', $request->state);

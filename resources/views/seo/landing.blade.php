@@ -205,7 +205,7 @@
         {{-- Main Listings Grid & Recommended fallback --}}
         <div class="mb-24">
             @if($properties->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                     @foreach($properties as $property)
                         <x-property-card :property="$property" />
                     @endforeach
@@ -233,7 +233,7 @@
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                         @foreach($recommendations as $recProperty)
                             <x-property-card :property="$recProperty" />
                         @endforeach
