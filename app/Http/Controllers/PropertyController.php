@@ -362,6 +362,15 @@ class PropertyController extends Controller
             $targetUser->update(['phone' => $request->contact_phone]);
         }
 
+        // Process alternate phone numbers into comma-separated string
+        if ($request->filled('alternate_phones')) {
+            $altList = array_values(array_unique(array_filter(array_map('trim', (array)$request->input('alternate_phones')))));
+            $data['alternate_phone'] = !empty($altList) ? implode(', ', $altList) : null;
+        } elseif ($request->filled('alternate_phone')) {
+            $data['alternate_phone'] = trim((string)$request->input('alternate_phone'));
+        }
+        unset($data['alternate_phones']);
+
         // Remove media & helper fields from the data array before creating
         unset(
             $data['price_unit'],
@@ -518,6 +527,15 @@ class PropertyController extends Controller
                 $owner->update(['phone' => $request->contact_phone]);
             }
         }
+
+        // Process alternate phone numbers into comma-separated string
+        if ($request->has('alternate_phones')) {
+            $altList = array_values(array_unique(array_filter(array_map('trim', (array)$request->input('alternate_phones')))));
+            $data['alternate_phone'] = !empty($altList) ? implode(', ', $altList) : null;
+        } elseif ($request->has('alternate_phone')) {
+            $data['alternate_phone'] = $request->filled('alternate_phone') ? trim((string)$request->input('alternate_phone')) : null;
+        }
+        unset($data['alternate_phones']);
 
         // Remove media & helper fields from the data array before updating
         unset(

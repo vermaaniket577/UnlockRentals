@@ -302,7 +302,13 @@
                         </div>
 
                         <div>
-                            <label for="edit-phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 sm:mb-1.5">Contact Phone <span class="text-red-500">*</span></label>
+                            <div class="flex items-center justify-between mb-1 sm:mb-1.5">
+                                <label for="edit-phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Contact Phone <span class="text-red-500">*</span></label>
+                                <button type="button" id="btn-add-alternate-phone" class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer" title="Add another mobile number">
+                                    <i class="ph-bold ph-plus-circle text-xs sm:text-sm"></i>
+                                    <span>Add More Mobile No.</span>
+                                </button>
+                            </div>
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs sm:text-sm"><i class="ph-bold ph-phone"></i></span>
                                 <input type="tel" name="contact_phone" id="edit-phone" value="{{ old('contact_phone', $property->contact_phone ?? $property->owner->phone ?? auth()->user()->phone) }}" required inputmode="tel" enterkeyhint="next"
@@ -310,6 +316,39 @@
                                        placeholder="+91 94254 55499">
                             </div>
                             @error('contact_phone') <p class="text-red-500 text-xs mt-1 font-semibold">{{ $message }}</p> @enderror
+
+                            {{-- Dynamic Alternate Phone Numbers Container --}}
+                            <div id="alternate-phones-container" class="space-y-2 mt-2.5">
+                                @php
+                                    $oldAltPhones = old('alternate_phones');
+                                    if (is_null($oldAltPhones)) {
+                                        $oldAltPhones = !empty($property->alternate_phone) ? explode(',', $property->alternate_phone) : [];
+                                    } elseif (empty($oldAltPhones) && old('alternate_phone')) {
+                                        $oldAltPhones = explode(',', old('alternate_phone'));
+                                    }
+                                    $oldAltPhones = array_filter(array_map('trim', (array)$oldAltPhones));
+                                @endphp
+                                @foreach($oldAltPhones as $altPhone)
+                                    <div class="alternate-phone-row flex items-center gap-2">
+                                        <div class="relative flex-1">
+                                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-500 text-sm"><i class="ph-bold ph-phone-call"></i></span>
+                                            <input type="tel" name="alternate_phones[]" value="{{ $altPhone }}" inputmode="tel" autocomplete="tel"
+                                                   class="w-full pl-9 pr-14 py-2 sm:pl-10 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
+                                                   placeholder="Alternate Mobile (e.g. +91 98765 43210)">
+                                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded-md pointer-events-none">Alt</span>
+                                        </div>
+                                        <button type="button" class="btn-remove-alt-phone p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-400 hover:text-red-600 hover:border-red-200 dark:hover:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all shrink-0 cursor-pointer" title="Remove this number">
+                                            <i class="ph-bold ph-trash text-sm"></i>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            {{-- Bottom Add Button --}}
+                            <button type="button" id="btn-add-alternate-phone-bottom" class="mt-2.5 w-full py-2 px-3 border border-dashed border-blue-300 dark:border-blue-700/60 rounded-xl text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="ph-bold ph-plus-circle text-sm"></i>
+                                <span>Add Another Mobile Number</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -2749,6 +2788,59 @@ document.getElementById('edit-property-form')?.addEventListener('submit', functi
 
     xhr.send(formData);
 });
+
+// Alternate Phone Numbers Handler
+(function() {
+    const container = document.getElementById('alternate-phones-container');
+    const btnTop = document.getElementById('btn-add-alternate-phone');
+    const btnBottom = document.getElementById('btn-add-alternate-phone-bottom');
+
+    function createAltPhoneRow(val = '') {
+        const row = document.createElement('div');
+        row.className = 'alternate-phone-row flex items-center gap-2 animate-fade-in';
+        row.innerHTML = `
+            <div class="relative flex-1">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-500 text-sm"><i class="ph-bold ph-phone-call"></i></span>
+                <input type="tel" name="alternate_phones[]" value="${val ? val.replace(/"/g, '&quot;') : ''}" inputmode="tel" autocomplete="tel"
+                       class="w-full pl-9 pr-14 py-2 sm:pl-10 sm:py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 transition-all"
+                       placeholder="Alternate Mobile (e.g. +91 98765 43210)">
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.5 rounded-md pointer-events-none">Alt</span>
+            </div>
+            <button type="button" class="btn-remove-alt-phone p-2 sm:p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-400 hover:text-red-600 hover:border-red-200 dark:hover:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all shrink-0 cursor-pointer" title="Remove this number">
+                <i class="ph-bold ph-trash text-sm"></i>
+            </button>
+        `;
+        return row;
+    }
+
+    function addAltPhone() {
+        if (!container) return;
+        const currentRows = container.querySelectorAll('.alternate-phone-row');
+        if (currentRows.length >= 5) {
+            alert('You can add up to 5 alternate contact numbers.');
+            return;
+        }
+        const row = createAltPhoneRow();
+        container.appendChild(row);
+        const input = row.querySelector('input');
+        if (input) input.focus();
+    }
+
+    if (btnTop) btnTop.addEventListener('click', addAltPhone);
+    if (btnBottom) btnBottom.addEventListener('click', addAltPhone);
+
+    if (container) {
+        container.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-remove-alt-phone');
+            if (btn) {
+                const row = btn.closest('.alternate-phone-row');
+                if (row) {
+                    row.remove();
+                }
+            }
+        });
+    }
+})();
 </script>
 
 @endsection

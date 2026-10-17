@@ -27,6 +27,7 @@ class Property extends Model
         'locality',
         'address',
         'contact_phone',
+        'alternate_phone',
         'latitude',
         'longitude',
         'bedrooms',
