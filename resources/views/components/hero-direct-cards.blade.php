@@ -431,43 +431,11 @@ function updateDirectPassDots() {
     });
 }
 
-function startDirectPassTimer() {
-    if (directPassAutoTimer) clearInterval(directPassAutoTimer);
-    directPassAutoTimer = setInterval(() => {
-        const grid = document.getElementById('urDirectCardsGrid');
-        if (!grid) return;
-        const maxScroll = grid.scrollWidth - grid.clientWidth;
-        if (grid.scrollLeft >= maxScroll - 25) {
-            grid.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-            slideDirectPasses(1);
-        }
-    }, 4500);
-}
-
-function stopDirectPassTimer() {
-    if (directPassAutoTimer) {
-        clearInterval(directPassAutoTimer);
-        directPassAutoTimer = null;
-    }
-}
-
-function resetDirectPassTimer() {
-    stopDirectPassTimer();
-    startDirectPassTimer();
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('urDirectCardsGrid');
     if (grid) {
         grid.addEventListener('scroll', updateDirectPassDots, { passive: true });
-        grid.addEventListener('mouseenter', stopDirectPassTimer);
-        grid.addEventListener('mouseleave', startDirectPassTimer);
-        grid.addEventListener('touchstart', stopDirectPassTimer, { passive: true });
-        grid.addEventListener('touchend', () => {
-            setTimeout(startDirectPassTimer, 2500);
-        }, { passive: true });
-        startDirectPassTimer();
+        updateDirectPassDots();
     }
 });
 </script>
