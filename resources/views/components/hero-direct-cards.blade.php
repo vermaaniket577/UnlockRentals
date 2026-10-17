@@ -54,9 +54,9 @@
             </div>
         </div>
 
-        {{-- Cards Container: Responsive Interactive Slider on Mobile & Website --}}
+        {{-- Cards Container: Responsive Horizontal Single Card Slider on Mobile & Website --}}
         <div class="ur-direct-slider-viewport relative w-full" id="urDirectSliderViewport">
-            <div class="ur-direct-cards-wrapper flex gap-3.5 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 sm:pb-3 scroll-smooth" id="urDirectCardsGrid">
+            <div class="ur-direct-cards-wrapper flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 sm:pb-3 scroll-smooth" id="urDirectCardsGrid">
                 @foreach($allDirectPlans as $idx => $plan)
                     @php
                         $isBuy = $plan->isBuyPlan();
@@ -104,27 +104,52 @@
                     <div class="ur-direct-card-item flex-shrink-0 snap-center" data-purpose="{{ $dataPurpose }}" data-card-index="{{ $idx }}">
                         <div class="ur-direct-card">
                             
-                            {{-- Top Badges Row --}}
-                            <div class="ur-dc-badges">
-                                <span class="ur-dc-mint-pill">
-                                    <i class="ph-bold ph-shield-check"></i>
-                                    <span>{{ $mintText }}</span>
-                                </span>
-                                <span class="ur-dc-gold-badge">
-                                    <i class="ph-fill ph-seal-check"></i>
-                                    <span>{{ $tierText }}</span>
-                                </span>
+                            {{-- Left / Main Info Block --}}
+                            <div class="ur-dc-main">
+                                {{-- Top Badges Row --}}
+                                <div class="ur-dc-badges">
+                                    <span class="ur-dc-mint-pill">
+                                        <i class="ph-bold ph-shield-check"></i>
+                                        <span>{{ $mintText }}</span>
+                                    </span>
+                                    <span class="ur-dc-gold-badge">
+                                        <i class="ph-fill ph-seal-check"></i>
+                                        <span>{{ $tierText }}</span>
+                                    </span>
+                                    @if(!empty($plan->duration_days))
+                                        <span class="ur-dc-duration-pill">
+                                            <i class="ph-bold ph-calendar"></i>
+                                            <span>{{ $plan->duration_days }} Days Validity</span>
+                                        </span>
+                                    @endif
+                                </div>
+
+                                {{-- Main Title & Subtitle --}}
+                                <h4 class="ur-dc-title">
+                                    Unlock {{ $plan->contact_limit }}+ Direct {{ $isBuy ? 'Sellers' : 'Landlords' }}
+                                </h4>
+                                <p class="ur-dc-sub">
+                                    {{ $plan->description ?: ($isBuy ? 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property sellers.' : 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property owners.') }}
+                                </p>
+
+                                {{-- Feature Highlights Row (visible on desktop / tablet) --}}
+                                <div class="ur-dc-features-row">
+                                    <span class="ur-dc-feat-tag">
+                                        <i class="ph-bold ph-phone-call text-emerald-400"></i>
+                                        <span>Direct Phone &amp; WhatsApp Unlocks</span>
+                                    </span>
+                                    <span class="ur-dc-feat-tag">
+                                        <i class="ph-bold ph-shield-check text-emerald-400"></i>
+                                        <span>Zero Brokerage Guaranteed</span>
+                                    </span>
+                                    <span class="ur-dc-feat-tag">
+                                        <i class="ph-bold ph-seal-check text-amber-400"></i>
+                                        <span>100% Verified {{ $isBuy ? 'Sellers' : 'Owners' }}</span>
+                                    </span>
+                                </div>
                             </div>
 
-                            {{-- Main Title & Subtitle --}}
-                            <h4 class="ur-dc-title">
-                                Unlock {{ $plan->contact_limit }}+ Direct {{ $isBuy ? 'Sellers' : 'Landlords' }}
-                            </h4>
-                            <p class="ur-dc-sub">
-                                {{ $plan->description ?: 'Skip brokerage charges completely. Instant contact numbers.' }}
-                            </p>
-
-                            {{-- Footer Dock: Price & Unlock CTA --}}
+                            {{-- Right Side / Footer Dock: Price & Unlock CTA --}}
                             <div class="ur-dc-footer">
                                 <div class="ur-dc-price-group">
                                     <div class="ur-dc-price-row">
@@ -136,22 +161,24 @@
                                     <span class="ur-dc-save">{{ $savingsText }}</span>
                                 </div>
 
-                                @guest
-                                    <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
-                                       onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
-                                       class="ur-dc-btn" 
-                                       title="Unlock Direct Contacts">
-                                        <span>Unlock Now</span>
-                                        <i class="ph-bold ph-arrow-right"></i>
-                                    </a>
-                                @else
-                                    <a href="{{ $checkoutUrl }}" 
-                                       class="ur-dc-btn" 
-                                       title="Unlock Direct Contacts">
-                                        <span>Unlock Now</span>
-                                        <i class="ph-bold ph-arrow-right"></i>
-                                    </a>
-                                @endguest
+                                <div class="ur-dc-cta-group w-full md:w-auto">
+                                    @guest
+                                        <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
+                                           onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
+                                           class="ur-dc-btn" 
+                                           title="Unlock Direct Contacts">
+                                            <span>Unlock Now</span>
+                                            <i class="ph-bold ph-arrow-right"></i>
+                                        </a>
+                                    @else
+                                        <a href="{{ $checkoutUrl }}" 
+                                           class="ur-dc-btn" 
+                                           title="Unlock Direct Contacts">
+                                            <span>Unlock Now</span>
+                                            <i class="ph-bold ph-arrow-right"></i>
+                                        </a>
+                                    @endguest
+                                </div>
                             </div>
 
                         </div>
@@ -171,7 +198,7 @@
 </section>
 
 <style>
-/* ─── DIRECT OWNER PASS CARDS (DARK LUXURY DESIGN) ─── */
+/* ─── DIRECT OWNER PASS CARDS (HORIZONTAL SINGLE CARD SLIDER) ─── */
 .ur-direct-slider-viewport {
     width: 100%;
     position: relative;
@@ -180,7 +207,6 @@
 
 .ur-direct-cards-wrapper {
     display: flex;
-    gap: 0.85rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -189,43 +215,31 @@
     padding-bottom: 0.35rem;
     width: 100%;
     box-sizing: border-box;
+    gap: 0;
 }
 
 .ur-direct-card-item {
-    flex: 0 0 calc(100vw - 42px);
-    max-width: 350px;
-    scroll-snap-align: center;
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+    scroll-snap-align: start;
     box-sizing: border-box;
-}
-
-@media (min-width: 640px) {
-    .ur-direct-card-item {
-        flex: 0 0 340px;
-        max-width: 340px;
-        scroll-snap-align: start;
-    }
-}
-
-@media (min-width: 1024px) {
-    .ur-direct-card-item {
-        flex: 0 0 calc((100% - 2rem) / 3);
-        max-width: none;
-        scroll-snap-align: start;
-    }
+    padding: 0 2px;
 }
 
 .ur-direct-card {
     position: relative;
     width: 100%;
     box-sizing: border-box;
-    background: radial-gradient(130% 120% at 75% 0%, #0d1e3d 0%, #071328 65%, #050c1a 100%);
+    background: radial-gradient(130% 120% at 85% 20%, #0d1e3d 0%, #071328 65%, #050c1a 100%);
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 20px;
-    padding: 1.25rem 1.15rem 1.15rem;
+    padding: 1.35rem 1.25rem;
     box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: 1.15rem;
     color: #ffffff;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
@@ -237,26 +251,31 @@
     box-shadow: 0 20px 42px -8px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
+.ur-dc-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
 .ur-dc-badges {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.35rem;
-    margin-bottom: 0.85rem;
-    flex-wrap: nowrap;
-    overflow: hidden;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .ur-dc-mint-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.24rem 0.62rem;
+    padding: 0.25rem 0.65rem;
     border-radius: 9999px;
     border: 1.5px solid #10b981;
     background: #ecfdf5;
     color: #047857;
-    font-size: 0.66rem;
+    font-size: 0.68rem;
     font-weight: 800;
     letter-spacing: 0.03em;
     text-transform: uppercase;
@@ -266,7 +285,7 @@
 }
 
 .ur-dc-mint-pill i {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: #10b981;
 }
 
@@ -275,7 +294,7 @@
     align-items: center;
     gap: 0.3rem;
     color: #fbbf24;
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 800;
     letter-spacing: 0.03em;
     text-transform: uppercase;
@@ -285,8 +304,24 @@
 }
 
 .ur-dc-gold-badge i {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: #fbbf24;
+}
+
+.ur-dc-duration-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.24rem 0.65rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .ur-dc-title {
@@ -295,23 +330,44 @@
     color: #ffffff;
     line-height: 1.25;
     letter-spacing: -0.02em;
-    margin: 0 0 0.3rem 0;
+    margin: 0 0 0.35rem 0;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .ur-dc-sub {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 400;
     color: #94a3b8;
-    line-height: 1.4;
-    margin: 0 0 1rem 0;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.ur-dc-features-row {
+    display: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+}
+
+.ur-dc-feat-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    color: #e2e8f0;
+    font-size: 0.74rem;
+    font-weight: 600;
 }
 
 .ur-dc-footer {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 0.65rem;
+    gap: 0.75rem;
     margin-top: auto;
     padding-top: 0.25rem;
 }
@@ -325,12 +381,12 @@
 .ur-dc-price-row {
     display: flex;
     align-items: baseline;
-    gap: 0.35rem;
+    gap: 0.4rem;
     line-height: 1;
 }
 
 .ur-dc-val {
-    font-size: 1.8rem;
+    font-size: 1.85rem;
     font-weight: 900;
     color: #ffffff;
     letter-spacing: -0.03em;
@@ -338,17 +394,17 @@
 }
 
 .ur-dc-orig {
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: #64748b;
     text-decoration: line-through;
 }
 
 .ur-dc-save {
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: #10b981;
-    margin-top: 0.25rem;
+    margin-top: 0.3rem;
     letter-spacing: 0.01em;
     white-space: nowrap;
 }
@@ -357,12 +413,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     background: #10b981;
     color: #ffffff !important;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    padding: 0.65rem 1.25rem;
+    padding: 0.68rem 1.35rem;
     border-radius: 14px;
     text-decoration: none;
     box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
@@ -382,6 +438,65 @@
 
 .ur-dc-btn:active {
     transform: scale(0.97);
+}
+
+/* ─── DESKTOP HORIZONTAL SINGLE CARD STYLES ─── */
+@media (min-width: 768px) {
+    .ur-direct-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.75rem 2.25rem;
+        gap: 2.25rem;
+        min-height: 185px;
+        border-radius: 24px;
+    }
+
+    .ur-dc-title {
+        font-size: 1.75rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .ur-dc-sub {
+        font-size: 0.92rem;
+        max-width: 700px;
+    }
+
+    .ur-dc-features-row {
+        display: flex;
+    }
+
+    .ur-dc-footer {
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        flex-shrink: 0;
+        gap: 0.95rem;
+        padding-left: 2.25rem;
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
+        margin-top: 0;
+        padding-top: 0;
+        min-width: 220px;
+    }
+
+    .ur-dc-val {
+        font-size: 2.35rem;
+    }
+
+    .ur-dc-orig {
+        font-size: 1.05rem;
+    }
+
+    .ur-dc-save {
+        font-size: 0.8rem;
+    }
+
+    .ur-dc-btn {
+        padding: 0.78rem 1.65rem;
+        font-size: 0.95rem;
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* Slider Dots */
@@ -463,10 +578,7 @@ function scrollDirectPassToIndex(index) {
     if (index >= 0 && index < cards.length) {
         directPassCurrentIndex = index;
         const targetCard = cards[index];
-        const isMobile = window.innerWidth < 640;
-        const targetScrollLeft = isMobile
-            ? (targetCard.offsetLeft - grid.offsetLeft - (grid.clientWidth - targetCard.clientWidth) / 2)
-            : (targetCard.offsetLeft - grid.offsetLeft);
+        const targetScrollLeft = targetCard.offsetLeft - grid.offsetLeft;
 
         grid.scrollTo({
             left: Math.max(0, targetScrollLeft),
@@ -483,18 +595,12 @@ function updateDirectPassDots() {
     if (!grid || !cards.length || !dots.length) return;
 
     const scrollLeft = grid.scrollLeft;
-    const isMobile = window.innerWidth < 640;
     let closestIndex = 0;
     let minDistance = Infinity;
 
     cards.forEach((c, idx) => {
-        const cardPos = isMobile
-            ? (c.offsetLeft - grid.offsetLeft + (c.clientWidth / 2))
-            : (c.offsetLeft - grid.offsetLeft);
-        const viewPos = isMobile
-            ? (scrollLeft + (grid.clientWidth / 2))
-            : scrollLeft;
-        const distance = Math.abs(cardPos - viewPos);
+        const cardPos = c.offsetLeft - grid.offsetLeft;
+        const distance = Math.abs(cardPos - scrollLeft);
         if (distance < minDistance) {
             minDistance = distance;
             closestIndex = idx;
