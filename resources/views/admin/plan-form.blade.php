@@ -49,12 +49,18 @@
                           placeholder="Brief description of what this plan offers">{{ old('description', $plan->description ?? '') }}</textarea>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Price (₹) *</label>
                     <input type="number" name="price" value="{{ old('price', $plan->price ?? '') }}" required min="0" step="0.01"
                            class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600"
-                           placeholder="499">
+                           placeholder="399">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Original Price (₹) <span class="text-xs font-normal text-zinc-400">(Crossed out)</span></label>
+                    <input type="number" name="original_price" value="{{ old('original_price', $plan->original_price ?? '') }}" min="0" step="0.01"
+                           class="w-full px-4 py-2.5 border border-stone-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-blue-600"
+                           placeholder="e.g. 998">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-zinc-700 mb-1.5">Duration (days) *</label>

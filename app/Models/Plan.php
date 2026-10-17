@@ -12,6 +12,7 @@ class Plan extends Model
         'description',
         'purpose',
         'price',
+        'original_price',
         'duration_days',
         'contact_limit',
         'features',
@@ -26,6 +27,7 @@ class Plan extends Model
         return [
             'features' => 'array',
             'price' => 'decimal:2',
+            'original_price' => 'decimal:2',
             'duration_days' => 'integer',
             'contact_limit' => 'integer',
             'is_active' => 'boolean',
@@ -134,6 +136,14 @@ class Plan extends Model
     }
 
     /**
+     * Get formatted original price.
+     */
+    public function getFormattedOriginalPriceAttribute(): ?string
+    {
+        return $this->original_price !== null ? ('₹' . number_format($this->original_price, 0)) : null;
+    }
+
+    /**
      * Ensure dedicated Buyer Pass plans exist in the database.
      */
     public static function ensureBuyerPlansExist(): void
@@ -160,6 +170,7 @@ class Plan extends Model
                     'purpose'       => 'buy',
                     'description'   => 'Essential direct seller contacts and priority access for property buyers.',
                     'price'         => 399.00,
+                    'original_price'=> 998.00,
                     'duration_days' => 60,
                     'contact_limit' => 30,
                     'features'      => [
@@ -177,6 +188,7 @@ class Plan extends Model
                     'purpose'       => 'buy',
                     'description'   => 'Most popular annual pass for active home buyers and property investors.',
                     'price'         => 999.00,
+                    'original_price'=> 2499.00,
                     'duration_days' => 150,
                     'contact_limit' => 75,
                     'features'      => [
@@ -195,6 +207,7 @@ class Plan extends Model
                     'purpose'       => 'buy',
                     'description'   => 'Ultimate annual pass with maximum verified seller unlocks for serious property buyers.',
                     'price'         => 1999.00,
+                    'original_price'=> 4999.00,
                     'duration_days' => 365,
                     'contact_limit' => 180,
                     'features'      => [
@@ -242,6 +255,7 @@ class Plan extends Model
                     'purpose'       => 'rent',
                     'description'   => 'Essential direct owner contact access for verified rental listings in top localities.',
                     'price'         => 199.00,
+                    'original_price'=> 499.00,
                     'duration_days' => 45,
                     'contact_limit' => 30,
                     'features'      => [
@@ -260,6 +274,7 @@ class Plan extends Model
                     'purpose'       => 'rent',
                     'description'   => 'Best value for 1BHK, 2BHK & 3BHK home hunters. Directly call & WhatsApp owners with 0% middleman brokerage.',
                     'price'         => 499.00,
+                    'original_price'=> 1249.00,
                     'duration_days' => 150,
                     'contact_limit' => 75,
                     'features'      => [
@@ -277,6 +292,7 @@ class Plan extends Model
                     'purpose'       => 'rent',
                     'description'   => 'Ultimate VIP pass with maximum direct owner unlocks, concierge support, and lease assistance.',
                     'price'         => 999.00,
+                    'original_price'=> 2499.00,
                     'duration_days' => 180,
                     'contact_limit' => 150,
                     'features'      => [

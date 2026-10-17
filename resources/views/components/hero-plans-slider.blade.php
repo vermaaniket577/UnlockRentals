@@ -196,11 +196,10 @@
     $hasGoldOffer = ($goldOffer && $goldOffer->discounted_price !== null);
     $goldPrice = $hasGoldOffer ? (float) $goldOffer->discounted_price : $goldBasePrice;
     $goldRegularPrice = $goldBasePrice;
-    $goldOrigPrice = $hasGoldOffer ? $goldRegularPrice : round(max($goldPrice * 2, $goldPrice * 2.5));
-    if ($goldOrigPrice <= $goldPrice) {
-        $goldOrigPrice = round(max($goldPrice + 500, $goldPrice * 2));
-    }
-    $goldSavingsPct = max(30, min(85, (int) round((1 - ($goldPrice / max(1, $goldOrigPrice))) * 100)));
+    $goldOrigPrice = $hasGoldOffer 
+        ? $goldRegularPrice 
+        : (!empty($goldRent->original_price) && (float) $goldRent->original_price > $goldPrice ? (float) $goldRent->original_price : null);
+    $goldSavingsPct = ($goldOrigPrice && $goldOrigPrice > $goldPrice) ? max(1, min(95, (int) round((1 - ($goldPrice / $goldOrigPrice)) * 100))) : 0;
     $goldDays = max(1, (int) ($goldRent->duration_days ?? 150));
     $goldPerDay = $goldPrice < 5 ? round($goldPrice / $goldDays, 2) : round($goldPrice / $goldDays, 1);
 
@@ -210,11 +209,10 @@
     $hasPlatOffer = ($platOffer && $platOffer->discounted_price !== null);
     $platPrice = $hasPlatOffer ? (float) $platOffer->discounted_price : $platBasePrice;
     $platRegularPrice = $platBasePrice;
-    $platOrigPrice = $hasPlatOffer ? $platRegularPrice : round(max($platPrice * 2, $platPrice * 2.5));
-    if ($platOrigPrice <= $platPrice) {
-        $platOrigPrice = round(max($platPrice + 1000, $platPrice * 2));
-    }
-    $platSavingsPct = max(30, min(85, (int) round((1 - ($platPrice / max(1, $platOrigPrice))) * 100)));
+    $platOrigPrice = $hasPlatOffer 
+        ? $platRegularPrice 
+        : (!empty($platRent->original_price) && (float) $platRent->original_price > $platPrice ? (float) $platRent->original_price : null);
+    $platSavingsPct = ($platOrigPrice && $platOrigPrice > $platPrice) ? max(1, min(95, (int) round((1 - ($platPrice / $platOrigPrice)) * 100))) : 0;
     $platDays = max(1, (int) ($platRent->duration_days ?? 180));
     $platPerDay = $platPrice < 5 ? round($platPrice / $platDays, 2) : round($platPrice / $platDays, 1);
 
@@ -224,11 +222,10 @@
     $hasSilverOffer = ($silverOffer && $silverOffer->discounted_price !== null);
     $silverPrice = $hasSilverOffer ? (float) $silverOffer->discounted_price : $silverBasePrice;
     $silverRegularPrice = $silverBasePrice;
-    $silverOrigPrice = $hasSilverOffer ? $silverRegularPrice : round(max($silverPrice * 2, $silverPrice * 2.5));
-    if ($silverOrigPrice <= $silverPrice) {
-        $silverOrigPrice = round(max($silverPrice + 300, $silverPrice * 2));
-    }
-    $silverSavingsPct = max(30, min(85, (int) round((1 - ($silverPrice / max(1, $silverOrigPrice))) * 100)));
+    $silverOrigPrice = $hasSilverOffer 
+        ? $silverRegularPrice 
+        : (!empty($silverRent->original_price) && (float) $silverRent->original_price > $silverPrice ? (float) $silverRent->original_price : null);
+    $silverSavingsPct = ($silverOrigPrice && $silverOrigPrice > $silverPrice) ? max(1, min(95, (int) round((1 - ($silverPrice / $silverOrigPrice)) * 100))) : 0;
     $silverDays = max(1, (int) ($silverRent->duration_days ?? 45));
     $silverPerDay = $silverPrice < 5 ? round($silverPrice / $silverDays, 2) : round($silverPrice / $silverDays, 1);
 
@@ -383,11 +380,10 @@
                 : $buyerBasePrice;
             $buyerDays = (int) ($bPlan->duration_days ?: 60);
             $buyerContacts = (int) ($bPlan->contact_limit ?: 30);
-            $buyerOrigPrice = $hasBuyerOffer ? $buyerBasePrice : round(max($buyerPrice * 2, $buyerPrice * 2.5));
-            if ($buyerOrigPrice <= $buyerPrice) {
-                $buyerOrigPrice = round(max($buyerPrice + 500, $buyerPrice * 2));
-            }
-            $buyerSavingsPct = max(30, min(85, (int) round((1 - ($buyerPrice / max(1, $buyerOrigPrice))) * 100)));
+            $buyerOrigPrice = $hasBuyerOffer 
+                ? $buyerBasePrice 
+                : (!empty($bPlan->original_price) && (float) $bPlan->original_price > $buyerPrice ? (float) $bPlan->original_price : null);
+            $buyerSavingsPct = ($buyerOrigPrice && $buyerOrigPrice > $buyerPrice) ? max(1, min(95, (int) round((1 - ($buyerPrice / $buyerOrigPrice)) * 100))) : 0;
             $buyerPerDay = $buyerPrice < 5 ? round($buyerPrice / max(1, $buyerDays), 2) : round($buyerPrice / max(1, $buyerDays), 1);
 
             $isGoldBuyer = str_contains(strtolower($bPlan->name), 'gold');
@@ -2592,7 +2588,7 @@
 
                                     {{-- Title & Subtitle --}}
                                     <h4 class="ur-dark-card-title">
-                                        Unlock {{ $s['type'] === 'buy' ? '30+' : ($s['plan']->contact_limit ?? 25) . '+' }} Direct {{ $s['type'] === 'buy' ? 'Sellers' : 'Landlords' }}
+                                        Unlock {{ ($s['plan']->contact_limit ?? ($s['type'] === 'buy' ? 30 : 25)) . '+' }} Direct {{ $s['type'] === 'buy' ? 'Sellers' : 'Landlords' }}
                                     </h4>
                                     <p class="ur-dark-card-sub">
                                         Skip brokerage charges completely. Instant contact numbers.
@@ -2686,7 +2682,7 @@
 
                             {{-- Title & Subtitle --}}
                             <h4 class="ur-dark-card-title">
-                                Unlock {{ $s['type'] === 'buy' ? '30+' : ($s['plan']->contact_limit ?? 25) . '+' }} Direct {{ $s['type'] === 'buy' ? 'Sellers' : 'Landlords' }}
+                                Unlock {{ ($s['plan']->contact_limit ?? ($s['type'] === 'buy' ? 30 : 25)) . '+' }} Direct {{ $s['type'] === 'buy' ? 'Sellers' : 'Landlords' }}
                             </h4>
                             <p class="ur-dark-card-sub">
                                 Skip brokerage charges completely. Instant contact numbers.

@@ -73,7 +73,12 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 font-bold text-zinc-900">{{ $plan->formatted_price }}</td>
+                        <td class="px-6 py-4">
+                            <span class="font-bold text-zinc-900">{{ $plan->formatted_price }}</span>
+                            @if($plan->original_price && $plan->original_price > $plan->price)
+                                <span class="block text-xs text-zinc-400 line-through">{{ $plan->formatted_original_price }}</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 text-zinc-700 font-medium">{{ $plan->duration_days }} days</td>
                         <td class="px-6 py-4 text-zinc-700 font-medium">{{ $plan->contact_limit }} contacts</td>
                         <td class="px-6 py-4">

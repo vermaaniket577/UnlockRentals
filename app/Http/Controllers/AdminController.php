@@ -972,6 +972,7 @@ class AdminController extends Controller
             'description' => 'nullable|string',
             'purpose' => 'required|string|in:rent,buy,both',
             'price' => 'required|numeric|min:0',
+            'original_price' => 'nullable|numeric|min:0',
             'duration_days' => 'required|integer|min:1',
             'contact_limit' => 'required|integer|min:1',
             'features' => 'nullable|string',
@@ -987,6 +988,10 @@ class AdminController extends Controller
 
         $data['is_active'] = $request->has('is_active');
         $data['is_private'] = $request->has('is_private');
+
+        if (array_key_exists('original_price', $data) && ($data['original_price'] === '' || $data['original_price'] === null)) {
+            $data['original_price'] = null;
+        }
 
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('plans', 'public');
@@ -1015,6 +1020,7 @@ class AdminController extends Controller
             'description' => 'nullable|string',
             'purpose' => 'required|string|in:rent,buy,both',
             'price' => 'required|numeric|min:0',
+            'original_price' => 'nullable|numeric|min:0',
             'duration_days' => 'required|integer|min:1',
             'contact_limit' => 'required|integer|min:1',
             'features' => 'nullable|string',
@@ -1030,6 +1036,10 @@ class AdminController extends Controller
 
         $data['is_active'] = $request->has('is_active');
         $data['is_private'] = $request->has('is_private');
+
+        if (array_key_exists('original_price', $data) && ($data['original_price'] === '' || $data['original_price'] === null)) {
+            $data['original_price'] = null;
+        }
 
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('plans', 'public');
