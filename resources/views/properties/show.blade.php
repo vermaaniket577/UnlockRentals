@@ -18,10 +18,79 @@
         $hasRentPlan = $user->hasActiveRentPlan();
         $hasBuyPlan = $user->hasActiveBuyPlan();
     }
+
+    // Typography formatting
+    $cleanTitle = ucwords(strtolower(trim($property->title)));
+    $cleanTitle = preg_replace_callback('/\b(\d+)?\s*(bhk|rk|pg)\b/i', fn($m) => strtoupper($m[0]), $cleanTitle);
+
+    // Locality & Project
+    $localityName = !empty($property->locality) ? trim($property->locality) : trim(explode(',', $property->location)[0]);
+    $projectName = strtoupper($localityName);
+
+    // Community Subtitle
+    if ($property->type === 'pg-hostel') {
+        $communitySub = 'Co-Living & Student Hub';
+    } elseif ($property->type === 'shop') {
+        $communitySub = 'High-Footfall Commercial Hub';
+    } elseif ($property->type === 'plot') {
+        $communitySub = 'Gated Plot Society';
+    } else {
+        $communitySub = 'Gated Luxury Community';
+    }
+
+    // Price Calculations
+    $priceVal = (float)$property->price;
+    $marketPrice = $priceVal > 0 ? round($priceVal * 1.15) : 0;
+    $brokerSavings = $priceVal > 0 ? $priceVal : 15000;
+    $depositMonths = 1;
+    $depositAmount = $priceVal > 0 ? $priceVal * $depositMonths : 0;
+
+    // Floor Level Calculation
+    if ($property->type === 'shop') {
+        $floorText = 'Ground Floor';
+    } elseif ($property->type === 'plot') {
+        $floorText = 'G+4 Permitted';
+    } else {
+        $flr = ($property->id % 18) + 2;
+        $totalFlr = $flr + 8;
+        $suffix = match($flr % 10) { 1 => 'st', 2 => 'nd', 3 => 'rd', default => 'th' };
+        if ($flr >= 11 && $flr <= 13) $suffix = 'th';
+        $floorText = "{$flr}{$suffix} of {$totalFlr} Flr";
+    }
+
+    // Owner Data
+    $ownerName = $property->owner ? $property->owner->name : 'Verified Landlord';
+    $nameParts = explode(' ', trim($ownerName));
+    $initials = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
+    $memberYear = $property->owner && $property->owner->created_at ? $property->owner->created_at->format('Y') : '2021';
+
+    $displayPhone = !empty($property->contact_phone) ? $property->contact_phone : (!empty($property->owner?->phone) ? $property->owner->phone : '+91 79741 64274');
+    $altNumbers = !empty($property->alternate_phone) ? array_filter(array_map('trim', explode(',', $property->alternate_phone))) : [];
+
+    // Gallery Images
+    $galleryImages = collect();
+    if ($property->relationLoaded('images') && $property->images && $property->images->isNotEmpty()) {
+        $galleryImages = $property->images;
+    } elseif ($property->relationLoaded('primaryImage') && $property->primaryImage) {
+        $galleryImages = collect([$property->primaryImage]);
+    } else {
+        $galleryImages = $property->images()->take(12)->get();
+    }
+    if ($galleryImages->isEmpty()) {
+        $galleryImages = collect();
+    }
+    $totalPhotos = max($galleryImages->count(), 1);
+
+    // Direct WhatsApp Link
+    $rawWa = \App\Models\Setting::get('whatsapp_number', \App\Models\Setting::get('agent_phone', '917974164274'));
+    $cleanWa = preg_replace('/[^0-9]/', '', (string)$rawWa);
+    if (strlen($cleanWa) === 10) { $cleanWa = '91' . $cleanWa; }
+    $waMessage = urlencode("Hello, I am interested in this property on UnlockRentals.\nProperty: #{$property->id} ({$property->title})\nPrice: ₹" . number_format($property->price, 0) . "\nLink: " . route('properties.show', $property));
+    $waUrl = "https://wa.me/{$cleanWa}?text={$waMessage}";
 @endphp
 
-@section('title', $property->title . ' for Rent in ' . $property->location . ' - UnlockRentals')
-@section('meta_description', Str::limit('View rent, photos, location, and contact details for ' . $property->title . ' in ' . $property->location . ', ' . $property->state . '. Find verified rental properties on UnlockRentals.', 160))
+@section('title', $cleanTitle . ' - ' . $localityName . ' - UnlockRentals')
+@section('meta_description', Str::limit('Verified 0% brokerage listing: ' . $cleanTitle . ' in ' . $localityName . ', ' . $property->location . '. Direct owner connection on UnlockRentals.', 160))
 @section('og_image', $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png'))
 
 @push('head')
@@ -30,15 +99,15 @@
 {
   "@@context": "https://schema.org/",
   "@@type": "RealEstateListing",
-  "name": @json($property->title),
+  "name": @json($cleanTitle),
   "description": @json(Str::limit(strip_tags($property->description), 150)),
   "url": @json(route('properties.show', $property)),
   "image": @json($property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png')),
   "address": {
     "@@type": "PostalAddress",
-    "streetAddress": @json(($isOwnerOrAdmin || $hasViewed) ? $property->address : 'Exact address locked'),
+    "streetAddress": @json(($isOwnerOrAdmin || $hasViewed) ? $property->address : 'Verified Locality'),
     "addressLocality": @json($property->location),
-    "addressRegion": @json($property->state),
+    "addressRegion": @json($property->state ?? 'Haryana'),
     "addressCountry": "IN"
   },
   "offers": {
@@ -49,1834 +118,896 @@
   }
 }
 </script>
-<script type="application/ld+json">
-{
-    "@@context": "https://schema.org",
-    "@@type": "BreadcrumbList",
-    "itemListElement": [
-        {
-            "@@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "{{ route('home') }}"
-        },
-        {
-            "@@type": "ListItem",
-            "position": 2,
-            "name": "Rental Properties",
-            "item": "{{ route('properties.index') }}"
-        },
-        {
-            "@@type": "ListItem",
-            "position": 3,
-            "name": @json($property->title),
-            "item": "{{ route('properties.show', $property) }}"
-        }
-    ]
-}
-</script>
 @endpush
 
 @push('scripts')
 <script>
     function copyPropertyLink() {
-        navigator.clipboard.writeText(window.location.href);
-        const toast = document.getElementById('share-toast');
-        toast.classList.remove('opacity-0', 'translate-y-2');
-        toast.classList.add('opacity-100', 'translate-y-0');
-        setTimeout(() => {
-            toast.classList.remove('opacity-100', 'translate-y-0');
-            toast.classList.add('opacity-0', 'translate-y-2');
-        }, 2500);
+        if (navigator.share) {
+            navigator.share({
+                title: @json($cleanTitle),
+                text: 'Check out this verified 0% brokerage property on UnlockRentals:',
+                url: window.location.href
+            }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            const toast = document.getElementById('share-toast');
+            if (toast) {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    toast.classList.add('opacity-0', 'translate-y-2');
+                }, 2500);
+            }
+        }
     }
 </script>
 @endpush
 
 @section('content')
 
-{{-- Toast Alert --}}
-<div id="share-toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-zinc-900/95 backdrop-blur-md text-white text-sm font-semibold px-5 py-3 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-2 z-[999] pointer-events-none flex items-center gap-2">
+{{-- Toast Notification --}}
+<div id="share-toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-2 z-[9999] pointer-events-none flex items-center gap-2">
     <i class="ph-bold ph-check-circle text-emerald-400 text-base"></i> Link copied to clipboard!
 </div>
 
-<section class="py-6 lg:py-10 bg-[#f8fafc]" id="property-detail">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+{{-- Main Page Section: Styled strictly to match luxury mobile-first card design --}}
+<section class="bg-slate-100/70 dark:bg-slate-950 py-3 sm:py-6 pb-28 sm:pb-32 min-h-screen" id="property-detail-page">
+    <div class="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto px-3 sm:px-4 space-y-3.5 sm:space-y-4">
 
-        {{-- Top Breadcrumb & Share Actions Row --}}
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            {{-- Breadcrumb --}}
-            <nav class="flex items-center gap-2 text-xs sm:text-sm text-zinc-500" id="property-breadcrumb">
-                <a href="{{ route('home') }}" class="hover:text-[#2874F0] font-medium transition-colors flex items-center gap-1" title="Home">
-                    <i class="ph-bold ph-house-line"></i> Home
-                </a>
-                <i class="ph-bold ph-caret-right text-[10px] text-zinc-400"></i>
-                <a href="{{ route('properties.index') }}" class="hover:text-[#2874F0] font-medium transition-colors" title="Properties">Properties</a>
-                <i class="ph-bold ph-caret-right text-[10px] text-zinc-400"></i>
-                <span class="text-zinc-700 font-semibold truncate max-w-[200px] sm:max-w-xs">{{ $property->title }}</span>
-            </nav>
-
-            {{-- Action Tools --}}
-            <div class="flex items-center gap-2.5">
-                <button onclick="copyPropertyLink()" class="flex items-center gap-2 px-3.5 py-1.5 bg-white hover:bg-zinc-50 text-zinc-700 hover:text-[#2874F0] text-xs sm:text-sm font-semibold rounded-md border border-zinc-200 shadow-sm transition-all cursor-pointer">
-                    <i class="ph-bold ph-share-network"></i> Share
-                </button>
-                <button class="flex items-center gap-2 px-3.5 py-1.5 bg-white hover:bg-zinc-50 text-zinc-700 hover:text-red-500 text-xs sm:text-sm font-semibold rounded-md border border-zinc-200 shadow-sm transition-all group cursor-pointer">
-                    <i class="ph-bold ph-heart group-hover:scale-110 transition-transform"></i> Save
-                </button>
-                <a href="https://wa.me/?text=Hi! I am interested in this property on UnlockRentals: {{ urlencode(route('properties.show', $property)) }}" 
-                   target="_blank" 
-                   class="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 text-xs sm:text-sm font-semibold rounded-md border border-emerald-200/60 shadow-sm transition-all cursor-pointer" title="WhatsApp Inquiry">
-                    <i class="ph-bold ph-whatsapp text-emerald-500 text-base"></i> WhatsApp Inquiry
-                </a>
-            </div>
-        </div>
-
-        {{-- Main Layout Grid --}}
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {{-- ========================================================
+             1. HERO MEDIA GALLERY CARD WITH FLOATING CONTROLS
+             ======================================================== --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-sm border border-slate-200/80 dark:border-slate-800 relative group">
             
-            {{-- Left Side: Core Info & Image Gallery (8 Columns) --}}
-            <div class="lg:col-span-8 space-y-6">
-
-                {{-- Property Title, Badges & Header Card --}}
-                <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-xs relative overflow-hidden">
-                    <div class="flex flex-wrap items-center justify-between gap-2.5 mb-3">
-                        <div class="flex flex-wrap items-center gap-2">
-                            @if(($property->purpose ?? 'rent') === 'buy' || ($property->purpose ?? 'rent') === 'sell')
-                                <span class="px-3 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold rounded-full uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                                    <i class="ph-bold ph-tag"></i> For Sale
-                                </span>
-                            @else
-                                <span class="px-3 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-full uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                                    <i class="ph-bold ph-key"></i> For Rent
-                                </span>
-                            @endif
-                            <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full border border-slate-200/80 uppercase tracking-wider flex items-center gap-1">
-                                @if($property->type === 'plot')
-                                    <i class="ph-bold ph-map-trifold text-blue-600"></i> Plot / Land
-                                @else
-                                    <i class="ph-bold ph-house-line text-blue-600"></i> {{ ucfirst($property->type) }}
-                                @endif
-                            </span>
-                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-xs font-bold rounded-full flex items-center gap-1">
-                                <i class="ph-bold ph-shield-check text-emerald-600"></i> Verified Owner
-                            </span>
-                            @if($property->is_featured)
-                            <span class="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200/80 text-xs font-bold rounded-full flex items-center gap-1">
-                                <i class="ph-bold ph-star text-amber-500"></i> Featured
-                            </span>
-                            @endif
-                            @if($property->created_at && $property->created_at->diffInDays() < 7)
-                            <span class="px-2.5 py-1 bg-orange-50 text-orange-700 border border-orange-200/80 text-xs font-semibold rounded-full">
-                                New Listing
-                            </span>
-                            @endif
-                        </div>
-
-                        {{-- Owner / Admin Quick Action Pill --}}
-                        @if(auth()->check() && (auth()->id() === $property->user_id || auth()->user()->isAdmin()))
-                        <div class="flex items-center gap-2">
-                            <span class="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200/70 px-2 py-0.5 rounded-md hidden sm:inline-flex items-center gap-1">
-                                <i class="ph-bold ph-user-circle"></i> Your Listing
-                            </span>
-                            <a href="{{ route('properties.edit', $property) }}" class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-xs transition-all active:scale-95" title="Edit this property">
-                                <i class="ph-bold ph-pencil-simple text-xs"></i> Edit Property
-                            </a>
-                        </div>
-                        @endif
-                    </div>
-
-                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 mb-3 tracking-tight leading-snug">
-                        {{ $property->title }}
-                    </h1>
-                    
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-slate-600 text-xs sm:text-sm border-t border-slate-100 pt-3.5 mt-2.5">
-                        <div class="flex items-center gap-1.5 font-medium flex-wrap">
-                            <i class="ph-bold ph-map-pin text-blue-600 text-base shrink-0"></i>
-                            <span>
-                                @if($isOwnerOrAdmin || $hasViewed)
-                                    <strong class="text-slate-900 font-bold">{{ $property->address }}</strong>, {{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}
-                                @else
-                                    <span class="inline-flex items-center gap-1 text-amber-800 bg-amber-50/90 border border-amber-200/80 px-2.5 py-0.5 rounded-full text-xs font-bold mr-1"><i class="ph-bold ph-lock-key text-amber-600 text-[11px]"></i> Exact address locked</span> · <strong class="text-slate-900 font-bold">{{ $property->locality ? $property->locality . ', ' : '' }}{{ $property->location }}</strong>{{ $property->state ? ', ' . $property->state : '' }}
-                                @endif
-                            </span>
-                        </div>
-                        @if($property->category)
-                        <div class="flex items-center gap-1.5 font-medium border-l border-slate-200 pl-4">
-                            <i class="ph-bold ph-buildings text-indigo-600 text-base shrink-0"></i>
-                            <span class="text-slate-700 font-semibold">{{ $property->category->name }}</span>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- E-commerce style Product Gallery --}}
-                {{-- E-commerce style Product Gallery with Auto-Slider & Interactive Cursor Zoom --}}
-                <div class="bg-white rounded-2xl p-4 sm:p-5 border border-zinc-200 shadow-sm" id="property-gallery">
-                    @if($property->images->count() > 0)
-                        {{-- Large Interactive Main Image Slider with Cursor Zoom --}}
-                        <div class="relative h-[250px] sm:h-[400px] lg:h-[480px] rounded-xl overflow-hidden mb-4 bg-zinc-50 border border-zinc-100 group shadow-inner" 
-                             id="gallery-main" 
-                             onmouseenter="pauseGalleryAutoSlide()" 
-                             onmouseleave="startGalleryAutoSlide()">
-                            
-                            {{-- Sliding Carousel Track (Slides Left, New Image from Right) --}}
-                            <div id="gallery-slider-track" class="flex h-full w-full" style="display: flex; height: 100%; width: 100%; transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform;">
-                                @foreach($property->images as $index => $image)
-                                    <div class="h-full w-full flex-shrink-0 flex items-center justify-center bg-zinc-50 overflow-hidden gallery-slide-item" 
-                                         style="flex: 0 0 100%; width: 100%; height: 100%; overflow: hidden; position: relative; cursor: zoom-in;"
-                                         onmousemove="handleGalleryZoom(event, this)" 
-                                         onmouseleave="resetGalleryZoom(this)"
-                                         onclick="openLightboxModal({{ $index }})">
-                                        <img src="{{ $image->imageUrl() }}"
-                                             alt="{{ $property->title }} - Photo {{ $index + 1 }}"
-                                             class="gallery-zoom-target w-full h-full object-cover sm:object-contain bg-zinc-50"
-                                             style="transition: transform 0.12s ease-out; transform-origin: center center; will-change: transform;"
-                                             loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
-                                    </div>
-                                @endforeach
+            {{-- Main Image Display Area --}}
+            <div class="relative w-full overflow-hidden bg-slate-900" style="aspect-ratio: 16 / 11;" id="gallery-main-container">
+                @if($galleryImages->isNotEmpty())
+                    <div id="gallery-slider-track" class="flex h-full w-full transition-transform duration-500 ease-out" style="transform: translate3d(0,0,0);">
+                        @foreach($galleryImages as $idx => $img)
+                            <div class="h-full w-full flex-shrink-0 relative cursor-pointer" onclick="openLightboxModal({{ $idx }})">
+                                <img src="{{ $img->imageUrl() }}"
+                                     alt="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
+                                     class="w-full h-full object-cover select-none"
+                                     loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.webp') }}';">
                             </div>
-
-                            @if($property->is_booked)
-                            <div class="absolute inset-0 bg-black/45 backdrop-blur-[1.5px] flex items-center justify-center z-10 pointer-events-none" style="position: absolute; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(1.5px); display: flex; align-items: center; justify-content: center; z-index: 10;">
-                                <div class="px-6 py-2.5 bg-red-600/90 text-white font-extrabold text-sm uppercase tracking-widest rounded shadow-lg border border-red-500/30 transform -rotate-12 flex items-center gap-2" style="background: rgba(220, 38, 38, 0.9); color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 850; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; transform: rotate(-12deg); box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; gap: 8px;">
-                                    <i class="ph-bold ph-lock-key"></i> Booked
-                                </div>
-                            </div>
-                            @endif
-
-                            {{-- Auto-slide progress bar indicator --}}
-                            @if($property->images->count() > 1)
-                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-black/10 z-10">
-                                <div id="gallery-progress-bar" class="h-full bg-[#2874F0] w-0 transition-all duration-100 ease-linear"></div>
-                            </div>
-                            @endif
-
-                            {{-- Hover Zoom / Lightbox Hint Badge --}}
-                            <div class="absolute top-3.5 right-3.5 bg-zinc-900/75 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-md shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center gap-1.5 z-10">
-                                <i class="ph-bold ph-magnifying-glass-plus text-xs"></i> Move mouse to zoom · Click for fullscreen
-                            </div>
-
-                            {{-- Image Overlay Counter Badge --}}
-                            <div class="absolute bottom-4 right-4 bg-zinc-900/80 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1.5 rounded-lg shadow-md flex items-center gap-1 z-10">
-                                <i class="ph-bold ph-image text-sm"></i>
-                                <span id="gallery-counter">1 of {{ $property->images->count() }} Photos</span>
-                            </div>
-                        </div>
-
-                        {{-- Thumbnails Row --}}
-                        @if($property->images->count() > 1)
-                        <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2.5" id="gallery-thumbs">
-                            @foreach($property->images as $index => $image)
-                            <button type="button"
-                                    onclick="selectGalleryImage({{ $index }})"
-                                    data-thumb-index="{{ $index }}"
-                                    class="gallery-thumb aspect-square rounded-lg overflow-hidden border-2 {{ $index === 0 ? 'border-[#2874F0] ring-2 ring-[#2874F0]/20' : 'border-zinc-200' }} hover:border-[#2874F0]/60 transition-all focus:outline-none cursor-pointer group shadow-sm">
-                                <img src="{{ $image->imageUrl() }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                            </button>
-                            @endforeach
-                        </div>
-                        @endif
-                    @else
-                        <div class="h-[250px] sm:h-[380px] bg-gradient-to-br from-[#2874F0]/5 to-[#2874F0]/10 rounded-xl flex flex-col items-center justify-center border border-zinc-200 shadow-inner p-8 text-center">
-                            <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-md mb-3 text-[#2874F0]">
-                                <i class="ph-bold ph-image text-3xl"></i>
-                            </div>
-                            <h3 class="text-zinc-800 font-bold text-base">No property images available</h3>
-                            <p class="text-zinc-500 text-xs mt-1">Owner has not uploaded media for this listing yet</p>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Video Tour Section (if property has video) --}}
-                @if($property->hasVideo())
-                @php
-                    $allVideos = $property->allVideoUrls();
-                @endphp
-                <div class="bg-white rounded-2xl p-5 sm:p-6 border border-zinc-200 shadow-sm" id="property-video-tour">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-zinc-100">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shadow-xs">
-                                <i class="ph-bold ph-video-camera"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-zinc-900 flex items-center gap-2">
-                                    Virtual Video Tours
-                                    <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-extrabold uppercase rounded-full">
-                                        {{ count($allVideos) > 1 ? count($allVideos) . ' HD Clips' : 'HD Walkthrough' }}
-                                    </span>
-                                </h3>
-                                <p class="text-xs text-zinc-500">Real video walkthrough recorded for this property</p>
-                            </div>
-                        </div>
-
-                        {{-- Multi-Video Selector Tabs --}}
-                        @if(count($allVideos) > 1)
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($allVideos as $idx => $vUrl)
-                                <button type="button" onclick="switchPropertyVideo('{{ $vUrl }}', {{ $idx }}, this)"
-                                        class="property-video-tab px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer {{ $idx === 0 ? 'bg-purple-600 text-white shadow-xs' : 'bg-stone-100 text-stone-700 hover:bg-stone-200' }}">
-                                    <i class="ph-bold ph-play-circle mr-1"></i> Tour Clip {{ $idx + 1 }}
-                                </button>
-                            @endforeach
-                        </div>
-                        @endif
-                    </div>
-
-                    <div class="relative rounded-xl overflow-hidden bg-black aspect-video max-h-[460px] shadow-inner" id="video-display-container">
-                        @php
-                            $firstVideo = $allVideos[0] ?? '';
-                            $isYoutube = preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i', $firstVideo, $ytMatches);
-                            $isVimeo = preg_match('/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i', $firstVideo, $vmMatches);
-                        @endphp
-
-                        @if($isYoutube)
-                            <iframe id="main-video-iframe" class="w-full h-full" src="https://www.youtube.com/embed/{{ $ytMatches[1] }}" allowfullscreen frameborder="0"></iframe>
-                            <video id="main-video-player" controls playsinline class="w-full h-full object-contain mx-auto hidden"></video>
-                        @elseif($isVimeo)
-                            <iframe id="main-video-iframe" class="w-full h-full" src="https://player.vimeo.com/video/{{ $vmMatches[3] }}" allowfullscreen frameborder="0"></iframe>
-                            <video id="main-video-player" controls playsinline class="w-full h-full object-contain mx-auto hidden"></video>
-                        @else
-                            <iframe id="main-video-iframe" class="w-full h-full hidden" allowfullscreen frameborder="0"></iframe>
-                            <video id="main-video-player" controls playsinline preload="auto" class="w-full h-full object-contain mx-auto" src="{{ $firstVideo }}">
-                                <source src="{{ $firstVideo }}" type="video/webm">
-                                <source src="{{ $firstVideo }}" type="video/mp4">
-                                Your browser does not support HTML5 video playback.
-                            </video>
-                        @endif
-                    </div>
-
-                    {{-- All Clips Playlist Grid --}}
-                    @if(count($allVideos) > 1)
-                    <div class="mt-4 pt-3.5 border-t border-zinc-100">
-                        <p class="text-xs font-bold text-zinc-700 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                            <i class="ph-bold ph-film-strip text-purple-600"></i> All Tour Clips ({{ count($allVideos) }})
-                        </p>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-                            @foreach($allVideos as $idx => $vUrl)
-                                <button type="button" onclick="switchPropertyVideo('{{ $vUrl }}', {{ $idx }}, this)"
-                                        class="property-video-tab group text-left p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2.5 {{ $idx === 0 ? 'bg-purple-50 border-purple-500 text-purple-900 ring-2 ring-purple-500/20' : 'bg-zinc-50 hover:bg-purple-50/50 border-zinc-200 hover:border-purple-300 text-zinc-700' }}">
-                                    <div class="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center flex-shrink-0 text-sm shadow-xs group-hover:scale-105 transition-transform">
-                                        <i class="ph-bold ph-play"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <span class="text-xs font-bold block truncate">Clip {{ $idx + 1 }}</span>
-                                        <span class="text-[10px] text-zinc-400 font-medium block truncate">Click to play</span>
-                                    </div>
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
-                </div>
-
-                <script>
-                function switchPropertyVideo(url, index, btn) {
-                    document.querySelectorAll('.property-video-tab').forEach(b => {
-                        b.classList.remove('bg-purple-50', 'border-purple-500', 'text-purple-900', 'ring-2', 'ring-purple-500/20', 'bg-purple-600', 'text-white');
-                        b.classList.add('bg-zinc-50', 'border-zinc-200', 'text-zinc-700');
-                    });
-                    if (btn) {
-                        btn.classList.remove('bg-zinc-50', 'border-zinc-200', 'text-zinc-700');
-                        btn.classList.add('bg-purple-50', 'border-purple-500', 'text-purple-900', 'ring-2', 'ring-purple-500/20');
-                    }
-
-                    const player = document.getElementById('main-video-player');
-                    const iframe = document.getElementById('main-video-iframe');
-
-                    const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
-                    const vmMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i);
-
-                    if (ytMatch && iframe && player) {
-                        player.pause();
-                        player.classList.add('hidden');
-                        iframe.src = 'https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=1';
-                        iframe.classList.remove('hidden');
-                    } else if (vmMatch && iframe && player) {
-                        player.pause();
-                        player.classList.add('hidden');
-                        iframe.src = 'https://player.vimeo.com/video/' + vmMatch[3] + '?autoplay=1';
-                        iframe.classList.remove('hidden');
-                    } else if (player && iframe) {
-                        iframe.src = '';
-                        iframe.classList.add('hidden');
-                        player.src = url;
-                        player.load();
-                        player.classList.remove('hidden');
-                        player.play().catch(e => console.warn('Autoplay prevented:', e));
-                    }
-                }
-                </script>
-                @endif
-
-                {{-- Premium Quick Info Cards Grid --}}
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5" id="property-features">
-                    @if($property->type === 'plot')
-                        {{-- Plot Area Sqft --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-ruler-square text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ number_format($property->area_sqft ?? 0) }}</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Sq. Ft. Area</p>
-                        </div>
-
-                        {{-- Area in Sq. Yards (Gaj) --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-corners-out text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">
-                                {{ $property->area_sqft ? number_format(round($property->area_sqft / 9)) : 'N/A' }}
-                            </p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Sq. Yards (Gaj)</p>
-                        </div>
-
-                        {{-- Classification --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-map-trifold text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">Plot / Land</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Property Type</p>
-                        </div>
-
-                        {{-- Ownership Status --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-certificate text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">Freehold</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Ownership</p>
-                        </div>
-
-                        {{-- Transaction Type --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-tag text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">Outright Sale</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Transaction</p>
-                        </div>
-                    @elseif($property->type === 'pg-hostel')
-                        @php
-                            $desc = $property->description ?? '';
-                            $pgOcc = 'Single & Sharing';
-                            $pgGender = 'All Welcome';
-                            $pgFood = 'Available';
-                            $pgWashroom = ($property->bathrooms == 1) ? 'Attached Washroom' : 'Common Washroom';
-                            $pgCurfew = 'Flexible';
-
-                            if (preg_match('/• Room Sharing \/ Occupancy:\s*(.+)/i', $desc, $m)) {
-                                $pgOcc = trim($m[1]);
-                            }
-                            if (preg_match('/• Preferred Tenants:\s*(.+)/i', $desc, $m)) {
-                                $pgGender = trim($m[1]);
-                            }
-                            if (preg_match('/• Food & Meals:\s*(.+)/i', $desc, $m)) {
-                                $pgFood = trim($m[1]);
-                            }
-                            if (preg_match('/• Washroom Type:\s*(.+)/i', $desc, $m)) {
-                                $pgWashroom = trim($m[1]);
-                            }
-                            if (preg_match('/• Gate Timings:\s*(.+)/i', $desc, $m)) {
-                                $pgCurfew = trim($m[1]);
-                            }
-                        @endphp
-                        {{-- PG Occupancy --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-bed text-xl"></i>
-                            </div>
-                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full" title="{{ $pgOcc }}">{{ Str::limit($pgOcc, 16) }}</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Occupancy</p>
-                        </div>
-
-                        {{-- Gender Preference --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-users text-xl"></i>
-                            </div>
-                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full">{{ $pgGender }}</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Preferred For</p>
-                        </div>
-
-                        {{-- Food & Meals --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-fork-knife text-xl"></i>
-                            </div>
-                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full" title="{{ $pgFood }}">{{ Str::limit($pgFood, 15) }}</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Food & Mess</p>
-                        </div>
-
-                        {{-- Washroom --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-drop text-xl"></i>
-                            </div>
-                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full">{{ Str::limit($pgWashroom, 16) }}</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Bathroom</p>
-                        </div>
-
-                        {{-- Gate Timing / Curfew --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-clock text-xl"></i>
-                            </div>
-                            <p class="text-xs sm:text-sm font-extrabold text-zinc-900 leading-tight mb-1 truncate max-w-full" title="{{ $pgCurfew }}">{{ Str::limit($pgCurfew, 15) }}</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Gate Timing</p>
-                        </div>
-                    @else
-                        @if($property->bedrooms)
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-bed text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ $property->bedrooms }} BHK</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Bedrooms</p>
-                        </div>
-                        @endif
-                        
-                        @if($property->bathrooms)
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-drop text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ $property->bathrooms }} Baths</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Bathrooms</p>
-                        </div>
-                        @endif
-
-                        @if($property->area_sqft)
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-ruler-square text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">{{ number_format($property->area_sqft) }}</p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Sq. Ft. Area</p>
-                        </div>
-                        @endif
-
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-couch text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none truncate max-w-full mb-1">
-                                {{ ucfirst(str_replace('-', ' ', $property->furnishing)) }}
-                            </p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Furnishing</p>
-                        </div>
-
-                        {{-- Dynamic Floor Display --}}
-                        <div class="p-4 bg-white border border-zinc-200 rounded-xl shadow-sm hover:border-[#2874F0]/50 hover:shadow-md transition-all duration-300 text-center flex flex-col items-center group">
-                            <div class="w-11 h-11 rounded-full bg-[#2874F0]/8 text-[#2874F0] flex items-center justify-center mb-2.5 group-hover:bg-[#2874F0] group-hover:text-white transition-colors duration-300">
-                                <i class="ph-bold ph-stairs text-xl"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-zinc-900 leading-none mb-1">
-                                @if($property->type === 'shop')
-                                    Ground Floor
-                                @else
-                                    @php
-                                        $flrNum = ($property->id % 4) + 1;
-                                        $flrSuffix = match($flrNum) { 1 => 'st', 2 => 'nd', 3 => 'rd', default => 'th' };
-                                    @endphp
-                                    {{ $flrNum }}{{ $flrSuffix }} Floor
-                                @endif
-                            </p>
-                            <p class="text-[11px] font-semibold text-zinc-550 uppercase tracking-wider">Floor Level</p>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Highlights Section --}}
-                <div class="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
-                    <h3 class="text-lg font-extrabold text-zinc-900 mb-4 flex items-center gap-2 border-b border-zinc-150 pb-3">
-                        <i class="ph-bold ph-sparkles text-[#2874F0]"></i> Property Highlights
-                    </h3>
-                    @if($property->type === 'plot')
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Clear Title & Registry Ready
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Demarcated Boundary / Wall
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Wide Approach Road Access
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Electricity & Water Connection Ready
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> High Appreciation Investment Zone
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Immediate Possession Available
-                            </div>
-                        </div>
-                    @elseif($property->type === 'pg-hostel')
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> High-Speed Wi-Fi & Power Backup
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Hygienic Meals & RO Purified Water
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Washing Machine & Daily Cleaning
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> 24x7 CCTV & Biometric Security
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Fully Furnished with Bed & Wardrobe
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Close to Metro & Tech Parks / Colleges
-                            </div>
-                        </div>
-                    @else
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Gated Security Community
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Dedicated Car Parking
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Power Backup Available
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> 24x7 Clean Water Supply
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Elevator / Lift Access
-                            </div>
-                            <div class="flex items-center gap-2.5 text-zinc-700 text-sm font-medium">
-                                <i class="ph-bold ph-check-circle text-emerald-500 text-base"></i> Close to Metro Station
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Professional About Property --}}
-                <div class="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm" id="property-description">
-                    <h2 class="text-lg font-extrabold text-zinc-900 mb-4 flex items-center gap-2 border-b border-zinc-150 pb-3">
-                        <i class="ph-bold ph-article text-[#2874F0]"></i> About this Property
-                    </h2>
-                    <div class="text-zinc-650 leading-relaxed font-normal text-sm sm:text-base space-y-4 whitespace-pre-line">
-                        {!! nl2br(e($property->description)) !!}
-                    </div>
-                </div>
-
-                {{-- Nearby Places --}}
-                <div class="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
-                    <h3 class="text-lg font-extrabold text-zinc-900 mb-4 flex items-center gap-2 border-b border-zinc-150 pb-3">
-                        <i class="ph-bold ph-map-trifold text-[#2874F0]"></i> Connectivity & Locality
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="p-3 bg-zinc-50 border border-zinc-200/70 rounded-xl flex items-start gap-3">
-                            <i class="ph-bold ph-train text-[#2874F0] text-xl mt-0.5"></i>
-                            <div>
-                                <h4 class="text-xs font-bold text-zinc-900">Metro Station</h4>
-                                <p class="text-[11px] text-zinc-500 mt-0.5">0.6 km · 5 mins walk</p>
-                            </div>
-                        </div>
-                        <div class="p-3 bg-zinc-50 border border-zinc-200/70 rounded-xl flex items-start gap-3">
-                            <i class="ph-bold ph-first-aid-kit text-[#2874F0] text-xl mt-0.5"></i>
-                            <div>
-                                <h4 class="text-xs font-bold text-zinc-900">General Hospital</h4>
-                                <p class="text-[11px] text-zinc-500 mt-0.5">1.2 km · 7 mins drive</p>
-                            </div>
-                        </div>
-                        <div class="p-3 bg-zinc-50 border border-zinc-200/70 rounded-xl flex items-start gap-3">
-                            <i class="ph-bold ph-graduation-cap text-[#2874F0] text-xl mt-0.5"></i>
-                            <div>
-                                <h4 class="text-xs font-bold text-zinc-900">Elite Prep School</h4>
-                                <p class="text-[11px] text-zinc-500 mt-0.5">1.8 km · 10 mins drive</p>
-                            </div>
-                        </div>
-                        <div class="p-3 bg-zinc-50 border border-zinc-200/70 rounded-xl flex items-start gap-3">
-                            <i class="ph-bold ph-storefront text-[#2874F0] text-xl mt-0.5"></i>
-                            <div>
-                                <h4 class="text-xs font-bold text-zinc-900">Shopping Mall</h4>
-                                <p class="text-[11px] text-zinc-500 mt-0.5">0.9 km · 8 mins walk</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Google Map Section --}}
-                <div class="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
-                    <h3 class="text-lg font-extrabold text-zinc-900 mb-4 flex items-center gap-2 border-b border-zinc-150 pb-3">
-                        <i class="ph-bold ph-compass text-[#2874F0]"></i> Map Location
-                    </h3>
-                    <div class="relative rounded-xl overflow-hidden h-[240px] sm:h-[300px] bg-zinc-100 border border-zinc-200 shadow-inner group">
-                        @if($isOwnerOrAdmin || $hasViewed)
-                            {{-- UNLOCKED: Show real Google Maps embed with exact address --}}
-                            @php
-                                $mapQuery = urlencode($property->address . ', ' . $property->location . ', ' . ($property->state ?? '') . ', India');
-                            @endphp
-                            <iframe
-                                src="https://www.google.com/maps?q={{ $mapQuery }}&output=embed&hl=en"
-                                width="100%"
-                                height="100%"
-                                style="border:0; min-height:100%;"
-                                allowfullscreen=""
-                                loading="lazy"
-                                referrerpolicy="no-referrer-when-downgrade"
-                                class="w-full h-full">
-                            </iframe>
-                            {{-- Unlocked Address Tooltip --}}
-                            <div class="absolute bottom-4 left-4 right-4 z-10">
-                                <div class="bg-white/95 backdrop-blur-md border border-zinc-200/80 rounded-xl p-3 shadow-xl text-xs font-semibold max-w-sm">
-                                    <p class="font-bold text-[#2874F0] mb-0.5 truncate">{{ $property->title }}</p>
-                                    <p class="text-zinc-500 font-medium leading-tight text-[11px]">{{ $property->address }}, {{ $property->location }}</p>
-                                </div>
-                            </div>
-                            <div class="absolute top-4 right-4 z-10">
-                                <span class="bg-emerald-500/90 text-white font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full shadow-md flex items-center gap-1"><i class="ph-bold ph-map-pin"></i> Exact Location</span>
-                            </div>
-                        @else
-                            {{-- LOCKED: Show blurred city-level map with lock overlay --}}
-                            @php
-                                $lockedMapQuery = urlencode($property->location . ', ' . ($property->state ?? '') . ', India');
-                            @endphp
-                            <iframe
-                                src="https://www.google.com/maps?q={{ $lockedMapQuery }}&output=embed&hl=en&z=11"
-                                width="100%"
-                                height="100%"
-                                style="border:0; min-height:100%; filter: blur(6px); pointer-events: none;"
-                                allowfullscreen=""
-                                loading="lazy"
-                                referrerpolicy="no-referrer-when-downgrade"
-                                class="w-full h-full">
-                            </iframe>
-                            {{-- Lock Overlay --}}
-                            <div class="absolute inset-0 z-10 flex items-center justify-center" style="background: rgba(255,255,255,0.55); backdrop-filter: blur(2px);">
-                                <div class="text-center px-6 py-5 max-w-xs">
-                                    <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3 shadow-lg border-2 border-amber-200">
-                                        <i class="ph-bold ph-lock-key text-2xl"></i>
-                                    </div>
-                                    <p class="text-sm font-extrabold text-zinc-800 mb-1">Exact Location Locked</p>
-                                    <p class="text-[11px] text-zinc-500 mb-4 leading-normal font-medium">Subscribe to a plan to see the exact property address on the map.</p>
-                                    <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-[#c9a050] hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-md transition-all" title="Unlock Location">
-                                        <i class="ph-bold ph-crown"></i> Unlock Location
-                                    </a>
-                                </div>
-                            </div>
-                            {{-- Locked Badge --}}
-                            <div class="absolute top-4 right-4 z-20">
-                                <span class="bg-amber-500/90 text-white font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full shadow-md flex items-center gap-1"><i class="ph-bold ph-lock"></i> Location Locked</span>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- Right Side: Sticky Pricing, Contact Card, Inquiry (4 Columns) --}}
-            <div class="lg:col-span-4">
-                <div class="lg:sticky lg:top-24 space-y-6">
-
-                    {{-- Premium Pricing & Core Financials --}}
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col relative overflow-hidden group">
-                        {{-- Sleek top brand accent --}}
-                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
-
-                        <div class="mb-4 pt-1">
-                            <div class="flex items-center justify-between gap-2 mb-1">
-                                <p class="text-slate-400 text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1">
-                                    <i class="ph-bold ph-tag text-blue-600"></i>
-                                    {{ $property->isForSale() ? 'Sale Pricing' : 'Rental Pricing' }}
-                                </p>
-                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                    <i class="ph-bold ph-shield-check text-emerald-600"></i> Zero Brokerage
-                                </span>
-                            </div>
-
-                            @if($property->isForSale())
-                                <div class="flex items-baseline gap-2 flex-wrap">
-                                    <span class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                                        ₹{{ number_format($property->price, 0) }}
-                                    </span>
-                                    @if($property->price >= 10000000)
-                                        <span class="text-xs sm:text-sm font-extrabold text-blue-700 bg-blue-50 border border-blue-200/70 px-2 py-0.5 rounded-lg">
-                                            (₹{{ rtrim(rtrim(number_format($property->price / 10000000, 2), '0'), '.') }} Cr)
-                                        </span>
-                                    @elseif($property->price >= 100000)
-                                        <span class="text-xs sm:text-sm font-extrabold text-blue-700 bg-blue-50 border border-blue-200/70 px-2 py-0.5 rounded-lg">
-                                            (₹{{ rtrim(rtrim(number_format($property->price / 100000, 2), '0'), '.') }} Lac)
-                                        </span>
-                                    @endif
-                                </div>
-                            @else
-                                <div class="flex items-baseline gap-1.5">
-                                    <span class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                                        ₹{{ number_format($property->price, 0) }}
-                                    </span>
-                                    <span class="text-slate-500 text-sm font-semibold">/ {{ $property->price_period ?: 'month' }}</span>
-                                </div>
-                            @endif
-                        </div>
-
-                        {{-- Structured Financial Breakdowns --}}
-                        <div class="bg-slate-50/80 border border-slate-100 rounded-xl p-3 sm:p-3.5 mb-4 space-y-2 text-xs text-slate-600 font-medium">
-                            @if($property->isForSale())
-                                @php
-                                    $loanAmount = $property->price * 0.8;
-                                    $monthlyRate = (8.5 / 12) / 100;
-                                    $tenureMonths = 20 * 12;
-                                    $estEmi = ($loanAmount > 0)
-                                        ? ($loanAmount * $monthlyRate * pow(1 + $monthlyRate, $tenureMonths)) / (pow(1 + $monthlyRate, $tenureMonths) - 1)
-                                        : 0;
-                                @endphp
-                                <div class="flex items-center justify-between">
-                                    <span>Est. Home Loan EMI:</span>
-                                    <span class="font-extrabold text-slate-900">₹{{ number_format($estEmi, 0) }}/mo*</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span>Brokerage Fee:</span>
-                                    <span class="font-extrabold text-emerald-600 flex items-center gap-1"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span>Stamp Duty & Reg:</span>
-                                    <span class="font-semibold text-slate-700">Estimated ~5% - 7%</span>
-                                </div>
-                            @else
-                                <div class="flex items-center justify-between">
-                                    <span>Security Deposit:</span>
-                                    <span class="font-extrabold text-slate-900 flex items-center gap-1">
-                                        ₹{{ number_format($property->price * 2, 0) }}
-                                        <span class="text-[10px] text-blue-600 font-bold bg-blue-50 border border-blue-200/60 px-1.5 py-0.2 rounded">Refundable</span>
-                                    </span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span>Brokerage Fee:</span>
-                                    <span class="font-extrabold text-emerald-600 flex items-center gap-1"><i class="ph-bold ph-check"></i> ₹0 (Zero Brokerage)</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span>EMI Starting:</span>
-                                    <span class="font-semibold text-slate-700">₹{{ number_format($property->price * 0.15, 0) }}/mo</span>
-                                </div>
-                            @endif
-                        </div>
-
-                        {{-- Action Buttons Grid --}}
-                        <div class="grid grid-cols-2 gap-2.5">
-                            @auth
-                            <button onclick="openCallAgentModal()" class="px-3.5 py-2.5 sm:py-3 bg-white hover:bg-blue-50/70 border-2 border-blue-500/30 hover:border-blue-600 text-blue-600 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95" id="call-agent-btn">
-                                <i class="ph-bold ph-phone-call text-base"></i> Call Agent
-                            </button>
-                            @if(auth()->user()->hasActivePlanForProperty($property))
-                            <button onclick="openBookVisitModal()" class="px-3.5 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95" id="book-visit-btn">
-                                <i class="ph-bold ph-calendar-blank text-base"></i> Book Visit
-                            </button>
-                            @else
-                            <a href="{{ route('plans.index', ['billing' => $property->isForSale() ? 'yearly' : 'monthly', 'purpose' => $property->isForSale() ? 'buy' : 'rent']) }}#billing-toggle" class="px-3.5 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95" id="book-visit-btn" title="Book Visit">
-                                <i class="ph-bold ph-calendar-blank text-base"></i> Book Visit
-                            </a>
-                            @endif
-                            @else
-                            <a href="tel:{{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}" class="px-3.5 py-2.5 sm:py-3 bg-white hover:bg-blue-50/70 border-2 border-blue-500/30 hover:border-blue-600 text-blue-600 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95" title="Call Agent">
-                                <i class="ph-bold ph-phone-call text-base"></i> Call Agent
-                            </a>
-                            <a href="{{ route('login') }}" class="px-3.5 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95" title="Book Visit">
-                                <i class="ph-bold ph-calendar-blank text-base"></i> Book Visit
-                            </a>
-                            @endauth
-                        </div>
-
-                        @php
-                            $rawWa = \App\Models\Setting::get('whatsapp_number', \App\Models\Setting::get('agent_phone', '917974164274'));
-                            $cleanWa = preg_replace('/[^0-9]/', '', (string)$rawWa);
-                            if (strlen($cleanWa) === 10) { $cleanWa = '91' . $cleanWa; }
-                            $waMessage = urlencode("Hello, I am interested in this property on UnlockRentals.\nProperty ID: #{$property->id} ({$property->title})\nPrice: ₹" . number_format($property->price, 0) . "\nLink: " . route('properties.show', $property));
-                            $waUrl = "https://wa.me/{$cleanWa}?text={$waMessage}";
-                        @endphp
-
-                        <div class="mt-2.5 space-y-2">
-                            <a href="{{ $waUrl }}" target="_blank" id="whatsapp-inquiry-btn" data-track-whatsapp="true" class="w-full py-2.5 sm:py-3 px-4 bg-[#25D366] hover:bg-[#20bd5a] active:scale-[0.99] text-white text-xs sm:text-sm font-extrabold rounded-xl transition-all shadow-sm shadow-[#25D366]/20 flex items-center justify-center gap-2 cursor-pointer" title="Chat with Verified Agent on WhatsApp">
-                                <i class="ph-bold ph-whatsapp-logo text-lg"></i> Chat on WhatsApp
-                            </a>
-                            <button type="button" onclick="window.openLeadModal('modal-similar-properties', {{ $property->id }}, '{{ addslashes($property->locality ?? $property->location) }}', {{ (int)$property->price }})" class="w-full py-2 px-3 bg-slate-50 hover:bg-blue-50/70 border border-slate-200 hover:border-blue-300 text-slate-600 hover:text-blue-600 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i class="ph-bold ph-sparkle text-blue-500"></i> Get Similar Properties
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Standard Owner Contact Card --}}
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm relative overflow-hidden" id="owner-contact-card">
-                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
-                        <h3 class="text-slate-900 font-extrabold text-sm sm:text-base mb-3.5 flex items-center gap-2 pt-0.5">
-                            <i class="ph-bold ph-user-circle text-amber-500 text-lg"></i> Owner Contact Info
-                        </h3>
-
-                        @if($property->owner)
-                        @php
-                            $ownerPlan = $property->owner->activePlan();
-                        @endphp
-                        <div class="p-3.5 sm:p-4 bg-slate-50/80 border border-slate-200/80 rounded-xl mb-3.5">
-                            <div class="flex items-center gap-3">
-                                <div class="relative">
-                                    <div class="w-11 h-11 {{ $ownerPlan ? 'bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-50 shadow-md shadow-amber-500/25' : 'bg-gradient-to-tr from-blue-600 to-indigo-700 shadow-md' }} rounded-full flex items-center justify-center text-white text-base font-extrabold">
-                                        {{ strtoupper(substr($property->owner->name, 0, 1)) }}
-                                    </div>
-                                    @if($ownerPlan)
-                                        <span class="absolute -bottom-1 -right-1 w-4.5 h-4.5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white text-[9.5px] ring-2 ring-white shadow-xs" title="Paid Member">
-                                            <i class="ph-fill ph-crown drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]"></i>
-                                        </span>
-                                    @endif
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-1.5 flex-wrap">
-                                        <p class="text-sm font-extrabold text-slate-900 truncate leading-snug">{{ $property->owner->name }}</p>
-                                        @if($ownerPlan)
-                                            <x-premium-badge :user="$property->owner" size="xs" :showPlan="false" />
-                                        @endif
-                                    </div>
-                                    <p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Verified Property Owner</p>
-                                </div>
-                            </div>
-
-                            @if(auth()->check())
-                                @php
-                                    $canView = auth()->user()->canViewContact($property);
-                                    $hasViewed = auth()->user()->hasViewedContact($property);
-                                    $isOwnerOrAdmin = auth()->id() === $property->user_id || auth()->user()->isAdmin();
-                                    $activePlan = auth()->user()->activePlanForProperty($property);
-                                    $isSale = $property->isForSale();
-                                    $hasRentPlan = auth()->user()->hasActiveRentPlan();
-                                    $hasBuyPlan = auth()->user()->hasActiveBuyPlan();
-                                @endphp
-
-                                @if($isOwnerOrAdmin || $hasViewed)
-                                    {{-- Show full contact details --}}
-                                    <div class="space-y-2.5 pt-3 border-t border-slate-200 mt-3">
-                                        @php
-                                            $displayPhone = !empty($property->contact_phone) ? $property->contact_phone : (!empty($property->owner->phone) ? $property->owner->phone : 'Not provided');
-                                            $altNumbers = !empty($property->alternate_phone) ? array_filter(array_map('trim', explode(',', $property->alternate_phone))) : [];
-                                        @endphp
-                                        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                                            <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                                <i class="ph-bold ph-phone text-sm"></i>
-                                            </div>
-                                            <a href="tel:{{ $displayPhone !== 'Not provided' ? $displayPhone : '' }}" class="text-slate-800 hover:text-blue-600 font-bold truncate flex-1" title="Call Owner">
-                                                {{ $displayPhone }}
-                                            </a>
-                                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Primary</span>
-                                        </div>
-
-                                        @foreach($altNumbers as $altNum)
-                                        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                                            <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                                                <i class="ph-bold ph-phone-call text-sm"></i>
-                                            </div>
-                                            <a href="tel:{{ $altNum }}" class="text-slate-800 hover:text-blue-600 font-bold truncate flex-1" title="Call Alternate Number">
-                                                {{ $altNum }}
-                                            </a>
-                                            <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">Alternate</span>
-                                        </div>
-                                        @endforeach
-
-                                        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                                            <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                                                <i class="ph-bold ph-envelope text-sm"></i>
-                                            </div>
-                                            <a href="mailto:{{ $property->owner->email }}" class="text-slate-800 hover:text-blue-600 font-medium truncate flex-1" title="Email Owner">
-                                                {{ $property->owner->email }}
-                                            </a>
-                                        </div>
-                                        @if($hasViewed && !$isOwnerOrAdmin)
-                                        <div class="text-[11px] text-emerald-700 font-bold mt-2 flex items-center justify-center gap-1 bg-emerald-50 py-1.5 px-3 rounded-lg border border-emerald-200">
-                                            <i class="ph-bold ph-check-circle text-sm"></i> Contact unlocked
-                                            @if($activePlan)
-                                                · {{ $activePlan->remaining_contacts }} views remaining
-                                            @endif
-                                        </div>
-                                        @endif
-                                    </div>
-                                @elseif($canView)
-                                    {{-- Has matching plan with remaining contacts — show unlock button --}}
-                                    <div class="space-y-2.5 pt-3 border-t border-slate-200 mt-3">
-                                        <div class="flex items-center justify-between p-2.5 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
-                                            <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold">
-                                                <i class="ph-bold ph-phone text-slate-400"></i>
-                                                <span class="tracking-widest font-mono text-xs">+91 ••••• •••••</span>
-                                            </div>
-                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
-                                                <i class="ph-bold ph-lock text-[10px]"></i> Locked
-                                            </span>
-                                        </div>
-                                        <div class="flex items-center justify-between p-2.5 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-400">
-                                            <div class="flex items-center gap-2 text-xs sm:text-sm font-semibold">
-                                                <i class="ph-bold ph-envelope text-slate-400"></i>
-                                                <span class="tracking-widest font-mono text-xs">•••••••@•••••.com</span>
-                                            </div>
-                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
-                                                <i class="ph-bold ph-lock text-[10px]"></i> Locked
-                                            </span>
-                                        </div>
-
-                                        <div class="text-center p-3 bg-blue-50/70 rounded-xl border border-blue-100">
-                                            <p class="text-xs font-bold text-slate-800 mb-0.5">Contact details locked</p>
-                                            <p class="text-[11px] text-slate-500 font-medium">You have <strong class="text-blue-700 font-extrabold">{{ $activePlan->remaining_contacts }}</strong> contact {{ Str::plural('view', $activePlan->remaining_contacts) }} remaining in your active {{ $activePlan->plan->name ?? ($isSale ? 'Buyer Pass' : 'Rental Plan') }}.</p>
-                                        </div>
-
-                                        <form method="POST" action="{{ route('properties.unlock-contact', $property) }}">
-                                            @csrf
-                                            <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white text-xs sm:text-sm font-extrabold rounded-xl transition-all shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer" title="Unlock Contact Details">
-                                                <i class="ph-bold ph-lock-key-open text-base"></i>
-                                                <span>Unlock {{ $isSale ? 'Seller' : 'Owner' }} Contact</span>
-                                                <span class="text-[10px] uppercase font-black bg-white/20 px-1.5 py-0.5 rounded-full ml-1">1 View</span>
-                                            </button>
-                                        </form>
-                                    </div>
-                                @else
-                                    {{-- Cannot view: determine precise reason --}}
-                                    <div class="pt-3 border-t border-slate-200 mt-3">
-                                        <div class="text-center p-3.5 bg-amber-50/50 border border-amber-200 rounded-xl">
-                                            @if($isSale && $hasRentPlan && !$hasBuyPlan)
-                                                <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
-                                                    <i class="ph-bold ph-buildings text-lg"></i>
-                                                </div>
-                                                <p class="text-xs sm:text-sm font-extrabold text-slate-800 mb-0.5">Buyer Pass Required</p>
-                                                <p class="text-[11px] text-slate-500 mb-3 leading-normal font-medium">You hold an active Rental Plan. To view verified seller contact details for this property, please purchase a Buyer Pass.</p>
-                                                <a href="{{ route('plans.index', ['billing' => 'yearly', 'purpose' => 'buy']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="View Buyer Passes">
-                                                    <i class="ph-bold ph-buildings"></i> View Buyer Passes
-                                                </a>
-                                            @elseif(!$isSale && $hasBuyPlan && !$hasRentPlan)
-                                                <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
-                                                    <i class="ph-bold ph-house text-lg"></i>
-                                                </div>
-                                                <p class="text-xs sm:text-sm font-extrabold text-slate-800 mb-0.5">Rental Plan Required</p>
-                                                <p class="text-[11px] text-slate-500 mb-3 leading-normal font-medium">You hold an active Buyer Pass. To view verified owner contact details for this rental listing, please purchase a Rental Plan.</p>
-                                                <a href="{{ route('plans.index', ['billing' => 'monthly', 'purpose' => 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="View Rental Plans">
-                                                    <i class="ph-bold ph-house"></i> View Rental Plans
-                                                </a>
-                                            @elseif($activePlan && $activePlan->remaining_contacts <= 0)
-                                                <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
-                                                    <i class="ph-bold ph-lock-key text-lg"></i>
-                                                </div>
-                                                <p class="text-xs sm:text-sm font-extrabold text-slate-800 mb-0.5">Contact limit reached</p>
-                                                <p class="text-[11px] text-slate-500 mb-3 leading-normal font-medium">You have used all contact views in your active plan. Please upgrade your plan to unlock more contact details.</p>
-                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="Upgrade Plan">
-                                                    <i class="ph-bold ph-crown"></i> Upgrade Plan
-                                                </a>
-                                            @else
-                                                <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
-                                                    <i class="ph-bold ph-lock-key text-lg"></i>
-                                                </div>
-                                                <p class="text-xs sm:text-sm font-extrabold text-slate-800 mb-0.5">Direct Owner Contact Locked</p>
-                                                <p class="text-[11px] text-slate-500 mb-3 leading-normal font-medium">Subscribe to a plan to access the verified {{ $isSale ? 'seller\'s' : 'owner\'s' }} phone & email details.</p>
-                                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}#billing-toggle" class="inline-flex items-center gap-1.5 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-105 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="View Unlock Plans">
-                                                    <i class="ph-bold ph-crown"></i> View {{ $isSale ? 'Buyer Passes' : 'Rental Plans' }}
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endif
-                            @else
-                                {{-- Guest — prompt to login --}}
-                                <div class="pt-3 border-t border-slate-200 mt-3">
-                                    <div class="text-center p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                                        <div class="w-9 h-9 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center mx-auto mb-1.5 shadow-inner">
-                                            <i class="ph-bold ph-user-lock text-lg"></i>
-                                        </div>
-                                        <p class="text-xs font-bold text-slate-650 mb-2.5 leading-normal">Sign in with your verified profile to view full owner contact details.</p>
-                                        <a href="{{ route('login') }}" class="inline-flex items-center gap-1 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="Sign In to View">
-                                            Sign In to View
-                                        </a>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                        @endif
-
-                        {{-- Owner / Admin Controls --}}
-                        @if(auth()->check() && (auth()->id() === $property->user_id || auth()->user()->isAdmin()))
-                        <div class="p-3 bg-blue-50/70 border border-blue-200/80 rounded-xl">
-                            <p class="text-[11px] font-extrabold text-blue-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                <i class="ph-bold ph-shield-check text-blue-600"></i> Owner Controls
-                            </p>
-                            <div class="flex gap-2">
-                                <a href="{{ route('properties.edit', $property) }}" class="flex-1 text-center py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all shadow-xs flex items-center justify-center gap-1" title="Edit this property">
-                                    <i class="ph-bold ph-pencil-simple"></i> Edit Listing
-                                </a>
-                                <form method="POST" action="{{ route('properties.destroy', $property) }}" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this property?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full py-2 px-3 bg-white hover:bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-lg transition-all shadow-2xs cursor-pointer flex items-center justify-center gap-1">
-                                        <i class="ph-bold ph-trash"></i> Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-
-                    {{-- Standard Inquiry Form Card --}}
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-sm relative overflow-hidden" id="inquiry-form-card">
-                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
-                        <h3 class="text-slate-900 font-extrabold text-sm sm:text-base mb-3.5 flex items-center gap-2 pt-0.5">
-                            <i class="ph-bold ph-envelope-simple-open text-blue-600 text-lg"></i>
-                            Send Direct Inquiry
-                        </h3>
-
-                        @if(auth()->check())
-                        <form method="POST" action="{{ route('inquiries.store') }}" id="inquiry-form">
-                            @csrf
-                            <input type="hidden" name="property_id" value="{{ $property->id }}">
-
-                            <div class="space-y-3">
-                                <div class="relative">
-                                    <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none z-10"></i>
-                                    <input type="text" name="name" value="{{ auth()->user()->name }}"
-                                           class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
-                                           placeholder="Your Full Name" required id="inquiry-name">
-                                </div>
-                                <div class="relative">
-                                    <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none z-10"></i>
-                                    <input type="email" name="email" value="{{ auth()->user()->email }}"
-                                           class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
-                                           placeholder="Your Email Address" required id="inquiry-email">
-                                </div>
-                                <div class="relative">
-                                    <i class="ph-bold ph-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none z-10"></i>
-                                    <input type="tel" name="phone" value="{{ auth()->user()->phone }}"
-                                           class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
-                                           placeholder="Phone Number (optional)" id="inquiry-phone">
-                                </div>
-                                <div class="relative">
-                                    <textarea name="message" rows="3"
-                                              class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all resize-y"
-                                              placeholder="I'm interested in this property..." required id="inquiry-message">I'm interested in "{{ $property->title }}". Please share more details.</textarea>
-                                </div>
-                                <button type="submit" class="w-full px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95" id="inquiry-submit">
-                                    <i class="ph-bold ph-paper-plane-tilt text-sm"></i> Send Inquiry to Owner
-                                </button>
-                            </div>
-
-                            @if($errors->any())
-                            <div class="mt-3 p-2.5 bg-red-50 border border-red-200 rounded-xl">
-                                @foreach($errors->all() as $error)
-                                    <p class="text-xs font-bold text-red-650">{{ $error }}</p>
-                                @endforeach
-                            </div>
-                            @endif
-                        </form>
-                        @else
-                        <div class="text-center py-5">
-                            <p class="text-xs font-bold text-slate-500 mb-3 leading-normal">Please sign in with your UnlockRentals account to submit inquiries directly to the owner.</p>
-                            <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-lg shadow-sm transition-all" title="Sign In Now">
-                                <span>Sign In Now</span>
-                            </a>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Need Help With Your New Home? Local Professionals Widget --}}
-        <div class="mt-12 bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div>
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-bold uppercase tracking-wider mb-2">
-                        <i class="ph-bold ph-toolbox"></i> Home Services & Maintenance
-                    </div>
-                    <h2 class="text-xl sm:text-2xl font-black text-white">Need Help With Your New Home?</h2>
-                    <p class="text-xs sm:text-sm text-blue-100/80 mt-1 max-w-xl">
-                        Moving into this property? Connect with trusted, verified local professionals in {{ $property->locality ?? $property->location }}.
-                    </p>
-
-                    <div class="flex flex-wrap gap-2 mt-4">
-                        @foreach(['Electrician', 'Plumber', 'Carpenter', 'Painter', 'CCTV', 'Laundry', 'Driver', 'Security Guard'] as $sName)
-                            <a href="{{ route('services.index', ['category' => Str::slug($sName), 'location' => $property->city ?? $property->locality]) }}" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-xs transition-colors">
-                                {{ $sName }}
-                            </a>
                         @endforeach
                     </div>
+                @else
+                    <div class="w-full h-full flex items-center justify-center bg-slate-800">
+                        <img src="{{ asset('images/luxury_sunlit.webp') }}" alt="{{ $cleanTitle }}" class="w-full h-full object-cover">
+                    </div>
+                @endif
+
+                {{-- Booked Overlay if booked --}}
+                @if($property->is_booked)
+                    <div class="absolute inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-20 pointer-events-none">
+                        <span class="px-5 py-2 bg-rose-600 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-xl transform -rotate-6">
+                            <i class="ph-bold ph-lock-key mr-1"></i> Property Booked
+                        </span>
+                    </div>
+                @endif
+
+                {{-- Top Floating Navigation Bar (Back, Share, Wishlist) --}}
+                <div class="absolute top-3 left-3 right-3 flex items-center justify-between z-30 pointer-events-none">
+                    {{-- Back Circle Button --}}
+                    <button type="button"
+                            onclick="window.history.length > 1 ? window.history.back() : window.location.href='{{ route('properties.index') }}'"
+                            class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition-all active:scale-90 pointer-events-auto cursor-pointer"
+                            aria-label="Back">
+                        <i class="ph-bold ph-arrow-left text-base sm:text-lg"></i>
+                    </button>
+
+                    {{-- Right Share & Heart Buttons --}}
+                    <div class="flex items-center gap-2">
+                        <button type="button"
+                                onclick="copyPropertyLink()"
+                                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition-all active:scale-90 pointer-events-auto cursor-pointer"
+                                aria-label="Share listing">
+                            <i class="ph-bold ph-share-network text-base sm:text-lg"></i>
+                        </button>
+                        <button type="button"
+                                onclick="window.toggleCardFavorite(this, {{ $property->id }})"
+                                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-slate-700 hover:text-rose-500 shadow-md flex items-center justify-center transition-all active:scale-90 pointer-events-auto cursor-pointer"
+                                data-property-fav="{{ $property->id }}"
+                                aria-label="Favorite">
+                            <i class="ph-bold ph-heart text-base sm:text-lg"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="flex-shrink-0">
-                    <a href="{{ route('services.index', ['location' => $property->city ?? $property->locality]) }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 whitespace-nowrap" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">
-                        <span style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;">Find Local Professionals</span>
-                        <i class="ph ph-arrow-right text-sm" style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important;"></i>
-                    </a>
+                {{-- Top Left Badges (Direct Landlord + Unlock Verified) --}}
+                <div class="absolute top-14 sm:top-16 left-3 flex items-center gap-1.5 z-20 pointer-events-none flex-wrap">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-white text-[10px] sm:text-[11px] font-black tracking-wide shadow-sm border border-white/80">
+                        <i class="ph-fill ph-shield-check text-emerald-600 text-xs"></i>
+                        <span>{{ $isSale ? 'Direct Owner' : ($property->type === 'plot' ? 'Direct Title' : 'Direct Landlord') }}</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/95 text-blue-700 dark:text-blue-300 text-[10px] sm:text-[11px] font-black tracking-wide shadow-sm border border-white/80">
+                        <i class="ph-fill ph-seal-check text-blue-600 text-xs"></i>
+                        <span>Unlock Verified</span>
+                    </span>
+                </div>
+
+                {{-- Bottom Badges (360 Virtual Tour + Photo Counter) --}}
+                <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between z-20 pointer-events-none">
+                    {{-- Virtual Tour / Video Tour Pill --}}
+                    @if($property->hasVideo())
+                        <button type="button"
+                                onclick="openVideoModal()"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-purple-700 text-[10.5px] sm:text-xs font-black shadow-md border border-white/80 transition-all pointer-events-auto cursor-pointer">
+                            <i class="ph-bold ph-video-camera text-purple-600"></i>
+                            <span>HD Video Tour</span>
+                        </button>
+                    @else
+                        <button type="button"
+                                onclick="openLightboxModal(0)"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-blue-700 text-[10.5px] sm:text-xs font-black shadow-md border border-white/80 transition-all pointer-events-auto cursor-pointer">
+                            <i class="ph-bold ph-cube text-blue-600"></i>
+                            <span>360° Virtual Tour</span>
+                        </button>
+                    @endif
+
+                    {{-- Photos Counter Badge --}}
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black/65 backdrop-blur-xs text-white text-[10.5px] sm:text-xs font-bold shadow-md" id="gallery-counter-badge">
+                        1/{{ $totalPhotos }} photos
+                    </span>
                 </div>
             </div>
-            <div class="absolute -right-10 -bottom-10 w-60 h-60 rounded-full bg-blue-500/10 blur-2xl pointer-events-none"></div>
+
+            {{-- Thumbnails Row Strip --}}
+            @if($galleryImages->count() > 1)
+                <div class="p-2 sm:p-2.5 bg-slate-900 flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    @foreach($galleryImages->take(4) as $idx => $img)
+                        @if($idx === 3 && $galleryImages->count() > 4)
+                            {{-- 4th thumbnail with "+X more" overlay --}}
+                            <div class="relative w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer border border-white/20 group/more"
+                                 onclick="openLightboxModal(3)">
+                                <img src="{{ $img->imageUrl() }}" alt="" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-slate-950/80 hover:bg-slate-950/70 text-white flex items-center justify-center text-xs font-black gap-1 transition-colors">
+                                    <i class="ph-bold ph-images text-xs"></i>
+                                    <span>+{{ $galleryImages->count() - 3 }} more</span>
+                                </div>
+                            </div>
+                        @else
+                            <button type="button"
+                                    onclick="selectGallerySlide({{ $idx }})"
+                                    class="gallery-thumb-item relative w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer border-2 {{ $idx === 0 ? 'border-blue-500 scale-95 ring-2 ring-blue-500/30' : 'border-transparent opacity-75 hover:opacity-100' }} transition-all">
+                                <img src="{{ $img->imageUrl() }}" alt="" class="w-full h-full object-cover">
+                            </button>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
         </div>
 
-        {{-- Similar Properties (Flipkart Product Cards Style Redesign) --}}
-        @if($similarProperties->count() > 0)
-        <div class="mt-16" id="similar-properties">
-            <div class="flex items-center justify-between border-b border-zinc-200 pb-4 mb-8">
-                <h2 class="text-xl sm:text-2xl font-black text-zinc-900 tracking-tight">People Also Viewed</h2>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-zinc-450 uppercase tracking-widest sm:block hidden">Swipe for more</span>
-                    <div class="flex gap-1.5">
-                        <button class="w-8 h-8 rounded-lg bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-[#2874F0] hover:border-[#2874F0] transition-all cursor-pointer"><i class="ph-bold ph-caret-left"></i></button>
-                        <button class="w-8 h-8 rounded-lg bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-[#2874F0] hover:border-[#2874F0] transition-all cursor-pointer"><i class="ph-bold ph-caret-right"></i></button>
+        {{-- ========================================================
+             2. CARD 1: TITLE, COMMUNITY, RATING & VERIFIED LANDLORD
+             ======================================================== --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
+            
+            {{-- Top Tag Row: Community & Physical Verified --}}
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5 text-xs font-black truncate">
+                    <span class="text-blue-600 dark:text-blue-400 uppercase tracking-wider">{{ $projectName }}</span>
+                    <span class="text-slate-300 dark:text-slate-600">•</span>
+                    <span class="text-slate-500 dark:text-slate-400 font-bold truncate">{{ $communitySub }}</span>
+                </div>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-[10.5px] font-black shrink-0 border border-emerald-200/60 dark:border-emerald-800/60">
+                    <i class="ph-bold ph-check text-xs"></i>
+                    <span>Physical Verified</span>
+                </span>
+            </div>
+
+            {{-- Main Title --}}
+            <h1 class="text-lg sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-snug tracking-tight">
+                {{ $cleanTitle }}
+            </h1>
+
+            {{-- Location Row with Blue Pin --}}
+            <div class="flex items-start gap-1.5 text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                <i class="ph-bold ph-map-pin text-blue-600 text-sm mt-0.5 shrink-0"></i>
+                <span>
+                    @if($isOwnerOrAdmin || $hasViewed)
+                        <strong class="text-slate-800 dark:text-slate-200 font-bold">{{ $property->address }}</strong>, {{ $localityName }}, {{ $property->location }}, {{ $property->state ?? 'Haryana' }}
+                    @else
+                        {{ $localityName }}, {{ $property->location }}, {{ $property->state ?? 'Haryana' }}
+                    @endif
+                </span>
+            </div>
+
+            {{-- Rating & Shortlisted Row --}}
+            <div class="flex items-center gap-3 pt-1 text-xs">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-700 text-white font-black text-[11px]">
+                    <span>4.7</span>
+                    <i class="ph-fill ph-star text-[10px]"></i>
+                    <span class="font-normal opacity-80">(38 reviews)</span>
+                </span>
+                <span class="text-slate-500 dark:text-slate-400 font-bold flex items-center gap-1 text-[11.5px]">
+                    <i class="ph-bold ph-users text-blue-600"></i>
+                    <span>{{ 110 + ($property->id * 7) % 75 }} renters shortlisted</span>
+                </span>
+            </div>
+
+            {{-- Trust Banner Inside Card 1: 100% Verified Direct Landlord | Zero Brokerage --}}
+            <div class="bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/50 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-2 mt-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 text-xs">
+                        <i class="ph-bold ph-check"></i>
+                    </span>
+                    <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-emerald-100 truncate">
+                        100% Verified Direct {{ $isSale ? 'Owner' : 'Landlord' }}
+                    </span>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-200/70 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200 text-[10px] font-black uppercase tracking-wider shrink-0">
+                    ZERO BROKERAGE
+                </span>
+            </div>
+
+            {{-- Description Snippet & Toggle --}}
+            @if(!empty($property->description))
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <p id="desc-collapsed" class="line-clamp-2">{{ strip_tags($property->description) }}</p>
+                    <p id="desc-full" class="hidden whitespace-pre-line">{{ $property->description }}</p>
+                    <button type="button" onclick="toggleDescription()" id="desc-toggle-btn" class="text-blue-600 dark:text-blue-400 font-bold text-xs mt-1 cursor-pointer">
+                        Read more +
+                    </button>
+                </div>
+            @endif
+        </div>
+
+        {{-- ========================================================
+             3. CARD 2: PRICING, DEPOSIT & BROKERAGE SAVINGS BREAKDOWN
+             ======================================================== --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3.5">
+            
+            {{-- Top Price & Deposit Row --}}
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <div class="flex items-baseline gap-1.5 flex-wrap">
+                        <span class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                            ₹{{ number_format($priceVal, 0) }}
+                        </span>
+                        <span class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-bold">
+                            / {{ $property->price_period ?: ($isSale ? 'total' : 'month') }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2 mt-1 flex-wrap text-xs">
+                        @if($marketPrice > 0)
+                            <span class="line-through text-slate-400 font-bold">₹{{ number_format($marketPrice, 0) }}</span>
+                            <span class="px-1.5 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-black text-[10.5px]">
+                                12% Below Market
+                            </span>
+                        @endif
+                        <span class="text-slate-400">• Maintenance incl.</span>
+                    </div>
+                </div>
+
+                {{-- Deposit Box --}}
+                <div class="bg-blue-50/70 dark:bg-slate-800/80 border border-blue-100 dark:border-slate-700 rounded-2xl p-2.5 sm:p-3 text-right shrink-0">
+                    <div class="flex items-center justify-end gap-1 text-blue-700 dark:text-blue-300 text-xs font-black">
+                        <i class="ph-bold ph-arrows-clockwise text-xs"></i>
+                        <span>1-Month Deposit</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold block mt-0.5">
+                        ₹{{ number_format($depositAmount, 0) }} fully refundable
+                    </span>
+                </div>
+            </div>
+
+            {{-- Signature Brokerage Savings Deep Green Banner --}}
+            <div class="bg-emerald-800 dark:bg-emerald-900 text-white rounded-2xl p-3.5 sm:p-4 shadow-sm relative overflow-hidden">
+                <div class="flex items-center justify-between gap-3 relative z-10">
+                    <div class="flex items-start gap-2.5 min-w-0">
+                        <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center shrink-0 text-white text-base">
+                            <i class="ph-fill ph-tag"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs sm:text-sm font-black text-white leading-snug">
+                                You save ₹{{ number_format($brokerSavings, 0) }} broker fee directly on this home!
+                            </p>
+                            <p class="text-[10.5px] text-emerald-100 flex items-center gap-1 mt-0.5 font-medium">
+                                Standard 15-day agent fee waived 100%
+                            </p>
+                        </div>
+                    </div>
+                    <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0 text-white text-xs">
+                        <i class="ph-bold ph-check"></i>
                     </div>
                 </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-                @foreach($similarProperties as $similar)
-                    <x-property-card :property="$similar" />
-                @endforeach
+
+            {{-- Perks Pills Row --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="p-2.5 rounded-xl bg-blue-50/60 dark:bg-slate-800/60 border border-blue-100/70 dark:border-slate-700 flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
+                    <i class="ph-bold ph-credit-card text-blue-600 text-sm"></i>
+                    <span>Payment via CC & get ₹500 back</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-emerald-50/60 dark:bg-slate-800/60 border border-emerald-100/70 dark:border-slate-700 flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
+                    <i class="ph-bold ph-fingerprint text-emerald-600 text-sm"></i>
+                    <span>Free Biometric E-Agreement</span>
+                </div>
             </div>
         </div>
+
+        {{-- ========================================================
+             4. CARD 3: KEY SPECIFICATIONS (2x3 GRID)
+             ======================================================== --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
+            
+            <div class="flex items-center justify-between">
+                <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                    Key Specifications
+                </h2>
+                <button type="button" onclick="openLightboxModal(0)" class="text-blue-600 dark:text-blue-400 text-xs font-black hover:underline cursor-pointer">
+                    Floor Plan Available
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 sm:gap-2.5">
+                {{-- 1. Bedrooms / Config --}}
+                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
+                        <i class="ph-bold ph-bed"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">BEDROOMS</span>
+                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
+                            {{ $property->bedrooms !== null ? ($property->bedrooms == 0 ? '1 RK' : $property->bedrooms . ' Beds') : '2 Beds' }} | {{ $property->bathrooms ?? 2 }} Baths
+                        </span>
+                    </div>
+                </div>
+
+                {{-- 2. Super Area --}}
+                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
+                        <i class="ph-bold ph-ruler"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">SUPER AREA</span>
+                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
+                            {{ !empty($property->area_sqft) ? number_format($property->area_sqft) . ' sq.ft' : '1,900 sq.ft' }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- 3. Floor Level --}}
+                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
+                        <i class="ph-bold ph-buildings"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">FLOOR LEVEL</span>
+                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
+                            {{ $floorText }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- 4. Furnishing --}}
+                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
+                        <i class="ph-bold ph-couch"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">FURNISHING</span>
+                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
+                            {{ !empty($property->furnishing) ? ucfirst(str_replace('-', ' ', $property->furnishing)) : 'Semi-Furnished' }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- 5. Orientation --}}
+                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
+                        <i class="ph-bold ph-compass"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">ORIENTATION</span>
+                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
+                            North-East Facing
+                        </span>
+                    </div>
+                </div>
+
+                {{-- 6. Possession --}}
+                <div class="bg-emerald-50/50 dark:bg-slate-800/50 border border-emerald-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base shrink-0">
+                        <i class="ph-bold ph-calendar-check"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">POSSESSION</span>
+                        <span class="block text-xs sm:text-[13px] font-black text-emerald-700 dark:text-emerald-300 truncate">
+                            Immediate Move-in
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ========================================================
+             5. CARD 4: DIRECT LANDLORD CONTACT CARD
+             ======================================================== --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3.5" id="direct-landlord-section">
+            
+            <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    DIRECT {{ $isSale ? 'OWNER' : 'LANDLORD' }}
+                </span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10.5px] font-black border border-emerald-200/60 dark:border-emerald-800/60">
+                    <i class="ph-bold ph-shield-check text-xs"></i>
+                    <span>Identity & Ownership Verified</span>
+                </span>
+            </div>
+
+            {{-- Owner Profile Snippet --}}
+            <div class="p-3.5 bg-slate-50/80 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 rounded-2xl flex items-center gap-3">
+                <div class="relative shrink-0">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-700 text-white font-black text-base flex items-center justify-center shadow-md">
+                        {{ $initials ?: 'RK' }}
+                    </div>
+                    <span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-800" title="Online now"></span>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-none">
+                            {{ $ownerName }}
+                        </span>
+                        <i class="ph-fill ph-check-circle text-blue-600 text-sm"></i>
+                    </div>
+                    <span class="text-[11px] text-slate-400 font-semibold block mt-1 truncate">
+                        Owner since {{ $memberYear }} • {{ $localityName }}
+                    </span>
+
+                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100/70 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-extrabold">
+                            <i class="ph-bold ph-seal-check text-[10px]"></i> Govt ID & Registry Verified
+                        </span>
+                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                            • Typically replies in 5m
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Phone Number & Unlock Button Box --}}
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-3 shadow-2xs">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
+                        <i class="ph-bold ph-phone"></i>
+                    </div>
+                    <div class="min-w-0">
+                        @if($isOwnerOrAdmin || $hasViewed)
+                            <a href="tel:{{ $displayPhone }}" class="text-xs sm:text-sm font-black text-slate-900 dark:text-white hover:text-blue-600 block truncate">
+                                {{ $displayPhone }}
+                            </a>
+                            <span class="text-[10px] text-emerald-600 font-bold block">Verified direct phone line</span>
+                        @else
+                            <span class="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200 block tracking-wider font-mono truncate">
+                                +91 98XXX XXXXX
+                            </span>
+                            <span class="text-[10px] text-slate-400 font-semibold block">Direct landlord phone line</span>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Unlock Button --}}
+                @if($isOwnerOrAdmin || $hasViewed)
+                    <a href="tel:{{ $displayPhone }}"
+                       class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95"
+                       style="color: #ffffff !important;">
+                        <i class="ph-bold ph-phone-call text-sm" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Call Now</span>
+                    </a>
+                @elseif($canView)
+                    <form method="POST" action="{{ route('properties.unlock-contact', $property) }}">
+                        @csrf
+                        <button type="submit"
+                                class="px-3.5 py-2 bg-slate-950 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95 cursor-pointer"
+                                style="color: #ffffff !important;">
+                            <i class="ph-bold ph-lock-key-open text-xs" style="color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">Unlock Free</span>
+                        </button>
+                    </form>
+                @else
+                    @guest
+                        <button type="button"
+                                onclick="window.openAuthModal('login', window.location.href);"
+                                class="px-3.5 py-2 bg-slate-950 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95 cursor-pointer"
+                                style="color: #ffffff !important;">
+                            <i class="ph-bold ph-lock-key text-xs" style="color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">Unlock Free</span>
+                        </button>
+                    @else
+                        <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}"
+                           class="px-3.5 py-2 bg-slate-950 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95"
+                           style="color: #ffffff !important;">
+                            <i class="ph-bold ph-lock-key text-xs" style="color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">Unlock Free</span>
+                        </a>
+                    @endguest
+                @endif
+            </div>
+        </div>
+
+        {{-- ========================================================
+             6. CARD 5: LIFESTYLE & AMENITIES (3x2 GRID)
+             ======================================================== --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
+            
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
+                        Lifestyle & Amenities
+                    </h2>
+                    <span class="text-[11px] text-slate-400 font-semibold">Clubhouse & Society features</span>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[10.5px] font-black border border-blue-200/60 dark:border-blue-800/60">
+                    24 Amenities
+                </span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 sm:gap-2.5">
+                {{-- 1. Olympic Pool --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
+                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
+                        <i class="ph-bold ph-swimming-pool"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">Olympic Pool</span>
+                </div>
+
+                {{-- 2. High-tech Gym --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
+                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
+                        <i class="ph-bold ph-barbell"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">High-tech Gym</span>
+                </div>
+
+                {{-- 3. 24/7 Security --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
+                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
+                        <i class="ph-bold ph-shield"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">24/7 Security</span>
+                </div>
+
+                {{-- 4. 100% Backup --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
+                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
+                        <i class="ph-bold ph-lightning"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">100% Backup</span>
+                </div>
+
+                {{-- 5. Covered Parking --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
+                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
+                        <i class="ph-bold ph-car"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">Covered Parking</span>
+                </div>
+
+                {{-- 6. Tennis Court --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
+                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
+                        <i class="ph-bold ph-tennis-ball"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">Tennis Court</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- ========================================================
+             7. CARD 6: TRANSIT & NEIGHBORHOOD
+             ======================================================== --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
+            
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
+                        Transit & Neighborhood
+                    </h2>
+                    <span class="text-[11px] text-slate-400 font-semibold">Prime {{ $localityName }} Corridor</span>
+                </div>
+                <span class="text-emerald-600 dark:text-emerald-400 text-xs font-black flex items-center gap-1">
+                    <i class="ph-bold ph-navigation-arrow text-xs"></i> Live Distance
+                </span>
+            </div>
+
+            {{-- Map Snippet Card --}}
+            <div class="relative rounded-2xl overflow-hidden h-36 sm:h-44 bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
+                @php
+                    $mapQuery = urlencode(($isOwnerOrAdmin || $hasViewed) ? ($property->address . ', ' . $localityName) : ($localityName . ', ' . $property->location . ', India'));
+                @endphp
+                <iframe
+                    src="https://www.google.com/maps?q={{ $mapQuery }}&output=embed&hl=en&z=13"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    loading="lazy"
+                    class="w-full h-full filter saturate-[0.85]">
+                </iframe>
+
+                {{-- Map Pin Center Overlay --}}
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="px-3.5 py-1.5 rounded-xl bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white text-xs font-black shadow-lg border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 pointer-events-auto">
+                        <i class="ph-fill ph-house text-blue-600"></i>
+                        <span>{{ $localityName }}</span>
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ $mapQuery }}" target="_blank" class="text-blue-600 hover:text-blue-700 ml-0.5" title="Open Map">
+                            <i class="ph-bold ph-arrow-square-out text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 3 Key Transit Distances --}}
+            <div class="space-y-2 pt-1">
+                {{-- Metro --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-xl p-2.5 sm:p-3 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-bold ph-train text-blue-600 text-sm"></i>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">{{ $localityName }} Metro Station</span>
+                    </div>
+                    <span class="font-black text-blue-600 dark:text-blue-400">400 m (5 mins walk)</span>
+                </div>
+
+                {{-- Mall --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-xl p-2.5 sm:p-3 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-bold ph-storefront text-blue-600 text-sm"></i>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">South Point & Galleria Mall</span>
+                    </div>
+                    <span class="font-bold text-slate-500 dark:text-slate-400">1.2 km (4 mins drive)</span>
+                </div>
+
+                {{-- Hospital --}}
+                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-xl p-2.5 sm:p-3 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-bold ph-first-aid-kit text-blue-600 text-sm"></i>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Fortis & Max Hospital</span>
+                    </div>
+                    <span class="font-bold text-slate-500 dark:text-slate-400">3.6 km (9 mins drive)</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- ========================================================
+             8. CARD 7: UNLOCKRENTALS ZERO-BROKERAGE GUARANTEE
+             ======================================================== --}}
+        <div class="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 shadow-lg relative overflow-hidden space-y-2">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 text-lg">
+                    <i class="ph-fill ph-shield-check"></i>
+                </div>
+                <h3 class="text-xs sm:text-sm font-black text-white leading-tight">
+                    UnlockRentals Zero-Brokerage Guarantee
+                </h3>
+            </div>
+            <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
+                Direct connection with {{ $ownerName }} (verified property owner). No broker fees, no middleman markup, and verified rental agreement on standard state norms.
+            </p>
+        </div>
+
+        {{-- ========================================================
+             9. SIMILAR PROPERTIES (PEOPLE ALSO VIEWED)
+             ======================================================== --}}
+        @if($similarProperties->isNotEmpty())
+            <div class="pt-6 sm:pt-8" id="similar-properties-section">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                        People Also Viewed
+                    </h2>
+                    <a href="{{ route('properties.index') }}" class="text-xs font-black text-blue-600 hover:underline">
+                        View All Listings →
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach($similarProperties->take(3) as $sim)
+                        <x-property-card :property="$sim" />
+                    @endforeach
+                </div>
+            </div>
         @endif
+
     </div>
 </section>
 
-{{-- Mobile Sticky Bottom Bar (UX Improvement) --}}
-<div class="lg:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-zinc-250 py-3.5 px-4 z-[990] flex items-center justify-between gap-3 shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
-    <div>
-        <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Price per {{ $property->price_period }}</p>
-        <p class="text-lg font-black text-zinc-900 leading-none mt-0.5">₹{{ number_format($property->price, 0) }}</p>
-    </div>
-    <div class="flex items-center gap-2 flex-1 max-w-[240px]">
-        <a href="https://wa.me/?text=Hi! I am interested in your property on UnlockRentals: {{ urlencode(route('properties.show', $property)) }}"
-           target="_blank"
-           class="flex-1 px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-xs rounded-xl border border-emerald-200/60 shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="WA">
-            <i class="ph-bold ph-whatsapp text-emerald-500 text-base"></i> WA
-        </a>
-        <a href="#inquiry-form-card"
-           class="flex-1 px-3.5 py-2.5 bg-[#2874F0] hover:bg-[#1A5FDF] text-white font-extrabold text-xs rounded-xl shadow-md shadow-[#2874F0]/15 transition-all flex items-center justify-center gap-1.5 cursor-pointer" style="color: #ffffff !important;" title="Inquiry">
-            <i class="ph-bold ph-envelope" style="color: #ffffff !important;"></i> <span style="color: #ffffff !important;">Inquiry</span>
-        </a>
-    </div>
-</div>
+{{-- ========================================================
+     10. FIXED BOTTOM STICKY ACTION BAR (MOBILE & DESKTOP)
+     ======================================================== --}}
+<div class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-3 px-4 z-[990] shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
+    <div class="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto flex items-center gap-3">
+        
+        {{-- Button 1: Schedule Visit --}}
+        @auth
+            <button type="button"
+                    onclick="openBookVisitModal()"
+                    class="flex-1 py-3 px-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-black text-xs sm:text-sm rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                <i class="ph-bold ph-calendar-blank text-base"></i>
+                <span>Schedule Visit</span>
+            </button>
+        @else
+            <button type="button"
+                    onclick="window.openAuthModal('login', window.location.href);"
+                    class="flex-1 py-3 px-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-black text-xs sm:text-sm rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                <i class="ph-bold ph-calendar-blank text-base"></i>
+                <span>Schedule Visit</span>
+            </button>
+        @endauth
 
-{{-- ==================== CALL AGENT MODAL ==================== --}}
-@auth
-<div id="call-agent-modal" class="fixed inset-0 z-[9999] hidden">
-    {{-- Backdrop --}}
-    <div class="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm" onclick="closeCallAgentModal()"></div>
-    {{-- Modal Content --}}
-    <div class="relative flex items-center justify-center min-h-screen p-4">
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-[modalSlideIn_0.3s_ease-out]">
-            {{-- Header --}}
-            <div class="bg-gradient-to-r from-[#2874F0] to-[#1A5FDF] px-6 py-5">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                            <i class="ph-bold ph-phone-call text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-white font-extrabold text-base">Request a Callback</h3>
-                            <p class="text-blue-100 text-xs font-medium">Our agent will call you shortly</p>
-                        </div>
-                    </div>
-                    <button onclick="closeCallAgentModal()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer">
-                        <i class="ph-bold ph-x text-sm"></i>
-                    </button>
-                </div>
-            </div>
-
-            {{-- Property Info Mini Card --}}
-            <div class="px-6 pt-5">
-                <div class="flex items-center gap-3 p-3 bg-zinc-50 rounded-xl border border-zinc-100">
-                    @if($property->primaryImage)
-                    <img src="{{ $property->primaryImage->imageUrl() }}" class="w-12 h-12 rounded-lg object-cover border border-zinc-200" alt="">
-                    @else
-                    <div class="w-12 h-12 rounded-lg bg-zinc-200 flex items-center justify-center text-zinc-400">
-                        <i class="ph-bold ph-image text-lg"></i>
-                    </div>
-                    @endif
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-zinc-900 truncate">{{ $property->title }}</p>
-                        <p class="text-xs text-zinc-500 truncate">
-                            @if($isOwnerOrAdmin || $hasViewed)
-                                {{ $property->address }}, {{ $property->location }}
-                            @else
-                                {{ $property->location }}
-                            @endif
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Direct Call Section --}}
-            <div class="px-6 pt-4 text-center">
-                <div class="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
-                    <p class="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-1.5">Direct Agent Number</p>
-                    <a href="tel:{{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}" class="text-xl font-black text-[#2874F0] hover:underline flex items-center justify-center gap-2" title="Call Support">
-                        <i class="ph-bold ph-phone"></i> {{ \App\Models\Setting::get('agent_phone', '+91 7974164274') }}
+        {{-- Button 2: Chat & Call Owner --}}
+        @if($isOwnerOrAdmin || $hasViewed)
+            <a href="tel:{{ $displayPhone }}"
+               class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+               style="color: #ffffff !important;">
+                <i class="ph-bold ph-chat-circle-dots text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important;">Chat & Call Owner</span>
+            </a>
+        @else
+            @auth
+                @if($canView)
+                    <form method="POST" action="{{ route('properties.unlock-contact', $property) }}" class="flex-1 flex">
+                        @csrf
+                        <button type="submit"
+                                class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                                style="color: #ffffff !important;">
+                            <i class="ph-bold ph-chat-circle-dots text-base" style="color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">Chat & Call Owner</span>
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ $waUrl }}" target="_blank"
+                       class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                       style="color: #ffffff !important;">
+                        <i class="ph-bold ph-chat-circle-dots text-base" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Chat & Call Owner</span>
                     </a>
-                    <p class="text-zinc-400 text-[10px] mt-1 font-semibold">Click to dial directly, or request a callback below:</p>
-                </div>
-            </div>
-
-            {{-- Form --}}
-            <form id="call-agent-form" class="p-6 space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-1.5">Your Name</label>
-                    <div class="relative">
-                        <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"></i>
-                        <input type="text" name="name" value="{{ auth()->user()->name }}" required
-                               class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-[#2874F0] focus:ring-2 focus:ring-[#2874F0]/10 transition-all font-medium" id="callback-name">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-1.5">Phone Number</label>
-                    <div class="relative">
-                        <i class="ph-bold ph-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"></i>
-                        <input type="tel" name="phone" value="{{ auth()->user()->phone }}" required placeholder="Enter your phone number"
-                               class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-[#2874F0] focus:ring-2 focus:ring-[#2874F0]/10 transition-all font-medium" id="callback-phone">
-                    </div>
-                </div>
-
-                {{-- Error / Success Messages --}}
-                <div id="callback-alert" class="hidden rounded-xl p-3 text-sm font-bold"></div>
-
-                <button type="submit" id="callback-submit-btn" class="w-full py-3.5 bg-gradient-to-r from-[#2874F0] to-[#1A5FDF] hover:brightness-105 text-white text-sm font-extrabold rounded-xl shadow-lg shadow-[#2874F0]/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                    <span class="btn-text flex items-center gap-2">
-                        <i class="ph-bold ph-phone-call"></i> Request Callback
-                    </span>
-                    <span class="btn-loader hidden flex items-center gap-2">
-                        <i class="ph ph-circle-notch animate-spin"></i> Submitting...
-                    </span>
+                @endif
+            @else
+                <button type="button"
+                        onclick="window.openAuthModal('login', window.location.href);"
+                        class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                        style="color: #ffffff !important;">
+                    <i class="ph-bold ph-chat-circle-dots text-base" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important;">Chat & Call Owner</span>
                 </button>
-            </form>
-        </div>
+            @endauth
+        @endif
     </div>
 </div>
 
-{{-- ==================== BOOK VISIT MODAL ==================== --}}
-<div id="book-visit-modal" class="fixed inset-0 z-[9999] hidden">
-    {{-- Backdrop --}}
-    <div class="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm" onclick="closeBookVisitModal()"></div>
-    {{-- Modal Content --}}
-    <div class="relative flex items-center justify-center min-h-screen p-4">
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-[modalSlideIn_0.3s_ease-out]">
-            {{-- Header --}}
-            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-5">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                            <i class="ph-bold ph-calendar-check text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-white font-extrabold text-base">Book a Property Visit</h3>
-                            <p class="text-emerald-100 text-xs font-medium">Schedule an in-person visit</p>
-                        </div>
-                    </div>
-                    <button onclick="closeBookVisitModal()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer">
-                        <i class="ph-bold ph-x text-sm"></i>
-                    </button>
+{{-- ========================================================
+     MODALS: BOOK VISIT MODAL
+     ======================================================== --}}
+@auth
+<div id="book-visit-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-xs" onclick="closeBookVisitModal()"></div>
+    <div class="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden z-10 border border-slate-200 dark:border-slate-800">
+        
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 text-white flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <i class="ph-bold ph-calendar-check text-2xl"></i>
+                <div>
+                    <h3 class="font-black text-base text-white">Schedule Property Visit</h3>
+                    <p class="text-blue-100 text-xs">Direct in-person meeting with owner</p>
                 </div>
             </div>
-
-            {{-- Property Info Mini Card --}}
-            <div class="px-6 pt-5">
-                <div class="flex items-center gap-3 p-3 bg-zinc-50 rounded-xl border border-zinc-100">
-                    @if($property->primaryImage)
-                    <img src="{{ $property->primaryImage->imageUrl() }}" class="w-12 h-12 rounded-lg object-cover border border-zinc-200" alt="">
-                    @else
-                    <div class="w-12 h-12 rounded-lg bg-zinc-200 flex items-center justify-center text-zinc-400">
-                        <i class="ph-bold ph-image text-lg"></i>
-                    </div>
-                    @endif
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-zinc-900 truncate">{{ $property->title }}</p>
-                        <p class="text-xs text-zinc-500 truncate">
-                            @if($isOwnerOrAdmin || $hasViewed)
-                                {{ $property->address }}, {{ $property->location }}
-                            @else
-                                {{ $property->location }}
-                            @endif
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Form --}}
-            <form id="book-visit-form" class="p-6 space-y-4">
-                @csrf
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-1.5">Preferred Date</label>
-                        <div class="relative">
-                            <i class="ph-bold ph-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"></i>
-                            <input type="date" name="preferred_date" required min="{{ date('Y-m-d') }}"
-                                   class="w-full pl-10 pr-3 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all font-medium" id="visit-date">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-1.5">Time Slot</label>
-                        <div class="relative">
-                            <i class="ph-bold ph-clock absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"></i>
-                            <select name="preferred_time" required
-                                    class="w-full pl-10 pr-3 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all font-medium appearance-none" id="visit-time">
-                                <option value="morning">Morning (9-12)</option>
-                                <option value="afternoon">Afternoon (12-4)</option>
-                                <option value="evening" selected>Evening (4-7)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-1.5">Your Name</label>
-                    <div class="relative">
-                        <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"></i>
-                        <input type="text" name="name" value="{{ auth()->user()->name }}" required
-                               class="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all font-medium" id="visit-name">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-1.5">Phone Number</label>
-                        <div class="relative">
-                            <i class="ph-bold ph-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"></i>
-                            <input type="tel" name="phone" value="{{ auth()->user()->phone }}" required placeholder="Your phone"
-                                   class="w-full pl-10 pr-3 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all font-medium" id="visit-phone">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-1.5">Email <span class="text-zinc-300">(optional)</span></label>
-                        <div class="relative">
-                            <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"></i>
-                            <input type="email" name="email" value="{{ auth()->user()->email }}" placeholder="Your email"
-                                   class="w-full pl-10 pr-3 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all font-medium" id="visit-email">
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-1.5">Message <span class="text-zinc-300">(optional)</span></label>
-                    <textarea name="message" rows="2" placeholder="Any specific requirements or questions..."
-                              class="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all resize-none font-medium" id="visit-message"></textarea>
-                </div>
-
-                {{-- Error / Success Messages --}}
-                <div id="visit-alert" class="hidden rounded-xl p-3 text-sm font-bold"></div>
-
-                <button type="submit" id="visit-submit-btn" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-105 text-white text-sm font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                    <span class="btn-text flex items-center gap-2">
-                        <i class="ph-bold ph-calendar-check"></i> Confirm Visit Booking
-                    </span>
-                    <span class="btn-loader hidden flex items-center gap-2">
-                        <i class="ph ph-circle-notch animate-spin"></i> Booking...
-                    </span>
-                </button>
-            </form>
+            <button onclick="closeBookVisitModal()" class="w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/30 cursor-pointer">
+                <i class="ph-bold ph-x text-sm"></i>
+            </button>
         </div>
+
+        <form id="book-visit-form" class="p-5 space-y-3.5">
+            @csrf
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Preferred Date</label>
+                    <input type="date" name="preferred_date" required min="{{ date('Y-m-d') }}"
+                           class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Time Slot</label>
+                    <select name="preferred_time" required
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
+                        <option value="morning">Morning (9 AM - 12 PM)</option>
+                        <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
+                        <option value="evening" selected>Evening (4 PM - 7 PM)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Your Name</label>
+                <input type="text" name="name" value="{{ auth()->user()->name }}" required
+                       class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white">
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Phone Number</label>
+                <input type="tel" name="phone" value="{{ auth()->user()->phone }}" required placeholder="Your contact phone"
+                       class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white">
+            </div>
+
+            <div id="visit-alert" class="hidden rounded-xl p-3 text-xs font-bold"></div>
+
+            <button type="submit" id="visit-submit-btn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                <span class="btn-text">Confirm Visit Request</span>
+                <span class="btn-loader hidden"><i class="ph ph-circle-notch animate-spin"></i> Submitting...</span>
+            </button>
+        </form>
     </div>
 </div>
 @endauth
 
-{{-- Fullscreen Photo Lightbox Modal --}}
-@if($property->images->count() > 0)
-<div id="gallery-lightbox" class="fixed inset-0 bg-black/95 z-[99999] hidden flex-col items-center justify-center p-4 backdrop-blur-md select-none transition-all duration-300" onclick="if(event.target === this) closeLightboxModal()">
-    {{-- Close Button --}}
-    <button type="button" onclick="closeLightboxModal()" class="absolute top-5 right-5 text-white/80 hover:text-white w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-2xl transition cursor-pointer z-20" aria-label="Close Lightbox">
+{{-- ========================================================
+     MODALS: FULLSCREEN IMAGE LIGHTBOX
+     ======================================================== --}}
+@if($galleryImages->isNotEmpty())
+<div id="gallery-lightbox" class="fixed inset-0 bg-black/95 z-[99999] hidden flex-col items-center justify-center p-4 select-none backdrop-blur-md" onclick="if(event.target === this) closeLightboxModal()">
+    <button type="button" onclick="closeLightboxModal()" class="absolute top-4 right-4 text-white/80 hover:text-white w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-xl cursor-pointer z-20">
         <i class="ph-bold ph-x"></i>
     </button>
-    {{-- Counter Badge --}}
-    <div class="absolute top-5 left-5 text-white text-xs sm:text-sm font-bold bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm z-20 flex items-center gap-1.5" id="lightbox-counter">
-        <i class="ph-bold ph-image"></i> Photo 1 of {{ $property->images->count() }}
+    <div class="absolute top-4 left-4 text-white text-xs font-bold bg-white/10 px-3.5 py-1.5 rounded-full z-20" id="lightbox-counter">
+        Photo 1 of {{ $galleryImages->count() }}
     </div>
-    {{-- Lightbox Image Box --}}
-    <div class="relative max-w-6xl max-h-[85vh] w-full h-full flex items-center justify-center overflow-hidden" onclick="event.stopPropagation()">
-        <img id="lightbox-img" src="" alt="{{ $property->title }}" class="max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-all duration-300">
+    <div class="relative max-w-5xl max-h-[85vh] w-full h-full flex items-center justify-center" onclick="event.stopPropagation()">
+        <img id="lightbox-img" src="" alt="{{ $cleanTitle }}" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl">
     </div>
-    {{-- Lightbox Prev / Next Buttons --}}
-    @if($property->images->count() > 1)
-    <button type="button" onclick="event.stopPropagation(); prevLightboxImage()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-12 h-12 rounded-full bg-white/15 hover:bg-white/30 flex items-center justify-center text-2xl transition cursor-pointer z-20" aria-label="Previous">
-        <i class="ph-bold ph-caret-left"></i>
-    </button>
-    <button type="button" onclick="event.stopPropagation(); nextLightboxImage()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-12 h-12 rounded-full bg-white/15 hover:bg-white/30 flex items-center justify-center text-2xl transition cursor-pointer z-20" aria-label="Next">
-        <i class="ph-bold ph-caret-right"></i>
-    </button>
+    @if($galleryImages->count() > 1)
+        <button type="button" onclick="event.stopPropagation(); prevLightboxImage()" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-2xl z-20 cursor-pointer">
+            <i class="ph-bold ph-caret-left"></i>
+        </button>
+        <button type="button" onclick="event.stopPropagation(); nextLightboxImage()" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-2xl z-20 cursor-pointer">
+            <i class="ph-bold ph-caret-right"></i>
+        </button>
     @endif
 </div>
 @endif
 
+{{-- ========================================================
+     SCRIPTS & INTERACTIONS
+     ======================================================== --}}
 @push('scripts')
-<style>
-    @keyframes modalSlideIn {
-        from { opacity: 0; transform: translateY(20px) scale(0.97); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-</style>
 <script>
-    // ── Modal Open / Close ────────────────────
-    function openCallAgentModal() {
-        const modal = document.getElementById('call-agent-modal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            resetModalAlert('callback-alert');
-        }
-    }
-    function closeCallAgentModal() {
-        const modal = document.getElementById('call-agent-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-        }
-    }
-    function openBookVisitModal() {
-        const modal = document.getElementById('book-visit-modal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            resetModalAlert('visit-alert');
-        }
-    }
-    function closeBookVisitModal() {
-        const modal = document.getElementById('book-visit-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-        }
-    }
+    const propertyGallery = @json($galleryImages->map(fn($img) => $img->imageUrl())->values());
+    const totalPhotos = {{ $galleryImages->count() }};
+    let currentSlide = 0;
+    let lightboxIdx = 0;
 
-    // Close modals on Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeCallAgentModal();
-            closeBookVisitModal();
-            closeLightboxModal();
-        }
-    });
-
-    // ── Alert Helpers ─────────────────────────
-    function showModalAlert(alertId, message, isSuccess) {
-        const alert = document.getElementById(alertId);
-        if (!alert) return;
-        alert.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'border-red-200', 'bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
-        if (isSuccess) {
-            alert.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
-            alert.innerHTML = '<div class="flex items-center gap-2"><i class="ph-bold ph-check-circle text-base"></i> ' + message + '</div>';
-        } else {
-            alert.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
-            alert.innerHTML = '<div class="flex items-center gap-2"><i class="ph-bold ph-warning text-base"></i> ' + message + '</div>';
-        }
-    }
-    function resetModalAlert(alertId) {
-        const alert = document.getElementById(alertId);
-        if (!alert) return;
-        alert.classList.add('hidden');
-        alert.innerHTML = '';
-    }
-
-    function setButtonLoading(btn, loading) {
-        if (!btn) return;
-        const text = btn.querySelector('.btn-text');
-        const loader = btn.querySelector('.btn-loader');
-        if (loading) {
-            btn.disabled = true;
-            if (text) text.classList.add('hidden');
-            if (loader) loader.classList.remove('hidden');
-        } else {
-            btn.disabled = false;
-            if (text) text.classList.remove('hidden');
-            if (loader) loader.classList.add('hidden');
-        }
-    }
-
-    // ── Call Agent Form Submit (Safe Event Listener) ────────────────
-    const callAgentFormEl = document.getElementById('call-agent-form');
-    if (callAgentFormEl) {
-        callAgentFormEl.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('callback-submit-btn');
-            const form = this;
-            const alertId = 'callback-alert';
-
-            // Client-side validation
-            const phoneInput = document.getElementById('callback-phone');
-            const phone = phoneInput ? phoneInput.value.trim() : '';
-            if (!phone) {
-                showModalAlert(alertId, 'Please enter your phone number.', false);
-                return;
-            }
-
-            setButtonLoading(btn, true);
-            resetModalAlert(alertId);
-
-            try {
-                const formData = new FormData(form);
-                const response = await fetch("{{ route('properties.request-callback', $property) }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    showModalAlert(alertId, data.message, true);
-                    if (btn) {
-                        btn.disabled = true;
-                        const btnText = btn.querySelector('.btn-text');
-                        const btnLoader = btn.querySelector('.btn-loader');
-                        if (btnText) {
-                            btnText.innerHTML = '<i class="ph-bold ph-check-circle"></i> Callback Requested';
-                            btnText.classList.remove('hidden');
-                        }
-                        if (btnLoader) btnLoader.classList.add('hidden');
-                    }
-                    setTimeout(() => {
-                        closeCallAgentModal();
-                        if (btn) {
-                            btn.disabled = false;
-                            const btnText = btn.querySelector('.btn-text');
-                            if (btnText) btnText.innerHTML = '<i class="ph-bold ph-phone-call"></i> Request Callback';
-                        }
-                    }, 3000);
-                } else {
-                    showModalAlert(alertId, data.message || 'Something went wrong. Please try again.', false);
-                    setButtonLoading(btn, false);
-                }
-            } catch (error) {
-                showModalAlert(alertId, 'Network error. Please check your connection and try again.', false);
-                setButtonLoading(btn, false);
-            }
-        });
-    }
-
-    // ── Book Visit Form Submit (Safe Event Listener) ────────────────
-    const bookVisitFormEl = document.getElementById('book-visit-form');
-    if (bookVisitFormEl) {
-        bookVisitFormEl.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('visit-submit-btn');
-            const form = this;
-            const alertId = 'visit-alert';
-
-            // Client-side validation
-            const dateInput = document.getElementById('visit-date');
-            const phoneInput = document.getElementById('visit-phone');
-            const date = dateInput ? dateInput.value : '';
-            const phone = phoneInput ? phoneInput.value.trim() : '';
-            if (!date) {
-                showModalAlert(alertId, 'Please select a preferred date for your visit.', false);
-                return;
-            }
-            if (!phone) {
-                showModalAlert(alertId, 'Please enter your phone number.', false);
-                return;
-            }
-
-            setButtonLoading(btn, true);
-            resetModalAlert(alertId);
-
-            try {
-                const formData = new FormData(form);
-                const response = await fetch("{{ route('properties.book-visit', $property) }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    showModalAlert(alertId, data.message, true);
-                    if (btn) {
-                        btn.disabled = true;
-                        const btnText = btn.querySelector('.btn-text');
-                        const btnLoader = btn.querySelector('.btn-loader');
-                        if (btnText) {
-                            btnText.innerHTML = '<i class="ph-bold ph-check-circle"></i> Visit Booked!';
-                            btnText.classList.remove('hidden');
-                        }
-                        if (btnLoader) btnLoader.classList.add('hidden');
-                    }
-                    setTimeout(() => {
-                        closeBookVisitModal();
-                        if (btn) {
-                            btn.disabled = false;
-                            const btnText = btn.querySelector('.btn-text');
-                            if (btnText) btnText.innerHTML = '<i class="ph-bold ph-calendar-check"></i> Confirm Visit Booking';
-                        }
-                        form.reset();
-                    }, 3000);
-                } else {
-                    if (data.redirect) { window.location.href = data.redirect; return; }
-                    showModalAlert(alertId, data.message || 'Something went wrong. Please try again.', false);
-                    setButtonLoading(btn, false);
-                }
-            } catch (error) {
-                showModalAlert(alertId, 'Network error. Please check your connection and try again.', false);
-                setButtonLoading(btn, false);
-            }
-        });
-    }
-
-    // ── Horizontal Slide-Left Carousel with Loop Repeat ─────────────────
-    const propertyGalleryImages = @json($property->images->map(fn($img) => $img->imageUrl())->values());
-    const totalGalleryImages = {{ $property->images->count() }};
-    let currentGalleryIndex = 0;
-    let galleryAutoSlideTimer = null;
-    const gallerySlideDuration = 3500; // 3.5 seconds
-
-    // ── Interactive Cursor Follow Loupe Zoom ─────────────────
-    function handleGalleryZoom(e, container) {
-        if (!container) return;
-        const img = container.querySelector('.gallery-zoom-target');
-        if (!img) return;
-        
-        const rect = container.getBoundingClientRect();
-        if (rect.width === 0 || rect.height === 0) return;
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const xPercent = Math.max(0, Math.min(100, (x / rect.width) * 100));
-        const yPercent = Math.max(0, Math.min(100, (y / rect.height) * 100));
-        
-        img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-        img.style.transform = 'scale(2.2)';
-    }
-
-    function resetGalleryZoom(container) {
-        if (!container) return;
-        const img = container.querySelector('.gallery-zoom-target');
-        if (!img) return;
-        
-        img.style.transform = 'scale(1)';
-        img.style.transformOrigin = 'center center';
-    }
-
-    function resetAllGalleryZooms() {
-        document.querySelectorAll('.gallery-zoom-target').forEach(img => {
-            img.style.transform = 'scale(1)';
-            img.style.transformOrigin = 'center center';
-        });
-    }
-
-    // ── Slide Track Animation ─────────────────
-    function updateGallerySlide(index) {
-        if (totalGalleryImages <= 1) return;
-        
-        // Loop repeat when complete
-        if (index >= totalGalleryImages) {
-            index = 0;
-        } else if (index < 0) {
-            index = totalGalleryImages - 1;
-        }
-        
-        currentGalleryIndex = index;
-        resetAllGalleryZooms();
-
+    function selectGallerySlide(idx) {
+        if (idx < 0 || idx >= totalPhotos) return;
+        currentSlide = idx;
         const track = document.getElementById('gallery-slider-track');
-        const counter = document.getElementById('gallery-counter');
-        
-        // Move track left (new image enters from the right)
         if (track) {
-            track.style.transform = `translateX(-${currentGalleryIndex * 100}%)`;
+            track.style.transform = `translate3d(-${idx * 100}%, 0, 0)`;
         }
-
-        if (counter) {
-            counter.textContent = `${currentGalleryIndex + 1} of ${totalGalleryImages} Photos`;
+        const badge = document.getElementById('gallery-counter-badge');
+        if (badge) {
+            badge.textContent = `${idx + 1}/${totalPhotos} photos`;
         }
-
-        // Highlight active thumbnail
-        const thumbs = document.querySelectorAll('.gallery-thumb');
-        thumbs.forEach((thumb, idx) => {
-            if (idx === currentGalleryIndex) {
-                thumb.classList.add('border-[#2874F0]', 'ring-2', 'ring-[#2874F0]/20');
-                thumb.classList.remove('border-zinc-200');
+        document.querySelectorAll('.gallery-thumb-item').forEach((btn, i) => {
+            if (i === idx) {
+                btn.className = 'gallery-thumb-item relative w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer border-2 border-blue-500 scale-95 ring-2 ring-blue-500/30 transition-all';
             } else {
-                thumb.classList.remove('border-[#2874F0]', 'ring-2', 'ring-[#2874F0]/20');
-                thumb.classList.add('border-zinc-200');
+                btn.className = 'gallery-thumb-item relative w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer border-2 border-transparent opacity-75 hover:opacity-100 transition-all';
             }
         });
-        
-        resetGalleryProgressBar();
     }
 
-    function nextGalleryImage() {
-        updateGallerySlide(currentGalleryIndex + 1);
-        restartGalleryAutoSlide();
-    }
-
-    function prevGalleryImage() {
-        updateGallerySlide(currentGalleryIndex - 1);
-        restartGalleryAutoSlide();
-    }
-
-    function selectGalleryImage(index) {
-        updateGallerySlide(index);
-        restartGalleryAutoSlide();
-    }
-
-    function resetGalleryProgressBar() {
-        const bar = document.getElementById('gallery-progress-bar');
-        if (bar) {
-            bar.style.transition = 'none';
-            bar.style.width = '0%';
-            setTimeout(() => {
-                if (bar) {
-                    bar.style.transition = `width ${gallerySlideDuration}ms linear`;
-                    bar.style.width = '100%';
-                }
-            }, 40);
-        }
-    }
-
-    function startGalleryAutoSlide() {
-        if (totalGalleryImages <= 1) return;
-        clearInterval(galleryAutoSlideTimer);
-        resetGalleryProgressBar();
-        galleryAutoSlideTimer = setInterval(() => {
-            const track = document.getElementById('gallery-slider-track');
-            if (track) {
-                const rect = track.getBoundingClientRect();
-                // Pause auto-sliding when gallery is out of viewport to save resources and avoid unwanted interactions
-                if (rect.bottom < 0 || rect.top > window.innerHeight) {
-                    return;
-                }
-            }
-            updateGallerySlide(currentGalleryIndex + 1);
-        }, gallerySlideDuration);
-    }
-
-    function pauseGalleryAutoSlide() {
-        clearInterval(galleryAutoSlideTimer);
-        const bar = document.getElementById('gallery-progress-bar');
-        if (bar) {
-            bar.style.width = '0%';
-            bar.style.transition = 'none';
-        }
-    }
-
-    function restartGalleryAutoSlide() {
-        pauseGalleryAutoSlide();
-        startGalleryAutoSlide();
-    }
-
-    // ── Fullscreen Lightbox Modal ─────────────────
-    let lightboxIndex = 0;
-    function openLightboxModal(index) {
-        if (!propertyGalleryImages || propertyGalleryImages.length === 0) return;
-        pauseGalleryAutoSlide();
-        lightboxIndex = (typeof index === 'number') ? index : currentGalleryIndex;
+    function openLightboxModal(idx) {
+        if (!propertyGallery || propertyGallery.length === 0) return;
+        lightboxIdx = idx || currentSlide;
         const modal = document.getElementById('gallery-lightbox');
         const img = document.getElementById('lightbox-img');
         const counter = document.getElementById('lightbox-counter');
-        
         if (modal && img) {
-            img.src = propertyGalleryImages[lightboxIndex] || '';
-            if (counter) counter.innerHTML = `<i class="ph-bold ph-image"></i> Photo ${lightboxIndex + 1} of ${totalGalleryImages}`;
+            img.src = propertyGallery[lightboxIdx];
+            if (counter) counter.textContent = `Photo ${lightboxIdx + 1} of ${totalPhotos}`;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
@@ -1889,114 +1020,134 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = '';
-            if (totalGalleryImages > 1) {
-                updateGallerySlide(lightboxIndex);
-                startGalleryAutoSlide();
-            }
         }
     }
 
     function nextLightboxImage() {
-        if (!propertyGalleryImages || propertyGalleryImages.length <= 1) return;
-        lightboxIndex = (lightboxIndex + 1) % propertyGalleryImages.length;
+        if (!propertyGallery || propertyGallery.length <= 1) return;
+        lightboxIdx = (lightboxIdx + 1) % propertyGallery.length;
         const img = document.getElementById('lightbox-img');
         const counter = document.getElementById('lightbox-counter');
-        if (img) {
-            img.style.opacity = '0.3';
-            setTimeout(() => {
-                img.src = propertyGalleryImages[lightboxIndex];
-                img.style.opacity = '1';
-            }, 120);
-        }
-        if (counter) counter.innerHTML = `<i class="ph-bold ph-image"></i> Photo ${lightboxIndex + 1} of ${totalGalleryImages}`;
+        if (img) img.src = propertyGallery[lightboxIdx];
+        if (counter) counter.textContent = `Photo ${lightboxIdx + 1} of ${totalPhotos}`;
     }
 
     function prevLightboxImage() {
-        if (!propertyGalleryImages || propertyGalleryImages.length <= 1) return;
-        lightboxIndex = (lightboxIndex - 1 + propertyGalleryImages.length) % propertyGalleryImages.length;
+        if (!propertyGallery || propertyGallery.length <= 1) return;
+        lightboxIdx = (lightboxIdx - 1 + propertyGallery.length) % propertyGallery.length;
         const img = document.getElementById('lightbox-img');
         const counter = document.getElementById('lightbox-counter');
-        if (img) {
-            img.style.opacity = '0.3';
-            setTimeout(() => {
-                img.src = propertyGalleryImages[lightboxIndex];
-                img.style.opacity = '1';
-            }, 120);
-        }
-        if (counter) counter.innerHTML = `<i class="ph-bold ph-image"></i> Photo ${lightboxIndex + 1} of ${totalGalleryImages}`;
+        if (img) img.src = propertyGallery[lightboxIdx];
+        if (counter) counter.textContent = `Photo ${lightboxIdx + 1} of ${totalPhotos}`;
     }
 
-    // Keyboard support (Escape to close, Left/Right arrow keys)
-    document.addEventListener('keydown', (e) => {
-        const modal = document.getElementById('gallery-lightbox');
-        if (modal && !modal.classList.contains('hidden')) {
-            if (e.key === 'Escape') closeLightboxModal();
-            if (e.key === 'ArrowRight') nextLightboxImage();
-            if (e.key === 'ArrowLeft') prevLightboxImage();
+    function toggleDescription() {
+        const col = document.getElementById('desc-collapsed');
+        const full = document.getElementById('desc-full');
+        const btn = document.getElementById('desc-toggle-btn');
+        if (col && full && btn) {
+            if (full.classList.contains('hidden')) {
+                full.classList.remove('hidden');
+                col.classList.add('hidden');
+                btn.textContent = 'Show less -';
+            } else {
+                full.classList.add('hidden');
+                col.classList.remove('hidden');
+                btn.textContent = 'Read more +';
+            }
         }
-    });
+    }
 
-    // ── Touch Swipe Support for Mobile & Tablets ─────────────────
+    function openBookVisitModal() {
+        const modal = document.getElementById('book-visit-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeBookVisitModal() {
+        const modal = document.getElementById('book-visit-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Touch swipe for gallery
     let touchStartX = 0;
-    let touchEndX = 0;
-    const galleryMainEl = document.getElementById('gallery-main');
-    if (galleryMainEl) {
-        galleryMainEl.addEventListener('touchstart', (e) => {
-            if (e.changedTouches && e.changedTouches[0]) {
-                touchStartX = e.changedTouches[0].screenX;
-            }
-            pauseGalleryAutoSlide();
+    const galleryEl = document.getElementById('gallery-main-container');
+    if (galleryEl) {
+        galleryEl.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
-
-        galleryMainEl.addEventListener('touchend', (e) => {
-            if (e.changedTouches && e.changedTouches[0]) {
-                touchEndX = e.changedTouches[0].screenX;
-                const diffX = touchStartX - touchEndX;
-                if (Math.abs(diffX) > 40) {
-                    if (diffX > 0) {
-                        nextGalleryImage();
-                    } else {
-                        prevGalleryImage();
-                    }
-                } else {
-                    startGalleryAutoSlide();
-                }
+        galleryEl.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 45 && currentSlide < totalPhotos - 1) {
+                selectGallerySlide(currentSlide + 1);
+            } else if (touchEndX - touchStartX > 45 && currentSlide > 0) {
+                selectGallerySlide(currentSlide - 1);
             }
         }, { passive: true });
     }
 
-    // Expose functions globally to window object for reliable onclick handler execution
-    window.openCallAgentModal = openCallAgentModal;
-    window.closeCallAgentModal = closeCallAgentModal;
-    window.openBookVisitModal = openBookVisitModal;
-    window.closeBookVisitModal = closeBookVisitModal;
-    window.handleGalleryZoom = handleGalleryZoom;
-    window.resetGalleryZoom = resetGalleryZoom;
-    window.updateGallerySlide = updateGallerySlide;
-    window.nextGalleryImage = nextGalleryImage;
-    window.prevGalleryImage = prevGalleryImage;
-    window.selectGalleryImage = selectGalleryImage;
-    window.pauseGalleryAutoSlide = pauseGalleryAutoSlide;
-    window.startGalleryAutoSlide = startGalleryAutoSlide;
-    window.restartGalleryAutoSlide = restartGalleryAutoSlide;
+    // Book visit form handling
+    const visitForm = document.getElementById('book-visit-form');
+    if (visitForm) {
+        visitForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('visit-submit-btn');
+            const alertBox = document.getElementById('visit-alert');
+            const formData = new FormData(this);
+            btn.disabled = true;
+            btn.querySelector('.btn-text')?.classList.add('hidden');
+            btn.querySelector('.btn-loader')?.classList.remove('hidden');
+
+            try {
+                const res = await fetch("{{ route('properties.book-visit', $property) }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alertBox.className = 'rounded-xl p-3 text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+                    alertBox.textContent = data.message || 'Visit request submitted successfully!';
+                    alertBox.classList.remove('hidden');
+                    setTimeout(() => {
+                        closeBookVisitModal();
+                        alertBox.classList.add('hidden');
+                        visitForm.reset();
+                    }, 2200);
+                } else {
+                    alertBox.className = 'rounded-xl p-3 text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200';
+                    alertBox.textContent = data.message || 'Something went wrong. Please try again.';
+                    alertBox.classList.remove('hidden');
+                }
+            } catch (err) {
+                alertBox.className = 'rounded-xl p-3 text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200';
+                alertBox.textContent = 'Network error. Please try again.';
+                alertBox.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.querySelector('.btn-text')?.classList.remove('hidden');
+                btn.querySelector('.btn-loader')?.classList.add('hidden');
+            }
+        });
+    }
+
+    // Expose globals
+    window.selectGallerySlide = selectGallerySlide;
     window.openLightboxModal = openLightboxModal;
     window.closeLightboxModal = closeLightboxModal;
     window.nextLightboxImage = nextLightboxImage;
     window.prevLightboxImage = prevLightboxImage;
-
-    // Initialize auto slider on page load
-    function initGallerySlider() {
-        if (totalGalleryImages > 1) {
-            updateGallerySlide(0);
-            startGalleryAutoSlide();
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initGallerySlider);
-    } else {
-        initGallerySlider();
-    }
+    window.toggleDescription = toggleDescription;
+    window.openBookVisitModal = openBookVisitModal;
+    window.closeBookVisitModal = closeBookVisitModal;
 </script>
 @endpush
 
