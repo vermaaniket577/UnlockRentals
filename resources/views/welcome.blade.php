@@ -143,8 +143,8 @@
     </script>
     <link rel="canonical" href="{{ route('home') }}">
     <meta name="robots" content="index, follow">
-    <title>UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs</title>
-    <meta name="description" content="Unlock rent savings with UnlockRentals, India's leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.">
+    <title>UnlockRentals — Zero Brokerage Rentals, Flats & PGs</title>
+    <meta name="description" content="Rent verified flats, rooms, 1BHK & PGs with zero brokerage on UnlockRentals. Connect directly with owners across India and save 100% on broker commissions.">
     <meta name="keywords" content="unlock, unlock rent, unlock rental, unlock rentals, rental, rent, unlockrentals, rent flats, rent houses, rent rooms, zero brokerage rental, rent without broker, direct owner rent, room near my location, flat for rent near me, pg near me">
     <meta name="author" content="UnlockRentals">
     <meta name="publisher" content="UnlockRentals">
@@ -156,16 +156,16 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="UnlockRentals">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs">
-    <meta property="og:description" content="Unlock rent savings with UnlockRentals, India's leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.">
+    <meta property="og:title" content="UnlockRentals — Zero Brokerage Rentals, Flats & PGs">
+    <meta property="og:description" content="Rent verified flats, rooms, 1BHK & PGs with zero brokerage on UnlockRentals. Connect directly with owners across India and save 100% on broker commissions.">
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
 
     {{-- Twitter --}}
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:site" content="@UnlockRentals">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs">
-    <meta property="twitter:description" content="Unlock rent savings with UnlockRentals, India's leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.">
+    <meta property="twitter:title" content="UnlockRentals — Zero Brokerage Rentals, Flats & PGs">
+    <meta property="twitter:description" content="Rent verified flats, rooms, 1BHK & PGs with zero brokerage on UnlockRentals. Connect directly with owners across India and save 100% on broker commissions.">
     <meta property="twitter:image" content="{{ asset('images/logo.png') }}">
 
     {{-- High-Performance Deferred Google AdSense (Zero Blocking on Initial Page Load & Never in App) --}}
@@ -224,7 +224,7 @@
                     "UnlockRental"
                 ],
                 "url": "{{ route('home') }}",
-                "description": "Unlock rent savings with UnlockRentals — India's verified zero brokerage rental platform to rent flats, single rooms, 1RK, 1BHK, PGs, houses, and commercial spaces directly from owners.",
+                "description": "Rent verified flats, rooms, 1BHK & PGs with zero brokerage on UnlockRentals. Connect directly with owners across India and save 100% on broker commissions.",
                 "potentialAction": {
                     "@@type": "SearchAction",
                     "target": {

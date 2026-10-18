@@ -111,12 +111,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta name="description" content="@yield('meta_description', 'Unlock rent savings with UnlockRentals, India\'s leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.')">
+    <meta name="description" content="@yield('meta_description', 'Rent verified flats, rooms, 1BHK & PGs with zero brokerage on UnlockRentals. Connect directly with owners across India and save 100% on broker commissions.')">
     <meta name="keywords" content="@yield('meta_keywords', 'unlock, unlock rent, unlock rental, unlock rentals, rental, rent, unlockrentals, rent flats, rent houses, rent rooms, zero brokerage rental, rent without broker, direct owner rent')">
     <meta name="author" content="UnlockRentals">
     <meta name="publisher" content="UnlockRentals">
     <meta name="robots" content="@yield('robots', 'index, follow')">
-    <title>@yield('title', 'UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs')</title>
+    <title>@yield('title', 'UnlockRentals — Zero Brokerage Rentals, Flats & PGs')</title>
 
     {{-- Legacy & Universal Image Source --}}
     <link rel="image_src" href="@yield('og_image', asset('images/logo.png'))">
@@ -160,16 +160,16 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="UnlockRentals">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', 'UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs')">
-    <meta property="og:description" content="@yield('meta_description', 'Unlock rent savings with UnlockRentals, India\'s leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.')">
+    <meta property="og:title" content="@yield('title', 'UnlockRentals — Zero Brokerage Rentals, Flats & PGs')">
+    <meta property="og:description" content="@yield('meta_description', 'Rent verified flats, rooms, 1BHK & PGs with zero brokerage on UnlockRentals. Connect directly with owners across India and save 100% on broker commissions.')">
     <meta property="og:image" content="@yield('og_image', asset('images/logo.png'))">
 
     {{-- Twitter --}}
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:site" content="@UnlockRentals">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="@yield('title', 'UnlockRentals — Unlock Rent & Zero Brokerage Rentals | Rent Flats, Rooms & PGs')">
-    <meta property="twitter:description" content="@yield('meta_description', 'Unlock rent savings with UnlockRentals, India\'s leading zero brokerage rental platform. Rent verified flats, single rooms, 1RK, 1BHK, PGs, houses & shops directly from property owners.')">
+    <meta property="twitter:title" content="@yield('title', 'UnlockRentals — Zero Brokerage Rentals, Flats & PGs')">
+    <meta property="twitter:description" content="@yield('meta_description', 'Rent verified flats, rooms, 1BHK & PGs with zero brokerage on UnlockRentals. Connect directly with owners across India and save 100% on broker commissions.')">
     <meta property="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
 
     {{-- Favicon & Google Search SERP Icons (Google Guidelines Compliant) --}}

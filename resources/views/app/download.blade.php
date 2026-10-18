@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Download UnlockRentals Mobile App - Zero Brokerage Rentals for Android & iOS')
-@section('meta_description', 'Download the official UnlockRentals app for Android and iOS. Search 10,000+ verified zero-brokerage rental rooms, flats, PGs, and houses with direct owner contacts across India.')
+@section('title', 'Download UnlockRentals App — Zero Brokerage Rentals')
+@section('meta_description', 'Download the UnlockRentals app for Android & iOS. Search verified zero-brokerage flats, rooms, PGs & houses with direct owner contacts across India.')
 
 @section('content')
 <div class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white font-sans antialiased relative overflow-x-hidden">
