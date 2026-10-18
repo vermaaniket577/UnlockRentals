@@ -835,6 +835,7 @@
                 flex-wrap: nowrap !important;
                 align-items: center !important;
                 gap: 8px !important;
+                margin-left: auto !important;
             }
             .main-header .nav-link {
                 white-space: nowrap !important;
@@ -1681,7 +1682,7 @@
                 <span class="logo-text" style="font-size: 15px !important; font-weight: 800 !important; letter-spacing: -0.3px !important; white-space: nowrap !important;">Unlock<span class="logo-accent">Rentals</span></span>
             </a>
         </div>
-        <nav class="main-nav hidden lg:flex" style="gap: 8px !important; align-items: center !important;">
+        <nav class="main-nav hidden lg:flex" style="gap: 8px !important; align-items: center !important; margin-left: auto !important;">
             <a href="{{ route('properties.index') }}" class="nav-link" title="Discover" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
                 <i class="ph-bold ph-compass" style="font-size: 14px !important;"></i>
                 Discover
@@ -1715,7 +1716,7 @@
                 Blog
             </a>
         </nav>
-        <div class="auth-nav" style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: auto;">
+        <div class="auth-nav" style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: 6px;">
             @if (Route::has('login'))
                 @auth
                     {{-- Desktop Only: Post Ad CTA (hidden on mobile to prevent overlap) --}}

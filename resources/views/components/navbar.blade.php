@@ -15,8 +15,8 @@
                 />
             </div>
 
-            {{-- Center: Desktop Navigation Links (Responsive, Non-overlapping) --}}
-            <nav class="main-nav hidden lg:flex items-center gap-0.5 xl:gap-1 flex-shrink">
+            {{-- Right: Desktop Navigation Links (Responsive, Non-overlapping) --}}
+            <nav class="main-nav hidden lg:flex items-center gap-0.5 xl:gap-1 flex-shrink ml-auto">
                 <a href="{{ url('/') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('/') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-home" title="Home">
                     <i class="ph-bold ph-house text-xs xl:text-sm text-blue-600"></i>
                     <span>Home</span>
