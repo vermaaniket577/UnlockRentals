@@ -8,9 +8,6 @@
 
 @php
     try {
-        \App\Models\Plan::ensureRentalPlansExist();
-        \App\Models\Plan::ensureBuyerPlansExist();
-
         $allRentPlans = \App\Models\Plan::active()
             ->where('is_private', false)
             ->whereIn('purpose', ['rent', 'both', null])

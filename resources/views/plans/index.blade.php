@@ -1210,9 +1210,7 @@
     $displayPlans = $plans->values();
     $hasEnterprise = $displayPlans->contains(fn($item) => str_contains(strtolower($item->name), 'enterprise'));
 
-    \App\Models\Plan::ensureRentalPlansExist();
-    \App\Models\Plan::ensureBuyerPlansExist();
-    if ($displayPlans->whereIn('purpose', ['rent', 'both', null])->isEmpty() || $displayPlans->whereIn('purpose', ['buy', 'sale'])->isEmpty()) {
+    if ($displayPlans->isEmpty()) {
         $displayPlans = \App\Models\Plan::public()->get();
     }
     $rentPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['rent', 'both', null]));

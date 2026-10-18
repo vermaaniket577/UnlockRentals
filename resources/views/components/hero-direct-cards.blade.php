@@ -11,6 +11,11 @@
 
     $hasRentPlans = $allDirectPlans->contains(fn($p) => $p->isRentPlan());
     $hasBuyPlans = $allDirectPlans->contains(fn($p) => $p->isBuyPlan());
+
+    $defaultPurpose = ($hasRentPlans ? 'rent' : ($hasBuyPlans ? 'buy' : 'all'));
+    if (in_array(request('purpose'), ['buy', 'sale']) && $hasBuyPlans) {
+        $defaultPurpose = 'buy';
+    }
 @endphp
 
 @if($allDirectPlans->isNotEmpty())
@@ -30,24 +35,20 @@
             </div>
 
             <div class="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
-                {{-- Filter Pills: All / Rent / Buy (only if both types exist) --}}
+                {{-- Filter Tabs: Tenant Pass (Rent) / Buyer Pass (Buy) --}}
                 @if($hasRentPlans && $hasBuyPlans)
                 <div class="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60" id="urDirectPassFilter">
-                    <button type="button" onclick="filterDirectPassCards('all', this)" class="ur-dp-tab active px-3 py-1.5 text-xs font-bold rounded-lg transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs">
-                        All Passes
-                    </button>
-                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab {{ $defaultPurpose === 'rent' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer">
                         Tenant Pass
                     </button>
-                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab {{ $defaultPurpose === 'buy' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer">
                         Buyer Pass
                     </button>
                 </div>
                 @endif
 
-                {{-- Interactive Slider Navigation Chevrons (only if > 1 plan) --}}
-                @if($allDirectPlans->count() > 1)
-                <div class="flex items-center gap-1.5">
+                {{-- Interactive Slider Navigation Chevrons --}}
+                <div class="flex items-center gap-1.5" id="urDirectSliderArrows">
                     <button type="button" onclick="slideDirectPasses(-1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-90 shadow-xs cursor-pointer" title="Previous Pass" aria-label="Previous Pass">
                         <i class="ph-bold ph-caret-left text-sm"></i>
                     </button>
@@ -55,7 +56,6 @@
                         <i class="ph-bold ph-caret-right text-sm"></i>
                     </button>
                 </div>
-                @endif
             </div>
         </div>
 
@@ -68,6 +68,9 @@
                         $isRent = $plan->isRentPlan();
                         $rawPurpose = $plan->purpose ?? ($isBuy ? 'buy' : 'rent');
                         $dataPurpose = ($rawPurpose === 'both') ? 'rent buy' : $rawPurpose;
+                        $matchesDefault = ($defaultPurpose === 'all') 
+                            || ($defaultPurpose === 'rent' && $isRent) 
+                            || ($defaultPurpose === 'buy' && $isBuy);
                         $planNameLower = strtolower($plan->name);
                         
                         // Determine tier badge & icon
@@ -106,7 +109,10 @@
                             : url('/plans');
                     @endphp
 
-                    <div class="ur-direct-card-item flex-shrink-0 snap-center" data-purpose="{{ $dataPurpose }}" data-card-index="{{ $idx }}">
+                    <div class="ur-direct-card-item flex-shrink-0 snap-center" 
+                         data-purpose="{{ $dataPurpose }}" 
+                         data-card-index="{{ $idx }}"
+                         @if(!$matchesDefault) style="display: none;" @endif>
                         <div class="ur-direct-card">
                             
                             {{-- Left / Main Info Block --}}
@@ -212,14 +218,19 @@
             </div>
         </div>
 
-        {{-- Slider Dot Indicators (only if > 1 plan) --}}
-        @if($allDirectPlans->count() > 1)
-        <div class="flex items-center justify-center gap-1.5 mt-2 sm:mt-3" id="urDirectSliderDots">
-            @foreach($allDirectPlans as $idx => $p)
+        {{-- Slider Dot Indicators --}}
+        @php
+            $initialMatchingPlans = $allDirectPlans->filter(function($p) use ($defaultPurpose) {
+                if ($defaultPurpose === 'all') return true;
+                if ($defaultPurpose === 'buy') return $p->isBuyPlan();
+                return $p->isRentPlan();
+            })->values();
+        @endphp
+        <div class="flex items-center justify-center gap-1.5 mt-2 sm:mt-3" id="urDirectSliderDots" style="{{ $initialMatchingPlans->count() <= 1 ? 'display: none;' : '' }}">
+            @foreach($initialMatchingPlans as $idx => $p)
                 <button type="button" onclick="scrollDirectPassToIndex({{ $idx }}); resetDirectPassAutoTimer();" class="ur-ds-dot {{ $idx === 0 ? 'active' : '' }}" aria-label="Go to pass {{ $idx + 1 }}"></button>
             @endforeach
         </div>
-        @endif
 
     </div>
 </section>
@@ -233,6 +244,7 @@
 }
 
 .ur-direct-cards-wrapper {
+    position: relative;
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -640,9 +652,18 @@ function updateDirectPassDots() {
     });
 }
 
+function updateDirectPassControls() {
+    const visibleCards = getDirectPassVisibleCards();
+    const arrows = document.getElementById('urDirectSliderArrows');
+    if (arrows) {
+        arrows.style.display = visibleCards.length > 1 ? 'flex' : 'none';
+    }
+}
+
 function buildDirectPassDots() {
     const dotsContainer = document.getElementById('urDirectSliderDots');
     const visibleCards = getDirectPassVisibleCards();
+    updateDirectPassControls();
     if (!dotsContainer) return;
 
     dotsContainer.innerHTML = '';
@@ -694,8 +715,10 @@ function filterDirectPassCards(purpose, btn) {
         t.classList.remove('active', 'bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-xs');
         t.classList.add('text-slate-600', 'dark:text-slate-300');
     });
-    btn.classList.add('active', 'bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-xs');
-    btn.classList.remove('text-slate-600', 'dark:text-slate-300');
+    if (btn) {
+        btn.classList.add('active', 'bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-xs');
+        btn.classList.remove('text-slate-600', 'dark:text-slate-300');
+    }
 
     // Filter cards
     const grid = document.getElementById('urDirectCardsGrid');
@@ -712,7 +735,8 @@ function filterDirectPassCards(purpose, btn) {
     });
 
     directPassCurrentIndex = 0;
-    grid.scrollTo({ left: 0, behavior: 'smooth' });
+    grid.scrollLeft = 0;
+    grid.scrollTo({ left: 0, behavior: 'instant' });
 
     buildDirectPassDots();
     updateDirectPassDots();

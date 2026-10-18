@@ -762,11 +762,6 @@
 </style>
 
 @php
-    try {
-        \App\Models\Plan::ensureRentalPlansExist();
-        \App\Models\Plan::ensureBuyerPlansExist();
-    } catch (\Throwable $e) {}
-
     $rentPlans = (isset($allRentPlans) && $allRentPlans->isNotEmpty())
         ? $allRentPlans->take(3)
         : \App\Models\Plan::active()
