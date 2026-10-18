@@ -313,7 +313,7 @@ window.UnlockSubscriptionCheckout = (config) => {
         if (pollingInterval) return;
 
         let pollCount = 0;
-        const maxPolls = 240; // 240 * 2.5s = 10 minutes
+        const maxPolls = 60; // 60 * 5s = 5 minutes
 
         pollingInterval = setInterval(async () => {
             if (paymentCompleted) {
@@ -328,7 +328,7 @@ window.UnlockSubscriptionCheckout = (config) => {
             }
 
             await checkOrderStatusOnce(orderId);
-        }, 2500);
+        }, 5000);
     }
 
     // Mobile App & Browser Resume Handler:

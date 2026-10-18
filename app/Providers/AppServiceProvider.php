@@ -51,16 +51,27 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Explicitly disconnect DB connection on HTTP request termination to free MySQL connection slots immediately
+        app()->terminating(function () {
+            try {
+                \Illuminate\Support\Facades\DB::disconnect();
+            } catch (\Throwable $e) {}
+        });
+
         // Always share site_settings as an empty array by default
         View::share('site_settings', []);
 
         try {
-            if (Schema::hasTable('settings')) {
-                $settings = Cache::rememberForever('site_settings', function () {
+            $settings = Cache::rememberForever('site_settings', function () {
+                try {
                     return Setting::pluck('value', 'key')->toArray();
-                });
-                View::share('site_settings', $settings);
+                } catch (\Throwable) {
+                    return [];
+                }
+            });
+            View::share('site_settings', $settings);
 
+            if (!empty($settings)) {
                 // Dynamically override mail config
                 if (isset($settings['mail_host']) && !empty($settings['mail_host'])) {
                     config([

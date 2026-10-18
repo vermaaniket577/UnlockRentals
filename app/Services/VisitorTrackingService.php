@@ -118,7 +118,17 @@ class VisitorTrackingService
     {
         static $columnCache = [];
         $key = "{$table}.{$column}";
-        return $columnCache[$key] ??= \Illuminate\Support\Facades\Schema::hasColumn($table, $column);
+        if (array_key_exists($key, $columnCache)) {
+            return $columnCache[$key];
+        }
+
+        return $columnCache[$key] = \Illuminate\Support\Facades\Cache::rememberForever("ur_col_exists_{$key}", function () use ($table, $column) {
+            try {
+                return \Illuminate\Support\Facades\Schema::hasColumn($table, $column);
+            } catch (\Throwable) {
+                return false;
+            }
+        });
     }
 
     /**
