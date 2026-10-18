@@ -12,3 +12,18 @@
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
   --font-outfit: "Outfit", sans-serif;
 }
+
+/* Remove default number input up and down spin arrows (stepper buttons) across all browsers */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+  display: none !important;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
