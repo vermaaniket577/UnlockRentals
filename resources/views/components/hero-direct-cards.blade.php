@@ -1,9 +1,14 @@
 @php
     try {
         $allDirectPlans = \App\Models\Plan::query()
-            ->where('is_active', true)
-            ->where('is_private', false)
+            ->where(function ($q) {
+                $q->where('is_active', 1)->orWhere('is_active', true)->orWhereNull('is_active');
+            })
+            ->where(function ($q) {
+                $q->where('is_private', 0)->orWhere('is_private', false)->orWhereNull('is_private');
+            })
             ->orderBy('sort_order')
+            ->orderBy('price')
             ->get();
     } catch (\Throwable $e) {
         $allDirectPlans = collect();
@@ -71,18 +76,9 @@
                         $matchesDefault = ($defaultPurpose === 'all') 
                             || ($defaultPurpose === 'rent' && $isRent) 
                             || ($defaultPurpose === 'buy' && $isBuy);
-                        $planNameLower = strtolower($plan->name);
                         
-                        // Determine tier badge & icon
-                        if (str_contains($planNameLower, 'platinum') || str_contains($planNameLower, 'vip')) {
-                            $tierText = $isBuy ? 'PLATINUM VIP BUYER' : 'PLATINUM VIP ACCESS';
-                        } elseif (str_contains($planNameLower, 'gold')) {
-                            $tierText = $isBuy ? 'GOLD BUYER ACCESS' : 'GOLD ACCESS';
-                        } elseif (str_contains($planNameLower, 'silver')) {
-                            $tierText = $isBuy ? 'SILVER BUYER ACCESS' : 'SILVER ACCESS';
-                        } else {
-                            $tierText = strtoupper($plan->name) . ' ACCESS';
-                        }
+                        // Plan Name & Tier Badge from Admin Panel
+                        $badgeText = strtoupper($plan->name);
 
                         // Mint badge text indicating Buyer Pass or Tenant Pass
                         if ($rawPurpose === 'buy') {
@@ -125,7 +121,7 @@
                                     </span>
                                     <span class="ur-dc-gold-badge">
                                         <i class="ph-fill ph-seal-check"></i>
-                                        <span>{{ $tierText }}</span>
+                                        <span>{{ $badgeText }}</span>
                                     </span>
                                     @if(!empty($plan->duration_days))
                                         <span class="ur-dc-duration-pill">
@@ -135,9 +131,9 @@
                                     @endif
                                 </div>
 
-                                {{-- Main Title & Subtitle --}}
+                                {{-- Main Title & Subtitle directly displaying plan details from Admin Panel --}}
                                 <h4 class="ur-dc-title">
-                                    Unlock {{ $plan->contact_limit }}+ Direct {{ $isBuy ? 'Sellers' : 'Landlords' }}
+                                    {{ $plan->name }} &ndash; Unlock {{ $plan->contact_limit }}+ Direct {{ $isBuy ? 'Sellers' : 'Landlords' }}
                                 </h4>
                                 <p class="ur-dc-sub">
                                     {{ $plan->description ?: ($isBuy ? 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property sellers.' : 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property owners.') }}
@@ -145,7 +141,7 @@
 
                                 {{-- Feature Highlights Row (visible on desktop / tablet) --}}
                                 @php
-                                    $cardFeatures = !empty($plan->features) && is_array($plan->features) ? array_slice($plan->features, 0, 3) : [];
+                                    $cardFeatures = !empty($plan->features) && is_array($plan->features) ? array_slice($plan->features, 0, 4) : [];
                                 @endphp
                                 @if(!empty($cardFeatures))
                                     <div class="ur-dc-features-row">
