@@ -133,6 +133,24 @@
         -webkit-text-fill-color: #ffffff !important;
     }
 
+    /* Orange Action: Standard Enterprise Orange */
+    .ur-admin-btn-orange {
+        background: linear-gradient(180deg, #ea580c 0%, #c2410c 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid #9a3412 !important;
+        box-shadow: 0 1px 2px 0 rgba(194, 65, 12, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
+    }
+    .ur-admin-btn-orange:hover {
+        background: linear-gradient(180deg, #f97316 0%, #ea580c 100%) !important;
+        border-color: #c2410c !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 6px 0 rgba(194, 65, 12, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.25) !important;
+    }
+    .ur-admin-btn-orange * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
     /* Secondary / Refresh Action: Clean Neutral Slate */
     .ur-admin-btn-secondary {
         background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
@@ -635,13 +653,15 @@
             {{-- Actions --}}
             <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
                 <button type="button" onclick="closeAddUserModal()"
-                        class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100 transition-colors cursor-pointer">
+                        class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                        style="background-color: #ffffff !important; color: #334155 !important; border: 1px solid #cbd5e1 !important;">
                     Cancel
                 </button>
                 <button type="submit"
-                        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-xs shadow-md shadow-indigo-600/25 transition-all flex items-center gap-1.5 cursor-pointer">
-                    <i class="ph-bold ph-check text-sm"></i>
-                    <span>Create User</span>
+                        class="ur-admin-btn ur-admin-btn-primary px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                        style="background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important; color: #ffffff !important; border: 1px solid #1e40af !important; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35) !important;">
+                    <i class="ph-bold ph-check text-sm" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; font-weight: 700;">Create User</span>
                 </button>
             </div>
         </form>
@@ -759,13 +779,15 @@
             {{-- Actions --}}
             <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
                 <button type="button" onclick="closePostAdvertiseModal()"
-                        class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-100 transition-colors cursor-pointer">
+                        class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                        style="background-color: #ffffff !important; color: #334155 !important; border: 1px solid #cbd5e1 !important;">
                     Cancel
                 </button>
                 <button type="submit"
-                        class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold text-xs shadow-md shadow-orange-600/25 transition-all flex items-center gap-1.5 cursor-pointer">
-                    <span>Proceed to Property Form</span>
-                    <i class="ph-bold ph-arrow-right text-sm"></i>
+                        class="ur-admin-btn ur-admin-btn-orange px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                        style="background: linear-gradient(180deg, #ea580c 0%, #c2410c 100%) !important; color: #ffffff !important; border: 1px solid #9a3412 !important; box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35) !important;">
+                    <span style="color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; font-weight: 700;">Proceed to Property Form</span>
+                    <i class="ph-bold ph-arrow-right text-sm" style="color: #ffffff !important;"></i>
                 </button>
             </div>
         </form>
