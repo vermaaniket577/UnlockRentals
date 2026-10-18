@@ -17,13 +17,60 @@ class Setting extends Model
     {
         // Use the cached settings array loaded at boot time
         $settings = Cache::get('site_settings', []);
-        if (array_key_exists($key, $settings)) {
+        if (is_array($settings) && array_key_exists($key, $settings)) {
             return $settings[$key];
         }
 
         // Fallback: direct DB query (cold cache only)
-        $setting = self::where('key', $key)->first();
-        return $setting ? $setting->value : $default;
+        try {
+            $setting = self::where('key', $key)->first();
+            return $setting ? $setting->value : $default;
+        } catch (\Throwable) {
+            return $default;
+        }
+    }
+
+    /**
+     * Set / persist a setting value in DB and invalidate the site_settings cache.
+     */
+    public static function set($key, $value)
+    {
+        self::ensureSchema();
+
+        $valString = is_array($value) || is_object($value) ? json_encode($value) : (string) ($value ?? '');
+
+        try {
+            $setting = self::updateOrCreate(
+                ['key' => $key],
+                ['value' => $valString]
+            );
+
+            Cache::forget('site_settings');
+
+            return $setting;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Error in Setting::set: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Ensure the settings table exists.
+     */
+    public static function ensureSchema(): void
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                \Illuminate\Support\Facades\Schema::create('settings', function ($table) {
+                    $table->id();
+                    $table->string('key')->unique();
+                    $table->text('value')->nullable();
+                    $table->timestamps();
+                });
+            }
+        } catch (\Throwable) {
+            // Table already exists or permission denied
+        }
     }
 
     public static function paymentGateways(): array
