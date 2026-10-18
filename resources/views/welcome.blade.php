@@ -1539,9 +1539,96 @@
                 overflow: hidden !important;
             }
 
-            /* DISPLAY DESKTOP WEBSITE HERO ON DESKTOP */
+            /* DISPLAY DESKTOP WEBSITE HERO ON DESKTOP - COMPACT HEIGHT & BALANCED TYPOGRAPHY */
             .hero-section {
                 display: flex !important;
+                min-height: auto !important;
+            }
+            .hero-container {
+                max-width: 980px !important;
+                padding-top: 76px !important;
+                padding-bottom: 24px !important;
+            }
+            .hero-badge {
+                font-size: 10.5px !important;
+                padding: 4px 14px !important;
+                margin-bottom: 10px !important;
+            }
+            .hero-title {
+                font-size: clamp(22px, 2.5vw, 32px) !important;
+                line-height: 1.22 !important;
+                margin-bottom: 8px !important;
+                max-width: 820px !important;
+            }
+            .hero-subtitle {
+                font-size: 13.5px !important;
+                line-height: 1.45 !important;
+                max-width: 580px !important;
+                margin-bottom: 12px !important;
+            }
+            .search-glass-panel {
+                padding: 8px 12px !important;
+                border-radius: 16px !important;
+            }
+            .filter-group {
+                padding: 10px 18px 10px 14px !important;
+            }
+            .filter-label {
+                font-size: 9.5px !important;
+                margin-bottom: 2px !important;
+            }
+            .filter-input {
+                font-size: 12.5px !important;
+            }
+            .search-actions-row {
+                gap: 12px !important;
+                margin-top: 8px !important;
+            }
+            .config-item label {
+                font-size: 11px !important;
+            }
+            .config-item select {
+                font-size: 12px !important;
+                padding: 4px 8px !important;
+            }
+            .pill-btn {
+                height: 34px !important;
+                padding: 0 12px !important;
+                font-size: 12px !important;
+            }
+            .btn-search-premium {
+                height: 40px !important;
+                padding: 0 20px !important;
+                font-size: 13px !important;
+            }
+            .actions-wrapper {
+                margin-top: 14px !important;
+                gap: 12px !important;
+            }
+            .actions-wrapper .btn-outline-blue {
+                padding: 5px 15px !important;
+                font-size: 11.5px !important;
+            }
+            .actions-wrapper .btn-text-link {
+                font-size: 11.5px !important;
+            }
+            .trust-indicators {
+                margin-top: 16px !important;
+                gap: 28px !important;
+            }
+            .trust-indicators .indicator-icon {
+                width: 30px !important;
+                height: 30px !important;
+            }
+            .trust-indicators .indicator-icon svg {
+                width: 18px !important;
+                height: 18px !important;
+            }
+            .trust-indicators .indicator-text .val {
+                font-size: 1.25rem !important;
+            }
+            .trust-indicators .indicator-text .lbl {
+                font-size: 11px !important;
             }
             .promo-slider-container {
                 display: block !important;
@@ -2068,7 +2155,7 @@
                 Verified Premium Listings
             </div>
 
-            <h1 class="hero-title title-animate" style="max-width: 960px; margin-left: auto; margin-right: auto;">
+            <h1 class="hero-title title-animate" style="max-width: 820px; margin-left: auto; margin-right: auto;">
                 <span style="background: linear-gradient(135deg, #93c5fd 0%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Unlock Rent</span> With Zero Brokerage <br class="hidden sm:inline">
                 Rent <span style="background: linear-gradient(90deg, #dbeafe 0%, #60a5fa 40%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Flats, Rooms & Houses</span> By Direct Owners
             </h1>
@@ -2078,21 +2165,21 @@
             </p>
 
             {{-- Quick SEO Shortcuts / Near Me Badges --}}
-            <div class="flex items-center justify-center flex-wrap gap-2 mb-4 px-2">
-                <a href="{{ url('/room-near-my-location') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-600/40 hover:bg-blue-600 text-blue-100 hover:text-white text-xs font-bold border border-blue-400/40 transition shadow-sm" title="Rooms Near My Location">
-                    <i class="ph-bold ph-map-pin text-sm text-blue-300"></i>
+            <div class="flex items-center justify-center flex-wrap gap-2 mb-3 px-2">
+                <a href="{{ url('/room-near-my-location') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600/40 hover:bg-blue-600 text-blue-100 hover:text-white text-[11px] font-bold border border-blue-400/40 transition shadow-sm" title="Rooms Near My Location">
+                    <i class="ph-bold ph-map-pin text-xs text-blue-300"></i>
                     <span>📍 Rooms Near My Location</span>
                 </a>
-                <a href="{{ url('/flat-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-semibold border border-white/15 transition shadow-sm" title="Flats Near Me">
-                    <i class="ph-bold ph-buildings text-sm text-sky-300"></i>
+                <a href="{{ url('/flat-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[11px] font-semibold border border-white/15 transition shadow-sm" title="Flats Near Me">
+                    <i class="ph-bold ph-buildings text-xs text-sky-300"></i>
                     <span>Flats Near Me</span>
                 </a>
-                <a href="{{ url('/pg-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-semibold border border-white/15 transition shadow-sm" title="PG Near Me">
-                    <i class="ph-bold ph-bed text-sm text-amber-300"></i>
+                <a href="{{ url('/pg-near-me') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[11px] font-semibold border border-white/15 transition shadow-sm" title="PG Near Me">
+                    <i class="ph-bold ph-bed text-xs text-amber-300"></i>
                     <span>PG Near Me</span>
                 </a>
-                <a href="{{ url('/house-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-semibold border border-white/15 transition shadow-sm" title="House For Rent Near Me">
-                    <i class="ph-bold ph-house text-sm text-emerald-300"></i>
+                <a href="{{ url('/house-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[11px] font-semibold border border-white/15 transition shadow-sm" title="House For Rent Near Me">
+                    <i class="ph-bold ph-house text-xs text-emerald-300"></i>
                     <span>House Near Me</span>
                 </a>
             </div>
