@@ -544,18 +544,18 @@ window.OtpVerification = (function () {
             document.body.appendChild(toast);
         }
 
-        toast.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999999;max-width:440px;width:calc(100% - 24px);animation:urToastSlideDown 0.45s cubic-bezier(0.16, 1, 0.3, 1);box-shadow:0 25px 60px -15px rgba(0,0,0,0.8), 0 0 30px rgba(56,189,248,0.3);';
+        toast.style.cssText = 'position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9999999;max-width:370px;width:calc(100% - 24px);animation:urToastSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1);box-shadow:0 16px 36px -6px rgba(15,23,42,0.16), 0 6px 14px -3px rgba(15,23,42,0.08), 0 0 0 1px rgba(0,0,0,0.04);';
 
-        // Separate OTP digits for individual large box rendering
+        // Separate OTP digits for individual sleek box rendering
         let digitsHtml = '';
         if (otp) {
             const digitChars = String(otp).replace(/[^0-9]/g, '').split('');
-            const boxWidth = digitChars.length <= 4 ? '58px' : '46px';
-            const boxHeight = digitChars.length <= 4 ? '68px' : '58px';
-            const fontSize = digitChars.length <= 4 ? '42px' : '36px';
+            const boxWidth = digitChars.length <= 4 ? '38px' : '32px';
+            const boxHeight = digitChars.length <= 4 ? '44px' : '38px';
+            const fontSize = digitChars.length <= 4 ? '22px' : '18px';
 
             digitsHtml = digitChars.map(d => `
-                <span style="display:inline-flex;align-items:center;justify-content:center;width:${boxWidth};height:${boxHeight};background:rgba(15,23,42,0.92);border:2.5px solid #38bdf8;border-radius:16px;font-size:${fontSize};font-weight:900;color:#38bdf8;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;box-shadow:0 6px 18px rgba(0,0,0,0.4),0 0 18px rgba(56,189,248,0.25);text-shadow:0 0 16px rgba(56,189,248,0.7);">
+                <span style="display:inline-flex;align-items:center;justify-content:center;width:${boxWidth};height:${boxHeight};background:#ffffff;border:1.5px solid #93c5fd;border-radius:10px;font-size:${fontSize};font-weight:800;color:#1d4ed8;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;box-shadow:0 1px 3px rgba(37,99,235,0.08);">
                     ${d}
                 </span>
             `).join('');
@@ -564,7 +564,7 @@ window.OtpVerification = (function () {
         toast.innerHTML = `
             <style>
                 @keyframes urToastSlideDown {
-                    0% { opacity: 0; transform: translate(-50%, -30px) scale(0.95); }
+                    0% { opacity: 0; transform: translate(-50%, -18px) scale(0.97); }
                     100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
                 }
                 @keyframes urProgressTimer {
@@ -572,60 +572,60 @@ window.OtpVerification = (function () {
                     100% { width: 0%; }
                 }
             </style>
-            <div style="background:linear-gradient(145deg, #0b1120 0%, #111e38 50%, #0f172a 100%);color:#fff;border-radius:24px;padding:18px 20px 14px;border:1.5px solid rgba(56, 189, 248, 0.35);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;position:relative;overflow:hidden;">
+            <div style="background:#ffffff;color:#0f172a;border-radius:18px;padding:12px 14px 10px;border:1px solid #e2e8f0;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;position:relative;overflow:hidden;">
                 
-                <!-- Professional Header Bar -->
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg, #2563eb, #38bdf8);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(37,99,235,0.5);flex-shrink:0;">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <!-- Compact Header Bar -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg, #2563eb, #3b82f6);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(37,99,235,0.25);flex-shrink:0;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                         </div>
                         <div>
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <span style="font-size:13px;font-weight:800;color:#f8fafc;letter-spacing:0.02em;">UnlockRentals</span>
-                                <span style="background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);font-size:9px;font-weight:800;padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:0.05em;">Security Code</span>
+                            <div style="display:flex;align-items:center;gap:5px;">
+                                <span style="font-size:12px;font-weight:800;color:#0f172a;letter-spacing:-0.01em;">UnlockRentals</span>
+                                <span style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;font-size:8.5px;font-weight:800;padding:1px 5px;border-radius:5px;text-transform:uppercase;letter-spacing:0.04em;">Security Code</span>
                             </div>
-                            <div style="font-size:11px;font-weight:600;color:#94a3b8;">Push Notification &bull; Just now</div>
+                            <div style="font-size:10px;font-weight:600;color:#64748b;line-height:1.2;">Push Notification &bull; Just now</div>
                         </div>
                     </div>
-                    <button type="button" onclick="this.closest('#ur-push-otp-toast').remove()" style="background:rgba(255,255,255,0.08);border:none;color:#94a3b8;cursor:pointer;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">✕</button>
+                    <button type="button" onclick="this.closest('#ur-push-otp-toast').remove()" style="background:#f1f5f9;border:none;color:#64748b;cursor:pointer;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all 0.15s;" onmouseover="this.style.background='#e2e8f0';this.style.color='#0f172a'" onmouseout="this.style.background='#f1f5f9';this.style.color='#64748b'">✕</button>
                 </div>
 
                 <!-- Subtitle / Instruction -->
-                <div style="font-size:12px;color:#cbd5e1;margin-bottom:10px;text-align:center;line-height:1.4;">
+                <div style="font-size:11.5px;color:#475569;margin-bottom:6px;text-align:center;line-height:1.35;font-weight:500;">
                     ${otp ? 'Your One-Time Password (OTP) for account verification is:' : (body || title)}
                 </div>
 
-                <!-- Extra-Large Segmented OTP Display -->
+                <!-- Compact Segmented OTP Display -->
                 ${otp ? `
-                    <div onclick="window.OtpVerification.autofillOtp('${otp}', true);" style="margin:6px 0 12px;padding:14px 10px;background:rgba(15, 23, 42, 0.65);border-radius:18px;border:1px dashed rgba(56, 189, 248, 0.45);display:flex;justify-content:center;gap:8px;cursor:pointer;transition:transform 0.15s;" title="Click to Auto-Fill & Verify">
+                    <div onclick="window.OtpVerification.autofillOtp('${otp}', true);" style="margin:4px 0 8px;padding:8px 10px;background:#f8fafc;border-radius:12px;border:1px dashed #cbd5e1;display:flex;justify-content:center;gap:6px;cursor:pointer;transition:all 0.15s ease;" onmouseover="this.style.background='#f1f5f9';this.style.borderColor='#94a3b8'" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#cbd5e1'" title="Click to Auto-Fill & Verify">
                         ${digitsHtml}
                     </div>
                 ` : ''}
 
                 <!-- Professional Security Advice -->
-                <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:5px;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <div style="font-size:10px;color:#64748b;text-align:center;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:500;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                     <span>Auto-filling code into inputs... Never share this code.</span>
                 </div>
 
                 <!-- Action Buttons: Copy Code & Auto-Fill -->
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
                     ${otp ? `
-                        <button type="button" id="ur-btn-copy-otp" onclick="window.OtpVerification.copyOtpToClipboard('${otp}', this);" style="flex:1;background:rgba(255,255,255,0.08);color:#f1f5f9;border:1.5px solid rgba(255,255,255,0.2);padding:11px 16px;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all 0.2s;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <button type="button" id="ur-btn-copy-otp" onclick="window.OtpVerification.copyOtpToClipboard('${otp}', this);" style="flex:1;background:#f8fafc;color:#1e293b;border:1px solid #cbd5e1;padding:7px 12px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s ease;" onmouseover="this.style.background='#f1f5f9';this.style.borderColor='#94a3b8'" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#cbd5e1'">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                             <span>Copy Code</span>
                         </button>
                         
-                        <button type="button" onclick="window.OtpVerification.autofillOtp('${otp}', true);this.closest('#ur-push-otp-toast').remove();" style="flex:1.2;background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);color:#fff;border:none;padding:11px 16px;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 6px 20px rgba(37,99,235,0.45);transition:all 0.2s;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <button type="button" onclick="window.OtpVerification.autofillOtp('${otp}', true);this.closest('#ur-push-otp-toast').remove();" style="flex:1.2;background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);color:#fff;border:none;padding:7px 12px;border-radius:10px;font-size:11.5px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 3px 10px rgba(37,99,235,0.25);transition:all 0.15s ease;" onmouseover="this.style.boxShadow='0 5px 14px rgba(37,99,235,0.38)';this.style.filter='brightness(1.05)'" onmouseout="this.style.boxShadow='0 3px 10px rgba(37,99,235,0.25)';this.style.filter='none'">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                             <span>Auto-Fill & Verify</span>
                         </button>
                     ` : ''}
                 </div>
 
                 <!-- Animated Timer Progress Bar at Bottom -->
-                <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.1);">
+                <div style="position:absolute;bottom:0;left:0;right:0;height:2.5px;background:#f1f5f9;">
                     <div style="height:100%;background:linear-gradient(90deg, #38bdf8, #2563eb);animation:urProgressTimer 20s linear forwards;"></div>
                 </div>
             </div>
@@ -646,19 +646,19 @@ window.OtpVerification = (function () {
         if (!otp) return;
         navigator.clipboard.writeText(String(otp)).then(() => {
             if (btn) {
-                btn.style.background = 'rgba(16, 185, 129, 0.2)';
+                btn.style.background = '#ecfdf5';
                 btn.style.borderColor = '#10b981';
-                btn.style.color = '#34d399';
+                btn.style.color = '#059669';
                 btn.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     <span>✓ Copied!</span>
                 `;
                 setTimeout(() => {
-                    btn.style.background = 'rgba(255,255,255,0.08)';
-                    btn.style.borderColor = 'rgba(255,255,255,0.2)';
-                    btn.style.color = '#f1f5f9';
+                    btn.style.background = '#f8fafc';
+                    btn.style.borderColor = '#cbd5e1';
+                    btn.style.color = '#1e293b';
                     btn.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy Code</span>
                     `;
                 }, 2500);
