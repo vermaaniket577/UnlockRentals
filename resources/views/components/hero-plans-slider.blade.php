@@ -75,90 +75,8 @@
         });
     };
 
-    // High quality fallback plans matching prompt requirements
-    if ($allRentPlans->isEmpty()) {
-        $allRentPlans = collect([
-            (object)[
-                'id' => 2,
-                'name' => 'Gold Direct Pass',
-                'description' => 'Best value for 1BHK, 2BHK & 3BHK home hunters. Directly call & WhatsApp owners with 0% middleman brokerage.',
-                'price' => 999.00,
-                'duration_days' => 150,
-                'contact_limit' => 75,
-                'features' => [
-                    '75 Verified Owner Contacts',
-                    'Zero Brokerage Guaranteed',
-                    '150 Days Active Validity',
-                    'Instant WhatsApp Connect'
-                ],
-                'image_path' => null,
-            ],
-            (object)[
-                'id' => 3,
-                'name' => 'Platinum VIP Pass',
-                'description' => 'Ultimate VIP pass with maximum direct owner unlocks, concierge support, and lease assistance.',
-                'price' => 1999.00,
-                'duration_days' => 180,
-                'contact_limit' => 150,
-                'features' => [
-                    '150 Verified Owner Direct Contacts',
-                    'Instant WhatsApp & Phone Call Unlock',
-                    'Zero Brokerage Guaranteed (Save ₹50,000+)',
-                    '180 Days VIP Access (6 Months)',
-                    'Dedicated Relationship Manager',
-                    'Free Rental Agreement Draft Template'
-                ],
-                'image_path' => null,
-            ],
-            (object)[
-                'id' => 1,
-                'name' => 'Silver Starter Pass',
-                'description' => 'Essential direct owner contact access for verified rental listings in top localities.',
-                'price' => 399.00,
-                'duration_days' => 45,
-                'contact_limit' => 30,
-                'features' => [
-                    '30 Verified Owner Direct Contacts',
-                    'Instant WhatsApp & Phone Call Unlock',
-                    'Zero Brokerage Guaranteed',
-                    '45 Days Validity',
-                    'Standard Online Support'
-                ],
-                'image_path' => null,
-            ],
-        ]);
-    }
-
-    if ($allBuyPlans->isEmpty()) {
-        $allBuyPlans = collect([
-            (object)[
-                'id' => 4,
-                'name' => 'Direct Buyer Pass',
-                'description' => 'Buying a flat, villa, or commercial space? Skip the 1% to 2% property broker commission and negotiate directly with verified sellers.',
-                'price' => 50000.00,
-                'duration_days' => 60,
-                'contact_limit' => 30,
-                'features' => [
-                    '30 Verified Direct Sellers',
-                    'Save ₹1 Lakh to ₹5 Lakhs Brokerage',
-                    '60 Days Buyer Validity',
-                    'Title & Visit Assistance'
-                ],
-                'image_path' => null,
-            ],
-        ]);
-    }
-
-    // Build curated slides list with Gold as premier flagship first
-    $goldRent = $allRentPlans->first(fn($p) => str_contains(strtolower($p->name), 'gold') || str_contains(strtolower($p->name), 'pro'));
-    $platRent = $allRentPlans->first(fn($p) => str_contains(strtolower($p->name), 'plat') || str_contains(strtolower($p->name), 'diamond'));
-    $silverRent = $allRentPlans->first(fn($p) => str_contains(strtolower($p->name), 'silver') || str_contains(strtolower($p->name), 'basic') || str_contains(strtolower($p->name), 'starter'));
-    $buyerPlan = $allBuyPlans->first();
-
-    // Fallbacks if named plans aren't matched exactly
-    $goldRent = $goldRent ?? $allRentPlans->skip(1)->first() ?? $allRentPlans->first();
-    $platRent = $platRent ?? $allRentPlans->skip(2)->first() ?? $allRentPlans->first();
-    $silverRent = $silverRent ?? $allRentPlans->first();
+    // No hardcoded fallback plans — all plans come from Admin Panel only
+    // If no plans exist in the database, the section simply won't render
 
     // Smart image URL resolver that supports local subfolder paths, asset(), and reliable CDN fallback
     $resolveHeroPassImg = function($localPath, $cdnFallback) {
@@ -170,272 +88,212 @@
         ];
     };
 
-    $goldImg = $resolveHeroPassImg(
-        'images/buyer_pass/gold_apartment_card.webp',
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80'
-    );
-    $platImg = $resolveHeroPassImg(
-        'images/buyer_pass/platinum_luxury_card.webp',
-        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'
-    );
-    $silverImg = $resolveHeroPassImg(
-        'images/buyer_pass/silver_studio_card.webp',
-        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80'
-    );
-    $buyerImg = $resolveHeroPassImg(
-        'images/buyer_pass/buyer_villa_card.webp',
-        'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80'
-    );
+    // Image pool based on plan tier detection (used as visual fallback when plan has no image_path)
+    $defaultImages = [
+        'gold' => $resolveHeroPassImg(
+            'images/buyer_pass/gold_apartment_card.webp',
+            'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80'
+        ),
+        'platinum' => $resolveHeroPassImg(
+            'images/buyer_pass/platinum_luxury_card.webp',
+            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'
+        ),
+        'silver' => $resolveHeroPassImg(
+            'images/buyer_pass/silver_studio_card.webp',
+            'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80'
+        ),
+        'buyer' => $resolveHeroPassImg(
+            'images/buyer_pass/buyer_villa_card.webp',
+            'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80'
+        ),
+    ];
 
-    // Pricing & offer calculations for Gold
-    $goldOffer = $resolvePlanOffer($goldRent, 'monthly');
-    $goldBasePrice = (float) ($goldRent && $goldRent->price > 0 ? $goldRent->price : 499);
-    $hasGoldOffer = ($goldOffer && $goldOffer->discounted_price !== null);
-    $goldPrice = $hasGoldOffer ? (float) $goldOffer->discounted_price : $goldBasePrice;
-    $goldRegularPrice = $goldBasePrice;
-    $goldOrigPrice = $hasGoldOffer 
-        ? $goldRegularPrice 
-        : (!empty($goldRent->original_price) && (float) $goldRent->original_price > $goldPrice ? (float) $goldRent->original_price : null);
-    $goldSavingsPct = ($goldOrigPrice && $goldOrigPrice > $goldPrice) ? max(1, min(95, (int) round((1 - ($goldPrice / $goldOrigPrice)) * 100))) : 0;
-    $goldDays = max(1, (int) ($goldRent->duration_days ?? 150));
-    $goldPerDay = $goldPrice < 5 ? round($goldPrice / $goldDays, 2) : round($goldPrice / $goldDays, 1);
+    // Helper: detect plan theme from its name (for styling & badge icon purposes)
+    $detectPlanTheme = function($plan) {
+        $name = strtolower($plan->name ?? '');
+        if (str_contains($name, 'plat') || str_contains($name, 'diamond') || str_contains($name, 'vip')) return 'platinum';
+        if (str_contains($name, 'gold') || str_contains($name, 'pro') || str_contains($name, 'popular')) return 'gold';
+        return 'silver';
+    };
 
-    // Pricing & offer calculations for Platinum
-    $platOffer = $resolvePlanOffer($platRent, 'monthly');
-    $platBasePrice = (float) ($platRent && $platRent->price > 0 ? $platRent->price : 999);
-    $hasPlatOffer = ($platOffer && $platOffer->discounted_price !== null);
-    $platPrice = $hasPlatOffer ? (float) $platOffer->discounted_price : $platBasePrice;
-    $platRegularPrice = $platBasePrice;
-    $platOrigPrice = $hasPlatOffer 
-        ? $platRegularPrice 
-        : (!empty($platRent->original_price) && (float) $platRent->original_price > $platPrice ? (float) $platRent->original_price : null);
-    $platSavingsPct = ($platOrigPrice && $platOrigPrice > $platPrice) ? max(1, min(95, (int) round((1 - ($platPrice / $platOrigPrice)) * 100))) : 0;
-    $platDays = max(1, (int) ($platRent->duration_days ?? 180));
-    $platPerDay = $platPrice < 5 ? round($platPrice / $platDays, 2) : round($platPrice / $platDays, 1);
+    $themeIcons = [
+        'gold' => 'ph-crown',
+        'platinum' => 'ph-sparkle',
+        'silver' => 'ph-shield',
+    ];
 
-    // Pricing & offer calculations for Silver
-    $silverOffer = $resolvePlanOffer($silverRent, 'monthly');
-    $silverBasePrice = (float) ($silverRent && $silverRent->price > 0 ? $silverRent->price : 199);
-    $hasSilverOffer = ($silverOffer && $silverOffer->discounted_price !== null);
-    $silverPrice = $hasSilverOffer ? (float) $silverOffer->discounted_price : $silverBasePrice;
-    $silverRegularPrice = $silverBasePrice;
-    $silverOrigPrice = $hasSilverOffer 
-        ? $silverRegularPrice 
-        : (!empty($silverRent->original_price) && (float) $silverRent->original_price > $silverPrice ? (float) $silverRent->original_price : null);
-    $silverSavingsPct = ($silverOrigPrice && $silverOrigPrice > $silverPrice) ? max(1, min(95, (int) round((1 - ($silverPrice / $silverOrigPrice)) * 100))) : 0;
-    $silverDays = max(1, (int) ($silverRent->duration_days ?? 45));
-    $silverPerDay = $silverPrice < 5 ? round($silverPrice / $silverDays, 2) : round($silverPrice / $silverDays, 1);
+    // Build hero slides dynamically from ALL admin panel plans
+    $heroSlides = collect();
 
-    $heroSlides = collect([
-        [
-            'plan' => $goldRent,
-            'type' => 'rent',
-            'theme' => 'gold',
-            'tab_label' => 'Gold Pass',
-            'tab_icon' => 'ph-crown',
-            'tab_badge' => $hasGoldOffer ? ('₹' . number_format($goldPrice, 0) . ' OFFER') : 'POPULAR',
-            'has_offer' => $hasGoldOffer,
-            'offer' => $goldOffer,
-            'regular_price' => $goldRegularPrice,
-            'badge' => $hasGoldOffer 
-                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($goldPrice, 0) . ' EXCLUSIVE PASS'
-                : '👑 MOST POPULAR · 84% OF TENANTS CHOOSE THIS',
-            'title_prefix' => 'Unlock Verified Owners With',
-            'title_highlight' => 'Gold Direct Pass',
-            'title_suffix' => '',
-            'tagline' => 'Best value for 1BHK, 2BHK & 3BHK home hunters. Directly call & WhatsApp owners with 0% middleman brokerage.',
-            'original_price' => $goldOrigPrice,
-            'price' => $goldPrice,
-            'savings_pct' => $goldSavingsPct,
-            'per_day' => $goldPerDay,
-            'highlights' => [
-                ['icon' => 'ph-phone-call', 'title' => ($goldRent->contact_limit ?? 75) . ' Verified Owner Contacts', 'desc' => 'Direct phone & WhatsApp numbers'],
-                ['icon' => 'ph-shield-check', 'title' => 'Zero Brokerage Guaranteed', 'desc' => 'Save ₹15,000 to ₹35,000 in fees'],
-                ['icon' => 'ph-calendar-check', 'title' => ($goldRent->duration_days ?? 150) . ' Days Active Validity', 'desc' => 'Full 5 months of unlimited unlocks'],
+    // 1. Add all Rent plans dynamically
+    foreach ($allRentPlans as $plan) {
+        $theme = $detectPlanTheme($plan);
+        $planOffer = $resolvePlanOffer($plan, 'monthly');
+        $basePrice = (float) ($plan->price > 0 ? $plan->price : 0);
+        $hasOffer = ($planOffer && $planOffer->discounted_price !== null);
+        $price = $hasOffer ? (float) $planOffer->discounted_price : $basePrice;
+        $regularPrice = $basePrice;
+        $origPrice = $hasOffer 
+            ? $regularPrice 
+            : (!empty($plan->original_price) && (float) $plan->original_price > $price ? (float) $plan->original_price : null);
+        $savingsPct = ($origPrice && $origPrice > $price) ? max(1, min(95, (int) round((1 - ($price / $origPrice)) * 100))) : 0;
+        $days = max(1, (int) ($plan->duration_days ?? 30));
+        $perDay = $price < 5 ? round($price / $days, 2) : round($price / $days, 1);
+        $contacts = (int) ($plan->contact_limit ?? 10);
+        $img = $defaultImages[$theme] ?? $defaultImages['silver'];
+
+        // Build feature highlights from admin panel features or generate from plan data
+        $planFeatures = !empty($plan->features) && is_array($plan->features) ? $plan->features : [];
+        $featureIcons = ['ph-phone-call', 'ph-shield-check', 'ph-calendar-check', 'ph-chat-circle-dots'];
+        $highlights = [];
+        if (!empty($planFeatures)) {
+            foreach (array_slice($planFeatures, 0, 4) as $fi => $feat) {
+                $highlights[] = [
+                    'icon' => $featureIcons[$fi] ?? 'ph-seal-check',
+                    'title' => $feat,
+                    'desc' => '',
+                ];
+            }
+        } else {
+            $highlights = [
+                ['icon' => 'ph-phone-call', 'title' => $contacts . ' Verified Owner Contacts', 'desc' => 'Direct phone & WhatsApp numbers'],
+                ['icon' => 'ph-shield-check', 'title' => 'Zero Brokerage Guaranteed', 'desc' => 'Save on brokerage fees'],
+                ['icon' => 'ph-calendar-check', 'title' => $days . ' Days Active Validity', 'desc' => 'Full access period'],
                 ['icon' => 'ph-chat-circle-dots', 'title' => 'Instant WhatsApp Connect', 'desc' => 'Direct landlord chat & visit pass'],
-            ],
+            ];
+        }
+
+        $tabBadge = $hasOffer 
+            ? ('₹' . number_format($price, 0) . ' OFFER') 
+            : ($theme === 'gold' ? 'POPULAR' : ($theme === 'platinum' ? 'VIP CHOICE' : 'BUDGET'));
+
+        $heroSlides->push([
+            'plan' => $plan,
+            'type' => 'rent',
+            'theme' => $theme,
+            'tab_label' => str_replace([' Pass', ' pass'], '', $plan->name),
+            'tab_icon' => $themeIcons[$theme] ?? 'ph-shield',
+            'tab_badge' => $tabBadge,
+            'has_offer' => $hasOffer,
+            'offer' => $planOffer,
+            'regular_price' => $regularPrice,
+            'badge' => $hasOffer 
+                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($price, 0) . ' ' . strtoupper($plan->name)
+                : ($theme === 'gold' ? '👑 MOST POPULAR · TENANTS\' TOP CHOICE' : ($theme === 'platinum' ? '💎 VIP PRIVILEGE · MAXIMUM OWNER UNLOCKS' : '🛡️ ESSENTIAL STARTER · QUICK HOUSE HUNT')),
+            'title_prefix' => 'Unlock Verified Owners With',
+            'title_highlight' => $plan->name,
+            'title_suffix' => '',
+            'tagline' => $plan->description ?: 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property owners.',
+            'original_price' => $origPrice,
+            'price' => $price,
+            'savings_pct' => $savingsPct,
+            'per_day' => $perDay,
+            'highlights' => $highlights,
             'specs' => [
-                ['label' => 'Direct Owner Contacts', 'value' => ($goldRent->contact_limit ?? 75) . ' Direct Unlocks'],
-                ['label' => 'Access Duration', 'value' => ($goldRent->duration_days ?? 150) . ' Full Days'],
+                ['label' => 'Direct Owner Contacts', 'value' => $contacts . ' Direct Unlocks'],
+                ['label' => 'Access Duration', 'value' => $days . ' Full Days'],
                 ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
             ],
             'visual' => [
-                'tag' => $hasGoldOffer ? 'EXCLUSIVE OFFER' : '100% OWNER DIRECT',
+                'tag' => $hasOffer ? 'EXCLUSIVE OFFER' : '100% OWNER DIRECT',
                 'title' => 'Direct Landlords Only',
-                'sub' => 'Connect directly with genuine property owners with 0% middleman commission.',
-                'perks' => [
+                'sub' => $plan->description ?: 'Connect directly with genuine property owners with 0% middleman commission.',
+                'perks' => array_slice($planFeatures, 0, 3) ?: [
                     'Verified Landlord Phone & WA',
                     'Direct Landlord Visit Scheduling',
-                    'Save ₹15,000 to ₹35,000 Fees',
+                    'Zero Brokerage Guaranteed',
                 ],
                 'trust_note' => 'Direct Landlords Only · ₹0 Commission',
-                'image' => $goldImg['primary'],
-                'fallback' => $goldImg['fallback'],
+                'image' => $img['primary'],
+                'fallback' => $img['fallback'],
             ],
-        ],
-        [
-            'plan' => $platRent,
-            'type' => 'rent',
-            'theme' => 'platinum',
-            'tab_label' => 'Platinum VIP',
-            'tab_icon' => 'ph-sparkle',
-            'tab_badge' => $hasPlatOffer ? ('₹' . number_format($platPrice, 0) . ' OFFER') : 'VIP CHOICE',
-            'has_offer' => $hasPlatOffer,
-            'offer' => $platOffer,
-            'regular_price' => $platRegularPrice,
-            'badge' => $hasPlatOffer 
-                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($platPrice, 0) . ' VIP PASS'
-                : '💎 VIP PRIVILEGE · MAXIMUM OWNER UNLOCKS',
-            'title_prefix' => 'Experience Premium Access With',
-            'title_highlight' => 'Platinum VIP Pass',
-            'title_suffix' => '',
-            'tagline' => 'Ultimate unrestricted pass for families, executives, and luxury home seekers. Maximum direct contacts + concierge.',
-            'original_price' => $platOrigPrice,
-            'price' => $platPrice,
-            'savings_pct' => $platSavingsPct,
-            'per_day' => $platPerDay,
-            'highlights' => [
-                ['icon' => 'ph-lightning', 'title' => ($platRent->contact_limit ?? 150) . ' Verified Owner Contacts', 'desc' => 'Maximum direct contact credits'],
-                ['icon' => 'ph-shield-check', 'title' => 'Zero Brokerage Guaranteed', 'desc' => 'Save ₹30,000 to ₹60,000 in fees'],
-                ['icon' => 'ph-calendar-check', 'title' => ($platRent->duration_days ?? 180) . ' Days Active Validity', 'desc' => 'Full 6 months priority access'],
-                ['icon' => 'ph-user-check', 'title' => 'Dedicated Concierge', 'desc' => 'Personal relationship support on WhatsApp'],
-            ],
-            'specs' => [
-                ['label' => 'Direct Owner Contacts', 'value' => ($platRent->contact_limit ?? 150) . ' Direct Unlocks'],
-                ['label' => 'Access Duration', 'value' => ($platRent->duration_days ?? 180) . ' Full Days'],
-                ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
-            ],
-            'visual' => [
-                'tag' => $hasPlatOffer ? 'EXCLUSIVE OFFER' : 'VIP CONCIERGE ACCESS',
-                'title' => 'Exclusive Luxury Rentals',
-                'sub' => 'Direct access to high-end gated societies, penthouses, and luxury villas.',
-                'perks' => [
-                    'Priority Concierge Support',
-                    'Unlimited Direct Landlord Calls',
-                    'Free Rental Agreement Draft',
-                ],
-                'trust_note' => 'Dedicated Concierge · ₹0 Brokerage',
-                'image' => $platImg['primary'],
-                'fallback' => $platImg['fallback'],
-            ],
-        ],
-        [
-            'plan' => $silverRent,
-            'type' => 'rent',
-            'theme' => 'silver',
-            'tab_label' => 'Silver Starter',
-            'tab_icon' => 'ph-shield',
-            'tab_badge' => $hasSilverOffer ? ('₹' . number_format($silverPrice, 0) . ' OFFER') : 'BUDGET',
-            'has_offer' => $hasSilverOffer,
-            'offer' => $silverOffer,
-            'regular_price' => $silverRegularPrice,
-            'badge' => $hasSilverOffer 
-                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($silverPrice, 0) . ' DIRECT PASS'
-                : '🛡️ ESSENTIAL STARTER · QUICK HOUSE HUNT',
-            'title_prefix' => 'Find Your First Home With',
-            'title_highlight' => 'Silver Starter Pass',
-            'title_suffix' => '',
-            'tagline' => $silverRent->description ?? 'Pocket-friendly direct owner access for individual rooms, 1RK, PG stays, and quick single-neighborhood rentals.',
-            'original_price' => $silverOrigPrice,
-            'price' => $silverPrice,
-            'savings_pct' => $silverSavingsPct,
-            'per_day' => $silverPerDay,
-            'highlights' => [
-                ['icon' => 'ph-phone-call', 'title' => ($silverRent->contact_limit ?? 30) . ' Verified Owner Contacts', 'desc' => 'Direct phone numbers & WhatsApp'],
-                ['icon' => 'ph-shield-check', 'title' => 'Zero Brokerage Guaranteed', 'desc' => 'No commission on lease closing'],
-                ['icon' => 'ph-calendar-check', 'title' => ($silverRent->duration_days ?? 60) . ' Days Active Validity', 'desc' => 'Standard monthly house hunt'],
-                ['icon' => 'ph-headset', 'title' => 'Standard Support', 'desc' => 'WhatsApp & email query assistance'],
-            ],
-            'specs' => [
-                ['label' => 'Direct Owner Contacts', 'value' => ($silverRent->contact_limit ?? 30) . ' Direct Unlocks'],
-                ['label' => 'Access Duration', 'value' => ($silverRent->duration_days ?? 60) . ' Full Days'],
-                ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
-            ],
-            'visual' => [
-                'tag' => $hasSilverOffer ? 'EXCLUSIVE OFFER' : 'QUICK MOVE-IN',
-                'title' => 'Verified Starter Listings',
-                'sub' => 'Best for singles, students, and professionals searching for budget 1RK & PGs.',
-                'perks' => [
-                    'Direct Phone & WhatsApp Unlock',
-                    'Zero Broker Commission',
-                    'Standard Online Support',
-                ],
-                'trust_note' => 'Verified Direct Listings · Fast Connect',
-                'image' => $silverImg['primary'],
-                'fallback' => $silverImg['fallback'],
-            ],
-        ],
-    ]);
+        ]);
+    }
 
-    if ($allBuyPlans->isNotEmpty()) {
-        foreach ($allBuyPlans as $bPlan) {
-            $buyerBasePrice = (float) (($bPlan->price && $bPlan->price > 0) ? $bPlan->price : 399.00);
-            $buyerOffer = $resolvePlanOffer($bPlan, 'yearly');
-            $hasBuyerOffer = ($buyerOffer && $buyerOffer->discounted_price !== null);
-            $buyerPrice = $hasBuyerOffer 
-                ? (float) $buyerOffer->discounted_price 
-                : $buyerBasePrice;
-            $buyerDays = (int) ($bPlan->duration_days ?: 60);
-            $buyerContacts = (int) ($bPlan->contact_limit ?: 30);
-            $buyerOrigPrice = $hasBuyerOffer 
-                ? $buyerBasePrice 
-                : (!empty($bPlan->original_price) && (float) $bPlan->original_price > $buyerPrice ? (float) $bPlan->original_price : null);
-            $buyerSavingsPct = ($buyerOrigPrice && $buyerOrigPrice > $buyerPrice) ? max(1, min(95, (int) round((1 - ($buyerPrice / $buyerOrigPrice)) * 100))) : 0;
-            $buyerPerDay = $buyerPrice < 5 ? round($buyerPrice / max(1, $buyerDays), 2) : round($buyerPrice / max(1, $buyerDays), 1);
+    // 2. Add all Buy plans dynamically
+    foreach ($allBuyPlans as $bPlan) {
+        $buyerBasePrice = (float) ($bPlan->price > 0 ? $bPlan->price : 0);
+        $buyerOffer = $resolvePlanOffer($bPlan, 'yearly');
+        $hasBuyerOffer = ($buyerOffer && $buyerOffer->discounted_price !== null);
+        $buyerPrice = $hasBuyerOffer 
+            ? (float) $buyerOffer->discounted_price 
+            : $buyerBasePrice;
+        $buyerDays = max(1, (int) ($bPlan->duration_days ?: 60));
+        $buyerContacts = (int) ($bPlan->contact_limit ?: 10);
+        $buyerOrigPrice = $hasBuyerOffer 
+            ? $buyerBasePrice 
+            : (!empty($bPlan->original_price) && (float) $bPlan->original_price > $buyerPrice ? (float) $bPlan->original_price : null);
+        $buyerSavingsPct = ($buyerOrigPrice && $buyerOrigPrice > $buyerPrice) ? max(1, min(95, (int) round((1 - ($buyerPrice / $buyerOrigPrice)) * 100))) : 0;
+        $buyerPerDay = $buyerPrice < 5 ? round($buyerPrice / max(1, $buyerDays), 2) : round($buyerPrice / max(1, $buyerDays), 1);
 
-            $isGoldBuyer = str_contains(strtolower($bPlan->name), 'gold');
-            $isPlatBuyer = str_contains(strtolower($bPlan->name), 'plat');
-            $tabBadge = $hasBuyerOffer 
-                ? ('₹' . number_format($buyerPrice, 0) . ' OFFER') 
-                : ($isGoldBuyer ? 'POPULAR' : ($isPlatBuyer ? 'VIP BUYER' : 'BUYER'));
+        $bTheme = $detectPlanTheme($bPlan);
+        $tabBadge = $hasBuyerOffer 
+            ? ('₹' . number_format($buyerPrice, 0) . ' OFFER') 
+            : ($bTheme === 'gold' ? 'POPULAR' : ($bTheme === 'platinum' ? 'VIP BUYER' : 'BUYER'));
 
-            $heroSlides->push([
-                'plan' => $bPlan,
-                'type' => 'buy',
-                'theme' => 'buyer',
-                'tab_label' => str_replace([' Pass', ' pass'], '', $bPlan->name),
-                'tab_icon' => 'ph-buildings',
-                'tab_badge' => $tabBadge,
-                'has_offer' => $hasBuyerOffer,
-                'offer' => $buyerOffer,
-                'regular_price' => $buyerBasePrice,
-                'badge' => $hasBuyerOffer 
-                    ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($buyerPrice, 0) . ' ' . strtoupper($bPlan->name) 
-                    : '🏡 ZERO BROKERAGE BUYER PASS · DIRECT SELLER DEALS',
-                'title_prefix' => 'Purchase Your Dream Property With',
-                'title_highlight' => $bPlan->name,
-                'title_suffix' => '',
-                'tagline' => $bPlan->description ?: 'Buying a flat, villa, or commercial space? Skip the 1% to 2% property broker commission and negotiate directly with verified sellers.',
-                'original_price' => $buyerOrigPrice,
-                'price' => $buyerPrice,
-                'savings_pct' => $buyerSavingsPct,
-                'per_day' => $buyerPerDay,
-                'highlights' => [
-                    ['icon' => 'ph-house-line', 'title' => $buyerContacts . ' Verified Direct Sellers', 'desc' => 'Direct owners & builder representatives'],
-                    ['icon' => 'ph-money', 'title' => 'Save ₹1 Lakh to ₹5 Lakhs', 'desc' => 'Zero broker commission on buy transactions'],
-                    ['icon' => 'ph-calendar-check', 'title' => $buyerDays . ' Days Buyer Validity', 'desc' => 'Extended window to evaluate deals'],
-                    ['icon' => 'ph-file-text', 'title' => 'Title & Visit Assistance', 'desc' => 'Direct owner negotiation pass'],
-                ],
-                'specs' => [
-                    ['label' => 'Direct Seller Contacts', 'value' => $buyerContacts . ' Direct Unlocks'],
-                    ['label' => 'Access Duration', 'value' => $buyerDays . ' Full Days'],
-                    ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
-                ],
-                'visual' => [
-                    'tag' => $hasBuyerOffer ? 'EXCLUSIVE OFFER' : 'DIRECT SELLER DEALS',
-                    'title' => 'Direct Property Purchase',
-                    'sub' => 'Connect directly with genuine property sellers and save lakhs in brokerage fees.',
-                    'perks' => [
-                        'Verified Direct Seller Contacts',
-                        'Save 1% to 2% Brokerage Fee',
-                        'Title Document Checklist',
-                    ],
-                    'trust_note' => 'Direct Seller Negotiation · ₹0 Middleman',
-                    'image' => $buyerImg['primary'],
-                    'fallback' => $buyerImg['fallback'],
-                ],
-            ]);
+        $buyerFeatures = !empty($bPlan->features) && is_array($bPlan->features) ? $bPlan->features : [];
+        $buyHighlights = [];
+        if (!empty($buyerFeatures)) {
+            $bIcons = ['ph-house-line', 'ph-money', 'ph-calendar-check', 'ph-file-text'];
+            foreach (array_slice($buyerFeatures, 0, 4) as $fi => $feat) {
+                $buyHighlights[] = [
+                    'icon' => $bIcons[$fi] ?? 'ph-seal-check',
+                    'title' => $feat,
+                    'desc' => '',
+                ];
+            }
+        } else {
+            $buyHighlights = [
+                ['icon' => 'ph-house-line', 'title' => $buyerContacts . ' Verified Direct Sellers', 'desc' => 'Direct owners & builder representatives'],
+                ['icon' => 'ph-money', 'title' => 'Zero Brokerage on Purchase', 'desc' => 'Save on broker commission'],
+                ['icon' => 'ph-calendar-check', 'title' => $buyerDays . ' Days Buyer Validity', 'desc' => 'Extended window to evaluate deals'],
+                ['icon' => 'ph-file-text', 'title' => 'Title & Visit Assistance', 'desc' => 'Direct owner negotiation pass'],
+            ];
         }
+
+        $buyerImg = $defaultImages['buyer'];
+
+        $heroSlides->push([
+            'plan' => $bPlan,
+            'type' => 'buy',
+            'theme' => 'buyer',
+            'tab_label' => str_replace([' Pass', ' pass'], '', $bPlan->name),
+            'tab_icon' => 'ph-buildings',
+            'tab_badge' => $tabBadge,
+            'has_offer' => $hasBuyerOffer,
+            'offer' => $buyerOffer,
+            'regular_price' => $buyerBasePrice,
+            'badge' => $hasBuyerOffer 
+                ? '🎉 SPECIAL OFFER UNLOCKED · ₹' . number_format($buyerPrice, 0) . ' ' . strtoupper($bPlan->name) 
+                : '🏡 ZERO BROKERAGE BUYER PASS · DIRECT SELLER DEALS',
+            'title_prefix' => 'Purchase Your Dream Property With',
+            'title_highlight' => $bPlan->name,
+            'title_suffix' => '',
+            'tagline' => $bPlan->description ?: 'Skip the broker commission and negotiate directly with verified sellers.',
+            'original_price' => $buyerOrigPrice,
+            'price' => $buyerPrice,
+            'savings_pct' => $buyerSavingsPct,
+            'per_day' => $buyerPerDay,
+            'highlights' => $buyHighlights,
+            'specs' => [
+                ['label' => 'Direct Seller Contacts', 'value' => $buyerContacts . ' Direct Unlocks'],
+                ['label' => 'Access Duration', 'value' => $buyerDays . ' Full Days'],
+                ['label' => 'Brokerage Fee', 'value' => '₹0 (Zero Commission)', 'accent' => true],
+            ],
+            'visual' => [
+                'tag' => $hasBuyerOffer ? 'EXCLUSIVE OFFER' : 'DIRECT SELLER DEALS',
+                'title' => 'Direct Property Purchase',
+                'sub' => $bPlan->description ?: 'Connect directly with genuine property sellers and save on brokerage fees.',
+                'perks' => array_slice($buyerFeatures, 0, 3) ?: [
+                    'Verified Direct Seller Contacts',
+                    'Zero Brokerage on Purchase',
+                    'Title Document Checklist',
+                ],
+                'trust_note' => 'Direct Seller Negotiation · ₹0 Middleman',
+                'image' => $buyerImg['primary'],
+                'fallback' => $buyerImg['fallback'],
+            ],
+        ]);
     }
 @endphp
 
@@ -2433,6 +2291,7 @@
 }
 </style>
 
+@if($heroSlides->isNotEmpty())
 <section class="ur-hero-plans-slider-section" id="hero-plans-slider-section">
     {{-- Ambient Light Orbs --}}
     <div class="ur-hps-ambient-orb ur-hps-ambient-orb--1" id="hpsOrb1"></div>
@@ -2575,7 +2434,7 @@
                                     <div class="ur-dark-badges-row">
                                         <span class="ur-dark-badge-mint">
                                             <i class="ph-bold ph-shield-check"></i>
-                                            <span>BUYER & TENANT PASS</span>
+                                            <span>{{ ($s['type'] === 'buy') ? 'BUYER PASS' : (($s['type'] === 'rent') ? 'TENANT PASS' : 'BUYER & TENANT PASS') }}</span>
                                         </span>
                                         <span class="ur-dark-badge-gold">
                                             <i class="ph-bold {{ $s['theme'] === 'platinum' ? 'ph-sparkle' : ($s['theme'] === 'silver' ? 'ph-shield-check' : ($s['theme'] === 'buyer' ? 'ph-buildings' : 'ph-medal')) }}"></i>
@@ -2588,7 +2447,7 @@
                                         Unlock {{ ($s['plan']->contact_limit ?? ($s['type'] === 'buy' ? 30 : 25)) . '+' }} Direct {{ $s['type'] === 'buy' ? 'Sellers' : 'Landlords' }}
                                     </h4>
                                     <p class="ur-dark-card-sub">
-                                        Skip brokerage charges completely. Instant contact numbers.
+                                        {{ $s['plan']->description ?: ($s['type'] === 'buy' ? 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property sellers.' : 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property owners.') }}
                                     </p>
 
                                     {{-- Footer Dock: Price & Unlock Now CTA --}}
@@ -2669,7 +2528,7 @@
                             <div class="ur-dark-badges-row">
                                 <span class="ur-dark-badge-mint">
                                     <i class="ph-bold ph-shield-check"></i>
-                                    <span>BUYER & TENANT PASS</span>
+                                    <span>{{ ($s['type'] === 'buy') ? 'BUYER PASS' : (($s['type'] === 'rent') ? 'TENANT PASS' : 'BUYER & TENANT PASS') }}</span>
                                 </span>
                                 <span class="ur-dark-badge-gold">
                                     <i class="ph-bold {{ $s['theme'] === 'platinum' ? 'ph-sparkle' : ($s['theme'] === 'silver' ? 'ph-shield-check' : ($s['theme'] === 'buyer' ? 'ph-buildings' : 'ph-medal')) }}"></i>
@@ -2682,7 +2541,7 @@
                                 Unlock {{ ($s['plan']->contact_limit ?? ($s['type'] === 'buy' ? 30 : 25)) . '+' }} Direct {{ $s['type'] === 'buy' ? 'Sellers' : 'Landlords' }}
                             </h4>
                             <p class="ur-dark-card-sub">
-                                Skip brokerage charges completely. Instant contact numbers.
+                                {{ $s['plan']->description ?: ($s['type'] === 'buy' ? 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property sellers.' : 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property owners.') }}
                             </p>
 
                             {{-- Footer Dock: Price & Unlock Now CTA --}}
@@ -3040,7 +2899,7 @@
             } else {
                 const urlParams = new URLSearchParams(window.location.search);
                 const hash = window.location.hash.toLowerCase();
-                if (urlParams.get('tab') === 'buyer' || urlParams.get('plan') === 'buyer' || urlParams.get('type') === 'buy' || hash === '#buyer-pass' || hash === '#buyer' || hash === '#direct-buyer-pass') {
+                if (urlParams.get('tab') === 'buyer' || urlParams.get('plan') === 'buyer' || urlParams.get('type') === 'buy' || urlParams.get('purpose') === 'buy' || urlParams.get('purpose') === 'sale' || hash === '#buyer-pass' || hash === '#buyer' || hash === '#direct-buyer-pass') {
                     const buyerIdx = Array.from(slides).findIndex(s => s.getAttribute('data-theme') === 'buyer');
                     if (buyerIdx >= 0) initialIndex = buyerIdx;
                 }
@@ -3072,3 +2931,4 @@
     }
 })();
 </script>
+@endif
