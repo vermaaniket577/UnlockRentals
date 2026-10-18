@@ -26,7 +26,7 @@ class PlanController extends Controller
 
     public function index()
     {
-        $plans = Plan::public()->get();
+        $plans = Plan::public()->orderBy('sort_order')->orderBy('price')->get();
         $user = auth()->user();
         $activePlan = $user ? $user->activePlan() : null;
         $activeRentPlan = $user ? $user->activeRentPlan() : null;

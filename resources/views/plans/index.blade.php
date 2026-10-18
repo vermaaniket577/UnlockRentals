@@ -1213,8 +1213,12 @@
     if ($displayPlans->isEmpty()) {
         $displayPlans = \App\Models\Plan::public()->get();
     }
-    $rentPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['rent', 'both', null]));
-    $buyPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['buy', 'sale']));
+    $rentPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['rent', 'both', null]))
+        ->sortBy(fn($p) => sprintf('%04d_%08.2f', $p->sort_order ?? 0, (float)($p->price ?? 0)))
+        ->values();
+    $buyPlans = $displayPlans->filter(fn($p) => in_array($p->purpose, ['buy', 'sale', 'both']))
+        ->sortBy(fn($p) => sprintf('%04d_%08.2f', $p->sort_order ?? 0, (float)($p->price ?? 0)))
+        ->values();
     if ($buyPlans->isEmpty()) {
         $buyPlans = $rentPlans;
     }
@@ -1227,6 +1231,7 @@
     // Build combined plan list for tabs
     $allPlansForTabs = $isYearly ? $buyPlans : $rentPlans;
     $firstPlanId = $allPlansForTabs->first()?->id;
+    $cleanTel = preg_replace('/[^0-9+]/', '', (string)($site_settings['site_phone'] ?? '+919425455499'));
 @endphp
 
 <div class="plans-page pb-24">
@@ -1687,13 +1692,8 @@
                 $price = (float) $plan->price;
                 $perDay = $plan->duration_days > 0 ? round($price / $plan->duration_days, 1) : 0;
 
-                $isExplicitBuyPlan = ($plan->purpose === 'buy' || $plan->purpose === 'sale');
-                $buyerDisplayName = $isExplicitBuyPlan ? $plan->name : ($isGold ? 'Gold Buyer Pass' : ($isPlatinum ? 'Platinum Buyer Pass' : 'Silver Buyer Pass'));
-                $buyerDisplayDesc = $isExplicitBuyPlan ? ($plan->description ?: 'Direct seller contact access for verified property purchase.') : (
-                    $isGold ? 'Most popular annual pass for active home buyers and property investors.' : (
-                        $isPlatinum ? 'Ultimate annual pass with maximum verified seller unlocks for serious property buyers.' : 'Essential direct seller contacts and priority access for property buyers.'
-                    )
-                );
+                $buyerDisplayName = $plan->name;
+                $buyerDisplayDesc = $plan->description ?: 'Direct seller contact access for verified property purchase.';
             @endphp
             <div class="plan-content-panel buyer-panel {{ $index === 0 && $isYearly ? 'active' : '' }}"
                  id="panel-buy_{{ $plan->id }}" data-category="buyer">

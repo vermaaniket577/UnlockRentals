@@ -763,21 +763,21 @@
 
 @php
     $rentPlans = (isset($allRentPlans) && $allRentPlans->isNotEmpty())
-        ? $allRentPlans->take(3)
+        ? $allRentPlans
         : \App\Models\Plan::active()
             ->where('is_private', false)
             ->whereIn('purpose', ['rent', 'both', null])
             ->orderBy('sort_order')
-            ->take(3)
+            ->orderBy('price')
             ->get();
 
     $buyPlans = (isset($allBuyPlans) && $allBuyPlans->isNotEmpty())
-        ? $allBuyPlans->take(3)
+        ? $allBuyPlans
         : \App\Models\Plan::active()
             ->where('is_private', false)
-            ->whereIn('purpose', ['buy', 'sale'])
+            ->whereIn('purpose', ['buy', 'sale', 'both'])
             ->orderBy('sort_order')
-            ->take(3)
+            ->orderBy('price')
             ->get();
 
     if ($buyPlans->isEmpty()) {
@@ -1121,13 +1121,8 @@
                             </div>
 
                             @php
-                                $isExplicitBuyPlan = ($plan->purpose === 'buy' || $plan->purpose === 'sale');
-                                $buyerDisplayName = $isExplicitBuyPlan ? $plan->name : ($isGold ? 'Gold Buyer Pass' : ($isPlatinum ? 'Platinum Buyer Pass' : 'Silver Buyer Pass'));
-                                $buyerDisplayDesc = $isExplicitBuyPlan ? ($plan->description ?: 'Direct seller contact access for verified property purchases.') : (
-                                    $isGold ? 'Most popular pass for active home buyers and property seekers.' : (
-                                        $isPlatinum ? 'Ultimate pass with maximum verified seller unlocks for serious property buyers.' : 'Essential direct seller contacts and priority access for property buyers.'
-                                    )
-                                );
+                                $buyerDisplayName = $plan->name;
+                                $buyerDisplayDesc = $plan->description ?: 'Direct seller contact access for verified property purchases.';
                             @endphp
 
                             <h3 class="ur-plan-card__name">{{ $buyerDisplayName }}</h3>

@@ -142,8 +142,14 @@
                                 </div>
 
                                 {{-- Main Title & Subtitle directly displaying plan details from Admin Panel --}}
+                                @php
+                                    $contactsTarget = $isBuy ? 'Sellers' : 'Landlords';
+                                    $displayTitle = str_contains(strtolower($plan->name), 'unlock') 
+                                        ? $plan->name 
+                                        : ($plan->name . ' &ndash; Unlock ' . $plan->contact_limit . '+ Direct ' . $contactsTarget);
+                                @endphp
                                 <h4 class="ur-dc-title">
-                                    {{ $plan->name }} &ndash; Unlock {{ $plan->contact_limit }}+ Direct {{ $isBuy ? 'Sellers' : 'Landlords' }}
+                                    {!! $displayTitle !!}
                                 </h4>
                                 <p class="ur-dc-sub">
                                     {{ $plan->description ?: ($isBuy ? 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property sellers.' : 'Skip brokerage charges completely. Instant phone & WhatsApp contact numbers directly from verified property owners.') }}
@@ -151,39 +157,37 @@
 
                                 {{-- Feature Highlights Row (visible on desktop / tablet) --}}
                                 @php
-                                    $cardFeatures = !empty($plan->features) && is_array($plan->features) ? array_slice($plan->features, 0, 4) : [];
+                                    $adminFeatures = !empty($plan->features) && is_array($plan->features) 
+                                        ? array_values(array_filter(array_map('trim', $plan->features))) 
+                                        : [];
+                                    
+                                    if (!empty($adminFeatures)) {
+                                        $displayFeatures = $adminFeatures;
+                                    } else {
+                                        $displayFeatures = [
+                                            $plan->contact_limit . '+ Verified ' . ($isBuy ? 'Seller' : 'Owner') . ' Direct Contacts',
+                                            'Direct Phone & WhatsApp Unlock',
+                                            'Zero Brokerage Guaranteed',
+                                            $plan->duration_days . ' Days Priority ' . ($isBuy ? 'Buyer' : 'Tenant') . ' Access',
+                                        ];
+                                    }
                                 @endphp
-                                @if(!empty($cardFeatures))
-                                    <div class="ur-dc-features-row">
-                                        @foreach($cardFeatures as $fIdx => $feat)
-                                            <span class="ur-dc-feat-tag">
-                                                @if($fIdx === 0)
-                                                    <i class="ph-bold ph-phone-call text-emerald-400"></i>
-                                                @elseif($fIdx === 1)
-                                                    <i class="ph-bold ph-shield-check text-emerald-400"></i>
-                                                @else
-                                                    <i class="ph-bold ph-seal-check text-amber-400"></i>
-                                                @endif
-                                                <span>{{ $feat }}</span>
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="ur-dc-features-row">
+                                <div class="ur-dc-features-row">
+                                    @foreach(array_slice($displayFeatures, 0, 4) as $fIdx => $feat)
                                         <span class="ur-dc-feat-tag">
-                                            <i class="ph-bold ph-phone-call text-emerald-400"></i>
-                                            <span>Direct Phone &amp; WhatsApp Unlocks</span>
+                                            @if($fIdx === 0)
+                                                <i class="ph-bold ph-phone-call text-emerald-400"></i>
+                                            @elseif($fIdx === 1)
+                                                <i class="ph-bold ph-shield-check text-emerald-400"></i>
+                                            @elseif($fIdx === 2)
+                                                <i class="ph-bold ph-seal-check text-amber-400"></i>
+                                            @else
+                                                <i class="ph-bold ph-calendar text-sky-400"></i>
+                                            @endif
+                                            <span>{{ $feat }}</span>
                                         </span>
-                                        <span class="ur-dc-feat-tag">
-                                            <i class="ph-bold ph-shield-check text-emerald-400"></i>
-                                            <span>Zero Brokerage Guaranteed</span>
-                                        </span>
-                                        <span class="ur-dc-feat-tag">
-                                            <i class="ph-bold ph-seal-check text-amber-400"></i>
-                                            <span>100% Verified {{ $isBuy ? 'Sellers' : 'Owners' }}</span>
-                                        </span>
-                                    </div>
-                                @endif
+                                    @endforeach
+                                </div>
                             </div>
 
                             {{-- Right Side / Footer Dock: Price & Unlock CTA --}}
