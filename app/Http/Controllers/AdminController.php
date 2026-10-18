@@ -955,6 +955,15 @@ class AdminController extends Controller
     }
 
     /**
+     * Restore or re-seed standard default passes.
+     */
+    public function restoreDefaultPlans()
+    {
+        Plan::seedDefaultPlans(true);
+        return redirect()->route('admin.plans')->with('success', 'Default rental and buyer passes restored successfully.');
+    }
+
+    /**
      * Show create plan form.
      */
     public function createPlan()

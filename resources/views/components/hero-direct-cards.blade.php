@@ -133,20 +133,40 @@
                                 </p>
 
                                 {{-- Feature Highlights Row (visible on desktop / tablet) --}}
-                                <div class="ur-dc-features-row">
-                                    <span class="ur-dc-feat-tag">
-                                        <i class="ph-bold ph-phone-call text-emerald-400"></i>
-                                        <span>Direct Phone &amp; WhatsApp Unlocks</span>
-                                    </span>
-                                    <span class="ur-dc-feat-tag">
-                                        <i class="ph-bold ph-shield-check text-emerald-400"></i>
-                                        <span>Zero Brokerage Guaranteed</span>
-                                    </span>
-                                    <span class="ur-dc-feat-tag">
-                                        <i class="ph-bold ph-seal-check text-amber-400"></i>
-                                        <span>100% Verified {{ $isBuy ? 'Sellers' : 'Owners' }}</span>
-                                    </span>
-                                </div>
+                                @php
+                                    $cardFeatures = !empty($plan->features) && is_array($plan->features) ? array_slice($plan->features, 0, 3) : [];
+                                @endphp
+                                @if(!empty($cardFeatures))
+                                    <div class="ur-dc-features-row">
+                                        @foreach($cardFeatures as $fIdx => $feat)
+                                            <span class="ur-dc-feat-tag">
+                                                @if($fIdx === 0)
+                                                    <i class="ph-bold ph-phone-call text-emerald-400"></i>
+                                                @elseif($fIdx === 1)
+                                                    <i class="ph-bold ph-shield-check text-emerald-400"></i>
+                                                @else
+                                                    <i class="ph-bold ph-seal-check text-amber-400"></i>
+                                                @endif
+                                                <span>{{ $feat }}</span>
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="ur-dc-features-row">
+                                        <span class="ur-dc-feat-tag">
+                                            <i class="ph-bold ph-phone-call text-emerald-400"></i>
+                                            <span>Direct Phone &amp; WhatsApp Unlocks</span>
+                                        </span>
+                                        <span class="ur-dc-feat-tag">
+                                            <i class="ph-bold ph-shield-check text-emerald-400"></i>
+                                            <span>Zero Brokerage Guaranteed</span>
+                                        </span>
+                                        <span class="ur-dc-feat-tag">
+                                            <i class="ph-bold ph-seal-check text-amber-400"></i>
+                                            <span>100% Verified {{ $isBuy ? 'Sellers' : 'Owners' }}</span>
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
 
                             {{-- Right Side / Footer Dock: Price & Unlock CTA --}}

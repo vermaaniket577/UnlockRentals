@@ -13,10 +13,19 @@
                 <h1 class="text-2xl font-bold text-zinc-900 mb-1">Manage Plans</h1>
                 <p class="text-zinc-500 text-sm">Create and manage subscription passes for Renters (Tenants) and Buyers (Property Purchasers).</p>
             </div>
-            <a href="{{ route('admin.plans.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all" title="Create Plan">
-                <i class="ph-bold ph-plus"></i>
-                <span>Create New Plan</span>
-            </a>
+            <div class="flex items-center gap-2.5">
+                <form method="POST" action="{{ route('admin.plans.restore-defaults') }}" onsubmit="return confirm('Restore all standard default rental and buyer passes?')">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-zinc-700 text-sm font-semibold rounded-xl border border-stone-200 shadow-2xs transition-all cursor-pointer" title="Restore Default Plans">
+                        <i class="ph-bold ph-arrow-counter-clockwise"></i>
+                        <span>Restore Default Passes</span>
+                    </button>
+                </form>
+                <a href="{{ route('admin.plans.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all" title="Create Plan">
+                    <i class="ph-bold ph-plus"></i>
+                    <span>Create New Plan</span>
+                </a>
+            </div>
         </div>
 
         {{-- Purpose Filter Tabs --}}

@@ -580,6 +580,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Plan management
     Route::get('/plans', [AdminController::class, 'plans'])->name('plans');
     Route::post('/plans/tax-settings', [AdminController::class, 'updateTaxSettings'])->name('plans.tax-settings.update');
+    Route::post('/plans/restore-defaults', [AdminController::class, 'restoreDefaultPlans'])->name('plans.restore-defaults');
     Route::get('/plans/create', [AdminController::class, 'createPlan'])->name('plans.create');
     Route::post('/plans', [AdminController::class, 'storePlan'])->name('plans.store');
     Route::get('/plans/{plan}/edit', [AdminController::class, 'editPlan'])->name('plans.edit');

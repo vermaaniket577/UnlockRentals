@@ -144,6 +144,172 @@ class Plan extends Model
     }
 
     /**
+     * Get array of all default direct contact pass plans.
+     */
+    public static function getDefaultPlansData(): array
+    {
+        return [
+            [
+                'name'          => 'Silver Starter Pass',
+                'purpose'       => 'rent',
+                'description'   => 'Perfect for tenants looking for a basic start. Skip brokerage charges completely.',
+                'price'         => 199.00,
+                'original_price'=> 499.00,
+                'duration_days' => 30,
+                'contact_limit' => 5,
+                'features'      => [
+                    '5 Verified Landlords Direct Contacts',
+                    'Direct Phone & WhatsApp Unlocks',
+                    'Zero Brokerage Guaranteed',
+                    '30 Days Validity'
+                ],
+                'is_active'     => true,
+                'is_private'    => false,
+                'sort_order'    => 1,
+            ],
+            [
+                'name'          => 'Silver Buyer Pass',
+                'purpose'       => 'buy',
+                'description'   => 'Skip brokerage charges completely. Instant contact numbers directly from verified property sellers.',
+                'price'         => 399.00,
+                'original_price'=> 998.00,
+                'duration_days' => 60,
+                'contact_limit' => 30,
+                'features'      => [
+                    '30 Verified Seller Direct Contacts',
+                    'Direct Phone & WhatsApp Unlocks',
+                    'Zero Brokerage Guaranteed',
+                    '60 Days Priority Buyer Access'
+                ],
+                'is_active'     => true,
+                'is_private'    => false,
+                'sort_order'    => 2,
+            ],
+            [
+                'name'          => 'Gold Direct Pass',
+                'purpose'       => 'rent',
+                'description'   => 'Skip brokerage charges completely. Instant contact numbers for active rental seekers.',
+                'price'         => 499.00,
+                'original_price'=> 1249.00,
+                'duration_days' => 90,
+                'contact_limit' => 15,
+                'features'      => [
+                    '15 Verified Landlords Direct Contacts',
+                    'Direct Phone & WhatsApp Unlocks',
+                    'Zero Brokerage Guaranteed',
+                    '90 Days Active Validity'
+                ],
+                'is_active'     => true,
+                'is_private'    => false,
+                'sort_order'    => 3,
+            ],
+            [
+                'name'          => 'Gold Buyer Pass',
+                'purpose'       => 'buy',
+                'description'   => 'Most popular pass for home buyers and investors. Skip brokerage completely.',
+                'price'         => 999.00,
+                'original_price'=> 2499.00,
+                'duration_days' => 150,
+                'contact_limit' => 75,
+                'features'      => [
+                    '75 Verified Seller Direct Contacts',
+                    'Direct Phone & WhatsApp Unlocks',
+                    'Zero Brokerage Guaranteed',
+                    '150 Days Priority Buyer Access'
+                ],
+                'is_active'     => true,
+                'is_private'    => false,
+                'sort_order'    => 4,
+            ],
+            [
+                'name'          => 'Platinum VIP Pass',
+                'purpose'       => 'rent',
+                'description'   => 'Skip brokerage charges completely. Instant contact numbers with maximum VIP access.',
+                'price'         => 999.00,
+                'original_price'=> 2499.00,
+                'duration_days' => 180,
+                'contact_limit' => 50,
+                'features'      => [
+                    '50 Verified Landlords Direct Contacts',
+                    'Direct Phone & WhatsApp Unlocks',
+                    'Zero Brokerage Guaranteed',
+                    '180 Days VIP Access'
+                ],
+                'is_active'     => true,
+                'is_private'    => false,
+                'sort_order'    => 5,
+            ],
+            [
+                'name'          => 'Platinum Buyer Pass',
+                'purpose'       => 'buy',
+                'description'   => 'Ultimate annual pass with maximum verified seller unlocks for serious property buyers.',
+                'price'         => 1999.00,
+                'original_price'=> 4999.00,
+                'duration_days' => 365,
+                'contact_limit' => 180,
+                'features'      => [
+                    '180 Verified Seller Direct Contacts',
+                    'Direct Phone & WhatsApp Unlocks',
+                    'Zero Brokerage Guaranteed',
+                    '365 Days Priority Buyer Access'
+                ],
+                'is_active'     => true,
+                'is_private'    => false,
+                'sort_order'    => 6,
+            ],
+        ];
+    }
+
+    /**
+     * Ensure all standard default plans (Rent & Buy) exist or reset them.
+     */
+    public static function seedDefaultPlans(bool $force = false): void
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('plans')) {
+                return;
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
+                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('purpose', 20)->default('rent')->after('description');
+                });
+            }
+
+            $defaults = static::getDefaultPlansData();
+
+            foreach ($defaults as $planData) {
+                $query = static::where('name', $planData['name'])->where('purpose', $planData['purpose']);
+                $existing = $query->first();
+
+                if (!$existing) {
+                    // Also check if existing by purpose & price
+                    $existingByPrice = static::where('purpose', $planData['purpose'])
+                        ->where('price', $planData['price'])
+                        ->first();
+
+                    if ($existingByPrice && $force) {
+                        $existingByPrice->update($planData);
+                    } else {
+                        static::create($planData);
+                    }
+                } elseif ($force) {
+                    $existing->update($planData);
+                }
+            }
+
+            \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v1');
+            \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
+            \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v2');
+            \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v2');
+            \Illuminate\Support\Facades\Cache::forever('rental_plans_ensured_v1', true);
+            \Illuminate\Support\Facades\Cache::forever('buyer_plans_ensured_v1', true);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Seed default plans warning: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Ensure dedicated Buyer Pass plans exist in the database.
      */
     public static function ensureBuyerPlansExist(): void
@@ -157,69 +323,9 @@ class Plan extends Model
                 return;
             }
 
-            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
-                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
-                    $table->string('purpose', 20)->default('rent')->after('description');
-                });
-            }
-
             $count = static::whereIn('purpose', ['buy', 'sale'])->count();
             if ($count === 0) {
-                static::create([
-                    'name'          => 'Silver Buyer Pass',
-                    'purpose'       => 'buy',
-                    'description'   => 'Essential direct seller contacts and priority access for property buyers.',
-                    'price'         => 399.00,
-                    'original_price'=> 998.00,
-                    'duration_days' => 60,
-                    'contact_limit' => 30,
-                    'features'      => [
-                        '30 Verified Seller Direct Contacts',
-                        'Direct Phone & WhatsApp Unlock',
-                        'Zero Brokerage Guaranteed',
-                        '60 Days Priority Buyer Access',
-                    ],
-                    'is_active'     => true,
-                    'sort_order'    => 10,
-                ]);
-
-                static::create([
-                    'name'          => 'Gold Buyer Pass',
-                    'purpose'       => 'buy',
-                    'description'   => 'Most popular annual pass for active home buyers and property investors.',
-                    'price'         => 999.00,
-                    'original_price'=> 2499.00,
-                    'duration_days' => 150,
-                    'contact_limit' => 75,
-                    'features'      => [
-                        '75 Verified Seller Direct Contacts',
-                        'Direct Phone & WhatsApp Unlock',
-                        'Zero Brokerage Guaranteed',
-                        '150 Days Priority Buyer Access',
-                        'Priority Support Response',
-                    ],
-                    'is_active'     => true,
-                    'sort_order'    => 11,
-                ]);
-
-                static::create([
-                    'name'          => 'Platinum Buyer Pass',
-                    'purpose'       => 'buy',
-                    'description'   => 'Ultimate annual pass with maximum verified seller unlocks for serious property buyers.',
-                    'price'         => 1999.00,
-                    'original_price'=> 4999.00,
-                    'duration_days' => 365,
-                    'contact_limit' => 180,
-                    'features'      => [
-                        '180 Verified Seller Direct Contacts',
-                        'Direct Phone & WhatsApp Unlock',
-                        'Zero Brokerage Guaranteed',
-                        '365 Days Priority Buyer Access',
-                        'Dedicated Relationship Manager',
-                    ],
-                    'is_active'     => true,
-                    'sort_order'    => 12,
-                ]);
+                static::seedDefaultPlans(false);
             }
 
             \Illuminate\Support\Facades\Cache::forever('buyer_plans_ensured_v1', true);
@@ -242,75 +348,9 @@ class Plan extends Model
                 return;
             }
 
-            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
-                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
-                    $table->string('purpose', 20)->default('rent')->after('description');
-                });
-            }
-
             $count = static::whereIn('purpose', ['rent', 'both'])->orWhereNull('purpose')->count();
             if ($count === 0) {
-                static::create([
-                    'name'          => 'Silver Starter Pass',
-                    'purpose'       => 'rent',
-                    'description'   => 'Essential direct owner contact access for verified rental listings in top localities.',
-                    'price'         => 199.00,
-                    'original_price'=> 499.00,
-                    'duration_days' => 45,
-                    'contact_limit' => 30,
-                    'features'      => [
-                        '30 Verified Owner Direct Contacts',
-                        'Instant WhatsApp & Phone Call Unlock',
-                        'Zero Brokerage Guaranteed',
-                        '45 Days Validity',
-                        'Standard Online Support',
-                    ],
-                    'is_active'     => true,
-                    'sort_order'    => 1,
-                ]);
-
-                static::create([
-                    'name'          => 'Gold Direct Pass',
-                    'purpose'       => 'rent',
-                    'description'   => 'Best value for 1BHK, 2BHK & 3BHK home hunters. Directly call & WhatsApp owners with 0% middleman brokerage.',
-                    'price'         => 499.00,
-                    'original_price'=> 1249.00,
-                    'duration_days' => 150,
-                    'contact_limit' => 75,
-                    'features'      => [
-                        '75 Verified Owner Contacts',
-                        'Zero Brokerage Guaranteed',
-                        '150 Days Active Validity',
-                        'Instant WhatsApp Connect',
-                    ],
-                    'is_active'     => true,
-                    'sort_order'    => 2,
-                ]);
-
-                static::create([
-                    'name'          => 'Platinum VIP Pass',
-                    'purpose'       => 'rent',
-                    'description'   => 'Ultimate VIP pass with maximum direct owner unlocks, concierge support, and lease assistance.',
-                    'price'         => 999.00,
-                    'original_price'=> 2499.00,
-                    'duration_days' => 180,
-                    'contact_limit' => 150,
-                    'features'      => [
-                        '150 Verified Owner Direct Contacts',
-                        'Instant WhatsApp & Phone Call Unlock',
-                        'Zero Brokerage Guaranteed (Save ₹50,000+)',
-                        '180 Days VIP Access (6 Months)',
-                        'Dedicated Relationship Manager',
-                        'Free Rental Agreement Draft Template',
-                    ],
-                    'is_active'     => true,
-                    'sort_order'    => 3,
-                ]);
-
-                \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v1');
-                \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');
-                \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v2');
-                \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v2');
+                static::seedDefaultPlans(false);
             }
 
             \Illuminate\Support\Facades\Cache::forever('rental_plans_ensured_v1', true);
