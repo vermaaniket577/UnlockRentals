@@ -1,70 +1,70 @@
 {{-- Navigation Bar Component --}}
 <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-stone-200/50 transition-all duration-300 dark:bg-slate-950/85 dark:border-slate-800/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 lg:h-18 gap-3 xl:gap-6">
+        <div class="flex items-center justify-between h-12 lg:h-13 gap-2.5 xl:gap-4">
 
             {{-- Left Side: Brand Logo --}}
-            <div class="flex-shrink-0 pr-6 xl:pr-8">
+            <div class="flex-shrink-0 pr-4 xl:pr-6">
                 <x-brand-logo
                     href="{{ url('/') }}"
                     id="nav-logo"
                     class="group flex-shrink-0"
-                    imageClass="h-9 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
-                    textClass="text-lg xl:text-xl font-bold tracking-tight text-zinc-900"
+                    imageClass="h-7 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
+                    textClass="text-base xl:text-lg font-bold tracking-tight text-zinc-900 dark:text-white"
                     accentClass="text-[#2563EB]"
                 />
             </div>
 
             {{-- Center: Desktop Navigation Links (Responsive, Non-overlapping) --}}
-            <nav class="main-nav hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 flex-shrink">
-                <a href="{{ url('/') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('/') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-home" title="Home">
-                    <i class="ph-bold ph-house text-sm xl:text-base text-blue-600"></i>
+            <nav class="main-nav hidden lg:flex items-center gap-0.5 xl:gap-1 flex-shrink">
+                <a href="{{ url('/') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('/') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-home" title="Home">
+                    <i class="ph-bold ph-house text-xs xl:text-sm text-blue-600"></i>
                     <span>Home</span>
                 </a>
-                <a href="{{ url('/properties') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('properties') && !request('purpose') && !request('type') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-discover" title="Discover">
-                    <i class="ph-bold ph-compass text-sm xl:text-base text-blue-600"></i>
+                <a href="{{ url('/properties') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('properties') && !request('purpose') && !request('type') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-discover" title="Discover">
+                    <i class="ph-bold ph-compass text-xs xl:text-sm text-blue-600"></i>
                     <span>Discover</span>
                 </a>
-                <a href="{{ url('/properties?purpose=buy') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request('purpose') == 'buy' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-buy" title="Buy">
-                    <i class="ph-bold ph-shopping-bag text-sm xl:text-base text-blue-600"></i>
+                <a href="{{ url('/properties?purpose=buy') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request('purpose') == 'buy' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-buy" title="Buy">
+                    <i class="ph-bold ph-shopping-bag text-xs xl:text-sm text-blue-600"></i>
                     <span>Buy</span>
                 </a>
-                <a href="{{ url('/properties?purpose=rent') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request('purpose') == 'rent' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-rent" title="Rent">
-                    <i class="ph-bold ph-key text-sm xl:text-base text-blue-600"></i>
+                <a href="{{ url('/properties?purpose=rent') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request('purpose') == 'rent' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-rent" title="Rent">
+                    <i class="ph-bold ph-key text-xs xl:text-sm text-blue-600"></i>
                     <span>Rent</span>
                 </a>
-                <a href="{{ url('/properties?type=commercial') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request('type') == 'commercial' || request('type') == 'shop' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-commercial" title="Commercial">
-                    <i class="ph-bold ph-buildings text-sm xl:text-base text-blue-600"></i>
+                <a href="{{ url('/properties?type=commercial') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request('type') == 'commercial' || request('type') == 'shop' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-commercial" title="Commercial">
+                    <i class="ph-bold ph-buildings text-xs xl:text-sm text-blue-600"></i>
                     <span>Commercial</span>
                 </a>
-                <a href="{{ route('services.index') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('services*') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20 text-blue-600' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-local-professionals" title="Local Professionals">
-                    <i class="ph-bold ph-toolbox text-sm xl:text-base text-blue-600"></i>
+                <a href="{{ route('services.index') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('services*') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20 text-blue-600' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-local-professionals" title="Local Professionals">
+                    <i class="ph-bold ph-toolbox text-xs xl:text-sm text-blue-600"></i>
                     <span>Local Professionals</span>
                 </a>
-                <a href="{{ url('/how-it-works') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('how-it-works') || request()->is('process') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-process" title="Process">
-                    <i class="ph-bold ph-git-merge text-sm xl:text-base text-blue-600"></i>
+                <a href="{{ url('/how-it-works') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('how-it-works') || request()->is('process') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-process" title="Process">
+                    <i class="ph-bold ph-git-merge text-xs xl:text-sm text-blue-600"></i>
                     <span>Process</span>
                 </a>
-                <a href="{{ url('/blog') }}" class="ur-nav-link px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-[13.5px] font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request()->is('blog*') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-blog" title="Blog">
-                    <i class="ph-bold ph-newspaper text-sm xl:text-base text-blue-600"></i>
+                <a href="{{ url('/blog') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('blog*') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-blog" title="Blog">
+                    <i class="ph-bold ph-newspaper text-xs xl:text-sm text-blue-600"></i>
                     <span>Blog</span>
                 </a>
             </nav>
 
             {{-- Right Side: Auth Actions & Top-Right Theme Toggle --}}
-            <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
+            <div class="flex items-center gap-1.5 xl:gap-2.5 flex-shrink-0">
                 @guest
-                    {{-- Mobile Top Login Button (Standardized 34px Height, Refined Look) --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="lg:hidden inline-flex items-center justify-center gap-1.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="height: 34px; text-decoration: none; color: #ffffff !important;" id="nav-mobile-top-login" title="Login">
+                    {{-- Mobile Top Login Button (Standardized 32px Height, Refined Look) --}}
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="lg:hidden inline-flex items-center justify-center gap-1.5 px-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="height: 32px; text-decoration: none; color: #ffffff !important;" id="nav-mobile-top-login" title="Login">
                         <i class="ph-bold ph-sign-in text-sm" style="color: #ffffff !important;"></i>
                         <span style="color: #ffffff !important;">Login</span>
                     </a>
 
                     {{-- Desktop Sign In & Get Started --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex px-3 py-1.5 text-xs xl:text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer" id="nav-login" title="Sign In">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex px-2.5 py-1 text-xs xl:text-[12.5px] font-semibold text-zinc-600 hover:text-zinc-900 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer" id="nav-login" title="Sign In">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}" onclick="event.preventDefault(); window.openAuthModal('register');" class="hidden lg:inline-flex px-3.5 xl:px-4.5 py-1.5 xl:py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap cursor-pointer" id="nav-register" title="Get Started">
+                    <a href="{{ route('register') }}" onclick="event.preventDefault(); window.openAuthModal('register');" class="hidden lg:inline-flex px-3 py-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap cursor-pointer" id="nav-register" title="Get Started">
                         Get Started
                     </a>
                 @else
@@ -74,8 +74,8 @@
                         $navBadgeClass = str_contains($navPlanName, 'enterprise') ? 'from-slate-900 to-teal-500' : (str_contains($navPlanName, 'platinum') ? 'from-blue-600 to-violet-600' : (str_contains($navPlanName, 'gold') ? 'from-amber-500 to-yellow-300' : 'from-slate-400 to-sky-300'));
                     @endphp
                     @if(auth()->user()->isOwner() || auth()->user()->isAdmin())
-                    <a href="{{ route('properties.create') }}" class="hidden lg:inline-flex items-center gap-1.5 px-3.5 xl:px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs xl:text-sm font-bold rounded-xl shadow-sm shadow-[#2563EB]/25 transition-all whitespace-nowrap active:scale-95" style="color: #ffffff !important;" id="nav-add-property" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle text-sm xl:text-base" style="color: #ffffff !important;"></i>
+                    <a href="{{ route('properties.create') }}" class="hidden lg:inline-flex items-center gap-1 px-3 py-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold rounded-lg shadow-sm shadow-[#2563EB]/25 transition-all whitespace-nowrap active:scale-95" style="color: #ffffff !important;" id="nav-add-property" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle text-sm" style="color: #ffffff !important;"></i>
                         <span style="color: #ffffff !important;">Post Free Advertise</span>
                     </a>
                     @endif

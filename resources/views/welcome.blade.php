@@ -825,15 +825,28 @@
             .main-header {
                 box-sizing: border-box !important;
                 max-width: 100% !important;
+                padding: 6px 18px !important;
+                height: 50px !important;
+                min-height: 50px !important;
+                gap: 10px !important;
             }
             .main-header .main-nav {
                 display: flex !important;
                 flex-wrap: nowrap !important;
                 align-items: center !important;
+                gap: 8px !important;
             }
             .main-header .nav-link {
                 white-space: nowrap !important;
                 flex-shrink: 0 !important;
+                font-size: 12px !important;
+                font-weight: 500 !important;
+                padding: 4px 7px !important;
+                gap: 4px !important;
+                border-radius: 6px !important;
+            }
+            .main-header .nav-link i {
+                font-size: 14px !important;
             }
             .main-header .hamburger {
                 display: none !important;
@@ -843,33 +856,51 @@
             }
             .logo-text {
                 color: #ffffff !important;
+                font-size: 15px !important;
             }
             .logo-text .logo-accent {
                 color: #60a5fa !important;
             }
+            .btn-cta-premium-header {
+                height: 32px !important;
+                padding: 0 12px !important;
+                font-size: 11.5px !important;
+                font-weight: 700 !important;
+                gap: 5px !important;
+            }
+            .btn-cta-premium-header i {
+                font-size: 13.5px !important;
+            }
         }
         @media (min-width: 1024px) and (max-width: 1320px) {
             .main-header {
-                padding: 10px 14px !important;
-                gap: 8px !important;
+                padding: 5px 12px !important;
+                gap: 6px !important;
+                height: 48px !important;
+                min-height: 48px !important;
             }
             .main-header .logo-wrapper {
-                margin-right: 8px !important;
+                margin-right: 4px !important;
             }
             .main-header .main-nav {
-                gap: 8px !important;
-            }
-            .main-header .nav-link {
-                font-size: 12.5px !important;
                 gap: 4px !important;
             }
+            .main-header .nav-link {
+                font-size: 11.5px !important;
+                padding: 3px 5px !important;
+                gap: 3.5px !important;
+            }
             .main-header .nav-link i {
-                font-size: 15px !important;
+                font-size: 13px !important;
             }
             .btn-cta-premium-header {
-                padding: 0 12px !important;
-                font-size: 12px !important;
-                height: 38px !important;
+                padding: 0 10px !important;
+                font-size: 11px !important;
+                height: 30px !important;
+                gap: 4px !important;
+            }
+            .btn-cta-premium-header i {
+                font-size: 12.5px !important;
             }
         }
 
@@ -1641,56 +1672,56 @@
     {{-- Premium Page Loader --}}
     @include('components.page-loader')
 
-    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px; padding: 10px 16px;">
+    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; padding: 6px 18px; height: 50px; min-height: 50px;">
         <div class="logo-wrapper" style="flex-shrink: 0;">
-            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
-                <div style="width: 34px; height: 34px; border-radius: 9px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 3px; box-shadow: 0 4px 14px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.25); flex-shrink: 0;">
-                    <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="34" height="34" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
+            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 6px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
+                <div style="width: 28px; height: 28px; border-radius: 7px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.2); flex-shrink: 0;">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="28" height="28" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
                 </div>
-                <span class="logo-text" style="font-size: 17px !important; font-weight: 800 !important; letter-spacing: -0.4px !important; white-space: nowrap !important;">Unlock<span class="logo-accent">Rentals</span></span>
+                <span class="logo-text" style="font-size: 15px !important; font-weight: 800 !important; letter-spacing: -0.3px !important; white-space: nowrap !important;">Unlock<span class="logo-accent">Rentals</span></span>
             </a>
         </div>
-        <nav class="main-nav hidden lg:flex">
-            <a href="{{ route('properties.index') }}" class="nav-link" title="Discover" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-                <i class="ph-bold ph-compass"></i>
+        <nav class="main-nav hidden lg:flex" style="gap: 8px !important; align-items: center !important;">
+            <a href="{{ route('properties.index') }}" class="nav-link" title="Discover" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
+                <i class="ph-bold ph-compass" style="font-size: 14px !important;"></i>
                 Discover
             </a>
-            <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="nav-link" title="Buy" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-                <i class="ph-bold ph-shopping-bag"></i>
+            <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="nav-link" title="Buy" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
+                <i class="ph-bold ph-shopping-bag" style="font-size: 14px !important;"></i>
                 Buy
             </a>
-            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="nav-link" title="Rent" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-                <i class="ph-bold ph-key"></i>
+            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="nav-link" title="Rent" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
+                <i class="ph-bold ph-key" style="font-size: 14px !important;"></i>
                 Rent
             </a>
-            <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="nav-link" title="Commercial" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-                <i class="ph-bold ph-buildings"></i>
+            <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="nav-link" title="Commercial" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
+                <i class="ph-bold ph-buildings" style="font-size: 14px !important;"></i>
                 Commercial
             </a>
-            <a href="{{ route('properties.index', ['type' => 'plot']) }}" class="nav-link" title="Plots / Land" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-                <i class="ph-bold ph-map-trifold"></i>
+            <a href="{{ route('properties.index', ['type' => 'plot']) }}" class="nav-link" title="Plots / Land" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
+                <i class="ph-bold ph-map-trifold" style="font-size: 14px !important;"></i>
                 Plots
             </a>
-            <a href="{{ route('services.index') }}" class="nav-link" title="Local Professionals" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-                <i class="ph-bold ph-toolbox"></i>
+            <a href="{{ route('services.index') }}" class="nav-link" title="Local Professionals" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
+                <i class="ph-bold ph-toolbox" style="font-size: 14px !important;"></i>
                 Local Professionals
             </a>
-            <a href="{{ url('/how-it-works') }}" class="nav-link" title="Process" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-                <i class="ph-bold ph-git-merge"></i>
+            <a href="{{ url('/how-it-works') }}" class="nav-link" title="Process" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
+                <i class="ph-bold ph-git-merge" style="font-size: 14px !important;"></i>
                 Process
             </a>
-            <a href="{{ url('/blog') }}" class="nav-link" title="Blog" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important;">
-                <i class="ph-bold ph-newspaper"></i>
+            <a href="{{ url('/blog') }}" class="nav-link" title="Blog" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
+                <i class="ph-bold ph-newspaper" style="font-size: 14px !important;"></i>
                 Blog
             </a>
         </nav>
-        <div class="auth-nav" style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto;">
+        <div class="auth-nav" style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: auto;">
             @if (Route::has('login'))
                 @auth
                     {{-- Desktop Only: Post Ad CTA (hidden on mobile to prevent overlap) --}}
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space: nowrap !important; flex-shrink: 0; padding: 0 16px; height: 40px; align-items: center; gap: 6px; color: #ffffff !important;" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle" style="font-size: 16px; color: #ffffff !important;"></i>
-                        <span style="color: #ffffff !important; white-space: nowrap !important;">Post Free Advertise</span>
+                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space: nowrap !important; flex-shrink: 0; padding: 0 12px; height: 32px; align-items: center; gap: 5px; color: #ffffff !important; font-size: 11.5px !important; font-weight: 700 !important;" title="Post Free Advertise">
+                        <i class="ph-bold ph-plus-circle" style="font-size: 13.5px; color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important; white-space: nowrap !important; font-size: 11.5px !important; font-weight: 700 !important;">Post Free Advertise</span>
                     </a>
 
                     {{-- Compact User Account Pill --}}
@@ -1786,22 +1817,22 @@
                         @php
                             $welcomeActivePlan = auth()->user()->activePlan();
                         @endphp
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="group flex items-center gap-2 pl-1.5 pr-2.5 sm:pr-3 py-1 rounded-full hover:bg-white/10 transition-all border border-white/20 bg-white/5 backdrop-blur-md shadow-2xs hover:shadow-xs relative z-[100000] cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 active:scale-[0.98]" id="userDropdownBtn" aria-label="User Account">
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="group flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-full hover:bg-white/10 transition-all border border-white/20 bg-white/5 backdrop-blur-md shadow-2xs hover:shadow-xs relative z-[100000] cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 active:scale-[0.98]" id="userDropdownBtn" aria-label="User Account">
                             <div class="relative pointer-events-none flex-shrink-0">
-                                <div style="width:36px; height:36px; border-radius:50%; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.8), 0 2px 10px rgba(245,158,11,0.4);' : 'background:linear-gradient(135deg, #2563eb, #6366f1); box-shadow:0 2px 8px rgba(37,99,235,0.4);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:13.5px; flex-shrink:0;">
-                                    <span style="filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.35));">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                                <div style="width:28px; height:28px; border-radius:50%; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 1.5px rgba(245,158,11,0.8), 0 2px 8px rgba(245,158,11,0.4);' : 'background:linear-gradient(135deg, #2563eb, #6366f1); box-shadow:0 2px 6px rgba(37,99,235,0.4);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11.5px; flex-shrink:0;">
+                                    <span style="filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35));">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                                 </div>
                                 @if($welcomeActivePlan)
-                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white ring-2 ring-slate-900 shadow-xs" title="{{ $welcomeActivePlan->plan->name ?? 'Paid Member' }}">
-                                        <i class="ph-fill ph-crown text-[8.5px] drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]"></i>
+                                    <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 flex items-center justify-center text-white ring-1 ring-slate-900 shadow-xs" title="{{ $welcomeActivePlan->plan->name ?? 'Paid Member' }}">
+                                        <i class="ph-fill ph-crown text-[7px] drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]"></i>
                                     </span>
                                 @endif
                             </div>
-                            <span class="hidden md:inline-block text-xs sm:text-[13px] font-bold text-white max-w-[110px] lg:max-w-[140px] truncate tracking-tight pointer-events-none">{{ auth()->user()->name }}</span>
+                            <span class="hidden md:inline-block text-xs font-bold text-white max-w-[110px] lg:max-w-[130px] truncate tracking-tight pointer-events-none">{{ auth()->user()->name }}</span>
                             @if($welcomeActivePlan)
                                 <x-premium-badge :plan="$welcomeActivePlan" size="xs" :showPlan="false" class="hidden sm:inline-flex pointer-events-none" />
                             @endif
-                            <i class="ph-bold ph-caret-down text-[10px] text-white/70 transition-transform duration-200 group-hover:translate-y-0.5 pointer-events-none"></i>
+                            <i class="ph-bold ph-caret-down text-[9px] text-white/70 transition-transform duration-200 group-hover:translate-y-0.5 pointer-events-none"></i>
                         </button>
                         
                         <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:320px; max-width:calc(100vw - 1.5rem); background:#ffffff; border:1px solid #e2e8f0; border-radius:18px; box-shadow:0 20px 45px -10px rgba(15,23,42,0.18), 0 10px 20px -5px rgba(15,23,42,0.08); overflow:hidden; z-index:100000;">
@@ -1876,14 +1907,14 @@
                     </a>
 
                     {{-- Desktop Sign In & Post Free Advertise --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden lg:inline-flex" style="margin-right: 8px; cursor: pointer;" title="Log in">
-                        <i class="ph ph-user-circle"></i>
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden lg:inline-flex" style="margin-right: 4px; cursor: pointer; white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important;" title="Log in">
+                        <i class="ph ph-user-circle" style="font-size: 14px !important;"></i>
                         Log in
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space: nowrap !important; flex-shrink: 0; padding: 0 16px; height: 40px; align-items: center; gap: 6px; color: #ffffff !important;" title="Post Free Advertise">
-                            <i class="ph-bold ph-plus-circle" style="font-size: 16px; color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important; white-space: nowrap !important;">Post Free Advertise</span>
+                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space: nowrap !important; flex-shrink: 0; padding: 0 12px; height: 32px; align-items: center; gap: 5px; color: #ffffff !important; font-size: 11.5px !important; font-weight: 700 !important;" title="Post Free Advertise">
+                            <i class="ph-bold ph-plus-circle" style="font-size: 13.5px; color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important; white-space: nowrap !important; font-size: 11.5px !important; font-weight: 700 !important;">Post Free Advertise</span>
                         </a>
                     @endif
                 @endauth

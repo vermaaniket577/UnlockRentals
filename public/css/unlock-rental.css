@@ -74,7 +74,9 @@ a { text-decoration: none; color: inherit; }
     max-width: 100%;
     box-sizing: border-box;
     z-index: 100;
-    padding: 14px 28px;
+    padding: 6px 18px;
+    height: 50px;
+    min-height: 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -84,13 +86,13 @@ a { text-decoration: none; color: inherit; }
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     text-decoration: none;
 }
 
 .logo-asset {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     object-fit: contain;
     display: block;
     flex-shrink: 0;
@@ -98,9 +100,9 @@ a { text-decoration: none; color: inherit; }
 }
 
 .logo-mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
     background: rgba(37, 99, 235, 0.15);
     border: 1.5px solid rgba(37, 99, 235, 0.4);
     display: flex;
@@ -113,14 +115,14 @@ a { text-decoration: none; color: inherit; }
 .logo:hover .logo-mark {
     background: rgba(37, 99, 235, 0.25);
     border-color: var(--primary);
-    box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
 }
 
 .logo:hover .logo-asset { transform: scale(1.03); }
 
 .logo-img {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     object-fit: contain;
     display: block;
 }
@@ -128,29 +130,31 @@ a { text-decoration: none; color: inherit; }
 .logo-text {
     font-family: var(--font-heading);
     font-weight: 800;
-    font-size: 20px;
+    font-size: 15px;
     color: #fff;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
     line-height: 1;
 }
 .logo-text span { color: var(--primary); }
 
-.main-header .main-nav { display: flex; gap: 16px; align-items: center; flex-wrap: nowrap; }
+.main-header .main-nav { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
 .main-header .nav-link {
     color: rgba(255,255,255,0.85);
-    font-size: 13.5px;
+    font-size: 12px;
     font-weight: 500;
+    padding: 4px 7px;
+    border-radius: 6px;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     text-decoration: none;
     position: relative;
     white-space: nowrap !important;
     flex-shrink: 0;
 }
 .main-header .nav-link i {
-    font-size: 18px;
+    font-size: 14px;
     color: #60a5fa;
     opacity: 0.95;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -165,18 +169,26 @@ a { text-decoration: none; color: inherit; }
 .main-header .nav-link:hover i {
     opacity: 1;
     color: #93c5fd;
-    transform: scale(1.15);
+    transform: scale(1.1);
 }
 
-.auth-nav { display: flex; gap: 12px; align-items: center; flex-shrink: 0; }
+.auth-nav { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+
+.btn-cta-premium-header {
+    height: 32px !important;
+    padding: 0 12px !important;
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    gap: 5px !important;
+}
 
 @media (min-width: 1024px) and (max-width: 1320px) {
-    .main-header { padding: 10px 14px !important; gap: 8px !important; }
-    .main-header .logo-wrapper { margin-right: 8px !important; }
-    .main-header .main-nav { gap: 8px !important; }
-    .main-header .nav-link { font-size: 12.5px !important; gap: 4px !important; }
-    .main-header .nav-link i { font-size: 15px !important; }
-    .btn-cta-premium-header { padding: 0 12px !important; font-size: 12px !important; height: 38px !important; }
+    .main-header { padding: 5px 12px !important; gap: 6px !important; height: 48px !important; min-height: 48px !important; }
+    .main-header .logo-wrapper { margin-right: 4px !important; }
+    .main-header .main-nav { gap: 4px !important; }
+    .main-header .nav-link { font-size: 11.5px !important; padding: 3px 5px !important; gap: 3.5px !important; }
+    .main-header .nav-link i { font-size: 13px !important; }
+    .btn-cta-premium-header { padding: 0 10px !important; font-size: 11px !important; height: 30px !important; gap: 4px !important; }
 }
 
 .btn-primary-sm {
