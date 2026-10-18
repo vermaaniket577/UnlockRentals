@@ -10,6 +10,11 @@
             ->orderBy('sort_order')
             ->orderBy('price')
             ->get();
+
+        $allDirectPlans = $allDirectPlans->sortBy(function ($p) {
+            $pRank = $p->isRentPlan() ? 1 : ($p->purpose === 'both' ? 2 : 3);
+            return sprintf('%d_%04d_%08.2f', $pRank, $p->sort_order ?? 0, (float) ($p->price ?? 0));
+        })->values();
     } catch (\Throwable $e) {
         $allDirectPlans = collect();
     }
@@ -17,9 +22,11 @@
     $hasRentPlans = $allDirectPlans->contains(fn($p) => $p->isRentPlan());
     $hasBuyPlans = $allDirectPlans->contains(fn($p) => $p->isBuyPlan());
 
-    $defaultPurpose = ($hasRentPlans ? 'rent' : ($hasBuyPlans ? 'buy' : 'all'));
+    $defaultPurpose = 'all';
     if (in_array(request('purpose'), ['buy', 'sale']) && $hasBuyPlans) {
         $defaultPurpose = 'buy';
+    } elseif (request('purpose') === 'rent' && $hasRentPlans) {
+        $defaultPurpose = 'rent';
     }
 @endphp
 
@@ -40,13 +47,16 @@
             </div>
 
             <div class="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
-                {{-- Filter Tabs: Tenant Pass (Rent) / Buyer Pass (Buy) --}}
+                {{-- Filter Tabs: All Plans / Tenant Pass (Rent) / Buyer Pass (Buy) --}}
                 @if($hasRentPlans && $hasBuyPlans)
                 <div class="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60" id="urDirectPassFilter">
-                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab {{ $defaultPurpose === 'rent' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer">
+                    <button type="button" onclick="filterDirectPassCards('all', this)" class="ur-dp-tab {{ $defaultPurpose === 'all' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3 sm:px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap">
+                        All Plans
+                    </button>
+                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab {{ $defaultPurpose === 'rent' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3 sm:px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap">
                         Tenant Pass
                     </button>
-                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab {{ $defaultPurpose === 'buy' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer">
+                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab {{ $defaultPurpose === 'buy' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3 sm:px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap">
                         Buyer Pass
                     </button>
                 </div>
