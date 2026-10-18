@@ -427,7 +427,7 @@
             width: 100%;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 30px 40px 10px;
+            padding: 16px 40px 8px;
             overflow: hidden;
         }
         
@@ -435,10 +435,10 @@
             position: relative;
             width: 100%;
             background: #1a3fbd; /* fallback blue matching image */
-            border-radius: 20px;
+            border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            height: 330px;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.12);
+            height: 220px;
         }
 
         .promo-slides-wrapper {
@@ -460,7 +460,7 @@
         .promo-slide-content {
             width: 55%;
             height: 100%;
-            padding: 40px 50px;
+            padding: 20px 45px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -472,46 +472,46 @@
         .promo-badge {
             background: #ffd814;
             color: #0f1111;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
-            padding: 6px 14px;
+            padding: 3.5px 11px;
             border-radius: 100px;
-            letter-spacing: 0.5px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 10px rgba(255, 216, 20, 0.2);
+            letter-spacing: 0.4px;
+            margin-bottom: 8px;
+            box-shadow: 0 3px 8px rgba(255, 216, 20, 0.2);
             display: inline-block;
         }
 
         .promo-title {
             font-family: 'Outfit', sans-serif;
-            font-size: clamp(1.8rem, 3.2vw, 2.8rem);
-            font-weight: 900;
-            line-height: 1.15;
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
+            font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 6px;
+            letter-spacing: -0.4px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .promo-desc {
             font-family: 'Inter', sans-serif;
-            font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+            font-size: clamp(0.78rem, 1vw, 0.88rem);
             color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            margin-bottom: 24px;
+            line-height: 1.45;
+            margin-bottom: 14px;
             max-width: 520px;
         }
 
         .promo-btn {
             background: #ffd814;
             color: #0f1111;
-            font-weight: 800;
-            font-size: 14px;
-            padding: 12px 28px;
-            border-radius: 10px;
+            font-weight: 750;
+            font-size: 12.5px;
+            padding: 7px 20px;
+            border-radius: 8px;
             text-transform: none;
             letter-spacing: 0.2px;
             transition: all 0.25s ease;
-            box-shadow: 0 6px 20px rgba(255, 216, 20, 0.25);
+            box-shadow: 0 4px 14px rgba(255, 216, 20, 0.25);
             border: none;
             cursor: pointer;
             display: inline-flex;
@@ -521,8 +521,8 @@
 
         .promo-btn:hover {
             background: #ffd814;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 216, 20, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(255, 216, 20, 0.35);
         }
 
         .promo-image-side {
@@ -576,8 +576,8 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             background: rgba(15, 23, 42, 0.65);
             backdrop-filter: blur(8px);
@@ -601,16 +601,16 @@
         }
 
         .promo-arrow-prev {
-            left: 16px;
+            left: 14px;
         }
 
         .promo-arrow-next {
-            right: 16px;
+            right: 14px;
         }
 
         .promo-arrow svg {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             transition: transform 0.2s ease;
         }
         
@@ -620,17 +620,17 @@
 
         .promo-dots {
             position: absolute;
-            bottom: 16px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 8px;
+            gap: 6px;
             z-index: 10;
         }
 
         .promo-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.4);
             border: none;
@@ -647,11 +647,11 @@
         /* Responsive styling for promo slider */
         @media (max-width: 1024px) {
             .promo-slider-container {
-                padding: 20px 24px 10px;
+                padding: 16px 20px 8px;
             }
             .promo-slide-content {
                 width: 65%;
-                padding: 30px 40px;
+                padding: 18px 30px;
             }
             .promo-image-side {
                 width: 35%;
@@ -660,11 +660,11 @@
 
         @media (max-width: 768px) {
             .promo-slider {
-                height: 280px;
+                height: 200px;
             }
             .promo-slide-content {
                 width: 100%;
-                padding: 24px 36px;
+                padding: 20px 28px;
                 text-align: center;
                 align-items: center;
             }
@@ -672,17 +672,18 @@
                 display: none;
             }
             .promo-arrow {
-                width: 36px;
+                width: 30px;
+                height: 30px;
             }
         }
 
         @media (max-width: 480px) {
             .promo-slider-container {
-                padding: 14px 12px 6px !important;
+                padding: 12px 10px 6px !important;
             }
             .promo-slider {
-                height: 240px !important;
-                border-radius: 16px !important;
+                height: 185px !important;
+                border-radius: 14px !important;
             }
             .promo-slide-content {
                 padding: 16px 18px !important;
@@ -3162,7 +3163,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80" alt="Zero Brokerage Rentals" title="Zero Brokerage Rentals" width="600" height="330" loading="lazy" decoding="async">
+                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80" alt="Zero Brokerage Rentals" title="Zero Brokerage Rentals" width="600" height="220" loading="lazy" decoding="async">
                     </div>
                 </div>
 
@@ -3176,7 +3177,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80" alt="Premium PG Stays" title="Premium PG Stays" width="600" height="330" loading="lazy" decoding="async">
+                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80" alt="Premium PG Stays" title="Premium PG Stays" width="600" height="220" loading="lazy" decoding="async">
                     </div>
                 </div>
 
@@ -3190,7 +3191,7 @@
                     </div>
                     <div class="promo-image-side">
                         <div class="promo-gradient-overlay"></div>
-                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="Commercial Properties" title="Commercial Properties" width="600" height="330" loading="lazy" decoding="async">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="Commercial Properties" title="Commercial Properties" width="600" height="220" loading="lazy" decoding="async">
                     </div>
                 </div>
 
