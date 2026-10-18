@@ -36,10 +36,64 @@ class Plan extends Model
     }
 
     /**
+     * Ensure all required columns exist in the database table (self-healing schema).
+     */
+    public static function ensureSchema(): void
+    {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('plans')) {
+                return;
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'original_price')) {
+                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->decimal('original_price', 10, 2)->nullable()->after('price');
+                });
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
+                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('purpose', 20)->default('rent')->after('description');
+                });
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'is_private')) {
+                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->boolean('is_private')->default(false)->after('is_active');
+                });
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'image_path')) {
+                \Illuminate\Support\Facades\Schema::table('plans', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('image_path')->nullable()->after('is_private');
+                });
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Plan::ensureSchema: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * The booted method of the model.
      */
     protected static function booted(): void
     {
+        static::saving(function ($plan) {
+            static::ensureSchema();
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'original_price')) {
+                unset($plan->attributes['original_price']);
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
+                unset($plan->attributes['purpose']);
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'is_private')) {
+                unset($plan->attributes['is_private']);
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'image_path')) {
+                unset($plan->attributes['image_path']);
+            }
+        });
+
         static::saved(function () {
             \Illuminate\Support\Facades\Cache::forget('active_rent_plans_v1');
             \Illuminate\Support\Facades\Cache::forget('active_buy_plans_v1');

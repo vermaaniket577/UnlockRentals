@@ -923,6 +923,7 @@ class AdminController extends Controller
      */
     public function plans(Request $request)
     {
+        Plan::ensureSchema();
         $query = Plan::query();
         if ($request->filled('purpose') && in_array($request->purpose, ['rent', 'buy'])) {
             $query->whereIn('purpose', [$request->purpose, 'both']);
@@ -965,6 +966,7 @@ class AdminController extends Controller
      */
     public function createPlan()
     {
+        Plan::ensureSchema();
         return view('admin.plan-form', ['plan' => null]);
     }
 
@@ -1003,6 +1005,20 @@ class AdminController extends Controller
             $data['image_path'] = $request->file('image')->store('plans', 'public');
         }
 
+        Plan::ensureSchema();
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'original_price')) {
+            unset($data['original_price']);
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
+            unset($data['purpose']);
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'is_private')) {
+            unset($data['is_private']);
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'image_path')) {
+            unset($data['image_path']);
+        }
+
         Plan::create($data);
 
         return redirect()->route('admin.plans')->with('success', 'Plan created successfully.');
@@ -1013,6 +1029,7 @@ class AdminController extends Controller
      */
     public function editPlan(Plan $plan)
     {
+        Plan::ensureSchema();
         return view('admin.plan-form', compact('plan'));
     }
 
@@ -1049,6 +1066,20 @@ class AdminController extends Controller
 
         if ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('plans', 'public');
+        }
+
+        Plan::ensureSchema();
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'original_price')) {
+            unset($data['original_price']);
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'purpose')) {
+            unset($data['purpose']);
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'is_private')) {
+            unset($data['is_private']);
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('plans', 'image_path')) {
+            unset($data['image_path']);
         }
 
         $plan->update($data);
