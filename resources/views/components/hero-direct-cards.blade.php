@@ -35,40 +35,40 @@
     <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
         
         {{-- Section Header with Purpose Filter Tabs & Slider Controls --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 sm:mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-2.5 sm:mb-3">
             <div>
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-wider mb-1">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-1">
                     <i class="ph-bold ph-shield-check text-xs"></i>
                     <span>Zero Brokerage Guaranteed</span>
                 </div>
-                <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                     Direct Owner Contact Passes
                 </h3>
             </div>
 
-            <div class="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
+            <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
                 {{-- Filter Tabs: All Plans / Tenant Pass (Rent) / Buyer Pass (Buy) --}}
                 @if($hasRentPlans && $hasBuyPlans)
-                <div class="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700/60" id="urDirectPassFilter">
-                    <button type="button" onclick="filterDirectPassCards('all', this)" class="ur-dp-tab {{ $defaultPurpose === 'all' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3 sm:px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap">
+                <div class="inline-flex items-center p-0.5 bg-slate-100 dark:bg-slate-800/80 rounded-lg border border-slate-200 dark:border-slate-700/60" id="urDirectPassFilter">
+                    <button type="button" onclick="filterDirectPassCards('all', this)" class="ur-dp-tab {{ $defaultPurpose === 'all' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md transition-all cursor-pointer whitespace-nowrap">
                         All Plans
                     </button>
-                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab {{ $defaultPurpose === 'rent' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3 sm:px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap">
+                    <button type="button" onclick="filterDirectPassCards('rent', this)" class="ur-dp-tab {{ $defaultPurpose === 'rent' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md transition-all cursor-pointer whitespace-nowrap">
                         Tenant Pass
                     </button>
-                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab {{ $defaultPurpose === 'buy' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-3 sm:px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap">
+                    <button type="button" onclick="filterDirectPassCards('buy', this)" class="ur-dp-tab {{ $defaultPurpose === 'buy' ? 'active bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }} px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md transition-all cursor-pointer whitespace-nowrap">
                         Buyer Pass
                     </button>
                 </div>
                 @endif
 
                 {{-- Interactive Slider Navigation Chevrons --}}
-                <div class="flex items-center gap-1.5" id="urDirectSliderArrows">
-                    <button type="button" onclick="slideDirectPasses(-1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-90 shadow-xs cursor-pointer" title="Previous Pass" aria-label="Previous Pass">
-                        <i class="ph-bold ph-caret-left text-sm"></i>
+                <div class="flex items-center gap-1" id="urDirectSliderArrows">
+                    <button type="button" onclick="slideDirectPasses(-1)" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-90 shadow-xs cursor-pointer" title="Previous Pass" aria-label="Previous Pass">
+                        <i class="ph-bold ph-caret-left text-xs"></i>
                     </button>
-                    <button type="button" onclick="slideDirectPasses(1)" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-90 shadow-xs cursor-pointer" title="Next Pass" aria-label="Next Pass">
-                        <i class="ph-bold ph-caret-right text-sm"></i>
+                    <button type="button" onclick="slideDirectPasses(1)" class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition-all active:scale-90 shadow-xs cursor-pointer" title="Next Pass" aria-label="Next Pass">
+                        <i class="ph-bold ph-caret-right text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -282,22 +282,22 @@
     box-sizing: border-box;
     background: radial-gradient(130% 120% at 85% 20%, #0d1e3d 0%, #071328 65%, #050c1a 100%);
     border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 20px;
-    padding: 1.35rem 1.25rem;
-    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1rem 1.15rem;
+    box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 1.15rem;
+    gap: 0.85rem;
     color: #ffffff;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-    min-height: 195px;
+    min-height: auto;
 }
 
 .ur-direct-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 20px 42px -8px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 18px 36px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .ur-dc-main {
@@ -310,23 +310,23 @@
 .ur-dc-badges {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    gap: 0.35rem;
+    margin-bottom: 0.45rem;
     flex-wrap: wrap;
 }
 
 .ur-dc-mint-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.25rem 0.65rem;
+    gap: 0.22rem;
+    padding: 0.16rem 0.48rem;
     border-radius: 9999px;
     border: 1.5px solid #10b981;
     background: #ecfdf5;
     color: #047857;
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.03em;
+    font-size: 0.6rem;
+    font-weight: 750;
+    letter-spacing: 0.025em;
     text-transform: uppercase;
     line-height: 1.2;
     white-space: nowrap;
@@ -334,18 +334,18 @@
 }
 
 .ur-dc-mint-pill i {
-    font-size: 0.82rem;
+    font-size: 0.7rem;
     color: #10b981;
 }
 
 .ur-dc-gold-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.22rem;
     color: #fbbf24;
-    font-size: 0.74rem;
-    font-weight: 800;
-    letter-spacing: 0.03em;
+    font-size: 0.64rem;
+    font-weight: 750;
+    letter-spacing: 0.025em;
     text-transform: uppercase;
     line-height: 1.2;
     white-space: nowrap;
@@ -353,41 +353,41 @@
 }
 
 .ur-dc-gold-badge i {
-    font-size: 0.92rem;
+    font-size: 0.78rem;
     color: #fbbf24;
 }
 
 .ur-dc-duration-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    padding: 0.24rem 0.65rem;
+    gap: 0.22rem;
+    padding: 0.16rem 0.48rem;
     border-radius: 9999px;
     background: rgba(255, 255, 255, 0.07);
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: #cbd5e1;
-    font-size: 0.68rem;
-    font-weight: 700;
+    font-size: 0.6rem;
+    font-weight: 650;
     letter-spacing: 0.02em;
     white-space: nowrap;
     flex-shrink: 0;
 }
 
 .ur-dc-title {
-    font-size: 1.35rem;
-    font-weight: 800;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #ffffff;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
-    margin: 0 0 0.35rem 0;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    margin: 0 0 0.22rem 0;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .ur-dc-sub {
-    font-size: 0.82rem;
+    font-size: 0.76rem;
     font-weight: 400;
     color: #94a3b8;
-    line-height: 1.45;
+    line-height: 1.4;
     margin: 0;
 }
 
@@ -395,20 +395,20 @@
     display: none;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.85rem;
+    gap: 0.35rem;
+    margin-top: 0.55rem;
 }
 
 .ur-dc-feat-tag {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.25rem 0.65rem;
-    border-radius: 8px;
+    gap: 0.3rem;
+    padding: 0.16rem 0.48rem;
+    border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.09);
     color: #e2e8f0;
-    font-size: 0.74rem;
+    font-size: 0.66rem;
     font-weight: 600;
 }
 
@@ -416,9 +416,9 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.6rem;
     margin-top: auto;
-    padding-top: 0.25rem;
+    padding-top: 0.2rem;
 }
 
 .ur-dc-price-group {
@@ -430,30 +430,30 @@
 .ur-dc-price-row {
     display: flex;
     align-items: baseline;
-    gap: 0.4rem;
+    gap: 0.35rem;
     line-height: 1;
 }
 
 .ur-dc-val {
-    font-size: 1.85rem;
-    font-weight: 900;
+    font-size: 1.4rem;
+    font-weight: 800;
     color: #ffffff;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .ur-dc-orig {
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     font-weight: 500;
     color: #64748b;
     text-decoration: line-through;
 }
 
 .ur-dc-save {
-    font-size: 0.75rem;
+    font-size: 0.66rem;
     font-weight: 700;
     color: #10b981;
-    margin-top: 0.3rem;
+    margin-top: 0.15rem;
     letter-spacing: 0.01em;
     white-space: nowrap;
 }
@@ -462,15 +462,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: 0.35rem;
     background: #10b981;
     color: #ffffff !important;
-    font-size: 0.9rem;
+    font-size: 0.76rem;
     font-weight: 700;
-    padding: 0.68rem 1.35rem;
-    border-radius: 14px;
+    padding: 0.48rem 0.95rem;
+    border-radius: 10px;
     text-decoration: none;
-    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
     cursor: pointer;
@@ -482,7 +482,7 @@
 .ur-dc-btn:hover {
     background: #059669;
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
 .ur-dc-btn:active {
@@ -495,24 +495,34 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        padding: 1.75rem 2.25rem;
-        gap: 2.25rem;
-        min-height: 185px;
-        border-radius: 24px;
+        padding: 1.15rem 1.65rem;
+        gap: 1.5rem;
+        min-height: 135px;
+        border-radius: 18px;
     }
 
     .ur-dc-title {
-        font-size: 1.75rem;
-        margin-bottom: 0.4rem;
+        font-size: 1.18rem;
+        font-weight: 750;
+        margin-bottom: 0.25rem;
+        line-height: 1.3;
     }
 
     .ur-dc-sub {
-        font-size: 0.92rem;
-        max-width: 700px;
+        font-size: 0.8rem;
+        line-height: 1.45;
+        max-width: 650px;
     }
 
     .ur-dc-features-row {
         display: flex;
+        gap: 0.4rem;
+        margin-top: 0.6rem;
+    }
+
+    .ur-dc-feat-tag {
+        padding: 0.18rem 0.5rem;
+        font-size: 0.68rem;
     }
 
     .ur-dc-footer {
@@ -520,29 +530,31 @@
         align-items: flex-end;
         justify-content: center;
         flex-shrink: 0;
-        gap: 0.95rem;
-        padding-left: 2.25rem;
+        gap: 0.6rem;
+        padding-left: 1.65rem;
         border-left: 1px solid rgba(255, 255, 255, 0.12);
         margin-top: 0;
         padding-top: 0;
-        min-width: 220px;
+        min-width: 175px;
     }
 
     .ur-dc-val {
-        font-size: 2.35rem;
+        font-size: 1.65rem;
+        font-weight: 800;
     }
 
     .ur-dc-orig {
-        font-size: 1.05rem;
+        font-size: 0.88rem;
     }
 
     .ur-dc-save {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
 
     .ur-dc-btn {
-        padding: 0.78rem 1.65rem;
-        font-size: 0.95rem;
+        padding: 0.52rem 1.15rem;
+        font-size: 0.82rem;
+        border-radius: 10px;
         width: 100%;
         justify-content: center;
     }
