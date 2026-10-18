@@ -153,8 +153,8 @@ class Plan extends Model
                 'name'          => 'Silver Starter Pass',
                 'purpose'       => 'rent',
                 'description'   => 'Perfect for tenants looking for a basic start. Skip brokerage charges completely.',
-                'price'         => 199.00,
-                'original_price'=> 499.00,
+                'price'         => 399.00,
+                'original_price'=> 799.00,
                 'duration_days' => 30,
                 'contact_limit' => 5,
                 'features'      => [
