@@ -26,8 +26,6 @@ class PlanController extends Controller
 
     public function index()
     {
-        Plan::ensureRentalPlansExist();
-        Plan::ensureBuyerPlansExist();
         $plans = Plan::public()->get();
         $user = auth()->user();
         $activePlan = $user ? $user->activePlan() : null;
