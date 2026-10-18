@@ -1230,12 +1230,12 @@
         .mobile-hero-banner-slide {
             flex: 0 0 100%;
             width: 100%;
-            padding: 16px 14px 18px;
+            padding: 12px 12px 14px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 195px;
+            min-height: 160px;
             position: relative;
             overflow: hidden;
             user-select: none;
@@ -1268,7 +1268,7 @@
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
-            min-height: 175px;
+            min-height: 140px;
         }
 
         .mobile-hero-slide-content h2,

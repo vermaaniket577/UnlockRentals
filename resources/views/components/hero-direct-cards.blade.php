@@ -565,17 +565,242 @@
     background: #10b981;
 }
 
-@media (max-width: 640px) {
+/* ─── COMPACT MOBILE & MOBILE APP VIEWPORT (REDUCED HEIGHT & TEXT SIZES) ─── */
+@media (max-width: 767px) {
+    .ur-direct-passes-section {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    .ur-direct-passes-section .max-w-7xl > .flex {
+        gap: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .ur-direct-passes-section h3 {
+        font-size: 1.1rem !important;
+        line-height: 1.3 !important;
+    }
+
+    .ur-dp-tab {
+        padding: 0.25rem 0.55rem !important;
+        font-size: 0.7rem !important;
+    }
+
+    #urDirectSliderArrows button {
+        width: 1.75rem !important;
+        height: 1.75rem !important;
+    }
+
+    .ur-direct-card {
+        padding: 0.75rem 0.95rem !important;
+        min-height: auto !important;
+        gap: 0.5rem !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    .ur-dc-badges {
+        gap: 0.35rem !important;
+        margin-bottom: 0.35rem !important;
+    }
+
+    .ur-dc-mint-pill {
+        padding: 0.16rem 0.45rem !important;
+        font-size: 0.58rem !important;
+        letter-spacing: 0.02em !important;
+        gap: 0.22rem !important;
+    }
+
+    .ur-dc-mint-pill i {
+        font-size: 0.68rem !important;
+    }
+
+    .ur-dc-gold-badge {
+        font-size: 0.62rem !important;
+        gap: 0.22rem !important;
+    }
+
+    .ur-dc-gold-badge i {
+        font-size: 0.75rem !important;
+    }
+
+    .ur-dc-duration-pill {
+        padding: 0.15rem 0.42rem !important;
+        font-size: 0.58rem !important;
+        gap: 0.22rem !important;
+    }
+
+    .ur-dc-duration-pill i {
+        font-size: 0.65rem !important;
+    }
+
     .ur-dc-title {
-        font-size: 1.25rem;
+        font-size: 0.95rem !important;
+        font-weight: 800 !important;
+        line-height: 1.25 !important;
+        margin: 0 0 0.2rem 0 !important;
+        letter-spacing: -0.01em !important;
     }
+
+    .ur-dc-sub {
+        font-size: 0.72rem !important;
+        line-height: 1.35 !important;
+        color: #94a3b8 !important;
+        margin: 0 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    .ur-dc-footer {
+        gap: 0.5rem !important;
+        margin-top: auto !important;
+        padding-top: 0 !important;
+    }
+
+    .ur-dc-price-group {
+        min-width: 0 !important;
+    }
+
+    .ur-dc-price-row {
+        gap: 0.3rem !important;
+        align-items: baseline !important;
+    }
+
     .ur-dc-val {
-        font-size: 1.65rem;
+        font-size: 1.25rem !important;
+        line-height: 1 !important;
     }
+
+    .ur-dc-orig {
+        font-size: 0.75rem !important;
+    }
+
+    .ur-dc-save {
+        font-size: 0.62rem !important;
+        margin-top: 0.15rem !important;
+    }
+
+    .ur-dc-cta-group {
+        width: auto !important;
+    }
+
     .ur-dc-btn {
-        padding: 0.6rem 1.1rem;
-        font-size: 0.84rem;
+        padding: 0.42rem 0.85rem !important;
+        font-size: 0.76rem !important;
+        border-radius: 10px !important;
+        gap: 0.35rem !important;
+        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3) !important;
     }
+
+    .ur-dc-btn i {
+        font-size: 0.75rem !important;
+    }
+
+    .ur-ds-dot {
+        width: 5px !important;
+        height: 5px !important;
+    }
+
+    .ur-ds-dot.active {
+        width: 14px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .ur-direct-card {
+        padding: 0.68rem 0.8rem !important;
+    }
+
+    .ur-dc-title {
+        font-size: 0.88rem !important;
+    }
+
+    .ur-dc-val {
+        font-size: 1.18rem !important;
+    }
+
+    .ur-dc-btn {
+        padding: 0.38rem 0.75rem !important;
+        font-size: 0.72rem !important;
+    }
+}
+
+/* ─── DEDICATED IN-APP WEBVIEW STYLING (.is-mobile-app) ─── */
+.is-mobile-app .ur-direct-passes-section {
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.4rem !important;
+}
+
+.is-mobile-app .ur-direct-card {
+    padding: 0.72rem 0.9rem !important;
+    min-height: auto !important;
+    gap: 0.45rem !important;
+    border-radius: 14px !important;
+}
+
+.is-mobile-app .ur-dc-badges {
+    margin-bottom: 0.3rem !important;
+    gap: 0.3rem !important;
+}
+
+.is-mobile-app .ur-dc-mint-pill {
+    padding: 0.15rem 0.42rem !important;
+    font-size: 0.56rem !important;
+}
+
+.is-mobile-app .ur-dc-gold-badge {
+    font-size: 0.6rem !important;
+}
+
+.is-mobile-app .ur-dc-duration-pill {
+    padding: 0.14rem 0.4rem !important;
+    font-size: 0.56rem !important;
+}
+
+.is-mobile-app .ur-dc-title {
+    font-size: 0.92rem !important;
+    line-height: 1.25 !important;
+    margin: 0 0 0.2rem 0 !important;
+}
+
+.is-mobile-app .ur-dc-sub {
+    font-size: 0.7rem !important;
+    line-height: 1.35 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+.is-mobile-app .ur-dc-footer {
+    gap: 0.45rem !important;
+    padding-top: 0 !important;
+}
+
+.is-mobile-app .ur-dc-val {
+    font-size: 1.22rem !important;
+}
+
+.is-mobile-app .ur-dc-orig {
+    font-size: 0.72rem !important;
+}
+
+.is-mobile-app .ur-dc-save {
+    font-size: 0.6rem !important;
+    margin-top: 0.12rem !important;
+}
+
+.is-mobile-app .ur-dc-cta-group {
+    width: auto !important;
+}
+
+.is-mobile-app .ur-dc-btn {
+    padding: 0.4rem 0.82rem !important;
+    font-size: 0.74rem !important;
+    border-radius: 9px !important;
 }
 </style>
 
