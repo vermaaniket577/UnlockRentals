@@ -60,40 +60,14 @@ class VisitorTrackingService
 
         $ip = $request->ip();
 
-        // If city not in proxy headers and IP is public, look up via fast GeoIP service
+        // Check fast cached GeoIP if available without blocking requests
         if (empty($city) && $ip && filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
             $cacheKey = 'ur_geoip_' . md5($ip);
-            $geo = \Illuminate\Support\Facades\Cache::remember($cacheKey, 86400 * 30, function () use ($ip) {
-                try {
-                    $ctx = stream_context_create([
-                        'http' => [
-                            'timeout' => 0.5,
-                            'header'  => "User-Agent: UnlockRentals-GeoIP/1.0\r\n"
-                        ]
-                    ]);
-                    $json = @file_get_contents("http://ip-api.com/json/{$ip}?fields=status,country,regionName,city", false, $ctx);
-                    if ($json) {
-                        $res = json_decode($json, true);
-                        if (($res['status'] ?? '') === 'success') {
-                            return [
-                                'city' => $res['city'] ?? null,
-                                'state' => $res['regionName'] ?? null,
-                                'country' => $res['country'] ?? 'India',
-                            ];
-                        }
-                    }
-                } catch (\Throwable $e) {}
-                return ['city' => null, 'state' => null, 'country' => 'India'];
-            });
-
-            if (!empty($geo['city'])) {
-                $city = $geo['city'];
-            }
-            if (!empty($geo['state'])) {
-                $state = $geo['state'];
-            }
-            if (!empty($geo['country'])) {
-                $country = $geo['country'];
+            $geo = \Illuminate\Support\Facades\Cache::get($cacheKey);
+            if ($geo && is_array($geo)) {
+                $city = $city ?: ($geo['city'] ?? null);
+                $state = $state ?: ($geo['state'] ?? null);
+                $country = $country ?: ($geo['country'] ?? 'India');
             }
         }
 

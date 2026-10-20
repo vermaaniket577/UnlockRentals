@@ -120,6 +120,8 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
             "--disable-dev-shm-usage",
             "--disable-infobars",
             "--disable-gpu",
+            "--single-process",
+            "--no-zygote",
             "--window-size=1920,1080",
         ]
     }

@@ -5,8 +5,16 @@ import time
 import random
 import json
 import sqlite3
+import signal
 from curl_cffi import requests
 from bs4 import BeautifulSoup
+
+# Global hard timeout for Linux environments to prevent zombie processes
+if hasattr(signal, "alarm"):
+    try:
+        signal.alarm(45)  # 45 second absolute hard execution timeout
+    except Exception:
+        pass
 
 try:
     from playwright_scraper import scrape_with_playwright, PLAYWRIGHT_INSTALLED

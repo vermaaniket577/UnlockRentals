@@ -623,6 +623,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/properties/sync-check', [AdminController::class, 'checkPropertyUpdates'])->name('properties.sync-check');
     Route::post('/properties/sync-now', [AdminController::class, 'triggerPropertySync'])->name('properties.sync-now');
     Route::post('/properties/fetch-and-post', [AdminController::class, 'fetchAndPostFromUrl'])->name('properties.fetch-and-post');
+    Route::match(['get', 'post'], '/cleanup-db-connections', [AdminController::class, 'cleanupDbConnections'])->name('cleanup-db-connections');
     Route::post('/properties/post-advertise', [AdminController::class, 'postAdvertise'])->name('properties.post-advertise');
     Route::match(['get', 'post'], '/properties/toggle-bypass', [AdminController::class, 'toggleBypassApproval'])->name('properties.toggle-bypass');
     Route::post('/properties/{property}/approve', [AdminController::class, 'approve'])->name('properties.approve');

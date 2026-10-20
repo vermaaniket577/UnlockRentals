@@ -26,165 +26,183 @@ class VisitorDashboardController extends Controller
         $startDate = Carbon::now()->subDays($days - 1)->startOfDay();
         $endDate = Carbon::now()->endOfDay();
 
-        // 1. High Level KPI Metrics
-        $totalVisitors = Visitor::whereBetween('created_at', [$startDate, $endDate])->count();
-        $totalSessions = VisitorSession::whereBetween('started_at', [$startDate, $endDate])->count();
-        $totalLeads = Lead::whereBetween('created_at', [$startDate, $endDate])->count();
-        $conversionRate = $totalVisitors > 0 ? round(($totalLeads / $totalVisitors) * 100, 2) : 0;
+        // 1-8. High Level KPI Metrics, Trends, Breakdown & Top Lists (Cached for 60s to prevent MySQL query spikes)
+        $stats = \Illuminate\Support\Facades\Cache::remember("ur_visitor_dashboard_stats_{$days}", 60, function () use ($startDate, $endDate, $days) {
+            $isSqlite = DB::getDriverName() === 'sqlite';
+            $diffSeconds = $isSqlite
+                ? '(strftime("%s", ended_at) - strftime("%s", started_at))'
+                : 'TIMESTAMPDIFF(SECOND, started_at, ended_at)';
 
-        $isSqlite = DB::getDriverName() === 'sqlite';
-        $diffSeconds = $isSqlite
-            ? '(strftime("%s", ended_at) - strftime("%s", started_at))'
-            : 'TIMESTAMPDIFF(SECOND, started_at, ended_at)';
+            $totalVisitors = Visitor::whereBetween('created_at', [$startDate, $endDate])->count();
+            $totalSessions = VisitorSession::whereBetween('started_at', [$startDate, $endDate])->count();
+            $totalLeads = Lead::whereBetween('created_at', [$startDate, $endDate])->count();
+            $conversionRate = $totalVisitors > 0 ? round(($totalLeads / $totalVisitors) * 100, 2) : 0;
 
-        // Average duration of sessions with end time
-        $avgDurationSeconds = (int) VisitorSession::whereBetween('started_at', [$startDate, $endDate])
-            ->whereNotNull('ended_at')
-            ->selectRaw("AVG({$diffSeconds}) as avg_dur")
-            ->value('avg_dur');
+            // Average duration of sessions with end time
+            $avgDurationSeconds = (int) VisitorSession::whereBetween('started_at', [$startDate, $endDate])
+                ->whereNotNull('ended_at')
+                ->selectRaw("AVG({$diffSeconds}) as avg_dur")
+                ->value('avg_dur');
 
-        // Bounce rate (sessions with only 1 page view or duration < 10 seconds)
-        $bounceSessionsCount = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
-            ->where(function ($q) use ($diffSeconds) {
-                $q->where('page_views', '<=', 1)
-                  ->orWhereRaw("{$diffSeconds} <= 10");
-            })->count();
+            // Bounce rate (sessions with only 1 page view or duration < 10 seconds)
+            $bounceSessionsCount = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
+                ->where(function ($q) use ($diffSeconds) {
+                    $q->where('page_views', '<=', 1)
+                      ->orWhereRaw("{$diffSeconds} <= 10");
+                })->count();
 
-        $bounceRate = $totalSessions > 0 ? round(($bounceSessionsCount / $totalSessions) * 100, 1) : 0;
+            $bounceRate = $totalSessions > 0 ? round(($bounceSessionsCount / $totalSessions) * 100, 1) : 0;
 
-        // 2. Daily Trends Chart Data
-        $dailyData = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
-            ->selectRaw('DATE(started_at) as date, COUNT(*) as sessions, COUNT(DISTINCT visitor_id) as visitors')
-            ->groupBy('date')
-            ->orderBy('date', 'ASC')
-            ->get()
-            ->keyBy('date');
+            // Daily Trends Chart Data
+            $dailyData = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
+                ->selectRaw('DATE(started_at) as date, COUNT(*) as sessions, COUNT(DISTINCT visitor_id) as visitors')
+                ->groupBy('date')
+                ->orderBy('date', 'ASC')
+                ->get()
+                ->keyBy('date');
 
-        $dailyLeads = Lead::whereBetween('created_at', [$startDate, $endDate])
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as leads')
-            ->groupBy('date')
-            ->pluck('leads', 'date');
+            $dailyLeads = Lead::whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw('DATE(created_at) as date, COUNT(*) as leads')
+                ->groupBy('date')
+                ->pluck('leads', 'date');
 
-        $chartLabels = [];
-        $chartVisitors = [];
-        $chartSessions = [];
-        $chartLeads = [];
+            $chartLabels = [];
+            $chartVisitors = [];
+            $chartSessions = [];
+            $chartLeads = [];
 
-        $period = Carbon::now()->subDays($days - 1);
-        while ($period <= Carbon::now()) {
-            $dateStr = $period->format('Y-m-d');
-            $chartLabels[] = $period->format('d M');
-            $chartVisitors[] = $dailyData->has($dateStr) ? $dailyData[$dateStr]->visitors : 0;
-            $chartSessions[] = $dailyData->has($dateStr) ? $dailyData[$dateStr]->sessions : 0;
-            $chartLeads[] = $dailyLeads[$dateStr] ?? 0;
-            $period->addDay();
-        }
-
-        // 3. Device Breakdown
-        $deviceBreakdown = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
-            ->selectRaw('COALESCE(device_type, "desktop") as device, COUNT(*) as count')
-            ->groupBy('device')
-            ->orderByDesc('count')
-            ->get();
-
-        // 4. Traffic Sources
-        $sourceBreakdown = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
-            ->selectRaw('
-                CASE 
-                    WHEN referrer LIKE "%google%" THEN "Google Search"
-                    WHEN referrer LIKE "%facebook%" OR referrer LIKE "%fb%" THEN "Facebook"
-                    WHEN referrer LIKE "%instagram%" THEN "Instagram"
-                    WHEN referrer LIKE "%indus%" OR referrer LIKE "%indusappstore%" THEN "Indus Appstore"
-                    WHEN referrer LIKE "%whatsapp%" THEN "WhatsApp"
-                    WHEN referrer IS NULL OR referrer = "" OR referrer LIKE "%unlockrentals%" THEN "Direct"
-                    ELSE "Referral / Other"
-                END as source_channel,
-                COUNT(*) as count
-            ')
-            ->groupBy('source_channel')
-            ->orderByDesc('count')
-            ->get();
-
-        // 5. Top Indian Cities & States
-        $topCities = Visitor::whereBetween('created_at', [$startDate, $endDate])
-            ->whereNotNull('city')
-            ->where('city', '!=', '')
-            ->selectRaw('city, state, COUNT(*) as total_visits')
-            ->groupBy('city', 'state')
-            ->orderByDesc('total_visits')
-            ->limit(8)
-            ->get();
-
-        // 6. Top Viewed Properties
-        $topProperties = VisitorEvent::whereBetween('visitor_events.created_at', [$startDate, $endDate])
-            ->where('event_name', 'view_property')
-            ->whereNotNull('property_id')
-            ->join('properties', 'visitor_events.property_id', '=', 'properties.id')
-            ->selectRaw('properties.id, properties.title, properties.location, properties.price, properties.purpose, COUNT(visitor_events.id) as views_count')
-            ->groupBy('properties.id', 'properties.title', 'properties.location', 'properties.price', 'properties.purpose')
-            ->orderByDesc('views_count')
-            ->limit(6)
-            ->get();
-
-        // 7. Top Search Origins (From where users are searching)
-        $topSearchOrigins = VisitorEvent::where('event_name', 'search')
-            ->whereBetween('visitor_events.created_at', [$startDate, $endDate])
-            ->join('visitors', 'visitor_events.visitor_id', '=', 'visitors.id')
-            ->whereNotNull('visitors.city')
-            ->where('visitors.city', '!=', '')
-            ->selectRaw('visitors.city, visitors.state, COUNT(visitor_events.id) as total_searches, COUNT(DISTINCT visitor_events.visitor_id) as unique_searchers')
-            ->groupBy('visitors.city', 'visitors.state')
-            ->orderByDesc('total_searches')
-            ->limit(8)
-            ->get();
-
-        // 8. Top Searched Demands & Targets (What locations/keywords users search for)
-        $searchEventsForTargets = VisitorEvent::where('event_name', 'search')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->latest('created_at')
-            ->take(1000)
-            ->get();
-
-        $targetCounts = [];
-        foreach ($searchEventsForTargets as $se) {
-            $meta = $se->metadata ?? [];
-            $target = null;
-            if (!empty($meta['locality']) && !empty($meta['district'])) {
-                $target = ucwords(str_replace('-', ' ', $meta['locality'])) . ', ' . ucwords(str_replace('-', ' ', $meta['district']));
-            } elseif (!empty($meta['locality'])) {
-                $target = ucwords(str_replace('-', ' ', $meta['locality']));
-            } elseif (!empty($meta['district'])) {
-                $target = ucwords(str_replace('-', ' ', $meta['district']));
-            } elseif (!empty($meta['search'])) {
-                $target = \Illuminate\Support\Str::limit(trim($meta['search']), 30);
-            } elseif (!empty($meta['near_me'])) {
-                $target = 'Near Me (GPS)';
+            $period = Carbon::now()->subDays($days - 1);
+            while ($period <= Carbon::now()) {
+                $dateStr = $period->format('Y-m-d');
+                $chartLabels[] = $period->format('d M');
+                $chartVisitors[] = $dailyData->has($dateStr) ? $dailyData[$dateStr]->visitors : 0;
+                $chartSessions[] = $dailyData->has($dateStr) ? $dailyData[$dateStr]->sessions : 0;
+                $chartLeads[] = $dailyLeads[$dateStr] ?? 0;
+                $period->addDay();
             }
 
-            if ($target) {
-                $targetCounts[$target] = ($targetCounts[$target] ?? 0) + 1;
-            }
-        }
-        arsort($targetCounts);
-        $topSearchTargets = array_slice($targetCounts, 0, 8, true);
+            // Device Breakdown
+            $deviceBreakdown = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
+                ->selectRaw('COALESCE(device_type, "desktop") as device, COUNT(*) as count')
+                ->groupBy('device')
+                ->orderByDesc('count')
+                ->get();
 
-        // 9. Live User Search Activity Feed with Filters & Sorting
+            // Traffic Sources
+            $sourceBreakdown = VisitorSession::whereBetween('started_at', [$startDate, $endDate])
+                ->selectRaw('
+                    CASE 
+                        WHEN referrer LIKE "%google%" THEN "Google Search"
+                        WHEN referrer LIKE "%facebook%" OR referrer LIKE "%fb%" THEN "Facebook"
+                        WHEN referrer LIKE "%instagram%" THEN "Instagram"
+                        WHEN referrer LIKE "%indus%" OR referrer LIKE "%indusappstore%" THEN "Indus Appstore"
+                        WHEN referrer LIKE "%whatsapp%" THEN "WhatsApp"
+                        WHEN referrer IS NULL OR referrer = "" OR referrer LIKE "%unlockrentals%" THEN "Direct"
+                        ELSE "Referral / Other"
+                    END as source_channel,
+                    COUNT(*) as count
+                ')
+                ->groupBy('source_channel')
+                ->orderByDesc('count')
+                ->get();
+
+            // Top Indian Cities & States
+            $topCities = Visitor::whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('city')
+                ->where('city', '!=', '')
+                ->selectRaw('city, state, COUNT(*) as total_visits')
+                ->groupBy('city', 'state')
+                ->orderByDesc('total_visits')
+                ->limit(8)
+                ->get();
+
+            // Top Viewed Properties
+            $topProperties = VisitorEvent::whereBetween('visitor_events.created_at', [$startDate, $endDate])
+                ->where('event_name', 'view_property')
+                ->whereNotNull('property_id')
+                ->join('properties', 'visitor_events.property_id', '=', 'properties.id')
+                ->selectRaw('properties.id, properties.title, properties.location, properties.price, properties.purpose, COUNT(visitor_events.id) as views_count')
+                ->groupBy('properties.id', 'properties.title', 'properties.location', 'properties.price', 'properties.purpose')
+                ->orderByDesc('views_count')
+                ->limit(6)
+                ->get();
+
+            // Top Search Origins
+            $topSearchOrigins = VisitorEvent::where('event_name', 'search')
+                ->whereBetween('visitor_events.created_at', [$startDate, $endDate])
+                ->join('visitors', 'visitor_events.visitor_id', '=', 'visitors.id')
+                ->whereNotNull('visitors.city')
+                ->where('visitors.city', '!=', '')
+                ->selectRaw('visitors.city, visitors.state, COUNT(visitor_events.id) as total_searches, COUNT(DISTINCT visitor_events.visitor_id) as unique_searchers')
+                ->groupBy('visitors.city', 'visitors.state')
+                ->orderByDesc('total_searches')
+                ->limit(8)
+                ->get();
+
+            // Top Searched Demands & Targets (capped at 150 events for speed)
+            $searchEventsForTargets = VisitorEvent::where('event_name', 'search')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->latest('created_at')
+                ->take(150)
+                ->get(['metadata']);
+
+            $targetCounts = [];
+            foreach ($searchEventsForTargets as $se) {
+                $meta = $se->metadata ?? [];
+                $target = null;
+                if (!empty($meta['locality']) && !empty($meta['district'])) {
+                    $target = ucwords(str_replace('-', ' ', $meta['locality'])) . ', ' . ucwords(str_replace('-', ' ', $meta['district']));
+                } elseif (!empty($meta['locality'])) {
+                    $target = ucwords(str_replace('-', ' ', $meta['locality']));
+                } elseif (!empty($meta['district'])) {
+                    $target = ucwords(str_replace('-', ' ', $meta['district']));
+                } elseif (!empty($meta['search'])) {
+                    $target = \Illuminate\Support\Str::limit(trim($meta['search']), 30);
+                } elseif (!empty($meta['near_me'])) {
+                    $target = 'Near Me (GPS)';
+                }
+
+                if ($target) {
+                    $targetCounts[$target] = ($targetCounts[$target] ?? 0) + 1;
+                }
+            }
+            arsort($targetCounts);
+            $topSearchTargets = array_slice($targetCounts, 0, 8, true);
+
+            $totalSearches = VisitorEvent::where('event_name', 'search')->whereBetween('created_at', [$startDate, $endDate])->count();
+
+            return compact(
+                'totalVisitors',
+                'totalSessions',
+                'totalLeads',
+                'conversionRate',
+                'avgDurationSeconds',
+                'bounceRate',
+                'chartLabels',
+                'chartVisitors',
+                'chartSessions',
+                'chartLeads',
+                'deviceBreakdown',
+                'sourceBreakdown',
+                'topCities',
+                'topProperties',
+                'topSearchOrigins',
+                'topSearchTargets',
+                'totalSearches'
+            );
+        });
+
+        extract($stats);
+
+        // 9. Live User Search Activity Feed with Filters & Sorting (Fast Indexed Query)
         $sort = $request->get('sort', 'recent');
         $searchingFor = trim((string) $request->get('searching_for', ''));
         $searchOrigin = trim((string) $request->get('search_origin', ''));
 
-        $freqSub = VisitorEvent::where('event_name', 'search')
-            ->select('page_url', DB::raw('COUNT(*) as search_freq'))
-            ->groupBy('page_url');
-
         $searchFeedQuery = VisitorEvent::with(['visitor', 'session'])
-            ->where('visitor_events.event_name', 'search')
-            ->leftJoinSub($freqSub, 'freq', function ($join) {
-                $join->on('visitor_events.page_url', '=', 'freq.page_url');
-            })
-            ->select('visitor_events.*', DB::raw('COALESCE(freq.search_freq, 1) as search_freq'));
+            ->where('visitor_events.event_name', 'search');
 
-        // Filter: What the user is searching for (Target Query, Locality, City, Property Type, BHK, etc.)
+        // Filter: What the user is searching for
         if (!empty($searchingFor)) {
             $sf = $searchingFor;
             $searchFeedQuery->where(function ($q) use ($sf) {
@@ -193,7 +211,7 @@ class VisitorDashboardController extends Controller
             });
         }
 
-        // Filter: Where the user is physically searching from (Origin City / State)
+        // Filter: Where the user is physically searching from
         if (!empty($searchOrigin)) {
             $so = $searchOrigin;
             $searchFeedQuery->where(function ($q) use ($so) {
@@ -223,20 +241,29 @@ class VisitorDashboardController extends Controller
             });
         }
 
-        // Sorting Options
+        // Sorting Options: Only execute heavy subquery if explicitly requested
         if ($sort === 'mostly_searched' || $sort === 'popular') {
-            // Sort by highest search demand / frequency first, then most recent
-            $searchFeedQuery->orderByDesc('freq.search_freq')
-                ->latest('visitor_events.created_at');
+            $freqSub = VisitorEvent::where('event_name', 'search')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->select('page_url', DB::raw('COUNT(*) as search_freq'))
+                ->groupBy('page_url');
+
+            $searchFeedQuery->leftJoinSub($freqSub, 'freq', function ($join) {
+                $join->on('visitor_events.page_url', '=', 'freq.page_url');
+            })
+            ->select('visitor_events.*', DB::raw('COALESCE(freq.search_freq, 1) as search_freq'))
+            ->orderByDesc('freq.search_freq')
+            ->latest('visitor_events.created_at');
         } elseif ($sort === 'oldest') {
-            $searchFeedQuery->oldest('visitor_events.created_at');
+            $searchFeedQuery->select('visitor_events.*', DB::raw('1 as search_freq'))
+                ->oldest('visitor_events.created_at');
         } else {
-            // Default: Most recent searches first
-            $searchFeedQuery->latest('visitor_events.created_at');
+            // Default: Most recent searches first (Index scan, 0 subqueries)
+            $searchFeedQuery->select('visitor_events.*', DB::raw('1 as search_freq'))
+                ->latest('visitor_events.created_at');
         }
 
         $recentSearches = $searchFeedQuery->paginate(15, ['*'], 'searches_page')->withQueryString();
-        $totalSearches = VisitorEvent::where('event_name', 'search')->whereBetween('created_at', [$startDate, $endDate])->count();
 
         // 10. Filterable Recent Visitors Table
         $visitorsQuery = Visitor::with(['latestSession', 'lead', 'user'])

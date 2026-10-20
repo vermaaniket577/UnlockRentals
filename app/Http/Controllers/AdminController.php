@@ -2439,10 +2439,21 @@ class AdminController extends Controller
      */
     public function triggerPropertySync(Request $request)
     {
+        $lock = Cache::lock('ur_scraper_crawler_lock', 90);
+        if (!$lock->get()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Another property crawl or sync operation is already actively running. Please wait a moment.',
+            ], 429);
+        }
+
         $city = $request->get('city', 'Gurgaon');
         $count = (int) $request->get('count', 3);
 
         try {
+            // Free any active DB connection before starting long-running scraper
+            try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
+
             \Illuminate\Support\Facades\Artisan::call('scrape:city', [
                 'city' => $city,
                 '--count' => $count,
@@ -2469,6 +2480,9 @@ class AdminController extends Controller
                 'success' => false,
                 'message' => 'Sync error: ' . $e->getMessage(),
             ], 500);
+        } finally {
+            optional($lock)->release();
+            try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
         }
     }
 
@@ -2542,7 +2556,17 @@ class AdminController extends Controller
             ]);
         }
 
+        $lock = Cache::lock('ur_scraper_crawler_lock', 90);
+        if (!$lock->get()) {
+            return response()->json([
+                'status'  => 'busy',
+                'message' => 'Crawler is already actively executing in background.',
+            ], 429);
+        }
+
         try {
+            try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
+
             \Illuminate\Support\Facades\Artisan::call('scrape:city', [
                 'city' => $city,
                 '--count' => $count,
@@ -2570,6 +2594,9 @@ class AdminController extends Controller
                 'status'  => 'error',
                 'message' => $e->getMessage(),
             ], 500);
+        } finally {
+            optional($lock)->release();
+            try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
         }
     }
 
@@ -2592,6 +2619,14 @@ class AdminController extends Controller
         $createAccounts = $request->boolean('create_accounts', true);
         $autoApprove = $request->boolean('auto_approve', true);
 
+        $lock = Cache::lock('ur_scraper_crawler_lock', 120);
+        if (!$lock->get()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Another property crawl/fetch task is currently running. Please wait a minute for it to finish.',
+            ], 429);
+        }
+
         try {
             $scriptPath = base_path('scrapers/crawl_and_import.py');
             $pythonBinary = 'python3';
@@ -2607,6 +2642,9 @@ class AdminController extends Controller
             $escapedEngine = escapeshellarg($engine ?: 'playwright');
             $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine}";
 
+            // Free DB connection while Python is crawling external web pages
+            try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
+
             exec($command, $output, $returnCode);
 
             $rawOutput = implode("\n", (array) $output);
@@ -2618,7 +2656,7 @@ class AdminController extends Controller
             if (empty($items) || !is_array($items)) {
                 // Shared hosting fallback using scrape:city
                 \Illuminate\Support\Facades\Artisan::call('scrape:city', [
-                    'city' => $url,
+                    'city' => $url ?: $city,
                     '--count' => $count,
                     '--create-accounts' => true,
                 ]);
@@ -2633,7 +2671,7 @@ class AdminController extends Controller
 
                 return response()->json([
                     'success'          => true,
-                    'message'          => "Successfully fetched and posted {$count} listings for {$url}",
+                    'message'          => "Successfully fetched and posted {$count} listings for " . ($url ?: $city),
                     'url'              => $url,
                     'total_properties' => Property::count(),
                     'latest_id'        => Property::latest('id')->first()?->id ?? 0,
@@ -2797,6 +2835,32 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        } finally {
+            optional($lock)->release();
+            try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
+        }
+    }
+
+    /**
+     * Terminate idle/sleeping MySQL connections to free up connection slots.
+     */
+    public function cleanupDbConnections(Request $request)
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('db:cleanup-connections', [
+                '--all-sleep' => true
+            ]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+            return response()->json([
+                'success' => true,
+                'message' => 'Cleaned up sleeping DB connections successfully',
+                'output' => $output
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
             ], 500);
         }
     }
