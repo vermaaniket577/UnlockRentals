@@ -13,6 +13,16 @@
                 <p class="text-zinc-500">Manage and review property listings</p>
             </div>
             <div class="flex items-center gap-3">
+                {{-- Fetch & Post 99acres Button --}}
+                <button type="button" 
+                        onclick="openFetchUrlModal()"
+                        class="inline-flex items-center gap-2 text-white font-bold text-sm shadow-md transition-all cursor-pointer hover:brightness-110 active:scale-95" 
+                        style="background: linear-gradient(180deg, #4f46e5 0%, #3730a3 100%) !important; color: #ffffff !important; border: 1px solid #312e81 !important; padding: 0.55rem 1.05rem; border-radius: 9999px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);"
+                        title="Fetch data with complete images from 99acres URL (all types: Buy, Rent, Land, Projects) and post directly in website">
+                    <i class="ph-bold ph-globe-hemisphere-west text-base" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important; font-weight: 700; font-size: 0.875rem;">Fetch &amp; Post (99acres)</span>
+                </button>
+
                 {{-- Post Advertise Button --}}
                 <button type="button" 
                         onclick="openPostAdvertiseModal()"
@@ -444,10 +454,10 @@
                                id="fetch_target_url" 
                                name="url" 
                                required 
-                               value="https://www.99acres.com/search/property/rent/bangalore?city=20&preference=R&budget_min=0&res_com=R&isPreLeased=N" 
+                               value="https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R" 
                                class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all pr-10"
-                               placeholder="https://www.99acres.com/search/property/rent/...">
-                        <button type="button" onclick="pasteClipboardToUrl()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 text-xs px-1.5 py-0.5 rounded transition-colors" title="Paste from clipboard">
+                               placeholder="https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R">
+                        <button type="button" onclick="pasteClipboardToUrl()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 text-xs px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Paste from clipboard">
                             <i class="ph-bold ph-clipboard text-sm"></i>
                         </button>
                     </div>
@@ -455,9 +465,10 @@
                     {{-- Quick preset chips --}}
                     <div class="flex items-center gap-1.5 mt-2 flex-wrap text-[11px]">
                         <span class="text-slate-400 font-medium">Quick presets:</span>
-                        <button type="button" onclick="setFetchUrlPreset('bangalore')" class="px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold cursor-pointer border border-indigo-200/50">Bangalore (Current)</button>
+                        <button type="button" onclick="setFetchUrlPreset('indore-buy')" class="px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold cursor-pointer border border-indigo-200/50">Indore (Buy/Sale)</button>
+                        <button type="button" onclick="setFetchUrlPreset('indore-rent')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Indore (Rent)</button>
+                        <button type="button" onclick="setFetchUrlPreset('bangalore')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Bangalore (Rent)</button>
                         <button type="button" onclick="setFetchUrlPreset('gurgaon')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Gurgaon</button>
-                        <button type="button" onclick="setFetchUrlPreset('delhi')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Delhi</button>
                         <button type="button" onclick="setFetchUrlPreset('mumbai')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Mumbai</button>
                     </div>
                 </div>
@@ -789,6 +800,8 @@ function setFetchUrlPreset(preset) {
     const input = document.getElementById('fetch_target_url');
     if (!input) return;
     const presets = {
+        'indore-buy': 'https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R',
+        'indore-rent': 'https://www.99acres.com/search/property/rent/indore?city=142&preference=R&res_com=R',
         'bangalore': 'https://www.99acres.com/search/property/rent/bangalore?city=20&preference=R&budget_min=0&res_com=R&isPreLeased=N',
         'gurgaon': 'https://www.99acres.com/flats-for-rent-in-gurgaon-ffid',
         'delhi': 'https://www.99acres.com/flats-for-rent-in-delhi-ffid',
@@ -880,11 +893,24 @@ async function handleFetchUrlSubmit(e) {
                 propsHtml = `
                     <div class="mt-2.5 pt-2.5 border-t border-emerald-200/80">
                         <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-1.5">🏡 Posted Properties (${data.properties.length}):</p>
-                        <div class="space-y-1 max-h-32 overflow-y-auto pr-1">
+                        <div class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                             ${data.properties.map(p => `
-                                <div class="flex items-center justify-between bg-white/90 p-1.5 rounded-lg border border-emerald-200/60 text-[11px]">
-                                    <span class="font-semibold text-slate-800 truncate max-w-[240px]" title="${p.title}">#${p.id} ${p.title}</span>
-                                    <span class="font-bold text-emerald-700 shrink-0">₹${Number(p.price).toLocaleString()} • ${p.images_count} 📸</span>
+                                <div class="flex items-center justify-between bg-white/95 p-2 rounded-xl border border-emerald-200/70 text-[11px] gap-2 shadow-2xs">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="font-bold text-slate-800 truncate" title="${p.title}">#${p.id} ${p.title}</span>
+                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase ${p.purpose === 'buy' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">${p.purpose === 'buy' ? 'Sale' : 'Rent'}</span>
+                                            ${p.category ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-100 text-slate-600">${p.category}</span>` : ''}
+                                        </div>
+                                        <div class="text-[10px] text-slate-500 mt-0.5 flex items-center gap-2">
+                                            <span>📍 ${p.locality || p.city}, ${p.city}</span>
+                                            <span>👤 ${p.owner}</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <div class="font-black text-emerald-700">₹${Number(p.price).toLocaleString()}</div>
+                                        <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1 rounded">${p.images_count} 📸</span>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>

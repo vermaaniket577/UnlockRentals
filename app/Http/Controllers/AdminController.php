@@ -2633,8 +2633,6 @@ class AdminController extends Controller
 
             $adminUser = User::where('role', 'admin')->first() ?? User::first();
             $defaultUserId = $adminUser ? $adminUser->id : 1;
-            $category = \App\Models\Category::where('name', 'like', '%Flat%')->orWhere('name', 'like', '%Apartment%')->first() ?? \App\Models\Category::first();
-            $categoryId = $category ? $category->id : 1;
 
             $createdAccounts = [];
             $createdProperties = [];
@@ -2687,26 +2685,42 @@ class AdminController extends Controller
                     $ownerName = $sellerUser->name;
                 }
 
+                // Dynamically resolve category per listing
+                $catName = $item['category_name'] ?? 'Flat / Apartment';
+                $category = \App\Models\Category::where('name', $catName)
+                    ->orWhere('name', 'like', "%{$catName}%")
+                    ->first();
+                if (!$category) {
+                    $category = \App\Models\Category::where('slug', Str::slug($catName))->first();
+                }
+                if (!$category) {
+                    $category = \App\Models\Category::where('name', 'like', '%Flat%')->orWhere('name', 'like', '%Apartment%')->first() ?? \App\Models\Category::first();
+                }
+                $itemCategoryId = $category ? $category->id : 1;
+
+                $itemType = in_array($item['type'] ?? '', ['house', 'shop', 'pg-hostel', 'hotel', 'plot']) ? $item['type'] : 'house';
+                $itemPurpose = in_array($item['purpose'] ?? '', ['rent', 'buy']) ? $item['purpose'] : 'rent';
+
                 $slug = Str::slug($item['title']) . '-' . rand(10000, 99999);
                 $prop = Property::create([
                     'user_id'       => $propertyUserId,
-                    'category_id'   => $categoryId,
+                    'category_id'   => $itemCategoryId,
                     'title'         => $item['title'],
                     'slug'          => $slug,
-                    'description'   => $item['description'] ?? ("Rental listing in " . ($item['locality'] ?? $item['city'])),
-                    'type'          => 'house',
-                    'purpose'       => 'rent',
+                    'description'   => $item['description'] ?? ("{$item['title']} in " . ($item['locality'] ?? $item['city']) . ", " . ($item['city'] ?? '')),
+                    'type'          => $itemType,
+                    'purpose'       => $itemPurpose,
                     'price'         => $item['price'] ?? 25000,
                     'price_period'  => 'month',
-                    'state'         => $item['state'] ?? 'Karnataka',
-                    'location'      => $item['city'] ?? 'Bangalore',
-                    'locality'      => $item['locality'] ?? 'Bangalore',
+                    'state'         => $item['state'] ?? 'India',
+                    'location'      => $item['city'] ?? 'India',
+                    'locality'      => $item['locality'] ?? ($item['city'] ?? 'India'),
                     'address'       => "{$item['locality']}, {$item['city']}",
                     'contact_phone' => $item['contact_phone'] ?? '+91 98765 43210',
-                    'bedrooms'      => $item['bedrooms'] ?? 2,
-                    'bathrooms'     => $item['bathrooms'] ?? 1,
-                    'area_sqft'     => $item['area_sqft'] ?? 900,
-                    'furnishing'    => $item['furnishing'] ?? 'semi-furnished',
+                    'bedrooms'      => $itemType === 'plot' ? 0 : ($item['bedrooms'] ?? 2),
+                    'bathrooms'     => $itemType === 'plot' ? 0 : ($item['bathrooms'] ?? 1),
+                    'area_sqft'     => $item['area_sqft'] ?? 800,
+                    'furnishing'    => $itemType === 'plot' ? 'unfurnished' : ($item['furnishing'] ?? 'semi-furnished'),
                     'status'        => $autoApprove ? 'approved' : 'pending',
                     'approved_at'   => $autoApprove ? now() : null,
                     'is_featured'   => false,
@@ -2728,8 +2742,12 @@ class AdminController extends Controller
                     'id'           => $prop->id,
                     'title'        => $prop->title,
                     'price'        => $prop->price,
+                    'purpose'      => $prop->purpose,
+                    'type'         => $prop->type,
+                    'category'     => $category?->name ?? 'Property',
                     'locality'     => $prop->locality,
                     'city'         => $prop->location,
+                    'state'        => $prop->state,
                     'owner'        => $ownerName,
                     'images_count' => count($item['images'] ?? []),
                 ];

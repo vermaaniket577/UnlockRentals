@@ -124,25 +124,41 @@ class ScrapeCityCommand extends Command
                 $propertyUserId = $sellerUser->id;
             }
 
+            // Dynamically resolve category per listing
+            $catName = $item['category_name'] ?? 'Flat / Apartment';
+            $category = Category::where('name', $catName)
+                ->orWhere('name', 'like', "%{$catName}%")
+                ->first();
+            if (!$category) {
+                $category = Category::where('slug', Str::slug($catName))->first();
+            }
+            if (!$category) {
+                $category = Category::where('name', 'like', '%Flat%')->orWhere('name', 'like', '%Apartment%')->first() ?? Category::first();
+            }
+            $itemCategoryId = $category ? $category->id : 1;
+
+            $itemType = in_array($item['type'] ?? '', ['house', 'shop', 'pg-hostel', 'hotel', 'plot']) ? $item['type'] : 'house';
+            $itemPurpose = in_array($item['purpose'] ?? '', ['rent', 'buy']) ? $item['purpose'] : 'rent';
+
             $property = Property::create([
                 'user_id' => $propertyUserId,
-                'category_id' => $categoryId,
+                'category_id' => $itemCategoryId,
                 'title' => $item['title'],
                 'slug' => $slug,
-                'description' => $item['description'] ?? "Rental flat in {$item['locality']}, {$item['city']}.",
-                'type' => 'house',
-                'purpose' => 'rent',
+                'description' => $item['description'] ?? ("{$item['title']} in " . ($item['locality'] ?? $item['city']) . ", " . ($item['city'] ?? '')),
+                'type' => $itemType,
+                'purpose' => $itemPurpose,
                 'price' => $item['price'] ?? 25000,
                 'price_period' => 'month',
                 'state' => $item['state'] ?? 'India',
-                'location' => $item['city'],
-                'locality' => $item['locality'],
+                'location' => $item['city'] ?? 'India',
+                'locality' => $item['locality'] ?? ($item['city'] ?? 'India'),
                 'address' => "{$item['locality']}, {$item['city']}",
                 'contact_phone' => $item['contact_phone'] ?? '+91 98765 43210',
-                'bedrooms' => $item['bedrooms'] ?? 2,
-                'bathrooms' => $item['bathrooms'] ?? 1,
+                'bedrooms' => $itemType === 'plot' ? 0 : ($item['bedrooms'] ?? 2),
+                'bathrooms' => $itemType === 'plot' ? 0 : ($item['bathrooms'] ?? 1),
                 'area_sqft' => $item['area_sqft'] ?? 800,
-                'furnishing' => $item['furnishing'] ?? 'semi-furnished',
+                'furnishing' => $itemType === 'plot' ? 'unfurnished' : ($item['furnishing'] ?? 'semi-furnished'),
                 'status' => $status,
                 'is_featured' => ($insertedCount < 3),
                 'is_booked' => false,
@@ -161,7 +177,8 @@ class ScrapeCityCommand extends Command
             }
 
             $insertedCount++;
-            $this->line("  [✓] Imported ID #{$property->id}: {$property->title} | ₹" . number_format($property->price) . "/mo");
+            $priceSuffix = $itemPurpose === 'buy' ? ' [For Sale]' : '/mo [Rent]';
+            $this->line("  [✓] Imported ID #{$property->id}: {$property->title} | ₹" . number_format($property->price) . "{$priceSuffix} ({$property->location}, {$property->state})");
         }
 
         // Invalidate homepage cache
