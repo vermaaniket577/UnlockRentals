@@ -205,9 +205,9 @@
                     </div>
                 @endif
 
-                {{-- Prominent Results Header & Sorting Toolbar --}}
-                <div class="mb-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3.5 sm:p-4 shadow-sm">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {{-- 99acres-Style Top Filter & Sort Bar --}}
+                <div class="mb-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3 sm:p-4 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/80">
                         {{-- Left: Count & Status --}}
                         <div class="flex items-center gap-2.5">
                             <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shadow-xs flex-shrink-0">
@@ -224,17 +224,17 @@
                             </div>
                         </div>
 
-                        {{-- Right: Prominent Sort Dropdown --}}
-                        <div class="flex items-center gap-2 w-full sm:w-auto">
-                            <label for="property-grid-sort" class="text-xs font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap flex items-center gap-1.5 flex-shrink-0">
-                                <i class="ph-bold ph-arrows-down-up text-blue-600"></i>
+                        {{-- Right: Sort By Dropdown --}}
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            <label for="property-grid-sort" class="text-xs font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap flex items-center gap-1.5 flex-shrink-0 cursor-pointer">
+                                <i class="ph-bold ph-list-dashes text-blue-600 text-sm"></i>
                                 <span>Sort By:</span>
                             </label>
-                            <div class="relative flex-1 sm:w-56">
+                            <div class="relative flex-1 sm:w-52">
                                 <select id="property-grid-sort"
                                         onchange="updatePropertySort(this.value)"
                                         class="w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all appearance-none cursor-pointer">
-                                    <option value="latest" {{ request('sort') === 'latest' || request('sort') === 'new_to_old' || !request('sort') ? 'selected' : '' }}>⏱️ Newest First</option>
+                                    <option value="latest" {{ request('sort') === 'latest' || request('sort') === 'new_to_old' || !request('sort') ? 'selected' : '' }}>⏱️ Relevance / Newest</option>
                                     <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>💰 Price: Low to High</option>
                                     <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>💎 Price: High to Low</option>
                                     <option value="unbooked" {{ request('sort') === 'unbooked' ? 'selected' : '' }}>🟢 Available / Unbooked</option>
@@ -248,49 +248,70 @@
                         </div>
                     </div>
 
-                    {{-- Quick 1-Click Sort Pills (Horizontal Scrolling) --}}
-                    <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none -mx-1 px-1">
-                        <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500 whitespace-nowrap mr-1 flex-shrink-0">
-                            Quick Sort:
-                        </span>
-                        
-                        @php
-                            $currentSort = request('sort', 'latest');
-                            if ($currentSort === 'new_to_old') $currentSort = 'latest';
-                            if ($currentSort === 'oldest') $currentSort = 'old_to_new';
-                            if ($currentSort === 'distance') $currentSort = 'nearest';
+                    {{-- 99acres Top Quick Filter Pills (Owner, Verified, Furnished, With Photos, With Videos) --}}
+                    @php
+                        $isOwner = request()->boolean('owner');
+                        $isVerified = request()->boolean('verified');
+                        $isFurnished = request()->boolean('furnished');
+                        $isPhotos = request()->boolean('with_photos') || request('media') === 'images';
+                        $isVideos = request()->boolean('with_videos') || request('media') === 'video';
 
-                            $sortPills = [
-                                ['id' => 'latest', 'label' => 'Newest', 'icon' => 'ph-clock'],
-                                ['id' => 'price_low', 'label' => 'Price: Low to High', 'icon' => 'ph-trend-up'],
-                                ['id' => 'price_high', 'label' => 'Price: High to Low', 'icon' => 'ph-trend-down'],
-                                ['id' => 'unbooked', 'label' => 'Available First', 'icon' => 'ph-check-circle'],
-                            ];
-                            if (request('near_me') || request('lat')) {
-                                array_unshift($sortPills, ['id' => 'nearest', 'label' => 'Nearest to Me', 'icon' => 'ph-navigation-arrow']);
+                        $getToggleUrl = function($paramName, $isActive) {
+                            $params = request()->query();
+                            unset($params['page']);
+                            if ($isActive) {
+                                unset($params[$paramName]);
+                                if ($paramName === 'with_photos' && isset($params['media'])) unset($params['media']);
+                                if ($paramName === 'with_videos' && isset($params['media'])) unset($params['media']);
+                            } else {
+                                $params[$paramName] = '1';
                             }
-                        @endphp
+                            return route('properties.index', $params);
+                        };
+                    @endphp
+                    <div class="pt-3 flex items-center gap-2 overflow-x-auto scrollbar-none -mx-1 px-1">
+                        {{-- Owner Pill --}}
+                        <a href="{{ $getToggleUrl('owner', $isOwner) }}"
+                           class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs transition-all border flex items-center gap-1.5 {{ $isOwner ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-600 text-blue-600 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium hover:border-slate-400' }}">
+                            @if($isOwner)<i class="ph-bold ph-check text-xs"></i>@endif
+                            <span>Owner</span>
+                        </a>
 
-                        @foreach($sortPills as $sp)
-                            @php
-                                $isActive = ($currentSort === $sp['id']);
-                                $pillParams = array_merge(request()->query(), ['sort' => $sp['id']]);
-                                unset($pillParams['page']);
-                            @endphp
-                            <a href="{{ route('properties.index', $pillParams) }}"
-                               class="whitespace-nowrap px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 flex-shrink-0 {{ $isActive ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700' }}">
-                                <i class="ph-bold {{ $sp['icon'] }} text-xs"></i>
-                                <span>{{ $sp['label'] }}</span>
-                            </a>
-                        @endforeach
+                        {{-- Verified Pill --}}
+                        <a href="{{ $getToggleUrl('verified', $isVerified) }}"
+                           class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs transition-all border flex items-center gap-1.5 {{ $isVerified ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-600 text-blue-600 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium hover:border-slate-400' }}">
+                            @if($isVerified)<i class="ph-bold ph-check text-xs"></i>@endif
+                            <span>Verified</span>
+                        </a>
+
+                        {{-- Furnished Pill --}}
+                        <a href="{{ $getToggleUrl('furnished', $isFurnished) }}"
+                           class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs transition-all border flex items-center gap-1.5 {{ $isFurnished ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-600 text-blue-600 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium hover:border-slate-400' }}">
+                            @if($isFurnished)<i class="ph-bold ph-check text-xs"></i>@endif
+                            <span>Furnished</span>
+                        </a>
+
+                        {{-- With Photos Pill --}}
+                        <a href="{{ $getToggleUrl('with_photos', $isPhotos) }}"
+                           class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs transition-all border flex items-center gap-1.5 {{ $isPhotos ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-600 text-blue-600 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium hover:border-slate-400' }}">
+                            @if($isPhotos)<i class="ph-bold ph-check text-xs"></i>@endif
+                            <span>With Photos</span>
+                        </a>
+
+                        {{-- With Videos Pill --}}
+                        <a href="{{ $getToggleUrl('with_videos', $isVideos) }}"
+                           class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs transition-all border flex items-center gap-1.5 {{ $isVideos ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-600 text-blue-600 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium hover:border-slate-400' }}">
+                            @if($isVideos)<i class="ph-bold ph-check text-xs"></i>@endif
+                            <span>With Videos</span>
+                        </a>
                     </div>
                 </div>
 
                 @if($properties->count() > 0)
-                    {{-- Grid Container --}}
-                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+                    {{-- 99acres Horizontal Cards Stack --}}
+                    <div class="space-y-4 sm:space-y-5" id="properties-list-container">
                         @foreach($properties as $property)
-                            <x-property-card :property="$property" />
+                            <x-property-horizontal-card :property="$property" />
                         @endforeach
                     </div>
 
@@ -343,6 +364,14 @@
         }
         url.searchParams.delete('page');
         window.location.href = url.toString();
+    }
+
+    function revealCardPhoneNumber(propId, phone, btn) {
+        if (!btn) return;
+        const cleanNumber = phone.replace(/[^\d+]/g, '');
+        btn.innerHTML = `<i class="ph-bold ph-phone-call text-emerald-600 text-sm"></i> <a href="tel:${cleanNumber}" class="text-emerald-700 dark:text-emerald-400 font-black">${phone}</a>`;
+        btn.className = 'px-3.5 py-2 sm:py-2.5 rounded-xl border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-2xs transition-all';
+        btn.onclick = null;
     }
 </script>
 

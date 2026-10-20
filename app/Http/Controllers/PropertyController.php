@@ -96,18 +96,77 @@ class PropertyController extends Controller
             } elseif ($request->rooms === '2bhk') {
                 $query->where('bedrooms', 2);
             } elseif (in_array($request->rooms, ['3bhk', '3bhk-plus', '3plus', '3+'])) {
-                $query->where('bedrooms', '>=', 3);
-            } elseif ($request->rooms === '4bhk-plus') {
-                $query->where('bedrooms', '>=', 4);
+                $query->where('bedrooms', 3);
+            } elseif ($request->rooms === '4bhk' || $request->rooms === '4bhk-plus') {
+                $query->where('bedrooms', 4);
+            } elseif ($request->rooms === '5bhk') {
+                $query->where('bedrooms', '>=', 5);
             }
         } elseif ($request->filled('bedrooms')) {
-            // Fallback for older direct parameter
-            $query->where('bedrooms', '>=', $request->bedrooms);
+            $beds = $request->bedrooms;
+            if (is_numeric($beds)) {
+                $beds = (int)$beds;
+                if ($beds >= 5) {
+                    $query->where('bedrooms', '>=', 5);
+                } else {
+                    $query->where('bedrooms', $beds);
+                }
+            }
         }
 
         // Filter by furnishing
         if ($request->filled('furnishing')) {
             $query->where('furnishing', $request->furnishing);
+        } elseif ($request->boolean('furnished')) {
+            $query->whereIn('furnishing', ['furnished', 'semi-furnished']);
+        }
+
+        // Verified Filter (Featured / Verified)
+        if ($request->boolean('verified')) {
+            $query->where('is_featured', true);
+        }
+
+        // Owner Only Filter
+        if ($request->boolean('owner')) {
+            $query->whereNotNull('user_id');
+        }
+
+        // Sub-Type Filter (Builder Floor, Apartment, Independent House/Villa, Studio, Farm House)
+        if ($request->filled('sub_type')) {
+            $subType = strtolower(trim($request->sub_type));
+            if ($subType === 'builder-floor') {
+                $query->where(function ($q) {
+                    $q->where('title', 'like', '%builder floor%')
+                      ->orWhere('description', 'like', '%builder floor%')
+                      ->orWhere('type', 'house');
+                });
+            } elseif ($subType === 'apartment') {
+                $query->where(function ($q) {
+                    $q->where('title', 'like', '%apartment%')
+                      ->orWhere('title', 'like', '%flat%')
+                      ->orWhere('description', 'like', '%apartment%')
+                      ->orWhere('type', 'house');
+                });
+            } elseif ($subType === 'villa') {
+                $query->where(function ($q) {
+                    $q->where('title', 'like', '%villa%')
+                      ->orWhere('title', 'like', '%independent house%')
+                      ->orWhere('description', 'like', '%villa%');
+                });
+            } elseif ($subType === 'studio') {
+                $query->where(function ($q) {
+                    $q->where('title', 'like', '%studio%')
+                      ->orWhere('title', 'like', '%1 rk%')
+                      ->orWhere('description', 'like', '%studio%')
+                      ->orWhere('bedrooms', 0);
+                });
+            } elseif ($subType === 'farm-house') {
+                $query->where(function ($q) {
+                    $q->where('title', 'like', '%farm%')
+                      ->orWhere('description', 'like', '%farm%')
+                      ->orWhere('type', 'plot');
+                });
+            }
         }
 
         // Search by keyword
@@ -133,6 +192,10 @@ class PropertyController extends Controller
             } elseif ($request->media === 'images' || $request->media === 'image') {
                 $query->whereHas('images');
             }
+        } elseif ($request->boolean('with_photos')) {
+            $query->whereHas('images');
+        } elseif ($request->boolean('with_videos')) {
+            $query->whereNotNull('video_path')->where('video_path', '!=', '')->where('video_path', '!=', '[]');
         }
 
         // Proximity / Near Me Geolocation Distance Calculation

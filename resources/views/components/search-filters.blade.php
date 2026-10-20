@@ -33,25 +33,87 @@
             </div>
         </div>
 
-        {{-- Property Type Selector --}}
-        <div>
-            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2.5">Property Type</label>
-            <div class="grid grid-cols-2 gap-2">
+        {{-- No. of Bedrooms (99acres Accordion & Pills) --}}
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-4">
+            <div class="flex items-center justify-between mb-2.5">
+                <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200">No. of Bedrooms</span>
+                <i class="ph-bold ph-caret-up text-slate-400 text-xs"></i>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
                 @php
-                    $types = [
-                        '' => ['label' => 'All Types', 'icon' => 'ph-bold ph-squares-four'],
-                        'house' => ['label' => 'House/Flat', 'icon' => 'ph-bold ph-house-line'],
-                        'shop' => ['label' => 'Shop/Office', 'icon' => 'ph-bold ph-storefront'],
-                        'pg-hostel' => ['label' => 'PG / Hostel', 'icon' => 'ph-bold ph-buildings'],
-                        'plot' => ['label' => 'Plot / Land', 'icon' => 'ph-bold ph-map-trifold'],
+                    $curRooms = request('rooms') ?: (request('bedrooms') ? request('bedrooms').'bhk' : '');
+                    $bhkItems = [
+                        ['val' => '1bhk', 'label' => '+ 1 RK/1 BHK'],
+                        ['val' => '2bhk', 'label' => '+ 2 BHK'],
+                        ['val' => '3bhk', 'label' => '+ 3 BHK'],
+                        ['val' => '4bhk', 'label' => '+ 4 BHK'],
+                        ['val' => '5bhk', 'label' => '+ 5 BHK'],
                     ];
                 @endphp
-                @foreach($types as $val => $info)
-                <label class="relative flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all {{ request('type') == $val ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300 text-slate-600 dark:text-slate-400 font-medium' }}" for="{{ $idPrefix }}filter-type-{{ $val ?: 'all' }}">
-                    <input type="radio" name="type" value="{{ $val }}" id="{{ $idPrefix }}filter-type-{{ $val ?: 'all' }}" {{ request('type') == $val ? 'checked' : '' }} class="sr-only">
-                    <i class="{{ $info['icon'] }} text-base {{ request('type') == $val ? 'text-blue-600' : 'text-slate-400' }}"></i>
-                    <span class="text-xs">{{ $info['label'] }}</span>
-                </label>
+                @foreach($bhkItems as $item)
+                    @php $isAct = ($curRooms === $item['val']); @endphp
+                    <label class="cursor-pointer">
+                        <input type="radio" name="rooms" value="{{ $isAct ? '' : $item['val'] }}" {{ $isAct ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold transition-all border {{ $isAct ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-600 text-blue-600 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-400' }}">
+                            {{ $isAct ? '✓ ' . substr($item['label'], 2) : $item['label'] }}
+                        </span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Type of property (99acres Accordion & Pills) --}}
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-4">
+            <div class="flex items-center justify-between mb-2.5">
+                <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200">Type of property</span>
+                <i class="ph-bold ph-caret-up text-slate-400 text-xs"></i>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+                @php
+                    $curSubType = request('sub_type', '');
+                    $subTypeItems = [
+                        ['val' => 'builder-floor', 'label' => '+ Builder Floor'],
+                        ['val' => 'apartment', 'label' => '+ Residential Apartment'],
+                        ['val' => 'villa', 'label' => '+ Independent House/Villa'],
+                        ['val' => 'studio', 'label' => '+ 1 RK/ Studio Apartment'],
+                        ['val' => 'farm-house', 'label' => '+ Farm House'],
+                    ];
+                @endphp
+                @foreach($subTypeItems as $item)
+                    @php $isAct = ($curSubType === $item['val']); @endphp
+                    <label class="cursor-pointer">
+                        <input type="radio" name="sub_type" value="{{ $isAct ? '' : $item['val'] }}" {{ $isAct ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold transition-all border {{ $isAct ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-600 text-blue-600 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-400' }}">
+                            {{ $isAct ? '✓ ' . substr($item['label'], 2) : $item['label'] }}
+                        </span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Available for (99acres Accordion & Pills) --}}
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-4">
+            <div class="flex items-center justify-between mb-2.5">
+                <span class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200">Available for</span>
+                <i class="ph-bold ph-caret-up text-slate-400 text-xs"></i>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+                @php
+                    $curAvail = request('available_for', '');
+                    $availItems = [
+                        ['val' => 'family', 'label' => '+ Family'],
+                        ['val' => 'single-men', 'label' => '+ Single Men'],
+                        ['val' => 'single-women', 'label' => '+ Single Women'],
+                    ];
+                @endphp
+                @foreach($availItems as $item)
+                    @php $isAct = ($curAvail === $item['val']); @endphp
+                    <label class="cursor-pointer">
+                        <input type="radio" name="available_for" value="{{ $isAct ? '' : $item['val'] }}" {{ $isAct ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold transition-all border {{ $isAct ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-600 text-blue-600 dark:text-blue-400 font-bold ring-1 ring-blue-600' : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-400' }}">
+                            {{ $isAct ? '✓ ' . substr($item['label'], 2) : $item['label'] }}
+                        </span>
+                    </label>
                 @endforeach
             </div>
         </div>
@@ -191,34 +253,19 @@
             </div>
         </div>
 
-        {{-- Bedrooms & Sort Row --}}
-        <div class="grid grid-cols-2 gap-3 pt-1 border-t border-slate-100 dark:border-slate-800">
-            <div>
-                <label for="{{ $idPrefix }}filter-bedrooms" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Beds</label>
-                <div class="relative">
-                    <select name="bedrooms" id="{{ $idPrefix }}filter-bedrooms"
-                            class="w-full pl-3 pr-7 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 transition-all appearance-none cursor-pointer">
-                        <option value="">Any BHK</option>
-                        @for($i = 1; $i <= 5; $i++)
-                            <option value="{{ $i }}" {{ request('bedrooms') == $i ? 'selected' : '' }}>{{ $i }} BHK</option>
-                        @endfor
-                    </select>
-                    <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                </div>
-            </div>
-            <div>
-                <label for="{{ $idPrefix }}filter-sort" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Sort By</label>
-                <div class="relative">
-                    <select name="sort" id="{{ $idPrefix }}filter-sort"
-                            class="w-full pl-3 pr-7 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 transition-all appearance-none cursor-pointer">
-                        <option value="new_to_old" {{ request('sort') === 'new_to_old' || request('sort') === 'latest' || !request('sort') ? 'selected' : '' }}>New to Old</option>
-                        <option value="old_to_new" {{ request('sort') === 'old_to_new' || request('sort') === 'oldest' ? 'selected' : '' }}>Old to New</option>
-                        <option value="unbooked" {{ request('sort') === 'unbooked' ? 'selected' : '' }}>Unbooked First</option>
-                        <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
-                        <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
-                    </select>
-                    <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                </div>
+        {{-- Sort Dropdown --}}
+        <div class="pt-1 border-t border-slate-100 dark:border-slate-800">
+            <label for="{{ $idPrefix }}filter-sort" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Sort Listings By</label>
+            <div class="relative">
+                <select name="sort" id="{{ $idPrefix }}filter-sort"
+                        class="w-full pl-3 pr-7 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 transition-all appearance-none cursor-pointer">
+                    <option value="new_to_old" {{ request('sort') === 'new_to_old' || request('sort') === 'latest' || !request('sort') ? 'selected' : '' }}>Relevance / New to Old</option>
+                    <option value="old_to_new" {{ request('sort') === 'old_to_new' || request('sort') === 'oldest' ? 'selected' : '' }}>Old to New</option>
+                    <option value="unbooked" {{ request('sort') === 'unbooked' ? 'selected' : '' }}>Available / Unbooked First</option>
+                    <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                    <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                </select>
+                <i class="ph-bold ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
             </div>
         </div>
 
