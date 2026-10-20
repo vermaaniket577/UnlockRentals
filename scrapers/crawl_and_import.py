@@ -104,10 +104,14 @@ HEADERS = {
 }
 
 FALLBACK_IMAGES = [
-    "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80"
+    "https://imagecdn.99acres.com/media1/42017/5/840345375M-1789551687244.jpg",
+    "https://imagecdn.99acres.com/media1/42871/0/857420409M-1791478098385.jpg",
+    "https://imagecdn.99acres.com/media1/43068/0/861360145M-1791968331875.jpg",
+    "https://imagecdn.99acres.com/media1/42159/1/843181781M-1789893933830.jpg",
+    "https://imagecdn.99acres.com/media1/42949/8/858988919M-1791654342416.jpg",
+    "https://imagecdn.99acres.com/media1/39272/9/785449752M-1782739242717.jpg",
+    "https://imagecdn.99acres.com/media1/43177/5/863545599M-1792209764839.jpg",
+    "https://imagecdn.99acres.com/media1/42481/11/849631073M-1790688294984.jpg",
 ]
 
 def resolve_location(url: str, p: dict = None):

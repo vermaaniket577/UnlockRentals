@@ -243,6 +243,73 @@ Route::withoutMiddleware([
         ->header('Access-Control-Allow-Origin', '*');
 })->name('property.image');
 
+// Secure Image Proxy to reliably serve external CDN images (99acres, etc.) without CORS or hotlink blocks
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+])->get('/image-proxy', function (\Illuminate\Http\Request $request) {
+    $url = $request->get('url');
+    if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
+        $placeholder = public_path('images/property_placeholder.svg');
+        return response()->file($placeholder, ['Content-Type' => 'image/svg+xml']);
+    }
+
+    $parsed = parse_url($url);
+    $host = strtolower($parsed['host'] ?? '');
+    $allowed = ['99acres.com', 'imagecdn.99acres.com', 'unsplash.com', 'images.unsplash.com', 'magicbricks.com', 'housing.com'];
+    $isAllowed = false;
+    foreach ($allowed as $a) {
+        if (str_ends_with($host, $a) || $host === $a) {
+            $isAllowed = true;
+            break;
+        }
+    }
+
+    if (!$isAllowed) {
+        $placeholder = public_path('images/property_placeholder.svg');
+        return response()->file($placeholder, ['Content-Type' => 'image/svg+xml']);
+    }
+
+    $cacheKey = 'img_proxy_' . md5($url);
+    $cached = \Illuminate\Support\Facades\Cache::get($cacheKey);
+    if ($cached && isset($cached['data'], $cached['mime'])) {
+        return response($cached['data'], 200)
+            ->header('Content-Type', $cached['mime'])
+            ->header('Cache-Control', 'public, max-age=604800, immutable')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 8,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_HTTPHEADER => [
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer: https://www.99acres.com/',
+            'Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+        ]
+    ]);
+    $data = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $mime = curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: 'image/jpeg';
+    curl_close($ch);
+
+    if ($code >= 200 && $code < 300 && !empty($data)) {
+        \Illuminate\Support\Facades\Cache::put($cacheKey, ['data' => $data, 'mime' => $mime], 604800);
+        return response($data, 200)
+            ->header('Content-Type', $mime)
+            ->header('Cache-Control', 'public, max-age=604800, immutable')
+            ->header('Access-Control-Allow-Origin', '*');
+    }
+
+    $placeholder = public_path('images/property_placeholder.svg');
+    return response()->file($placeholder, ['Content-Type' => 'image/svg+xml']);
+})->name('image.proxy');
+
 // Public CSRF Token Refresh Endpoint
 Route::get('/csrf-token', function () {
     return response()->json(['csrf_token' => csrf_token()]);
@@ -1055,18 +1122,15 @@ Route::withoutMiddleware([
     }
 
     if (!$foundPath) {
-        $defaultFallback = public_path('images/luxury_sunlit.webp');
-        if (!file_exists($defaultFallback)) {
-            $defaultFallback = public_path('images/luxury_sunlit.png');
-        }
+        $defaultFallback = public_path('images/property_placeholder.svg');
         if (file_exists($defaultFallback)) {
             return response()->file($defaultFallback, [
-                'Content-Type' => str_ends_with($defaultFallback, '.webp') ? 'image/webp' : 'image/png',
+                'Content-Type' => 'image/svg+xml',
                 'Cache-Control' => 'public, max-age=31536000, immutable',
                 'Access-Control-Allow-Origin' => '*',
             ]);
         }
-        return redirect('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80');
+        return response('', 404);
     }
 
     $etag = '"pif-' . md5($foundPath . filemtime($foundPath)) . '"';

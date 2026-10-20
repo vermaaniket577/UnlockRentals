@@ -168,16 +168,18 @@
                         @foreach($galleryImages as $idx => $img)
                             <div class="h-full w-full flex-shrink-0 relative cursor-pointer" onclick="openLightboxModal({{ $idx }})">
                                 <img src="{{ $img->imageUrl() }}"
+                                     data-orig-src="{{ $img->imageUrl() }}"
                                      alt="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
                                      class="w-full h-full object-cover select-none"
+                                     referrerpolicy="no-referrer"
                                      loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
-                                     onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.webp') }}';">
+                                     onerror="if(!this.dataset.proxied && this.src.startsWith('http') && !this.src.includes('/image-proxy')){ this.dataset.proxied='1'; this.src='{{ route('image.proxy') }}?url=' + encodeURIComponent(this.dataset.origSrc || this.src); } else { this.onerror=null; this.src='{{ asset('images/property_placeholder.svg') }}'; }">
                             </div>
                         @endforeach
                     </div>
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-slate-800">
-                        <img src="{{ asset('images/luxury_sunlit.webp') }}" alt="{{ $cleanTitle }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('images/property_placeholder.svg') }}" alt="{{ $cleanTitle }}" class="w-full h-full object-cover">
                     </div>
                 @endif
 

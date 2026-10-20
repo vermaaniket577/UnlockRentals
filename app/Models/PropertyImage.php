@@ -152,7 +152,7 @@ class PropertyImage extends Model
             return route('property.image.file', ['path' => $p], false);
         }
 
-        return asset('images/luxury_sunlit.webp');
+        return asset('images/property_placeholder.svg');
     }
 
     /**

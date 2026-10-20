@@ -138,11 +138,13 @@
                     @foreach($cardImages as $idx => $img)
                         <div class="card-slide flex-shrink-0 w-full h-full relative">
                             <img src="{{ $img->imageUrl() }}"
+                                 data-orig-src="{{ $img->imageUrl() }}"
                                  alt="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
                                  title="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
                                  width="480"
                                  height="360"
-                                 onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.webp') }}';"
+                                 referrerpolicy="no-referrer"
+                                 onerror="if(!this.dataset.proxied && this.src.startsWith('http') && !this.src.includes('/image-proxy')){ this.dataset.proxied='1'; this.src='{{ route('image.proxy') }}?url=' + encodeURIComponent(this.dataset.origSrc || this.src); } else { this.onerror=null; this.src='{{ asset('images/property_placeholder.svg') }}'; }"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out pointer-events-none"
                                  loading="{{ $idx === 0 ? $loadingAttr : 'lazy' }}"
                                  fetchpriority="{{ $idx === 0 ? $priorityAttr : 'low' }}"
@@ -173,18 +175,20 @@
             </div>
         @elseif($property->primaryImageUrl())
             <img src="{{ $property->primaryImageUrl() }}"
+                 data-orig-src="{{ $property->primaryImageUrl() }}"
                  alt="{{ $cleanTitle }}"
                  title="{{ $cleanTitle }}"
                  width="480"
                  height="360"
-                 onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.webp') }}';"
+                 referrerpolicy="no-referrer"
+                 onerror="if(!this.dataset.proxied && this.src.startsWith('http') && !this.src.includes('/image-proxy')){ this.dataset.proxied='1'; this.src='{{ route('image.proxy') }}?url=' + encodeURIComponent(this.dataset.origSrc || this.src); } else { this.onerror=null; this.src='{{ asset('images/property_placeholder.svg') }}'; }"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                  loading="{{ $loadingAttr }}"
                  fetchpriority="{{ $priorityAttr }}"
                  decoding="async">
         @elseif($property->hasVideo())
             <div class="relative w-full h-full">
-                <img src="{{ asset('images/luxury_sunlit.webp') }}"
+                <img src="{{ asset('images/property_placeholder.svg') }}"
                      alt="{{ $cleanTitle }}"
                      title="{{ $cleanTitle }}"
                      width="480"
@@ -201,9 +205,9 @@
                 </div>
             </div>
         @else
-            <img src="{{ asset('images/luxury_sunlit.webp') }}"
-                 alt="Premium Property - {{ $cleanTitle }}"
-                 title="Premium Property - {{ $cleanTitle }}"
+            <img src="{{ asset('images/property_placeholder.svg') }}"
+                 alt="Verified Property - {{ $cleanTitle }}"
+                 title="Verified Property - {{ $cleanTitle }}"
                  width="480"
                  height="360"
                  loading="{{ $loadingAttr }}"

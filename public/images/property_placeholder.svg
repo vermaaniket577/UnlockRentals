@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bgGrad)"/>
+  <rect width="800" height="600" fill="url(#glow)"/>
+
+  <!-- Architectural Grid Lines -->
+  <g opacity="0.08" stroke="#ffffff" stroke-width="1">
+    <line x1="0" y1="150" x2="800" y2="150"/>
+    <line x1="0" y1="300" x2="800" y2="300"/>
+    <line x1="0" y1="450" x2="800" y2="450"/>
+    <line x1="200" y1="0" x2="200" y2="600"/>
+    <line x1="400" y1="0" x2="400" y2="600"/>
+    <line x1="600" y1="0" x2="600" y2="600"/>
+  </g>
+
+  <!-- Center Icon Box -->
+  <g transform="translate(400, 260)">
+    <!-- Shield / Badge Backing -->
+    <circle r="64" fill="url(#blueGrad)" opacity="0.15"/>
+    <circle r="48" fill="url(#blueGrad)" opacity="0.3"/>
+    <circle r="36" fill="url(#blueGrad)"/>
+
+    <!-- Home Icon -->
+    <path d="M -16 6 L 0 -10 L 16 6 L 10 6 L 10 14 C 10 15 9 16 8 16 L -8 16 C -9 16 -10 15 -10 14 L -10 6 Z" fill="#ffffff"/>
+    <path d="M -4 16 L -4 10 L 4 10 L 4 16 Z" fill="url(#blueGrad)"/>
+    <polygon points="0,-14 -20,6 -17,8 0,-9 17,8 20,6" fill="#93c5fd"/>
+  </g>
+
+  <!-- Text -->
+  <text x="400" y="375" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="800" fill="#ffffff" letter-spacing="0.5">
+    UnlockRentals
+  </text>
+  <text x="400" y="405" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600" fill="#94a3b8" letter-spacing="0.3">
+    Verified Real Estate Listing
+  </text>
+  
+  <g transform="translate(400, 440)">
+    <rect x="-85" y="-12" width="170" height="24" rx="12" fill="#3b82f6" opacity="0.2"/>
+    <rect x="-85" y="-12" width="170" height="24" rx="12" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.4"/>
+    <text x="0" y="4" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#60a5fa" letter-spacing="0.8">
+      PHOTOS VERIFIED
+    </text>
+  </g>
+</svg>

@@ -60,7 +60,7 @@
             $cardImages = collect([$primaryImg])->merge($cardImages->reject(fn($img) => $img->id === $primaryImg->id))->values();
         }
     }
-    $primaryUrl = $cardImages->first()?->imageUrl() ?? $property->primaryImageUrl() ?? asset('images/luxury_sunlit.webp');
+    $primaryUrl = $cardImages->first()?->imageUrl() ?? $property->primaryImageUrl() ?? asset('images/property_placeholder.svg');
     $imagesCount = $cardImages->count() > 0 ? $cardImages->count() : ($property->images_count ?? 1);
 
     // Owner / Dealer Information
@@ -103,10 +103,12 @@
         {{-- Clickable Image Link --}}
         <a href="{{ $propertyUrl }}" class="block w-full h-full relative group/img overflow-hidden" title="{{ $cleanTitle }}">
             <img src="{{ $primaryUrl }}"
+                 data-orig-src="{{ $primaryUrl }}"
                  alt="{{ $cleanTitle }}"
                  loading="lazy"
+                 referrerpolicy="no-referrer"
                  class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500 ease-out select-none"
-                 onerror="this.onerror=null; this.src='{{ asset('images/luxury_sunlit.webp') }}';">
+                 onerror="if(!this.dataset.proxied && this.src.startsWith('http') && !this.src.includes('/image-proxy')){ this.dataset.proxied='1'; this.src='{{ route('image.proxy') }}?url=' + encodeURIComponent(this.dataset.origSrc || this.src); } else { this.onerror=null; this.src='{{ asset('images/property_placeholder.svg') }}'; }">
 
             {{-- Subtle Vignette Gradients --}}
             <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none"></div>
