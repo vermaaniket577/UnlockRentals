@@ -50,63 +50,84 @@
             </div>
         </div>
 
-        {{-- Advanced Filter & Search Bar --}}
-        <div class="bg-white border border-stone-200 rounded-xl p-4 mb-6 shadow-sm">
-            <form method="GET" action="{{ route('admin.properties') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {{-- Compact Filter Toolbar (UnlockRentals Theme) --}}
+        <div class="bg-white border border-stone-200/80 rounded-lg p-2.5 mb-5 shadow-sm">
+            <form method="GET" action="{{ route('admin.properties') }}" class="flex flex-wrap items-center gap-2">
                 @if(request('status'))
                     <input type="hidden" name="status" value="{{ request('status') }}">
                 @endif
 
-                {{-- Search Bar --}}
-                <div class="lg:col-span-2">
-                    <label class="block text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">Search Listing / ID</label>
-                    <div class="relative">
-                        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"></i>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Title, locality, ID..." class="w-full pl-9 pr-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                    </div>
+                {{-- Compact Search Input --}}
+                <div class="relative flex-1 min-w-[200px]">
+                    <i class="ph ph-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+                    <input type="text" 
+                           name="search" 
+                           value="{{ request('search') }}" 
+                           placeholder="Search title, locality, ID..." 
+                           class="w-full h-8 pl-8 pr-2.5 text-xs bg-stone-50 hover:bg-stone-50/80 focus:bg-white border border-stone-200 rounded-md text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-[#2563EB] focus:border-[#2563EB] transition-all">
                 </div>
 
-                {{-- Date of Posting Filter --}}
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">Date of Posting</label>
-                    <select name="date_filter" class="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" onchange="this.form.submit()">
+                {{-- Date of Posting Dropdown --}}
+                <div class="relative min-w-[130px]">
+                    <div class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 text-xs">
+                        <i class="ph ph-calendar"></i>
+                    </div>
+                    <select name="date_filter" 
+                            class="w-full h-8 pl-7 pr-6 text-xs bg-stone-50 hover:bg-stone-50/80 focus:bg-white border border-stone-200 rounded-md text-zinc-700 font-medium focus:outline-none focus:ring-1 focus:ring-[#2563EB] focus:border-[#2563EB] appearance-none cursor-pointer transition-all" 
+                            onchange="this.form.submit()">
                         <option value="">All Dates</option>
                         <option value="today" {{ request('date_filter') === 'today' ? 'selected' : '' }}>Today</option>
                         <option value="yesterday" {{ request('date_filter') === 'yesterday' ? 'selected' : '' }}>Yesterday</option>
                         <option value="this_week" {{ request('date_filter') === 'this_week' ? 'selected' : '' }}>This Week</option>
                         <option value="this_month" {{ request('date_filter') === 'this_month' ? 'selected' : '' }}>This Month</option>
                     </select>
+                    <i class="ph ph-caret-down absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none text-[10px]"></i>
                 </div>
 
-                {{-- City / Location Filter --}}
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">City / Location</label>
-                    <select name="location" class="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" onchange="this.form.submit()">
-                        <option value="">All Locations</option>
+                {{-- City Dropdown --}}
+                <div class="relative min-w-[130px]">
+                    <div class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 text-xs">
+                        <i class="ph ph-map-pin"></i>
+                    </div>
+                    <select name="location" 
+                            class="w-full h-8 pl-7 pr-6 text-xs bg-stone-50 hover:bg-stone-50/80 focus:bg-white border border-stone-200 rounded-md text-zinc-700 font-medium focus:outline-none focus:ring-1 focus:ring-[#2563EB] focus:border-[#2563EB] appearance-none cursor-pointer transition-all" 
+                            onchange="this.form.submit()">
+                        <option value="">All Cities</option>
                         @foreach($availableLocations ?? [] as $loc)
                             <option value="{{ $loc }}" {{ request('location') === $loc ? 'selected' : '' }}>{{ $loc }}</option>
                         @endforeach
                     </select>
+                    <i class="ph ph-caret-down absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none text-[10px]"></i>
                 </div>
 
-                {{-- Property Type Filter --}}
-                <div>
-                    <label class="block text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">Type</label>
-                    <select name="type" class="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" onchange="this.form.submit()">
+                {{-- Type Dropdown --}}
+                <div class="relative min-w-[110px]">
+                    <div class="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400 text-xs">
+                        <i class="ph ph-house"></i>
+                    </div>
+                    <select name="type" 
+                            class="w-full h-8 pl-7 pr-6 text-xs bg-stone-50 hover:bg-stone-50/80 focus:bg-white border border-stone-200 rounded-md text-zinc-700 font-medium focus:outline-none focus:ring-1 focus:ring-[#2563EB] focus:border-[#2563EB] appearance-none cursor-pointer transition-all" 
+                            onchange="this.form.submit()">
                         <option value="">All Types</option>
                         <option value="house" {{ request('type') === 'house' ? 'selected' : '' }}>House / Flat</option>
-                        <option value="shop" {{ request('type') === 'shop' ? 'selected' : '' }}>Shop / Commercial</option>
+                        <option value="shop" {{ request('type') === 'shop' ? 'selected' : '' }}>Shop</option>
                     </select>
+                    <i class="ph ph-caret-down absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none text-[10px]"></i>
                 </div>
 
-                {{-- Filter & Reset Actions --}}
-                <div class="flex items-end gap-2">
-                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm shadow-blue-600/20 flex items-center justify-center gap-1.5">
-                        <i class="ph ph-funnel"></i> Filter
+                {{-- Action Buttons --}}
+                <div class="flex items-center gap-1.5 ml-auto">
+                    <button type="submit" 
+                            class="h-8 px-3.5 bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-semibold rounded-md shadow-xs transition-colors flex items-center gap-1">
+                        <i class="ph ph-funnel text-xs"></i>
+                        <span>Filter</span>
                     </button>
                     @if(request()->hasAny(['search', 'date_filter', 'location', 'type', 'sort']))
-                    <a href="{{ route('admin.properties', request('status') ? ['status' => request('status')] : []) }}" class="px-3 py-2 bg-stone-100 hover:bg-stone-200 text-zinc-600 text-xs font-bold rounded-lg transition-all" title="Reset Filters">
-                        <i class="ph ph-arrow-counter-clockwise"></i>
+                    <a href="{{ route('admin.properties', request('status') ? ['status' => request('status')] : []) }}" 
+                       class="h-8 px-2.5 bg-stone-100 hover:bg-stone-200 text-zinc-600 text-xs font-medium rounded-md transition-colors flex items-center gap-1" 
+                       title="Reset Filters">
+                        <i class="ph ph-arrow-counter-clockwise text-xs"></i>
+                        <span class="hidden sm:inline">Reset</span>
                     </a>
                     @endif
                 </div>
@@ -124,7 +145,7 @@
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Owner</th>
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Type</th>
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Price</th>
-                            <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Posted Date</th>
+                            <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Posted</th>
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Booked</th>
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Status</th>
                             <th class="text-center text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Actions</th>
@@ -157,11 +178,10 @@
                             <td class="px-6 py-5 text-sm text-zinc-900 font-bold tracking-tight">{{ $property->formatted_price }}</td>
                             <td class="px-6 py-5 whitespace-nowrap">
                                 <div class="flex flex-col">
-                                    <span class="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
-                                        <i class="ph-bold ph-calendar text-blue-600"></i>
-                                        {{ $property->created_at ? $property->created_at->format('d M, Y') : 'N/A' }}
+                                    <span class="text-xs font-medium text-zinc-800">
+                                        {{ $property->created_at ? $property->created_at->format('d M Y') : '—' }}
                                     </span>
-                                    <span class="text-[11px] text-zinc-400 pl-4">
+                                    <span class="text-[10px] text-zinc-400">
                                         {{ $property->created_at ? $property->created_at->format('h:i A') . ' (' . $property->created_at->diffForHumans() . ')' : '' }}
                                     </span>
                                 </div>
