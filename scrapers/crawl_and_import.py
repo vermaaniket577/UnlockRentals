@@ -8,6 +8,12 @@ import sqlite3
 from curl_cffi import requests
 from bs4 import BeautifulSoup
 
+try:
+    from playwright_scraper import scrape_with_playwright, PLAYWRIGHT_INSTALLED
+except Exception:
+    PLAYWRIGHT_INSTALLED = False
+    scrape_with_playwright = None
+
 # ==============================================================================
 # Comprehensive Indian Cities & States Knowledge Map
 # ==============================================================================
@@ -560,10 +566,38 @@ def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: s
 
     return f"https://www.99acres.com/{type_slug}-for-{purp}-in-{city_slug}-ffid"
 
+def fetch_properties_smart(url: str, city_name: str, state_name: str, max_items: int = 10, purpose: str = "rent", engine: str = "playwright", is_json: bool = False):
+    items = []
+    # 1. Primary: Use Playwright browser automation for deep rendering & maximum image extraction
+    if engine in ["playwright", "auto", "default"] and PLAYWRIGHT_INSTALLED and scrape_with_playwright:
+        try:
+            if not is_json:
+                print(f"[*] Crawling with Playwright Browser Engine: {city_name} -> {url}...")
+            items = scrape_with_playwright(url, city_name, state_name, max_items=max_items, target_purpose=purpose)
+            if not is_json and items:
+                print(f"[✓] Playwright fetched {len(items)} listings with high-res galleries!")
+        except Exception as e:
+            sys.stderr.write(f"Playwright attempt warning ({e}), falling back to stealth HTTP...\n")
+
+    # 2. Resilient Fallback: curl_cffi stealth HTTP engine
+    if not items:
+        if not is_json:
+            print(f"[*] Crawling with Stealth HTTP Engine: {city_name} -> {url}...")
+        cfg = {"url": url, "state": state_name}
+        items = crawl_items_from_city(city_name, cfg, max_items=max_items)
+
+    return items
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     is_json = "--json" in args
-    clean_args = [a for a in args if a != "--json"]
+
+    engine = "playwright"
+    for a in args:
+        if a.startswith("--engine="):
+            engine = a.split("=", 1)[1].lower()
+
+    clean_args = [a for a in args if not a.startswith("--")]
 
     target_city = clean_args[0] if len(clean_args) > 0 else "Delhi"
     max_count = int(clean_args[1]) if len(clean_args) > 1 else 10
@@ -575,10 +609,9 @@ if __name__ == "__main__":
         custom_url = target_city
         city_name, state = resolve_location(custom_url)
 
-        cfg = {"url": custom_url, "state": state}
         if not is_json:
-            print(f"\n[*] Crawling custom URL for {city_name}, {state} (up to {max_count} listings)...")
-        items = crawl_items_from_city(city_name, cfg, max_items=max_count)
+            print(f"\n[*] Crawling custom URL for {city_name}, {state} (up to {max_count} listings, engine={engine})...")
+        items = fetch_properties_smart(custom_url, city_name, state, max_items=max_count, purpose=target_purpose, engine=engine, is_json=is_json)
 
         if is_json:
             print("===JSON_START===")
@@ -610,11 +643,10 @@ if __name__ == "__main__":
         for c_name, c_state in ALL_CITIES:
             c_url = generate_99acres_url(c_name, target_purpose, target_type)
             if not is_json:
-                print(f"\n[*] Crawling {c_name} ({target_purpose}, {target_type}) -> {c_url}...")
-            cfg = {"url": c_url, "state": c_state}
-            c_items = crawl_items_from_city(c_name, cfg, max_items=per_city)
+                print(f"\n[*] Crawling {c_name} ({target_purpose}, {target_type}, engine={engine}) -> {c_url}...")
+            c_items = fetch_properties_smart(c_url, c_name, c_state, max_items=per_city, purpose=target_purpose, engine=engine, is_json=is_json)
             all_items.extend(c_items)
-            time.sleep(random.uniform(1.2, 2.2))
+            time.sleep(random.uniform(0.8, 1.8))
 
         if is_json:
             print("===JSON_START===")
@@ -632,10 +664,9 @@ if __name__ == "__main__":
         state = matched[1] if matched else "India"
 
         url = generate_99acres_url(city_name, target_purpose, target_type)
-        cfg = {"url": url, "state": state}
         if not is_json:
-            print(f"\n[*] Crawling {city_name}, {state} ({target_purpose}, {target_type}) -> {url}...")
-        items = crawl_items_from_city(city_name, cfg, max_items=max_count)
+            print(f"\n[*] Crawling {city_name}, {state} ({target_purpose}, {target_type}, engine={engine}) -> {url}...")
+        items = fetch_properties_smart(url, city_name, state, max_items=max_count, purpose=target_purpose, engine=engine, is_json=is_json)
 
         if is_json:
             print("===JSON_START===")

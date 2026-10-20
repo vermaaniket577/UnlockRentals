@@ -2588,6 +2588,7 @@ class AdminController extends Controller
         $target = !empty($url) ? $url : (!empty($city) ? $city : 'delhi');
 
         $count = max(1, min(60, (int) $request->input('count', 10)));
+        $engine = strtolower(trim((string) $request->input('engine', 'playwright')));
         $createAccounts = $request->boolean('create_accounts', true);
         $autoApprove = $request->boolean('auto_approve', true);
 
@@ -2603,7 +2604,8 @@ class AdminController extends Controller
             $escapedScript = escapeshellarg($scriptPath);
             $escapedPurpose = escapeshellarg($purpose ?: 'rent');
             $escapedType = escapeshellarg($propertyType ?: 'all');
-            $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json";
+            $escapedEngine = escapeshellarg($engine ?: 'playwright');
+            $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine}";
 
             exec($command, $output, $returnCode);
 
@@ -2762,7 +2764,10 @@ class AdminController extends Controller
                     'thumbnail'     => !empty($item['images']) ? $item['images'][0] : null,
                     'images_count'  => count($item['images'] ?? []),
                     'bedrooms'      => $prop->bedrooms,
+                    'bathrooms'     => $prop->bathrooms,
+                    'furnishing'    => $prop->furnishing,
                     'area_sqft'     => $prop->area_sqft,
+                    'engine'        => $engine,
                     'view_url'      => route('properties.show', $prop->slug),
                 ];
             }
@@ -2777,8 +2782,9 @@ class AdminController extends Controller
 
             return response()->json([
                 'success'              => true,
-                'message'              => "Successfully fetched & posted " . count($createdProperties) . " properties and created/linked " . count($createdAccounts) . " owner accounts!",
+                'message'              => "Successfully fetched & posted " . count($createdProperties) . " properties and created/linked " . count($createdAccounts) . " owner accounts using " . strtoupper($engine) . " engine!",
                 'url'                  => $url,
+                'engine'               => $engine,
                 'imported_count'       => count($createdProperties),
                 'accounts_created'     => count($createdAccounts),
                 'accounts'             => $createdAccounts,
@@ -2803,6 +2809,7 @@ class AdminController extends Controller
         $request->merge([
             'city'    => 'all',
             'purpose' => $request->input('purpose', 'rent'),
+            'engine'  => $request->input('engine', 'playwright'),
         ]);
         return $this->fetchAndPostFromUrl($request);
     }

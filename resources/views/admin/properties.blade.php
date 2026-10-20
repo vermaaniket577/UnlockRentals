@@ -553,6 +553,26 @@
                     </div>
                 </div>
 
+                {{-- Scraper Engine Selector (Playwright vs High-Speed) --}}
+                <div class="bg-gradient-to-r from-indigo-50/80 to-purple-50/80 p-3.5 rounded-2xl border border-indigo-200/70 flex items-center justify-between gap-3 flex-wrap">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+                            <i class="ph-bold ph-lightning"></i>
+                        </span>
+                        <div>
+                            <p class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                Scraper Engine: <span class="text-indigo-600 font-black">Playwright Browser</span>
+                                <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wide bg-emerald-100 text-emerald-800">Active</span>
+                            </p>
+                            <p class="text-[11px] text-slate-500">Headless Chromium browser loads complete 15-20+ photo galleries &amp; full specs</p>
+                        </div>
+                    </div>
+                    <select id="fetch_engine" name="engine" class="text-xs font-bold px-3 py-1.5 rounded-xl border border-indigo-300 bg-white text-indigo-950 focus:ring-2 focus:ring-indigo-200 outline-none shadow-2xs">
+                        <option value="playwright" selected>⚡ Playwright Browser (Max Photos &amp; Deep Specs)</option>
+                        <option value="curl">🚀 High-Speed Engine (curl-cffi)</option>
+                    </select>
+                </div>
+
                 {{-- Quantity & Automation Options --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                     <div>
@@ -956,6 +976,7 @@ async function handleFetchUrlSubmit(e) {
     const cityVal = (citySelect === 'custom' && cityCustom) ? cityCustom : citySelect;
     const purposeVal = document.getElementById('scrape_purpose')?.value || 'rent';
     const propTypeVal = document.getElementById('scrape_property_type')?.value || 'all';
+    const engineVal = document.getElementById('fetch_engine')?.value || 'playwright';
     const urlVal = document.getElementById('fetch_target_url').value.trim();
     const countVal = document.getElementById('fetch_count').value;
     const createAccounts = document.getElementById('fetch_create_accounts').checked;
@@ -963,15 +984,15 @@ async function handleFetchUrlSubmit(e) {
 
     btn.disabled = true;
     icon.className = 'ph-bold ph-arrows-clockwise text-sm animate-spin';
-    text.textContent = 'Scraping from 99acres...';
+    text.textContent = `Scraping with ${engineVal === 'playwright' ? 'Playwright' : 'High-Speed'}...`;
 
     const cityLabel = cityVal === 'all' ? 'All Top Indian Cities' : cityVal;
     resultBox.className = 'p-4 rounded-2xl border border-indigo-200 bg-indigo-50/70 text-indigo-900 flex items-center gap-3 text-xs font-semibold';
     resultBox.innerHTML = `
         <span class="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin shrink-0"></span>
         <div class="min-w-0 flex-1">
-            <p class="font-bold">Scraping ${cityLabel} listings for ${purposeVal.toUpperCase()}...</p>
-            <p class="text-[11px] text-indigo-700 font-normal mt-0.5">Fetching complete image galleries, contact phone numbers, and auto-creating owner accounts...</p>
+            <p class="font-bold">Scraping ${cityLabel} listings for ${purposeVal.toUpperCase()} using ${engineVal.toUpperCase()}...</p>
+            <p class="text-[11px] text-indigo-700 font-normal mt-0.5">Playwright browser engine loading deep image galleries, specs, and verified contact numbers...</p>
         </div>
     `;
     resultBox.classList.remove('hidden');
@@ -994,6 +1015,7 @@ async function handleFetchUrlSubmit(e) {
                 city: cityVal,
                 purpose: purposeVal,
                 property_type: propTypeVal,
+                engine: engineVal,
                 url: isRawUrl ? urlVal : '',
                 count: parseInt(countVal, 10),
                 create_accounts: createAccounts,
@@ -1033,7 +1055,10 @@ async function handleFetchUrlSubmit(e) {
             if (data.properties && data.properties.length > 0) {
                 propsHtml = `
                     <div class="mt-3 pt-3 border-t border-emerald-200/80">
-                        <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-2">🏡 Published Listings (${data.properties.length}):</p>
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800">🏡 Published Listings (${data.properties.length}):</p>
+                            ${data.engine ? `<span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">⚡ Engine: ${data.engine}</span>` : ''}
+                        </div>
                         <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
                             ${data.properties.map(p => `
                                 <div class="flex items-start justify-between bg-white/95 p-2.5 rounded-2xl border border-emerald-200/80 text-[11px] gap-3 shadow-xs hover:border-emerald-300 transition-all">
@@ -1050,9 +1075,13 @@ async function handleFetchUrlSubmit(e) {
                                                 <span class="font-bold text-slate-900 truncate max-w-[220px]" title="${p.title}">#${p.id} ${p.title}</span>
                                                 <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wide ${p.purpose === 'buy' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">${p.purpose === 'buy' ? 'For Sale' : 'For Rent'}</span>
                                                 <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-100 text-slate-600">${p.category}</span>
+                                                ${p.furnishing ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-amber-50 text-amber-800 border border-amber-200/60 capitalize">${p.furnishing}</span>` : ''}
                                             </div>
                                             <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
                                                 <span>📍 ${p.locality || p.city}, ${p.city}</span>
+                                                ${p.bedrooms ? `<span>🛏️ ${p.bedrooms} Beds</span>` : ''}
+                                                ${p.bathrooms ? `<span>🚿 ${p.bathrooms} Baths</span>` : ''}
+                                                ${p.area_sqft ? `<span>📐 ${p.area_sqft} sqft</span>` : ''}
                                                 <span class="font-semibold text-slate-700">👤 ${p.owner}</span>
                                             </div>
                                             ${p.contact_phone ? `
