@@ -248,8 +248,9 @@
                     @endif
                 </span>
                 @if($property->is_booked && $property->is_featured)
-                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded sm:rounded-md text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wide bg-amber-500 text-slate-950 shadow-xs backdrop-blur-md">
-                        <i class="ph-fill ph-star text-[8px]"></i> <span class="hidden sm:inline">Featured</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] sm:text-[9.5px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-white/25 shadow-xs shadow-blue-500/25 backdrop-blur-md">
+                        <i class="ph-fill ph-star text-amber-300 text-[9px] sm:text-[10px]"></i>
+                        <span>Featured</span>
                     </span>
                 @endif
             </div>
@@ -263,8 +264,9 @@
                     </span>
                 @endif
                 @if(!$property->is_booked && $property->is_featured)
-                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded sm:rounded-md text-[8px] sm:text-[9px] font-extrabold uppercase tracking-wide bg-amber-500 text-slate-950 shadow-xs backdrop-blur-md">
-                        <i class="ph-fill ph-star text-[8px]"></i> <span class="hidden sm:inline">Featured</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] sm:text-[9.5px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-white/25 shadow-xs shadow-blue-500/25 backdrop-blur-md">
+                        <i class="ph-fill ph-star text-amber-300 text-[9px] sm:text-[10px]"></i>
+                        <span>Featured</span>
                     </span>
                 @endif
             </div>
