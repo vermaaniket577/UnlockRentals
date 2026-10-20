@@ -2,36 +2,45 @@
 
 This crawler allows you to crawl real estate rental listings city-by-city and import them directly into your UnlockRentals database (`properties` and `property_images` tables).
 
-## Features
-- **Anti-Bot Bypass**: Uses `curl_cffi` to mimic Chrome TLS/JA3 fingerprints to bypass 99acres bot detection.
-- **Ultra-low RAM**: Runs smoothly within 50–70 MB RAM (ideal for your 1 GB RAM hosting).
-- **Zero Disk Space Storage**: Saves 99acres CDN WebP image URLs directly into the database.
-- **Direct Frontend Display**: Saves listings with `status = 'approved'` so they immediately appear in homepage search and property cards.
-
-## How to Run
-
-### 1. Crawl a Specific City
+## Prerequisites (Python libraries)
+In your terminal, make sure `curl_cffi` and `beautifulsoup4` are installed:
 ```bash
-python scrapers/crawl_and_import.py Gurgaon 10
-python scrapers/crawl_and_import.py Noida 10
-python scrapers/crawl_and_import.py Delhi 10
-python scrapers/crawl_and_import.py Bangalore 10
-python scrapers/crawl_and_import.py Mumbai 10
-python scrapers/crawl_and_import.py Pune 10
-python scrapers/crawl_and_import.py Hyderabad 10
+pip install curl_cffi beautifulsoup4
+# or
+pip3 install curl_cffi beautifulsoup4
 ```
 
-### 2. Crawl All Cities Automatically
+## How to Run on Live Server
+
+### Option A: Via Laravel Artisan (Recommended - Works with MySQL & SQLite)
+From inside your `laravel_project` directory:
+
 ```bash
-python scrapers/crawl_and_import.py all 10
+# Scrape a specific city (default: 10 properties)
+php artisan scrape:city Gurgaon --count=10
+php artisan scrape:city Noida --count=10
+php artisan scrape:city Delhi --count=10
+php artisan scrape:city Bangalore --count=10
+php artisan scrape:city Mumbai --count=10
+php artisan scrape:city Pune --count=10
+php artisan scrape:city Hyderabad --count=10
+
+# Scrape all supported cities
+php artisan scrape:city all --count=5
 ```
 
-### 3. Verify Frontend Data
+### Option B: Direct Python Execution
+```bash
+python3 scrapers/crawl_and_import.py Gurgaon 10
+python3 scrapers/crawl_and_import.py all 5
+```
+
+### Verify Frontend Data
 ```bash
 php scrapers/verify_frontend.php
 ```
 
-### 4. Clear Cache (if needed)
+### Clear Cache (if needed)
 ```bash
 php artisan cache:clear
 ```

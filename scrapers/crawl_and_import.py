@@ -3,6 +3,7 @@ import re
 import sys
 import time
 import random
+import json
 import sqlite3
 from curl_cffi import requests
 from bs4 import BeautifulSoup
@@ -41,7 +42,6 @@ CITIES_CONFIG = {
     }
 }
 
-# Resolve DB Path
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DB_PATH = os.path.join(ROOT_DIR, "database", "database.sqlite")
 
@@ -74,97 +74,48 @@ def parse_indian_price(price_str: str) -> float:
         return float(digits.group(1))
     return 0.0
 
-def get_or_create_user(cursor):
-    cursor.execute("SELECT id FROM users WHERE role = 'admin' OR email LIKE '%admin%' LIMIT 1")
-    row = cursor.fetchone()
-    if row:
-        return row[0]
-    cursor.execute("SELECT id FROM users LIMIT 1")
-    row = cursor.fetchone()
-    return row[0] if row else 1
-
-def get_category_id(cursor):
-    # Try Flat / Apartment (ID 10) or Residential House
-    cursor.execute("SELECT id FROM categories WHERE name LIKE '%Flat%' OR name LIKE '%Apartment%' LIMIT 1")
-    row = cursor.fetchone()
-    if row:
-        return row[0]
-    cursor.execute("SELECT id FROM categories LIMIT 1")
-    row = cursor.fetchone()
-    return row[0] if row else 1
-
-def generate_unique_slug(cursor, title):
-    base_slug = re.sub(r"[^a-zA-Z0-9]+", "-", title.lower()).strip("-")
-    if not base_slug:
-        base_slug = "rental-property"
-    candidate = f"{base_slug}-{random.randint(10000, 99999)}"
-    cursor.execute("SELECT 1 FROM properties WHERE slug = ?", (candidate,))
-    while cursor.fetchone():
-        candidate = f"{base_slug}-{random.randint(10000, 99999)}"
-        cursor.execute("SELECT 1 FROM properties WHERE slug = ?", (candidate,))
-    return candidate
-
-def crawl_city(city_name: str, config: dict, max_items: int = 15):
+def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
     url = config["url"]
     state = config["state"]
-
-    print(f"\n========================================================")
-    print(f"[*] Crawling: {city_name}, {state}")
-    print(f"[*] URL: {url}")
-    print(f"[*] Target Max: {max_items} properties")
-    print(f"========================================================")
 
     try:
         response = requests.get(url, headers=HEADERS, impersonate="chrome120", timeout=25)
     except Exception as e:
-        print(f"[!] Error fetching {url}: {e}")
-        return 0
+        sys.stderr.write(f"Fetch error: {e}\n")
+        return []
 
     if response.status_code != 200:
-        print(f"[!] HTTP error {response.status_code} while fetching {url}")
-        return 0
+        sys.stderr.write(f"HTTP error {response.status_code}\n")
+        return []
 
     soup = BeautifulSoup(response.text, "html.parser")
     cards = soup.find_all("div", class_=re.compile(r"tupleNew__outerTupleWrap"))
-    print(f"[+] Found {len(cards)} listings on page.")
-
-    if not cards:
-        print("[!] No cards detected. 99acres structure may have changed.")
-        return 0
-
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    user_id = get_or_create_user(cursor)
-    category_id = get_category_id(cursor)
-
-    imported = 0
+    items = []
 
     for idx, card in enumerate(cards):
-        if imported >= max_items:
+        if len(items) >= max_items:
             break
 
         try:
-            # 1. Title
+            # Title
             title_el = card.find(["h2", "a"], class_=re.compile(r"tupleNew__propType|tupleTitle"))
-            title = title_el.get_text(" ", strip=True) if title_el else f"Modern Rental Flat in {city_name}"
+            title = title_el.get_text(" ", strip=True) if title_el else f"Rental Flat in {city_name}"
 
-            # 2. Price
+            # Price
             price_el = card.find(class_=re.compile(r"tupleNew__priceValWrap|list_header_semiBold"))
             price_raw = price_el.get_text(strip=True) if price_el else ""
             price = parse_indian_price(price_raw)
             if price <= 0:
-                price = 25000.0  # reasonable fallback
+                price = 25000.0
 
-            # 3. BHK & Bathrooms
+            # Bedrooms
             bedrooms = 2
             bhk_match = re.search(r"(\d+)\s*BHK", title, re.I)
             if bhk_match:
                 bedrooms = int(bhk_match.group(1))
-
             bathrooms = max(1, bedrooms - 1) if bedrooms > 1 else 1
 
-            # 4. Area
+            # Area
             area_sqft = 850
             area_el = card.find(class_=re.compile(r"tupleNew__area1Type"))
             if area_el:
@@ -172,15 +123,13 @@ def crawl_city(city_name: str, config: dict, max_items: int = 15):
                 if area_match:
                     area_sqft = int(area_match.group(1).replace(",", ""))
 
-            # 5. Locality
+            # Locality
             locality = city_name
             loc_match = re.search(r"in\s+(.+?)(?:,|$)", title, re.I)
             if loc_match:
                 locality = loc_match.group(1).strip()
 
-            address = f"{locality}, {city_name}, {state}"
-
-            # 6. Furnishing
+            # Furnishing
             furnishing = "semi-furnished"
             card_text = card.get_text().lower()
             if "fully furnished" in card_text or "fully-furnished" in card_text:
@@ -188,96 +137,129 @@ def crawl_city(city_name: str, config: dict, max_items: int = 15):
             elif "unfurnished" in card_text:
                 furnishing = "unfurnished"
 
-            # 7. Images
+            # Images
             imgs = []
             for img in card.find_all("img"):
                 src = img.get("src") or img.get("data-src")
                 if src and "imagecdn.99acres.com" in src:
                     imgs.append(src)
-
-            # If no photos found on card, pick a high quality fallback
             if not imgs:
                 imgs.append(random.choice(FALLBACK_IMAGES))
 
-            # 8. Contact phone
             contact_phone = f"+91 {random.randint(70000, 99999)} {random.randint(10000, 99999)}"
 
-            # 9. Description
             description = (
-                f"Beautiful {bedrooms} BHK apartment available for rent in {locality}, {city_name}. "
-                f"Spacious carpet area of {area_sqft} sq.ft. with {bathrooms} bathrooms. "
+                f"Spacious {bedrooms} BHK apartment available for rent in {locality}, {city_name}. "
+                f"Carpet area of {area_sqft} sq.ft. with {bathrooms} bathrooms. "
                 f"Comes {furnishing}. Situated close to public transit, markets, and key hubs."
             )
 
-            # 10. Slug
-            slug = generate_unique_slug(cursor, title)
-
-            # Insert Property
-            cursor.execute("""
-                INSERT INTO properties (
-                    user_id, category_id, title, slug, description, type, purpose,
-                    price, price_period, state, location, locality, address,
-                    contact_phone, bedrooms, bathrooms, area_sqft, furnishing,
-                    status, is_featured, is_booked, approved_at, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, 'house', 'rent', ?, 'month', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, 0, datetime('now'), datetime('now'), datetime('now'))
-            """, (
-                user_id,
-                category_id,
-                title,
-                slug,
-                description,
-                price,
-                state,
-                city_name,
-                locality,
-                address,
-                contact_phone,
-                bedrooms,
-                bathrooms,
-                area_sqft,
-                furnishing,
-                1 if idx < 3 else 0  # feature top 3
-            ))
-
-            property_id = cursor.lastrowid
-
-            # Insert Images into property_images table
-            for img_idx, img_url in enumerate(imgs):
-                cursor.execute("""
-                    INSERT INTO property_images (
-                        property_id, path, is_primary, sort_order, created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))
-                """, (
-                    property_id,
-                    img_url,
-                    1 if img_idx == 0 else 0,
-                    img_idx
-                ))
-
-            imported += 1
-            print(f"  [{imported}/{max_items}] Saved ID #{property_id}: '{title}' | ₹{int(price)}/mo | {locality}")
-
+            items.append({
+                "title": title,
+                "price": price,
+                "bedrooms": bedrooms,
+                "bathrooms": bathrooms,
+                "area_sqft": area_sqft,
+                "city": city_name,
+                "state": state,
+                "locality": locality,
+                "furnishing": furnishing,
+                "images": imgs,
+                "contact_phone": contact_phone,
+                "description": description
+            })
         except Exception as e:
-            print(f"  [!] Failed card {idx}: {e}")
             continue
+
+    return items
+
+def save_items_to_sqlite(items):
+    if not os.path.exists(DB_PATH):
+        print(f"Database file not found at {DB_PATH}")
+        return 0
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM users WHERE role = 'admin' OR email LIKE '%admin%' LIMIT 1")
+    user_row = cursor.fetchone()
+    user_id = user_row[0] if user_row else 1
+
+    cursor.execute("SELECT id FROM categories WHERE name LIKE '%Flat%' OR name LIKE '%Apartment%' LIMIT 1")
+    cat_row = cursor.fetchone()
+    category_id = cat_row[0] if cat_row else 1
+
+    saved = 0
+    for idx, item in enumerate(items):
+        slug_base = re.sub(r"[^a-zA-Z0-9]+", "-", item["title"].lower()).strip("-")
+        slug = f"{slug_base}-{random.randint(10000, 99999)}"
+
+        cursor.execute("""
+            INSERT INTO properties (
+                user_id, category_id, title, slug, description, type, purpose,
+                price, price_period, state, location, locality, address,
+                contact_phone, bedrooms, bathrooms, area_sqft, furnishing,
+                status, is_featured, is_booked, approved_at, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, 'house', 'rent', ?, 'month', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, 0, datetime('now'), datetime('now'), datetime('now'))
+        """, (
+            user_id, category_id, item["title"], slug, item["description"],
+            item["price"], item["state"], item["city"], item["locality"],
+            f"{item['locality']}, {item['city']}", item["contact_phone"],
+            item["bedrooms"], item["bathrooms"], item["area_sqft"], item["furnishing"],
+            1 if idx < 3 else 0
+        ))
+
+        prop_id = cursor.lastrowid
+        for img_idx, img_url in enumerate(item["images"]):
+            cursor.execute("""
+                INSERT INTO property_images (
+                    property_id, path, is_primary, sort_order, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))
+            """, (prop_id, img_url, 1 if img_idx == 0 else 0, img_idx))
+
+        saved += 1
+        print(f"  [✓] Imported ID #{prop_id}: '{item['title']}' | ₹{int(item['price'])}/mo")
 
     conn.commit()
     conn.close()
-    print(f"[✓] Completed {city_name}: Successfully added {imported} properties.")
-    return imported
+    return saved
 
 if __name__ == "__main__":
-    target_city = sys.argv[1] if len(sys.argv) > 1 else "Gurgaon"
-    max_items = int(sys.argv[2]) if len(sys.argv) > 2 else 10
+    args = sys.argv[1:]
+    is_json = "--json" in args
+    clean_args = [a for a in args if a != "--json"]
+
+    target_city = clean_args[0] if len(clean_args) > 0 else "Gurgaon"
+    max_count = int(clean_args[1]) if len(clean_args) > 1 else 10
 
     if target_city.lower() == "all":
-        total = 0
+        all_items = []
         for city, cfg in CITIES_CONFIG.items():
-            cnt = crawl_city(city, cfg, max_items=max_items)
-            total += cnt
-            time.sleep(random.uniform(3.0, 5.0))
-        print(f"\n[🎉] Done! Total properties imported across all cities: {total}")
+            if not is_json:
+                print(f"\n[*] Crawling {city}...")
+            city_items = crawl_items_from_city(city, cfg, max_items=max_count)
+            all_items.extend(city_items)
+            time.sleep(random.uniform(2.5, 4.0))
+
+        if is_json:
+            print("===JSON_START===")
+            print(json.dumps(all_items))
+            print("===JSON_END===")
+        else:
+            save_items_to_sqlite(all_items)
+            print(f"\n[🎉] Done! Stored {len(all_items)} properties.")
+
     elif target_city in CITIES_CONFIG:
-        crawl_city(target_city, CITIES_CONFIG[target_city], max_items=max_items)
+        if not is_json:
+            print(f"\n[*] Crawling {target_city} ({max_count} listings)...")
+        items = crawl_items_from_city(target_city, CITIES_CONFIG[target_city], max_items=max_count)
+
+        if is_json:
+            print("===JSON_START===")
+            print(json.dumps(items))
+            print("===JSON_END===")
+        else:
+            save_items_to_sqlite(items)
+            print(f"\n[✓] Done! Stored {len(items)} properties.")
     else:
-        print(f"Unknown city '{target_city}'. Available: {list(CITIES_CONFIG.keys())} or 'all'")
+        print(f"Unknown city '{target_city}'. Options: {list(CITIES_CONFIG.keys())} or 'all'")
