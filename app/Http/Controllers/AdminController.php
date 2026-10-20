@@ -271,13 +271,96 @@ class AdminController extends Controller
     {
         $query = Property::with(['owner', 'primaryImage', 'category']);
 
+        // Filter by Status (pending, approved, rejected)
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        $properties = $query->latest()->paginate(15);
+        // Filter by Search Keyword (Title, Locality, Location, ID)
+        if ($request->filled('search')) {
+            $s = trim($request->search);
+            $query->where(function ($q) use ($s) {
+                if (is_numeric($s)) {
+                    $q->orWhere('id', (int)$s);
+                }
+                $q->orWhere('title', 'like', "%{$s}%")
+                  ->orWhere('location', 'like', "%{$s}%")
+                  ->orWhere('locality', 'like', "%{$s}%")
+                  ->orWhere('address', 'like', "%{$s}%");
+            });
+        }
 
-        return view('admin.properties', compact('properties'));
+        // Filter by City / Location
+        if ($request->filled('location')) {
+            $query->where('location', $request->location);
+        }
+
+        // Filter by Type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter by Date of Posting
+        if ($request->filled('date_filter')) {
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', Carbon::today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', Carbon::yesterday());
+                    break;
+                case 'this_week':
+                    $query->where('created_at', '>=', Carbon::now()->startOfWeek());
+                    break;
+                case 'this_month':
+                    $query->where('created_at', '>=', Carbon::now()->startOfMonth());
+                    break;
+                case 'custom':
+                    if ($request->filled('date_from')) {
+                        $query->whereDate('created_at', '>=', $request->date_from);
+                    }
+                    if ($request->filled('date_to')) {
+                        $query->whereDate('created_at', '<=', $request->date_to);
+                    }
+                    break;
+            }
+        } elseif ($request->filled('date_from') || $request->filled('date_to')) {
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', $request->date_from);
+            }
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', $request->date_to);
+            }
+        }
+
+        // Sort by option
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'oldest':
+                $query->oldest('created_at');
+                break;
+            case 'price_high':
+                $query->orderByDesc('price');
+                break;
+            case 'price_low':
+                $query->orderBy('price');
+                break;
+            case 'latest':
+            default:
+                $query->latest('created_at');
+                break;
+        }
+
+        $properties = $query->paginate(15)->withQueryString();
+
+        // Get unique cities/locations for filter dropdown
+        $availableLocations = Property::whereNotNull('location')
+            ->where('location', '!=', '')
+            ->distinct()
+            ->orderBy('location')
+            ->pluck('location');
+
+        return view('admin.properties', compact('properties', 'availableLocations'));
     }
 
     /**

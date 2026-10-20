@@ -50,6 +50,69 @@
             </div>
         </div>
 
+        {{-- Advanced Filter & Search Bar --}}
+        <div class="bg-white border border-stone-200 rounded-xl p-4 mb-6 shadow-sm">
+            <form method="GET" action="{{ route('admin.properties') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                @if(request('status'))
+                    <input type="hidden" name="status" value="{{ request('status') }}">
+                @endif
+
+                {{-- Search Bar --}}
+                <div class="lg:col-span-2">
+                    <label class="block text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">Search Listing / ID</label>
+                    <div class="relative">
+                        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Title, locality, ID..." class="w-full pl-9 pr-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                    </div>
+                </div>
+
+                {{-- Date of Posting Filter --}}
+                <div>
+                    <label class="block text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">Date of Posting</label>
+                    <select name="date_filter" class="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" onchange="this.form.submit()">
+                        <option value="">All Dates</option>
+                        <option value="today" {{ request('date_filter') === 'today' ? 'selected' : '' }}>Today</option>
+                        <option value="yesterday" {{ request('date_filter') === 'yesterday' ? 'selected' : '' }}>Yesterday</option>
+                        <option value="this_week" {{ request('date_filter') === 'this_week' ? 'selected' : '' }}>This Week</option>
+                        <option value="this_month" {{ request('date_filter') === 'this_month' ? 'selected' : '' }}>This Month</option>
+                    </select>
+                </div>
+
+                {{-- City / Location Filter --}}
+                <div>
+                    <label class="block text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">City / Location</label>
+                    <select name="location" class="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" onchange="this.form.submit()">
+                        <option value="">All Locations</option>
+                        @foreach($availableLocations ?? [] as $loc)
+                            <option value="{{ $loc }}" {{ request('location') === $loc ? 'selected' : '' }}>{{ $loc }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Property Type Filter --}}
+                <div>
+                    <label class="block text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-1">Type</label>
+                    <select name="type" class="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" onchange="this.form.submit()">
+                        <option value="">All Types</option>
+                        <option value="house" {{ request('type') === 'house' ? 'selected' : '' }}>House / Flat</option>
+                        <option value="shop" {{ request('type') === 'shop' ? 'selected' : '' }}>Shop / Commercial</option>
+                    </select>
+                </div>
+
+                {{-- Filter & Reset Actions --}}
+                <div class="flex items-end gap-2">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm shadow-blue-600/20 flex items-center justify-center gap-1.5">
+                        <i class="ph ph-funnel"></i> Filter
+                    </button>
+                    @if(request()->hasAny(['search', 'date_filter', 'location', 'type', 'sort']))
+                    <a href="{{ route('admin.properties', request('status') ? ['status' => request('status')] : []) }}" class="px-3 py-2 bg-stone-100 hover:bg-stone-200 text-zinc-600 text-xs font-bold rounded-lg transition-all" title="Reset Filters">
+                        <i class="ph ph-arrow-counter-clockwise"></i>
+                    </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
         {{-- Properties Table --}}
         <div class="bg-white border border-stone-200 rounded-xl shadow-sm overflow-hidden">
             @if($properties->count() > 0)
@@ -61,6 +124,7 @@
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Owner</th>
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Type</th>
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Price</th>
+                            <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Posted Date</th>
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Booked</th>
                             <th class="text-left text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Status</th>
                             <th class="text-center text-xs font-bold text-zinc-500 uppercase tracking-wider px-6 py-4">Actions</th>
@@ -91,6 +155,17 @@
                                 </span>
                             </td>
                             <td class="px-6 py-5 text-sm text-zinc-900 font-bold tracking-tight">{{ $property->formatted_price }}</td>
+                            <td class="px-6 py-5 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-zinc-800 flex items-center gap-1.5">
+                                        <i class="ph-bold ph-calendar text-blue-600"></i>
+                                        {{ $property->created_at ? $property->created_at->format('d M, Y') : 'N/A' }}
+                                    </span>
+                                    <span class="text-[11px] text-zinc-400 pl-4">
+                                        {{ $property->created_at ? $property->created_at->format('h:i A') . ' (' . $property->created_at->diffForHumans() . ')' : '' }}
+                                    </span>
+                                </div>
+                            </td>
                             <td class="px-6 py-5">
                                 <span class="booked-status-badge text-xs font-bold px-2.5 py-1 rounded-md border {{ $property->is_booked ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200' }}">
                                     {{ $property->is_booked ? 'Booked' : 'Available' }}
