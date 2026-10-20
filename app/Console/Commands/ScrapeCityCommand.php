@@ -17,7 +17,7 @@ class ScrapeCityCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'scrape:city {city=Gurgaon : Name of city (Gurgaon, Noida, Delhi, Mumbai, Pune, Bangalore, Hyderabad, or all)} {--count=10 : Number of properties to scrape}';
+    protected $signature = 'scrape:city {city=Gurgaon : Name of city or 99acres URL} {--count=10 : Number of properties to scrape} {--create-accounts : Create user accounts for property owners/agents}';
 
     /**
      * The console command description.
@@ -49,7 +49,9 @@ class ScrapeCityCommand extends Command
             $pythonBinary = 'python';
         }
 
-        $command = escapeshellcmd("{$pythonBinary} {$scriptPath} {$city} {$count} --json");
+        $escapedCity = escapeshellarg($city);
+        $escapedScript = escapeshellarg($scriptPath);
+        $command = "{$pythonBinary} {$escapedScript} {$escapedCity} {$count} --json";
         $this->line("Running: {$command}");
 
         exec($command, $output, $returnCode);
@@ -70,7 +72,7 @@ class ScrapeCityCommand extends Command
         }
 
         $adminUser = User::where('role', 'admin')->first() ?? User::first();
-        $userId = $adminUser ? $adminUser->id : 1;
+        $defaultUserId = $adminUser ? $adminUser->id : 1;
 
         $category = Category::where('name', 'like', '%Flat%')
             ->orWhere('name', 'like', '%Apartment%')
@@ -78,12 +80,52 @@ class ScrapeCityCommand extends Command
         $categoryId = $category ? $category->id : 1;
 
         $insertedCount = 0;
+        $createdAccountsCount = 0;
 
         foreach ($items as $item) {
             $slug = Str::slug($item['title']) . '-' . rand(10000, 99999);
 
+            // Determine property owner user_id: create or find landlord/agent account
+            $propertyUserId = $defaultUserId;
+            $sellerName = trim($item['seller_name'] ?? '');
+
+            if (!empty($sellerName) && strtolower($sellerName) !== 'property owner') {
+                $contactPhone = $item['contact_phone'] ?? null;
+                $company = $item['seller_company'] ?? null;
+                $photo = $item['seller_photo'] ?? null;
+
+                $phoneDigits = preg_replace('/\D/', '', (string) $contactPhone);
+                $suffix = !empty($phoneDigits) ? substr($phoneDigits, -4) : rand(1000, 9999);
+                $cleanSlug = Str::slug($sellerName) ?: 'owner';
+                $email = $cleanSlug . '.' . $suffix . '@unlockrentals.com';
+
+                $sellerUser = null;
+                if (!empty($contactPhone)) {
+                    $sellerUser = User::where('phone', $contactPhone)->first();
+                }
+                if (!$sellerUser) {
+                    $sellerUser = User::where('email', $email)->first();
+                }
+                if (!$sellerUser) {
+                    $fullName = $sellerName . (!empty($company) && $company !== $sellerName ? " ({$company})" : "");
+                    $sellerUser = User::create([
+                        'name'              => $fullName,
+                        'email'             => $email,
+                        'phone'             => $contactPhone,
+                        'password'          => \Illuminate\Support\Facades\Hash::make('Password@123'),
+                        'role'              => 'owner',
+                        'avatar'            => $photo ?: null,
+                        'email_verified_at' => now(),
+                        'phone_verified_at' => now(),
+                    ]);
+                    $createdAccountsCount++;
+                    $this->line("  [👤] Created Owner Account: {$fullName} ({$email})");
+                }
+                $propertyUserId = $sellerUser->id;
+            }
+
             $property = Property::create([
-                'user_id' => $userId,
+                'user_id' => $propertyUserId,
                 'category_id' => $categoryId,
                 'title' => $item['title'],
                 'slug' => $slug,

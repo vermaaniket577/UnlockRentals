@@ -111,7 +111,9 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
 
                 bedrooms = int(p.get("BEDROOM_NUM") or 2)
                 bathrooms = int(p.get("BATHROOM_NUM") or max(1, bedrooms - 1))
-                area_sqft = int(float(p.get("CARPET_SQFT") or p.get("AREA") or 900))
+                area_raw = str(p.get("CARPET_SQFT") or p.get("AREA") or "900")
+                area_match = re.search(r"([\d\.]+)", area_raw.replace(",", ""))
+                area_sqft = int(float(area_match.group(1))) if area_match else 900
 
                 locality = p.get("LOCALITY") or p.get("LOCALITY_WO_CITY") or city_name
                 society = p.get("SOCIETY_NAME") or p.get("BUILDING_NAME") or ""
@@ -152,6 +154,12 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                         f"Comes {furnishing}. Situated close to public transit, markets, and key commercial hubs."
                     )
 
+                profile = p.get("profile") or {}
+                seller_name = p.get("CONTACT_NAME") or profile.get("CONTACT_NAME") or p.get("DEALER_NAME") or "Property Owner"
+                seller_company = p.get("CONTACT_COMPANY_NAME") or profile.get("CONTACT_COMPANY_NAME") or ""
+                seller_photo = p.get("DEALER_PHOTO_URL") or profile.get("PHOTO_URL") or ""
+                seller_type = str(p.get("USER_TYPE") or p.get("SELLER_TYPE") or "owner").lower()
+
                 items.append({
                     "title": title,
                     "price": price,
@@ -164,7 +172,11 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                     "furnishing": furnishing,
                     "images": clean_imgs,
                     "contact_phone": contact_phone,
-                    "description": desc
+                    "description": desc,
+                    "seller_name": seller_name,
+                    "seller_company": seller_company,
+                    "seller_photo": seller_photo,
+                    "seller_type": seller_type,
                 })
         except Exception as e:
             sys.stderr.write(f"JSON parsing error: {e}\n")
@@ -305,7 +317,41 @@ if __name__ == "__main__":
     target_city = clean_args[0] if len(clean_args) > 0 else "Gurgaon"
     max_count = int(clean_args[1]) if len(clean_args) > 1 else 10
 
-    if target_city.lower() == "all":
+    # Support custom 99acres URL directly
+    if target_city.startswith("http://") or target_city.startswith("https://"):
+        custom_url = target_city
+        url_lower = custom_url.lower()
+        city_name = "Bangalore"
+        state = "Karnataka"
+        if "gurgaon" in url_lower:
+            city_name, state = "Gurgaon", "Haryana"
+        elif "noida" in url_lower:
+            city_name, state = "Noida", "Uttar Pradesh"
+        elif "delhi" in url_lower:
+            city_name, state = "Delhi", "Delhi"
+        elif "mumbai" in url_lower:
+            city_name, state = "Mumbai", "Maharashtra"
+        elif "pune" in url_lower:
+            city_name, state = "Pune", "Maharashtra"
+        elif "hyderabad" in url_lower:
+            city_name, state = "Hyderabad", "Telangana"
+        elif "bangalore" in url_lower or "bengaluru" in url_lower or "city=20" in url_lower:
+            city_name, state = "Bangalore", "Karnataka"
+
+        cfg = {"url": custom_url, "state": state}
+        if not is_json:
+            print(f"\n[*] Crawling custom URL for {city_name} ({max_count} listings)...")
+        items = crawl_items_from_city(city_name, cfg, max_items=max_count)
+
+        if is_json:
+            print("===JSON_START===")
+            print(json.dumps(items))
+            print("===JSON_END===")
+        else:
+            save_items_to_sqlite(items)
+            print(f"\n[✓] Done! Stored {len(items)} properties.")
+
+    elif target_city.lower() == "all":
         all_items = []
         for city, cfg in CITIES_CONFIG.items():
             if not is_json:
@@ -335,4 +381,4 @@ if __name__ == "__main__":
             save_items_to_sqlite(items)
             print(f"\n[✓] Done! Stored {len(items)} properties.")
     else:
-        print(f"Unknown city '{target_city}'. Options: {list(CITIES_CONFIG.keys())} or 'all'")
+        print(f"Unknown city '{target_city}'. Options: {list(CITIES_CONFIG.keys())} or 'all' or a valid 99acres URL")

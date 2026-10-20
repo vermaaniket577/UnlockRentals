@@ -134,6 +134,15 @@
             </div>
             
             <div class="flex items-center gap-3 flex-wrap">
+                {{-- Fetch & Post from URL Button --}}
+                <button type="button" 
+                        onclick="openFetchUrlModal()" 
+                        class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 px-3.5 py-2 rounded-lg shadow-sm transition-all cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-95 border border-indigo-400/30"
+                        title="Fetch listings from 99acres URL, auto-create owner accounts, and post directly">
+                    <i class="ph-bold ph-cloud-arrow-down text-sm"></i>
+                    <span>Fetch & Post (99acres)</span>
+                </button>
+
                 {{-- Live 1-Minute Auto-Sync Controls --}}
                 <div class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 border border-stone-200/60 rounded-sm shadow-sm">
                     <button type="button" 
@@ -400,6 +409,98 @@
                 <h3 class="text-xl font-semibold text-zinc-500">No properties found</h3>
             </div>
             @endif
+        </div>
+    </div>
+
+    {{-- ========================================================================= --}}
+    {{-- FETCH & POST FROM 99ACRES URL MODAL POPUP                                 --}}
+    {{-- ========================================================================= --}}
+    <div id="fetchUrlModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden transition-opacity duration-200 opacity-0" role="dialog" aria-modal="true">
+        <div id="fetchUrlModalCard" class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl w-full max-w-xl p-6 sm:p-8 transform scale-95 transition-all duration-200 relative max-h-[92vh] overflow-y-auto">
+            {{-- Close Button --}}
+            <button type="button" onclick="closeFetchUrlModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer" aria-label="Close modal">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            {{-- Header Icon & Title --}}
+            <div class="flex items-center gap-3.5 mb-5">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-md shadow-indigo-500/25 ring-4 ring-indigo-50 shrink-0">
+                    <i class="ph-bold ph-globe-hemisphere-west"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">Fetch & Post from 99acres</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Scrapes live listings from 99acres URL, auto-creates landlord accounts, and publishes with all images.</p>
+                </div>
+            </div>
+
+            <form id="fetchUrlForm" onsubmit="handleFetchUrlSubmit(event)" class="space-y-4">
+                {{-- URL Input --}}
+                <div>
+                    <label for="fetch_target_url" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        99acres Search URL <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="url" 
+                               id="fetch_target_url" 
+                               name="url" 
+                               required 
+                               value="https://www.99acres.com/search/property/rent/bangalore?city=20&preference=R&budget_min=0&res_com=R&isPreLeased=N" 
+                               class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all pr-10"
+                               placeholder="https://www.99acres.com/search/property/rent/...">
+                        <button type="button" onclick="pasteClipboardToUrl()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 text-xs px-1.5 py-0.5 rounded transition-colors" title="Paste from clipboard">
+                            <i class="ph-bold ph-clipboard text-sm"></i>
+                        </button>
+                    </div>
+
+                    {{-- Quick preset chips --}}
+                    <div class="flex items-center gap-1.5 mt-2 flex-wrap text-[11px]">
+                        <span class="text-slate-400 font-medium">Quick presets:</span>
+                        <button type="button" onclick="setFetchUrlPreset('bangalore')" class="px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold cursor-pointer border border-indigo-200/50">Bangalore (Current)</button>
+                        <button type="button" onclick="setFetchUrlPreset('gurgaon')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Gurgaon</button>
+                        <button type="button" onclick="setFetchUrlPreset('delhi')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Delhi</button>
+                        <button type="button" onclick="setFetchUrlPreset('mumbai')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Mumbai</button>
+                    </div>
+                </div>
+
+                {{-- Quantity & Options --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                    <div>
+                        <label for="fetch_count" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            Number of Listings
+                        </label>
+                        <select id="fetch_count" name="count" class="w-full text-xs font-semibold px-3 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-white">
+                            <option value="2">2 Listings (Quick test)</option>
+                            <option value="5">5 Listings</option>
+                            <option value="10" selected>10 Listings (Recommended)</option>
+                            <option value="20">20 Listings</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col justify-center gap-2 pt-1 sm:pt-4">
+                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="fetch_create_accounts" name="create_accounts" value="1" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300">
+                            <span class="text-xs font-bold text-slate-800">Create Owner Accounts</span>
+                        </label>
+                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="fetch_auto_approve" name="auto_approve" value="1" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+                            <span class="text-xs font-bold text-slate-800">Publish Directly (Approved)</span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Live Results / Progress Container --}}
+                <div id="fetchResultBox" class="hidden p-4 rounded-2xl border text-xs"></div>
+
+                {{-- Modal Action Buttons --}}
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeFetchUrlModal()" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer">
+                        Cancel
+                    </button>
+                    <button type="submit" id="fetchSubmitBtn" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-xl shadow-md transition-all cursor-pointer hover:shadow-lg disabled:opacity-50">
+                        <i class="ph-bold ph-download-simple text-sm" id="fetchSubmitIcon"></i>
+                        <span id="fetchSubmitText">Fetch & Post Listings</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -836,16 +937,202 @@ function switchAdModalTab(mode) {
     }
 }
 
+// =========================================================================
+// FETCH & POST FROM 99ACRES URL MODAL HANDLERS
+// =========================================================================
+function openFetchUrlModal() {
+    const modal = document.getElementById('fetchUrlModal');
+    const card = document.getElementById('fetchUrlModalCard');
+    if (!modal || !card) return;
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+    });
+}
+
+function closeFetchUrlModal() {
+    const modal = document.getElementById('fetchUrlModal');
+    const card = document.getElementById('fetchUrlModalCard');
+    if (!modal || !card) return;
+    modal.classList.remove('opacity-100');
+    modal.classList.add('opacity-0');
+    card.classList.remove('scale-100');
+    card.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
+function setFetchUrlPreset(preset) {
+    const input = document.getElementById('fetch_target_url');
+    if (!input) return;
+    const presets = {
+        'bangalore': 'https://www.99acres.com/search/property/rent/bangalore?city=20&preference=R&budget_min=0&res_com=R&isPreLeased=N',
+        'gurgaon': 'https://www.99acres.com/flats-for-rent-in-gurgaon-ffid',
+        'delhi': 'https://www.99acres.com/flats-for-rent-in-delhi-ffid',
+        'mumbai': 'https://www.99acres.com/flats-for-rent-in-mumbai-ffid'
+    };
+    if (presets[preset]) {
+        input.value = presets[preset];
+        input.focus();
+    }
+}
+
+async function pasteClipboardToUrl() {
+    try {
+        const text = await navigator.clipboard.readText();
+        if (text && text.startsWith('http')) {
+            document.getElementById('fetch_target_url').value = text;
+            showAdminToast('Pasted URL from clipboard', 'info');
+        } else {
+            showAdminToast('Clipboard does not contain a valid URL', 'error');
+        }
+    } catch (e) {
+        showAdminToast('Could not access clipboard automatically', 'error');
+    }
+}
+
+async function handleFetchUrlSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('fetchSubmitBtn');
+    const icon = document.getElementById('fetchSubmitIcon');
+    const text = document.getElementById('fetchSubmitText');
+    const resultBox = document.getElementById('fetchResultBox');
+    const url = document.getElementById('fetch_target_url').value;
+    const count = document.getElementById('fetch_count').value;
+    const createAccounts = document.getElementById('fetch_create_accounts').checked;
+    const autoApprove = document.getElementById('fetch_auto_approve').checked;
+
+    btn.disabled = true;
+    icon.className = 'ph-bold ph-arrows-clockwise text-sm animate-spin';
+    text.textContent = 'Fetching from 99acres...';
+
+    resultBox.className = 'p-3.5 rounded-2xl border border-indigo-200 bg-indigo-50/70 text-indigo-900 flex items-center gap-2.5 text-xs font-semibold';
+    resultBox.innerHTML = `
+        <span class="w-3 h-3 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin shrink-0"></span>
+        <span>Connecting to 99acres, scraping real listings with complete photo galleries, and auto-creating owner accounts...</span>
+    `;
+    resultBox.classList.remove('hidden');
+
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+            || '{{ csrf_token() }}';
+
+        const res = await fetch('{{ route('admin.properties.fetch-and-post') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                url: url,
+                count: parseInt(count, 10),
+                create_accounts: createAccounts,
+                auto_approve: autoApprove
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            let accountsHtml = '';
+            if (data.accounts && data.accounts.length > 0) {
+                accountsHtml = `
+                    <div class="mt-2.5 pt-2.5 border-t border-emerald-200/80">
+                        <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-1.5">👤 Created Owner / Dealer Accounts (${data.accounts.length}):</p>
+                        <div class="space-y-1 max-h-28 overflow-y-auto pr-1">
+                            ${data.accounts.map(acc => `
+                                <div class="flex items-center justify-between bg-white/90 p-1.5 rounded-lg border border-emerald-200/60 text-[11px]">
+                                    <span class="font-bold text-slate-800 truncate">${acc.name}</span>
+                                    <span class="text-slate-500 font-mono">${acc.email}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            let propsHtml = '';
+            if (data.properties && data.properties.length > 0) {
+                propsHtml = `
+                    <div class="mt-2.5 pt-2.5 border-t border-emerald-200/80">
+                        <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-1.5">🏡 Posted Properties (${data.properties.length}):</p>
+                        <div class="space-y-1 max-h-32 overflow-y-auto pr-1">
+                            ${data.properties.map(p => `
+                                <div class="flex items-center justify-between bg-white/90 p-1.5 rounded-lg border border-emerald-200/60 text-[11px]">
+                                    <span class="font-semibold text-slate-800 truncate max-w-[240px]" title="${p.title}">#${p.id} ${p.title}</span>
+                                    <span class="font-bold text-emerald-700 shrink-0">₹${Number(p.price).toLocaleString()} • ${p.images_count} 📸</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultBox.className = 'p-3.5 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-xs shadow-xs';
+            resultBox.innerHTML = `
+                <div class="flex items-start gap-2">
+                    <i class="ph-fill ph-check-circle text-lg text-emerald-600 shrink-0 mt-0.5"></i>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-bold">${data.message || 'Listings successfully fetched and posted!'}</p>
+                        ${accountsHtml}
+                        ${propsHtml}
+                        <p class="text-[11px] text-emerald-700 mt-2 font-medium">Total Properties in Database: <strong>${data.total_properties}</strong></p>
+                    </div>
+                </div>
+            `;
+
+            showAdminToast(data.message || 'Properties posted successfully!', 'success');
+
+            // Silently refresh the properties table so the new items appear right away
+            if (typeof refreshPropertiesTableSilently === 'function') {
+                refreshPropertiesTableSilently();
+            }
+        } else {
+            resultBox.className = 'p-3.5 rounded-2xl border border-rose-300 bg-rose-50 text-rose-900 text-xs';
+            resultBox.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="ph-bold ph-warning-circle text-lg text-rose-600 shrink-0"></i>
+                    <span>${data.message || 'Failed to fetch and post listings.'}</span>
+                </div>
+            `;
+            showAdminToast(data.message || 'Error fetching listings', 'error');
+        }
+    } catch (err) {
+        resultBox.className = 'p-3.5 rounded-2xl border border-rose-300 bg-rose-50 text-rose-900 text-xs';
+        resultBox.innerHTML = `
+            <div class="flex items-center gap-2">
+                <i class="ph-bold ph-warning-circle text-lg text-rose-600 shrink-0"></i>
+                <span>Error communicating with server: ${err.message}</span>
+            </div>
+        `;
+        showAdminToast('Request failed. Check server console.', 'error');
+    } finally {
+        btn.disabled = false;
+        icon.className = 'ph-bold ph-download-simple text-sm';
+        text.textContent = 'Fetch & Post Listings';
+    }
+}
+
 document.addEventListener('click', (e) => {
     const modal = document.getElementById('postAdvertiseModal');
     if (modal && !modal.classList.contains('hidden') && e.target === modal) {
         closePostAdvertiseModal();
+    }
+    const fetchModal = document.getElementById('fetchUrlModal');
+    if (fetchModal && !fetchModal.classList.contains('hidden') && e.target === fetchModal) {
+        closeFetchUrlModal();
     }
 });
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closePostAdvertiseModal();
+        closeFetchUrlModal();
     }
 });
 </script>

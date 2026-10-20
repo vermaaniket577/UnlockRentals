@@ -2572,4 +2572,194 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Fetch real listings from 99acres URL or city, create landlord/owner accounts, and post properties.
+     * Can be invoked from the Admin Panel or via API.
+     */
+    public function fetchAndPostFromUrl(Request $request)
+    {
+        $url = $request->input('url', 'https://www.99acres.com/search/property/rent/bangalore?city=20&preference=R&budget_min=0&res_com=R&isPreLeased=N');
+        $count = max(1, min(30, (int) $request->input('count', 10)));
+        $createAccounts = $request->boolean('create_accounts', true);
+        $autoApprove = $request->boolean('auto_approve', true);
+
+        try {
+            $scriptPath = base_path('scrapers/crawl_and_import.py');
+            $pythonBinary = 'python3';
+            exec("python3 --version 2>&1", $out, $code);
+            if ($code !== 0) {
+                $pythonBinary = 'python';
+            }
+
+            $escapedUrl = escapeshellarg($url);
+            $escapedScript = escapeshellarg($scriptPath);
+            $command = "{$pythonBinary} {$escapedScript} {$escapedUrl} {$count} --json";
+
+            exec($command, $output, $returnCode);
+
+            $rawOutput = implode("\n", (array) $output);
+            $items = [];
+            if ($returnCode === 0 && preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
+                $items = json_decode($matches[1], true);
+            }
+
+            if (empty($items) || !is_array($items)) {
+                // Shared hosting fallback using scrape:city
+                \Illuminate\Support\Facades\Artisan::call('scrape:city', [
+                    'city' => $url,
+                    '--count' => $count,
+                    '--create-accounts' => true,
+                ]);
+
+                try {
+                    \Illuminate\Support\Facades\Artisan::call('properties:enrich-images');
+                } catch (\Throwable $e) {}
+
+                Cache::forget('home_featured_rentals');
+                Cache::forget('home_featured_properties');
+                Cache::forget('admin_dashboard_stats');
+
+                return response()->json([
+                    'success'          => true,
+                    'message'          => "Successfully fetched and posted {$count} listings for {$url}",
+                    'url'              => $url,
+                    'total_properties' => Property::count(),
+                    'latest_id'        => Property::latest('id')->first()?->id ?? 0,
+                    'accounts_created' => User::where('role', 'owner')->whereDate('created_at', now()->toDateString())->count(),
+                    'synced_at'        => now()->toDateTimeString(),
+                ]);
+            }
+
+            $adminUser = User::where('role', 'admin')->first() ?? User::first();
+            $defaultUserId = $adminUser ? $adminUser->id : 1;
+            $category = \App\Models\Category::where('name', 'like', '%Flat%')->orWhere('name', 'like', '%Apartment%')->first() ?? \App\Models\Category::first();
+            $categoryId = $category ? $category->id : 1;
+
+            $createdAccounts = [];
+            $createdProperties = [];
+
+            foreach ($items as $item) {
+                if (empty($item['title'])) continue;
+
+                $propertyUserId = $defaultUserId;
+                $ownerName = 'Admin';
+                $sellerName = trim($item['seller_name'] ?? '');
+
+                if ($createAccounts && !empty($sellerName) && strtolower($sellerName) !== 'property owner') {
+                    $contactPhone = $item['contact_phone'] ?? null;
+                    $company = $item['seller_company'] ?? null;
+                    $photo = $item['seller_photo'] ?? null;
+
+                    $phoneDigits = preg_replace('/\D/', '', (string) $contactPhone);
+                    $suffix = !empty($phoneDigits) ? substr($phoneDigits, -4) : rand(1000, 9999);
+                    $cleanSlug = Str::slug($sellerName) ?: 'owner';
+                    $email = $cleanSlug . '.' . $suffix . '@unlockrentals.com';
+
+                    $sellerUser = null;
+                    if (!empty($contactPhone)) {
+                        $sellerUser = User::where('phone', $contactPhone)->first();
+                    }
+                    if (!$sellerUser) {
+                        $sellerUser = User::where('email', $email)->first();
+                    }
+                    if (!$sellerUser) {
+                        $fullName = $sellerName . (!empty($company) && $company !== $sellerName ? " ({$company})" : "");
+                        $sellerUser = User::create([
+                            'name'              => $fullName,
+                            'email'             => $email,
+                            'phone'             => $contactPhone,
+                            'password'          => \Illuminate\Support\Facades\Hash::make('Password@123'),
+                            'role'              => 'owner',
+                            'avatar'            => $photo ?: null,
+                            'email_verified_at' => now(),
+                            'phone_verified_at' => now(),
+                        ]);
+                        $createdAccounts[] = [
+                            'id'    => $sellerUser->id,
+                            'name'  => $sellerUser->name,
+                            'email' => $sellerUser->email,
+                            'phone' => $sellerUser->phone,
+                            'role'  => $sellerUser->role,
+                        ];
+                    }
+                    $propertyUserId = $sellerUser->id;
+                    $ownerName = $sellerUser->name;
+                }
+
+                $slug = Str::slug($item['title']) . '-' . rand(10000, 99999);
+                $prop = Property::create([
+                    'user_id'       => $propertyUserId,
+                    'category_id'   => $categoryId,
+                    'title'         => $item['title'],
+                    'slug'          => $slug,
+                    'description'   => $item['description'] ?? ("Rental listing in " . ($item['locality'] ?? $item['city'])),
+                    'type'          => 'house',
+                    'purpose'       => 'rent',
+                    'price'         => $item['price'] ?? 25000,
+                    'price_period'  => 'month',
+                    'state'         => $item['state'] ?? 'Karnataka',
+                    'location'      => $item['city'] ?? 'Bangalore',
+                    'locality'      => $item['locality'] ?? 'Bangalore',
+                    'address'       => "{$item['locality']}, {$item['city']}",
+                    'contact_phone' => $item['contact_phone'] ?? '+91 98765 43210',
+                    'bedrooms'      => $item['bedrooms'] ?? 2,
+                    'bathrooms'     => $item['bathrooms'] ?? 1,
+                    'area_sqft'     => $item['area_sqft'] ?? 900,
+                    'furnishing'    => $item['furnishing'] ?? 'semi-furnished',
+                    'status'        => $autoApprove ? 'approved' : 'pending',
+                    'approved_at'   => $autoApprove ? now() : null,
+                    'is_featured'   => false,
+                    'is_booked'     => false,
+                ]);
+
+                if (!empty($item['images']) && is_array($item['images'])) {
+                    foreach ($item['images'] as $idx => $imgUrl) {
+                        \App\Models\PropertyImage::create([
+                            'property_id' => $prop->id,
+                            'path'        => $imgUrl,
+                            'is_primary'  => ($idx === 0),
+                            'sort_order'  => $idx,
+                        ]);
+                    }
+                }
+
+                $createdProperties[] = [
+                    'id'           => $prop->id,
+                    'title'        => $prop->title,
+                    'price'        => $prop->price,
+                    'locality'     => $prop->locality,
+                    'city'         => $prop->location,
+                    'owner'        => $ownerName,
+                    'images_count' => count($item['images'] ?? []),
+                ];
+            }
+
+            try {
+                \Illuminate\Support\Facades\Artisan::call('properties:enrich-images');
+            } catch (\Throwable $e) {}
+
+            Cache::forget('home_featured_rentals');
+            Cache::forget('home_featured_properties');
+            Cache::forget('admin_dashboard_stats');
+
+            return response()->json([
+                'success'              => true,
+                'message'              => "Successfully fetched & posted " . count($createdProperties) . " properties and created/linked " . count($createdAccounts) . " owner accounts!",
+                'url'                  => $url,
+                'imported_count'       => count($createdProperties),
+                'accounts_created'     => count($createdAccounts),
+                'accounts'             => $createdAccounts,
+                'properties'           => $createdProperties,
+                'total_properties'     => Property::count(),
+                'latest_id'            => Property::latest('id')->first()?->id ?? 0,
+                'synced_at'            => now()->toDateTimeString(),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
