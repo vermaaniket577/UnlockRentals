@@ -29,6 +29,93 @@
             </div>
         </div>
 
+        {{-- KPI Top Summary Cards: Total, Booked, Selling, Rentals, Pending --}}
+        <div id="properties-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 mb-6">
+            {{-- Total Properties --}}
+            <a href="{{ route('admin.properties') }}" 
+               class="p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group cursor-pointer {{ !request()->hasAny(['is_booked', 'purpose', 'status']) ? 'bg-white border-[#2563EB]/40 shadow-sm ring-2 ring-[#2563EB]/20' : 'bg-white border-stone-200 hover:border-stone-300 shadow-xs hover:shadow-sm' }}"
+               title="View all properties">
+                <div>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Total</p>
+                    <h3 class="text-2xl font-black text-zinc-900 mt-1">{{ number_format($stats['total'] ?? 0) }}</h3>
+                    <span class="text-[11px] font-medium text-zinc-500 mt-0.5 block">All listed units</span>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-[#2563EB] border border-blue-200/60 flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                    <i class="ph-bold ph-buildings"></i>
+                </div>
+            </a>
+
+            {{-- Booked Properties (Specifically Requested) --}}
+            <a href="{{ route('admin.properties', array_merge(request()->except(['page']), ['is_booked' => request('is_booked') === '1' ? null : '1'])) }}" 
+               class="p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group cursor-pointer {{ request('is_booked') === '1' ? 'bg-rose-50/70 border-rose-400/80 shadow-sm ring-2 ring-rose-400/20' : 'bg-white border-stone-200 hover:border-rose-200 shadow-xs hover:shadow-sm' }}"
+               title="Filter Booked Properties">
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <p class="text-[11px] font-bold uppercase tracking-wider {{ request('is_booked') === '1' ? 'text-rose-700' : 'text-zinc-400' }}">Booked</p>
+                        <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold {{ request('is_booked') === '1' ? 'bg-rose-200 text-rose-800' : 'bg-rose-50 text-rose-600 border border-rose-200/60' }}">Closed</span>
+                    </div>
+                    <h3 class="text-2xl font-black {{ request('is_booked') === '1' ? 'text-rose-700' : 'text-zinc-900' }} mt-1">{{ number_format($stats['booked'] ?? 0) }}</h3>
+                    <span class="text-[11px] font-medium text-zinc-500 mt-0.5 block">Occupied / Closed</span>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-rose-50 text-rose-600 border border-rose-200/60 flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                    <i class="ph-bold ph-handshake"></i>
+                </div>
+            </a>
+
+            {{-- Selling Properties (Specifically Requested) --}}
+            <a href="{{ route('admin.properties', array_merge(request()->except(['page']), ['purpose' => request('purpose') === 'buy' ? null : 'buy'])) }}" 
+               class="p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group cursor-pointer {{ (request('purpose') === 'buy' || request('purpose') === 'sell') ? 'bg-emerald-50/70 border-emerald-400/80 shadow-sm ring-2 ring-emerald-400/20' : 'bg-white border-stone-200 hover:border-emerald-200 shadow-xs hover:shadow-sm' }}"
+               title="Filter Selling / Sale Properties">
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <p class="text-[11px] font-bold uppercase tracking-wider {{ (request('purpose') === 'buy' || request('purpose') === 'sell') ? 'text-emerald-700' : 'text-zinc-400' }}">Selling</p>
+                        <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold {{ (request('purpose') === 'buy' || request('purpose') === 'sell') ? 'bg-emerald-200 text-emerald-800' : 'bg-emerald-50 text-emerald-600 border border-emerald-200/60' }}">For Sale</span>
+                    </div>
+                    <h3 class="text-2xl font-black {{ (request('purpose') === 'buy' || request('purpose') === 'sell') ? 'text-emerald-700' : 'text-zinc-900' }} mt-1">{{ number_format($stats['selling'] ?? 0) }}</h3>
+                    <span class="text-[11px] font-medium text-zinc-500 mt-0.5 block">Buy & Sell units</span>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/60 flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                    <i class="ph-bold ph-tag"></i>
+                </div>
+            </a>
+
+            {{-- Rental Properties --}}
+            <a href="{{ route('admin.properties', array_merge(request()->except(['page']), ['purpose' => request('purpose') === 'rent' ? null : 'rent'])) }}" 
+               class="p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group cursor-pointer {{ request('purpose') === 'rent' ? 'bg-indigo-50/70 border-indigo-400/80 shadow-sm ring-2 ring-indigo-400/20' : 'bg-white border-stone-200 hover:border-indigo-200 shadow-xs hover:shadow-sm' }}"
+               title="Filter Rental Properties">
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <p class="text-[11px] font-bold uppercase tracking-wider {{ request('purpose') === 'rent' ? 'text-indigo-700' : 'text-zinc-400' }}">Rentals</p>
+                        <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold {{ request('purpose') === 'rent' ? 'bg-indigo-200 text-indigo-800' : 'bg-indigo-50 text-indigo-600 border border-indigo-200/60' }}">For Rent</span>
+                    </div>
+                    <h3 class="text-2xl font-black {{ request('purpose') === 'rent' ? 'text-indigo-700' : 'text-zinc-900' }} mt-1">{{ number_format($stats['rent'] ?? 0) }}</h3>
+                    <span class="text-[11px] font-medium text-zinc-500 mt-0.5 block">Monthly rental units</span>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-200/60 flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                    <i class="ph-bold ph-key"></i>
+                </div>
+            </a>
+
+            {{-- Pending Approval --}}
+            <a href="{{ route('admin.properties', array_merge(request()->except(['page']), ['status' => request('status') === 'pending' ? null : 'pending'])) }}" 
+               class="p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group cursor-pointer {{ request('status') === 'pending' ? 'bg-amber-50/70 border-amber-400/80 shadow-sm ring-2 ring-amber-400/20' : 'bg-white border-stone-200 hover:border-amber-200 shadow-xs hover:shadow-sm' }}"
+               title="Filter Pending Review Properties">
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <p class="text-[11px] font-bold uppercase tracking-wider {{ request('status') === 'pending' ? 'text-amber-700' : 'text-zinc-400' }}">Pending</p>
+                        @if(($stats['pending'] ?? 0) > 0)
+                            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white animate-pulse">Action</span>
+                        @endif
+                    </div>
+                    <h3 class="text-2xl font-black {{ request('status') === 'pending' ? 'text-amber-700' : 'text-zinc-900' }} mt-1">{{ number_format($stats['pending'] ?? 0) }}</h3>
+                    <span class="text-[11px] font-medium text-zinc-500 mt-0.5 block">Requires review</span>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60 flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                    <i class="ph-bold ph-clock-countdown"></i>
+                </div>
+            </a>
+        </div>
+
         {{-- Status Filters & Bypass Approval Toggle --}}
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div class="flex gap-2 flex-wrap">
@@ -90,6 +177,12 @@
             <form method="GET" action="{{ route('admin.properties') }}" class="flex flex-wrap items-center gap-2">
                 @if(request('status'))
                     <input type="hidden" name="status" value="{{ request('status') }}">
+                @endif
+                @if(request('purpose'))
+                    <input type="hidden" name="purpose" value="{{ request('purpose') }}">
+                @endif
+                @if(request()->has('is_booked') && request('is_booked') !== '')
+                    <input type="hidden" name="is_booked" value="{{ request('is_booked') }}">
                 @endif
 
                 {{-- Compact Search Input --}}
@@ -157,8 +250,8 @@
                         <i class="ph ph-funnel text-xs"></i>
                         <span>Filter</span>
                     </button>
-                    @if(request()->hasAny(['search', 'date_filter', 'location', 'type', 'sort']))
-                    <a href="{{ route('admin.properties', request('status') ? ['status' => request('status')] : []) }}" 
+                    @if(request()->hasAny(['search', 'date_filter', 'location', 'type', 'sort', 'purpose', 'is_booked']))
+                    <a href="{{ route('admin.properties') }}" 
                        class="h-8 px-2.5 bg-stone-100 hover:bg-stone-200 text-zinc-600 text-xs font-medium rounded-md transition-colors flex items-center gap-1" 
                        title="Reset Filters">
                         <i class="ph ph-arrow-counter-clockwise text-xs"></i>
@@ -610,6 +703,12 @@ async function refreshPropertiesTableSilently() {
 
         const newContainer = doc.getElementById('properties-table-container');
         const currentContainer = document.getElementById('properties-table-container');
+
+        const newKpi = doc.getElementById('properties-kpi-container');
+        const currentKpi = document.getElementById('properties-kpi-container');
+        if (newKpi && currentKpi) {
+            currentKpi.innerHTML = newKpi.innerHTML;
+        }
 
         if (newContainer && currentContainer) {
             currentContainer.innerHTML = newContainer.innerHTML;

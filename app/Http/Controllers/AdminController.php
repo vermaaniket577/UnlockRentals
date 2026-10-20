@@ -295,6 +295,21 @@ class AdminController extends Controller
             $query->where('location', $request->location);
         }
 
+        // Filter by Purpose (rent vs buy/sell)
+        if ($request->filled('purpose')) {
+            $p = $request->purpose;
+            if ($p === 'buy' || $p === 'sell') {
+                $query->whereIn('purpose', ['buy', 'sell']);
+            } else {
+                $query->where('purpose', $p);
+            }
+        }
+
+        // Filter by Booked status
+        if ($request->has('is_booked') && $request->is_booked !== '' && $request->is_booked !== null) {
+            $query->where('is_booked', (bool)$request->is_booked);
+        }
+
         // Filter by Type
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -362,7 +377,17 @@ class AdminController extends Controller
 
         $allUsersList = User::orderBy('name')->select('id', 'name', 'phone', 'email', 'role')->get();
 
-        return view('admin.properties', compact('properties', 'availableLocations', 'allUsersList'));
+        $stats = [
+            'total'     => Property::count(),
+            'booked'    => Property::where('is_booked', true)->count(),
+            'available' => Property::where('is_booked', false)->count(),
+            'selling'   => Property::whereIn('purpose', ['buy', 'sell'])->count(),
+            'rent'      => Property::where('purpose', 'rent')->count(),
+            'pending'   => Property::where('status', 'pending')->count(),
+            'approved'  => Property::where('status', 'approved')->count(),
+        ];
+
+        return view('admin.properties', compact('properties', 'availableLocations', 'allUsersList', 'stats'));
     }
 
     /**
