@@ -155,17 +155,31 @@
                         @foreach($properties as $property)
                         <tr class="hover:bg-stone-50/50 transition-colors">
                             <td class="px-6 py-5">
-                                <div class="flex items-center gap-3">
-                                    @if($property->primaryImage)
-                                        <img src="{{ $property->primaryImage->imageUrl() }}" class="w-10 h-10 rounded-sm object-cover border border-stone-200/50" alt="">
-                                    @else
-                                        <div class="w-10 h-10 rounded-sm bg-stone-50 flex items-center justify-center">
-                                            <i class="ph ph-image text-zinc-500 text-sm"></i>
-                                        </div>
-                                    @endif
-                                    <div>
-                                        <a href="{{ route('properties.show', $property) }}" class="text-sm font-medium text-zinc-900 hover:text-[#2563EB] transition-colors" title="UnlockRentals">{{ Str::limit($property->title, 30) }}</a>
-                                        <p class="text-xs text-zinc-500">{{ $property->location }}</p>
+                                <div class="flex items-start gap-3">
+                                    <div class="flex flex-col items-center shrink-0">
+                                        @if($property->primaryImage)
+                                            <img src="{{ $property->primaryImage->imageUrl() }}" class="w-11 h-11 rounded-md object-cover border border-stone-200/80 shadow-xs" alt="">
+                                        @else
+                                            <div class="w-11 h-11 rounded-md bg-stone-100 flex items-center justify-center border border-stone-200/80">
+                                                <i class="ph ph-image text-zinc-400 text-sm"></i>
+                                            </div>
+                                        @endif
+
+                                        {{-- Image Count Attached --}}
+                                        @php
+                                            $imgCount = $property->images_count ?? $property->images()->count();
+                                        @endphp
+                                        <span class="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold {{ $imgCount > 0 ? 'bg-blue-50 text-[#2563EB] border border-blue-200/70' : 'bg-stone-100 text-zinc-400 border border-stone-200/60' }}" title="{{ $imgCount }} image(s) attached">
+                                            <i class="ph-bold ph-camera text-[9.5px]"></i>
+                                            <span>{{ $imgCount }} {{ Str::plural('img', $imgCount) }}</span>
+                                        </span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <a href="{{ route('properties.show', $property) }}" class="text-sm font-semibold text-zinc-900 hover:text-[#2563EB] transition-colors" title="{{ $property->title }}">{{ Str::limit($property->title, 34) }}</a>
+                                        <p class="text-xs text-zinc-500 mt-0.5 flex items-center gap-1">
+                                            <i class="ph ph-map-pin text-zinc-400"></i>
+                                            <span>{{ $property->locality ? $property->locality . ', ' : '' }}{{ $property->location }}</span>
+                                        </p>
                                     </div>
                                 </div>
                             </td>

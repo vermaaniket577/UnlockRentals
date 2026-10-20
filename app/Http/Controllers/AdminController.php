@@ -269,7 +269,7 @@ class AdminController extends Controller
      */
     public function properties(Request $request)
     {
-        $query = Property::with(['owner', 'primaryImage', 'category']);
+        $query = Property::with(['owner', 'primaryImage', 'category'])->withCount('images');
 
         // Filter by Status (pending, approved, rejected)
         if ($request->filled('status')) {
