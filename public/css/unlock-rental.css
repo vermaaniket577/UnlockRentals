@@ -3236,4 +3236,180 @@ input[type="number"] {
     display: none !important;
 }
 
+/* =========================================================================
+   UNLOCK RENTALS — 99ACRES HORIZONTAL PROPERTY CARD LAYOUT
+   Guaranteed side-by-side (photo on left, specs/details on right) on tablet/desktop.
+   ========================================================================= */
+.property-horizontal-card {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #ffffff !important;
+    border-radius: 1.25rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden !important;
+    margin-bottom: 1.25rem !important;
+    position: relative !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+}
+
+html.dark .property-horizontal-card,
+.dark .property-horizontal-card {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.property-horizontal-card:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Mobile defaults (< 768px) */
+.property-horizontal-card .hcard-image-col {
+    position: relative !important;
+    width: 100% !important;
+    height: 220px !important;
+    min-height: 220px !important;
+    max-height: 220px !important;
+    background: #f1f5f9 !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+}
+
+html.dark .property-horizontal-card .hcard-image-col,
+.dark .property-horizontal-card .hcard-image-col {
+    background: #1e293b !important;
+}
+
+.property-horizontal-card .hcard-image-link {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.property-horizontal-card .hcard-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    transition: transform 0.5s cubic-bezier(0, 0, 0.2, 1) !important;
+}
+
+.property-horizontal-card:hover .hcard-img {
+    transform: scale(1.04) !important;
+}
+
+.property-horizontal-card .hcard-content-col {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 1.25rem !important;
+    box-sizing: border-box !important;
+}
+
+/* Tablet & Desktop (>= 768px): Strictly Side-by-Side Horizontal Layout */
+@media (min-width: 768px) {
+    .property-horizontal-card {
+        flex-direction: row !important;
+        align-items: stretch !important;
+        min-height: 245px !important;
+        height: auto !important;
+    }
+
+    .property-horizontal-card .hcard-image-col {
+        width: 320px !important;
+        min-width: 320px !important;
+        max-width: 320px !important;
+        height: auto !important;
+        min-height: 100% !important;
+        max-height: none !important;
+        align-self: stretch !important;
+        flex: 0 0 320px !important;
+    }
+
+    .property-horizontal-card .hcard-image-link {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .property-horizontal-card .hcard-content-col {
+        padding: 1.25rem 1.5rem !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .property-horizontal-card .hcard-image-col {
+        width: 340px !important;
+        min-width: 340px !important;
+        max-width: 340px !important;
+        flex: 0 0 340px !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .property-horizontal-card .hcard-image-col {
+        width: 360px !important;
+        min-width: 360px !important;
+        max-width: 360px !important;
+        flex: 0 0 360px !important;
+    }
+}
+
+/* 3-Column Key Highlights Row */
+.property-horizontal-card .hcard-specs-row {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem 0 !important;
+    border-top: 1px solid #f1f5f9 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    margin-bottom: 0.75rem !important;
+    margin-top: 0.25rem !important;
+}
+
+html.dark .property-horizontal-card .hcard-specs-row,
+.dark .property-horizontal-card .hcard-specs-row {
+    border-color: #1e293b !important;
+}
+
+.property-horizontal-card .hcard-spec-col {
+    min-width: 0 !important;
+}
+
+.property-horizontal-card .hcard-spec-col + .hcard-spec-col {
+    border-left: 1px solid #f1f5f9 !important;
+    padding-left: 0.75rem !important;
+}
+
+html.dark .property-horizontal-card .hcard-spec-col + .hcard-spec-col,
+.dark .property-horizontal-card .hcard-spec-col + .hcard-spec-col {
+    border-color: #1e293b !important;
+}
+
+/* Footer Row */
+.property-horizontal-card .hcard-footer-row {
+    padding-top: 0.75rem !important;
+    border-top: 1px solid #f1f5f9 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    flex-wrap: wrap !important;
+}
+
+html.dark .property-horizontal-card .hcard-footer-row,
+.dark .property-horizontal-card .hcard-footer-row {
+    border-color: #1e293b !important;
+}
+
+
 

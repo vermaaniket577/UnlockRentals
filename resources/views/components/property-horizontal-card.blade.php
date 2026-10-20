@@ -104,17 +104,17 @@
     {{-- ============================================================
          LEFT COLUMN: Large Property Image & Interactive Badges
          ============================================================ --}}
-    <div class="relative w-full md:w-[350px] lg:w-[380px] xl:w-[410px] min-h-[240px] md:min-h-full bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
+    <div class="hcard-image-col relative w-full md:w-[340px] lg:w-[360px] xl:w-[380px] min-h-[220px] md:min-h-full bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
         
         {{-- Clickable Image Link --}}
-        <a href="{{ $propertyUrl }}" class="block w-full h-full relative group/img overflow-hidden" title="{{ $cleanTitle }}">
+        <a href="{{ $propertyUrl }}" class="hcard-image-link block w-full h-full relative group/img overflow-hidden" title="{{ $cleanTitle }}">
             <img src="{{ $primaryUrl }}"
                  data-orig-src="{{ $primaryUrl }}"
                  data-fallback-url="{{ $cardFallbackPhoto }}"
                  alt="{{ $cleanTitle }}"
                  loading="lazy"
                  referrerpolicy="no-referrer"
-                 class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500 ease-out select-none"
+                 class="hcard-img w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500 ease-out select-none"
                  onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $cardFallbackPhoto }}'; } else { this.onerror=null; }">
 
             {{-- Subtle Vignette Gradients --}}
@@ -181,7 +181,7 @@
     {{-- ============================================================
          RIGHT COLUMN: Content, Key Metrics, Landmarks & Actions
          ============================================================ --}}
-    <div class="flex-1 p-5 sm:p-6 flex flex-col justify-between min-w-0">
+    <div class="hcard-content-col flex-1 p-5 sm:p-6 flex flex-col justify-between min-w-0">
 
         <div>
             {{-- Header: Locality & Property Type Title --}}
@@ -204,9 +204,9 @@
             </div>
 
             {{-- 3-Column Key Highlights Row (Price, Area, Configuration) --}}
-            <div class="grid grid-cols-3 gap-2 sm:gap-4 py-3 sm:py-3.5 border-y border-slate-100 dark:border-slate-800/80 mb-3.5">
+            <div class="hcard-specs-row grid grid-cols-3 gap-2 sm:gap-4 py-3 sm:py-3.5 border-y border-slate-100 dark:border-slate-800/80 mb-3.5">
                 {{-- Column 1: Price --}}
-                <div class="min-w-0 pr-1">
+                <div class="hcard-spec-col min-w-0 pr-1">
                     <div class="flex items-baseline gap-1 flex-wrap">
                         <span class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
                             {{ $formattedPrice }}
@@ -221,7 +221,7 @@
                 </div>
 
                 {{-- Column 2: Area in sqft & sqm --}}
-                <div class="min-w-0 px-1 border-l border-slate-100 dark:border-slate-800/80">
+                <div class="hcard-spec-col min-w-0 px-1 border-l border-slate-100 dark:border-slate-800/80">
                     <div class="flex items-center gap-1">
                         <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
                             {{ number_format($sqft) }} sqft
@@ -234,7 +234,7 @@
                 </div>
 
                 {{-- Column 3: Configuration & Baths --}}
-                <div class="min-w-0 pl-1 border-l border-slate-100 dark:border-slate-800/80">
+                <div class="hcard-spec-col min-w-0 pl-1 border-l border-slate-100 dark:border-slate-800/80">
                     <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block">
                         {{ $beds > 0 ? "{$beds} BHK" : '1 RK' }}
                     </span>
@@ -269,10 +269,10 @@
         {{-- ============================================================
              BOTTOM FOOTER BAR: Dealer Profile + "View Number" & "Contact"
              ============================================================ --}}
-        <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3 flex-wrap">
+        <div class="hcard-footer-row pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3 flex-wrap">
             
             {{-- Left: Dealer / Owner Info --}}
-            <div class="flex items-center gap-2.5 min-w-0">
+            <div class="hcard-dealer-info flex items-center gap-2.5 min-w-0">
                 <div class="relative shrink-0">
                     @if($ownerAvatar)
                         <img src="{{ $ownerAvatar }}" alt="{{ $ownerName }}" class="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-2xs">
@@ -299,7 +299,7 @@
             </div>
 
             {{-- Right: Action Buttons (View Number & Contact) --}}
-            <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+            <div class="hcard-actions flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
                 
                 {{-- Button 1: "View Number" --}}
                 <button type="button"
@@ -326,3 +326,194 @@
     </div>
 
 </article>
+
+@once
+<style>
+/* =========================================================================
+   UNLOCK RENTALS — 99ACRES HORIZONTAL CARD BULLETPROOF STYLES
+   Ensures side-by-side (left photo, right details) on tablet and desktop.
+   ========================================================================= */
+.property-horizontal-card {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #ffffff !important;
+    border-radius: 1.25rem !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden !important;
+    margin-bottom: 1.25rem !important;
+    position: relative !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+}
+
+html.dark .property-horizontal-card,
+.dark .property-horizontal-card {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+.property-horizontal-card:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Mobile defaults (< 768px) */
+.property-horizontal-card .hcard-image-col {
+    position: relative !important;
+    width: 100% !important;
+    height: 220px !important;
+    min-height: 220px !important;
+    max-height: 220px !important;
+    background: #f1f5f9 !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+}
+
+html.dark .property-horizontal-card .hcard-image-col,
+.dark .property-horizontal-card .hcard-image-col {
+    background: #1e293b !important;
+}
+
+.property-horizontal-card .hcard-image-link {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.property-horizontal-card .hcard-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    transition: transform 0.5s cubic-bezier(0, 0, 0.2, 1) !important;
+}
+
+.property-horizontal-card:hover .hcard-img {
+    transform: scale(1.04) !important;
+}
+
+.property-horizontal-card .hcard-content-col {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 1.25rem !important;
+    box-sizing: border-box !important;
+}
+
+/* Tablet & Desktop (>= 768px): Strictly Side-by-Side Horizontal Layout */
+@media (min-width: 768px) {
+    .property-horizontal-card {
+        flex-direction: row !important;
+        align-items: stretch !important;
+        min-height: 245px !important;
+        height: auto !important;
+    }
+
+    .property-horizontal-card .hcard-image-col {
+        width: 320px !important;
+        min-width: 320px !important;
+        max-width: 320px !important;
+        height: auto !important;
+        min-height: 100% !important;
+        max-height: none !important;
+        align-self: stretch !important;
+        flex: 0 0 320px !important;
+    }
+
+    .property-horizontal-card .hcard-image-link {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .property-horizontal-card .hcard-content-col {
+        padding: 1.25rem 1.5rem !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .property-horizontal-card .hcard-image-col {
+        width: 340px !important;
+        min-width: 340px !important;
+        max-width: 340px !important;
+        flex: 0 0 340px !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .property-horizontal-card .hcard-image-col {
+        width: 360px !important;
+        min-width: 360px !important;
+        max-width: 360px !important;
+        flex: 0 0 360px !important;
+    }
+}
+
+/* 3-Column Key Highlights Row */
+.property-horizontal-card .hcard-specs-row {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem 0 !important;
+    border-top: 1px solid #f1f5f9 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    margin-bottom: 0.75rem !important;
+    margin-top: 0.25rem !important;
+}
+
+html.dark .property-horizontal-card .hcard-specs-row,
+.dark .property-horizontal-card .hcard-specs-row {
+    border-color: #1e293b !important;
+}
+
+.property-horizontal-card .hcard-spec-col {
+    min-width: 0 !important;
+}
+
+.property-horizontal-card .hcard-spec-col + .hcard-spec-col {
+    border-left: 1px solid #f1f5f9 !important;
+    padding-left: 0.75rem !important;
+}
+
+html.dark .property-horizontal-card .hcard-spec-col + .hcard-spec-col,
+.dark .property-horizontal-card .hcard-spec-col + .hcard-spec-col {
+    border-color: #1e293b !important;
+}
+
+/* Footer Row */
+.property-horizontal-card .hcard-footer-row {
+    padding-top: 0.75rem !important;
+    border-top: 1px solid #f1f5f9 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    flex-wrap: wrap !important;
+}
+
+html.dark .property-horizontal-card .hcard-footer-row,
+.dark .property-horizontal-card .hcard-footer-row {
+    border-color: #1e293b !important;
+}
+</style>
+
+<script>
+    if (typeof window.revealCardPhoneNumber === 'undefined') {
+        window.revealCardPhoneNumber = function(propId, phone, btn) {
+            if (!btn) return;
+            const cleanNumber = phone.replace(/[^\d+]/g, '');
+            btn.innerHTML = `<i class="ph-bold ph-phone-call text-emerald-600 text-sm"></i> <a href="tel:${cleanNumber}" class="text-emerald-700 dark:text-emerald-400 font-black">${phone}</a>`;
+            btn.className = 'px-3.5 py-2 sm:py-2.5 rounded-xl border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-2xs transition-all';
+            btn.onclick = null;
+        };
+    }
+</script>
+@endonce
