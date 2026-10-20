@@ -304,25 +304,25 @@ class Property extends Model
         }
         $this->hasCheckedPrimaryImageUrl = true;
 
+        $url = null;
         if ($this->relationLoaded('primaryImage') && $this->primaryImage) {
-            return $this->memoizedPrimaryImageUrl = $this->primaryImage->imageUrl();
-        }
-        if ($this->relationLoaded('images') && $this->images && $this->images->isNotEmpty()) {
+            $url = $this->primaryImage->imageUrl();
+        } elseif ($this->relationLoaded('images') && $this->images && $this->images->isNotEmpty()) {
             $prim = $this->images->firstWhere('is_primary', true);
-            if ($prim) {
-                return $this->memoizedPrimaryImageUrl = $prim->imageUrl();
-            }
-            return $this->memoizedPrimaryImageUrl = $this->images->first()->imageUrl();
+            $url = $prim ? $prim->imageUrl() : $this->images->first()->imageUrl();
+        } elseif ($this->primaryImage) {
+            $url = $this->primaryImage->imageUrl();
+        } elseif ($prim = $this->images()->where('is_primary', true)->first()) {
+            $url = $prim->imageUrl();
+        } elseif ($first = $this->images()->first()) {
+            $url = $first->imageUrl();
         }
-        if ($this->primaryImage) {
-            return $this->memoizedPrimaryImageUrl = $this->primaryImage->imageUrl();
+
+        if (!$url || str_contains($url, 'property_placeholder') || str_contains($url, 'luxury_sunlit') || str_contains($url, '858815159M') || str_contains($url, 'photo-1512917774080-9991f1c4c750')) {
+            $photos = \App\Models\PropertyImage::VERIFIED_REAL_PHOTOS;
+            $url = $photos[abs((int)$this->id) % count($photos)];
         }
-        if ($prim = $this->images()->where('is_primary', true)->first()) {
-            return $this->memoizedPrimaryImageUrl = $prim->imageUrl();
-        }
-        if ($first = $this->images()->first()) {
-            return $this->memoizedPrimaryImageUrl = $first->imageUrl();
-        }
-        return $this->memoizedPrimaryImageUrl = null;
+
+        return $this->memoizedPrimaryImageUrl = $url;
     }
 }

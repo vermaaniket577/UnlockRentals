@@ -12,20 +12,13 @@ class FixBrokenPropertyImagesCommand extends Command
     protected $signature = 'properties:fix-images';
     protected $description = 'Replace broken 404 image URLs and AI stock placeholders with real, authentic 99acres apartment photos';
 
-    protected array $verifiedPhotos = [
-        'https://imagecdn.99acres.com/media1/42017/5/840345375M-1789551687244.jpg',
-        'https://imagecdn.99acres.com/media1/42871/0/857420409M-1791478098385.jpg',
-        'https://imagecdn.99acres.com/media1/43068/0/861360145M-1791968331875.jpg',
-        'https://imagecdn.99acres.com/media1/42159/1/843181781M-1789893933830.jpg',
-        'https://imagecdn.99acres.com/media1/42949/8/858988919M-1791654342416.jpg',
-        'https://imagecdn.99acres.com/media1/42949/8/858988915M-1791654342434.jpg',
-        'https://imagecdn.99acres.com/media1/39272/9/785449752M-1782739242717.jpg',
-        'https://imagecdn.99acres.com/media1/39272/9/785449750M-1782739242657.jpg',
-        'https://imagecdn.99acres.com/media1/43177/5/863545599M-1792209764839.jpg',
-        'https://imagecdn.99acres.com/media1/42481/11/849631073M-1790688294984.jpg',
-        'https://imagecdn.99acres.com/media1/35898/8/717968519M-1772008451141.jpg',
-        'https://imagecdn.99acres.com/media1/35898/8/717968565M-1772008453429.jpg',
-    ];
+    protected array $verifiedPhotos = [];
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->verifiedPhotos = PropertyImage::VERIFIED_REAL_PHOTOS;
+    }
 
     public function handle(): int
     {

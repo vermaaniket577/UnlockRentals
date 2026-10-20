@@ -83,6 +83,9 @@
     // Limit to 6 slides max per card for optimal DOM and memory performance
     $cardImages = $cardImages->take(6);
     $hasMultipleImages = $cardImages->count() > 1;
+
+    $fallbackPhotos = \App\Models\PropertyImage::VERIFIED_REAL_PHOTOS;
+    $cardFallbackPhoto = $fallbackPhotos[abs((int)$property->id) % count($fallbackPhotos)];
 @endphp
 
 <article class="property-rental-card group relative flex flex-col h-auto sm:h-full bg-white dark:bg-slate-900 rounded-xl sm:rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
@@ -144,7 +147,7 @@
                                  width="480"
                                  height="360"
                                  referrerpolicy="no-referrer"
-                                 onerror="if(!this.dataset.proxied && this.src.startsWith('http') && !this.src.includes('/image-proxy')){ this.dataset.proxied='1'; this.src='{{ route('image.proxy') }}?url=' + encodeURIComponent(this.dataset.origSrc || this.src); } else { this.onerror=null; this.src='{{ asset('images/property_placeholder.svg') }}'; }"
+                                 onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $cardFallbackPhoto }}'; } else { this.onerror=null; }"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out pointer-events-none"
                                  loading="{{ $idx === 0 ? $loadingAttr : 'lazy' }}"
                                  fetchpriority="{{ $idx === 0 ? $priorityAttr : 'low' }}"
@@ -181,14 +184,14 @@
                  width="480"
                  height="360"
                  referrerpolicy="no-referrer"
-                 onerror="if(!this.dataset.proxied && this.src.startsWith('http') && !this.src.includes('/image-proxy')){ this.dataset.proxied='1'; this.src='{{ route('image.proxy') }}?url=' + encodeURIComponent(this.dataset.origSrc || this.src); } else { this.onerror=null; this.src='{{ asset('images/property_placeholder.svg') }}'; }"
+                 onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $cardFallbackPhoto }}'; } else { this.onerror=null; }"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                  loading="{{ $loadingAttr }}"
                  fetchpriority="{{ $priorityAttr }}"
                  decoding="async">
         @elseif($property->hasVideo())
             <div class="relative w-full h-full">
-                <img src="{{ asset('images/property_placeholder.svg') }}"
+                <img src="{{ $cardFallbackPhoto }}"
                      alt="{{ $cleanTitle }}"
                      title="{{ $cleanTitle }}"
                      width="480"

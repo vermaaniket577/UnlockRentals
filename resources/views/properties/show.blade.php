@@ -87,6 +87,9 @@
     if (strlen($cleanWa) === 10) { $cleanWa = '91' . $cleanWa; }
     $waMessage = urlencode("Hello, I am interested in this property on UnlockRentals.\nProperty: #{$property->id} ({$property->title})\nPrice: ₹" . number_format($property->price, 0) . "\nLink: " . route('properties.show', $property));
     $waUrl = "https://wa.me/{$cleanWa}?text={$waMessage}";
+
+    $fallbackPhotos = \App\Models\PropertyImage::VERIFIED_REAL_PHOTOS;
+    $propFallbackPhoto = $fallbackPhotos[abs((int)$property->id) % count($fallbackPhotos)];
 @endphp
 
 @section('title', $cleanTitle . ' - ' . $localityName . ' - UnlockRentals')
@@ -173,13 +176,13 @@
                                      class="w-full h-full object-cover select-none"
                                      referrerpolicy="no-referrer"
                                      loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
-                                     onerror="if(!this.dataset.proxied && this.src.startsWith('http') && !this.src.includes('/image-proxy')){ this.dataset.proxied='1'; this.src='{{ route('image.proxy') }}?url=' + encodeURIComponent(this.dataset.origSrc || this.src); } else { this.onerror=null; this.src='{{ asset('images/property_placeholder.svg') }}'; }">
+                                     onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $propFallbackPhoto }}'; } else { this.onerror=null; }">
                             </div>
                         @endforeach
                     </div>
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-slate-800">
-                        <img src="{{ asset('images/property_placeholder.svg') }}" alt="{{ $cleanTitle }}" class="w-full h-full object-cover">
+                        <img src="{{ $propFallbackPhoto }}" alt="{{ $cleanTitle }}" class="w-full h-full object-cover">
                     </div>
                 @endif
 

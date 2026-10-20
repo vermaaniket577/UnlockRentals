@@ -60,7 +60,13 @@
             $cardImages = collect([$primaryImg])->merge($cardImages->reject(fn($img) => $img->id === $primaryImg->id))->values();
         }
     }
-    $primaryUrl = $cardImages->first()?->imageUrl() ?? $property->primaryImageUrl() ?? asset('images/property_placeholder.svg');
+    $fallbackPhotos = \App\Models\PropertyImage::VERIFIED_REAL_PHOTOS;
+    $cardFallbackPhoto = $fallbackPhotos[abs((int)$property->id) % count($fallbackPhotos)];
+
+    $primaryUrl = $cardImages->first()?->imageUrl() ?? $property->primaryImageUrl();
+    if (!$primaryUrl || str_contains($primaryUrl, 'property_placeholder') || str_contains($primaryUrl, '858815159M') || str_contains($primaryUrl, 'luxury_sunlit')) {
+        $primaryUrl = $cardFallbackPhoto;
+    }
     $imagesCount = $cardImages->count() > 0 ? $cardImages->count() : ($property->images_count ?? 1);
 
     // Owner / Dealer Information
@@ -104,11 +110,12 @@
         <a href="{{ $propertyUrl }}" class="block w-full h-full relative group/img overflow-hidden" title="{{ $cleanTitle }}">
             <img src="{{ $primaryUrl }}"
                  data-orig-src="{{ $primaryUrl }}"
+                 data-fallback-url="{{ $cardFallbackPhoto }}"
                  alt="{{ $cleanTitle }}"
                  loading="lazy"
                  referrerpolicy="no-referrer"
                  class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500 ease-out select-none"
-                 onerror="if(!this.dataset.proxied && this.src.startsWith('http') && !this.src.includes('/image-proxy')){ this.dataset.proxied='1'; this.src='{{ route('image.proxy') }}?url=' + encodeURIComponent(this.dataset.origSrc || this.src); } else { this.onerror=null; this.src='{{ asset('images/property_placeholder.svg') }}'; }">
+                 onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $cardFallbackPhoto }}'; } else { this.onerror=null; }">
 
             {{-- Subtle Vignette Gradients --}}
             <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none"></div>
