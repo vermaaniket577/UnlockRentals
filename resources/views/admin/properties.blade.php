@@ -34,19 +34,42 @@
                 </a>
             </div>
             
-            {{-- Direct Auto-Approve Toggle --}}
-            <div class="flex items-center gap-3 bg-white px-4 py-2.5 border border-stone-200/50 rounded-sm shadow-sm">
-                <div class="flex flex-col">
-                    <span class="text-xs font-bold text-zinc-800 uppercase tracking-wider">Bypass Approval</span>
-                    <span class="text-[10px] text-zinc-400">Post directly to website</span>
+            <div class="flex items-center gap-3 flex-wrap">
+                {{-- Live 1-Minute Auto-Sync Controls --}}
+                <div class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 border border-stone-200/60 rounded-sm shadow-sm">
+                    <button type="button" 
+                            id="liveSyncToggleBtn" 
+                            onclick="toggleLiveAutoSync()" 
+                            class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-1 rounded transition-colors cursor-pointer"
+                            title="Auto-syncs every 60s. Click to pause or resume">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="syncPulseDot"></span>
+                        <span id="syncCountdownText">Sync: 60s</span>
+                    </button>
+
+                    <button type="button" 
+                            id="manualSyncBtn" 
+                            onclick="triggerManualSync()" 
+                            class="inline-flex items-center gap-1 text-xs font-bold text-white bg-[#2563EB] hover:bg-blue-700 px-2.5 py-1 rounded transition-all shadow-xs disabled:opacity-50"
+                            title="Trigger 99acres scraper sync immediately">
+                        <i class="ph-bold ph-arrows-clockwise text-xs" id="manualSyncIcon"></i>
+                        <span id="manualSyncText">Sync Now</span>
+                    </button>
                 </div>
-                <form id="bypass-toggle-form" action="{{ route('admin.properties.toggle-bypass') }}" method="POST" class="m-0 p-0 flex items-center">
-                    @csrf
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="bypass-approval-checkbox" name="bypass_property_approval" value="1" {{ \App\Models\Setting::get('bypass_property_approval', '0') == '1' ? 'checked' : '' }} class="sr-only peer" onchange="document.getElementById('bypass-toggle-form').submit()">
-                        <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2563EB]"></div>
-                    </label>
-                </form>
+
+                {{-- Direct Auto-Approve Toggle --}}
+                <div class="flex items-center gap-3 bg-white px-4 py-2 border border-stone-200/50 rounded-sm shadow-sm">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-zinc-800 uppercase tracking-wider">Bypass Approval</span>
+                        <span class="text-[10px] text-zinc-400">Post directly to website</span>
+                    </div>
+                    <form id="bypass-toggle-form" action="{{ route('admin.properties.toggle-bypass') }}" method="POST" class="m-0 p-0 flex items-center">
+                        @csrf
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="bypass-approval-checkbox" name="bypass_property_approval" value="1" {{ \App\Models\Setting::get('bypass_property_approval', '0') == '1' ? 'checked' : '' }} class="sr-only peer" onchange="document.getElementById('bypass-toggle-form').submit()">
+                            <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2563EB]"></div>
+                        </label>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -135,7 +158,7 @@
         </div>
 
         {{-- Properties Table --}}
-        <div class="bg-white border border-stone-200 rounded-xl shadow-sm overflow-hidden">
+        <div id="properties-table-container" class="bg-white border border-stone-200 rounded-xl shadow-sm overflow-hidden">
             @if($properties->count() > 0)
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -363,6 +386,156 @@ function showAdminToast(message, type = 'success') {
         setTimeout(() => toast.remove(), 300);
     }, 2800);
 }
+
+// ==========================================
+// Live 1-Minute Property Sync & Update System
+// ==========================================
+let syncCountdown = 60;
+let syncInterval = null;
+let syncEnabled = true;
+let currentLatestId = {{ $properties->first()->id ?? 0 }};
+let currentTotal = {{ $properties->total() ?? $properties->count() }};
+let currentLatestUpdated = {{ \App\Models\Property::latest('updated_at')->first()?->updated_at?->timestamp ?? time() }};
+
+function startLiveSync() {
+    if (syncInterval) clearInterval(syncInterval);
+    syncCountdown = 60;
+    
+    syncInterval = setInterval(() => {
+        if (!syncEnabled) return;
+        syncCountdown--;
+        
+        const countdownEl = document.getElementById('syncCountdownText');
+        if (countdownEl) {
+            countdownEl.textContent = `Sync: ${syncCountdown}s`;
+        }
+
+        if (syncCountdown <= 0) {
+            syncCountdown = 60;
+            checkPropertyUpdatesSilently();
+        }
+    }, 1000);
+}
+
+function toggleLiveAutoSync() {
+    syncEnabled = !syncEnabled;
+    const dot = document.getElementById('syncPulseDot');
+    const text = document.getElementById('syncCountdownText');
+    const btn = document.getElementById('liveSyncToggleBtn');
+
+    if (syncEnabled) {
+        syncCountdown = 60;
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+        if (text) text.textContent = 'Sync: 60s';
+        if (btn) btn.className = 'inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-1 rounded transition-colors cursor-pointer';
+        showAdminToast('Live Auto-Sync active (checking every 60s)', 'success');
+    } else {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-zinc-400';
+        if (text) text.textContent = 'Sync: Paused';
+        if (btn) btn.className = 'inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-600 bg-stone-100 hover:bg-stone-200 border border-stone-200 px-2 py-1 rounded transition-colors cursor-pointer';
+        showAdminToast('Live Auto-Sync paused', 'info');
+    }
+}
+
+async function checkPropertyUpdatesSilently() {
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput && document.activeElement === searchInput) {
+        return;
+    }
+
+    try {
+        const url = `{{ route('admin.properties.sync-check') }}?last_id=${currentLatestId}&total=${currentTotal}&last_updated=${currentLatestUpdated}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.has_updates) {
+            currentLatestId = data.latest_id;
+            currentTotal = data.total;
+            currentLatestUpdated = data.latest_updated;
+            await refreshPropertiesTableSilently();
+        }
+    } catch (e) {
+        console.warn('Sync check warning:', e);
+    }
+}
+
+async function refreshPropertiesTableSilently() {
+    try {
+        const res = await fetch(window.location.href, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        const html = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const newContainer = doc.getElementById('properties-table-container');
+        const currentContainer = document.getElementById('properties-table-container');
+
+        if (newContainer && currentContainer) {
+            currentContainer.innerHTML = newContainer.innerHTML;
+
+            // Flash highlight top row to show new updated data
+            const topRow = currentContainer.querySelector('tbody tr');
+            if (topRow) {
+                topRow.classList.add('bg-blue-50/80', 'transition-colors', 'duration-1000');
+                setTimeout(() => {
+                    topRow.classList.remove('bg-blue-50/80');
+                }, 2500);
+            }
+
+            showAdminToast('⚡ Data updated! Fresh listings displayed.', 'success');
+        } else {
+            window.location.reload();
+        }
+    } catch (e) {
+        window.location.reload();
+    }
+}
+
+async function triggerManualSync() {
+    const btn = document.getElementById('manualSyncBtn');
+    const icon = document.getElementById('manualSyncIcon');
+    const text = document.getElementById('manualSyncText');
+
+    if (btn) btn.disabled = true;
+    if (icon) icon.classList.add('animate-spin');
+    if (text) text.textContent = 'Syncing...';
+
+    showAdminToast('Fetching latest listings from 99acres...', 'info');
+
+    try {
+        const res = await fetch('{{ route('admin.properties.sync-now') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ city: 'Gurgaon', count: 3 })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            showAdminToast(`✅ ${data.message}`, 'success');
+            currentLatestId = data.latest_id || currentLatestId;
+            currentTotal = data.total || currentTotal;
+            await refreshPropertiesTableSilently();
+        } else {
+            showAdminToast(data.message || 'Sync failed. Check scraper logs.', 'error');
+        }
+    } catch (err) {
+        showAdminToast('Could not reach sync endpoint. Please try again.', 'error');
+    } finally {
+        if (btn) btn.disabled = false;
+        if (icon) icon.classList.remove('animate-spin');
+        if (text) text.textContent = 'Sync Now';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    startLiveSync();
+});
 </script>
 @endpush
 

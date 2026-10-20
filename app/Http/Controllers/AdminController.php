@@ -2372,4 +2372,169 @@ class AdminController extends Controller
         $state = $inSlider ? 'added to homepage slider' : 'removed from homepage slider';
         return redirect()->back()->with('success', "Blog \"{$blog->title}\" is now {$state}.");
     }
+
+    /**
+     * Check if new properties have been added or updated since last client check.
+     */
+    public function checkPropertyUpdates(Request $request)
+    {
+        $lastId = (int) $request->get('last_id', 0);
+        $lastTotal = (int) $request->get('total', 0);
+        $lastUpdated = (int) $request->get('last_updated', 0);
+
+        $latestProp = Property::latest('id')->first();
+        $latestId = $latestProp ? $latestProp->id : 0;
+        $total = Property::count();
+
+        $latestUpdatedProp = Property::latest('updated_at')->first();
+        $latestUpdatedTimestamp = $latestUpdatedProp && $latestUpdatedProp->updated_at ? $latestUpdatedProp->updated_at->timestamp : 0;
+
+        $hasUpdates = false;
+        if ($lastId > 0 && $latestId > $lastId) {
+            $hasUpdates = true;
+        } elseif ($lastTotal > 0 && $total !== $lastTotal) {
+            $hasUpdates = true;
+        } elseif ($lastUpdated > 0 && $latestUpdatedTimestamp > $lastUpdated) {
+            $hasUpdates = true;
+        }
+
+        return response()->json([
+            'has_updates'       => $hasUpdates,
+            'latest_id'         => $latestId,
+            'latest_updated'    => $latestUpdatedTimestamp,
+            'total'             => $total,
+            'checked_at'        => now()->toDateTimeString(),
+        ]);
+    }
+
+    /**
+     * Trigger on-demand sync from 99acres crawler API.
+     */
+    public function triggerPropertySync(Request $request)
+    {
+        $city = $request->get('city', 'Gurgaon');
+        $count = (int) $request->get('count', 3);
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('scrape:city', [
+                'city' => $city,
+                '--count' => $count,
+            ]);
+
+            Cache::forget('home_featured_rentals');
+            Cache::forget('home_featured_properties');
+            Cache::forget('admin_dashboard_stats');
+
+            $latestProp = Property::latest('id')->first();
+
+            return response()->json([
+                'success'    => true,
+                'message'    => "Synced {$count} listings for {$city} successfully!",
+                'latest_id'  => $latestProp ? $latestProp->id : 0,
+                'total'      => Property::count(),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sync error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * External / 1-minute cron API to sync scraper.
+     * Can be invoked via GET/POST or by cron jobs.
+     */
+    public function apiSyncCrawler(Request $request)
+    {
+        $city = $request->get('city', 'Gurgaon');
+        $count = (int) $request->get('count', 2);
+
+        // Allow direct JSON property payload ingestion
+        if ($request->has('properties') && is_array($request->input('properties'))) {
+            $inserted = 0;
+            $adminUser = User::where('role', 'admin')->first() ?? User::first();
+            $userId = $adminUser ? $adminUser->id : 1;
+            $category = \App\Models\Category::first();
+            $categoryId = $category ? $category->id : 1;
+            $bypass = \App\Models\Setting::get('bypass_property_approval', '1') == '1';
+
+            foreach ($request->input('properties') as $item) {
+                if (empty($item['title'])) continue;
+                $slug = Str::slug($item['title']) . '-' . rand(10000, 99999);
+                $prop = Property::create([
+                    'user_id'       => $userId,
+                    'category_id'   => $categoryId,
+                    'title'         => $item['title'],
+                    'slug'          => $slug,
+                    'description'   => $item['description'] ?? "Listing in " . ($item['locality'] ?? $city),
+                    'type'          => $item['type'] ?? 'house',
+                    'purpose'       => $item['purpose'] ?? 'rent',
+                    'price'         => $item['price'] ?? 25000,
+                    'price_period'  => 'month',
+                    'state'         => $item['state'] ?? 'Haryana',
+                    'location'      => $item['location'] ?? $city,
+                    'locality'      => $item['locality'] ?? 'Sector 70',
+                    'address'       => $item['address'] ?? (($item['locality'] ?? 'Sector 70') . ', ' . $city),
+                    'contact_phone' => $item['contact_phone'] ?? '+91 98765 43210',
+                    'bedrooms'      => $item['bedrooms'] ?? 2,
+                    'bathrooms'     => $item['bathrooms'] ?? 2,
+                    'area_sqft'     => $item['area_sqft'] ?? 900,
+                    'furnishing'    => $item['furnishing'] ?? 'semi-furnished',
+                    'status'        => $bypass ? 'approved' : 'pending',
+                    'approved_at'   => $bypass ? now() : null,
+                ]);
+
+                if (!empty($item['images']) && is_array($item['images'])) {
+                    foreach ($item['images'] as $idx => $img) {
+                        \App\Models\PropertyImage::create([
+                            'property_id' => $prop->id,
+                            'path'        => $img,
+                            'is_primary'  => ($idx === 0),
+                            'sort_order'  => $idx,
+                        ]);
+                    }
+                }
+                $inserted++;
+            }
+
+            Cache::forget('home_featured_rentals');
+            Cache::forget('home_featured_properties');
+            Cache::forget('admin_dashboard_stats');
+
+            return response()->json([
+                'status'           => 'success',
+                'message'          => "Imported {$inserted} direct listings",
+                'total_properties' => Property::count(),
+                'latest_id'        => Property::latest('id')->first()?->id ?? 0,
+                'synced_at'        => now()->toDateTimeString(),
+            ]);
+        }
+
+        try {
+            \Illuminate\Support\Facades\Artisan::call('scrape:city', [
+                'city' => $city,
+                '--count' => $count,
+            ]);
+
+            Cache::forget('home_featured_rentals');
+            Cache::forget('home_featured_properties');
+            Cache::forget('admin_dashboard_stats');
+
+            $latestProp = Property::latest('id')->first();
+
+            return response()->json([
+                'status'           => 'success',
+                'message'          => "Scraped and synced {$city}",
+                'synced_at'        => now()->toDateTimeString(),
+                'total_properties' => Property::count(),
+                'latest_id'        => $latestProp ? $latestProp->id : 0,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

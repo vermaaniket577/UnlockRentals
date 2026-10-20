@@ -553,6 +553,8 @@ Route::get('/properties/{property}', [PropertyController::class, 'show'])->name(
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/properties', [AdminController::class, 'properties'])->name('properties');
+    Route::get('/properties/sync-check', [AdminController::class, 'checkPropertyUpdates'])->name('properties.sync-check');
+    Route::post('/properties/sync-now', [AdminController::class, 'triggerPropertySync'])->name('properties.sync-now');
     Route::match(['get', 'post'], '/properties/toggle-bypass', [AdminController::class, 'toggleBypassApproval'])->name('properties.toggle-bypass');
     Route::post('/properties/{property}/approve', [AdminController::class, 'approve'])->name('properties.approve');
     Route::post('/properties/{property}/reject', [AdminController::class, 'reject'])->name('properties.reject');

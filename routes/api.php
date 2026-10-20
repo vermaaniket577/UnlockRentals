@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
 Route::match(['get', 'post'], '/leads/send-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendAll']);
 Route::match(['get', 'post'], '/leads/send/{id}', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendSingle']);
 Route::match(['get', 'post'], '/leads/fetch-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetchAndStore']);
+Route::match(['get', 'post'], '/properties/sync-crawler', [\App\Http\Controllers\AdminController::class, 'apiSyncCrawler']);
 
 /*
 |--------------------------------------------------------------------------
