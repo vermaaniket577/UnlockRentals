@@ -2762,4 +2762,211 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Proper posting advertising form handler: creates owner account automatically and publishes property in their name.
+     */
+    public function postAdvertise(Request $request)
+    {
+        $request->validate([
+            'behalf_mode'   => 'nullable|string|in:new,existing',
+            'behalf_name'   => 'required_if:behalf_mode,new|nullable|string|max:255',
+            'behalf_phone'  => 'required_if:behalf_mode,new|nullable|string|max:20',
+            'behalf_email'  => 'nullable|string|email|max:255',
+            'behalf_user_id'=> 'required_if:behalf_mode,existing|nullable|exists:users,id',
+            'title'         => 'required|string|max:255',
+            'purpose'       => 'required|string|in:rent,buy,sell',
+            'type'          => 'required|string|in:house,shop,pg-hostel,hotel,plot',
+            'price'         => 'required|numeric|min:0',
+            'price_period'  => 'nullable|string|in:month,year',
+            'location'      => 'required|string|max:255',
+            'locality'      => 'required|string|max:255',
+            'address'       => 'nullable|string|max:500',
+            'bedrooms'      => 'nullable|integer|min:0|max:50',
+            'bathrooms'     => 'nullable|integer|min:0|max:20',
+            'area_sqft'     => 'nullable|integer|min:0',
+            'furnishing'    => 'nullable|string|in:furnished,semi-furnished,unfurnished,fully-furnished',
+            'description'   => 'nullable|string',
+            'images'        => 'nullable|array|max:25',
+            'images.*'      => 'image|mimes:jpeg,png,jpg,webp|max:12288',
+            'is_featured'   => 'nullable|boolean',
+        ]);
+
+        try {
+            $ownerUser = null;
+            $behalfMode = $request->input('behalf_mode', 'new');
+            $accountCreated = false;
+
+            if ($behalfMode === 'new') {
+                $name = trim($request->input('behalf_name'));
+                $phone = trim($request->input('behalf_phone'));
+                $email = trim($request->input('behalf_email', ''));
+
+                if (!empty($phone)) {
+                    $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+                    $ownerUser = User::where('phone', $phone)
+                        ->orWhere('phone', 'LIKE', "%{$cleanPhone}%")
+                        ->first();
+                }
+
+                if (!$ownerUser && !empty($email)) {
+                    $ownerUser = User::where('email', $email)->first();
+                }
+
+                if (!$ownerUser) {
+                    $cleanNum = preg_replace('/[^0-9]/', '', $phone) ?: rand(1000, 9999);
+                    $cleanSlug = Str::slug($name) ?: 'owner';
+                    $genEmail = !empty($email) ? $email : "{$cleanSlug}.{$cleanNum}@unlockrentals.com";
+                    if (User::where('email', $genEmail)->exists()) {
+                        $genEmail = "{$cleanSlug}.{$cleanNum}." . rand(100, 999) . "@unlockrentals.com";
+                    }
+
+                    $ownerUser = User::create([
+                        'name'              => $name,
+                        'phone'             => $phone,
+                        'email'             => $genEmail,
+                        'role'              => 'owner',
+                        'password'          => \Illuminate\Support\Facades\Hash::make('Password@123'),
+                        'phone_verified_at' => now(),
+                        'email_verified_at' => now(),
+                    ]);
+                    $accountCreated = true;
+                } else {
+                    if ($ownerUser->role === 'tenant') {
+                        $ownerUser->update(['role' => 'owner']);
+                    }
+                }
+            } elseif ($behalfMode === 'existing') {
+                $ownerUser = User::findOrFail($request->input('behalf_user_id'));
+                if ($ownerUser->role === 'tenant') {
+                    $ownerUser->update(['role' => 'owner']);
+                }
+            } else {
+                $ownerUser = auth()->user();
+            }
+
+            // Determine Category
+            $catName = match($request->type) {
+                'shop' => 'Commercial',
+                'plot' => 'Land',
+                'pg-hostel' => 'PG',
+                default => 'Apartment',
+            };
+            $category = \App\Models\Category::where('name', 'like', "%{$catName}%")->first() ?? \App\Models\Category::first();
+            $categoryId = $category ? $category->id : 1;
+
+            // Generate Description if needed
+            $desc = trim((string)$request->input('description', ''));
+            if (strlen($desc) < 20) {
+                $bhk = $request->bedrooms ? "{$request->bedrooms} BHK " : "";
+                $desc = "Spacious {$bhk}{$request->type} available for {$request->purpose} in {$request->locality}, {$request->location}. Area of " . ($request->area_sqft ?: 1000) . " sq.ft. with " . ($request->bathrooms ?: 1) . " bathrooms. Comes " . ($request->furnishing ?: 'semi-furnished') . ". Well-connected to transport, local markets, and key hubs. Contact {$ownerUser->name} at {$ownerUser->phone} for viewing and booking details.";
+            }
+
+            $slug = Str::slug($request->title) . '-' . rand(10000, 99999);
+            $state = match(strtolower($request->location)) {
+                'gurgaon', 'gurugram', 'faridabad' => 'Haryana',
+                'noida', 'greater noida', 'ghaziabad' => 'Uttar Pradesh',
+                'delhi', 'new delhi' => 'Delhi',
+                'bangalore', 'bengaluru' => 'Karnataka',
+                'mumbai', 'pune', 'navi mumbai', 'thane' => 'Maharashtra',
+                'hyderabad' => 'Telangana',
+                default => 'India',
+            };
+
+            $prop = Property::create([
+                'user_id'       => $ownerUser->id,
+                'category_id'   => $categoryId,
+                'title'         => $request->title,
+                'slug'          => $slug,
+                'description'   => $desc,
+                'type'          => $request->type,
+                'purpose'       => $request->purpose,
+                'price'         => $request->price,
+                'price_period'  => $request->input('price_period', 'month'),
+                'state'         => $state,
+                'location'      => $request->location,
+                'locality'      => $request->locality,
+                'address'       => $request->address ?: "{$request->locality}, {$request->location}",
+                'contact_phone' => $ownerUser->phone ?: ($request->behalf_phone ?: auth()->user()->phone),
+                'bedrooms'      => (int) ($request->bedrooms ?? 2),
+                'bathrooms'     => (int) ($request->bathrooms ?? 1),
+                'area_sqft'     => (int) ($request->area_sqft ?? 900),
+                'furnishing'    => $request->input('furnishing', 'semi-furnished'),
+                'status'        => 'approved',
+                'approved_at'   => now(),
+                'is_featured'   => $request->boolean('is_featured', false),
+                'is_booked'     => false,
+            ]);
+
+            // Handle image uploads
+            $uploadedCount = 0;
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $idx => $imgFile) {
+                    if ($imgFile->isValid()) {
+                        $path = \App\Services\ImageOptimizer::optimizeAndStore($imgFile, 'properties/' . $prop->id);
+                        \App\Models\PropertyImage::create([
+                            'property_id' => $prop->id,
+                            'path'        => $path,
+                            'is_primary'  => ($idx === 0),
+                            'sort_order'  => $idx,
+                        ]);
+                        $uploadedCount++;
+                    }
+                }
+            }
+
+            // If no images were uploaded, automatically enrich with verified photos
+            if ($uploadedCount === 0) {
+                try {
+                    \Illuminate\Support\Facades\Artisan::call('properties:enrich-images');
+                } catch (\Throwable $e) {}
+            }
+
+            Cache::forget('home_featured_rentals');
+            Cache::forget('home_featured_properties');
+            Cache::forget('admin_dashboard_stats');
+            Cache::forget('approved_locations');
+
+            $prop->load('images', 'user');
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success'         => true,
+                    'message'         => "Advertisement successfully posted on behalf of {$ownerUser->name}!" . ($accountCreated ? " (Active Owner account created)" : ""),
+                    'property'        => [
+                        'id'           => $prop->id,
+                        'title'        => $prop->title,
+                        'price'        => $prop->price,
+                        'locality'     => $prop->locality,
+                        'location'     => $prop->location,
+                        'images_count' => $prop->images->count(),
+                        'owner_name'   => $ownerUser->name,
+                        'owner_email'  => $ownerUser->email,
+                        'owner_phone'  => $ownerUser->phone,
+                        'view_url'     => route('properties.show', $prop->slug),
+                        'edit_url'     => route('properties.edit', $prop->id),
+                    ],
+                    'account_created' => $accountCreated,
+                    'owner'           => [
+                        'id'    => $ownerUser->id,
+                        'name'  => $ownerUser->name,
+                        'email' => $ownerUser->email,
+                        'phone' => $ownerUser->phone,
+                        'role'  => $ownerUser->role,
+                    ],
+                    'total_properties'=> Property::count(),
+                ]);
+            }
+
+            return redirect()->route('admin.properties')->with('success', "🎉 Advertisement posted successfully on behalf of {$ownerUser->name}!");
+        } catch (\Throwable $e) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error: ' . $e->getMessage(),
+                ], 422);
+            }
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
 }
