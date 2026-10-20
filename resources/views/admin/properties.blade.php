@@ -19,8 +19,8 @@
                         class="inline-flex items-center gap-2 text-white font-bold text-sm shadow-md transition-all cursor-pointer hover:brightness-110 active:scale-95" 
                         style="background: linear-gradient(180deg, #4f46e5 0%, #3730a3 100%) !important; color: #ffffff !important; border: 1px solid #312e81 !important; padding: 0.55rem 1.05rem; border-radius: 9999px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);"
                         title="Fetch data with complete images from 99acres URL (all types: Buy, Rent, Land, Projects) and post directly in website">
-                    <i class="ph-bold ph-globe-hemisphere-west text-base" style="color: #ffffff !important;"></i>
-                    <span style="color: #ffffff !important; font-weight: 700; font-size: 0.875rem;">Fetch &amp; Post (99acres)</span>
+                    <i class="ph-bold ph-magnifying-glass-plus text-base" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important; font-weight: 700; font-size: 0.875rem;">Search &amp; Scrape (99acres)</span>
                 </button>
 
                 {{-- Post Advertise Button --}}
@@ -149,8 +149,8 @@
                         onclick="openFetchUrlModal()" 
                         class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 px-3.5 py-2 rounded-lg shadow-sm transition-all cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-95 border border-indigo-400/30"
                         title="Fetch listings from 99acres URL, auto-create owner accounts, and post directly">
-                    <i class="ph-bold ph-cloud-arrow-down text-sm"></i>
-                    <span>Fetch & Post (99acres)</span>
+                    <i class="ph-bold ph-magnifying-glass-plus text-sm"></i>
+                    <span>Search &amp; Scrape (99acres)</span>
                 </button>
 
                 {{-- Live 1-Minute Auto-Sync Controls --}}
@@ -423,10 +423,10 @@
     </div>
 
     {{-- ========================================================================= --}}
-    {{-- FETCH & POST FROM 99ACRES URL MODAL POPUP                                 --}}
+    {{-- FETCH & POST FROM 99ACRES (SEARCH ALL CITIES, SELECT RENT, AUTO-PUBLISH)    --}}
     {{-- ========================================================================= --}}
     <div id="fetchUrlModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden transition-opacity duration-200 opacity-0" role="dialog" aria-modal="true">
-        <div id="fetchUrlModalCard" class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl w-full max-w-xl p-6 sm:p-8 transform scale-95 transition-all duration-200 relative max-h-[92vh] overflow-y-auto">
+        <div id="fetchUrlModalCard" class="bg-white rounded-3xl border border-slate-200/90 shadow-2xl w-full max-w-2xl p-6 sm:p-8 transform scale-95 transition-all duration-200 relative max-h-[92vh] overflow-y-auto">
             {{-- Close Button --}}
             <button type="button" onclick="closeFetchUrlModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer" aria-label="Close modal">
                 <i class="ph-bold ph-x text-lg"></i>
@@ -434,71 +434,152 @@
 
             {{-- Header Icon & Title --}}
             <div class="flex items-center gap-3.5 mb-5">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-md shadow-indigo-500/25 ring-4 ring-indigo-50 shrink-0">
-                    <i class="ph-bold ph-globe-hemisphere-west"></i>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center text-2xl shadow-md shadow-indigo-500/25 ring-4 ring-indigo-50 shrink-0">
+                    <i class="ph-bold ph-magnifying-glass-plus"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-black text-slate-900 tracking-tight">Fetch & Post from 99acres</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Scrapes live listings from 99acres URL, auto-creates landlord accounts, and publishes with all images.</p>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">Search &amp; Scrape Properties (99acres)</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Search all Indian cities, select <strong>Rent</strong> or Buy, and scrape listings with photos &amp; contact numbers into your website.</p>
                 </div>
             </div>
 
             <form id="fetchUrlForm" onsubmit="handleFetchUrlSubmit(event)" class="space-y-4">
-                {{-- URL Input --}}
-                <div>
-                    <label for="fetch_target_url" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                        99acres Search URL <span class="text-red-500">*</span>
-                    </label>
+                {{-- Search Bar & Filter Grid --}}
+                <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 space-y-3.5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        {{-- Purpose Dropdown (Rent vs Buy) --}}
+                        <div>
+                            <label for="scrape_purpose" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                <i class="ph-bold ph-key text-indigo-600 mr-1"></i> Purpose <span class="text-red-500">*</span>
+                            </label>
+                            <select id="scrape_purpose" name="purpose" onchange="updateGeneratedScrapeUrl()" class="w-full text-xs font-bold px-3 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-white">
+                                <option value="rent" selected>🔑 For Rent (Selected)</option>
+                                <option value="buy">🏷️ For Buy / Sale</option>
+                            </select>
+                        </div>
+
+                        {{-- Property Type Dropdown --}}
+                        <div>
+                            <label for="scrape_property_type" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                                <i class="ph-bold ph-buildings text-indigo-600 mr-1"></i> Property Type
+                            </label>
+                            <select id="scrape_property_type" name="property_type" onchange="updateGeneratedScrapeUrl()" class="w-full text-xs font-semibold px-3 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-white">
+                                <option value="all">All Property Types</option>
+                                <option value="builder-floor" selected>Builder Floor (Featured)</option>
+                                <option value="flats">Flats &amp; Apartments</option>
+                                <option value="house">Independent House / Villa</option>
+                                <option value="commercial">Commercial / Office Space</option>
+                                <option value="plots">Plots &amp; Land</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- City Selector Bar --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="scrape_city_select" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                <i class="ph-bold ph-map-pin text-indigo-600 mr-1"></i> Target City / Search All Cities <span class="text-red-500">*</span>
+                            </label>
+                            <span class="text-[11px] font-medium text-indigo-600">Supports all cities in India</span>
+                        </div>
+                        <div class="space-y-2">
+                            <select id="scrape_city_select" onchange="handleCitySelectChange()" class="w-full text-xs font-bold px-3 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-white">
+                                <option value="all">🌟 All Top Indian Cities (Bulk Scrape)</option>
+                                <option value="Delhi" selected>Delhi / NCR (Chanakya Puri, Vasant Vihar, etc.)</option>
+                                <option value="Mumbai">Mumbai (South Bombay, Bandra, Andheri)</option>
+                                <option value="Bangalore">Bangalore / Bengaluru (Indiranagar, Koramangala)</option>
+                                <option value="Gurgaon">Gurgaon / Gurugram (Golf Course Rd, Cyber Hub)</option>
+                                <option value="Noida">Noida / Greater Noida</option>
+                                <option value="Pune">Pune (Kothrud, Hinjewadi, Viman Nagar)</option>
+                                <option value="Hyderabad">Hyderabad (Gachibowli, Hitec City)</option>
+                                <option value="Indore">Indore (Nipania, Vijay Nagar, Super Corridor)</option>
+                                <option value="Kolkata">Kolkata</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Jaipur">Jaipur</option>
+                                <option value="Lucknow">Lucknow</option>
+                                <option value="Chandigarh">Chandigarh</option>
+                                <option value="Ahmedabad">Ahmedabad</option>
+                                <option value="custom">✍️ Type Custom City...</option>
+                            </select>
+
+                            {{-- Custom City Input Container (shown when 'custom' selected) --}}
+                            <div id="scrape_city_custom_container" class="hidden">
+                                <div class="relative">
+                                    <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                                    <input type="text" 
+                                           id="scrape_city_custom" 
+                                           placeholder="Type any Indian city (e.g. Chandigarh, Jaipur, Bhopal, Surat, Kochi)..." 
+                                           oninput="updateGeneratedScrapeUrl()" 
+                                           class="w-full text-xs font-semibold pl-9 pr-3 py-2 rounded-xl border border-indigo-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-indigo-50/40">
+                                </div>
+                            </div>
+
+                            {{-- Quick City Selector Chips --}}
+                            <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quick:</span>
+                                <button type="button" onclick="quickSelectCity('all')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition-colors cursor-pointer">🌟 All Cities</button>
+                                <button type="button" onclick="quickSelectCity('Delhi')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/80 hover:bg-indigo-100 transition-colors cursor-pointer">Delhi</button>
+                                <button type="button" onclick="quickSelectCity('Mumbai')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Mumbai</button>
+                                <button type="button" onclick="quickSelectCity('Bangalore')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Bangalore</button>
+                                <button type="button" onclick="quickSelectCity('Gurgaon')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Gurgaon</button>
+                                <button type="button" onclick="quickSelectCity('Noida')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Noida</button>
+                                <button type="button" onclick="quickSelectCity('Pune')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Pune</button>
+                                <button type="button" onclick="quickSelectCity('Hyderabad')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Hyderabad</button>
+                                <button type="button" onclick="quickSelectCity('Indore')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Indore</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Live Target URL Box (Auto-generated or Custom Override) --}}
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <label for="fetch_target_url" class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Live 99acres Target URL
+                        </label>
+                        <button type="button" onclick="pasteClipboardToUrl()" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 cursor-pointer">
+                            <i class="ph-bold ph-clipboard text-xs"></i> Paste URL
+                        </button>
+                    </div>
                     <div class="relative">
                         <input type="url" 
                                id="fetch_target_url" 
                                name="url" 
                                required 
-                               value="https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R" 
+                               value="https://www.99acres.com/builder-floor-for-rent-in-delhi-ffid" 
                                class="w-full text-xs font-mono px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all pr-10"
-                               placeholder="https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R">
-                        <button type="button" onclick="pasteClipboardToUrl()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 text-xs px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Paste from clipboard">
-                            <i class="ph-bold ph-clipboard text-sm"></i>
-                        </button>
-                    </div>
-
-                    {{-- Quick preset chips --}}
-                    <div class="flex items-center gap-1.5 mt-2 flex-wrap text-[11px]">
-                        <span class="text-slate-400 font-medium">Quick presets:</span>
-                        <button type="button" onclick="setFetchUrlPreset('indore-buy')" class="px-2 py-0.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold cursor-pointer border border-indigo-200/50">Indore (Buy/Sale)</button>
-                        <button type="button" onclick="setFetchUrlPreset('indore-rent')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Indore (Rent)</button>
-                        <button type="button" onclick="setFetchUrlPreset('bangalore')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Bangalore (Rent)</button>
-                        <button type="button" onclick="setFetchUrlPreset('gurgaon')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Gurgaon</button>
-                        <button type="button" onclick="setFetchUrlPreset('mumbai')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium cursor-pointer">Mumbai</button>
+                               placeholder="https://www.99acres.com/...">
                     </div>
                 </div>
 
-                {{-- Quantity & Options --}}
+                {{-- Quantity & Automation Options --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                     <div>
                         <label for="fetch_count" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                             Number of Listings
                         </label>
                         <select id="fetch_count" name="count" class="w-full text-xs font-semibold px-3 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-white">
-                            <option value="2">2 Listings (Quick test)</option>
+                            <option value="3">3 Listings (Instant test)</option>
                             <option value="5">5 Listings</option>
                             <option value="10" selected>10 Listings (Recommended)</option>
                             <option value="20">20 Listings</option>
+                            <option value="30">30 Listings (Deep scrape)</option>
                         </select>
                     </div>
                     <div class="flex flex-col justify-center gap-2 pt-1 sm:pt-4">
                         <label class="inline-flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" id="fetch_create_accounts" name="create_accounts" value="1" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300">
-                            <span class="text-xs font-bold text-slate-800">Create Owner Accounts</span>
+                            <span class="text-xs font-bold text-slate-800">Auto-create Landlord/Owner Accounts</span>
                         </label>
                         <label class="inline-flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" id="fetch_auto_approve" name="auto_approve" value="1" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
-                            <span class="text-xs font-bold text-slate-800">Publish Directly (Approved)</span>
+                            <span class="text-xs font-bold text-slate-800">Publish Immediately (Approved)</span>
                         </label>
                     </div>
                 </div>
 
-                {{-- Live Results / Progress Container --}}
+                {{-- Live Results Container --}}
                 <div id="fetchResultBox" class="hidden p-4 rounded-2xl border text-xs"></div>
 
                 {{-- Modal Action Buttons --}}
@@ -506,9 +587,9 @@
                     <button type="button" onclick="closeFetchUrlModal()" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer">
                         Cancel
                     </button>
-                    <button type="submit" id="fetchSubmitBtn" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-black text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-xl shadow-md transition-all cursor-pointer hover:shadow-lg disabled:opacity-50">
+                    <button type="submit" id="fetchSubmitBtn" class="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-black text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-xl shadow-md transition-all cursor-pointer hover:shadow-lg disabled:opacity-50 active:scale-95">
                         <i class="ph-bold ph-download-simple text-sm" id="fetchSubmitIcon"></i>
-                        <span id="fetchSubmitText">Fetch & Post Listings</span>
+                        <span id="fetchSubmitText">Scrape &amp; Publish in Website</span>
                     </button>
                 </div>
             </form>
@@ -796,20 +877,56 @@ function closeFetchUrlModal() {
     }, 200);
 }
 
-function setFetchUrlPreset(preset) {
-    const input = document.getElementById('fetch_target_url');
-    if (!input) return;
-    const presets = {
-        'indore-buy': 'https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R',
-        'indore-rent': 'https://www.99acres.com/search/property/rent/indore?city=142&preference=R&res_com=R',
-        'bangalore': 'https://www.99acres.com/search/property/rent/bangalore?city=20&preference=R&budget_min=0&res_com=R&isPreLeased=N',
-        'gurgaon': 'https://www.99acres.com/flats-for-rent-in-gurgaon-ffid',
-        'delhi': 'https://www.99acres.com/flats-for-rent-in-delhi-ffid',
-        'mumbai': 'https://www.99acres.com/flats-for-rent-in-mumbai-ffid'
-    };
-    if (presets[preset]) {
-        input.value = presets[preset];
-        input.focus();
+function quickSelectCity(cityName) {
+    const sel = document.getElementById('scrape_city_select');
+    if (!sel) return;
+    sel.value = cityName;
+    handleCitySelectChange();
+}
+
+function handleCitySelectChange() {
+    const sel = document.getElementById('scrape_city_select');
+    const customContainer = document.getElementById('scrape_city_custom_container');
+    const customInput = document.getElementById('scrape_city_custom');
+    if (!sel) return;
+    if (sel.value === 'custom') {
+        if (customContainer) customContainer.classList.remove('hidden');
+        if (customInput) customInput.focus();
+    } else {
+        if (customContainer) customContainer.classList.add('hidden');
+    }
+    updateGeneratedScrapeUrl();
+}
+
+function updateGeneratedScrapeUrl() {
+    const purpose = document.getElementById('scrape_purpose')?.value || 'rent';
+    const propType = document.getElementById('scrape_property_type')?.value || 'all';
+    const citySelect = document.getElementById('scrape_city_select')?.value || 'Delhi';
+    const cityCustom = document.getElementById('scrape_city_custom')?.value.trim();
+    const city = (citySelect === 'custom' && cityCustom) ? cityCustom : citySelect;
+
+    const urlInput = document.getElementById('fetch_target_url');
+    if (!urlInput) return;
+
+    if (city === 'all') {
+        urlInput.value = 'Bulk Scrape: All Top Indian Cities (' + (purpose === 'buy' ? 'For Sale' : 'For Rent') + ')';
+        return;
+    }
+
+    const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const purp = (purpose === 'buy') ? 'sale' : 'rent';
+
+    let typeSlug = 'property';
+    if (propType.includes('builder')) typeSlug = 'builder-floor';
+    else if (propType.includes('flat') || propType.includes('apartment')) typeSlug = 'flats';
+    else if (propType.includes('villa') || propType.includes('house')) typeSlug = 'independent-house';
+    else if (propType.includes('plot') || propType.includes('land')) typeSlug = 'plots';
+    else if (propType.includes('commercial') || propType.includes('office')) typeSlug = 'commercial-property';
+
+    if (purp === 'sale' && citySlug === 'indore' && typeSlug === 'property') {
+        urlInput.value = 'https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R';
+    } else {
+        urlInput.value = `https://www.99acres.com/${typeSlug}-for-${purp}-in-${citySlug}-ffid`;
     }
 }
 
@@ -833,25 +950,38 @@ async function handleFetchUrlSubmit(e) {
     const icon = document.getElementById('fetchSubmitIcon');
     const text = document.getElementById('fetchSubmitText');
     const resultBox = document.getElementById('fetchResultBox');
-    const url = document.getElementById('fetch_target_url').value;
-    const count = document.getElementById('fetch_count').value;
+    
+    const citySelect = document.getElementById('scrape_city_select')?.value || 'Delhi';
+    const cityCustom = document.getElementById('scrape_city_custom')?.value.trim();
+    const cityVal = (citySelect === 'custom' && cityCustom) ? cityCustom : citySelect;
+    const purposeVal = document.getElementById('scrape_purpose')?.value || 'rent';
+    const propTypeVal = document.getElementById('scrape_property_type')?.value || 'all';
+    const urlVal = document.getElementById('fetch_target_url').value.trim();
+    const countVal = document.getElementById('fetch_count').value;
     const createAccounts = document.getElementById('fetch_create_accounts').checked;
     const autoApprove = document.getElementById('fetch_auto_approve').checked;
 
     btn.disabled = true;
     icon.className = 'ph-bold ph-arrows-clockwise text-sm animate-spin';
-    text.textContent = 'Fetching from 99acres...';
+    text.textContent = 'Scraping from 99acres...';
 
-    resultBox.className = 'p-3.5 rounded-2xl border border-indigo-200 bg-indigo-50/70 text-indigo-900 flex items-center gap-2.5 text-xs font-semibold';
+    const cityLabel = cityVal === 'all' ? 'All Top Indian Cities' : cityVal;
+    resultBox.className = 'p-4 rounded-2xl border border-indigo-200 bg-indigo-50/70 text-indigo-900 flex items-center gap-3 text-xs font-semibold';
     resultBox.innerHTML = `
-        <span class="w-3 h-3 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin shrink-0"></span>
-        <span>Connecting to 99acres, scraping real listings with complete photo galleries, and auto-creating owner accounts...</span>
+        <span class="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin shrink-0"></span>
+        <div class="min-w-0 flex-1">
+            <p class="font-bold">Scraping ${cityLabel} listings for ${purposeVal.toUpperCase()}...</p>
+            <p class="text-[11px] text-indigo-700 font-normal mt-0.5">Fetching complete image galleries, contact phone numbers, and auto-creating owner accounts...</p>
+        </div>
     `;
     resultBox.classList.remove('hidden');
 
     try {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
             || '{{ csrf_token() }}';
+
+        // Check if URL is a raw valid http link, otherwise pass city/purpose
+        const isRawUrl = urlVal.startsWith('http://') || urlVal.startsWith('https://');
 
         const res = await fetch('{{ route('admin.properties.fetch-and-post') }}', {
             method: 'POST',
@@ -861,8 +991,11 @@ async function handleFetchUrlSubmit(e) {
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                url: url,
-                count: parseInt(count, 10),
+                city: cityVal,
+                purpose: purposeVal,
+                property_type: propTypeVal,
+                url: isRawUrl ? urlVal : '',
+                count: parseInt(countVal, 10),
                 create_accounts: createAccounts,
                 auto_approve: autoApprove
             })
@@ -874,13 +1007,21 @@ async function handleFetchUrlSubmit(e) {
             let accountsHtml = '';
             if (data.accounts && data.accounts.length > 0) {
                 accountsHtml = `
-                    <div class="mt-2.5 pt-2.5 border-t border-emerald-200/80">
-                        <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-1.5">👤 Created Owner / Dealer Accounts (${data.accounts.length}):</p>
-                        <div class="space-y-1 max-h-28 overflow-y-auto pr-1">
+                    <div class="mt-3 pt-3 border-t border-emerald-200/80">
+                        <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-2">👤 Created Landlord &amp; Dealer Accounts (${data.accounts.length}):</p>
+                        <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                             ${data.accounts.map(acc => `
-                                <div class="flex items-center justify-between bg-white/90 p-1.5 rounded-lg border border-emerald-200/60 text-[11px]">
-                                    <span class="font-bold text-slate-800 truncate">${acc.name}</span>
-                                    <span class="text-slate-500 font-mono">${acc.email}</span>
+                                <div class="flex items-center justify-between bg-white/95 p-2 rounded-xl border border-emerald-200/70 text-[11px] shadow-2xs">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-black flex items-center justify-center text-[10px] shrink-0">
+                                            ${acc.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        <span class="font-bold text-slate-800 truncate">${acc.name}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        ${acc.phone ? `<a href="tel:${acc.phone}" class="font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] flex items-center gap-1"><i class="ph-bold ph-phone"></i> ${acc.phone}</a>` : ''}
+                                        <span class="text-slate-400 font-mono text-[10px] hidden sm:inline">${acc.email}</span>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -891,25 +1032,42 @@ async function handleFetchUrlSubmit(e) {
             let propsHtml = '';
             if (data.properties && data.properties.length > 0) {
                 propsHtml = `
-                    <div class="mt-2.5 pt-2.5 border-t border-emerald-200/80">
-                        <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-1.5">🏡 Posted Properties (${data.properties.length}):</p>
-                        <div class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                    <div class="mt-3 pt-3 border-t border-emerald-200/80">
+                        <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-2">🏡 Published Listings (${data.properties.length}):</p>
+                        <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
                             ${data.properties.map(p => `
-                                <div class="flex items-center justify-between bg-white/95 p-2 rounded-xl border border-emerald-200/70 text-[11px] gap-2 shadow-2xs">
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="font-bold text-slate-800 truncate" title="${p.title}">#${p.id} ${p.title}</span>
-                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase ${p.purpose === 'buy' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">${p.purpose === 'buy' ? 'Sale' : 'Rent'}</span>
-                                            ${p.category ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-100 text-slate-600">${p.category}</span>` : ''}
-                                        </div>
-                                        <div class="text-[10px] text-slate-500 mt-0.5 flex items-center gap-2">
-                                            <span>📍 ${p.locality || p.city}, ${p.city}</span>
-                                            <span>👤 ${p.owner}</span>
+                                <div class="flex items-start justify-between bg-white/95 p-2.5 rounded-2xl border border-emerald-200/80 text-[11px] gap-3 shadow-xs hover:border-emerald-300 transition-all">
+                                    <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                                        ${p.thumbnail ? `
+                                            <img src="${p.thumbnail}" alt="" class="w-14 h-14 rounded-xl object-cover shrink-0 border border-slate-200 shadow-2xs">
+                                        ` : `
+                                            <div class="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 text-slate-400 text-lg border border-slate-200">
+                                                <i class="ph-bold ph-image"></i>
+                                            </div>
+                                        `}
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <span class="font-bold text-slate-900 truncate max-w-[220px]" title="${p.title}">#${p.id} ${p.title}</span>
+                                                <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wide ${p.purpose === 'buy' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">${p.purpose === 'buy' ? 'For Sale' : 'For Rent'}</span>
+                                                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-100 text-slate-600">${p.category}</span>
+                                            </div>
+                                            <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                                                <span>📍 ${p.locality || p.city}, ${p.city}</span>
+                                                <span class="font-semibold text-slate-700">👤 ${p.owner}</span>
+                                            </div>
+                                            ${p.contact_phone ? `
+                                                <div class="mt-1 flex items-center gap-2 flex-wrap">
+                                                    <a href="tel:${p.contact_phone}" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200/60" title="Click to Call Contact">
+                                                        <i class="ph-bold ph-phone-call"></i> ${p.contact_phone}
+                                                    </a>
+                                                    ${p.view_url ? `<a href="${p.view_url}" target="_blank" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800">View Listing &rarr;</a>` : ''}
+                                                </div>
+                                            ` : ''}
                                         </div>
                                     </div>
                                     <div class="text-right shrink-0">
-                                        <div class="font-black text-emerald-700">₹${Number(p.price).toLocaleString()}</div>
-                                        <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-1 rounded">${p.images_count} 📸</span>
+                                        <div class="font-black text-xs text-emerald-700">₹${Number(p.price).toLocaleString()}${p.purpose === 'rent' ? '<span class="text-[9px] font-normal text-slate-500">/mo</span>' : ''}</div>
+                                        <span class="inline-block mt-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-200/60">${p.images_count} 📸 Photos</span>
                                     </div>
                                 </div>
                             `).join('')}
@@ -918,22 +1076,22 @@ async function handleFetchUrlSubmit(e) {
                 `;
             }
 
-            resultBox.className = 'p-3.5 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-xs shadow-xs';
+            resultBox.className = 'p-4 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-xs shadow-xs';
             resultBox.innerHTML = `
-                <div class="flex items-start gap-2">
-                    <i class="ph-fill ph-check-circle text-lg text-emerald-600 shrink-0 mt-0.5"></i>
+                <div class="flex items-start gap-2.5">
+                    <i class="ph-fill ph-check-circle text-xl text-emerald-600 shrink-0 mt-0.5"></i>
                     <div class="min-w-0 flex-1">
-                        <p class="font-bold">${data.message || 'Listings successfully fetched and posted!'}</p>
+                        <p class="font-bold text-sm">${data.message || 'Listings successfully scraped and published!'}</p>
                         ${accountsHtml}
                         ${propsHtml}
-                        <p class="text-[11px] text-emerald-700 mt-2 font-medium">Total Properties in Database: <strong>${data.total_properties}</strong></p>
+                        <p class="text-[11px] text-emerald-700 mt-2.5 font-medium">Total Properties Live on UnlockRentals: <strong>${data.total_properties}</strong></p>
                     </div>
                 </div>
             `;
 
-            showAdminToast(data.message || 'Properties posted successfully!', 'success');
+            showAdminToast(data.message || 'Properties scraped and published successfully!', 'success');
 
-            // Silently refresh the properties table so the new items appear right away
+            // Silently refresh properties table so they appear live
             if (typeof refreshPropertiesTableSilently === 'function') {
                 refreshPropertiesTableSilently();
             }
@@ -942,24 +1100,24 @@ async function handleFetchUrlSubmit(e) {
             resultBox.innerHTML = `
                 <div class="flex items-center gap-2">
                     <i class="ph-bold ph-warning-circle text-lg text-rose-600 shrink-0"></i>
-                    <span>${data.message || 'Failed to fetch and post listings.'}</span>
+                    <span>${data.message || 'Failed to scrape and publish listings.'}</span>
                 </div>
             `;
-            showAdminToast(data.message || 'Error fetching listings', 'error');
+            showAdminToast(data.message || 'Error scraping listings', 'error');
         }
     } catch (err) {
         resultBox.className = 'p-3.5 rounded-2xl border border-rose-300 bg-rose-50 text-rose-900 text-xs';
         resultBox.innerHTML = `
             <div class="flex items-center gap-2">
                 <i class="ph-bold ph-warning-circle text-lg text-rose-600 shrink-0"></i>
-                <span>Error communicating with server: ${err.message}</span>
+                <span>Failed to complete scrape: ${err.message}</span>
             </div>
         `;
-        showAdminToast('Request failed. Check server console.', 'error');
+        showAdminToast(err.message, 'error');
     } finally {
         btn.disabled = false;
         icon.className = 'ph-bold ph-download-simple text-sm';
-        text.textContent = 'Fetch & Post Listings';
+        text.textContent = 'Scrape & Publish in Website';
     }
 }
 

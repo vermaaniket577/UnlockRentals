@@ -2579,8 +2579,15 @@ class AdminController extends Controller
      */
     public function fetchAndPostFromUrl(Request $request)
     {
-        $url = $request->input('url', 'https://www.99acres.com/search/property/rent/bangalore?city=20&preference=R&budget_min=0&res_com=R&isPreLeased=N');
-        $count = max(1, min(30, (int) $request->input('count', 10)));
+        $city = trim((string) $request->input('city', ''));
+        $purpose = strtolower(trim((string) $request->input('purpose', 'rent')));
+        $propertyType = strtolower(trim((string) $request->input('property_type', 'all')));
+        $url = trim((string) $request->input('url', ''));
+
+        // If direct URL is given, use it. Otherwise, target the city (or 'all' for all cities)
+        $target = !empty($url) ? $url : (!empty($city) ? $city : 'delhi');
+
+        $count = max(1, min(60, (int) $request->input('count', 10)));
         $createAccounts = $request->boolean('create_accounts', true);
         $autoApprove = $request->boolean('auto_approve', true);
 
@@ -2592,9 +2599,11 @@ class AdminController extends Controller
                 $pythonBinary = 'python';
             }
 
-            $escapedUrl = escapeshellarg($url);
+            $escapedTarget = escapeshellarg($target);
             $escapedScript = escapeshellarg($scriptPath);
-            $command = "{$pythonBinary} {$escapedScript} {$escapedUrl} {$count} --json";
+            $escapedPurpose = escapeshellarg($purpose ?: 'rent');
+            $escapedType = escapeshellarg($propertyType ?: 'all');
+            $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json";
 
             exec($command, $output, $returnCode);
 
@@ -2739,17 +2748,22 @@ class AdminController extends Controller
                 }
 
                 $createdProperties[] = [
-                    'id'           => $prop->id,
-                    'title'        => $prop->title,
-                    'price'        => $prop->price,
-                    'purpose'      => $prop->purpose,
-                    'type'         => $prop->type,
-                    'category'     => $category?->name ?? 'Property',
-                    'locality'     => $prop->locality,
-                    'city'         => $prop->location,
-                    'state'        => $prop->state,
-                    'owner'        => $ownerName,
-                    'images_count' => count($item['images'] ?? []),
+                    'id'            => $prop->id,
+                    'title'         => $prop->title,
+                    'price'         => $prop->price,
+                    'purpose'       => $prop->purpose,
+                    'type'          => $prop->type,
+                    'category'      => $category?->name ?? 'Property',
+                    'locality'      => $prop->locality,
+                    'city'          => $prop->location,
+                    'state'         => $prop->state,
+                    'owner'         => $ownerName,
+                    'contact_phone' => $prop->contact_phone,
+                    'thumbnail'     => !empty($item['images']) ? $item['images'][0] : null,
+                    'images_count'  => count($item['images'] ?? []),
+                    'bedrooms'      => $prop->bedrooms,
+                    'area_sqft'     => $prop->area_sqft,
+                    'view_url'      => route('properties.show', $prop->slug),
                 ];
             }
 
@@ -2779,6 +2793,18 @@ class AdminController extends Controller
                 'message' => 'Error: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * API endpoint to automatically scrape and publish listings across all major cities.
+     */
+    public function apiScrapeAllCities(Request $request)
+    {
+        $request->merge([
+            'city'    => 'all',
+            'purpose' => $request->input('purpose', 'rent'),
+        ]);
+        return $this->fetchAndPostFromUrl($request);
     }
 
     /**

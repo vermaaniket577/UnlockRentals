@@ -535,13 +535,40 @@ def save_items_to_sqlite(items):
     conn.close()
     return saved
 
+def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: str = "all") -> str:
+    city_slug = re.sub(r"[^a-zA-Z0-9]+", "-", city_name.lower()).strip("-")
+    purp = "sale" if str(purpose).lower() in ["buy", "sale", "s"] else "rent"
+    
+    pt = str(property_type).lower().strip()
+    if "builder" in pt:
+        type_slug = "builder-floor"
+    elif "flat" in pt or "apartment" in pt:
+        type_slug = "flats"
+    elif "villa" in pt or "house" in pt:
+        type_slug = "independent-house"
+    elif "plot" in pt or "land" in pt:
+        type_slug = "plots"
+    elif "commercial" in pt or "office" in pt or "shop" in pt:
+        type_slug = "commercial-property"
+    elif "pg" in pt or "hostel" in pt:
+        type_slug = "pg-hostels"
+    else:
+        type_slug = "property"
+
+    if purp == "sale" and city_slug == "indore" and type_slug == "property":
+        return "https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R"
+
+    return f"https://www.99acres.com/{type_slug}-for-{purp}-in-{city_slug}-ffid"
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     is_json = "--json" in args
     clean_args = [a for a in args if a != "--json"]
 
-    target_city = clean_args[0] if len(clean_args) > 0 else "Gurgaon"
+    target_city = clean_args[0] if len(clean_args) > 0 else "Delhi"
     max_count = int(clean_args[1]) if len(clean_args) > 1 else 10
+    target_purpose = clean_args[2] if len(clean_args) > 2 else "rent"
+    target_type = clean_args[3] if len(clean_args) > 3 else "all"
 
     # Support custom 99acres URL directly
     if target_city.startswith("http://") or target_city.startswith("https://"):
@@ -561,14 +588,33 @@ if __name__ == "__main__":
             save_items_to_sqlite(items)
             print(f"\n[✓] Done! Stored {len(items)} properties.")
 
-    elif target_city.lower() == "all":
+    elif target_city.lower() in ["all", "all-cities", "all_cities"]:
+        ALL_CITIES = [
+            ("Delhi", "Delhi"),
+            ("Mumbai", "Maharashtra"),
+            ("Bangalore", "Karnataka"),
+            ("Gurgaon", "Haryana"),
+            ("Noida", "Uttar Pradesh"),
+            ("Pune", "Maharashtra"),
+            ("Hyderabad", "Telangana"),
+            ("Indore", "Madhya Pradesh"),
+            ("Kolkata", "West Bengal"),
+            ("Chennai", "Tamil Nadu"),
+            ("Jaipur", "Rajasthan"),
+            ("Lucknow", "Uttar Pradesh"),
+            ("Chandigarh", "Punjab"),
+            ("Ahmedabad", "Gujarat"),
+        ]
         all_items = []
-        for city, cfg in CITIES_CONFIG.items():
+        per_city = max(2, max_count // len(ALL_CITIES)) if max_count > 10 else max_count
+        for c_name, c_state in ALL_CITIES:
+            c_url = generate_99acres_url(c_name, target_purpose, target_type)
             if not is_json:
-                print(f"\n[*] Crawling {city}...")
-            city_items = crawl_items_from_city(city, cfg, max_items=max_count)
-            all_items.extend(city_items)
-            time.sleep(random.uniform(2.0, 3.5))
+                print(f"\n[*] Crawling {c_name} ({target_purpose}, {target_type}) -> {c_url}...")
+            cfg = {"url": c_url, "state": c_state}
+            c_items = crawl_items_from_city(c_name, cfg, max_items=per_city)
+            all_items.extend(c_items)
+            time.sleep(random.uniform(1.2, 2.2))
 
         if is_json:
             print("===JSON_START===")
@@ -576,12 +622,20 @@ if __name__ == "__main__":
             print("===JSON_END===")
         else:
             save_items_to_sqlite(all_items)
-            print(f"\n[🎉] Done! Stored {len(all_items)} properties.")
+            print(f"\n[🎉] Done! Stored {len(all_items)} properties across all cities.")
 
-    elif target_city in CITIES_CONFIG:
+    else:
+        # Resolve single city name passed
+        city_key = target_city.lower().strip()
+        matched = CITY_STATE_MAP.get(city_key)
+        city_name = matched[0] if matched else target_city.title()
+        state = matched[1] if matched else "India"
+
+        url = generate_99acres_url(city_name, target_purpose, target_type)
+        cfg = {"url": url, "state": state}
         if not is_json:
-            print(f"\n[*] Crawling {target_city} ({max_count} listings)...")
-        items = crawl_items_from_city(target_city, CITIES_CONFIG[target_city], max_items=max_count)
+            print(f"\n[*] Crawling {city_name}, {state} ({target_purpose}, {target_type}) -> {url}...")
+        items = crawl_items_from_city(city_name, cfg, max_items=max_count)
 
         if is_json:
             print("===JSON_START===")
@@ -590,22 +644,3 @@ if __name__ == "__main__":
         else:
             save_items_to_sqlite(items)
             print(f"\n[✓] Done! Stored {len(items)} properties.")
-    else:
-        # Resolve any city name passed
-        city_key = target_city.lower().strip()
-        if city_key in CITY_STATE_MAP:
-            city_name, state = CITY_STATE_MAP[city_key]
-            url = f"https://www.99acres.com/search/property/buy/{city_key}?city={city_key}&preference=S&res_com=R"
-            cfg = {"url": url, "state": state}
-            if not is_json:
-                print(f"\n[*] Crawling {city_name}, {state} ({max_count} listings)...")
-            items = crawl_items_from_city(city_name, cfg, max_items=max_count)
-            if is_json:
-                print("===JSON_START===")
-                print(json.dumps(items))
-                print("===JSON_END===")
-            else:
-                save_items_to_sqlite(items)
-                print(f"\n[✓] Done! Stored {len(items)} properties.")
-        else:
-            print(f"Unknown city '{target_city}'. Options: {list(CITIES_CONFIG.keys())} or any Indian city or a valid 99acres URL")
