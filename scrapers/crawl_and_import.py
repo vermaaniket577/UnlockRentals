@@ -88,88 +88,161 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
         sys.stderr.write(f"HTTP error {response.status_code}\n")
         return []
 
-    soup = BeautifulSoup(response.text, "html.parser")
-    cards = soup.find_all("div", class_=re.compile(r"tupleNew__outerTupleWrap"))
     items = []
 
-    for idx, card in enumerate(cards):
-        if len(items) >= max_items:
-            break
-
+    # Priority 1: Extract complete rich gallery & property details from window.__initialData__
+    match = re.search(r'window\.__initialData__\s*=\s*(\{.*?\});', response.text)
+    if match:
         try:
-            # Title
-            title_el = card.find(["h2", "a"], class_=re.compile(r"tupleNew__propType|tupleTitle"))
-            title = title_el.get_text(" ", strip=True) if title_el else f"Rental Flat in {city_name}"
+            raw_json = json.loads(match.group(1))
+            props = raw_json.get("srp", {}).get("pageData", {}).get("properties", [])
+            for p in props:
+                if len(items) >= max_items:
+                    break
 
-            # Price
-            price_el = card.find(class_=re.compile(r"tupleNew__priceValWrap|list_header_semiBold"))
-            price_raw = price_el.get_text(strip=True) if price_el else ""
-            price = parse_indian_price(price_raw)
-            if price <= 0:
-                price = 25000.0
+                title = p.get("PROP_HEADING") or p.get("PROP_NAME")
+                if not title:
+                    continue
 
-            # Bedrooms
-            bedrooms = 2
-            bhk_match = re.search(r"(\d+)\s*BHK", title, re.I)
-            if bhk_match:
-                bedrooms = int(bhk_match.group(1))
-            bathrooms = max(1, bedrooms - 1) if bedrooms > 1 else 1
+                price_raw = str(p.get("PRICE") or "")
+                price = parse_indian_price(price_raw)
+                if price <= 0:
+                    price = float(p.get("MIN_PRICE") or 25000.0)
 
-            # Area
-            area_sqft = 850
-            area_el = card.find(class_=re.compile(r"tupleNew__area1Type"))
-            if area_el:
-                area_match = re.search(r"([\d,]+)\s*sqft", area_el.get_text(strip=True), re.I)
-                if area_match:
-                    area_sqft = int(area_match.group(1).replace(",", ""))
+                bedrooms = int(p.get("BEDROOM_NUM") or 2)
+                bathrooms = int(p.get("BATHROOM_NUM") or max(1, bedrooms - 1))
+                area_sqft = int(float(p.get("CARPET_SQFT") or p.get("AREA") or 900))
 
-            # Locality
-            locality = city_name
-            loc_match = re.search(r"in\s+(.+?)(?:,|$)", title, re.I)
-            if loc_match:
-                locality = loc_match.group(1).strip()
+                locality = p.get("LOCALITY") or p.get("LOCALITY_WO_CITY") or city_name
+                society = p.get("SOCIETY_NAME") or p.get("BUILDING_NAME") or ""
 
-            # Furnishing
-            furnishing = "semi-furnished"
-            card_text = card.get_text().lower()
-            if "fully furnished" in card_text or "fully-furnished" in card_text:
-                furnishing = "fully-furnished"
-            elif "unfurnished" in card_text:
-                furnishing = "unfurnished"
+                furnish_val = str(p.get("FURNISH") or "").lower()
+                furnishing = "semi-furnished"
+                if "unfurnished" in furnish_val or "un" in furnish_val:
+                    furnishing = "unfurnished"
+                elif "full" in furnish_val:
+                    furnishing = "fully-furnished"
 
-            # Images
-            imgs = []
-            for img in card.find_all("img"):
-                src = img.get("src") or img.get("data-src")
-                if src and "imagecdn.99acres.com" in src:
-                    imgs.append(src)
-            if not imgs:
-                imgs.append(random.choice(FALLBACK_IMAGES))
+                # Extract ALL images from PROPERTY_IMAGES list (full gallery: bedrooms, kitchen, bathrooms, views)
+                raw_imgs = p.get("PROPERTY_IMAGES") or []
+                if not raw_imgs:
+                    raw_imgs = p.get("THUMBNAIL_IMAGES") or []
+                if not raw_imgs and p.get("MEDIUM_PHOTO_URL"):
+                    raw_imgs = [p.get("MEDIUM_PHOTO_URL")]
+                if not raw_imgs and p.get("PHOTO_URL"):
+                    raw_imgs = [p.get("PHOTO_URL")]
 
-            contact_phone = f"+91 {random.randint(70000, 99999)} {random.randint(10000, 99999)}"
+                clean_imgs = []
+                for img in raw_imgs:
+                    if isinstance(img, str) and img.startswith("http") and not img.endswith(".m3u8"):
+                        high_img = img.replace("T-", "M-")
+                        if high_img not in clean_imgs:
+                            clean_imgs.append(high_img)
 
-            description = (
-                f"Spacious {bedrooms} BHK apartment available for rent in {locality}, {city_name}. "
-                f"Carpet area of {area_sqft} sq.ft. with {bathrooms} bathrooms. "
-                f"Comes {furnishing}. Situated close to public transit, markets, and key hubs."
-            )
+                if not clean_imgs:
+                    clean_imgs = [random.choice(FALLBACK_IMAGES)]
 
-            items.append({
-                "title": title,
-                "price": price,
-                "bedrooms": bedrooms,
-                "bathrooms": bathrooms,
-                "area_sqft": area_sqft,
-                "city": city_name,
-                "state": state,
-                "locality": locality,
-                "furnishing": furnishing,
-                "images": imgs,
-                "contact_phone": contact_phone,
-                "description": description
-            })
+                contact_phone = f"+91 {random.randint(70000, 99999)} {random.randint(10000, 99999)}"
+
+                desc = p.get("DESCRIPTION")
+                if not desc or len(desc) < 30:
+                    desc = (
+                        f"Spacious {bedrooms} BHK apartment in {society or locality}, {city_name}. "
+                        f"Carpet area of {area_sqft} sq.ft. with {bathrooms} bathrooms. "
+                        f"Comes {furnishing}. Situated close to public transit, markets, and key commercial hubs."
+                    )
+
+                items.append({
+                    "title": title,
+                    "price": price,
+                    "bedrooms": bedrooms,
+                    "bathrooms": bathrooms,
+                    "area_sqft": area_sqft,
+                    "city": city_name,
+                    "state": state,
+                    "locality": locality,
+                    "furnishing": furnishing,
+                    "images": clean_imgs,
+                    "contact_phone": contact_phone,
+                    "description": desc
+                })
         except Exception as e:
-            continue
+            sys.stderr.write(f"JSON parsing error: {e}\n")
+
+    # Priority 2: Fallback to HTML card extraction if __initialData__ was absent
+    if not items:
+        soup = BeautifulSoup(response.text, "html.parser")
+        cards = soup.find_all("div", class_=re.compile(r"tupleNew__outerTupleWrap"))
+        for idx, card in enumerate(cards):
+            if len(items) >= max_items:
+                break
+            try:
+                title_el = card.find(["h2", "a"], class_=re.compile(r"tupleNew__propType|tupleTitle"))
+                title = title_el.get_text(" ", strip=True) if title_el else f"Rental Flat in {city_name}"
+
+                price_el = card.find(class_=re.compile(r"tupleNew__priceValWrap|list_header_semiBold"))
+                price_raw = price_el.get_text(strip=True) if price_el else ""
+                price = parse_indian_price(price_raw)
+                if price <= 0:
+                    price = 25000.0
+
+                bedrooms = 2
+                bhk_match = re.search(r"(\d+)\s*BHK", title, re.I)
+                if bhk_match:
+                    bedrooms = int(bhk_match.group(1))
+                bathrooms = max(1, bedrooms - 1) if bedrooms > 1 else 1
+
+                area_sqft = 850
+                area_el = card.find(class_=re.compile(r"tupleNew__area1Type"))
+                if area_el:
+                    area_match = re.search(r"([\d,]+)\s*sqft", area_el.get_text(strip=True), re.I)
+                    if area_match:
+                        area_sqft = int(area_match.group(1).replace(",", ""))
+
+                locality = city_name
+                loc_match = re.search(r"in\s+(.+?)(?:,|$)", title, re.I)
+                if loc_match:
+                    locality = loc_match.group(1).strip()
+
+                furnishing = "semi-furnished"
+                card_text = card.get_text().lower()
+                if "fully furnished" in card_text or "fully-furnished" in card_text:
+                    furnishing = "fully-furnished"
+                elif "unfurnished" in card_text:
+                    furnishing = "unfurnished"
+
+                imgs = []
+                for img in card.find_all("img"):
+                    src = img.get("src") or img.get("data-src")
+                    if src and "imagecdn.99acres.com" in src:
+                        imgs.append(src)
+                if not imgs:
+                    imgs = random.sample(FALLBACK_IMAGES, min(3, len(FALLBACK_IMAGES)))
+
+                contact_phone = f"+91 {random.randint(70000, 99999)} {random.randint(10000, 99999)}"
+
+                description = (
+                    f"Spacious {bedrooms} BHK apartment available for rent in {locality}, {city_name}. "
+                    f"Carpet area of {area_sqft} sq.ft. with {bathrooms} bathrooms. "
+                    f"Comes {furnishing}. Situated close to public transit, markets, and key hubs."
+                )
+
+                items.append({
+                    "title": title,
+                    "price": price,
+                    "bedrooms": bedrooms,
+                    "bathrooms": bathrooms,
+                    "area_sqft": area_sqft,
+                    "city": city_name,
+                    "state": state,
+                    "locality": locality,
+                    "furnishing": furnishing,
+                    "images": imgs,
+                    "contact_phone": contact_phone,
+                    "description": description
+                })
+            except Exception:
+                continue
 
     return items
 

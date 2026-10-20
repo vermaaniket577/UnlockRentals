@@ -2448,6 +2448,10 @@ class AdminController extends Controller
                 '--count' => $count,
             ]);
 
+            try {
+                \Illuminate\Support\Facades\Artisan::call('properties:enrich-images');
+            } catch (\Throwable $e) {}
+
             Cache::forget('home_featured_rentals');
             Cache::forget('home_featured_properties');
             Cache::forget('admin_dashboard_stats');
@@ -2543,6 +2547,10 @@ class AdminController extends Controller
                 'city' => $city,
                 '--count' => $count,
             ]);
+
+            try {
+                \Illuminate\Support\Facades\Artisan::call('properties:enrich-images');
+            } catch (\Throwable $e) {}
 
             Cache::forget('home_featured_rentals');
             Cache::forget('home_featured_properties');
