@@ -360,7 +360,9 @@ class AdminController extends Controller
             ->orderBy('location')
             ->pluck('location');
 
-        return view('admin.properties', compact('properties', 'availableLocations'));
+        $allUsersList = User::orderBy('name')->select('id', 'name', 'phone', 'email', 'role')->get();
+
+        return view('admin.properties', compact('properties', 'availableLocations', 'allUsersList'));
     }
 
     /**
