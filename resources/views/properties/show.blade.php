@@ -19,16 +19,24 @@
         $hasBuyPlan = $user->hasActiveBuyPlan();
     }
 
-    // Typography formatting
+    // Professional Real Estate Portal Typography & Title Formatting
     $rawTitle = \App\Models\Property::cleanUrlFromText($property->title, true);
     $cleanTitle = ucwords(strtolower(trim($rawTitle)));
+    $minorWords = ['for', 'in', 'at', 'on', 'near', 'with', 'and', 'to', 'of', 'the', 'a', 'an', 'by', 'rent', 'sale'];
+    foreach ($minorWords as $w) {
+        $cleanTitle = preg_replace('/\b' . ucfirst($w) . '\b/', strtolower($w), $cleanTitle);
+    }
+    $cleanTitle = ucfirst($cleanTitle);
     $cleanTitle = preg_replace_callback('/\b(\d+)?\s*(bhk|rk|pg)\b/i', fn($m) => strtoupper($m[0]), $cleanTitle);
 
-    // Locality & Project: Strictly sanitize and remove 99acres URLs
+    // Locality, Location, and State Sanitization (Strictly strip 99acres URLs)
     $rawLocality = !empty($property->locality) ? trim($property->locality) : trim(explode(',', $property->location)[0]);
     $localityName = \App\Models\Property::cleanUrlFromText($rawLocality, false) ?: 'Verified Locality';
     $cleanLocation = \App\Models\Property::cleanUrlFromText($property->location, true) ?: 'Delhi';
-    $cleanState = \App\Models\Property::cleanUrlFromText($property->state ?? 'Haryana', false) ?: 'Haryana';
+    $cleanState = \App\Models\Property::cleanUrlFromText($property->state ?? '', false);
+    if (empty($cleanState) || $cleanState === 'India') {
+        [, $cleanState] = \App\Models\Property::extractCityAndStateFromUrl($cleanLocation);
+    }
     $cleanAddress = \App\Models\Property::cleanUrlFromText($property->address, true) ?: ($localityName . ', ' . $cleanLocation);
     $projectName = strtoupper($localityName);
 
@@ -60,7 +68,7 @@
         $totalFlr = $flr + 8;
         $suffix = match($flr % 10) { 1 => 'st', 2 => 'nd', 3 => 'rd', default => 'th' };
         if ($flr >= 11 && $flr <= 13) $suffix = 'th';
-        $floorText = "{$flr}{$suffix} of {$totalFlr} Flr";
+        $floorText = "{$flr}{$suffix} of {$totalFlr} Floors";
     }
 
     // Owner Data
@@ -99,14 +107,32 @@
 
     $fallbackPhotos = \App\Models\PropertyImage::VERIFIED_REAL_PHOTOS;
     $propFallbackPhoto = $fallbackPhotos[abs((int)$property->id) % count($fallbackPhotos)];
+
+    $primaryImg = null;
+    if ($property->relationLoaded('primaryImage') && $property->primaryImage) {
+        $primaryImg = $property->primaryImage;
+    } elseif ($property->relationLoaded('images') && $property->images && $property->images->isNotEmpty()) {
+        $primaryImg = $property->images->firstWhere('is_primary', true) ?? $property->images->first();
+    }
+    $primaryImageUrl = $primaryImg ? $primaryImg->imageUrl() : asset('images/logo.png');
+
+    // Area calculations
+    $superArea = !empty($property->area_sqft) ? (int)$property->area_sqft : 1850;
+    $carpetArea = round($superArea * 0.85);
+    $pricePerSqft = $superArea > 0 ? round($priceVal / $superArea) : 0;
 @endphp
 
 @section('title', $cleanTitle . ' - ' . $localityName . ' - UnlockRentals')
 @section('meta_description', Str::limit('Verified 0% brokerage listing: ' . $cleanTitle . ' in ' . $localityName . ', ' . $cleanLocation . '. Direct owner connection on UnlockRentals.', 160))
-@section('og_image', $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png'))
+@section('og_image', $primaryImageUrl)
 
 @push('head')
 <meta name="property-id" content="{{ $property->id }}">
+<style>
+    #property-detail-page, #property-detail-page * {
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+</style>
 <script type="application/ld+json">
 {
   "@@context": "https://schema.org/",
@@ -114,7 +140,7 @@
   "name": @json($cleanTitle),
   "description": @json(Str::limit(strip_tags($property->description), 150)),
   "url": @json(route('properties.show', $property)),
-  "image": @json($property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png')),
+  "image": @json($primaryImageUrl),
   "address": {
     "@@type": "PostalAddress",
     "streetAddress": @json(($isOwnerOrAdmin || $hasViewed) ? $cleanAddress : 'Verified Locality'),
@@ -143,712 +169,879 @@
             }).catch(() => {});
         } else {
             navigator.clipboard.writeText(window.location.href);
-            const toast = document.getElementById('share-toast');
-            if (toast) {
-                toast.classList.remove('opacity-0', 'translate-y-2');
-                toast.classList.add('opacity-100', 'translate-y-0');
-                setTimeout(() => {
-                    toast.classList.remove('opacity-100', 'translate-y-0');
-                    toast.classList.add('opacity-0', 'translate-y-2');
-                }, 2500);
-            }
+            showToast('Link copied to clipboard!');
         }
     }
+
+    function togglePropertyFavorite(btn, propId) {
+        let favs = JSON.parse(localStorage.getItem('ur_favorites') || '[]');
+        const idx = favs.indexOf(propId);
+        const icon = btn.querySelector('i');
+        if (idx > -1) {
+            favs.splice(idx, 1);
+            localStorage.setItem('ur_favorites', JSON.stringify(favs));
+            if (icon) {
+                icon.className = 'ph-bold ph-heart text-slate-700 dark:text-slate-300';
+            }
+            btn.classList.remove('text-rose-500');
+            showToast('Property removed from shortlisted');
+        } else {
+            favs.push(propId);
+            localStorage.setItem('ur_favorites', JSON.stringify(favs));
+            if (icon) {
+                icon.className = 'ph-fill ph-heart text-rose-500';
+            }
+            btn.classList.add('text-rose-500');
+            showToast('Property shortlisted successfully!');
+        }
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('share-toast');
+        const textEl = document.getElementById('toast-message');
+        if (toast) {
+            if (textEl) textEl.textContent = msg;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 2500);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        let favs = JSON.parse(localStorage.getItem('ur_favorites') || '[]');
+        const favBtn = document.getElementById('property-fav-btn');
+        if (favBtn && favs.includes({{ $property->id }})) {
+            const icon = favBtn.querySelector('i');
+            if (icon) icon.className = 'ph-fill ph-heart text-rose-500';
+            favBtn.classList.add('text-rose-500');
+        }
+    });
 </script>
 @endpush
 
 @section('content')
 
 {{-- Toast Notification --}}
-<div id="share-toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-2 z-[9999] pointer-events-none flex items-center gap-2">
-    <i class="ph-bold ph-check-circle text-emerald-400 text-base"></i> Link copied to clipboard!
+<div id="share-toast" class="fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-2 z-[9999] pointer-events-none flex items-center gap-2">
+    <i class="ph-bold ph-check-circle text-emerald-400 text-base"></i>
+    <span id="toast-message">Link copied to clipboard!</span>
 </div>
 
-{{-- Main Page Section: Styled strictly to match luxury mobile-first card design --}}
-<section class="bg-slate-100/70 dark:bg-slate-950 py-3 sm:py-6 pb-28 sm:pb-32 min-h-screen" id="property-detail-page">
-    <div class="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto px-3 sm:px-4 space-y-3.5 sm:space-y-4">
+{{-- Main Page Section: Standard 99acres Desktop & Mobile Layout --}}
+<section class="bg-slate-50/70 dark:bg-slate-950 py-3 sm:py-6 pb-28 lg:pb-16 min-h-screen text-slate-800 dark:text-slate-200" id="property-detail-page">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
 
         {{-- ========================================================
-             1. HERO MEDIA GALLERY CARD WITH FLOATING CONTROLS
+             1. BREADCRUMBS NAVIGATION (99ACRES STANDARD)
              ======================================================== --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-sm border border-slate-200/80 dark:border-slate-800 relative group">
-            
-            {{-- Main Image Display Area --}}
-            <div class="relative w-full overflow-hidden bg-slate-900" style="aspect-ratio: 16 / 11;" id="gallery-main-container">
-                @if($galleryImages->isNotEmpty())
-                    <div id="gallery-slider-track" class="flex h-full w-full transition-transform duration-500 ease-out" style="transform: translate3d(0,0,0);">
-                        @foreach($galleryImages as $idx => $img)
-                            <div class="h-full w-full flex-shrink-0 relative cursor-pointer" onclick="openLightboxModal({{ $idx }})">
-                                <img src="{{ $img->imageUrl() }}"
-                                     data-orig-src="{{ $img->imageUrl() }}"
-                                     alt="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
-                                     class="w-full h-full object-cover select-none"
-                                     referrerpolicy="no-referrer"
-                                     loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
-                                     onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $propFallbackPhoto }}'; } else { this.onerror=null; }">
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="w-full h-full flex items-center justify-center bg-slate-800">
-                        <img src="{{ $propFallbackPhoto }}" alt="{{ $cleanTitle }}" class="w-full h-full object-cover">
-                    </div>
-                @endif
-
-                {{-- Booked Overlay if booked --}}
-                @if($property->is_booked)
-                    <div class="absolute inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-20 pointer-events-none">
-                        <span class="px-5 py-2 bg-rose-600 text-white font-black text-xs uppercase tracking-widest rounded-xl shadow-xl transform -rotate-6">
-                            <i class="ph-bold ph-lock-key mr-1"></i> Property Booked
-                        </span>
-                    </div>
-                @endif
-
-                {{-- Top Floating Navigation Bar (Back, Share, Wishlist) --}}
-                <div class="absolute top-3 left-3 right-3 flex items-center justify-between z-30 pointer-events-none">
-                    {{-- Back Circle Button --}}
-                    <button type="button"
-                            onclick="window.history.length > 1 ? window.history.back() : window.location.href='{{ route('properties.index') }}'"
-                            class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition-all active:scale-90 pointer-events-auto cursor-pointer"
-                            aria-label="Back">
-                        <i class="ph-bold ph-arrow-left text-base sm:text-lg"></i>
-                    </button>
-
-                    {{-- Right Share & Heart Buttons --}}
-                    <div class="flex items-center gap-2">
-                        <button type="button"
-                                onclick="copyPropertyLink()"
-                                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-slate-800 shadow-md flex items-center justify-center transition-all active:scale-90 pointer-events-auto cursor-pointer"
-                                aria-label="Share listing">
-                            <i class="ph-bold ph-share-network text-base sm:text-lg"></i>
-                        </button>
-                        <button type="button"
-                                onclick="window.toggleCardFavorite(this, {{ $property->id }})"
-                                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-white text-slate-700 hover:text-rose-500 shadow-md flex items-center justify-center transition-all active:scale-90 pointer-events-auto cursor-pointer"
-                                data-property-fav="{{ $property->id }}"
-                                aria-label="Favorite">
-                            <i class="ph-bold ph-heart text-base sm:text-lg"></i>
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Top Left Badges (Direct Landlord + Unlock Verified) --}}
-                <div class="absolute top-14 sm:top-16 left-3 flex items-center gap-1.5 z-20 pointer-events-none flex-wrap">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-white text-[10px] sm:text-[11px] font-black tracking-wide shadow-sm border border-white/80">
-                        <i class="ph-fill ph-shield-check text-emerald-600 text-xs"></i>
-                        <span>{{ $isSale ? 'Direct Owner' : ($property->type === 'plot' ? 'Direct Title' : 'Direct Landlord') }}</span>
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/95 text-blue-700 dark:text-blue-300 text-[10px] sm:text-[11px] font-black tracking-wide shadow-sm border border-white/80">
-                        <i class="ph-fill ph-seal-check text-blue-600 text-xs"></i>
-                        <span>Unlock Verified</span>
-                    </span>
-                </div>
-
-                {{-- Bottom Badges (360 Virtual Tour + Photo Counter) --}}
-                <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between z-20 pointer-events-none">
-                    {{-- Virtual Tour / Video Tour Pill --}}
-                    @if($property->hasVideo())
-                        <button type="button"
-                                onclick="openVideoModal()"
-                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-purple-700 text-[10.5px] sm:text-xs font-black shadow-md border border-white/80 transition-all pointer-events-auto cursor-pointer">
-                            <i class="ph-bold ph-video-camera text-purple-600"></i>
-                            <span>HD Video Tour</span>
-                        </button>
-                    @else
-                        <button type="button"
-                                onclick="openLightboxModal(0)"
-                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-blue-700 text-[10.5px] sm:text-xs font-black shadow-md border border-white/80 transition-all pointer-events-auto cursor-pointer">
-                            <i class="ph-bold ph-cube text-blue-600"></i>
-                            <span>360° Virtual Tour</span>
-                        </button>
-                    @endif
-
-                    {{-- Photos Counter Badge --}}
-                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black/65 backdrop-blur-xs text-white text-[10.5px] sm:text-xs font-bold shadow-md" id="gallery-counter-badge">
-                        1/{{ $totalPhotos }} photos
-                    </span>
-                </div>
+        <nav class="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center justify-between gap-3 overflow-x-auto no-scrollbar">
+            <ol class="flex items-center gap-1.5 shrink-0">
+                <li>
+                    <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Home</a>
+                </li>
+                <li><span class="text-slate-300 dark:text-slate-700">/</span></li>
+                <li>
+                    <a href="{{ route('properties.index', ['purpose' => $isSale ? 'buy' : 'rent', 'location' => $cleanLocation]) }}" class="hover:text-blue-600 transition-colors">
+                        {{ $isSale ? 'Buy' : 'Rent' }} in {{ $cleanLocation }}
+                    </a>
+                </li>
+                <li><span class="text-slate-300 dark:text-slate-700">/</span></li>
+                <li>
+                    <a href="{{ route('properties.index', ['purpose' => $isSale ? 'buy' : 'rent', 'locality' => $localityName]) }}" class="hover:text-blue-600 transition-colors">
+                        {{ $localityName }}
+                    </a>
+                </li>
+                <li><span class="text-slate-300 dark:text-slate-700">/</span></li>
+                <li class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[200px] sm:max-w-sm">
+                    {{ $cleanTitle }}
+                </li>
+            </ol>
+            <div class="text-[11px] text-slate-400 shrink-0 hidden sm:block">
+                Property ID: <span class="font-bold text-slate-600 dark:text-slate-300">#{{ $property->id }}</span>
             </div>
+        </nav>
 
-            {{-- Thumbnails Row Strip --}}
-            @if($galleryImages->count() > 1)
-                <div class="p-2 sm:p-2.5 bg-slate-900 flex items-center gap-2 overflow-x-auto no-scrollbar">
-                    @foreach($galleryImages->take(4) as $idx => $img)
-                        @if($idx === 3 && $galleryImages->count() > 4)
-                            {{-- 4th thumbnail with "+X more" overlay --}}
-                            <div class="relative w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer border border-white/20 group/more"
-                                 onclick="openLightboxModal(3)">
-                                <img src="{{ $img->imageUrl() }}" alt="" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-slate-950/80 hover:bg-slate-950/70 text-white flex items-center justify-center text-xs font-black gap-1 transition-colors">
-                                    <i class="ph-bold ph-images text-xs"></i>
-                                    <span>+{{ $galleryImages->count() - 3 }} more</span>
-                                </div>
-                            </div>
+        {{-- ========================================================
+             2. TOP TITLE & ACTION HEADER
+             ======================================================== --}}
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-2 min-w-0 flex-1">
+                {{-- Badges Strip --}}
+                <div class="flex items-center gap-2 flex-wrap text-xs">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[11px] border border-emerald-200/70 dark:border-emerald-800/60">
+                        <i class="ph-fill ph-seal-check text-xs"></i> Verified Listing
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold text-[11px] border border-blue-200/70 dark:border-blue-800/60">
+                        <i class="ph-fill ph-shield-check text-xs"></i> 0% Brokerage
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-[11px]">
+                        {{ $isSale ? 'Direct Owner' : 'Direct Landlord' }}
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold text-[11px] border border-amber-200/60">
+                        <i class="ph-fill ph-star text-amber-500"></i> 4.8 (38 reviews)
+                    </span>
+                </div>
+
+                {{-- Listing Title --}}
+                <h1 class="text-xl sm:text-2xl lg:text-[26px] font-bold text-slate-900 dark:text-white leading-tight tracking-tight">
+                    {{ $cleanTitle }}
+                </h1>
+
+                {{-- Locality & Map Link --}}
+                <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium flex-wrap">
+                    <i class="ph-bold ph-map-pin text-blue-600 shrink-0"></i>
+                    <span>
+                        @if($isOwnerOrAdmin || $hasViewed)
+                            <strong class="text-slate-800 dark:text-slate-200 font-semibold">{{ $cleanAddress }}</strong>, {{ $localityName }}, {{ $cleanLocation }}, {{ $cleanState }}
                         @else
-                            <button type="button"
-                                    onclick="selectGallerySlide({{ $idx }})"
-                                    class="gallery-thumb-item relative w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer border-2 {{ $idx === 0 ? 'border-blue-500 scale-95 ring-2 ring-blue-500/30' : 'border-transparent opacity-75 hover:opacity-100' }} transition-all">
-                                <img src="{{ $img->imageUrl() }}" alt="" class="w-full h-full object-cover">
-                            </button>
+                            {{ $localityName }}, {{ $cleanLocation }}, {{ $cleanState }}
                         @endif
-                    @endforeach
-                </div>
-            @endif
-        </div>
-
-        {{-- ========================================================
-             2. CARD 1: TITLE, COMMUNITY, RATING & VERIFIED LANDLORD
-             ======================================================== --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
-            
-            {{-- Top Tag Row: Community & Physical Verified --}}
-            <div class="flex items-center justify-between gap-2">
-                <div class="flex items-center gap-1.5 text-xs font-black truncate">
-                    <span class="text-blue-600 dark:text-blue-400 uppercase tracking-wider">{{ $projectName }}</span>
-                    <span class="text-slate-300 dark:text-slate-600">•</span>
-                    <span class="text-slate-500 dark:text-slate-400 font-bold truncate">{{ $communitySub }}</span>
-                </div>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-[10.5px] font-black shrink-0 border border-emerald-200/60 dark:border-emerald-800/60">
-                    <i class="ph-bold ph-check text-xs"></i>
-                    <span>Physical Verified</span>
-                </span>
-            </div>
-
-            {{-- Main Title --}}
-            <h1 class="text-lg sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-snug tracking-tight">
-                {{ $cleanTitle }}
-            </h1>
-
-            {{-- Location Row with Blue Pin --}}
-            <div class="flex items-start gap-1.5 text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
-                <i class="ph-bold ph-map-pin text-blue-600 text-sm mt-0.5 shrink-0"></i>
-                <span>
-                    @if($isOwnerOrAdmin || $hasViewed)
-                        <strong class="text-slate-800 dark:text-slate-200 font-bold">{{ $cleanAddress }}</strong>, {{ $localityName }}, {{ $cleanLocation }}, {{ $cleanState }}
-                    @else
-                        {{ $localityName }}, {{ $cleanLocation }}, {{ $cleanState }}
-                    @endif
-                </span>
-            </div>
-
-            {{-- Rating & Shortlisted Row --}}
-            <div class="flex items-center gap-3 pt-1 text-xs">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-700 text-white font-black text-[11px]">
-                    <span>4.7</span>
-                    <i class="ph-fill ph-star text-[10px]"></i>
-                    <span class="font-normal opacity-80">(38 reviews)</span>
-                </span>
-                <span class="text-slate-500 dark:text-slate-400 font-bold flex items-center gap-1 text-[11.5px]">
-                    <i class="ph-bold ph-users text-blue-600"></i>
-                    <span>{{ 110 + ($property->id * 7) % 75 }} renters shortlisted</span>
-                </span>
-            </div>
-
-            {{-- Trust Banner Inside Card 1: 100% Verified Direct Landlord | Zero Brokerage --}}
-            <div class="bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/50 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-2 mt-2">
-                <div class="flex items-center gap-2 min-w-0">
-                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 text-xs">
-                        <i class="ph-bold ph-check"></i>
                     </span>
-                    <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-emerald-100 truncate">
-                        100% Verified Direct {{ $isSale ? 'Owner' : 'Landlord' }}
-                    </span>
-                </div>
-                <span class="px-2.5 py-1 rounded-lg bg-emerald-200/70 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200 text-[10px] font-black uppercase tracking-wider shrink-0">
-                    ZERO BROKERAGE
-                </span>
-            </div>
-
-            {{-- Description Snippet & Toggle --}}
-            @if(!empty($property->description))
-                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                    <p id="desc-collapsed" class="line-clamp-2">{{ strip_tags($property->description) }}</p>
-                    <p id="desc-full" class="hidden whitespace-pre-line">{{ $property->description }}</p>
-                    <button type="button" onclick="toggleDescription()" id="desc-toggle-btn" class="text-blue-600 dark:text-blue-400 font-bold text-xs mt-1 cursor-pointer">
-                        Read more +
-                    </button>
-                </div>
-            @endif
-        </div>
-
-        {{-- ========================================================
-             3. CARD 2: PRICING, DEPOSIT & BROKERAGE SAVINGS BREAKDOWN
-             ======================================================== --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3.5">
-            
-            {{-- Top Price & Deposit Row --}}
-            <div class="flex items-start justify-between gap-3">
-                <div>
-                    <div class="flex items-baseline gap-1.5 flex-wrap">
-                        <span class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                            ₹{{ number_format($priceVal, 0) }}
-                        </span>
-                        <span class="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-bold">
-                            / {{ $property->price_period ?: ($isSale ? 'total' : 'month') }}
-                        </span>
-                    </div>
-
-                    <div class="flex items-center gap-2 mt-1 flex-wrap text-xs">
-                        @if($marketPrice > 0)
-                            <span class="line-through text-slate-400 font-bold">₹{{ number_format($marketPrice, 0) }}</span>
-                            <span class="px-1.5 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-black text-[10.5px]">
-                                12% Below Market
-                            </span>
-                        @endif
-                        <span class="text-slate-400">• Maintenance incl.</span>
-                    </div>
-                </div>
-
-                {{-- Deposit Box --}}
-                <div class="bg-blue-50/70 dark:bg-slate-800/80 border border-blue-100 dark:border-slate-700 rounded-2xl p-2.5 sm:p-3 text-right shrink-0">
-                    <div class="flex items-center justify-end gap-1 text-blue-700 dark:text-blue-300 text-xs font-black">
-                        <i class="ph-bold ph-arrows-clockwise text-xs"></i>
-                        <span>1-Month Deposit</span>
-                    </div>
-                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold block mt-0.5">
-                        ₹{{ number_format($depositAmount, 0) }} fully refundable
-                    </span>
+                    <span class="text-slate-300 dark:text-slate-700">•</span>
+                    <span class="text-slate-500 dark:text-slate-400 font-semibold">{{ $communitySub }}</span>
                 </div>
             </div>
 
-            {{-- Signature Brokerage Savings Deep Green Banner --}}
-            <div class="bg-emerald-800 dark:bg-emerald-900 text-white rounded-2xl p-3.5 sm:p-4 shadow-sm relative overflow-hidden">
-                <div class="flex items-center justify-between gap-3 relative z-10">
-                    <div class="flex items-start gap-2.5 min-w-0">
-                        <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center shrink-0 text-white text-base">
-                            <i class="ph-fill ph-tag"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs sm:text-sm font-black text-white leading-snug">
-                                You save ₹{{ number_format($brokerSavings, 0) }} broker fee directly on this home!
-                            </p>
-                            <p class="text-[10.5px] text-emerald-100 flex items-center gap-1 mt-0.5 font-medium">
-                                Standard 15-day agent fee waived 100%
-                            </p>
-                        </div>
-                    </div>
-                    <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0 text-white text-xs">
-                        <i class="ph-bold ph-check"></i>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Perks Pills Row --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div class="p-2.5 rounded-xl bg-blue-50/60 dark:bg-slate-800/60 border border-blue-100/70 dark:border-slate-700 flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <i class="ph-bold ph-credit-card text-blue-600 text-sm"></i>
-                    <span>Payment via CC & get ₹500 back</span>
-                </div>
-                <div class="p-2.5 rounded-xl bg-emerald-50/60 dark:bg-slate-800/60 border border-emerald-100/70 dark:border-slate-700 flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200">
-                    <i class="ph-bold ph-fingerprint text-emerald-600 text-sm"></i>
-                    <span>Free Biometric E-Agreement</span>
-                </div>
-            </div>
-        </div>
-
-        {{-- ========================================================
-             4. CARD 3: KEY SPECIFICATIONS (2x3 GRID)
-             ======================================================== --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
-            
-            <div class="flex items-center justify-between">
-                <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                    Key Specifications
-                </h2>
-                <button type="button" onclick="openLightboxModal(0)" class="text-blue-600 dark:text-blue-400 text-xs font-black hover:underline cursor-pointer">
-                    Floor Plan Available
+            {{-- Action Buttons: Share & Favorite --}}
+            <div class="flex items-center gap-2.5 shrink-0 self-start md:self-center">
+                <button type="button"
+                        onclick="copyPropertyLink()"
+                        class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                    <i class="ph-bold ph-share-network text-base text-slate-600 dark:text-slate-300"></i>
+                    <span>Share</span>
+                </button>
+                <button type="button"
+                        id="property-fav-btn"
+                        onclick="togglePropertyFavorite(this, {{ $property->id }})"
+                        class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+                    <i class="ph-bold ph-heart text-base text-slate-600 dark:text-slate-300"></i>
+                    <span>Save</span>
                 </button>
             </div>
-
-            <div class="grid grid-cols-2 gap-2 sm:gap-2.5">
-                {{-- 1. Bedrooms / Config --}}
-                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
-                        <i class="ph-bold ph-bed"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">BEDROOMS</span>
-                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
-                            {{ $property->bedrooms !== null ? ($property->bedrooms == 0 ? '1 RK' : $property->bedrooms . ' Beds') : '2 Beds' }} | {{ $property->bathrooms ?? 2 }} Baths
-                        </span>
-                    </div>
-                </div>
-
-                {{-- 2. Super Area --}}
-                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
-                        <i class="ph-bold ph-ruler"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">SUPER AREA</span>
-                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
-                            {{ !empty($property->area_sqft) ? number_format($property->area_sqft) . ' sq.ft' : '1,900 sq.ft' }}
-                        </span>
-                    </div>
-                </div>
-
-                {{-- 3. Floor Level --}}
-                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
-                        <i class="ph-bold ph-buildings"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">FLOOR LEVEL</span>
-                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
-                            {{ $floorText }}
-                        </span>
-                    </div>
-                </div>
-
-                {{-- 4. Furnishing --}}
-                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
-                        <i class="ph-bold ph-couch"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">FURNISHING</span>
-                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
-                            {{ !empty($property->furnishing) ? ucfirst(str_replace('-', ' ', $property->furnishing)) : 'Semi-Furnished' }}
-                        </span>
-                    </div>
-                </div>
-
-                {{-- 5. Orientation --}}
-                <div class="bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-blue-100/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
-                        <i class="ph-bold ph-compass"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">ORIENTATION</span>
-                        <span class="block text-xs sm:text-[13px] font-black text-slate-800 dark:text-white truncate">
-                            North-East Facing
-                        </span>
-                    </div>
-                </div>
-
-                {{-- 6. Possession --}}
-                <div class="bg-emerald-50/50 dark:bg-slate-800/50 border border-emerald-100/70 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base shrink-0">
-                        <i class="ph-bold ph-calendar-check"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <span class="block text-[8.5px] font-black text-slate-400 uppercase tracking-wider">POSSESSION</span>
-                        <span class="block text-xs sm:text-[13px] font-black text-emerald-700 dark:text-emerald-300 truncate">
-                            Immediate Move-in
-                        </span>
-                    </div>
-                </div>
-            </div>
         </div>
 
         {{-- ========================================================
-             5. CARD 4: DIRECT LANDLORD CONTACT CARD
+             3. TWO-COLUMN DESKTOP ARCHITECTURE (99ACRES STANDARD)
              ======================================================== --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3.5" id="direct-landlord-section">
-            
-            <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    DIRECT {{ $isSale ? 'OWNER' : 'LANDLORD' }}
-                </span>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10.5px] font-black border border-emerald-200/60 dark:border-emerald-800/60">
-                    <i class="ph-bold ph-shield-check text-xs"></i>
-                    <span>Identity & Ownership Verified</span>
-                </span>
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
 
-            {{-- Owner Profile Snippet --}}
-            <div class="p-3.5 bg-slate-50/80 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 rounded-2xl flex items-center gap-3">
-                <div class="relative shrink-0">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-700 text-white font-black text-base flex items-center justify-center shadow-md">
-                        {{ $initials ?: 'RK' }}
-                    </div>
-                    <span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-800" title="Online now"></span>
-                </div>
+            {{-- ====================================================
+                 LEFT / MAIN COLUMN (8 COLS)
+                 ==================================================== --}}
+            <div class="lg:col-span-8 space-y-6">
 
-                <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-1.5 flex-wrap">
-                        <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-none">
-                            {{ $ownerName }}
-                        </span>
-                        <i class="ph-fill ph-check-circle text-blue-600 text-sm"></i>
-                    </div>
-                    <span class="text-[11px] text-slate-400 font-semibold block mt-1 truncate">
-                        Owner since {{ $memberYear }} • {{ $localityName }}
-                    </span>
-
-                    <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100/70 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-extrabold">
-                            <i class="ph-bold ph-seal-check text-[10px]"></i> Govt ID & Registry Verified
-                        </span>
-                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                            • Typically replies in 5m
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Phone Number & Unlock Button Box --}}
-            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-3 shadow-2xs">
-                <div class="flex items-center gap-2.5 min-w-0">
-                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
-                        <i class="ph-bold ph-phone"></i>
-                    </div>
-                    <div class="min-w-0">
-                        @if($isOwnerOrAdmin || $hasViewed)
-                            <a href="tel:{{ $displayPhone }}" class="text-xs sm:text-sm font-black text-slate-900 dark:text-white hover:text-blue-600 block truncate">
-                                {{ $displayPhone }}
-                            </a>
-                            <span class="text-[10px] text-emerald-600 font-bold block">Verified direct phone line</span>
+                {{-- ================================================
+                     A. PHOTO SHOWCASE & FILMSTRIP GALLERY
+                     ================================================ --}}
+                <div class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-2 p-2 sm:p-3">
+                    
+                    {{-- Main Hero Image Container --}}
+                    <div class="relative w-full overflow-hidden bg-slate-900 rounded-xl" style="aspect-ratio: 16 / 9;" id="gallery-main-container">
+                        @if($galleryImages->isNotEmpty())
+                            <div id="gallery-slider-track" class="flex h-full w-full transition-transform duration-500 ease-out" style="transform: translate3d(0,0,0);">
+                                @foreach($galleryImages as $idx => $img)
+                                    <div class="h-full w-full flex-shrink-0 relative cursor-pointer" onclick="openLightboxModal({{ $idx }})">
+                                        <img src="{{ $img->imageUrl() }}"
+                                             data-orig-src="{{ $img->imageUrl() }}"
+                                             alt="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
+                                             class="w-full h-full object-cover select-none"
+                                             referrerpolicy="no-referrer"
+                                             loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
+                                             onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $propFallbackPhoto }}'; } else { this.onerror=null; }">
+                                    </div>
+                                @endforeach
+                            </div>
                         @else
-                            <span class="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200 block tracking-wider font-mono truncate">
-                                +91 98XXX XXXXX
+                            <div class="w-full h-full flex items-center justify-center bg-slate-800">
+                                <img src="{{ $propFallbackPhoto }}" alt="{{ $cleanTitle }}" class="w-full h-full object-cover">
+                            </div>
+                        @endif
+
+                        {{-- Booked Overlay if booked --}}
+                        @if($property->is_booked)
+                            <div class="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-20 pointer-events-none">
+                                <span class="px-5 py-2.5 bg-rose-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-xl transform -rotate-3">
+                                    <i class="ph-bold ph-lock-key mr-1"></i> Property Booked
+                                </span>
+                            </div>
+                        @endif
+
+                        {{-- Left & Right Slider Arrows (Desktop visible on hover) --}}
+                        @if($galleryImages->count() > 1)
+                            <button type="button"
+                                    onclick="event.stopPropagation(); selectGallerySlide((currentSlide - 1 + totalPhotos) % totalPhotos);"
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-lg flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-20 cursor-pointer"
+                                    aria-label="Previous Photo">
+                                <i class="ph-bold ph-caret-left text-lg"></i>
+                            </button>
+                            <button type="button"
+                                    onclick="event.stopPropagation(); selectGallerySlide((currentSlide + 1) % totalPhotos);"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-lg flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-20 cursor-pointer"
+                                    aria-label="Next Photo">
+                                <i class="ph-bold ph-caret-right text-lg"></i>
+                            </button>
+                        @endif
+
+                        {{-- Top Badges on Image --}}
+                        <div class="absolute top-3 left-3 flex items-center gap-2 z-20 pointer-events-none">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white text-[11px] font-bold shadow-sm">
+                                <i class="ph-fill ph-shield-check text-emerald-600"></i>
+                                <span>Zero Brokerage</span>
                             </span>
-                            <span class="text-[10px] text-slate-400 font-semibold block">Direct landlord phone line</span>
+                        </div>
+
+                        {{-- Bottom Floating Buttons on Image --}}
+                        <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between z-20 pointer-events-none">
+                            <div class="pointer-events-auto">
+                                @if($property->hasVideo())
+                                    <button type="button"
+                                            onclick="openLightboxModal(0)"
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-purple-700 text-xs font-bold shadow-md transition-all cursor-pointer">
+                                        <i class="ph-bold ph-video-camera text-purple-600"></i>
+                                        <span>Video Tour</span>
+                                    </button>
+                                @else
+                                    <button type="button"
+                                            onclick="openLightboxModal(0)"
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-blue-700 text-xs font-bold shadow-md transition-all cursor-pointer">
+                                        <i class="ph-bold ph-cube text-blue-600"></i>
+                                        <span>360° Virtual Tour</span>
+                                    </button>
+                                @endif
+                            </div>
+
+                            <button type="button"
+                                    onclick="openLightboxModal(currentSlide)"
+                                    class="pointer-events-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/75 hover:bg-black/90 backdrop-blur-xs text-white text-xs font-semibold shadow-md transition-all cursor-pointer" id="gallery-counter-badge">
+                                <i class="ph-bold ph-images text-xs"></i>
+                                <span>1/{{ $totalPhotos }} Photos</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Filmstrip Thumbnails Row --}}
+                    @if($galleryImages->count() > 1)
+                        <div class="pt-1 flex items-center gap-2.5 overflow-x-auto no-scrollbar">
+                            @foreach($galleryImages->take(6) as $idx => $img)
+                                @if($idx === 5 && $galleryImages->count() > 6)
+                                    <div class="relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border border-slate-300 dark:border-slate-700 group/more"
+                                         onclick="openLightboxModal(5)">
+                                        <img src="{{ $img->imageUrl() }}" alt="" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-slate-950/80 hover:bg-slate-950/70 text-white flex items-center justify-center text-xs font-bold gap-1 transition-colors">
+                                            <i class="ph-bold ph-images text-xs"></i>
+                                            <span>+{{ $galleryImages->count() - 5 }} More</span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <button type="button"
+                                            onclick="selectGallerySlide({{ $idx }})"
+                                            class="gallery-thumb-item relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border-2 {{ $idx === 0 ? 'border-blue-600 ring-2 ring-blue-500/20' : 'border-transparent opacity-75 hover:opacity-100' }} transition-all">
+                                        <img src="{{ $img->imageUrl() }}" alt="" class="w-full h-full object-cover">
+                                    </button>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                {{-- ================================================
+                     B. 99ACRES KEY OVERVIEW / SPECIFICATION MATRIX
+                     ================================================ --}}
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="ph-bold ph-list-dashes text-blue-600"></i>
+                            <span>Property Overview</span>
+                        </h2>
+                        <span class="text-xs font-medium text-slate-400">
+                            Posted by {{ $isSale ? 'Owner' : 'Landlord' }}
+                        </span>
+                    </div>
+
+                    {{-- 99acres-Style Specification Grid Table --}}
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                        
+                        {{-- 1. Configuration / Bedrooms --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-bed"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Bedrooms</span>
+                                <span class="block text-xs sm:text-sm font-bold text-slate-800 dark:text-white truncate">
+                                    {{ $property->bedrooms !== null ? ($property->bedrooms == 0 ? '1 RK' : $property->bedrooms . ' BHK') : '2 BHK' }}
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    {{ $property->bathrooms ?? 2 }} Baths • 2 Balconies
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- 2. Super Built-up Area --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-ruler"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Super Area</span>
+                                <span class="block text-xs sm:text-sm font-bold text-slate-800 dark:text-white truncate">
+                                    {{ number_format($superArea) }} sq.ft
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    Carpet: {{ number_format($carpetArea) }} sq.ft
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- 3. Furnishing --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-couch"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Furnishing</span>
+                                <span class="block text-xs sm:text-sm font-bold text-slate-800 dark:text-white truncate">
+                                    {{ !empty($property->furnishing) ? ucfirst(str_replace('-', ' ', $property->furnishing)) : 'Semi-Furnished' }}
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    Lights, Fans & Modular
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- 4. Floor Level --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-buildings"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Floor</span>
+                                <span class="block text-xs sm:text-sm font-bold text-slate-800 dark:text-white truncate">
+                                    {{ $floorText }}
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    High-speed Elevators
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- 5. Facing / Orientation --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-compass"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Facing</span>
+                                <span class="block text-xs sm:text-sm font-bold text-slate-800 dark:text-white truncate">
+                                    North-East Facing
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    Garden & Sunlit View
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- 6. Possession / Available From --}}
+                        <div class="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-100/80 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-calendar-check"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Available From</span>
+                                <span class="block text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-300 truncate">
+                                    Immediate Move-in
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    Ready to Occupy
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- 7. Tenant Preference --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-users-three"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tenant Preference</span>
+                                <span class="block text-xs sm:text-sm font-bold text-slate-800 dark:text-white truncate">
+                                    Family / Bachelors
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    Working Professionals
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- 8. Parking --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-car"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Parking</span>
+                                <span class="block text-xs sm:text-sm font-bold text-slate-800 dark:text-white truncate">
+                                    1 Covered Reserved
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    + Visitor Parking
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- 9. Water Supply & Power --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-bold ph-drop"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Water Supply</span>
+                                <span class="block text-xs sm:text-sm font-bold text-slate-800 dark:text-white truncate">
+                                    24 Hours Available
+                                </span>
+                                <span class="block text-[11px] text-slate-500 font-medium truncate">
+                                    100% Power Backup
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- ================================================
+                     C. ABOUT THIS PROPERTY (DESCRIPTION)
+                     ================================================ --}}
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="ph-bold ph-article text-blue-600"></i>
+                        <span>About this Property</span>
+                    </h2>
+
+                    @if(!empty($property->description))
+                        <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed space-y-2">
+                            <p id="desc-collapsed" class="line-clamp-4 whitespace-pre-line">{{ strip_tags($property->description) }}</p>
+                            <p id="desc-full" class="hidden whitespace-pre-line">{{ $property->description }}</p>
+                            <button type="button" onclick="toggleDescription()" id="desc-toggle-btn" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 font-bold text-xs inline-flex items-center gap-1 cursor-pointer pt-1">
+                                <span>Read more +</span>
+                            </button>
+                        </div>
+                    @else
+                        <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                            Spacious and well-ventilated {{ $property->bedrooms ?? 2 }} BHK residence available for {{ $isSale ? 'purchase' : 'rent' }} directly from the verified owner. Situated in a prime residential society in {{ $localityName }}, {{ $cleanLocation }} with modern fixtures, dedicated security, and round-the-clock water and power backup.
+                        </p>
+                    @endif
+                </div>
+
+                {{-- ================================================
+                     D. LIFESTYLE & SOCIETY AMENITIES
+                     ================================================ --}}
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i class="ph-bold ph-sparkle text-blue-600"></i>
+                                <span>Society Amenities & Features</span>
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Clubhouse, sports & convenience amenities</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[11px] font-bold border border-blue-200/60">
+                            24 Amenities
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                        {{-- 1. Swimming Pool --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-swimming-pool text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Olympic Pool</span>
+                        </div>
+                        {{-- 2. Gym --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-barbell text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Fitness Gym</span>
+                        </div>
+                        {{-- 3. Security --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-shield-check text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">24/7 CCTV & Guards</span>
+                        </div>
+                        {{-- 4. Power Backup --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-lightning text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">100% Power Backup</span>
+                        </div>
+                        {{-- 5. Covered Parking --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-car text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Covered Parking</span>
+                        </div>
+                        {{-- 6. Clubhouse --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-house-line text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Modern Clubhouse</span>
+                        </div>
+                        {{-- 7. Kids Play Area --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-soccer-ball text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Children's Play Park</span>
+                        </div>
+                        {{-- 8. Lifts / Elevators --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-arrows-down-up text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">High-speed Lifts</span>
+                        </div>
+                        {{-- 9. Tennis / Badminton --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-tennis-ball text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Badminton Court</span>
+                        </div>
+                        {{-- 10. Intercom --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-phone-call text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Intercom Facility</span>
+                        </div>
+                        {{-- 11. Garden & Walking Track --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-tree text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Jogging & Park</span>
+                        </div>
+                        {{-- 12. EV Charging --}}
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i class="ph-bold ph-charging-station text-blue-600 text-lg shrink-0"></i>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">EV Charging Bay</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ================================================
+                     E. TRANSIT & NEIGHBORHOOD COMMUTES
+                     ================================================ --}}
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i class="ph-bold ph-map-trifold text-blue-600"></i>
+                                <span>Transit & Neighborhood Commutes</span>
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Prime location in {{ $localityName }}, {{ $cleanLocation }}</p>
+                        </div>
+                        <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
+                            <i class="ph-bold ph-navigation-arrow text-xs"></i> Live Commutes
+                        </span>
+                    </div>
+
+                    {{-- Map Embed --}}
+                    @php
+                        $mapQuery = urlencode(($isOwnerOrAdmin || $hasViewed) ? ($property->address . ', ' . $localityName) : ($localityName . ', ' . $property->location . ', India'));
+                    @endphp
+                    <div class="relative rounded-xl overflow-hidden h-44 sm:h-56 bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                        <iframe
+                            src="https://www.google.com/maps?q={{ $mapQuery }}&output=embed&hl=en&z=13"
+                            width="100%"
+                            height="100%"
+                            style="border:0;"
+                            loading="lazy"
+                            class="w-full h-full filter saturate-[0.9]">
+                        </iframe>
+
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="px-3.5 py-1.5 rounded-xl bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white text-xs font-bold shadow-lg border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 pointer-events-auto">
+                                <i class="ph-fill ph-house text-blue-600"></i>
+                                <span>{{ $localityName }}</span>
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ $mapQuery }}" target="_blank" class="text-blue-600 hover:text-blue-700 ml-1" title="Open Map">
+                                    <i class="ph-bold ph-arrow-square-out text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Commute Distances Strip --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2">
+                                <i class="ph-bold ph-train text-blue-600 text-base"></i>
+                                <span class="font-semibold text-slate-800 dark:text-slate-200">Metro Station</span>
+                            </div>
+                            <span class="font-bold text-blue-600 dark:text-blue-400">450 m (5 mins)</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2">
+                                <i class="ph-bold ph-storefront text-blue-600 text-base"></i>
+                                <span class="font-semibold text-slate-800 dark:text-slate-200">Mall & Market</span>
+                            </div>
+                            <span class="font-bold text-slate-600 dark:text-slate-300">1.2 km (4 mins)</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2">
+                                <i class="ph-bold ph-first-aid-kit text-blue-600 text-base"></i>
+                                <span class="font-semibold text-slate-800 dark:text-slate-200">Hospital</span>
+                            </div>
+                            <span class="font-bold text-slate-600 dark:text-slate-300">3.5 km (8 mins)</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ================================================
+                     F. SIMILAR PROPERTIES IN LOCALITY
+                     ================================================ --}}
+                @if($similarProperties->isNotEmpty())
+                    <div class="pt-4" id="similar-properties-section">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                                    Similar Properties in {{ $cleanLocation }}
+                                </h2>
+                                <p class="text-xs text-slate-400 mt-0.5">Explore recommended 0% brokerage listings</p>
+                            </div>
+                            <a href="{{ route('properties.index', ['purpose' => $isSale ? 'buy' : 'rent', 'location' => $cleanLocation]) }}" class="text-xs font-bold text-blue-600 hover:underline">
+                                View all →
+                            </a>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            @foreach($similarProperties->take(3) as $sim)
+                                <x-property-card :property="$sim" />
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+            </div>
+
+            {{-- ====================================================
+                 RIGHT COLUMN (4 COLS, STICKY SIDEBAR)
+                 ==================================================== --}}
+            <div class="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
+
+                {{-- Main Pricing & Direct Landlord Contact Card --}}
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+                    
+                    {{-- Price Section --}}
+                    <div>
+                        <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                            {{ $isSale ? 'SALE PRICE' : 'MONTHLY RENT' }}
+                        </div>
+                        <div class="flex items-baseline gap-2 mt-0.5 flex-wrap">
+                            <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                ₹{{ number_format($priceVal, 0) }}
+                            </span>
+                            <span class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                                / {{ $property->price_period ?: ($isSale ? 'total' : 'month') }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-2 mt-1.5 flex-wrap text-xs">
+                            @if($marketPrice > 0)
+                                <span class="line-through text-slate-400 font-semibold">₹{{ number_format($marketPrice, 0) }}</span>
+                                <span class="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[11px]">
+                                    12% Below Market
+                                </span>
+                            @endif
+                            <span class="text-slate-400">• Maintenance incl.</span>
+                        </div>
+                    </div>
+
+                    {{-- Security Deposit Pill --}}
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between text-xs">
+                        <div>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200 block">Security Deposit</span>
+                            <span class="text-[10px] text-slate-400">1 Month fully refundable</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-slate-900 dark:text-white block">₹{{ number_format($depositAmount, 0) }}</span>
+                            <span class="text-[10px] text-emerald-600 font-semibold">0% Brokerage</span>
+                        </div>
+                    </div>
+
+                    {{-- Brokerage Savings Callout Box --}}
+                    <div class="p-3.5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-xl shadow-xs space-y-1">
+                        <div class="flex items-center gap-2 font-bold text-xs">
+                            <i class="ph-fill ph-tag text-base"></i>
+                            <span>You save ₹{{ number_format($brokerSavings, 0) }} broker fee!</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-100 font-normal leading-snug">
+                            Connect directly with the verified owner on UnlockRentals. Zero agent commission.
+                        </p>
+                    </div>
+
+                    <hr class="border-slate-100 dark:border-slate-800">
+
+                    {{-- Direct Landlord / Owner Profile Card --}}
+                    <div class="p-3.5 bg-slate-50/80 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 rounded-xl space-y-2.5">
+                        <div class="flex items-center gap-3">
+                            <div class="relative shrink-0">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-700 text-white font-bold text-base flex items-center justify-center shadow-md">
+                                    {{ $initials ?: 'VK' }}
+                                </div>
+                                <span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-800" title="Online now"></span>
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                                        {{ $ownerName }}
+                                    </span>
+                                    <i class="ph-fill ph-check-circle text-blue-600 text-sm" title="Verified Owner"></i>
+                                </div>
+                                <span class="text-[11px] text-slate-400 font-medium block truncate mt-0.5">
+                                    Direct Property Owner • Member since {{ $memberYear }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 pt-1 border-t border-slate-200/50 dark:border-slate-700/50 text-[10.5px]">
+                            <span class="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-semibold">
+                                <i class="ph-bold ph-seal-check"></i> Govt ID & Registry Verified
+                            </span>
+                            <span class="text-slate-300 dark:text-slate-600">•</span>
+                            <span class="text-slate-500 dark:text-slate-400 font-medium">Replies in ~5m</span>
+                        </div>
+                    </div>
+
+                    {{-- Direct Phone Number Box --}}
+                    <div class="p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base shrink-0">
+                                <i class="ph-bold ph-phone"></i>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-slate-400 font-medium">DIRECT OWNER CONTACT</span>
+                                @if($isOwnerOrAdmin || $hasViewed)
+                                    <a href="tel:{{ $displayPhone }}" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white hover:text-blue-600 block">
+                                        {{ $displayPhone }}
+                                    </a>
+                                @else
+                                    <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 block font-mono">
+                                        +91 98XXX XXXXX
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        @if($isOwnerOrAdmin || $hasViewed)
+                            <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10.5px] font-bold">
+                                Unlocked
+                            </span>
                         @endif
                     </div>
-                </div>
 
-                {{-- Unlock Button --}}
-                @if($isOwnerOrAdmin || $hasViewed)
-                    <a href="tel:{{ $displayPhone }}"
-                       class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95"
-                       style="color: #ffffff !important;">
-                        <i class="ph-bold ph-phone-call text-sm" style="color: #ffffff !important;"></i>
-                        <span style="color: #ffffff !important;">Call Now</span>
-                    </a>
-                @elseif($canView)
-                    <form method="POST" action="{{ route('properties.unlock-contact', $property) }}">
-                        @csrf
-                        <button type="submit"
-                                class="px-3.5 py-2 bg-slate-950 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95 cursor-pointer"
-                                style="color: #ffffff !important;">
-                            <i class="ph-bold ph-lock-key-open text-xs" style="color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important;">Unlock Free</span>
-                        </button>
-                    </form>
-                @else
-                    @guest
-                        <button type="button"
-                                onclick="window.openAuthModal('login', window.location.href);"
-                                class="px-3.5 py-2 bg-slate-950 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95 cursor-pointer"
-                                style="color: #ffffff !important;">
-                            <i class="ph-bold ph-lock-key text-xs" style="color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important;">Unlock Free</span>
-                        </button>
-                    @else
-                        <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}"
-                           class="px-3.5 py-2 bg-slate-950 hover:bg-slate-800 text-white text-xs font-black rounded-xl shadow-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95"
+                    {{-- Primary Contact Action Buttons --}}
+                    <div class="space-y-2 pt-1">
+                        @if($isOwnerOrAdmin || $hasViewed)
+                            <a href="tel:{{ $displayPhone }}"
+                               class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                               style="color: #ffffff !important;">
+                                <i class="ph-bold ph-phone-call text-lg" style="color: #ffffff !important;"></i>
+                                <span style="color: #ffffff !important;">Call Direct Owner</span>
+                            </a>
+                        @elseif($canView)
+                            <form method="POST" action="{{ route('properties.unlock-contact', $property) }}">
+                                @csrf
+                                <button type="submit"
+                                        class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                        style="color: #ffffff !important;">
+                                    <i class="ph-bold ph-lock-key-open text-lg" style="color: #ffffff !important;"></i>
+                                    <span style="color: #ffffff !important;">Unlock Contact (Free - 0% Brokerage)</span>
+                                </button>
+                            </form>
+                        @else
+                            @guest
+                                <button type="button"
+                                        onclick="window.openAuthModal('login', window.location.href);"
+                                        class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                        style="color: #ffffff !important;">
+                                    <i class="ph-bold ph-lock-key text-lg" style="color: #ffffff !important;"></i>
+                                    <span style="color: #ffffff !important;">Unlock Contact (Free - 0% Brokerage)</span>
+                                </button>
+                            @else
+                                <a href="{{ route('plans.index', ['billing' => $isSale ? 'yearly' : 'monthly', 'purpose' => $isSale ? 'buy' : 'rent']) }}"
+                                   class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                                   style="color: #ffffff !important;">
+                                    <i class="ph-bold ph-lock-key text-lg" style="color: #ffffff !important;"></i>
+                                    <span style="color: #ffffff !important;">Unlock Contact (Free - 0% Brokerage)</span>
+                                </a>
+                            @endguest
+                        @endif
+
+                        {{-- Secondary CTA: WhatsApp Direct Chat --}}
+                        <a href="{{ $waUrl }}" target="_blank"
+                           class="w-full py-3 px-4 bg-[#25D366] hover:bg-[#1EBE5D] active:bg-[#1DA851] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                            style="color: #ffffff !important;">
-                            <i class="ph-bold ph-lock-key text-xs" style="color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important;">Unlock Free</span>
+                            <i class="ph-bold ph-whatsapp-logo text-lg" style="color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">Chat on WhatsApp</span>
                         </a>
-                    @endguest
-                @endif
+
+                        {{-- Tertiary CTA: Schedule Free Visit --}}
+                        @auth
+                            <button type="button"
+                                    onclick="openBookVisitModal()"
+                                    class="w-full py-3 px-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98">
+                                <i class="ph-bold ph-calendar-check text-base text-blue-600"></i>
+                                <span>Schedule a Visit</span>
+                            </button>
+                        @else
+                            <button type="button"
+                                    onclick="window.openAuthModal('login', window.location.href);"
+                                    class="w-full py-3 px-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98">
+                                <i class="ph-bold ph-calendar-check text-base text-blue-600"></i>
+                                <span>Schedule a Visit</span>
+                            </button>
+                        @endauth
+                    </div>
+
+                </div>
+
+                {{-- UnlockRentals Trust & Guarantee Card --}}
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
+                    <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-xs">
+                        <i class="ph-fill ph-shield-check text-emerald-600 text-lg"></i>
+                        <span>UnlockRentals Safe Rent Guarantee</span>
+                    </div>
+                    <ul class="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                        <li class="flex items-start gap-2">
+                            <i class="ph-bold ph-check text-emerald-600 mt-0.5 shrink-0"></i>
+                            <span>100% verified direct owner documents</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="ph-bold ph-check text-emerald-600 mt-0.5 shrink-0"></i>
+                            <span>Zero brokerage and no middleman commissions</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="ph-bold ph-check text-emerald-600 mt-0.5 shrink-0"></i>
+                            <span>Complimentary digital biometric rental agreement</span>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
+
         </div>
-
-        {{-- ========================================================
-             6. CARD 5: LIFESTYLE & AMENITIES (3x2 GRID)
-             ======================================================== --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
-            
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
-                        Lifestyle & Amenities
-                    </h2>
-                    <span class="text-[11px] text-slate-400 font-semibold">Clubhouse & Society features</span>
-                </div>
-                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[10.5px] font-black border border-blue-200/60 dark:border-blue-800/60">
-                    24 Amenities
-                </span>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2 sm:gap-2.5">
-                {{-- 1. Olympic Pool --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
-                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
-                        <i class="ph-bold ph-swimming-pool"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">Olympic Pool</span>
-                </div>
-
-                {{-- 2. High-tech Gym --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
-                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
-                        <i class="ph-bold ph-barbell"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">High-tech Gym</span>
-                </div>
-
-                {{-- 3. 24/7 Security --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
-                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
-                        <i class="ph-bold ph-shield"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">24/7 Security</span>
-                </div>
-
-                {{-- 4. 100% Backup --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
-                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
-                        <i class="ph-bold ph-lightning"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">100% Backup</span>
-                </div>
-
-                {{-- 5. Covered Parking --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
-                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
-                        <i class="ph-bold ph-car"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">Covered Parking</span>
-                </div>
-
-                {{-- 6. Tennis Court --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center gap-1">
-                    <div class="w-7 h-7 rounded-lg bg-blue-100/70 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base">
-                        <i class="ph-bold ph-tennis-ball"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black text-slate-800 dark:text-white leading-tight">Tennis Court</span>
-                </div>
-            </div>
-        </div>
-
-        {{-- ========================================================
-             7. CARD 6: TRANSIT & NEIGHBORHOOD
-             ======================================================== --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-3">
-            
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
-                        Transit & Neighborhood
-                    </h2>
-                    <span class="text-[11px] text-slate-400 font-semibold">Prime {{ $localityName }} Corridor</span>
-                </div>
-                <span class="text-emerald-600 dark:text-emerald-400 text-xs font-black flex items-center gap-1">
-                    <i class="ph-bold ph-navigation-arrow text-xs"></i> Live Distance
-                </span>
-            </div>
-
-            {{-- Map Snippet Card --}}
-            <div class="relative rounded-2xl overflow-hidden h-36 sm:h-44 bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group">
-                @php
-                    $mapQuery = urlencode(($isOwnerOrAdmin || $hasViewed) ? ($property->address . ', ' . $localityName) : ($localityName . ', ' . $property->location . ', India'));
-                @endphp
-                <iframe
-                    src="https://www.google.com/maps?q={{ $mapQuery }}&output=embed&hl=en&z=13"
-                    width="100%"
-                    height="100%"
-                    style="border:0;"
-                    loading="lazy"
-                    class="w-full h-full filter saturate-[0.85]">
-                </iframe>
-
-                {{-- Map Pin Center Overlay --}}
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div class="px-3.5 py-1.5 rounded-xl bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white text-xs font-black shadow-lg border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 pointer-events-auto">
-                        <i class="ph-fill ph-house text-blue-600"></i>
-                        <span>{{ $localityName }}</span>
-                        <a href="https://www.google.com/maps/search/?api=1&query={{ $mapQuery }}" target="_blank" class="text-blue-600 hover:text-blue-700 ml-0.5" title="Open Map">
-                            <i class="ph-bold ph-arrow-square-out text-xs"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 3 Key Transit Distances --}}
-            <div class="space-y-2 pt-1">
-                {{-- Metro --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-xl p-2.5 sm:p-3 flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                        <i class="ph-bold ph-train text-blue-600 text-sm"></i>
-                        <span class="font-bold text-slate-800 dark:text-slate-200">{{ $localityName }} Metro Station</span>
-                    </div>
-                    <span class="font-black text-blue-600 dark:text-blue-400">400 m (5 mins walk)</span>
-                </div>
-
-                {{-- Mall --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-xl p-2.5 sm:p-3 flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                        <i class="ph-bold ph-storefront text-blue-600 text-sm"></i>
-                        <span class="font-bold text-slate-800 dark:text-slate-200">South Point & Galleria Mall</span>
-                    </div>
-                    <span class="font-bold text-slate-500 dark:text-slate-400">1.2 km (4 mins drive)</span>
-                </div>
-
-                {{-- Hospital --}}
-                <div class="bg-blue-50/40 dark:bg-slate-800/40 border border-blue-100/60 dark:border-slate-700/60 rounded-xl p-2.5 sm:p-3 flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                        <i class="ph-bold ph-first-aid-kit text-blue-600 text-sm"></i>
-                        <span class="font-bold text-slate-800 dark:text-slate-200">Fortis & Max Hospital</span>
-                    </div>
-                    <span class="font-bold text-slate-500 dark:text-slate-400">3.6 km (9 mins drive)</span>
-                </div>
-            </div>
-        </div>
-
-        {{-- ========================================================
-             8. CARD 7: UNLOCKRENTALS ZERO-BROKERAGE GUARANTEE
-             ======================================================== --}}
-        <div class="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 shadow-lg relative overflow-hidden space-y-2">
-            <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 text-lg">
-                    <i class="ph-fill ph-shield-check"></i>
-                </div>
-                <h3 class="text-xs sm:text-sm font-black text-white leading-tight">
-                    UnlockRentals Zero-Brokerage Guarantee
-                </h3>
-            </div>
-            <p class="text-[11px] sm:text-xs text-slate-300 leading-relaxed">
-                Direct connection with {{ $ownerName }} (verified property owner). No broker fees, no middleman markup, and verified rental agreement on standard state norms.
-            </p>
-        </div>
-
-        {{-- ========================================================
-             9. SIMILAR PROPERTIES (PEOPLE ALSO VIEWED)
-             ======================================================== --}}
-        @if($similarProperties->isNotEmpty())
-            <div class="pt-6 sm:pt-8" id="similar-properties-section">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                        People Also Viewed
-                    </h2>
-                    <a href="{{ route('properties.index') }}" class="text-xs font-black text-blue-600 hover:underline">
-                        View All Listings →
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($similarProperties->take(3) as $sim)
-                        <x-property-card :property="$sim" />
-                    @endforeach
-                </div>
-            </div>
-        @endif
 
     </div>
 </section>
 
 {{-- ========================================================
-     10. FIXED BOTTOM STICKY ACTION BAR (MOBILE & DESKTOP)
+     4. FIXED BOTTOM STICKY ACTION BAR (MOBILE / TABLET ONLY)
+     Notice: block lg:hidden prevents floating bar on desktop!
      ======================================================== --}}
-<div class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-3 px-4 z-[990] shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
-    <div class="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto flex items-center gap-3">
+<div class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-3 px-4 z-[990] shadow-[0_-8px_30px_rgba(0,0,0,0.08)] block lg:hidden">
+    <div class="max-w-md mx-auto flex items-center gap-3">
         
         {{-- Button 1: Schedule Visit --}}
         @auth
             <button type="button"
                     onclick="openBookVisitModal()"
-                    class="flex-1 py-3 px-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-black text-xs sm:text-sm rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                    class="flex-1 py-3 px-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
                 <i class="ph-bold ph-calendar-blank text-base"></i>
                 <span>Schedule Visit</span>
             </button>
         @else
             <button type="button"
                     onclick="window.openAuthModal('login', window.location.href);"
-                    class="flex-1 py-3 px-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-black text-xs sm:text-sm rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                    class="flex-1 py-3 px-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:bg-slate-100 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
                 <i class="ph-bold ph-calendar-blank text-base"></i>
                 <span>Schedule Visit</span>
             </button>
@@ -857,10 +1050,10 @@
         {{-- Button 2: Chat & Call Owner --}}
         @if($isOwnerOrAdmin || $hasViewed)
             <a href="tel:{{ $displayPhone }}"
-               class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+               class="flex-1 py-3 px-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                style="color: #ffffff !important;">
-                <i class="ph-bold ph-chat-circle-dots text-base" style="color: #ffffff !important;"></i>
-                <span style="color: #ffffff !important;">Chat & Call Owner</span>
+                <i class="ph-bold ph-phone-call text-base" style="color: #ffffff !important;"></i>
+                <span style="color: #ffffff !important;">Call Owner</span>
             </a>
         @else
             @auth
@@ -868,27 +1061,27 @@
                     <form method="POST" action="{{ route('properties.unlock-contact', $property) }}" class="flex-1 flex">
                         @csrf
                         <button type="submit"
-                                class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                                class="w-full py-3 px-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                                 style="color: #ffffff !important;">
-                            <i class="ph-bold ph-chat-circle-dots text-base" style="color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important;">Chat & Call Owner</span>
+                            <i class="ph-bold ph-lock-key-open text-base" style="color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">Contact Owner</span>
                         </button>
                     </form>
                 @else
                     <a href="{{ $waUrl }}" target="_blank"
-                       class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                       class="flex-1 py-3 px-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                        style="color: #ffffff !important;">
                         <i class="ph-bold ph-chat-circle-dots text-base" style="color: #ffffff !important;"></i>
-                        <span style="color: #ffffff !important;">Chat & Call Owner</span>
+                        <span style="color: #ffffff !important;">Contact Owner</span>
                     </a>
                 @endif
             @else
                 <button type="button"
                         onclick="window.openAuthModal('login', window.location.href);"
-                        class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs sm:text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                        class="flex-1 py-3 px-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                         style="color: #ffffff !important;">
-                    <i class="ph-bold ph-chat-circle-dots text-base" style="color: #ffffff !important;"></i>
-                    <span style="color: #ffffff !important;">Chat & Call Owner</span>
+                    <i class="ph-bold ph-lock-key text-base" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important;">Contact Owner</span>
                 </button>
             @endauth
         @endif
@@ -907,7 +1100,7 @@
             <div class="flex items-center gap-2.5">
                 <i class="ph-bold ph-calendar-check text-2xl"></i>
                 <div>
-                    <h3 class="font-black text-base text-white">Schedule Property Visit</h3>
+                    <h3 class="font-bold text-base text-white">Schedule Property Visit</h3>
                     <p class="text-blue-100 text-xs">Direct in-person meeting with owner</p>
                 </div>
             </div>
@@ -920,14 +1113,14 @@
             @csrf
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Preferred Date</label>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Preferred Date</label>
                     <input type="date" name="preferred_date" required min="{{ date('Y-m-d') }}"
-                           class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
+                           class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Time Slot</label>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Time Slot</label>
                     <select name="preferred_time" required
-                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
+                            class="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
                         <option value="morning">Morning (9 AM - 12 PM)</option>
                         <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
                         <option value="evening" selected>Evening (4 PM - 7 PM)</option>
@@ -936,20 +1129,20 @@
             </div>
 
             <div>
-                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Your Name</label>
+                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Your Name</label>
                 <input type="text" name="name" value="{{ auth()->user()->name }}" required
-                       class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white">
             </div>
 
             <div>
-                <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Phone Number</label>
+                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Phone Number</label>
                 <input type="tel" name="phone" value="{{ auth()->user()->phone }}" required placeholder="Your contact phone"
-                       class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white">
             </div>
 
             <div id="visit-alert" class="hidden rounded-xl p-3 text-xs font-bold"></div>
 
-            <button type="submit" id="visit-submit-btn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <button type="submit" id="visit-submit-btn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
                 <span class="btn-text">Confirm Visit Request</span>
                 <span class="btn-loader hidden"><i class="ph ph-circle-notch animate-spin"></i> Submitting...</span>
             </button>
@@ -1002,20 +1195,20 @@
         }
         const badge = document.getElementById('gallery-counter-badge');
         if (badge) {
-            badge.textContent = `${idx + 1}/${totalPhotos} photos`;
+            badge.innerHTML = `<i class="ph-bold ph-images text-xs"></i> <span>${idx + 1}/${totalPhotos} Photos</span>`;
         }
         document.querySelectorAll('.gallery-thumb-item').forEach((btn, i) => {
             if (i === idx) {
-                btn.className = 'gallery-thumb-item relative w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer border-2 border-blue-500 scale-95 ring-2 ring-blue-500/30 transition-all';
+                btn.className = 'gallery-thumb-item relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border-2 border-blue-600 ring-2 ring-blue-500/20 transition-all';
             } else {
-                btn.className = 'gallery-thumb-item relative w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer border-2 border-transparent opacity-75 hover:opacity-100 transition-all';
+                btn.className = 'gallery-thumb-item relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border-2 border-transparent opacity-75 hover:opacity-100 transition-all';
             }
         });
     }
 
     function openLightboxModal(idx) {
         if (!propertyGallery || propertyGallery.length === 0) return;
-        lightboxIdx = idx || currentSlide;
+        lightboxIdx = idx !== undefined ? idx : currentSlide;
         const modal = document.getElementById('gallery-lightbox');
         const img = document.getElementById('lightbox-img');
         const counter = document.getElementById('lightbox-counter');
@@ -1063,11 +1256,11 @@
             if (full.classList.contains('hidden')) {
                 full.classList.remove('hidden');
                 col.classList.add('hidden');
-                btn.textContent = 'Show less -';
+                btn.innerHTML = '<span>Show less -</span>';
             } else {
                 full.classList.add('hidden');
                 col.classList.remove('hidden');
-                btn.textContent = 'Read more +';
+                btn.innerHTML = '<span>Read more +</span>';
             }
         }
     }
@@ -1152,6 +1345,16 @@
             }
         });
     }
+
+    // Keyboard support for lightbox
+    document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('gallery-lightbox');
+        if (modal && !modal.classList.contains('hidden')) {
+            if (e.key === 'Escape') closeLightboxModal();
+            else if (e.key === 'ArrowRight') nextLightboxImage();
+            else if (e.key === 'ArrowLeft') prevLightboxImage();
+        }
+    });
 
     // Expose globals
     window.selectGallerySlide = selectGallerySlide;

@@ -298,7 +298,7 @@ class PropertyController extends Controller
             }
         }
 
-        $property->load(['images', 'category', 'owner']);
+        $property->load(['images', 'primaryImage', 'category', 'owner']);
 
         $similarProperties = Property::approved()
             ->where('id', '!=', $property->id)
