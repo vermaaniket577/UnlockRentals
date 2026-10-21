@@ -70,10 +70,26 @@
     }
     $imagesCount = $cardImages->count() > 0 ? $cardImages->count() : ($property->images_count ?? 1);
 
-    // Owner / Dealer Information
+    // Owner / Dealer Information - Strict filtering to eliminate "Admin User"
     $owner = $property->owner ?? $property->user;
-    $ownerName = $owner?->name ?? 'Verified Partner';
-    $ownerAvatar = $owner?->avatar;
+    $rawOwnerName = trim($owner?->name ?? '');
+
+    $isAdmin = empty($rawOwnerName)
+        || preg_match('/\b(admin|administrator|root|system)\b/i', $rawOwnerName)
+        || ($owner && $owner->role === 'admin');
+
+    if ($isAdmin) {
+        $ownerName = 'Owner';
+        $isDealer = false;
+    } else {
+        $ownerName = $rawOwnerName;
+        $isDealer = str_contains(strtolower($rawOwnerName), 'realt') 
+            || str_contains(strtolower($rawOwnerName), 'properties') 
+            || str_contains(strtolower($rawOwnerName), 'associates') 
+            || str_contains(strtolower($rawOwnerName), 'service')
+            || str_contains(strtolower($rawOwnerName), 'estate');
+    }
+
     $ownerPhone = $property->contact_phone ?? $owner?->phone ?? '+91 98765 43210';
     $cleanPhone = preg_replace('/\D/', '', $ownerPhone);
     $postedTime = $property->created_at ? $property->created_at->diffForHumans(null, true) . ' ago' : 'Recently';
@@ -154,7 +170,7 @@
     ];
 @endphp
 
-<article class="property-horizontal-card group relative bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-lg hover:border-blue-400/60 dark:hover:border-blue-500/50 transition-all duration-300 overflow-hidden mb-5 flex flex-col md:flex-row items-stretch"
+<article class="property-horizontal-card group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-blue-400/60 dark:hover:border-blue-500/50 transition-all duration-200 overflow-hidden mb-4 flex flex-col md:flex-row items-stretch"
     id="property-hcard-{{ $property->id }}"
     data-property-card="true"
     data-property-id="{{ $property->id }}">
@@ -162,7 +178,7 @@
     {{-- ============================================================
          LEFT COLUMN: Large Property Image & Interactive Badges
          ============================================================ --}}
-    <div class="hcard-image-col relative w-full md:w-[340px] lg:w-[360px] xl:w-[380px] min-h-[220px] md:min-h-full bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
+    <div class="hcard-image-col relative w-full md:w-[260px] lg:w-[275px] min-h-[180px] md:min-h-full bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
         
         {{-- Clickable Image Link --}}
         <a href="{{ $propertyUrl }}" class="hcard-image-link block w-full h-full relative group/img overflow-hidden" title="{{ $cleanTitle }}">
@@ -172,64 +188,64 @@
                  alt="{{ $cleanTitle }}"
                  loading="lazy"
                  referrerpolicy="no-referrer"
-                 class="hcard-img w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500 ease-out select-none"
+                 class="hcard-img w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-400 ease-out select-none"
                  onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $cardFallbackPhoto }}'; } else { this.onerror=null; }">
 
             {{-- Subtle Vignette Gradients --}}
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25 pointer-events-none"></div>
         </a>
 
         {{-- Top-Left Badge: FEATURED --}}
-        <div class="absolute top-3.5 left-3.5 z-20 pointer-events-none">
-            <span class="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider text-white shadow-md"
+        <div class="absolute top-2.5 left-2.5 z-20 pointer-events-none">
+            <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider text-white shadow-sm"
                   style="background: #1e293b; letter-spacing: 0.05em;">
                 FEATURED
             </span>
         </div>
 
         {{-- Top-Right Action Buttons: Favorite Heart & Audio/Video --}}
-        <div class="absolute top-3.5 right-3.5 z-20 flex items-center gap-1.5 pointer-events-auto">
+        <div class="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 pointer-events-auto">
             @auth
                 <button type="button"
                         onclick="event.preventDefault(); event.stopPropagation(); window.togglePropertyFavorite ? window.togglePropertyFavorite({{ $property->id }}, this) : null;"
-                        class="w-8 h-8 rounded-full bg-black/45 hover:bg-black/70 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-110 active:scale-95"
+                        class="w-7 h-7 rounded-full bg-black/45 hover:bg-black/70 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-110 active:scale-95"
                         title="Shortlist / Save Property"
                         aria-label="Save Property">
-                    <i class="ph-bold ph-heart text-sm"></i>
+                    <i class="ph-bold ph-heart text-xs"></i>
                 </button>
             @else
                 <button type="button"
                         onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal ? window.openAuthModal('login', '{{ $propertyUrl }}') : null;"
-                        class="w-8 h-8 rounded-full bg-black/45 hover:bg-black/70 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-110 active:scale-95"
+                        class="w-7 h-7 rounded-full bg-black/45 hover:bg-black/70 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-110 active:scale-95"
                         title="Save Property"
                         aria-label="Save Property">
-                    <i class="ph-bold ph-heart text-sm"></i>
+                    <i class="ph-bold ph-heart text-xs"></i>
                 </button>
             @endauth
 
             @if($property->hasVideo())
-                <div class="w-8 h-8 rounded-full bg-black/45 backdrop-blur-md text-white flex items-center justify-center shadow-sm" title="Video Tour Available">
-                    <i class="ph-fill ph-video-camera text-sm text-white"></i>
+                <div class="w-7 h-7 rounded-full bg-black/45 backdrop-blur-md text-white flex items-center justify-center shadow-sm" title="Video Tour Available">
+                    <i class="ph-fill ph-video-camera text-xs text-white"></i>
                 </div>
             @else
-                <div class="w-8 h-8 rounded-full bg-black/45 backdrop-blur-md text-white/90 flex items-center justify-center shadow-sm" title="Verified Photos">
-                    <i class="ph-bold ph-speaker-slash text-xs"></i>
+                <div class="w-7 h-7 rounded-full bg-black/45 backdrop-blur-md text-white/90 flex items-center justify-center shadow-sm" title="Verified Photos">
+                    <i class="ph-bold ph-speaker-slash text-[11px]"></i>
                 </div>
             @endif
         </div>
 
         {{-- Bottom-Right Photo Counter Badge (e.g. 📷 6) --}}
-        <div class="absolute bottom-3 right-3 z-20 pointer-events-none">
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/65 backdrop-blur-md text-white text-[11px] font-extrabold shadow-md border border-white/10">
-                <i class="ph-bold ph-camera text-xs text-white"></i>
+        <div class="absolute bottom-2.5 right-2.5 z-20 pointer-events-none">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black/65 backdrop-blur-md text-white text-[10px] font-extrabold shadow-sm border border-white/10">
+                <i class="ph-bold ph-camera text-[11px] text-white"></i>
                 <span>{{ $imagesCount }}</span>
             </span>
         </div>
 
         {{-- Diagonal BOOKED Corner Ribbon --}}
         @if($property->is_booked)
-            <div class="absolute top-0 right-0 z-30 pointer-events-none overflow-hidden w-28 h-28">
-                <div class="absolute transform rotate-45 bg-rose-600 text-white font-black text-[9px] uppercase tracking-wider py-1 right-[-35px] top-[18px] w-[120px] text-center shadow-md">
+            <div class="absolute top-0 right-0 z-30 pointer-events-none overflow-hidden w-24 h-24">
+                <div class="absolute transform rotate-45 bg-rose-600 text-white font-black text-[8.5px] uppercase tracking-wider py-0.5 right-[-32px] top-[16px] w-[110px] text-center shadow-md">
                     BOOKED
                 </div>
             </div>
@@ -239,25 +255,25 @@
     {{-- ============================================================
          RIGHT COLUMN: Content, Key Metrics, Landmarks & Actions
          ============================================================ --}}
-    <div class="hcard-content-col flex-1 p-5 sm:p-6 flex flex-col justify-between min-w-0">
+    <div class="hcard-content-col flex-1 p-3.5 sm:p-4 flex flex-col justify-between min-w-0">
 
         <div>
             {{-- Header: Locality & Property Type Title --}}
-            <div class="mb-3.5">
+            <div class="mb-2">
                 <div class="flex items-start justify-between gap-2 flex-wrap">
                     <a href="{{ $propertyUrl }}" class="group-hover:text-blue-600 transition-colors">
-                        <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-snug">
+                        <h2 class="text-base sm:text-[17px] font-black text-slate-900 dark:text-white tracking-tight leading-snug">
                             {{ $isPg ? $pgHeadingName : $headingLocation }}
                         </h2>
                     </a>
                     <div class="flex items-center gap-1.5 shrink-0">
                         @if($isPg || ($property->furnishing ?? '') === 'furnished')
-                            <span class="px-2.5 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs"
+                            <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs"
                                   style="letter-spacing: 0.05em;">
                                 FURNISHED
                             </span>
                         @elseif(($property->furnishing ?? '') === 'semi-furnished')
-                            <span class="px-2.5 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                            <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
                                 SEMI-FURNISHED
                             </span>
                         @endif
@@ -268,26 +284,26 @@
                         @endif
                     </div>
                 </div>
-                <a href="{{ $propertyUrl }}" class="block mt-0.5 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors">
+                <a href="{{ $propertyUrl }}" class="block text-xs sm:text-[13px] font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors truncate mt-0.5">
                     {{ $isPg ? $pgSubheading : $subheading }}
                 </a>
             </div>
 
             {{-- 3-Column Key Highlights Row (Price, Area, Configuration) --}}
-            <div class="hcard-specs-row grid grid-cols-3 gap-2 sm:gap-4 py-3 sm:py-3.5 border-y border-slate-100 dark:border-slate-800/80 mb-3.5">
+            <div class="hcard-specs-row grid grid-cols-3 gap-2 sm:gap-3 py-2 border-y border-slate-100 dark:border-slate-800/80 mb-2">
                 {{-- Column 1: Price --}}
                 <div class="hcard-spec-col min-w-0 pr-1">
-                    <div class="flex items-baseline gap-1 flex-wrap">
-                        <span class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <div class="flex items-baseline gap-1 flex-nowrap truncate">
+                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
                             {{ $formattedPrice }}
                         </span>
                         @if($isPg)
-                            <span class="text-[11px] sm:text-xs font-semibold text-slate-500">/Bed</span>
+                            <span class="text-[11px] font-semibold text-slate-500 shrink-0">/Bed</span>
                         @elseif($isRent)
-                            <span class="text-[11px] sm:text-xs font-semibold text-slate-500">/month</span>
+                            <span class="text-[11px] font-semibold text-slate-500 shrink-0">/month</span>
                         @endif
                     </div>
-                    <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                    <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate">
                         @if($isPg && (empty($depositVal) || $depositVal == $priceNum))
                             + Deposit 1 months rent
                         @else
@@ -297,64 +313,63 @@
                 </div>
 
                 {{-- Column 2: Area / Sharing --}}
-                <div class="hcard-spec-col min-w-0 px-1 border-l border-slate-100 dark:border-slate-800/80">
+                <div class="hcard-spec-col min-w-0 px-2 border-l border-slate-100 dark:border-slate-800/80">
                     @if($isPg)
                         <div class="flex items-center gap-1">
                             <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight truncate">
                                 {{ $sharingType }}
                             </span>
                         </div>
-                        <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                        <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate">
                             {{ $sharingSubtitle }}
                         </span>
                     @else
                         <div class="flex items-center gap-1">
-                            <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                            <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight whitespace-nowrap">
                                 {{ number_format($sqft) }} sqft
                             </span>
-                            <span class="text-[10px] sm:text-[11px] text-slate-400 font-semibold hidden sm:inline">({{ $sqm }} sqm) ▾</span>
                         </div>
-                        <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                            {{ $property->type === 'plot' ? 'Plot Area' : 'Carpet Area' }}
+                        <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate" title="{{ $property->type === 'plot' ? 'Plot Area' : 'Carpet Area' }} ({{ $sqm }} sqm)">
+                            {{ $property->type === 'plot' ? 'Plot Area' : 'Carpet Area' }} ({{ $sqm }} sqm)
                         </span>
                     @endif
                 </div>
 
                 {{-- Column 3: Configuration & Baths --}}
-                <div class="hcard-spec-col min-w-0 pl-1 border-l border-slate-100 dark:border-slate-800/80">
+                <div class="hcard-spec-col min-w-0 pl-2 border-l border-slate-100 dark:border-slate-800/80">
                     @if($isPg)
                         <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block truncate">
                             Attached Bath
                         </span>
-                        <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                        <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate">
                             Furnished Room
                         </span>
                     @else
-                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block">
+                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block whitespace-nowrap">
                             {{ $beds > 0 ? "{$beds} BHK" : '1 RK' }}
                         </span>
-                        <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                            {{ $baths }} Baths
+                        <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                            {{ $baths }} {{ $baths === 1 ? 'Bath' : 'Baths' }}
                         </span>
                     @endif
                 </div>
             </div>
 
             {{-- Nearby Landmarks & Transit Pills --}}
-            <div class="flex items-center gap-1.5 flex-wrap mb-3 text-xs">
+            <div class="flex items-center gap-1.5 flex-wrap mb-2 text-xs">
                 <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Nearby :</span>
                 @foreach($nearbyTags as $idx => $tag)
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
                         {{ $tag }}
                     </span>
                 @endforeach
-                <span class="px-1.5 py-0.5 rounded-md text-[10.5px] font-bold bg-slate-50 dark:bg-slate-800 text-slate-500 border border-slate-200/50">
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-50 dark:bg-slate-800 text-slate-500 border border-slate-200/50">
                     +3
                 </span>
             </div>
 
             {{-- Short Description Teaser --}}
-            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mb-4 leading-relaxed">
+            <p class="text-[11.5px] text-slate-500 dark:text-slate-400 line-clamp-1 mb-2 leading-relaxed">
                 {{ $descTeaser }}
                 <a href="{{ $propertyUrl }}" class="text-slate-400 hover:text-blue-600 ml-1 inline-flex items-center" title="Read more">
                     <i class="ph-bold ph-caret-down text-xs"></i>
@@ -365,46 +380,36 @@
         {{-- ============================================================
              BOTTOM FOOTER BAR: Dealer Profile + "View Number" & "Contact"
              ============================================================ --}}
-        <div class="hcard-footer-row pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3 flex-wrap">
+        <div class="hcard-footer-row pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2 flex-wrap">
             
-            {{-- Left: Dealer / Owner Info --}}
-            <div class="hcard-dealer-info flex items-center gap-2.5 min-w-0">
-                <div class="relative shrink-0">
-                    @if($ownerAvatar)
-                        <img src="{{ $ownerAvatar }}" alt="{{ $ownerName }}" class="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-2xs">
-                    @else
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 to-orange-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
-                            {{ strtoupper(substr($ownerName, 0, 1)) }}
-                        </div>
-                    @endif
-                    <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[8px] ring-2 ring-white shadow-2xs" title="Featured Dealer">
-                        <i class="ph-bold ph-check"></i>
-                    </span>
-                </div>
+            {{-- Left: Dealer / Owner Info (Clean, No Admin User) --}}
+            <div class="hcard-dealer-info flex items-center gap-2 min-w-0">
                 <div class="min-w-0">
-                    <div class="flex items-center gap-1.5 flex-wrap leading-none">
-                        <span class="text-[10px] text-slate-400 font-semibold">{{ $postedTime }}</span>
-                        @if(!$isPg)
-                            <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-200/80">
-                                FEATURED DEALER
+                    <span class="text-[10px] text-slate-400 font-medium block leading-none">
+                        {{ $postedTime }}
+                    </span>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate max-w-[150px] sm:max-w-[200px]" title="{{ $ownerName }}">
+                            {{ $ownerName }}
+                        </span>
+                        @if($isDealer)
+                            <span class="px-1.5 py-0.2 rounded text-[8px] font-black uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-200/80">
+                                DEALER
                             </span>
                         @endif
                     </div>
-                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate mt-1 max-w-[140px] sm:max-w-[180px]" title="{{ $ownerName }}">
-                        {{ $isPg ? ($ownerName !== 'Verified Partner' ? $ownerName : 'Owner') : $ownerName }}
-                    </p>
                 </div>
             </div>
 
             {{-- Right: Action Buttons (View Number & Contact) --}}
-            <div class="hcard-actions flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+            <div class="hcard-actions flex items-center gap-2 shrink-0">
                 
                 {{-- Button 1: "View Number" --}}
                 <button type="button"
                         onclick="revealCardPhoneNumber({{ $property->id }}, '{{ $ownerPhone }}', this)"
-                        class="view-number-btn px-4 py-2 sm:py-2.5 rounded-xl border border-[#0066cc] text-[#0066cc] hover:bg-blue-50/80 dark:hover:bg-blue-950/40 text-xs sm:text-sm font-bold transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                        class="view-number-btn h-8 px-3.5 rounded-lg border border-[#0066cc] text-[#0066cc] hover:bg-blue-50/80 dark:hover:bg-blue-950/40 text-xs font-bold transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
                         data-phone="{{ $ownerPhone }}">
-                    <i class="ph-bold ph-phone text-xs sm:text-sm"></i>
+                    <i class="ph-bold ph-phone text-xs"></i>
                     <span class="btn-text">View Number</span>
                 </button>
 
@@ -412,9 +417,9 @@
                 <a href="https://wa.me/{{ $cleanPhone }}?text={{ urlencode('Hello, I am interested in your property: ' . $cleanTitle . ' on UnlockRentals (' . $propertyUrl . ')') }}"
                    target="_blank"
                    rel="noopener noreferrer"
-                   class="px-5 py-2 sm:py-2.5 rounded-xl bg-[#0066cc] hover:bg-[#0052a3] text-white text-xs sm:text-sm font-bold transition-all active:scale-95 shadow-xs flex items-center gap-1.5 cursor-pointer"
+                   class="h-8 px-3.5 rounded-lg bg-[#0066cc] hover:bg-[#0052a3] text-white text-xs font-bold transition-all active:scale-95 shadow-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                    style="color: #ffffff !important;">
-                    <i class="ph-bold ph-chat-circle-dots text-sm" style="color: #ffffff !important;"></i>
+                    <i class="ph-bold ph-chat-circle-dots text-xs" style="color: #ffffff !important;"></i>
                     <span style="color: #ffffff !important;">Contact</span>
                 </a>
             </div>
@@ -429,21 +434,21 @@
 <style>
 /* =========================================================================
    UNLOCK RENTALS — 99ACRES HORIZONTAL CARD BULLETPROOF STYLES
-   Ensures side-by-side (left photo, right details) on tablet and desktop.
+   Standard compact size: ~205-215px height on desktop, clean typography.
    ========================================================================= */
 .property-horizontal-card {
     display: flex !important;
     flex-direction: column !important;
     background: #ffffff !important;
-    border-radius: 1.25rem !important;
+    border-radius: 1rem !important;
     border: 1px solid rgba(226, 232, 240, 0.9) !important;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
     overflow: hidden !important;
-    margin-bottom: 1.25rem !important;
+    margin-bottom: 1rem !important;
     position: relative !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 
 html.dark .property-horizontal-card,
@@ -455,16 +460,16 @@ html.dark .property-horizontal-card,
 
 .property-horizontal-card:hover {
     border-color: #3b82f6 !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.07) !important;
 }
 
 /* Mobile defaults (< 768px) */
 .property-horizontal-card .hcard-image-col {
     position: relative !important;
     width: 100% !important;
-    height: 220px !important;
-    min-height: 220px !important;
-    max-height: 220px !important;
+    height: 190px !important;
+    min-height: 190px !important;
+    max-height: 190px !important;
     background: #f1f5f9 !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
@@ -488,11 +493,11 @@ html.dark .property-horizontal-card .hcard-image-col,
     height: 100% !important;
     object-fit: cover !important;
     display: block !important;
-    transition: transform 0.5s cubic-bezier(0, 0, 0.2, 1) !important;
+    transition: transform 0.4s ease !important;
 }
 
 .property-horizontal-card:hover .hcard-img {
-    transform: scale(1.04) !important;
+    transform: scale(1.03) !important;
 }
 
 .property-horizontal-card .hcard-content-col {
@@ -501,28 +506,29 @@ html.dark .property-horizontal-card .hcard-image-col,
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 1.25rem !important;
+    padding: 0.85rem 1rem !important;
     box-sizing: border-box !important;
 }
 
-/* Tablet & Desktop (>= 768px): Strictly Side-by-Side Horizontal Layout */
+/* Tablet & Desktop (>= 768px): Standard 99acres Compact Side-by-Side Size */
 @media (min-width: 768px) {
     .property-horizontal-card {
         flex-direction: row !important;
         align-items: stretch !important;
-        min-height: 245px !important;
-        height: auto !important;
+        min-height: 195px !important;
+        height: 205px !important;
+        max-height: 215px !important;
     }
 
     .property-horizontal-card .hcard-image-col {
-        width: 320px !important;
-        min-width: 320px !important;
-        max-width: 320px !important;
-        height: auto !important;
+        width: 260px !important;
+        min-width: 260px !important;
+        max-width: 260px !important;
+        height: 100% !important;
         min-height: 100% !important;
         max-height: none !important;
         align-self: stretch !important;
-        flex: 0 0 320px !important;
+        flex: 0 0 260px !important;
     }
 
     .property-horizontal-card .hcard-image-link {
@@ -533,25 +539,22 @@ html.dark .property-horizontal-card .hcard-image-col,
     }
 
     .property-horizontal-card .hcard-content-col {
-        padding: 1.25rem 1.5rem !important;
+        padding: 0.85rem 1.15rem !important;
     }
 }
 
 @media (min-width: 1024px) {
-    .property-horizontal-card .hcard-image-col {
-        width: 340px !important;
-        min-width: 340px !important;
-        max-width: 340px !important;
-        flex: 0 0 340px !important;
+    .property-horizontal-card {
+        min-height: 200px !important;
+        height: 210px !important;
+        max-height: 220px !important;
     }
-}
 
-@media (min-width: 1280px) {
     .property-horizontal-card .hcard-image-col {
-        width: 360px !important;
-        min-width: 360px !important;
-        max-width: 360px !important;
-        flex: 0 0 360px !important;
+        width: 275px !important;
+        min-width: 275px !important;
+        max-width: 275px !important;
+        flex: 0 0 275px !important;
     }
 }
 
@@ -559,12 +562,12 @@ html.dark .property-horizontal-card .hcard-image-col,
 .property-horizontal-card .hcard-specs-row {
     display: grid !important;
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 0.75rem !important;
-    padding: 0.75rem 0 !important;
+    gap: 0.5rem !important;
+    padding: 0.4rem 0 !important;
     border-top: 1px solid #f1f5f9 !important;
     border-bottom: 1px solid #f1f5f9 !important;
-    margin-bottom: 0.75rem !important;
-    margin-top: 0.25rem !important;
+    margin-bottom: 0.4rem !important;
+    margin-top: 0.2rem !important;
 }
 
 html.dark .property-horizontal-card .hcard-specs-row,
@@ -578,7 +581,7 @@ html.dark .property-horizontal-card .hcard-specs-row,
 
 .property-horizontal-card .hcard-spec-col + .hcard-spec-col {
     border-left: 1px solid #f1f5f9 !important;
-    padding-left: 0.75rem !important;
+    padding-left: 0.5rem !important;
 }
 
 html.dark .property-horizontal-card .hcard-spec-col + .hcard-spec-col,
@@ -588,13 +591,13 @@ html.dark .property-horizontal-card .hcard-spec-col + .hcard-spec-col,
 
 /* Footer Row */
 .property-horizontal-card .hcard-footer-row {
-    padding-top: 0.75rem !important;
+    padding-top: 0.4rem !important;
     border-top: 1px solid #f1f5f9 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 0.75rem !important;
-    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    flex-wrap: nowrap !important;
 }
 
 html.dark .property-horizontal-card .hcard-footer-row,
