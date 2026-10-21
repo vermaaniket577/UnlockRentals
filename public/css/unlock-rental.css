@@ -3244,7 +3244,7 @@ input[type="number"] {
     display: flex !important;
     flex-direction: column !important;
     background: #ffffff !important;
-    border-radius: 1.25rem !important;
+    border-radius: 1rem !important;
     border: 1px solid rgba(226, 232, 240, 0.9) !important;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
     overflow: hidden !important;
@@ -3252,6 +3252,7 @@ input[type="number"] {
     position: relative !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
 }
 
@@ -3271,9 +3272,9 @@ html.dark .property-horizontal-card,
 .property-horizontal-card .hcard-image-col {
     position: relative !important;
     width: 100% !important;
-    height: 220px !important;
-    min-height: 220px !important;
-    max-height: 220px !important;
+    height: 200px !important;
+    min-height: 200px !important;
+    max-height: 200px !important;
     background: #f1f5f9 !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
@@ -3310,7 +3311,7 @@ html.dark .property-horizontal-card .hcard-image-col,
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 1.25rem !important;
+    padding: 1rem 1.25rem !important;
     box-sizing: border-box !important;
 }
 
@@ -3319,19 +3320,20 @@ html.dark .property-horizontal-card .hcard-image-col,
     .property-horizontal-card {
         flex-direction: row !important;
         align-items: stretch !important;
-        min-height: 245px !important;
+        min-height: 235px !important;
         height: auto !important;
+        max-height: none !important;
     }
 
     .property-horizontal-card .hcard-image-col {
-        width: 320px !important;
-        min-width: 320px !important;
-        max-width: 320px !important;
+        width: 275px !important;
+        min-width: 275px !important;
+        max-width: 275px !important;
         height: auto !important;
         min-height: 100% !important;
         max-height: none !important;
         align-self: stretch !important;
-        flex: 0 0 320px !important;
+        flex: 0 0 275px !important;
     }
 
     .property-horizontal-card .hcard-image-link {
@@ -3342,25 +3344,32 @@ html.dark .property-horizontal-card .hcard-image-col,
     }
 
     .property-horizontal-card .hcard-content-col {
-        padding: 1.25rem 1.5rem !important;
+        padding: 1rem 1.25rem !important;
+        min-height: 100% !important;
     }
 }
 
 @media (min-width: 1024px) {
+    .property-horizontal-card {
+        min-height: 240px !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
     .property-horizontal-card .hcard-image-col {
-        width: 340px !important;
-        min-width: 340px !important;
-        max-width: 340px !important;
-        flex: 0 0 340px !important;
+        width: 290px !important;
+        min-width: 290px !important;
+        max-width: 290px !important;
+        flex: 0 0 290px !important;
     }
 }
 
 @media (min-width: 1280px) {
     .property-horizontal-card .hcard-image-col {
-        width: 360px !important;
-        min-width: 360px !important;
-        max-width: 360px !important;
-        flex: 0 0 360px !important;
+        width: 300px !important;
+        min-width: 300px !important;
+        max-width: 300px !important;
+        flex: 0 0 300px !important;
     }
 }
 

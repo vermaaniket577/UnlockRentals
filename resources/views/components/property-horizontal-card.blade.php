@@ -268,29 +268,28 @@
             <div class="mb-2">
                 <div class="flex items-start justify-between gap-2 flex-wrap">
                     <a href="{{ $propertyUrl }}" class="group-hover:text-blue-600 transition-colors">
-                        <h2 class="text-base sm:text-[17px] font-black text-slate-900 dark:text-white tracking-tight leading-snug">
+                        <h2 class="text-base sm:text-[17px] font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
                             {{ $isPg ? $pgHeadingName : $headingLocation }}
                         </h2>
                     </a>
                     <div class="flex items-center gap-1.5 shrink-0">
                         @if($isPg || ($property->furnishing ?? '') === 'furnished')
-                            <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs"
-                                  style="letter-spacing: 0.05em;">
+                            <span class="px-2 py-0.5 rounded text-[9.5px] font-semibold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
                                 FURNISHED
                             </span>
                         @elseif(($property->furnishing ?? '') === 'semi-furnished')
-                            <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                            <span class="px-2 py-0.5 rounded text-[9.5px] font-semibold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
                                 SEMI-FURNISHED
                             </span>
                         @endif
                         @if($property->is_featured)
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-600 border border-amber-500/30">
+                            <span class="px-2 py-0.5 rounded-full text-[9.5px] font-semibold uppercase tracking-wider bg-amber-500/15 text-amber-600 border border-amber-500/30">
                                 ★ Verified
                             </span>
                         @endif
                     </div>
                 </div>
-                <a href="{{ $propertyUrl }}" class="block text-xs sm:text-[13px] font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors truncate mt-0.5">
+                <a href="{{ $propertyUrl }}" class="block text-xs sm:text-[13px] font-normal text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors truncate mt-0.5">
                     {{ $isPg ? $pgSubheading : $subheading }}
                 </a>
             </div>
@@ -300,16 +299,16 @@
                 {{-- Column 1: Price --}}
                 <div class="hcard-spec-col min-w-0 pr-1">
                     <div class="flex items-baseline gap-1 flex-nowrap truncate">
-                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                        <span class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                             {{ $formattedPrice }}
                         </span>
                         @if($isPg)
-                            <span class="text-[11px] font-semibold text-slate-500 shrink-0">/Bed</span>
+                            <span class="text-[11.5px] font-medium text-slate-500 shrink-0">/Bed</span>
                         @elseif($isRent)
-                            <span class="text-[11px] font-semibold text-slate-500 shrink-0">/month</span>
+                            <span class="text-[11.5px] font-medium text-slate-500 shrink-0">/month</span>
                         @endif
                     </div>
-                    <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                    <span class="block text-[11px] font-normal text-slate-500 dark:text-slate-400 truncate">
                         @if($isPg && (empty($depositVal) || $depositVal == $priceNum))
                             + Deposit 1 months rent
                         @else
@@ -322,20 +321,20 @@
                 <div class="hcard-spec-col min-w-0 px-2 border-l border-slate-100 dark:border-slate-800/80">
                     @if($isPg)
                         <div class="flex items-center gap-1">
-                            <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight truncate">
+                            <span class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight truncate">
                                 {{ $sharingType }}
                             </span>
                         </div>
-                        <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                        <span class="block text-[11px] font-normal text-slate-500 dark:text-slate-400 truncate">
                             {{ $sharingSubtitle }}
                         </span>
                     @else
                         <div class="flex items-center gap-1">
-                            <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight whitespace-nowrap">
+                            <span class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight whitespace-nowrap">
                                 {{ number_format($sqft) }} sqft
                             </span>
                         </div>
-                        <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate" title="{{ $property->type === 'plot' ? 'Plot Area' : 'Carpet Area' }} ({{ $sqm }} sqm)">
+                        <span class="block text-[11px] font-normal text-slate-500 dark:text-slate-400 truncate" title="{{ $property->type === 'plot' ? 'Plot Area' : 'Carpet Area' }} ({{ $sqm }} sqm)">
                             {{ $property->type === 'plot' ? 'Plot Area' : 'Carpet Area' }} ({{ $sqm }} sqm)
                         </span>
                     @endif
@@ -344,17 +343,17 @@
                 {{-- Column 3: Configuration & Baths --}}
                 <div class="hcard-spec-col min-w-0 pl-2 border-l border-slate-100 dark:border-slate-800/80">
                     @if($isPg)
-                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block truncate">
+                        <span class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight block truncate">
                             Attached Bath
                         </span>
-                        <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                        <span class="block text-[11px] font-normal text-slate-500 dark:text-slate-400 truncate">
                             Furnished Room
                         </span>
                     @else
-                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block whitespace-nowrap">
+                        <span class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight block whitespace-nowrap">
                             {{ $beds > 0 ? "{$beds} BHK" : '1 RK' }}
                         </span>
-                        <span class="block text-[10.5px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                        <span class="block text-[11px] font-normal text-slate-500 dark:text-slate-400 truncate">
                             {{ $baths }} {{ $baths === 1 ? 'Bath' : 'Baths' }}
                         </span>
                     @endif
@@ -363,22 +362,22 @@
 
             {{-- Nearby Landmarks & Transit Pills --}}
             <div class="flex items-center gap-1.5 flex-wrap mb-2 text-xs">
-                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Nearby :</span>
+                <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Nearby :</span>
                 @foreach($nearbyTags as $idx => $tag)
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
                         {{ $tag }}
                     </span>
                 @endforeach
-                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-50 dark:bg-slate-800 text-slate-500 border border-slate-200/50">
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-50 dark:bg-slate-800 text-slate-500 border border-slate-200/50">
                     +3
                 </span>
             </div>
 
             {{-- Short Description Teaser --}}
-            <p class="text-[11.5px] text-slate-500 dark:text-slate-400 line-clamp-1 mb-2 leading-relaxed">
+            <p class="text-[12px] text-slate-500 dark:text-slate-400 line-clamp-1 mb-2 leading-relaxed">
                 {{ $descTeaser }}
-                <a href="{{ $propertyUrl }}" class="text-slate-400 hover:text-blue-600 ml-1 inline-flex items-center" title="Read more">
-                    <i class="ph-bold ph-caret-down text-xs"></i>
+                <a href="{{ $propertyUrl }}" class="text-blue-600 hover:underline ml-1 inline-flex items-center font-medium" title="Read more">
+                    more &rarr;
                 </a>
             </p>
         </div>
@@ -386,20 +385,20 @@
         {{-- ============================================================
              BOTTOM FOOTER BAR: Dealer Profile + "View Number" & "Contact"
              ============================================================ --}}
-        <div class="hcard-footer-row pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2 flex-wrap">
+        <div class="hcard-footer-row pt-2.5 mt-auto border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3">
             
             {{-- Left: Dealer / Owner Info (Clean, No Admin User) --}}
             <div class="hcard-dealer-info flex items-center gap-2 min-w-0">
                 <div class="min-w-0">
-                    <span class="text-[10px] text-slate-400 font-medium block leading-none">
+                    <span class="text-[10.5px] text-slate-400 font-normal block leading-none">
                         {{ $postedTime }}
                     </span>
-                    <div class="flex items-center gap-1.5 mt-0.5">
-                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate max-w-[150px] sm:max-w-[200px]" title="{{ $ownerName }}">
+                    <div class="flex items-center gap-1.5 mt-1">
+                        <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[150px] sm:max-w-[200px]" title="{{ $ownerName }}">
                             {{ $ownerName }}
                         </span>
                         @if($isDealer)
-                            <span class="px-1.5 py-0.2 rounded text-[8px] font-black uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-200/80">
+                            <span class="px-1.5 py-0.5 rounded text-[8.5px] font-bold uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-200/80">
                                 DEALER
                             </span>
                         @endif
@@ -413,7 +412,7 @@
                 {{-- Button 1: "View Number" --}}
                 <button type="button"
                         onclick="revealCardPhoneNumber({{ $property->id }}, '{{ $ownerPhone }}', this)"
-                        class="view-number-btn h-8 px-3.5 rounded-lg border border-[#0066cc] text-[#0066cc] hover:bg-blue-50/80 dark:hover:bg-blue-950/40 text-xs font-bold transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
+                        class="view-number-btn h-9 px-3.5 sm:px-4 rounded-xl border border-blue-600 text-blue-600 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 text-[12px] font-semibold transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
                         data-phone="{{ $ownerPhone }}">
                     <i class="ph-bold ph-phone text-xs"></i>
                     <span class="btn-text">View Number</span>
@@ -423,7 +422,7 @@
                 <a href="https://wa.me/{{ $cleanPhone }}?text={{ urlencode('Hello, I am interested in your property: ' . $cleanTitle . ' on UnlockRentals (' . $propertyUrl . ')') }}"
                    target="_blank"
                    rel="noopener noreferrer"
-                   class="h-8 px-3.5 rounded-lg bg-[#0066cc] hover:bg-[#0052a3] text-white text-xs font-bold transition-all active:scale-95 shadow-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                   class="h-9 px-3.5 sm:px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[12px] font-semibold transition-all active:scale-95 shadow-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                    style="color: #ffffff !important;">
                     <i class="ph-bold ph-chat-circle-dots text-xs" style="color: #ffffff !important;"></i>
                     <span style="color: #ffffff !important;">Contact</span>
@@ -440,8 +439,14 @@
 <style>
 /* =========================================================================
    UNLOCK RENTALS — 99ACRES HORIZONTAL CARD BULLETPROOF STYLES
-   Standard compact size: ~205-215px height on desktop, clean typography.
+   Standard responsive side-by-side card with Poppins typography.
    ========================================================================= */
+.property-horizontal-card,
+.property-horizontal-card * {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    box-sizing: border-box !important;
+}
+
 .property-horizontal-card {
     display: flex !important;
     flex-direction: column !important;
@@ -450,10 +455,11 @@
     border: 1px solid rgba(226, 232, 240, 0.9) !important;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
     overflow: hidden !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 1.25rem !important;
     position: relative !important;
     width: 100% !important;
-    box-sizing: border-box !important;
+    height: auto !important;
+    min-height: auto !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 
@@ -473,9 +479,9 @@ html.dark .property-horizontal-card,
 .property-horizontal-card .hcard-image-col {
     position: relative !important;
     width: 100% !important;
-    height: 190px !important;
-    min-height: 190px !important;
-    max-height: 190px !important;
+    height: 200px !important;
+    min-height: 200px !important;
+    max-height: 200px !important;
     background: #f1f5f9 !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
@@ -512,7 +518,7 @@ html.dark .property-horizontal-card .hcard-image-col,
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 0.85rem 1rem !important;
+    padding: 1rem !important;
     box-sizing: border-box !important;
 }
 
@@ -521,20 +527,20 @@ html.dark .property-horizontal-card .hcard-image-col,
     .property-horizontal-card {
         flex-direction: row !important;
         align-items: stretch !important;
-        min-height: 195px !important;
-        height: 205px !important;
-        max-height: 215px !important;
+        min-height: 235px !important;
+        height: auto !important;
+        max-height: none !important;
     }
 
     .property-horizontal-card .hcard-image-col {
-        width: 260px !important;
-        min-width: 260px !important;
-        max-width: 260px !important;
-        height: 100% !important;
+        width: 275px !important;
+        min-width: 275px !important;
+        max-width: 275px !important;
+        height: auto !important;
         min-height: 100% !important;
         max-height: none !important;
         align-self: stretch !important;
-        flex: 0 0 260px !important;
+        flex: 0 0 275px !important;
     }
 
     .property-horizontal-card .hcard-image-link {
@@ -545,22 +551,32 @@ html.dark .property-horizontal-card .hcard-image-col,
     }
 
     .property-horizontal-card .hcard-content-col {
-        padding: 0.85rem 1.15rem !important;
+        padding: 1rem 1.25rem !important;
+        min-height: 100% !important;
     }
 }
 
 @media (min-width: 1024px) {
     .property-horizontal-card {
-        min-height: 200px !important;
-        height: 210px !important;
-        max-height: 220px !important;
+        min-height: 240px !important;
+        height: auto !important;
+        max-height: none !important;
     }
 
     .property-horizontal-card .hcard-image-col {
-        width: 275px !important;
-        min-width: 275px !important;
-        max-width: 275px !important;
-        flex: 0 0 275px !important;
+        width: 290px !important;
+        min-width: 290px !important;
+        max-width: 290px !important;
+        flex: 0 0 290px !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .property-horizontal-card .hcard-image-col {
+        width: 300px !important;
+        min-width: 300px !important;
+        max-width: 300px !important;
+        flex: 0 0 300px !important;
     }
 }
 
@@ -569,11 +585,11 @@ html.dark .property-horizontal-card .hcard-image-col,
     display: grid !important;
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 0.5rem !important;
-    padding: 0.4rem 0 !important;
+    padding: 0.45rem 0 !important;
     border-top: 1px solid #f1f5f9 !important;
     border-bottom: 1px solid #f1f5f9 !important;
-    margin-bottom: 0.4rem !important;
-    margin-top: 0.2rem !important;
+    margin-bottom: 0.45rem !important;
+    margin-top: 0.25rem !important;
 }
 
 html.dark .property-horizontal-card .hcard-specs-row,
@@ -587,7 +603,7 @@ html.dark .property-horizontal-card .hcard-specs-row,
 
 .property-horizontal-card .hcard-spec-col + .hcard-spec-col {
     border-left: 1px solid #f1f5f9 !important;
-    padding-left: 0.5rem !important;
+    padding-left: 0.65rem !important;
 }
 
 html.dark .property-horizontal-card .hcard-spec-col + .hcard-spec-col,
@@ -597,13 +613,14 @@ html.dark .property-horizontal-card .hcard-spec-col + .hcard-spec-col,
 
 /* Footer Row */
 .property-horizontal-card .hcard-footer-row {
-    padding-top: 0.4rem !important;
+    padding-top: 0.6rem !important;
+    margin-top: auto !important;
     border-top: 1px solid #f1f5f9 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 0.5rem !important;
-    flex-wrap: nowrap !important;
+    gap: 0.75rem !important;
+    flex-wrap: wrap !important;
 }
 
 html.dark .property-horizontal-card .hcard-footer-row,
@@ -617,8 +634,8 @@ html.dark .property-horizontal-card .hcard-footer-row,
         window.revealCardPhoneNumber = function(propId, phone, btn) {
             if (!btn) return;
             const cleanNumber = phone.replace(/[^\d+]/g, '');
-            btn.innerHTML = `<i class="ph-bold ph-phone-call text-emerald-600 text-sm"></i> <a href="tel:${cleanNumber}" class="text-emerald-700 dark:text-emerald-400 font-black">${phone}</a>`;
-            btn.className = 'px-3.5 py-2 sm:py-2.5 rounded-xl border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-2xs transition-all';
+            btn.innerHTML = `<i class="ph-bold ph-phone-call text-emerald-600 text-xs"></i> <a href="tel:${cleanNumber}" class="text-emerald-700 dark:text-emerald-400 font-semibold">${phone}</a>`;
+            btn.className = 'view-number-btn h-9 px-3.5 sm:px-4 rounded-xl border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-[12px] font-semibold flex items-center gap-1.5 shadow-2xs transition-all';
             btn.onclick = null;
         };
     }
