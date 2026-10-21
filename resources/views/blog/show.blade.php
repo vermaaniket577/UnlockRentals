@@ -84,16 +84,16 @@
         </div>
 
         {{-- Article Title --}}
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight mb-6 font-['Playfair_Display',serif]">
+        <h1 class="text-2xl sm:text-3xl lg:text-[32px] font-bold text-slate-900 dark:text-white leading-snug tracking-tight mb-4">
             {{ $post->title }}
         </h1>
 
         {{-- Article Meta & Author Bar --}}
-        <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-slate-200 dark:border-slate-800 mb-8">
+        <div class="flex flex-wrap items-center justify-between gap-4 py-3 border-y border-slate-200 dark:border-slate-800 mb-6">
             <div class="flex items-center gap-3">
                 <img src="{{ $post->author_avatar_url }}" alt="{{ $post->author_display_name }}"
                      onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($post->author_display_name) }}&background=2563EB&color=fff&rounded=true&bold=true';"
-                     class="w-12 h-12 rounded-full object-cover border-2 border-blue-600 shadow-sm">
+                     class="w-10 h-10 rounded-full object-cover border-2 border-blue-600 shadow-sm">
                 <div>
                     <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $post->author_display_name }}</p>
                     <p class="text-xs text-slate-500">{{ $post->author_role_title }}</p>
@@ -109,10 +109,10 @@
         </div>
 
         {{-- Featured Hero Image --}}
-        <div class="rounded-3xl overflow-hidden mb-10 shadow-xl border border-slate-200/80 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+        <div class="rounded-2xl overflow-hidden mb-8 shadow-md border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center justify-center max-h-[340px]">
             <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}"
                  onerror="this.onerror=null;this.src='{{ $post->getDefaultCoverImage() }}';"
-                 class="w-full h-auto max-h-[580px] object-contain block mx-auto">
+                 class="w-full h-auto max-h-[280px] sm:max-h-[320px] md:max-h-[340px] object-contain block mx-auto">
         </div>
 
         {{-- Article Content --}}
@@ -124,7 +124,7 @@
             </div>
             @endif
 
-            <div class="prose prose-slate dark:prose-invert prose-lg max-w-none blog-article-content prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-img:rounded-2xl prose-img:mx-auto prose-img:h-auto prose-img:max-h-[600px] prose-img:object-contain">
+            <div class="prose prose-slate dark:prose-invert prose-lg max-w-none blog-article-content prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-img:rounded-2xl prose-img:mx-auto prose-img:h-auto prose-img:max-h-[420px] prose-img:object-contain">
                 {!! $post->content !!}
             </div>
 
