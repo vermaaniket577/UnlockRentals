@@ -168,9 +168,10 @@
     $descTeaser = \Illuminate\Support\Str::limit($desc, 110);
 
     // Nearby Transit tags
+    $cleanLocTag = trim(explode(',', $locality)[0]) ?: 'Local';
     $nearbyTags = [
         "{$cleanLocTag} Market",
-        "Palam Triangle",
+        "Transit Hub",
         "Prime Park"
     ];
 @endphp
