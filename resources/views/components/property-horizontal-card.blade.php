@@ -56,6 +56,11 @@
     }
 
     if ($cardImages->isNotEmpty()) {
+        $cardImages = $cardImages->unique(function ($img) {
+            $p = $img->path ?? '';
+            return preg_replace('/\.(jpg|jpeg|png|webp)(\?.*)?$/i', '', trim($p));
+        })->values();
+
         $primaryImg = $cardImages->firstWhere('is_primary', true);
         if ($primaryImg) {
             $cardImages = collect([$primaryImg])->merge($cardImages->reject(fn($img) => $img->id === $primaryImg->id))->values();

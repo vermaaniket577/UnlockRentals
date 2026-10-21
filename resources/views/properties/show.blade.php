@@ -81,8 +81,12 @@
     } else {
         $galleryImages = $property->images()->take(12)->get();
     }
-    if ($galleryImages->isEmpty()) {
-        $galleryImages = collect();
+
+    if ($galleryImages->isNotEmpty()) {
+        $galleryImages = $galleryImages->unique(function ($img) {
+            $p = $img->path ?? '';
+            return preg_replace('/\.(jpg|jpeg|png|webp)(\?.*)?$/i', '', trim($p));
+        })->values();
     }
     $totalPhotos = max($galleryImages->count(), 1);
 
