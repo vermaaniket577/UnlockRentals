@@ -147,7 +147,18 @@ def resolve_location(url: str, p: dict = None):
         if k in url.lower():
             return v
 
-    return "Bangalore", "Karnataka"
+    return "Delhi", "Delhi"
+
+def clean_text_no_urls(text: str, default: str = "") -> str:
+    if not text:
+        return default
+    cleaned = re.sub(r'https?://[^\s,"\'<>]+|www\.[^\s,"\'<>]+|[\w-]*99acres[\w\.-]*', '', str(text), flags=re.I)
+    cleaned = re.sub(r'\s*,\s*\.', '.', cleaned)
+    cleaned = re.sub(r'\s*,\s*,+', ', ', cleaned)
+    cleaned = re.sub(r'\s{2,}', ' ', cleaned)
+    cleaned = re.sub(r',\s*$', '', cleaned)
+    cleaned = cleaned.strip(" \t\n\r\0\x0B,-/|")
+    return cleaned or default
 
 def detect_type_and_category(title: str, prop_type: str = "", res_com: str = ""):
     combined = f"{title} {prop_type} {res_com}".lower()
@@ -377,8 +388,12 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                             f"Available for {purpose}. Close to major transport routes, markets, and prime conveniences."
                         )
 
+                    clean_title = clean_text_no_urls(title, f"Property in {item_city}")
+                    clean_locality = clean_text_no_urls(locality, item_city)
+                    clean_desc = clean_text_no_urls(desc, f"{clean_title} in {clean_locality}, {item_city}.")
+
                     items.append({
-                        "title": title,
+                        "title": clean_title,
                         "type": prop_type,
                         "category_name": cat_name,
                         "purpose": purpose,
@@ -388,13 +403,13 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                         "area_sqft": area_sqft,
                         "city": item_city,
                         "state": item_state,
-                        "locality": locality,
+                        "locality": clean_locality,
                         "furnishing": furnishing if prop_type != "plot" else "unfurnished",
                         "images": clean_imgs,
                         "contact_phone": f"+91 {random.randint(70000, 99999)} {random.randint(10000, 99999)}",
-                        "description": desc,
-                        "seller_name": seller_name,
-                        "seller_company": seller_company,
+                        "description": clean_desc,
+                        "seller_name": clean_text_no_urls(seller_name, "Property Owner"),
+                        "seller_company": clean_text_no_urls(seller_company, ""),
                         "seller_photo": seller_photo,
                         "seller_type": seller_type,
                     })
@@ -455,8 +470,12 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                 if not imgs:
                     imgs = random.sample(FALLBACK_IMAGES, min(3, len(FALLBACK_IMAGES)))
 
+                clean_title = clean_text_no_urls(title, f"Property in {item_city}")
+                clean_locality = clean_text_no_urls(locality, item_city)
+                clean_desc = clean_text_no_urls(f"{clean_title} available for {purpose} in {clean_locality}, {item_city}. Area of {area_sqft} sq.ft.")
+
                 items.append({
-                    "title": title,
+                    "title": clean_title,
                     "type": prop_type,
                     "category_name": cat_name,
                     "purpose": purpose,
@@ -466,11 +485,11 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                     "area_sqft": area_sqft,
                     "city": item_city,
                     "state": item_state,
-                    "locality": locality,
+                    "locality": clean_locality,
                     "furnishing": furnishing if prop_type != "plot" else "unfurnished",
                     "images": imgs,
                     "contact_phone": f"+91 {random.randint(70000, 99999)} {random.randint(10000, 99999)}",
-                    "description": f"{title} available for {purpose} in {locality}, {item_city}. Area of {area_sqft} sq.ft.",
+                    "description": clean_desc,
                     "seller_name": "Property Owner",
                     "seller_company": "",
                     "seller_photo": "",

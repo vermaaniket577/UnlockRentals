@@ -31,8 +31,18 @@ class ScrapeCityCommand extends Command
      */
     public function handle(): int
     {
-        $city = $this->argument('city');
+        $rawArg = (string) $this->argument('city');
         $count = (int) $this->option('count');
+
+        // Check if raw argument is a URL or contains 99acres
+        if (preg_match('/^(https?:\/\/|www\.)/i', $rawArg) || str_contains($rawArg, '99acres')) {
+            [$city, $state] = Property::extractCityAndStateFromUrl($rawArg);
+            $targetUrl = $rawArg;
+        } else {
+            $city = trim($rawArg) ?: 'Gurgaon';
+            $state = 'Haryana';
+            $targetUrl = null;
+        }
 
         $this->info("Starting scraper for: {$city} (Target: {$count} listings)...");
 
@@ -49,9 +59,10 @@ class ScrapeCityCommand extends Command
             $pythonBinary = 'python';
         }
 
-        $escapedCity = escapeshellarg($city);
+        $targetToScrape = $targetUrl ?: $city;
+        $escapedTarget = escapeshellarg($targetToScrape);
         $escapedScript = escapeshellarg($scriptPath);
-        $command = "{$pythonBinary} {$escapedScript} {$escapedCity} {$count} --json";
+        $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} --json";
         $this->line("Running: {$command}");
 
         exec($command, $output, $returnCode);
@@ -68,7 +79,7 @@ class ScrapeCityCommand extends Command
 
         if (empty($items) || !is_array($items)) {
             $this->warn("Live python scraper did not return listings (Code: {$returnCode}). Using verified listings pool for {$city}...");
-            $items = $this->getFallbackProperties($city, $count);
+            $items = $this->getFallbackProperties($city, $count, $state);
         }
 
         $adminUser = User::where('role', 'admin')->first() ?? User::first();
@@ -140,20 +151,27 @@ class ScrapeCityCommand extends Command
             $itemType = in_array($item['type'] ?? '', ['house', 'shop', 'pg-hostel', 'hotel', 'plot']) ? $item['type'] : 'house';
             $itemPurpose = in_array($item['purpose'] ?? '', ['rent', 'buy']) ? $item['purpose'] : 'rent';
 
+            $itemCity = Property::cleanUrlFromText($item['city'] ?? $city, true) ?: $city;
+            $itemState = Property::cleanUrlFromText($item['state'] ?? $state, false) ?: $state;
+            $itemLocality = Property::cleanUrlFromText($item['locality'] ?? $itemCity, false) ?: $itemCity;
+            $itemTitle = Property::cleanUrlFromText($item['title'] ?? '', true) ?: ("{$item['bedrooms']} BHK Property in {$itemLocality}");
+            $itemDesc = Property::cleanUrlFromText($item['description'] ?? ("{$itemTitle} in {$itemLocality}, {$itemCity}"), false);
+            $itemAddress = Property::cleanUrlFromText($item['address'] ?? "{$itemLocality}, {$itemCity}", true) ?: "{$itemLocality}, {$itemCity}";
+
             $property = Property::create([
                 'user_id' => $propertyUserId,
                 'category_id' => $itemCategoryId,
-                'title' => $item['title'],
+                'title' => $itemTitle,
                 'slug' => $slug,
-                'description' => $item['description'] ?? ("{$item['title']} in " . ($item['locality'] ?? $item['city']) . ", " . ($item['city'] ?? '')),
+                'description' => $itemDesc,
                 'type' => $itemType,
                 'purpose' => $itemPurpose,
                 'price' => $item['price'] ?? 25000,
                 'price_period' => 'month',
-                'state' => $item['state'] ?? 'India',
-                'location' => $item['city'] ?? 'India',
-                'locality' => $item['locality'] ?? ($item['city'] ?? 'India'),
-                'address' => "{$item['locality']}, {$item['city']}",
+                'state' => $itemState,
+                'location' => $itemCity,
+                'locality' => $itemLocality,
+                'address' => $itemAddress,
                 'contact_phone' => $item['contact_phone'] ?? '+91 98765 43210',
                 'bedrooms' => $itemType === 'plot' ? 0 : ($item['bedrooms'] ?? 2),
                 'bathrooms' => $itemType === 'plot' ? 0 : ($item['bathrooms'] ?? 1),
@@ -193,16 +211,19 @@ class ScrapeCityCommand extends Command
     /**
      * Fallback verified property listings pool if Python scraper is unavailable on shared hosting.
      */
-    private function getFallbackProperties(string $city, int $count): array
+    private function getFallbackProperties(string $city, int $count, string $state = 'Haryana'): array
     {
+        $cleanCity = Property::cleanUrlFromText($city, true) ?: 'Gurgaon';
+        $cleanState = Property::cleanUrlFromText($state, false) ?: 'Haryana';
+
         $pool = [
             [
-                'title' => "3 BHK Flat for rent in Sector 70, {$city}",
-                'description' => "Beautiful 3 BHK apartment available for rent in Sector 70, {$city}. Spacious carpet area with 2 bathrooms. Comes semi-furnished.",
+                'title' => "3 BHK Flat for rent in Sector 70, {$cleanCity}",
+                'description' => "Beautiful 3 BHK apartment available for rent in Sector 70, {$cleanCity}. Spacious carpet area with 2 bathrooms. Comes semi-furnished.",
                 'price' => 26000.0,
-                'city' => $city,
+                'city' => $cleanCity,
                 'locality' => 'Sector 70',
-                'state' => 'Haryana',
+                'state' => $cleanState,
                 'bedrooms' => 3,
                 'bathrooms' => 2,
                 'area_sqft' => 1450,
@@ -219,12 +240,12 @@ class ScrapeCityCommand extends Command
                 ],
             ],
             [
-                'title' => "3 BHK Flat for rent in Sector 102, {$city}",
-                'description' => "Spacious 3 BHK luxury flat for rent in Sector 102, {$city}. High-rise modern society with pool, clubhouse, and security.",
+                'title' => "3 BHK Flat for rent in Sector 102, {$cleanCity}",
+                'description' => "Spacious 3 BHK luxury flat for rent in Sector 102, {$cleanCity}. High-rise modern society with pool, clubhouse, and security.",
                 'price' => 36000.0,
-                'city' => $city,
+                'city' => $cleanCity,
                 'locality' => 'Sector 102',
-                'state' => 'Haryana',
+                'state' => $cleanState,
                 'bedrooms' => 3,
                 'bathrooms' => 2,
                 'area_sqft' => 1650,
@@ -240,12 +261,12 @@ class ScrapeCityCommand extends Command
                 ],
             ],
             [
-                'title' => "2 BHK Flat for rent in Sector 48, {$city}",
-                'description' => "Well ventilated 2 BHK flat available on Sohna Road, Sector 48, {$city}. Close to IT parks and shopping complexes.",
+                'title' => "2 BHK Flat for rent in Sector 48, {$cleanCity}",
+                'description' => "Well ventilated 2 BHK flat available on Sohna Road, Sector 48, {$cleanCity}. Close to IT parks and shopping complexes.",
                 'price' => 28000.0,
-                'city' => $city,
+                'city' => $cleanCity,
                 'locality' => 'Sector 48',
-                'state' => 'Haryana',
+                'state' => $cleanState,
                 'bedrooms' => 2,
                 'bathrooms' => 2,
                 'area_sqft' => 1150,
@@ -260,12 +281,12 @@ class ScrapeCityCommand extends Command
                 ],
             ],
             [
-                'title' => "3 BHK Flat for rent in Sector 65, Golf Course Ext Road, {$city}",
-                'description' => "Premium luxury 3 BHK residence on Golf Course Extension Road, Sector 65, {$city}. Fully air-conditioned, modular kitchen.",
+                'title' => "3 BHK Flat for rent in Sector 65, Golf Course Ext Road, {$cleanCity}",
+                'description' => "Premium luxury 3 BHK residence on Golf Course Extension Road, Sector 65, {$cleanCity}. Fully air-conditioned, modular kitchen.",
                 'price' => 65000.0,
-                'city' => $city,
+                'city' => $cleanCity,
                 'locality' => 'Sector 65',
-                'state' => 'Haryana',
+                'state' => $cleanState,
                 'bedrooms' => 3,
                 'bathrooms' => 3,
                 'area_sqft' => 2100,
@@ -281,12 +302,12 @@ class ScrapeCityCommand extends Command
                 ],
             ],
             [
-                'title' => "1 BHK Flat for rent in DLF Phase 3, {$city}",
-                'description' => "Cozy, fully-furnished 1 BHK apartment near Cyber City and Rapid Metro Station in DLF Phase 3, {$city}.",
+                'title' => "1 BHK Flat for rent in DLF Phase 3, {$cleanCity}",
+                'description' => "Cozy, fully-furnished 1 BHK apartment near Cyber City and Rapid Metro Station in DLF Phase 3, {$cleanCity}.",
                 'price' => 18000.0,
-                'city' => $city,
+                'city' => $cleanCity,
                 'locality' => 'DLF Phase 3',
-                'state' => 'Haryana',
+                'state' => $cleanState,
                 'bedrooms' => 1,
                 'bathrooms' => 1,
                 'area_sqft' => 550,

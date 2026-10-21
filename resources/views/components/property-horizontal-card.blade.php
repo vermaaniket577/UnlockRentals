@@ -10,7 +10,8 @@
     $propertyUrl = Route::has('properties.show') ? route('properties.show', $property) : url('/properties/' . $property->id);
 
     // Formatted Clean Title
-    $cleanTitle = ucwords(strtolower(trim($property->title)));
+    $rawTitle = \App\Models\Property::cleanUrlFromText($property->title, true);
+    $cleanTitle = ucwords(strtolower(trim($rawTitle)));
     $cleanTitle = preg_replace_callback('/\b(\d+)?\s*(bhk|rk|pg)\b/i', fn($m) => strtoupper($m[0]), $cleanTitle);
 
     // Purpose & Type
@@ -77,20 +78,33 @@
     $cleanPhone = preg_replace('/\D/', '', $ownerPhone);
     $postedTime = $property->created_at ? $property->created_at->diffForHumans(null, true) . ' ago' : 'Recently';
 
-    // Locality and Subtitle
-    $locality = $property->locality ?: ($property->location ?: 'Delhi NCR');
-    $city = $property->location ?: 'Delhi';
+    // Locality and Subtitle: Strictly sanitize and eliminate any URLs or 99acres references
+    $rawLocality = $property->locality ?: ($property->location ?: 'Delhi NCR');
+    $rawCity = $property->location ?: 'Delhi';
+    $locality = \App\Models\Property::cleanUrlFromText($rawLocality, false) ?: 'Delhi NCR';
+    $city = \App\Models\Property::cleanUrlFromText($rawCity, true) ?: 'Delhi';
+
+    // Prevent duplicate city names in heading (e.g. "Sector 48, Noida, Noida")
+    if (strcasecmp($locality, $city) === 0 || str_contains(strtolower($locality), strtolower($city))) {
+        $headingLocation = $locality;
+    } else {
+        $headingLocation = "{$locality}, {$city}";
+    }
+    $headingLocation = \App\Models\Property::cleanUrlFromText($headingLocation, false);
+
     $propTypeLabel = $property->type === 'house' ? 'Builder Floor' : ($property->type === 'plot' ? 'Plot' : ($property->type === 'shop' ? 'Commercial' : ($property->category?->name ?? 'Flat')));
-    $headingLocation = "{$locality}, {$city}";
     $subheading = "{$beds} BHK {$propTypeLabel} {$purposeText} in {$locality}";
+    $subheading = \App\Models\Property::cleanUrlFromText($subheading, false);
 
     // Description teaser
     $desc = strip_tags($property->description ?? "Carefully laid out in the prime location of {$locality}, this {$beds} BHK {$propTypeLabel} features modern fixtures, natural lighting, and superior connectivity.");
+    $desc = \App\Models\Property::cleanUrlFromText($desc, false);
     $descTeaser = \Illuminate\Support\Str::limit($desc, 110);
 
     // Nearby Transit tags
+    $cleanLocTag = \App\Models\Property::cleanUrlFromText($locality, false);
     $nearbyTags = [
-        "{$locality} Metro Station",
+        "{$cleanLocTag} Metro Station",
         "Market Center",
         "Prime Park"
     ];

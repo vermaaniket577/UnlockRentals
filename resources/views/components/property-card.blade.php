@@ -6,7 +6,8 @@
     $propertyUrl = Route::has('properties.show') ? route('properties.show', $property) : url('/properties/' . $property->id);
 
     // Standard title casing with uppercase for acronyms (e.g. "1 BHK Big Floor", "2 Room Set")
-    $cleanTitle = ucwords(strtolower(trim($property->title)));
+    $rawTitle = \App\Models\Property::cleanUrlFromText($property->title, true);
+    $cleanTitle = ucwords(strtolower(trim($rawTitle)));
     $cleanTitle = preg_replace_callback('/\b(\d+)?\s*(bhk|rk|pg)\b/i', function($m) {
         return strtoupper($m[0]);
     }, $cleanTitle);
@@ -300,7 +301,7 @@
                 <div class="flex items-center gap-1 min-w-0">
                     <i class="ph-bold ph-map-pin text-blue-600 text-[9.5px] sm:text-[11px] shrink-0"></i>
                     <span class="truncate capitalize">
-                        {{ $property->location }}{{ $property->state ? ', ' . $property->state : '' }}
+                        {{ \App\Models\Property::cleanUrlFromText($property->location, true) }}{{ $property->state && !str_contains($property->state, 'http') && !str_contains($property->state, '99acres') ? ', ' . \App\Models\Property::cleanUrlFromText($property->state, false) : '' }}
                         @if(isset($property->distance_km) && $property->distance_km !== null)
                             <span class="text-emerald-600 font-bold text-[9px] sm:text-[10px]">({{ round($property->distance_km, 1) }} km away)</span>
                         @endif

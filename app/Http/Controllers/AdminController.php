@@ -2750,21 +2750,28 @@ class AdminController extends Controller
                 $itemType = in_array($item['type'] ?? '', ['house', 'shop', 'pg-hostel', 'hotel', 'plot']) ? $item['type'] : 'house';
                 $itemPurpose = in_array($item['purpose'] ?? '', ['rent', 'buy']) ? $item['purpose'] : 'rent';
 
-                $slug = Str::slug($item['title']) . '-' . rand(10000, 99999);
+                $itemCity = Property::cleanUrlFromText($item['city'] ?? $city, true) ?: ($city ?: 'Delhi');
+                $itemState = Property::cleanUrlFromText($item['state'] ?? 'India', false) ?: 'India';
+                $itemLocality = Property::cleanUrlFromText($item['locality'] ?? $itemCity, false) ?: $itemCity;
+                $itemTitle = Property::cleanUrlFromText($item['title'] ?? '', true) ?: ("{$item['bedrooms']} BHK Property in {$itemLocality}");
+                $itemDesc = Property::cleanUrlFromText($item['description'] ?? ("{$itemTitle} in {$itemLocality}, {$itemCity}"), false);
+                $itemAddress = Property::cleanUrlFromText($item['address'] ?? "{$itemLocality}, {$itemCity}", true) ?: "{$itemLocality}, {$itemCity}";
+
+                $slug = Str::slug($itemTitle) . '-' . rand(10000, 99999);
                 $prop = Property::create([
                     'user_id'       => $propertyUserId,
                     'category_id'   => $itemCategoryId,
-                    'title'         => $item['title'],
+                    'title'         => $itemTitle,
                     'slug'          => $slug,
-                    'description'   => $item['description'] ?? ("{$item['title']} in " . ($item['locality'] ?? $item['city']) . ", " . ($item['city'] ?? '')),
+                    'description'   => $itemDesc,
                     'type'          => $itemType,
                     'purpose'       => $itemPurpose,
                     'price'         => $item['price'] ?? 25000,
                     'price_period'  => 'month',
-                    'state'         => $item['state'] ?? 'India',
-                    'location'      => $item['city'] ?? 'India',
-                    'locality'      => $item['locality'] ?? ($item['city'] ?? 'India'),
-                    'address'       => "{$item['locality']}, {$item['city']}",
+                    'state'         => $itemState,
+                    'location'      => $itemCity,
+                    'locality'      => $itemLocality,
+                    'address'       => $itemAddress,
                     'contact_phone' => $item['contact_phone'] ?? '+91 98765 43210',
                     'bedrooms'      => $itemType === 'plot' ? 0 : ($item['bedrooms'] ?? 2),
                     'bathrooms'     => $itemType === 'plot' ? 0 : ($item['bathrooms'] ?? 1),

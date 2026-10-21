@@ -20,11 +20,16 @@
     }
 
     // Typography formatting
-    $cleanTitle = ucwords(strtolower(trim($property->title)));
+    $rawTitle = \App\Models\Property::cleanUrlFromText($property->title, true);
+    $cleanTitle = ucwords(strtolower(trim($rawTitle)));
     $cleanTitle = preg_replace_callback('/\b(\d+)?\s*(bhk|rk|pg)\b/i', fn($m) => strtoupper($m[0]), $cleanTitle);
 
-    // Locality & Project
-    $localityName = !empty($property->locality) ? trim($property->locality) : trim(explode(',', $property->location)[0]);
+    // Locality & Project: Strictly sanitize and remove 99acres URLs
+    $rawLocality = !empty($property->locality) ? trim($property->locality) : trim(explode(',', $property->location)[0]);
+    $localityName = \App\Models\Property::cleanUrlFromText($rawLocality, false) ?: 'Verified Locality';
+    $cleanLocation = \App\Models\Property::cleanUrlFromText($property->location, true) ?: 'Delhi';
+    $cleanState = \App\Models\Property::cleanUrlFromText($property->state ?? 'Haryana', false) ?: 'Haryana';
+    $cleanAddress = \App\Models\Property::cleanUrlFromText($property->address, true) ?: ($localityName . ', ' . $cleanLocation);
     $projectName = strtoupper($localityName);
 
     // Community Subtitle
@@ -93,7 +98,7 @@
 @endphp
 
 @section('title', $cleanTitle . ' - ' . $localityName . ' - UnlockRentals')
-@section('meta_description', Str::limit('Verified 0% brokerage listing: ' . $cleanTitle . ' in ' . $localityName . ', ' . $property->location . '. Direct owner connection on UnlockRentals.', 160))
+@section('meta_description', Str::limit('Verified 0% brokerage listing: ' . $cleanTitle . ' in ' . $localityName . ', ' . $cleanLocation . '. Direct owner connection on UnlockRentals.', 160))
 @section('og_image', $property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png'))
 
 @push('head')
@@ -108,9 +113,9 @@
   "image": @json($property->primaryImage ? $property->primaryImage->imageUrl() : asset('images/logo.png')),
   "address": {
     "@@type": "PostalAddress",
-    "streetAddress": @json(($isOwnerOrAdmin || $hasViewed) ? $property->address : 'Verified Locality'),
-    "addressLocality": @json($property->location),
-    "addressRegion": @json($property->state ?? 'Haryana'),
+    "streetAddress": @json(($isOwnerOrAdmin || $hasViewed) ? $cleanAddress : 'Verified Locality'),
+    "addressLocality": @json($cleanLocation),
+    "addressRegion": @json($cleanState),
     "addressCountry": "IN"
   },
   "offers": {
@@ -315,9 +320,9 @@
                 <i class="ph-bold ph-map-pin text-blue-600 text-sm mt-0.5 shrink-0"></i>
                 <span>
                     @if($isOwnerOrAdmin || $hasViewed)
-                        <strong class="text-slate-800 dark:text-slate-200 font-bold">{{ $property->address }}</strong>, {{ $localityName }}, {{ $property->location }}, {{ $property->state ?? 'Haryana' }}
+                        <strong class="text-slate-800 dark:text-slate-200 font-bold">{{ $cleanAddress }}</strong>, {{ $localityName }}, {{ $cleanLocation }}, {{ $cleanState }}
                     @else
-                        {{ $localityName }}, {{ $property->location }}, {{ $property->state ?? 'Haryana' }}
+                        {{ $localityName }}, {{ $cleanLocation }}, {{ $cleanState }}
                     @endif
                 </span>
             </div>

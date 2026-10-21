@@ -62,9 +62,247 @@ class Property extends Model
 
         static::creating(function ($property) {
             if (empty($property->slug)) {
-                $property->slug = Str::slug($property->title) . '-' . Str::random(6);
+                $cleanTitle = self::cleanUrlFromText($property->title, true) ?: 'Property';
+                $property->slug = Str::slug($cleanTitle) . '-' . Str::random(6);
             }
         });
+    }
+
+    /**
+     * Map of Indian cities and states to resolve city and state from any URL or string.
+     */
+    public static function extractCityAndStateFromUrl(?string $url): array
+    {
+        if (empty($url)) {
+            return ['Delhi', 'Delhi'];
+        }
+
+        $urlLower = strtolower($url);
+
+        $map = [
+            'greater noida'  => ['Greater Noida', 'Uttar Pradesh'],
+            'noida'          => ['Noida', 'Uttar Pradesh'],
+            'gurgaon'        => ['Gurgaon', 'Haryana'],
+            'gurugram'       => ['Gurgaon', 'Haryana'],
+            'faridabad'      => ['Faridabad', 'Haryana'],
+            'ghaziabad'      => ['Ghaziabad', 'Uttar Pradesh'],
+            'new delhi'      => ['New Delhi', 'Delhi'],
+            'delhi'          => ['Delhi', 'Delhi'],
+            'navi mumbai'    => ['Navi Mumbai', 'Maharashtra'],
+            'mumbai'         => ['Mumbai', 'Maharashtra'],
+            'thane'          => ['Thane', 'Maharashtra'],
+            'pune'           => ['Pune', 'Maharashtra'],
+            'bangalore'      => ['Bangalore', 'Karnataka'],
+            'bengaluru'      => ['Bangalore', 'Karnataka'],
+            'hyderabad'      => ['Hyderabad', 'Telangana'],
+            'secunderabad'   => ['Secunderabad', 'Telangana'],
+            'chennai'        => ['Chennai', 'Tamil Nadu'],
+            'kolkata'        => ['Kolkata', 'West Bengal'],
+            'ahmedabad'      => ['Ahmedabad', 'Gujarat'],
+            'surat'          => ['Surat', 'Gujarat'],
+            'vadodara'       => ['Vadodara', 'Gujarat'],
+            'jaipur'         => ['Jaipur', 'Rajasthan'],
+            'udaipur'        => ['Udaipur', 'Rajasthan'],
+            'jodhpur'        => ['Jodhpur', 'Rajasthan'],
+            'indore'         => ['Indore', 'Madhya Pradesh'],
+            'bhopal'         => ['Bhopal', 'Madhya Pradesh'],
+            'gwalior'        => ['Gwalior', 'Madhya Pradesh'],
+            'jabalpur'       => ['Jabalpur', 'Madhya Pradesh'],
+            'lucknow'        => ['Lucknow', 'Uttar Pradesh'],
+            'kanpur'         => ['Kanpur', 'Uttar Pradesh'],
+            'varanasi'       => ['Varanasi', 'Uttar Pradesh'],
+            'agra'           => ['Agra', 'Uttar Pradesh'],
+            'chandigarh'     => ['Chandigarh', 'Punjab'],
+            'mohali'         => ['Mohali', 'Punjab'],
+            'ludhiana'       => ['Ludhiana', 'Punjab'],
+            'patna'          => ['Patna', 'Bihar'],
+            'bhubaneswar'    => ['Bhubaneswar', 'Odisha'],
+            'cuttack'        => ['Cuttack', 'Odisha'],
+            'kochi'          => ['Kochi', 'Kerala'],
+            'trivandrum'     => ['Trivandrum', 'Kerala'],
+            'dehradun'       => ['Dehradun', 'Uttarakhand'],
+            'goa'            => ['Goa', 'Goa'],
+            'panipat'        => ['Panipat', 'Haryana'],
+            'nagpur'         => ['Nagpur', 'Maharashtra'],
+            'nashik'         => ['Nashik', 'Maharashtra'],
+            'mysore'         => ['Mysore', 'Karnataka'],
+            'coimbatore'     => ['Coimbatore', 'Tamil Nadu'],
+        ];
+
+        foreach ($map as $key => $pair) {
+            if (str_contains($urlLower, $key)) {
+                return $pair;
+            }
+        }
+
+        // Try extracting city from regex patterns like "-in-noida-ffid"
+        if (preg_match('/-in-([a-z0-9-]+)(?:-ffid|\?|\/|$)/i', $url, $m)) {
+            $candidate = ucwords(str_replace('-', ' ', $m[1]));
+            return [$candidate, 'India'];
+        }
+
+        return ['Delhi', 'Delhi'];
+    }
+
+    /**
+     * Bulletproof sanitization to remove all 99acres URLs, domains, and artifacts from any text.
+     */
+    public static function cleanUrlFromText(?string $text, bool $extractCity = false): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        $trimmed = trim($text);
+
+        // If the entire string is basically a URL
+        if (preg_match('/^(https?:\/\/|www\.)/i', $trimmed) || str_starts_with($trimmed, 'http')) {
+            if ($extractCity) {
+                [$city] = self::extractCityAndStateFromUrl($trimmed);
+                return $city;
+            }
+            return '';
+        }
+
+        // Strip out 99acres URLs or generic URLs and optionally replace with resolved city
+        $cleaned = preg_replace_callback('/(https?:\/\/[^\s,"\'<>]+|www\.[^\s,"\'<>]+|[\w-]*99acres[\w\.-]*)/i', function($m) use ($text, $extractCity) {
+            $url = rtrim($m[0], '.,;:!?');
+            $trailingPunct = substr($m[0], strlen($url));
+            if ($extractCity) {
+                [$city] = self::extractCityAndStateFromUrl($url);
+                if (!empty($city) && !str_contains(strtolower($text), strtolower($city))) {
+                    return $city . $trailingPunct;
+                }
+            }
+            return '' . $trailingPunct;
+        }, $text);
+
+        // Clean punctuation artifacts e.g. ", .", ", ,", duplicate spaces, trailing commas
+        $cleaned = preg_replace('/\s*,\s*\./', '.', $cleaned);
+        $cleaned = preg_replace('/\s*,\s*,+/', ', ', $cleaned);
+        $cleaned = preg_replace('/\s{2,}/', ' ', $cleaned);
+        $cleaned = preg_replace('/,\s*$/', '', $cleaned);
+        $cleaned = trim($cleaned, " \t\n\r\0\x0B,-/|");
+
+        return $cleaned;
+    }
+
+    /**
+     * Accessor for location: never allow a URL or 99acres reference.
+     */
+    public function getLocationAttribute($value): string
+    {
+        $cleaned = self::cleanUrlFromText($value, true);
+        if (empty($cleaned) || str_starts_with(strtolower($cleaned), 'http') || str_contains(strtolower($cleaned), '99acres')) {
+            [$city] = self::extractCityAndStateFromUrl($value);
+            return $city ?: 'Delhi';
+        }
+        return $cleaned;
+    }
+
+    /**
+     * Mutator for location.
+     */
+    public function setLocationAttribute($value): void
+    {
+        $this->attributes['location'] = self::cleanUrlFromText($value, true) ?: 'Delhi';
+    }
+
+    /**
+     * Accessor for locality: clean and remove URLs.
+     */
+    public function getLocalityAttribute($value): string
+    {
+        $cleaned = self::cleanUrlFromText($value, false);
+        return !empty($cleaned) ? $cleaned : ($this->attributes['location'] ?? 'Delhi');
+    }
+
+    /**
+     * Mutator for locality.
+     */
+    public function setLocalityAttribute($value): void
+    {
+        $this->attributes['locality'] = self::cleanUrlFromText($value, false);
+    }
+
+    /**
+     * Accessor for address: clean and remove URLs.
+     */
+    public function getAddressAttribute($value): string
+    {
+        $cleaned = self::cleanUrlFromText($value, true);
+        return !empty($cleaned) ? $cleaned : (($this->attributes['locality'] ?? '') . ', ' . ($this->attributes['location'] ?? 'Delhi'));
+    }
+
+    /**
+     * Mutator for address.
+     */
+    public function setAddressAttribute($value): void
+    {
+        $this->attributes['address'] = self::cleanUrlFromText($value, true);
+    }
+
+    /**
+     * Accessor for title: clean and remove URLs.
+     */
+    public function getTitleAttribute($value): string
+    {
+        $cleaned = self::cleanUrlFromText($value, true);
+        return !empty($cleaned) ? $cleaned : (($this->bedrooms ?? 2) . ' BHK Property in ' . ($this->attributes['location'] ?? 'Delhi'));
+    }
+
+    /**
+     * Mutator for title.
+     */
+    public function setTitleAttribute($value): void
+    {
+        $this->attributes['title'] = self::cleanUrlFromText($value, true);
+    }
+
+    /**
+     * Accessor for description: clean and remove URLs and 99acres.
+     */
+    public function getDescriptionAttribute($value): ?string
+    {
+        if (empty($value)) return $value;
+        return self::cleanUrlFromText($value, false);
+    }
+
+    /**
+     * Mutator for description.
+     */
+    public function setDescriptionAttribute($value): void
+    {
+        $this->attributes['description'] = !empty($value) ? self::cleanUrlFromText($value, false) : $value;
+    }
+
+    /**
+     * Accessor for state: never allow a URL.
+     */
+    public function getStateAttribute($value): string
+    {
+        $cleaned = self::cleanUrlFromText($value, false);
+        if (empty($cleaned) || str_starts_with(strtolower($cleaned), 'http') || str_contains(strtolower($cleaned), '99acres')) {
+            [, $state] = self::extractCityAndStateFromUrl($this->attributes['location'] ?? '');
+            return $state ?: 'India';
+        }
+        return $cleaned;
+    }
+
+    /**
+     * Mutator for state.
+     */
+    public function setStateAttribute($value): void
+    {
+        $this->attributes['state'] = self::cleanUrlFromText($value, false) ?: 'India';
+    }
+
+    /**
+     * Virtual city attribute.
+     */
+    public function getCityAttribute(): string
+    {
+        return $this->location;
     }
 
     /**
