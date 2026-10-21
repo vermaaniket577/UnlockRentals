@@ -14,19 +14,19 @@
             <div class="w-11 h-11 mx-auto rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center p-2 shadow-xs ring-1 ring-slate-900/10 dark:ring-white/10 mb-2">
                 <img src="{{ asset('images/logo-icon.png') }}" alt="UnlockRentals" title="UnlockRentals" class="w-full h-full object-contain" onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
             </div>
-            <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-snug" id="ur-auth-title">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white tracking-tight leading-snug" id="ur-auth-title">
                 Unlock Full Access
             </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-normal max-w-xs mx-auto" id="ur-auth-subtitle">
+            <p class="text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-normal max-w-xs mx-auto" id="ur-auth-subtitle">
                 Sign in to view direct owner contact & verified listings.
             </p>
 
             {{-- Primary Tab Switcher --}}
             <div class="grid grid-cols-2 p-1 mt-3 bg-slate-100 dark:bg-slate-800 rounded-xl" role="tablist">
-                <button type="button" id="tab-btn-login" onclick="window.switchAuthTab('login')" class="py-2 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer">
+                <button type="button" id="tab-btn-login" onclick="window.switchAuthTab('login')" class="py-2.5 text-[13px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer">
                     Sign In
                 </button>
-                <button type="button" id="tab-btn-register" onclick="window.switchAuthTab('register')" class="py-2 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer">
+                <button type="button" id="tab-btn-register" onclick="window.switchAuthTab('register')" class="py-2.5 text-[13px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer">
                     Create Account
                 </button>
             </div>
@@ -46,12 +46,12 @@
                 {{-- Sub-method selector: Mobile No. vs Email --}}
                 <div class="grid grid-cols-2 p-1 mb-3.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl">
                     <button type="button" id="modal-login-type-phone" onclick="window.switchLoginMethod('phone')"
-                            class="py-1.5 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                            class="py-2 text-[12.5px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="ph-bold ph-phone text-sm"></i>
                         <span>Mobile No.</span>
                     </button>
                     <button type="button" id="modal-login-type-email" onclick="window.switchLoginMethod('email')"
-                            class="py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer">
+                            class="py-2 text-[12.5px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="ph-bold ph-envelope text-sm"></i>
                         <span>Email & Password</span>
                     </button>
@@ -60,39 +60,39 @@
                 {{-- A. Mobile Phone OTP Login Form --}}
                 <div id="modal-login-panel-phone" class="space-y-3.5">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Mobile Number</label>
+                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mobile Number <span class="text-rose-500">*</span></label>
                         <div class="flex gap-2">
                             <div class="relative flex-1">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs select-none pointer-events-none">+91</span>
-                                <input type="tel" id="modal-login-phone-input" maxlength="10" placeholder="98765 43210"
-                                       class="w-full pl-12 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-medium text-[13px] select-none pointer-events-none">+91</span>
+                                <input type="tel" id="modal-login-phone-input" maxlength="10" placeholder="98765 43210" autocomplete="tel"
+                                       class="w-full pl-12 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                        onkeydown="if(event.key==='Enter'){event.preventDefault();window.modalSendLoginOtp();}">
                             </div>
                             <button type="button" id="modal-login-send-otp-btn" onclick="window.modalSendLoginOtp()"
-                                    class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
+                                    class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[12px] font-medium rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
                                 <i class="ph-bold ph-paper-plane-tilt text-sm"></i>
                                 <span>Send OTP</span>
                             </button>
                         </div>
-                        <p id="modal-login-phone-hint" class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">We will send a 4-digit verification code to this phone.</p>
+                        <p id="modal-login-phone-hint" class="text-[11.5px] text-slate-400 dark:text-slate-500 mt-1">We will send a 4-digit verification code to this phone.</p>
                     </div>
 
                     {{-- 4-Digit OTP Input Section --}}
                     <div id="modal-login-otp-section" class="hidden space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <label class="block text-center text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Enter 4-Digit Code</label>
+                        <label class="block text-center text-[12px] font-medium text-slate-700 dark:text-slate-300">Enter 4-Digit Verification Code</label>
                         <div id="modal-login-otp-digits" class="flex justify-center gap-2.5 sm:gap-3">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-black bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white" autofocus>
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-black bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-black bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-black bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white" autofocus>
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
                         </div>
                         <div class="flex items-center justify-between text-xs px-1">
-                            <span id="modal-login-otp-timer" class="text-slate-400 font-mono">Resend in 30s</span>
-                            <button type="button" id="modal-login-resend-btn" onclick="window.modalSendLoginOtp()" class="hidden text-emerald-600 dark:text-emerald-400 font-bold hover:underline cursor-pointer">Resend OTP</button>
+                            <span id="modal-login-otp-timer" class="text-slate-400 font-mono text-[11.5px]">Resend in 30s</span>
+                            <button type="button" id="modal-login-resend-btn" onclick="window.modalSendLoginOtp()" class="hidden text-emerald-600 dark:text-emerald-400 font-medium hover:underline cursor-pointer">Resend OTP</button>
                         </div>
                         <button type="button" id="modal-login-verify-btn" onclick="window.modalVerifyLoginOtp()"
-                                class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
+                                class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
                             <span>Verify & Sign In</span>
                             <i class="ph-bold ph-arrow-right text-xs"></i>
                         </button>
@@ -105,25 +105,25 @@
                     <input type="hidden" name="redirect" id="ur-login-redirect" value="">
 
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Email Address</label>
+                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email Address <span class="text-rose-500">*</span></label>
                         <div class="relative">
                             <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
-                            <input type="email" name="email" required
+                            <input type="email" name="email" required autocomplete="email"
                                    placeholder="you@example.com"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                         </div>
                     </div>
 
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Password</label>
-                            <a href="{{ route('password.request') }}" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline" title="Forgot Password?">Forgot?</a>
+                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300">Password <span class="text-rose-500">*</span></label>
+                            <a href="{{ route('password.request') }}" class="text-[12px] font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline" title="Forgot Password?">Forgot?</a>
                         </div>
                         <div class="relative">
                             <i class="ph-bold ph-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
-                            <input type="password" name="password" id="ur-login-password-input" required
+                            <input type="password" name="password" id="ur-login-password-input" required autocomplete="current-password"
                                    placeholder="••••••••"
-                                   class="ur-auth-input w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                   class="ur-auth-input w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                             <button type="button" onclick="window.toggleModalPassword('ur-login-password-input', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
                                 <i class="ph-bold ph-eye text-base"></i>
                             </button>
@@ -133,170 +133,119 @@
                     <div class="flex items-center justify-between pt-0.5">
                         <label class="flex items-center gap-2 cursor-pointer select-none">
                             <input type="checkbox" name="remember" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
-                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Remember me</span>
+                            <span class="text-[12.5px] font-normal text-slate-600 dark:text-slate-400">Remember me</span>
                         </label>
                     </div>
 
-                    <button type="submit" id="ur-modal-login-submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
-                        <span>Sign In with Email</span>
+                    <button type="submit" id="ur-modal-login-submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
+                        <span>Sign In</span>
                         <i class="ph-bold ph-arrow-right text-xs"></i>
                     </button>
                 </form>
-
-
-
             </div>
 
             {{-- ================================================================
-                 TAB 2: CREATE ACCOUNT (With Mobile OTP & Email Options)
+                 TAB 2: CREATE ACCOUNT (Unified Clean Professional Form)
                  ================================================================ --}}
             <div id="ur-modal-register-container" class="hidden">
-                
-                {{-- Sub-method selector: Create with Mobile vs Standard --}}
-                <div class="grid grid-cols-2 p-1 mb-3.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl">
-                    <button type="button" id="modal-reg-type-phone" onclick="window.switchRegisterMethod('phone')"
-                            class="py-1.5 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-phone text-sm"></i>
-                        <span>Create with Mobile</span>
-                    </button>
-                    <button type="button" id="modal-reg-type-email" onclick="window.switchRegisterMethod('email')"
-                            class="py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-envelope text-sm"></i>
-                        <span>Standard Form</span>
-                    </button>
-                </div>
-
-                {{-- A. Create Account with Mobile OTP Form --}}
-                <div id="modal-reg-panel-phone" class="space-y-3">
+                <form id="ur-modal-register-unified-form" class="space-y-3" onsubmit="event.preventDefault(); window.modalSubmitRegisterWithMobile();">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Full Name <span class="text-rose-500">*</span></label>
+                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Full Name <span class="text-rose-500">*</span>
+                        </label>
                         <div class="relative">
                             <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
-                            <input type="text" id="modal-reg-phone-name" placeholder="John Doe"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                            <input type="text" id="modal-reg-phone-name" name="name" required autocomplete="name"
+                                   placeholder="e.g. Rahul Sharma"
+                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Mobile Number <span class="text-rose-500">*</span></label>
+                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Mobile Number <span class="text-rose-500">*</span>
+                        </label>
                         <div class="flex gap-2">
                             <div class="relative flex-1">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs select-none pointer-events-none">+91</span>
-                                <input type="tel" id="modal-reg-phone-input" maxlength="10" placeholder="98765 43210"
-                                       class="w-full pl-12 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-medium text-[13px] select-none pointer-events-none">+91</span>
+                                <input type="tel" id="modal-reg-phone-input" name="phone" maxlength="10" required autocomplete="tel"
+                                       placeholder="98765 43210"
+                                       class="w-full pl-12 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                        onkeydown="if(event.key==='Enter'){event.preventDefault();window.modalSendRegisterOtp();}">
                             </div>
                             <button type="button" id="modal-reg-send-otp-btn" onclick="window.modalSendRegisterOtp()"
-                                    class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
+                                    class="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[12px] font-medium rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
                                 <i class="ph-bold ph-paper-plane-tilt text-sm"></i>
                                 <span>Send OTP</span>
                             </button>
                         </div>
                     </div>
 
-                    {{-- OTP Input Section for Registration --}}
-                    <div id="modal-reg-otp-section" class="hidden space-y-2.5 pt-1 border-t border-slate-100 dark:border-slate-800">
-                        <label class="block text-center text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Enter 4-Digit Code</label>
+                    {{-- OTP Input Section for Registration (reveals only when OTP is requested) --}}
+                    <div id="modal-reg-otp-section" class="hidden space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <label class="block text-center text-[12px] font-medium text-slate-700 dark:text-slate-300">
+                            Enter 4-Digit Verification Code
+                        </label>
                         <div id="modal-reg-otp-digits" class="flex justify-center gap-2.5 sm:gap-3">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-black bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white" autofocus>
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-black bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-black bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-black bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
                         </div>
                         <div class="flex items-center justify-between text-xs px-1">
-                            <span id="modal-reg-otp-timer" class="text-slate-400 font-mono">Resend in 30s</span>
-                            <button type="button" id="modal-reg-resend-btn" onclick="window.modalSendRegisterOtp()" class="hidden text-emerald-600 dark:text-emerald-400 font-bold hover:underline cursor-pointer">Resend OTP</button>
+                            <span id="modal-reg-otp-timer" class="text-slate-400 font-mono text-[11.5px]">Resend in 30s</span>
+                            <button type="button" id="modal-reg-resend-btn" onclick="window.modalSendRegisterOtp()" class="hidden text-emerald-600 dark:text-emerald-400 font-medium hover:underline cursor-pointer">Resend OTP</button>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Email Address <span class="text-rose-500">*</span></label>
+                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            Email Address <span class="text-rose-500">*</span>
+                        </label>
                         <div class="relative">
                             <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
-                            <input type="email" id="modal-reg-phone-email" placeholder="you@example.com"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Password <span class="text-rose-500">*</span></label>
-                            <input type="password" id="modal-reg-phone-password" minlength="8" placeholder="Min 8 chars"
-                                   class="ur-auth-input-no-icon w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Confirm <span class="text-rose-500">*</span></label>
-                            <input type="password" id="modal-reg-phone-confirm" minlength="8" placeholder="Repeat"
-                                   class="ur-auth-input-no-icon w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                        </div>
-                    </div>
-
-                    <button type="button" id="modal-reg-phone-submit" onclick="window.modalSubmitRegisterWithMobile()"
-                            class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-md shadow-emerald-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
-                        <span>Verify & Create Account</span>
-                        <i class="ph-bold ph-check text-xs"></i>
-                    </button>
-                </div>
-
-                {{-- B. Standard Email Registration Form --}}
-                <form id="ur-modal-register-form" method="POST" action="{{ route('register') }}" class="space-y-3 hidden" onsubmit="handleModalAuthSubmit(event, 'register')">
-                    @csrf
-                    <input type="hidden" name="redirect" id="ur-register-redirect" value="">
-
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Full Name <span class="text-rose-500">*</span></label>
-                        <div class="relative">
-                            <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
-                            <input type="text" name="name" required
-                                   placeholder="John Doe"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Email Address <span class="text-rose-500">*</span></label>
-                        <div class="relative">
-                            <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
-                            <input type="email" name="email" required
+                            <input type="email" id="modal-reg-phone-email" name="email" required autocomplete="email"
                                    placeholder="you@example.com"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Phone Number <span class="text-rose-500">*</span></label>
-                        <div class="relative">
-                            <i class="ph-bold ph-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
-                            <input type="tel" name="phone" required
-                                   placeholder="+91 94254 55499"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Password <span class="text-rose-500">*</span></label>
-                            <input type="password" name="password" required minlength="8"
-                                   placeholder="••••••••"
-                                   class="ur-auth-input-no-icon w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                Password <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="password" id="modal-reg-phone-password" name="password" minlength="8" required autocomplete="new-password"
+                                       placeholder="Min 8 chars"
+                                       class="ur-auth-input-no-icon w-full pl-3.5 pr-9 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                <button type="button" onclick="window.toggleModalPassword('modal-reg-phone-password', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
+                                    <i class="ph-bold ph-eye text-base"></i>
+                                </button>
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Confirm <span class="text-rose-500">*</span></label>
-                            <input type="password" name="password_confirmation" required minlength="8"
-                                   placeholder="••••••••"
-                                   class="ur-auth-input-no-icon w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                Confirm <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="password" id="modal-reg-phone-confirm" name="password_confirmation" minlength="8" required autocomplete="new-password"
+                                       placeholder="Repeat"
+                                       class="ur-auth-input-no-icon w-full pl-3.5 pr-9 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                <button type="button" onclick="window.toggleModalPassword('modal-reg-phone-confirm', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
+                                    <i class="ph-bold ph-eye text-base"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <input type="hidden" name="role" value="tenant">
-
-                    <button type="submit" id="ur-modal-register-submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
+                    <button type="submit" id="modal-reg-phone-submit"
+                            class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
                         <span>Create Free Account</span>
-                        <i class="ph-bold ph-check text-xs"></i>
+                        <i class="ph-bold ph-arrow-right text-xs"></i>
                     </button>
                 </form>
-
             </div>
 
         </div>
@@ -305,7 +254,11 @@
 
 {{-- Scoped Styles for Bulletproof Resilience Against Global Reset Conflicts --}}
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+#ur-auth-modal,
 #ur-auth-modal * {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     box-sizing: border-box;
 }
 #ur-auth-modal .ur-auth-input {
@@ -314,6 +267,7 @@
     padding-top: 0.65rem !important;
     padding-bottom: 0.65rem !important;
     height: 2.75rem !important;
+    font-size: 13.5px !important;
     line-height: 1.4 !important;
 }
 #ur-auth-modal .ur-auth-input-phone {
@@ -322,6 +276,7 @@
     padding-top: 0.65rem !important;
     padding-bottom: 0.65rem !important;
     height: 2.75rem !important;
+    font-size: 13.5px !important;
     line-height: 1.4 !important;
 }
 #ur-auth-modal .ur-auth-input-no-icon {
@@ -330,13 +285,24 @@
     padding-top: 0.65rem !important;
     padding-bottom: 0.65rem !important;
     height: 2.75rem !important;
+    font-size: 13.5px !important;
     line-height: 1.4 !important;
 }
 #ur-auth-modal input::placeholder {
-    color: #94a3b8;
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
     opacity: 1;
 }
+#ur-auth-modal label {
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.01em !important;
+    text-transform: none !important;
+}
 </style>
+
 
 <script>
 window.authModalTargetUrl = '';
@@ -408,10 +374,10 @@ window.switchAuthTab = function(tab) {
         if (loginContainer) loginContainer.classList.add('hidden');
         if (regContainer) regContainer.classList.remove('hidden');
         if (tabReg) {
-            tabReg.className = "py-2 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer";
+            tabReg.className = "py-2.5 text-[13px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer";
         }
         if (tabLogin) {
-            tabLogin.className = "py-2 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer";
+            tabLogin.className = "py-2.5 text-[13px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer";
         }
     } else {
         const loginPhone = document.getElementById('modal-login-phone-input');
@@ -422,10 +388,10 @@ window.switchAuthTab = function(tab) {
         if (regContainer) regContainer.classList.add('hidden');
         if (loginContainer) loginContainer.classList.remove('hidden');
         if (tabLogin) {
-            tabLogin.className = "py-2 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer";
+            tabLogin.className = "py-2.5 text-[13px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer";
         }
         if (tabReg) {
-            tabReg.className = "py-2 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer";
+            tabReg.className = "py-2.5 text-[13px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer";
         }
     }
 };
@@ -442,36 +408,19 @@ window.switchLoginMethod = function(method) {
     if (method === 'email') {
         if (panelPhone) panelPhone.classList.add('hidden');
         if (formEmail) formEmail.classList.remove('hidden');
-        if (btnEmail) btnEmail.className = "py-1.5 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer";
-        if (btnPhone) btnPhone.className = "py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer";
+        if (btnEmail) btnEmail.className = "py-2 text-[12.5px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer";
+        if (btnPhone) btnPhone.className = "py-2 text-[12.5px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer";
     } else {
         if (formEmail) formEmail.classList.add('hidden');
         if (panelPhone) panelPhone.classList.remove('hidden');
-        if (btnPhone) btnPhone.className = "py-1.5 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer";
-        if (btnEmail) btnEmail.className = "py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer";
+        if (btnPhone) btnPhone.className = "py-2 text-[12.5px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer";
+        if (btnEmail) btnEmail.className = "py-2 text-[12.5px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer";
     }
 };
 
-/* ── Sub-Method Switching (Register): Mobile No. vs Standard */
+/* ── Sub-Method Switching (Register): Safe Unified Handler ── */
 window.switchRegisterMethod = function(method) {
-    const panelPhone = document.getElementById('modal-reg-panel-phone');
-    const formEmail = document.getElementById('ur-modal-register-form');
-    const btnPhone = document.getElementById('modal-reg-type-phone');
-    const btnEmail = document.getElementById('modal-reg-type-email');
-    const alertBox = document.getElementById('ur-auth-alert');
-    if (alertBox) alertBox.classList.add('hidden');
-
-    if (method === 'email') {
-        if (panelPhone) panelPhone.classList.add('hidden');
-        if (formEmail) formEmail.classList.remove('hidden');
-        if (btnEmail) btnEmail.className = "py-1.5 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer";
-        if (btnPhone) btnPhone.className = "py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer";
-    } else {
-        if (formEmail) formEmail.classList.add('hidden');
-        if (panelPhone) panelPhone.classList.remove('hidden');
-        if (btnPhone) btnPhone.className = "py-1.5 text-xs font-extrabold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer";
-        if (btnEmail) btnEmail.className = "py-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer";
-    }
+    // Single unified registration form; safe no-op
 };
 
 /* ── Helper: Get CSRF Token ──────────────────────────── */
@@ -742,12 +691,6 @@ window.modalSubmitRegisterWithMobile = async function() {
         if (phoneInput) phoneInput.focus();
         return;
     }
-    let otp = '';
-    digits.forEach(d => otp += d.value.trim());
-    if (!otp || otp.length !== 4) {
-        showModalAlert('Please enter the 4-digit code sent to your mobile number.');
-        return;
-    }
     if (!email || !email.includes('@')) {
         showModalAlert('Please enter a valid email address.');
         if (emailInput) emailInput.focus();
@@ -764,33 +707,45 @@ window.modalSubmitRegisterWithMobile = async function() {
         return;
     }
 
+    const otpSection = document.getElementById('modal-reg-otp-section');
+    const isOtpActive = otpSection && !otpSection.classList.contains('hidden');
+
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Creating account...`;
 
     try {
-        // Step 1: Verify the registration OTP
-        const verifyRes = await modalFetch('{{ route("otp.verify") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ phone: phone, otp: otp, purpose: 'register' })
-        });
+        // If user requested an OTP verification, verify the code first
+        if (isOtpActive) {
+            let otp = '';
+            digits.forEach(d => otp += d.value.trim());
+            if (!otp || otp.length !== 4) {
+                showModalAlert('Please enter the 4-digit verification code sent to your mobile.');
+                submitBtn.disabled = false;
+                return;
+            }
 
-        const verifyData = await verifyRes.json();
-        if (!verifyRes.ok || !verifyData.success) {
-            showModalAlert(verifyData.message || 'Invalid OTP code. Please enter the correct code.');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<span>Verify & Create Account</span> <i class="ph-bold ph-check text-xs"></i>`;
-            return;
+            submitBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Verifying code...`;
+
+            const verifyRes = await modalFetch('{{ route("otp.verify") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone, otp: otp, purpose: 'register' })
+            });
+
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok || !verifyData.success) {
+                showModalAlert(verifyData.message || 'Invalid OTP code. Please enter the correct code.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Create Free Account</span> <i class="ph-bold ph-arrow-right text-xs"></i>`;
+                return;
+            }
         }
 
-        // Step 2: Register account
+        submitBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Creating account...`;
+
+        // Register account
         const regRes = await modalFetch('{{ route("register") }}', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: name,
                 phone: phone,
@@ -816,12 +771,12 @@ window.modalSubmitRegisterWithMobile = async function() {
             }
             showModalAlert(errorMsg);
             submitBtn.disabled = false;
-            submitBtn.innerHTML = `<span>Verify & Create Account</span> <i class="ph-bold ph-check text-xs"></i>`;
+            submitBtn.innerHTML = `<span>Create Free Account</span> <i class="ph-bold ph-arrow-right text-xs"></i>`;
         }
     } catch (e) {
         showModalAlert('Network error during registration. Please try again.');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `<span>Verify & Create Account</span> <i class="ph-bold ph-check text-xs"></i>`;
+        submitBtn.innerHTML = `<span>Create Free Account</span> <i class="ph-bold ph-arrow-right text-xs"></i>`;
     }
 };
 
