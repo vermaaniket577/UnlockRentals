@@ -33,3 +33,5 @@ Thumbs.db
 **/build/
 .dart_tool/
 /service_account.json
+__pycache__/
+*.pyc
