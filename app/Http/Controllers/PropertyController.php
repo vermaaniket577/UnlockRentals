@@ -131,10 +131,20 @@ class PropertyController extends Controller
             $query->whereNotNull('user_id');
         }
 
-        // Sub-Type Filter (Builder Floor, Apartment, Independent House/Villa, Studio, Farm House)
+        // Sub-Type Filter (Builder Floor, Apartment, Independent House/Villa, Studio, Farm House, PG)
         if ($request->filled('sub_type')) {
             $subType = strtolower(trim($request->sub_type));
-            if ($subType === 'builder-floor') {
+            if ($subType === 'pg' || $subType === 'pg-hostel') {
+                $query->where(function ($q) {
+                    $q->where('type', 'pg-hostel')
+                      ->orWhere('title', 'like', '%pg%')
+                      ->orWhere('title', 'like', '%paying guest%')
+                      ->orWhere('title', 'like', '%hostel%')
+                      ->orWhere('description', 'like', '%pg%')
+                      ->orWhere('description', 'like', '%paying guest%')
+                      ->orWhere('category_id', 7);
+                });
+            } elseif ($subType === 'builder-floor') {
                 $query->where(function ($q) {
                     $q->where('title', 'like', '%builder floor%')
                       ->orWhere('description', 'like', '%builder floor%')

@@ -2658,6 +2658,8 @@ class AdminController extends Controller
                 \Illuminate\Support\Facades\Artisan::call('scrape:city', [
                     'city' => $url ?: $city,
                     '--count' => $count,
+                    '--type' => $propertyType,
+                    '--purpose' => $purpose,
                     '--create-accounts' => true,
                 ]);
 
@@ -2749,6 +2751,23 @@ class AdminController extends Controller
 
                 $itemType = in_array($item['type'] ?? '', ['house', 'shop', 'pg-hostel', 'hotel', 'plot']) ? $item['type'] : 'house';
                 $itemPurpose = in_array($item['purpose'] ?? '', ['rent', 'buy']) ? $item['purpose'] : 'rent';
+
+                // Explicit PG & Hostel Detection
+                $isPg = in_array(strtolower($itemType), ['pg', 'pg-hostel']) || 
+                        in_array(strtolower($propertyType ?? ''), ['pg', 'pg-hostel']) || 
+                        str_contains(strtolower($item['title'] ?? ''), 'pg') || 
+                        str_contains(strtolower($item['title'] ?? ''), 'paying guest') ||
+                        str_contains(strtolower($item['category_name'] ?? ''), 'pg');
+
+                if ($isPg) {
+                    $itemType = 'pg-hostel';
+                    $itemPurpose = 'rent';
+                    $pgCategory = \App\Models\Category::where('slug', 'pg-hostel')->orWhere('name', 'like', '%PG%')->first();
+                    if ($pgCategory) {
+                        $itemCategoryId = $pgCategory->id;
+                        $category = $pgCategory;
+                    }
+                }
 
                 $itemCity = Property::cleanUrlFromText($item['city'] ?? $city, true) ?: ($city ?: 'Delhi');
                 $itemState = Property::cleanUrlFromText($item['state'] ?? 'India', false) ?: 'India';

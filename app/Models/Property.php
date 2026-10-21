@@ -398,6 +398,15 @@ class Property extends Model
      */
     public function scopeOfType($query, $type)
     {
+        if ($type === 'pg' || $type === 'pg-hostel') {
+            return $query->where(function ($q) {
+                $q->where('type', 'pg-hostel')
+                  ->orWhere('title', 'like', '%pg%')
+                  ->orWhere('title', 'like', '%paying guest%')
+                  ->orWhere('title', 'like', '%hostel%')
+                  ->orWhere('category_id', 7);
+            });
+        }
         return $query->where('type', $type);
     }
 

@@ -72,6 +72,7 @@
                 @php
                     $curSubType = request('sub_type', '');
                     $subTypeItems = [
+                        ['val' => 'pg-hostel', 'label' => '+ PG / Paying Guest'],
                         ['val' => 'builder-floor', 'label' => '+ Builder Floor'],
                         ['val' => 'apartment', 'label' => '+ Residential Apartment'],
                         ['val' => 'villa', 'label' => '+ Independent House/Villa'],

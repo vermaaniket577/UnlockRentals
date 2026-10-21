@@ -96,16 +96,60 @@
     $subheading = "{$beds} BHK {$propTypeLabel} {$purposeText} in {$locality}";
     $subheading = \App\Models\Property::cleanUrlFromText($subheading, false);
 
+    // PG / Paying Guest Detection & Parsing
+    $isPg = ($property->type === 'pg-hostel')
+        || str_contains(strtolower($property->title), 'pg')
+        || str_contains(strtolower($property->title), 'paying guest')
+        || str_contains(strtolower($property->title), 'hostel')
+        || str_contains(strtolower($property->category?->name ?? ''), 'pg')
+        || str_contains(strtolower($property->category?->name ?? ''), 'hostel')
+        || ($property->category_id == 7);
+
+    $pgHeadingName = $cleanTitle;
+    $pgSubheading = null;
+    $sharingType = 'Shared Room';
+    $sharingSubtitle = 'shared by 2';
+
+    if ($isPg) {
+        if (str_contains($cleanTitle, ' - ')) {
+            $parts = explode(' - ', $cleanTitle, 2);
+            $pgHeadingName = trim($parts[0]);
+            $pgSubheading = trim($parts[1]);
+        } elseif (str_contains($cleanTitle, ' — ')) {
+            $parts = explode(' — ', $cleanTitle, 2);
+            $pgHeadingName = trim($parts[0]);
+            $pgSubheading = trim($parts[1]);
+        }
+        if (!$pgSubheading) {
+            $pgSubheading = "Girls & Boys PG/Paying Guest in {$headingLocation}";
+        }
+
+        // Sharing type detection from description or title
+        $descLower = strtolower($property->description ?? '');
+        if (str_contains($descLower, 'private room') || str_contains($descLower, 'single room') || str_contains($descLower, 'single sharing')) {
+            $sharingType = 'Private Room';
+            $sharingSubtitle = 'Single occupancy';
+        } elseif (str_contains($descLower, 'triple') || str_contains($descLower, 'shared by 3') || str_contains($descLower, '3 sharing')) {
+            $sharingType = 'Shared Room';
+            $sharingSubtitle = 'shared by 3';
+        } elseif (str_contains($descLower, 'four') || str_contains($descLower, 'shared by 4')) {
+            $sharingType = 'Shared Room';
+            $sharingSubtitle = 'shared by 4';
+        } else {
+            $sharingType = 'Shared Room';
+            $sharingSubtitle = 'shared by 2';
+        }
+    }
+
     // Description teaser
     $desc = strip_tags($property->description ?? "Carefully laid out in the prime location of {$locality}, this {$beds} BHK {$propTypeLabel} features modern fixtures, natural lighting, and superior connectivity.");
     $desc = \App\Models\Property::cleanUrlFromText($desc, false);
     $descTeaser = \Illuminate\Support\Str::limit($desc, 110);
 
     // Nearby Transit tags
-    $cleanLocTag = \App\Models\Property::cleanUrlFromText($locality, false);
     $nearbyTags = [
-        "{$cleanLocTag} Metro Station",
-        "Market Center",
+        "{$cleanLocTag} Market",
+        "Palam Triangle",
         "Prime Park"
     ];
 @endphp
@@ -200,20 +244,32 @@
         <div>
             {{-- Header: Locality & Property Type Title --}}
             <div class="mb-3.5">
-                <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div class="flex items-start justify-between gap-2 flex-wrap">
                     <a href="{{ $propertyUrl }}" class="group-hover:text-blue-600 transition-colors">
                         <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-snug">
-                            {{ $headingLocation }}
+                            {{ $isPg ? $pgHeadingName : $headingLocation }}
                         </h2>
                     </a>
-                    @if($property->is_featured)
-                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-600 border border-amber-500/30">
-                            ★ Verified
-                        </span>
-                    @endif
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        @if($isPg || ($property->furnishing ?? '') === 'furnished')
+                            <span class="px-2.5 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs"
+                                  style="letter-spacing: 0.05em;">
+                                FURNISHED
+                            </span>
+                        @elseif(($property->furnishing ?? '') === 'semi-furnished')
+                            <span class="px-2.5 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                                SEMI-FURNISHED
+                            </span>
+                        @endif
+                        @if($property->is_featured)
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-600 border border-amber-500/30">
+                                ★ Verified
+                            </span>
+                        @endif
+                    </div>
                 </div>
                 <a href="{{ $propertyUrl }}" class="block mt-0.5 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 transition-colors">
-                    {{ $subheading }}
+                    {{ $isPg ? $pgSubheading : $subheading }}
                 </a>
             </div>
 
@@ -225,36 +281,62 @@
                         <span class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
                             {{ $formattedPrice }}
                         </span>
-                        @if($isRent)
+                        @if($isPg)
+                            <span class="text-[11px] sm:text-xs font-semibold text-slate-500">/Bed</span>
+                        @elseif($isRent)
                             <span class="text-[11px] sm:text-xs font-semibold text-slate-500">/month</span>
                         @endif
                     </div>
                     <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                        + Deposit {{ $depositText }}
+                        @if($isPg && (empty($depositVal) || $depositVal == $priceNum))
+                            + Deposit 1 months rent
+                        @else
+                            + Deposit {{ $depositText }}
+                        @endif
                     </span>
                 </div>
 
-                {{-- Column 2: Area in sqft & sqm --}}
+                {{-- Column 2: Area / Sharing --}}
                 <div class="hcard-spec-col min-w-0 px-1 border-l border-slate-100 dark:border-slate-800/80">
-                    <div class="flex items-center gap-1">
-                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                            {{ number_format($sqft) }} sqft
+                    @if($isPg)
+                        <div class="flex items-center gap-1">
+                            <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight truncate">
+                                {{ $sharingType }}
+                            </span>
+                        </div>
+                        <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                            {{ $sharingSubtitle }}
                         </span>
-                        <span class="text-[10px] sm:text-[11px] text-slate-400 font-semibold hidden sm:inline">({{ $sqm }} sqm) ▾</span>
-                    </div>
-                    <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                        {{ $property->type === 'plot' ? 'Plot Area' : 'Carpet Area' }}
-                    </span>
+                    @else
+                        <div class="flex items-center gap-1">
+                            <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                                {{ number_format($sqft) }} sqft
+                            </span>
+                            <span class="text-[10px] sm:text-[11px] text-slate-400 font-semibold hidden sm:inline">({{ $sqm }} sqm) ▾</span>
+                        </div>
+                        <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                            {{ $property->type === 'plot' ? 'Plot Area' : 'Carpet Area' }}
+                        </span>
+                    @endif
                 </div>
 
                 {{-- Column 3: Configuration & Baths --}}
                 <div class="hcard-spec-col min-w-0 pl-1 border-l border-slate-100 dark:border-slate-800/80">
-                    <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block">
-                        {{ $beds > 0 ? "{$beds} BHK" : '1 RK' }}
-                    </span>
-                    <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                        {{ $baths }} Baths
-                    </span>
+                    @if($isPg)
+                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block truncate">
+                            Attached Bath
+                        </span>
+                        <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                            Furnished Room
+                        </span>
+                    @else
+                        <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight block">
+                            {{ $beds > 0 ? "{$beds} BHK" : '1 RK' }}
+                        </span>
+                        <span class="block text-[10.5px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                            {{ $baths }} Baths
+                        </span>
+                    @endif
                 </div>
             </div>
 
@@ -302,12 +384,14 @@
                 <div class="min-w-0">
                     <div class="flex items-center gap-1.5 flex-wrap leading-none">
                         <span class="text-[10px] text-slate-400 font-semibold">{{ $postedTime }}</span>
-                        <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-200/80">
-                            FEATURED DEALER
-                        </span>
+                        @if(!$isPg)
+                            <span class="px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-200/80">
+                                FEATURED DEALER
+                            </span>
+                        @endif
                     </div>
                     <p class="text-xs font-bold text-slate-900 dark:text-white truncate mt-1 max-w-[140px] sm:max-w-[180px]" title="{{ $ownerName }}">
-                        {{ $ownerName }}
+                        {{ $isPg ? ($ownerName !== 'Verified Partner' ? $ownerName : 'Owner') : $ownerName }}
                     </p>
                 </div>
             </div>

@@ -163,6 +163,8 @@ def clean_text_no_urls(text: str, default: str = "") -> str:
 def detect_type_and_category(title: str, prop_type: str = "", res_com: str = ""):
     combined = f"{title} {prop_type} {res_com}".lower()
     
+    if any(k in combined for k in ["pg", "hostel", "paying guest", "paying-guest", "coliving", "co-living", "sharing", "shared room", "bed"]):
+        return "pg-hostel", "PG & Hostel"
     if "plot" in combined or "land" in combined:
         return "plot", "Plots & Land"
     if "villa" in combined:
@@ -173,8 +175,6 @@ def detect_type_and_category(title: str, prop_type: str = "", res_com: str = "")
         return "shop", "Retail Shop"
     if "office" in combined or "commercial" in combined or str(res_com).upper() == "C":
         return "shop", "Office Space"
-    if "pg" in combined or "hostel" in combined or "coliving" in combined or "co-living" in combined:
-        return "pg-hostel", "PG & Hostel"
     if "studio" in combined or "1 rk" in combined:
         return "house", "Studio Apartment"
     
@@ -574,9 +574,15 @@ def save_items_to_sqlite(items):
 
 def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: str = "all") -> str:
     city_slug = re.sub(r"[^a-zA-Z0-9]+", "-", city_name.lower()).strip("-")
-    purp = "sale" if str(purpose).lower() in ["buy", "sale", "s"] else "rent"
-    
     pt = str(property_type).lower().strip()
+    purp_str = str(purpose).lower().strip()
+
+    # Dedicated 99acres PG & Hostel URL format: https://www.99acres.com/pg-in-{city}-ffid
+    if any(k in pt for k in ["pg", "hostel", "paying-guest", "paying guest", "coliving"]) or purp_str == "pg":
+        return f"https://www.99acres.com/pg-in-{city_slug}-ffid"
+
+    purp = "sale" if purp_str in ["buy", "sale", "s"] else "rent"
+    
     if "builder" in pt:
         type_slug = "builder-floor"
     elif "flat" in pt or "apartment" in pt:
@@ -587,8 +593,6 @@ def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: s
         type_slug = "plots"
     elif "commercial" in pt or "office" in pt or "shop" in pt:
         type_slug = "commercial-property"
-    elif "pg" in pt or "hostel" in pt:
-        type_slug = "pg-hostels"
     else:
         type_slug = "property"
 

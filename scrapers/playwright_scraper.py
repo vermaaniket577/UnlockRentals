@@ -64,6 +64,8 @@ def parse_indian_price(price_val) -> float:
 
 def detect_type_and_category(title: str, prop_type: str = "", res_com: str = "R"):
     combined = f"{title} {prop_type}".lower()
+    if any(k in combined for k in ["pg", "paying guest", "hostel", "co-living", "coliving", "shared room", "sharing", "girls pg", "boys pg", "/bed"]):
+        return "pg-hostel", "PG & Hostel"
     if any(k in combined for k in ["builder floor", "builder-floor", "floor"]):
         return "house", "Flat / Apartment"
     if any(k in combined for k in ["flat", "apartment", "penthouse", "studio", "1 rk"]):
@@ -268,28 +270,42 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                     })
 
                 else:
-                    # Individual residential or commercial listing
-                    title = p_item.get("PROP_HEADING") or p_item.get("PROP_NAME")
-                    if not title:
+                    # Individual residential, commercial, or PG/Hostel listing
+                    prop_name = str(p_item.get("PROP_NAME") or "").strip()
+                    prop_heading = str(p_item.get("PROP_HEADING") or "").strip()
+                    if prop_name and prop_heading and prop_name.lower() not in prop_heading.lower():
+                        title = f"{prop_name} - {prop_heading}"
+                    else:
+                        title = prop_heading or prop_name or p_item.get("heading") or "Property"
+
+                    if not title or len(title) < 3:
                         continue
+
+                    # Auto detect PG / Hostel vs Apartment vs Plot vs Commercial
+                    prop_type, cat_name = detect_type_and_category(title, p_item.get("PROPERTY_TYPE") or "", p_item.get("RES_COM") or "R")
+                    is_pg = (prop_type == "pg-hostel") or "pg" in url.lower()
+                    if is_pg:
+                        prop_type = "pg-hostel"
+                        cat_name = "PG & Hostel"
+
+                    item_purpose = "rent" if is_pg else target_purpose
 
                     price_raw = str(p_item.get("PRICE") or p_item.get("FORMATTED_PRICE") or "")
                     price = parse_indian_price(price_raw)
                     if price <= 0:
-                        price = float(p_item.get("MIN_PRICE") or (30000.0 if target_purpose == "rent" else 6500000.0))
+                        price = float(p_item.get("MIN_PRICE") or (10000.0 if is_pg else (30000.0 if item_purpose == "rent" else 6500000.0)))
 
-                    bedrooms = int(p_item.get("BEDROOM_NUM") or 2)
+                    bedrooms = int(p_item.get("BEDROOM_NUM") or (1 if is_pg else 2))
                     bathrooms = int(p_item.get("BATHROOM_NUM") or max(1, bedrooms - 1))
 
-                    area_raw = str(p_item.get("SUPER_SQFT") or p_item.get("CARPET_SQFT") or p_item.get("AREA") or "1050")
+                    area_raw = str(p_item.get("SUPER_SQFT") or p_item.get("CARPET_SQFT") or p_item.get("AREA") or ("250" if is_pg else "1050"))
                     area_match = re.search(r"([\d\.]+)", area_raw.replace(",", ""))
-                    area_sqft = int(float(area_match.group(1))) if area_match else 1050
+                    area_sqft = int(float(area_match.group(1))) if area_match else (250 if is_pg else 1050)
 
                     locality = p_item.get("LOCALITY") or p_item.get("LOCALITY_WO_CITY") or city_name
                     society = p_item.get("SOCIETY_NAME") or p_item.get("BUILDING_NAME") or ""
 
-                    prop_type, cat_name = detect_type_and_category(title, p_item.get("PROPERTY_TYPE") or "", p_item.get("RES_COM") or "R")
-                    furnishing = parse_furnishing(p_item.get("FURNISH"))
+                    furnishing = "furnished" if is_pg else parse_furnishing(p_item.get("FURNISH"))
 
                     # Extract Complete Image Gallery (all 15-20+ high-res photos)
                     raw_imgs = p_item.get("PROPERTY_IMAGES") or []
@@ -322,17 +338,26 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
 
                     desc = p_item.get("DESCRIPTION")
                     if not desc or len(desc) < 30:
-                        desc = (
-                            f"{title} located in {society or locality}, {city_name}. "
-                            f"Total area of {area_sqft} sq.ft. with {bedrooms} bedrooms, {bathrooms} bathrooms, and {furnishing} layout. "
-                            f"Offered for {target_purpose}. Exceptional natural lighting, prime connectivity, and close proximity to key transit."
-                        )
+                        if is_pg:
+                            room_type = p_item.get("ROOM_TYPE") or "Shared Room (shared by 2)"
+                            dep = p_item.get("DEPOSIT") or "1 month rent"
+                            desc = (
+                                f"Located in {prop_name or society or locality}, {city_name}, this furnished PG accommodation offers comfortable living. "
+                                f"{room_type} with attached bathroom, bed, wardrobe, AC, and high-speed WiFi. Security Deposit: {dep}. "
+                                f"Prime location close to market centers and public transport."
+                            )
+                        else:
+                            desc = (
+                                f"{title} located in {society or locality}, {city_name}. "
+                                f"Total area of {area_sqft} sq.ft. with {bedrooms} bedrooms, {bathrooms} bathrooms, and {furnishing} layout. "
+                                f"Offered for {item_purpose}. Exceptional natural lighting, prime connectivity, and close proximity to key transit."
+                            )
 
                     results.append({
                         "title": title,
                         "type": prop_type,
                         "category_name": cat_name,
-                        "purpose": target_purpose,
+                        "purpose": item_purpose,
                         "price": price,
                         "bedrooms": bedrooms if prop_type != "plot" else 0,
                         "bathrooms": bathrooms if prop_type != "plot" else 0,

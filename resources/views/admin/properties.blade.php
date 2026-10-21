@@ -465,7 +465,8 @@
                             </label>
                             <select id="scrape_property_type" name="property_type" onchange="updateGeneratedScrapeUrl()" class="w-full text-xs font-semibold px-3 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-white">
                                 <option value="all">All Property Types</option>
-                                <option value="builder-floor" selected>Builder Floor (Featured)</option>
+                                <option value="pg">🛏️ PG / Paying Guest &amp; Hostel (Featured)</option>
+                                <option value="builder-floor" selected>Builder Floor</option>
                                 <option value="flats">Flats &amp; Apartments</option>
                                 <option value="house">Independent House / Villa</option>
                                 <option value="commercial">Commercial / Office Space</option>
@@ -485,10 +486,10 @@
                         <div class="space-y-2">
                             <select id="scrape_city_select" onchange="handleCitySelectChange()" class="w-full text-xs font-bold px-3 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-white">
                                 <option value="all">🌟 All Top Indian Cities (Bulk Scrape)</option>
-                                <option value="Delhi" selected>Delhi / NCR (Chanakya Puri, Vasant Vihar, etc.)</option>
+                                <option value="Gurgaon" selected>Gurgaon / Gurugram (Golf Course Rd, Cyber Hub)</option>
+                                <option value="Delhi">Delhi / NCR (Chanakya Puri, Vasant Vihar, etc.)</option>
                                 <option value="Mumbai">Mumbai (South Bombay, Bandra, Andheri)</option>
                                 <option value="Bangalore">Bangalore / Bengaluru (Indiranagar, Koramangala)</option>
-                                <option value="Gurgaon">Gurgaon / Gurugram (Golf Course Rd, Cyber Hub)</option>
                                 <option value="Noida">Noida / Greater Noida</option>
                                 <option value="Pune">Pune (Kothrud, Hinjewadi, Viman Nagar)</option>
                                 <option value="Hyderabad">Hyderabad (Gachibowli, Hitec City)</option>
@@ -517,15 +518,14 @@
                             {{-- Quick City Selector Chips --}}
                             <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quick:</span>
+                                <button type="button" onclick="quickSelectPgAllCities()" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200/80 hover:bg-purple-100 transition-colors cursor-pointer">🛏️ All Cities (PG)</button>
                                 <button type="button" onclick="quickSelectCity('all')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition-colors cursor-pointer">🌟 All Cities</button>
-                                <button type="button" onclick="quickSelectCity('Delhi')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/80 hover:bg-indigo-100 transition-colors cursor-pointer">Delhi</button>
-                                <button type="button" onclick="quickSelectCity('Mumbai')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Mumbai</button>
+                                <button type="button" onclick="quickSelectCity('Gurgaon', 'pg')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/80 hover:bg-indigo-100 transition-colors cursor-pointer">🛏️ Gurgaon PG</button>
+                                <button type="button" onclick="quickSelectCity('Delhi')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Delhi</button>
                                 <button type="button" onclick="quickSelectCity('Bangalore')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Bangalore</button>
-                                <button type="button" onclick="quickSelectCity('Gurgaon')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Gurgaon</button>
+                                <button type="button" onclick="quickSelectCity('Mumbai')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Mumbai</button>
                                 <button type="button" onclick="quickSelectCity('Noida')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Noida</button>
                                 <button type="button" onclick="quickSelectCity('Pune')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Pune</button>
-                                <button type="button" onclick="quickSelectCity('Hyderabad')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Hyderabad</button>
-                                <button type="button" onclick="quickSelectCity('Indore')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Indore</button>
                             </div>
                         </div>
                     </div>
@@ -897,11 +897,23 @@ function closeFetchUrlModal() {
     }, 200);
 }
 
-function quickSelectCity(cityName) {
+function quickSelectCity(cityName, typeName = null) {
     const sel = document.getElementById('scrape_city_select');
-    if (!sel) return;
-    sel.value = cityName;
+    if (sel) sel.value = cityName;
+    if (typeName) {
+        const typeSel = document.getElementById('scrape_property_type');
+        if (typeSel) typeSel.value = typeName;
+    }
     handleCitySelectChange();
+}
+
+function quickSelectPgAllCities() {
+    const propTypeSel = document.getElementById('scrape_property_type');
+    const citySel = document.getElementById('scrape_city_select');
+    if (propTypeSel) propTypeSel.value = 'pg';
+    if (citySel) citySel.value = 'all';
+    handleCitySelectChange();
+    if (window.showAdminToast) showAdminToast('Selected: All Top Indian Cities for PG / Paying Guest', 'info');
 }
 
 function handleCitySelectChange() {
@@ -921,19 +933,30 @@ function handleCitySelectChange() {
 function updateGeneratedScrapeUrl() {
     const purpose = document.getElementById('scrape_purpose')?.value || 'rent';
     const propType = document.getElementById('scrape_property_type')?.value || 'all';
-    const citySelect = document.getElementById('scrape_city_select')?.value || 'Delhi';
+    const citySelect = document.getElementById('scrape_city_select')?.value || 'Gurgaon';
     const cityCustom = document.getElementById('scrape_city_custom')?.value.trim();
     const city = (citySelect === 'custom' && cityCustom) ? cityCustom : citySelect;
 
     const urlInput = document.getElementById('fetch_target_url');
     if (!urlInput) return;
 
+    const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+    // Dedicated 99acres PG & Hostel URL format: https://www.99acres.com/pg-in-{city}-ffid
+    if (propType === 'pg' || propType === 'pg-hostel' || purpose === 'pg') {
+        if (city === 'all') {
+            urlInput.value = 'Bulk Scrape: All Top Indian Cities (PG & Hostel / Paying Guest)';
+        } else {
+            urlInput.value = `https://www.99acres.com/pg-in-${citySlug}-ffid`;
+        }
+        return;
+    }
+
     if (city === 'all') {
         urlInput.value = 'Bulk Scrape: All Top Indian Cities (' + (purpose === 'buy' ? 'For Sale' : 'For Rent') + ')';
         return;
     }
 
-    const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const purp = (purpose === 'buy') ? 'sale' : 'rent';
 
     let typeSlug = 'property';
