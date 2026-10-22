@@ -18,4 +18,12 @@ class PaymentLog extends Model
     protected $casts = [
         'details' => 'array',
     ];
+
+    /**
+     * The user associated with this payment log.
+     */
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

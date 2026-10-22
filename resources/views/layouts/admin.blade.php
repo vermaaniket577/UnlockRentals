@@ -533,6 +533,26 @@
                         <span class="sidebar-item-label">Pricing Plans</span>
                     </a>
 
+                    <a href="{{ route('admin.transactions') }}" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.transactions*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="User Transactions & Payments">
+                        <div class="flex items-center gap-3">
+                            <div class="sidebar-icon-box">
+                                <i class="ph-bold ph-credit-card text-base {{ request()->routeIs('admin.transactions*') ? 'text-white' : 'text-emerald-500' }}"></i>
+                            </div>
+                            <span class="sidebar-item-label">Transactions</span>
+                        </div>
+                        @php
+                            try {
+                                $pendingTxnCount = \App\Models\UserPlan::where('status', 'pending')->count();
+                            } catch (\Throwable $e) {
+                                $pendingTxnCount = 0;
+                            }
+                        @endphp
+                        @if($pendingTxnCount > 0)
+                            <span class="sidebar-badge-count bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">{{ $pendingTxnCount }}</span>
+                            <span class="sidebar-mini-dot bg-amber-400 animate-pulse"></span>
+                        @endif
+                    </a>
+
                     <a href="{{ route('admin.subscriptions') }}" class="flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all relative {{ request()->routeIs('admin.subscriptions*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-bold' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50/70' }}" title="Subscriptions">
                         <div class="sidebar-icon-box">
                             <i class="ph-bold ph-receipt text-base text-slate-500"></i>

@@ -685,6 +685,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/subscriptions/{userPlan}/cancel', [AdminController::class, 'cancelSubscription'])->name('subscriptions.cancel');
     Route::post('/subscriptions/{userPlan}/update-plan', [AdminController::class, 'updateSubscriptionPlanTier'])->name('subscriptions.update-plan');
     Route::delete('/subscriptions/{userPlan}', [AdminController::class, 'destroySubscription'])->name('subscriptions.destroy');
+    
+    // Transactions & Payments Management
+    Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions');
+    Route::get('/transactions/export', [AdminController::class, 'exportTransactionsCsv'])->name('transactions.export');
+    Route::post('/transactions/{userPlan}/approve', [AdminController::class, 'approveTransaction'])->name('transactions.approve');
+    Route::post('/transactions/{userPlan}/reject', [AdminController::class, 'rejectTransaction'])->name('transactions.reject');
+
     Route::get('/users/{user}/activity', [AdminController::class, 'userActivity'])->name('users.activity');
 
     // Blog management

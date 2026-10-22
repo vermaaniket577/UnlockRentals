@@ -8,6 +8,7 @@ use App\Models\Inquiry;
 use App\Models\Setting;
 use App\Models\Plan;
 use App\Models\UserPlan;
+use App\Models\PaymentLog;
 use App\Models\Feedback;
 use App\Models\ProcessStep;
 use App\Models\Blog;
@@ -1366,6 +1367,225 @@ class AdminController extends Controller
 
         return redirect()->back()
             ->with('success', "Subscription for {$userName} deleted permanently.");
+    }
+
+    /**
+     * Display all user transactions and payment records with status management.
+     */
+    public function transactions(Request $request)
+    {
+        $status = $request->query('status', 'all');
+        $method = $request->query('method', 'all');
+        $search = trim((string) $request->query('search', ''));
+        $dateRange = $request->query('date_range', 'all');
+        $tab = $request->query('tab', 'transactions'); // 'transactions' or 'logs'
+
+        // Base query on UserPlan (Plan purchases & subscription payments)
+        $query = UserPlan::with(['user', 'plan'])->latest();
+
+        if ($status !== 'all' && !empty($status)) {
+            $query->where('status', $status);
+        }
+
+        if ($method !== 'all' && !empty($method)) {
+            $query->where('payment_method', $method);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('invoice_id', 'like', "%{$search}%")
+                  ->orWhere('payment_reference', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%")
+                         ->orWhere('phone', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('plan', function ($pq) use ($search) {
+                      $pq->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($dateRange === 'today') {
+            $query->whereDate('created_at', Carbon::today());
+        } elseif ($dateRange === 'week') {
+            $query->where('created_at', '>=', Carbon::now()->subDays(7));
+        } elseif ($dateRange === 'month') {
+            $query->where('created_at', '>=', Carbon::now()->subDays(30));
+        }
+
+        $transactions = $query->paginate(15)->withQueryString();
+
+        // Gateway Logs Query (PaymentLog)
+        $logQuery = PaymentLog::with('user')->latest();
+        if ($status !== 'all' && !empty($status)) {
+            $logQuery->where('status', $status);
+        }
+        if (!empty($search)) {
+            $logQuery->where(function ($q) use ($search) {
+                $q->where('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('method', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+        $paymentLogs = $logQuery->paginate(15, ['*'], 'log_page')->withQueryString();
+
+        // Calculate Overview Statistics
+        $totalApproved = UserPlan::where('status', 'approved')->count();
+        $totalPending = UserPlan::where('status', 'pending')->count();
+        $totalRejected = UserPlan::whereIn('status', ['rejected', 'failed'])->count();
+        $totalExpired = UserPlan::where('status', 'expired')->count();
+        $totalTransactionsCount = UserPlan::count();
+
+        $totalRevenue = (float) UserPlan::where('status', 'approved')->sum('final_amount');
+        if ($totalRevenue <= 0) {
+            $totalRevenue = (float) UserPlan::where('status', 'approved')->sum('amount_paid');
+        }
+
+        $todayRevenue = (float) UserPlan::where('status', 'approved')
+            ->whereDate('created_at', Carbon::today())
+            ->sum('final_amount');
+        if ($todayRevenue <= 0) {
+            $todayRevenue = (float) UserPlan::where('status', 'approved')
+                ->whereDate('created_at', Carbon::today())
+                ->sum('amount_paid');
+        }
+
+        $stats = [
+            'total_revenue'  => $totalRevenue,
+            'today_revenue'  => $todayRevenue,
+            'total_count'    => $totalTransactionsCount,
+            'approved_count' => $totalApproved,
+            'pending_count'  => $totalPending,
+            'rejected_count' => $totalRejected,
+            'expired_count'  => $totalExpired,
+            'logs_count'     => PaymentLog::count(),
+        ];
+
+        return view('admin.transactions', compact(
+            'transactions',
+            'paymentLogs',
+            'stats',
+            'status',
+            'method',
+            'search',
+            'dateRange',
+            'tab'
+        ));
+    }
+
+    /**
+     * Export transactions as CSV download.
+     */
+    public function exportTransactionsCsv(Request $request)
+    {
+        $status = $request->query('status', 'all');
+        $query = UserPlan::with(['user', 'plan'])->latest();
+
+        if ($status !== 'all' && !empty($status)) {
+            $query->where('status', $status);
+        }
+
+        $records = $query->get();
+
+        $filename = 'unlockrentals-transactions-' . date('Y-m-d_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($records) {
+            $file = fopen('php://output', 'w');
+            fputs($file, "\xEF\xBB\xBF");
+            fputcsv($file, [
+                'Transaction ID',
+                'Invoice ID',
+                'Payment Ref',
+                'User Name',
+                'User Email',
+                'User Phone',
+                'Plan',
+                'Billing Period',
+                'Subtotal (INR)',
+                'Discount (INR)',
+                'GST (INR)',
+                'Final Amount Paid (INR)',
+                'Payment Method',
+                'Status',
+                'Purchased At',
+                'Approved At',
+                'Expires At',
+                'Admin Note'
+            ]);
+
+            foreach ($records as $txn) {
+                fputcsv($file, [
+                    $txn->transaction_id ?: ('TXN-' . $txn->id),
+                    $txn->invoice_id ?: ('INV-' . $txn->id),
+                    $txn->payment_reference ?: 'N/A',
+                    $txn->user->name ?? 'Deleted User',
+                    $txn->user->email ?? 'N/A',
+                    $txn->user->phone ?? 'N/A',
+                    $txn->plan->name ?? 'Custom / Deleted Plan',
+                    ucfirst($txn->billing_period ?: 'monthly'),
+                    number_format($txn->subtotal_amount ?: ($txn->amount_paid ?: 0), 2, '.', ''),
+                    number_format($txn->discount_amount ?: 0, 2, '.', ''),
+                    number_format($txn->gst_amount ?: 0, 2, '.', ''),
+                    number_format($txn->final_amount ?: ($txn->amount_paid ?: 0), 2, '.', ''),
+                    strtoupper($txn->payment_method ?: 'ONLINE'),
+                    strtoupper($txn->status ?: 'PENDING'),
+                    $txn->created_at ? $txn->created_at->format('Y-m-d H:i:s') : '',
+                    $txn->approved_at ? $txn->approved_at->format('Y-m-d H:i:s') : '',
+                    $txn->expires_at ? $txn->expires_at->format('Y-m-d H:i:s') : '',
+                    $txn->admin_note ?: ''
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Approve a pending transaction.
+     */
+    public function approveTransaction(UserPlan $userPlan)
+    {
+        $durationDays = (int) ($userPlan->plan->duration_days ?: 30);
+
+        $userPlan->update([
+            'status' => 'approved',
+            'approved_at' => now(),
+            'expires_at' => now()->addDays($durationDays),
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\Mail::to($userPlan->user->email)->send(new SubscriptionActivated($userPlan));
+        } catch (\Throwable $e) {}
+
+        return redirect()->back()
+            ->with('success', "Transaction {$userPlan->transaction_id} for {$userPlan->user->name} has been approved and activated.");
+    }
+
+    /**
+     * Reject a pending transaction.
+     */
+    public function rejectTransaction(UserPlan $userPlan, Request $request)
+    {
+        $userPlan->update([
+            'status' => 'rejected',
+            'admin_note' => $request->input('admin_note', 'Rejected by admin'),
+        ]);
+
+        return redirect()->back()
+            ->with('success', "Transaction {$userPlan->transaction_id} has been marked as rejected.");
     }
 
     /**

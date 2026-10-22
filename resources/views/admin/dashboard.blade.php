@@ -268,17 +268,30 @@
                 <i class="ph-bold ph-arrow-right text-slate-300 group-hover:text-amber-600 group-hover:translate-x-1 transition-all flex-shrink-0"></i>
             </a>
 
-            <a href="{{ route('admin.blogs.index') }}" class="group bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-emerald-500/40 hover:shadow-md transition-all flex items-center justify-between">
+            <a href="{{ route('admin.transactions') }}" class="group bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-emerald-500/40 hover:shadow-md transition-all flex items-center justify-between">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg group-hover:bg-emerald-600 group-hover:text-white transition-colors flex-shrink-0">
-                        <i class="ph-bold ph-newspaper"></i>
+                        <i class="ph-bold ph-receipt"></i>
                     </div>
                     <div class="min-w-0">
-                        <h4 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors truncate">Blog Articles</h4>
-                        <p class="text-[11px] text-slate-400 truncate">{{ $stats['total_blogs'] ?? 0 }} articles</p>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors truncate">Transactions</h4>
+                        <p class="text-[11px] text-slate-400 truncate">Payment ledger</p>
                     </div>
                 </div>
                 <i class="ph-bold ph-arrow-right text-slate-300 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all flex-shrink-0"></i>
+            </a>
+
+            <a href="{{ route('admin.blogs.index') }}" class="group bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-blue-500/40 hover:shadow-md transition-all flex items-center justify-between">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg group-hover:bg-blue-600 group-hover:text-white transition-colors flex-shrink-0">
+                        <i class="ph-bold ph-newspaper"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate">Blog Articles</h4>
+                        <p class="text-[11px] text-slate-400 truncate">{{ $stats['total_blogs'] ?? 0 }} articles</p>
+                    </div>
+                </div>
+                <i class="ph-bold ph-arrow-right text-slate-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all flex-shrink-0"></i>
             </a>
 
         </div>
