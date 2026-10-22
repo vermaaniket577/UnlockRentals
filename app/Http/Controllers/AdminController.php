@@ -2721,8 +2721,13 @@ class AdminController extends Controller
             $rawCity = '';
         }
 
-        // Reconstruct URL query parameters if they were split by query string parser
-        if (!empty($url) && !str_contains($url, '?') && ($request->has('city') || $request->has('preference') || $request->has('keyword'))) {
+        // Clean any extraneous query strings mistakenly attached to canonical -ffid URLs
+        if (str_contains($url, '-ffid') && str_contains($url, '?')) {
+            $url = explode('?', $url, 2)[0];
+        }
+
+        // Reconstruct URL query parameters ONLY for search endpoints if parameters were stripped
+        if (!empty($url) && str_contains($url, '/search/') && !str_contains($url, '?') && ($request->has('city') || $request->has('preference') || $request->has('keyword'))) {
             $rebuildQuery = [];
             foreach (['city', 'keyword', 'preference', 'res_com', 'isPreLeased', 'budget_min', 'budget_max'] as $qp) {
                 if ($request->has($qp) && !str_contains($url, "{$qp}=")) {
@@ -3009,8 +3014,13 @@ class AdminController extends Controller
             $city = '';
         }
 
-        // Reconstruct URL query parameters if they were split by query string parser
-        if (!empty($url) && !str_contains($url, '?') && ($request->has('city') || $request->has('preference') || $request->has('keyword'))) {
+        // Clean any extraneous query strings mistakenly attached to canonical -ffid URLs
+        if (str_contains($url, '-ffid') && str_contains($url, '?')) {
+            $url = explode('?', $url, 2)[0];
+        }
+
+        // Reconstruct URL query parameters ONLY for search endpoints if parameters were stripped
+        if (!empty($url) && str_contains($url, '/search/') && !str_contains($url, '?') && ($request->has('city') || $request->has('preference') || $request->has('keyword'))) {
             $rebuildQuery = [];
             foreach (['city', 'keyword', 'preference', 'res_com', 'isPreLeased', 'budget_min', 'budget_max', 'property_type'] as $qp) {
                 if ($request->has($qp) && !str_contains($url, "{$qp}=")) {
@@ -3076,6 +3086,12 @@ class AdminController extends Controller
         $autoApprove = $request->boolean('auto_approve', true);
 
         if (!empty($target) && (str_starts_with($target, 'http://') || str_starts_with($target, 'https://'))) {
+            // Check if URL already specifies page number
+            if (preg_match('/-page-(\d+)/', $target, $pm) || preg_match('/[?&]page=(\d+)/', $target, $pm)) {
+                if ($page === 1 && (int)$pm[1] > 1) {
+                    $page = (int)$pm[1];
+                }
+            }
             $target = Property::applyPageToUrl($target, $page);
         }
 
@@ -3115,6 +3131,8 @@ class AdminController extends Controller
             }
 
             if (empty($items) || !is_array($items)) {
+                $startedAt = now()->subSeconds(2);
+
                 // Shared hosting fallback using scrape:city
                 \Illuminate\Support\Facades\Artisan::call('scrape:city', [
                     'city' => $url ?: $city,
@@ -3134,17 +3152,65 @@ class AdminController extends Controller
                 Cache::forget('home_featured_properties');
                 Cache::forget('admin_dashboard_stats');
 
+                $recentProperties = Property::where('created_at', '>=', $startedAt)
+                    ->latest('id')
+                    ->take($count)
+                    ->get();
+
+                $returnedProps = [];
+                foreach ($recentProperties as $p) {
+                    $firstImg = $p->primaryImage?->path ?? $p->images()->first()?->path;
+                    $returnedProps[] = [
+                        'id'            => $p->id,
+                        'title'         => $p->title,
+                        'price'         => $p->price,
+                        'purpose'       => $p->purpose,
+                        'type'          => $p->type,
+                        'category'      => $p->category?->name ?? 'Property',
+                        'locality'      => $p->locality,
+                        'city'          => $p->location,
+                        'state'         => $p->state,
+                        'owner'         => $p->user?->name ?? 'Property Owner',
+                        'contact_phone' => $p->contact_phone,
+                        'thumbnail'     => $firstImg,
+                        'images_count'  => $p->images()->count(),
+                        'bedrooms'      => $p->bedrooms,
+                        'bathrooms'     => $p->bathrooms,
+                        'furnishing'    => $p->furnishing,
+                        'area_sqft'     => $p->area_sqft,
+                        'engine'        => $engine,
+                        'view_url'      => route('properties.show', $p->slug),
+                    ];
+                }
+
+                $recentAccounts = User::where('role', 'owner')
+                    ->where('created_at', '>=', $startedAt)
+                    ->take($count)
+                    ->get(['id', 'name', 'email', 'phone', 'role'])
+                    ->toArray();
+
+                $newImportedCount = count($returnedProps);
+                $isAlreadyScraped = ($newImportedCount === 0);
+
                 return response()->json([
-                    'success'          => true,
-                    'message'          => "Successfully fetched listings for " . ($url ?: $city) . " (Page {$page})",
-                    'url'              => $target,
-                    'page_scraped'     => $page,
-                    'next_page'        => $page + 1,
-                    'total_properties' => Property::count(),
-                    'latest_id'        => Property::latest('id')->first()?->id ?? 0,
-                    'accounts_created' => User::where('role', 'owner')->whereDate('created_at', now()->toDateString())->count(),
-                    'synced_at'        => now()->toDateTimeString(),
-                    'auth_status'      => $authStatus,
+                    'success'              => true,
+                    'message'              => $isAlreadyScraped
+                        ? "Page {$page} was already scraped! Zero duplicates added."
+                        : "Successfully fetched listings for " . ($url ?: $city) . " (Page {$page}): {$newImportedCount} newly posted.",
+                    'url'                  => $target,
+                    'engine'               => $engine,
+                    'page_scraped'         => $page,
+                    'next_page'            => $page + 1,
+                    'already_scraped'      => $isAlreadyScraped,
+                    'imported_count'       => $newImportedCount,
+                    'duplicates_prevented' => $isAlreadyScraped ? $count : 0,
+                    'accounts_created'     => count($recentAccounts),
+                    'accounts'             => $recentAccounts,
+                    'properties'           => $returnedProps,
+                    'total_properties'     => Property::count(),
+                    'latest_id'            => Property::latest('id')->first()?->id ?? 0,
+                    'synced_at'            => now()->toDateTimeString(),
+                    'auth_status'          => $authStatus,
                 ]);
             }
 

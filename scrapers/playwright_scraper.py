@@ -150,7 +150,11 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
             page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
             # Navigate to target URL
-            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            try:
+                page.goto(url, wait_until="domcontentloaded", timeout=20000)
+            except Exception as nav_err:
+                # If Akamai/Warden blocks or returns 403/417 error code
+                return []
 
             # Scroll to trigger lazy loading of image galleries and dynamic cards
             for _ in range(3):

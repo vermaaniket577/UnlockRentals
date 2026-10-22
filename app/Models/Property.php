@@ -754,7 +754,17 @@ class Property extends Model
                     if ($matchedImg && $matchedImg->property_id) {
                         $prop = self::find($matchedImg->property_id);
                         if ($prop) {
-                            return $prop;
+                            // Ensure the matched image actually belongs to the same city and has similar title or price
+                            $propCity = strtolower((string) ($prop->location ?? ''));
+                            $searchCity = strtolower((string) ($city ?? ''));
+                            $sameCity = empty($searchCity) || empty($propCity) || str_contains($propCity, $searchCity) || str_contains($searchCity, $propCity);
+                            if ($sameCity) {
+                                similar_text(strtolower($prop->title), strtolower($cleanTitle), $titleSim);
+                                $similarPrice = ($price > 0 && abs($prop->price - $price) / max(1, $price) <= 0.25);
+                                if ($titleSim >= 65 || $similarPrice) {
+                                    return $prop;
+                                }
+                            }
                         }
                     }
                 }

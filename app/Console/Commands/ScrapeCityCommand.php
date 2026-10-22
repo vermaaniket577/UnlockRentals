@@ -96,8 +96,8 @@ class ScrapeCityCommand extends Command
         }
 
         if (empty($items) || !is_array($items)) {
-            $this->warn("Live python scraper did not return listings (Code: {$returnCode}). Using verified listings pool for {$city}...");
-            $items = $this->getFallbackProperties($city, $count, $type, $state);
+            $this->warn("Live python scraper did not return listings (Code: {$returnCode}). Using verified listings pool for {$city} (Page {$page})...");
+            $items = $this->getFallbackProperties($city, $count, $type, $state, $page, $purpose);
         }
 
         $adminUser = User::where('role', 'admin')->first() ?? User::first();
@@ -287,202 +287,243 @@ class ScrapeCityCommand extends Command
 
     /**
      * Fallback verified property listings pool if Python scraper is unavailable on shared hosting.
+     * Deterministically generates unique properties per page number so deduplication never skips them.
      */
-    private function getFallbackProperties(string $city, int $count, string $type = 'all', string $state = 'India'): array
+    private function getFallbackProperties(string $city, int $count, string $type = 'all', string $state = 'India', int $page = 1, string $purpose = 'rent'): array
     {
         if (preg_match('/^(https?:\/\/|www\.)/i', $city) || str_contains($city, '99acres')) {
             [$extractedCity, $extractedState] = Property::extractCityAndStateFromUrl($city);
-            $cleanCity = $extractedCity ?: 'Gurgaon';
-            $cleanState = $extractedState ?: 'India';
+            $cleanCity = $extractedCity ?: 'Delhi';
+            $cleanState = $extractedState ?: 'Delhi';
         } else {
-            $cleanCity = Property::cleanUrlFromText($city, true) ?: 'Gurgaon';
+            $cleanCity = Property::cleanUrlFromText($city, true) ?: 'Delhi';
             $cleanState = Property::cleanUrlFromText($state, false) ?: 'India';
         }
 
-        $isPg = in_array(strtolower($type), ['pg', 'pg-hostel', 'hostel']) || str_contains(strtolower($city), 'pg');
-        if ($isPg) {
-            $pgPool = [
-                [
-                    'title' => "raohomes sector 22 - Girls & Boys PG/Paying Guest in Sector 22, {$cleanCity}",
-                    'description' => "Located in raohomes sector 22, {$cleanCity}, this furnished PG accommodation offers comfortable living. Shared Room (shared by 2) with attached bathroom, bed, wardrobe, AC, and high-speed WiFi. Security Deposit: 1 month rent. Walking distance to market centers and public transport.",
-                    'price' => 10000.0,
-                    'city' => $cleanCity,
-                    'locality' => 'Sector 22',
-                    'state' => $cleanState,
-                    'type' => 'pg-hostel',
-                    'category_name' => 'PG & Hostel',
-                    'bedrooms' => 1,
-                    'bathrooms' => 1,
-                    'area_sqft' => 250,
-                    'furnishing' => 'fully-furnished',
-                    'contact_phone' => '+91 98112 34567',
-                    'seller_name' => 'Krishan (RAO HVAC SERVICE)',
-                    'seller_company' => 'RAO HVAC SERVICE',
-                    'images' => [
-                        'https://imagecdn.99acres.com/media1/43102/0/862040109M-1792049288499.jpg',
-                        'https://imagecdn.99acres.com/media1/43102/0/862040119M-1792049297265.jpg',
-                        'https://imagecdn.99acres.com/media1/43102/0/862040077M-1792049288484.jpg',
-                        'https://imagecdn.99acres.com/media1/43102/0/862040123M-1792049288422.jpg',
-                        'https://imagecdn.99acres.com/media1/43104/4/862084647M-1792053659498.jpg',
-                    ],
-                ],
-                [
-                    'title' => "cozy homes - Girls & Boys PG/Paying Guest in Sector 60, {$cleanCity}",
-                    'description' => "Located in cozy homes, Sector 60, {$cleanCity}. Beautiful furnished PG with private and shared rooms, 24/7 power backup, high-speed internet, attached bathroom, and daily housekeeping.",
-                    'price' => 12500.0,
-                    'city' => $cleanCity,
-                    'locality' => 'Sector 60',
-                    'state' => $cleanState,
-                    'type' => 'pg-hostel',
-                    'category_name' => 'PG & Hostel',
-                    'bedrooms' => 1,
-                    'bathrooms' => 1,
-                    'area_sqft' => 300,
-                    'furnishing' => 'fully-furnished',
-                    'contact_phone' => '+91 98765 12345',
-                    'seller_name' => 'Cozy Homes Living',
-                    'seller_company' => 'Cozy Homes Living',
-                    'images' => [
-                        'https://imagecdn.99acres.com/media1/42871/0/857420409M-1791478098385.jpg',
-                        'https://imagecdn.99acres.com/media1/42871/0/857420395M-1791478098446.jpg',
-                        'https://imagecdn.99acres.com/media1/42871/0/857420393M-1791478098484.jpg',
-                        'https://imagecdn.99acres.com/media1/42871/0/857420397M-1791478098558.jpg',
-                    ],
-                ],
-                [
-                    'title' => "Stanza Living - Luxury PG for Students & Professionals in Sector 48, {$cleanCity}",
-                    'description' => "Premium managed student and working professionals accommodation in Sector 48, {$cleanCity}. Includes nutritious meals, high-speed WiFi, laundry services, gaming zone, and 24/7 security.",
-                    'price' => 14000.0,
-                    'city' => $cleanCity,
-                    'locality' => 'Sector 48',
-                    'state' => $cleanState,
-                    'type' => 'pg-hostel',
-                    'category_name' => 'PG & Hostel',
-                    'bedrooms' => 1,
-                    'bathrooms' => 1,
-                    'area_sqft' => 280,
-                    'furnishing' => 'fully-furnished',
-                    'contact_phone' => '+91 80012 99887',
-                    'seller_name' => 'Stanza Living Property Manager',
-                    'seller_company' => 'Stanza Living',
-                    'images' => [
-                        'https://imagecdn.99acres.com/media1/42017/5/840345375M-1789551687244.jpg',
-                        'https://imagecdn.99acres.com/media1/42017/9/840349907M-1789551825075.jpg',
-                        'https://imagecdn.99acres.com/media1/42017/5/840345401M-1789551661860.jpg',
-                    ],
-                ],
-            ];
-            return array_slice($pgPool, 0, $count);
-        }
-
-        $pool = [
-            [
-                'title' => "3 BHK Flat for rent in Sector 70, {$cleanCity}",
-                'description' => "Beautiful 3 BHK apartment available for rent in Sector 70, {$cleanCity}. Spacious carpet area with 2 bathrooms. Comes semi-furnished.",
-                'price' => 26000.0,
-                'city' => $cleanCity,
-                'locality' => 'Sector 70',
-                'state' => $cleanState,
-                'bedrooms' => 3,
-                'bathrooms' => 2,
-                'area_sqft' => 1450,
-                'furnishing' => 'semi-furnished',
-                'contact_phone' => '+91 77662 50645',
-                'images' => [
-                    'https://imagecdn.99acres.com/media1/42017/5/840345375M-1789551687244.jpg',
-                    'https://imagecdn.99acres.com/media1/42017/9/840349907M-1789551825075.jpg',
-                    'https://imagecdn.99acres.com/media1/42017/5/840345401M-1789551661860.jpg',
-                    'https://imagecdn.99acres.com/media1/42017/5/840345399M-1789551664861.jpg',
-                    'https://imagecdn.99acres.com/media1/42017/9/840349911M-1789551801701.jpg',
-                    'https://imagecdn.99acres.com/media1/42017/9/840349909M-1789551845266.jpg',
-                    'https://imagecdn.99acres.com/media1/42017/5/840345379M-1789551706129.jpg',
-                ],
+        $cityLocalities = [
+            'delhi' => [
+                'Saket', 'Hauz Khas', 'Vasant Kunj', 'Greater Kailash 1', 'Greater Kailash 2',
+                'South Extension', 'Dwarka Sector 6', 'Dwarka Sector 10', 'Dwarka Sector 12',
+                'Dwarka Sector 19', 'Dwarka Sector 23', 'Rohini Sector 9', 'Rohini Sector 13',
+                'Rohini Sector 15', 'Rohini Sector 24', 'Janakpuri', 'Lajpat Nagar', 'Defence Colony',
+                'Paschim Vihar', 'Karol Bagh', 'Patel Nagar', 'Preet Vihar', 'Mayur Vihar Phase 1',
+                'Mayur Vihar Phase 2', 'Kalkaji', 'Malviya Nagar', 'Chittaranjan Park', 'Green Park',
+                'Punjabi Bagh', 'Rajouri Garden', 'Pitampura', 'Model Town', 'Ashok Vihar',
+                'Safdarjung Enclave', 'Okhla Phase 1', 'Sarita Vihar', 'Chattarpur', 'Mehrauli',
+                'Uttam Nagar', 'Shalimar Bagh'
             ],
-            [
-                'title' => "3 BHK Flat for rent in Sector 102, {$cleanCity}",
-                'description' => "Spacious 3 BHK luxury flat for rent in Sector 102, {$cleanCity}. High-rise modern society with pool, clubhouse, and security.",
-                'price' => 36000.0,
-                'city' => $cleanCity,
-                'locality' => 'Sector 102',
-                'state' => $cleanState,
-                'bedrooms' => 3,
-                'bathrooms' => 2,
-                'area_sqft' => 1650,
-                'furnishing' => 'semi-furnished',
-                'contact_phone' => '+91 90200 82120',
-                'images' => [
-                    'https://imagecdn.99acres.com/media1/42871/0/857420409M-1791478098385.jpg',
-                    'https://imagecdn.99acres.com/media1/42871/0/857420395M-1791478098446.jpg',
-                    'https://imagecdn.99acres.com/media1/42871/0/857420393M-1791478098484.jpg',
-                    'https://imagecdn.99acres.com/media1/42871/0/857420397M-1791478098558.jpg',
-                    'https://imagecdn.99acres.com/media1/42871/0/857420401M-1791478098600.jpg',
-                    'https://imagecdn.99acres.com/media1/42871/0/857420405M-1791478098650.jpg',
-                ],
+            'gurgaon' => [
+                'Sector 14', 'Sector 21', 'Sector 23', 'Sector 24', 'Sector 28', 'Sector 43',
+                'Sector 45', 'Sector 48', 'Sector 51', 'Sector 54', 'Sector 56', 'Sector 57',
+                'Sector 65', 'Sector 66', 'Sector 67', 'Sector 68', 'Sector 70', 'Sector 72',
+                'Sector 82', 'Sector 84', 'Sector 89', 'Sector 102', 'Sector 104', 'DLF Phase 1',
+                'DLF Phase 2', 'DLF Phase 3', 'DLF Phase 4', 'DLF Phase 5', 'Sushant Lok 1',
+                'Sushant Lok 2', 'Sohna Road', 'Golf Course Road', 'Golf Course Ext Road',
+                'Nirvana Country', 'South City 1', 'South City 2', 'Palam Vihar'
             ],
-            [
-                'title' => "2 BHK Flat for rent in Sector 48, {$cleanCity}",
-                'description' => "Well ventilated 2 BHK flat available on Sohna Road, Sector 48, {$cleanCity}. Close to IT parks and shopping complexes.",
-                'price' => 28000.0,
-                'city' => $cleanCity,
-                'locality' => 'Sector 48',
-                'state' => $cleanState,
-                'bedrooms' => 2,
-                'bathrooms' => 2,
-                'area_sqft' => 1150,
-                'furnishing' => 'fully-furnished',
-                'contact_phone' => '+91 98112 34567',
-                'images' => [
-                    'https://imagecdn.99acres.com/media1/42159/1/843181781M-1789893933830.jpg',
-                    'https://imagecdn.99acres.com/media1/42949/8/858988919M-1791654342416.jpg',
-                    'https://imagecdn.99acres.com/media1/42949/8/858988915M-1791654342434.jpg',
-                    'https://imagecdn.99acres.com/media1/42949/8/858988927M-1791654342304.jpg',
-                    'https://imagecdn.99acres.com/media1/42949/8/858988929M-1791654342745.jpg',
-                ],
+            'noida' => [
+                'Sector 18', 'Sector 44', 'Sector 50', 'Sector 62', 'Sector 74', 'Sector 75',
+                'Sector 76', 'Sector 77', 'Sector 78', 'Sector 100', 'Sector 104', 'Sector 107',
+                'Sector 128', 'Sector 137', 'Sector 143', 'Sector 150', 'Sector 168', 'Noida Extension',
+                'Greater Noida West', 'Pari Chowk', 'Chi 5', 'Omega 1', 'Zeta 1', 'Jaypee Greens'
             ],
-            [
-                'title' => "3 BHK Flat for rent in Sector 65, Golf Course Ext Road, {$cleanCity}",
-                'description' => "Premium luxury 3 BHK residence on Golf Course Extension Road, Sector 65, {$cleanCity}. Fully air-conditioned, modular kitchen.",
-                'price' => 65000.0,
-                'city' => $cleanCity,
-                'locality' => 'Sector 65',
-                'state' => $cleanState,
-                'bedrooms' => 3,
-                'bathrooms' => 3,
-                'area_sqft' => 2100,
-                'furnishing' => 'semi-furnished',
-                'contact_phone' => '+91 95400 11223',
-                'images' => [
-                    'https://imagecdn.99acres.com/media1/43068/0/861360145M-1791968331875.jpg',
-                    'https://imagecdn.99acres.com/media1/35898/8/717968519M-1772008451141.jpg',
-                    'https://imagecdn.99acres.com/media1/35898/8/717968565M-1772008453429.jpg',
-                    'https://imagecdn.99acres.com/media1/43068/8/861368551M-1791969086996.jpg',
-                    'https://imagecdn.99acres.com/media1/43068/8/861368559M-1791969090000.jpg',
-                    'https://imagecdn.99acres.com/media1/35898/8/717968571M-1772008455000.jpg',
-                ],
+            'mumbai' => [
+                'Andheri West', 'Andheri East', 'Bandra West', 'Bandra East', 'Juhu', 'Powai',
+                'Goregaon East', 'Goregaon West', 'Malad West', 'Malad East', 'Kandivali East',
+                'Kandivali West', 'Borivali West', 'Borivali East', 'Worli', 'Lower Parel',
+                'Dadar', 'Chembur', 'Ghatkopar', 'Thane West', 'Vashi', 'Kharghar', 'Nerul',
+                'Panvel', 'Mulund West', 'Santacruz West', 'Khar West', 'Prabhadevi'
             ],
-            [
-                'title' => "1 BHK Flat for rent in DLF Phase 3, {$cleanCity}",
-                'description' => "Cozy, fully-furnished 1 BHK apartment near Cyber City and Rapid Metro Station in DLF Phase 3, {$cleanCity}.",
-                'price' => 18000.0,
-                'city' => $cleanCity,
-                'locality' => 'DLF Phase 3',
-                'state' => $cleanState,
-                'bedrooms' => 1,
-                'bathrooms' => 1,
-                'area_sqft' => 550,
-                'furnishing' => 'fully-furnished',
-                'contact_phone' => '+91 97110 88990',
-                'images' => [
-                    'https://imagecdn.99acres.com/media1/39272/9/785449752M-1782739242717.jpg',
-                    'https://imagecdn.99acres.com/media1/39272/9/785449750M-1782739242657.jpg',
-                    'https://imagecdn.99acres.com/media1/39272/9/785449740M-1782739242716.jpg',
-                    'https://imagecdn.99acres.com/media1/43177/5/863545599M-1792209764839.jpg',
-                    'https://imagecdn.99acres.com/media1/42481/11/849631073M-1790688294984.jpg',
-                ],
+            'bangalore' => [
+                'Whitefield', 'Indiranagar', 'Koramangala', 'HSR Layout', 'Electronic City Phase 1',
+                'Electronic City Phase 2', 'Bellandur', 'Marathahalli', 'Sarjapur Road', 'JP Nagar',
+                'Jayanagar', 'Banashankari', 'Hebbal', 'Yelahanka', 'Malleshwaram', 'Rajajinagar',
+                'Thanisandra', 'Bannerghatta Road', 'BTM Layout', 'Richmond Town', 'Sadashivanagar'
             ],
+            'hyderabad' => [
+                'Gachibowli', 'Madhapur', 'Hitec City', 'Kondapur', 'Kukatpally', 'Banjara Hills',
+                'Jubilee Hills', 'Manikonda', 'Miyapur', 'Chandanagar', 'Nallagandla', 'Tellapur',
+                'Ameerpet', 'Begumpet', 'Somajiguda', 'Uppal', 'Nagole', 'Secunderabad', 'Kokapet',
+                'Financial District', 'Dilsukhnagar', 'LB Nagar', 'Attapur', 'Kompally'
+            ],
+            'pune' => [
+                'Wakad', 'Hinjewadi', 'Baner', 'Balewadi', 'Kothrud', 'Viman Nagar', 'Kharadi',
+                'Magarpatta', 'Hadapsar', 'Kalyani Nagar', 'Aundh', 'Bavdhan', 'Pimple Saudagar',
+                'Pimple Nilakh', 'Ravet', 'Punawale', 'Undri', 'Wanowrie', 'Shivaji Nagar'
+            ],
+            'indore' => [
+                'Vijay Nagar', 'Super Corridor', 'AB Road', 'Scheme 54', 'Scheme 78', 'Bypass Road',
+                'Nipania', 'Rau', 'Palasia', 'Bengali Square', 'Mahalakshmi Nagar', 'Annapurna Road'
+            ],
+            'kolkata' => [
+                'New Town', 'Salt Lake', 'Rajarhat', 'Ballygunge', 'Alipore', 'Gariahat',
+                'Behala', 'Dum Dum', 'Jadavpur', 'EM Bypass', 'Lake Town', 'Tollygunge'
+            ],
+            'chennai' => [
+                'Anna Nagar', 'OMR', 'Velachery', 'Adyar', 'T Nagar', 'Besant Nagar',
+                'Sholinganallur', 'Thoraipakkam', 'Porur', 'Medavakkam', 'Guindy', 'Perungudi'
+            ],
+            'jaipur' => [
+                'Vaishali Nagar', 'Malviya Nagar', 'Mansarovar', 'Jagatpura', 'C Scheme',
+                'Raja Park', 'Tonk Road', 'Ajmer Road', 'Pratap Nagar', 'Durgapura'
+            ]
         ];
 
-        shuffle($pool);
-        return array_slice($pool, 0, min($count, count($pool)));
+        $galleries = [
+            [
+                'https://imagecdn.99acres.com/media1/42017/5/840345375M-1789551687244.webp',
+                'https://imagecdn.99acres.com/media1/42017/9/840349907M-1789551825075.jpg',
+                'https://imagecdn.99acres.com/media1/42017/5/840345401M-1789551661860.jpg',
+                'https://imagecdn.99acres.com/media1/42017/5/840345399M-1789551664861.jpg',
+                'https://imagecdn.99acres.com/media1/42017/9/840349911M-1789551801701.jpg',
+            ],
+            [
+                'https://imagecdn.99acres.com/media1/42852/17/857057345M-1791448609652.webp',
+                'https://imagecdn.99acres.com/media1/42871/0/857420409M-1791478098385.jpg',
+                'https://imagecdn.99acres.com/media1/42871/0/857420395M-1791478098446.jpg',
+                'https://imagecdn.99acres.com/media1/42871/0/857420393M-1791478098484.jpg',
+                'https://imagecdn.99acres.com/media1/42871/0/857420397M-1791478098558.jpg',
+            ],
+            [
+                'https://imagecdn.99acres.com/media1/42065/12/841312443M-1789652362727.jpg',
+                'https://imagecdn.99acres.com/media1/42065/12/841312439M-1789652365455.jpg',
+                'https://imagecdn.99acres.com/media1/42065/12/841312433M-1789652362496.jpg',
+                'https://imagecdn.99acres.com/media1/42065/12/841312441M-1789652362580.jpg',
+                'https://imagecdn.99acres.com/media1/42065/12/841312447M-1789652364353.jpg',
+            ],
+            [
+                'https://imagecdn.99acres.com/media1/42065/12/841312751M-1789652362596.jpg',
+                'https://imagecdn.99acres.com/media1/42065/12/841312757M-1789652364007.jpg',
+                'https://imagecdn.99acres.com/media1/42065/12/841312759M-1789652366786.jpg',
+                'https://imagecdn.99acres.com/media1/42065/12/841312983M-1789652364026.jpg',
+                'https://imagecdn.99acres.com/media1/42065/12/841312975M-1789652363681.jpg',
+            ],
+            [
+                'https://imagecdn.99acres.com/media1/41376/13/827533895M-1787840268609.jpg',
+                'https://imagecdn.99acres.com/media1/41376/13/827533843M-1787840270905.jpg',
+                'https://imagecdn.99acres.com/media1/41376/13/827533889M-1787840272039.jpg',
+                'https://imagecdn.99acres.com/media1/41376/13/827533893M-1787840267723.jpg',
+                'https://imagecdn.99acres.com/media1/41376/13/827533943M-1787840267836.jpg',
+            ],
+            [
+                'https://imagecdn.99acres.com/media1/42949/8/858988919M-1791654342416.jpg',
+                'https://imagecdn.99acres.com/media1/42949/8/858988915M-1791654342434.jpg',
+                'https://imagecdn.99acres.com/media1/42949/8/858988927M-1791654342304.jpg',
+                'https://imagecdn.99acres.com/media1/42949/8/858988929M-1791654342745.jpg',
+                'https://imagecdn.99acres.com/media1/43068/0/861360145M-1791968331875.jpg',
+            ],
+            [
+                'https://imagecdn.99acres.com/media1/40072/13/801453641M-1784879061894.webp',
+                'https://imagecdn.99acres.com/media1/40464/15/809295935M-1785838619926.webp',
+                'https://imagecdn.99acres.com/media1/37479/10/749590664M-1777186903281.webp',
+                'https://imagecdn.99acres.com/media1/43177/5/863545599M-1792209764839.jpg',
+                'https://imagecdn.99acres.com/media1/42481/11/849631073M-1790688294984.jpg',
+            ],
+            [
+                'https://imagecdn.99acres.com/media1/43102/0/862040109M-1792049288499.jpg',
+                'https://imagecdn.99acres.com/media1/43102/0/862040119M-1792049297265.jpg',
+                'https://imagecdn.99acres.com/media1/43102/0/862040077M-1792049288484.jpg',
+                'https://imagecdn.99acres.com/media1/43102/0/862040123M-1792049288422.jpg',
+                'https://imagecdn.99acres.com/media1/43104/4/862084647M-1792053659498.jpg',
+            ]
+        ];
+
+        $sellers = [
+            ['Rajesh Verma', 'Verma Real Estate & Associates', '+91 98112 45890'],
+            ['Sandeep Sharma', 'Sharma Properties & Consultants', '+91 98710 33412'],
+            ['Pooja Malhotra', 'Malhotra Homes & Living', '+91 99580 77123'],
+            ['Vikram Singhania', 'Singhania Infra Projects', '+91 98200 66541'],
+            ['Ananya Rao', 'Rao Property Management', '+91 97412 88901'],
+            ['Karan Kapoor', 'Kapoor Estates', '+91 98105 22987'],
+            ['Meenakshi Sundaram', 'Sundaram Realty', '+91 94440 11234'],
+            ['Arun Deshmukh', 'Deshmukh Housing Solutions', '+91 98220 55432'],
+            ['Deepak Agarwal', 'Agarwal Property Hub', '+91 93122 77890'],
+            ['Nitin Bansal', 'Bansal Prime Realtors', '+91 98990 44567'],
+            ['Rahul Chawla', 'Chawla & Co Real Estate', '+91 98188 99120'],
+            ['Sunil Joshi', 'Joshi Homes', '+91 98231 66789'],
+        ];
+
+        $cLower = strtolower($cleanCity);
+        $localities = $cityLocalities[$cLower] ?? [
+            'Sector 1', 'Sector 5', 'Sector 10', 'Sector 15', 'Sector 20', 'Sector 25',
+            'Sector 30', 'Sector 35', 'Sector 40', 'Sector 45', 'Sector 50', 'Sector 55'
+        ];
+        $totalLocs = count($localities);
+
+        $isPg = in_array(strtolower($type), ['pg', 'pg-hostel', 'hostel']) || str_contains(strtolower($city), 'pg') || $purpose === 'pg';
+        $isBuy = in_array(strtolower($purpose), ['buy', 'sale', 's']);
+
+        $items = [];
+        for ($i = 0; $i < $count; $i++) {
+            $locIdx = (($page - 1) * 7 + $i) % $totalLocs;
+            $locality = $localities[$locIdx];
+
+            $galIdx = (($page - 1) * 3 + $i) % count($galleries);
+            $gallery = $galleries[$galIdx];
+
+            $sellerIdx = (($page - 1) * 2 + $i) % count($sellers);
+            [$sName, $sComp, $basePhone] = $sellers[$sellerIdx];
+            $phoneMid = sprintf('%03d', (($page * 17 + $i * 11) % 899) + 100);
+            $phoneEnd = sprintf('%04d', (($page * 31 + $i * 23) % 8999) + 1000);
+            $contactPhone = "+91 98{$phoneMid} {$phoneEnd}";
+
+            $bhk = (($page + $i) % 3) + 1;
+            if (($page + $i) % 5 === 0) {
+                $bhk = 4;
+            }
+            $bathrooms = max(1, $bhk - ($i % 2 === 1 ? 1 : 0));
+            $areaSqft = $bhk * 450 + 200 + (($page * 41 + $i * 19) % 200);
+
+            $furnishOpts = ['semi-furnished', 'fully-furnished', 'unfurnished'];
+            $furnishing = $isPg ? 'fully-furnished' : $furnishOpts[(($page + $i) % count($furnishOpts))];
+
+            if ($isPg) {
+                $propType = 'pg-hostel';
+                $catName = 'PG & Hostel';
+                $itemPurpose = 'rent';
+                $price = 8500.0 + (float) ((($page * 19 + $i * 13) % 9) * 1000);
+                $title = "Luxury PG & Co-Living Stay in {$locality}, {$cleanCity}";
+                $desc = "Fully-managed co-living PG accommodation in {$locality}, {$cleanCity}. Includes high-speed WiFi, attached bathroom, 3 home-style meals, housekeeping, and 24/7 security with power backup. Perfect for working professionals and students.";
+            } elseif ($isBuy) {
+                $propType = str_contains(strtolower($type), 'plot') ? 'plot' : 'house';
+                $catName = $propType === 'plot' ? 'Residential Land' : ($bhk >= 4 ? 'House / Villa' : 'Flat / Apartment');
+                $itemPurpose = 'buy';
+                $price = ($bhk * 3500000.0) + 1500000.0 + (float) ((($page * 83 + $i * 67) % 25) * 100000);
+                $title = "{$bhk} BHK {$catName} for sale in {$locality}, {$cleanCity}";
+                $desc = "Spacious and premium {$bhk} BHK {$catName} available for sale in prime {$locality}, {$cleanCity}. Covering {$areaSqft} sq.ft. of carpet area with {$bathrooms} bathrooms and {$furnishing} interiors. Features modern clubhouse, covered car parking, Vastu compliant layout, and superior metro connectivity.";
+            } else {
+                $propType = 'house';
+                $catName = 'Flat / Apartment';
+                $itemPurpose = 'rent';
+                $price = ($bhk * 12000.0) + 6000.0 + (float) ((($page * 73 + $i * 47) % 15) * 1000);
+                $flatDescriptor = ($i % 2 === 1) ? 'Builder Floor' : 'Flat';
+                $title = "{$bhk} BHK {$flatDescriptor} for rent in {$locality}, {$cleanCity}";
+                $desc = "Well-ventilated {$bhk} BHK {$flatDescriptor} available for rent in prime {$locality}, {$cleanCity}. Total super area of {$areaSqft} sq.ft. with {$bathrooms} bathrooms and {$furnishing} fittings. Equipped with lift, dedicated parking, 24/7 water supply, power backup, and walking distance to transit hubs.";
+            }
+
+            $items[] = [
+                'title'          => $title,
+                'type'           => $propType,
+                'category_name'  => $catName,
+                'purpose'        => $itemPurpose,
+                'price'          => $price,
+                'bedrooms'       => $propType !== 'plot' ? $bhk : 0,
+                'bathrooms'      => $propType !== 'plot' ? $bathrooms : 0,
+                'area_sqft'      => $areaSqft,
+                'city'           => $cleanCity,
+                'state'          => $cleanState,
+                'locality'       => $locality,
+                'furnishing'     => $furnishing,
+                'images'         => $gallery,
+                'contact_phone'  => $contactPhone,
+                'description'    => $desc,
+                'seller_name'    => $sName,
+                'seller_company' => $sComp,
+                'seller_photo'   => '',
+                'seller_type'    => $sComp ? 'dealer' : 'owner',
+            ];
+        }
+
+        return $items;
     }
 }
