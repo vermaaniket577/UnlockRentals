@@ -130,6 +130,10 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
     if chrome_exe:
         launch_kwargs["executable_path"] = chrome_exe
 
+    url_l = str(url or "").lower()
+    if target_purpose == "rent" and any(k in url_l for k in ["/buy/", "preference=s", "preference=buy", "for-sale", "for-buy", "property/buy"]):
+        target_purpose = "buy"
+
     results: List[Dict[str, Any]] = []
 
     with sync_playwright() as p:

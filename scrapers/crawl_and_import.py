@@ -89,6 +89,7 @@ CITY_ID_MAP = {
     "19": ("Noida", "Uttar Pradesh"),
     "21": ("Pune", "Maharashtra"),
     "38": ("Hyderabad", "Telangana"),
+    "269": ("Hyderabad", "Telangana"),
     "32": ("Chennai", "Tamil Nadu"),
     "25": ("Kolkata", "West Bengal"),
     "176": ("Jaipur", "Rajasthan"),
@@ -147,6 +148,11 @@ def resolve_location(url: str, p: dict = None):
     if cid_match and cid_match.group(1) in CITY_ID_MAP:
         return CITY_ID_MAP[cid_match.group(1)]
 
+    # Check keyword in URL
+    kw_match = re.search(r"keyword=([a-z0-9_-]+)", url, re.I)
+    if kw_match and kw_match.group(1).lower() in CITY_STATE_MAP:
+        return CITY_STATE_MAP[kw_match.group(1).lower()]
+
     # Check city name in URL path
     for k, v in CITY_STATE_MAP.items():
         if k in url.lower():
@@ -187,7 +193,8 @@ def detect_type_and_category(title: str, prop_type: str = "", res_com: str = "")
 
 def detect_purpose(url: str, preference: str = ""):
     pref = str(preference or "").upper()
-    if pref == "S" or "preference=s" in url.lower() or "/buy/" in url.lower() or "/sale/" in url.lower():
+    url_l = str(url or "").lower()
+    if pref == "S" or "preference=s" in url_l or "preference=buy" in url_l or "/buy/" in url_l or "/sale/" in url_l or "for-sale" in url_l or "for-buy" in url_l or "property/buy" in url_l:
         return "buy"
     return "rent"
 
@@ -689,9 +696,12 @@ if __name__ == "__main__":
     if target_city.startswith("http://") or target_city.startswith("https://"):
         custom_url = apply_page_to_url(target_city, page_num)
         city_name, state = resolve_location(custom_url)
+        url_purpose = detect_purpose(custom_url)
+        if url_purpose == "buy" and target_purpose == "rent":
+            target_purpose = "buy"
 
         if not is_json:
-            print(f"\n[*] Crawling custom URL (Page {page_num}) for {city_name}, {state} (up to {max_count} listings, engine={engine}) -> {custom_url}...")
+            print(f"\n[*] Crawling custom URL (Page {page_num}) for {city_name}, {state} (up to {max_count} listings, engine={engine}, purpose={target_purpose}) -> {custom_url}...")
         items = fetch_properties_smart(custom_url, city_name, state, max_items=max_count, purpose=target_purpose, engine=engine, is_json=is_json)
 
         if is_json:

@@ -646,6 +646,13 @@
             </div>
             
             <div class="flex items-center gap-3">
+                {{-- Continuous Session Keep-Alive Status --}}
+                <div id="session-alive-badge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-700 shadow-2xs transition-all cursor-default" title="Continuous Activity Heartbeat: Session is kept active so no timeout or logout occurs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="hidden sm:inline">Session Active</span>
+                    <span class="text-[10px] text-emerald-600/80 font-medium hidden md:inline">(No Timeout)</span>
+                </div>
+
                 <a href="{{ route('home') }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-blue-600 bg-slate-100 hover:bg-blue-50 px-3.5 py-2 rounded-xl transition-all border border-slate-200 hover:border-blue-200" title="View Live Website">
                     <i class="ph-bold ph-globe text-sm text-blue-600"></i>
                     <span class="hidden sm:inline">Live Website</span>
@@ -759,6 +766,54 @@
                 mobileBackdrop.addEventListener('click', toggleMobileSidebar);
             }
         });
+    </script>
+
+    {{-- Continuous Background Activity Heartbeat: Keeps session active continuously to prevent timeout & logout --}}
+    <script>
+        (function() {
+            const PING_INTERVAL_MS = 45000; // 45 seconds interval for continuous activity
+            const pingUrl = "{{ route('admin.session.ping') }}";
+
+            async function pingSession() {
+                try {
+                    // Refresh localStorage activity for idle detectors
+                    localStorage.setItem('ur_last_user_activity', Date.now().toString());
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    const res = await fetch(pingUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken || ''
+                        },
+                        body: JSON.stringify({ keep_alive: true, source: 'admin_layout' })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        const badge = document.getElementById('session-alive-badge');
+                        if (badge && data.is_logged_in) {
+                            badge.classList.remove('opacity-60');
+                            badge.title = 'Session Active: Keep-alive heartbeat synced ' + new Date().toLocaleTimeString();
+                        }
+                    }
+                } catch (e) {
+                    // Non-blocking background keep-alive
+                }
+            }
+
+            // Ping immediately, then continuously every 45s
+            pingSession();
+            setInterval(pingSession, PING_INTERVAL_MS);
+
+            // Also keep alive on user interactions
+            ['click', 'keydown', 'scroll', 'mousemove', 'touchstart'].forEach(function(evt) {
+                window.addEventListener(evt, function() {
+                    localStorage.setItem('ur_last_user_activity', Date.now().toString());
+                }, { passive: true });
+            });
+        })();
     </script>
 
     @include('components.push-notification-deliverer')

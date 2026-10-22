@@ -129,9 +129,43 @@ class Property extends Model
             'coimbatore'     => ['Coimbatore', 'Tamil Nadu'],
         ];
 
+        // Check 99acres city ID parameters (e.g. city=269, city=38)
+        $idMap = [
+            '269' => ['Hyderabad', 'Telangana'],
+            '38'  => ['Hyderabad', 'Telangana'],
+            '142' => ['Indore', 'Madhya Pradesh'],
+            '20'  => ['Bangalore', 'Karnataka'],
+            '1'   => ['Delhi', 'Delhi'],
+            '2'   => ['Mumbai', 'Maharashtra'],
+            '18'  => ['Gurgaon', 'Haryana'],
+            '19'  => ['Noida', 'Uttar Pradesh'],
+            '21'  => ['Pune', 'Maharashtra'],
+            '32'  => ['Chennai', 'Tamil Nadu'],
+            '25'  => ['Kolkata', 'West Bengal'],
+            '176' => ['Jaipur', 'Rajasthan'],
+            '45'  => ['Ahmedabad', 'Gujarat'],
+        ];
+
+        if (preg_match('/(?:city=|city_id=)(\d+)/i', $url, $m) && isset($idMap[$m[1]])) {
+            return $idMap[$m[1]];
+        }
+        if (ctype_digit(trim($url)) && isset($idMap[trim($url)])) {
+            return $idMap[trim($url)];
+        }
+
         foreach ($map as $key => $pair) {
             if (str_contains($urlLower, $key)) {
                 return $pair;
+            }
+        }
+
+        // Check keyword parameter in URL (e.g. keyword=hyderabad)
+        if (preg_match('/(?:keyword=)([a-z0-9_-]+)/i', $url, $m)) {
+            $kw = strtolower($m[1]);
+            foreach ($map as $key => $pair) {
+                if (str_contains($kw, $key)) {
+                    return $pair;
+                }
             }
         }
 
@@ -142,6 +176,75 @@ class Property extends Model
         }
 
         return ['Delhi', 'Delhi'];
+    }
+
+    /**
+     * Intelligently extract purpose (buy or rent) from a property listing URL.
+     */
+    public static function extractPurposeFromUrl(?string $url): string
+    {
+        if (empty($url)) {
+            return 'rent';
+        }
+
+        $urlLower = strtolower($url);
+
+        // Check for buy/sale markers
+        if (
+            str_contains($urlLower, '/buy/') ||
+            str_contains($urlLower, 'for-sale') ||
+            str_contains($urlLower, 'for-buy') ||
+            str_contains($urlLower, 'preference=s') ||
+            str_contains($urlLower, 'preference=buy') ||
+            str_contains($urlLower, 'property/buy')
+        ) {
+            return 'buy';
+        }
+
+        // Check for PG / Hostel
+        if (
+            str_contains($urlLower, '/pg') ||
+            str_contains($urlLower, 'pg-in-') ||
+            str_contains($urlLower, 'paying-guest') ||
+            str_contains($urlLower, 'hostel')
+        ) {
+            return 'rent';
+        }
+
+        return 'rent';
+    }
+
+    /**
+     * Intelligently extract property type from a property listing URL.
+     */
+    public static function extractPropertyTypeFromUrl(?string $url): string
+    {
+        if (empty($url)) {
+            return 'all';
+        }
+
+        $urlLower = strtolower($url);
+
+        if (str_contains($urlLower, 'plot') || str_contains($urlLower, 'land') || str_contains($urlLower, 'residential-land')) {
+            return 'plot';
+        }
+        if (str_contains($urlLower, 'pg') || str_contains($urlLower, 'paying-guest') || str_contains($urlLower, 'hostel')) {
+            return 'pg-hostel';
+        }
+        if (str_contains($urlLower, 'builder-floor')) {
+            return 'builder-floor';
+        }
+        if (str_contains($urlLower, 'flat') || str_contains($urlLower, 'apartment')) {
+            return 'flat';
+        }
+        if (str_contains($urlLower, 'villa') || str_contains($urlLower, 'independent-house') || str_contains($urlLower, 'house')) {
+            return 'house';
+        }
+        if (str_contains($urlLower, 'commercial') || str_contains($urlLower, 'office') || str_contains($urlLower, 'shop')) {
+            return 'commercial';
+        }
+
+        return 'all';
     }
 
     /**

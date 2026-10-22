@@ -62,6 +62,17 @@
         localStorage.setItem(STORAGE_KEY, now.toString());
         hideWarning();
         scheduleTimers();
+        try {
+            fetch('{{ route("admin.session.ping") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ keep_alive: true, source: 'idle_logout_reset' })
+            }).catch(() => {});
+        } catch (e) {}
     }
 
     function scheduleTimers() {

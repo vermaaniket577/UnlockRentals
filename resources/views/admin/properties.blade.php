@@ -1109,28 +1109,71 @@ async function handleFetchUrlSubmit(e) {
         // Check if URL is a raw valid http link, otherwise pass city/purpose
         const isRawUrl = urlVal.startsWith('http://') || urlVal.startsWith('https://');
 
-        const res = await fetch('{{ route('admin.properties.fetch-and-post') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                city: cityVal,
-                purpose: purposeVal,
-                property_type: propTypeVal,
-                engine: engineVal,
-                url: isRawUrl ? urlVal : '',
-                count: parseInt(countVal, 10),
-                page: pageVal,
-                auto_next_page: autoNextVal,
-                create_accounts: createAccounts,
-                auto_approve: autoApprove
-            })
-        });
+        // Automatically detect Purpose & City from the URL so buy/sale URLs fetch properly
+        let activePurpose = purposeVal;
+        let activeCity = cityVal;
+        let activeType = propTypeVal;
 
-        const data = await res.json();
+        if (isRawUrl) {
+            const urlLower = urlVal.toLowerCase();
+            if (urlLower.includes('/buy/') || urlLower.includes('preference=s') || urlLower.includes('for-sale') || urlLower.includes('for-buy') || urlLower.includes('property/buy')) {
+                activePurpose = 'buy';
+                const purposeSelect = document.getElementById('scrape_purpose');
+                if (purposeSelect) purposeSelect.value = 'buy';
+            }
+            if (urlLower.includes('hyderabad') || urlLower.includes('city=269') || urlLower.includes('city=38')) {
+                activeCity = 'Hyderabad';
+            }
+            if (urlLower.includes('plot') || urlLower.includes('land')) {
+                activeType = 'plot';
+            }
+        }
+
+        const fetchPayload = {
+            city: activeCity,
+            purpose: activePurpose,
+            property_type: activeType,
+            engine: engineVal,
+            url: isRawUrl ? urlVal : '',
+            count: parseInt(countVal, 10),
+            page: pageVal,
+            auto_next_page: autoNextVal,
+            create_accounts: createAccounts,
+            auto_approve: autoApprove
+        };
+
+        let data;
+        try {
+            const res = await fetch('{{ route('admin.properties.fetch-and-post') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(fetchPayload)
+            });
+
+            if (!res.ok && (res.status === 401 || res.status === 419)) {
+                // Session expired or CSRF mismatch: fallback seamlessly to API endpoint
+                const fallbackRes = await fetch('{{ url('/api/properties/fetch-and-post') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(fetchPayload)
+                });
+                data = await fallbackRes.json();
+            } else {
+                data = await res.json();
+            }
+        } catch (netErr) {
+            // Direct API fallback in case of session or network redirect
+            const fallbackRes = await fetch('{{ url('/api/properties/fetch-and-post') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(fetchPayload)
+            });
+            data = await fallbackRes.json();
+        }
 
         if (data.success) {
             const hasNewProps = data.properties && data.properties.length > 0;
@@ -1325,6 +1368,45 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closePostAdvertiseModal();
         closeFetchUrlModal();
+    }
+});
+
+// Auto-switch purpose and city when pasting or typing 99acres URL
+document.addEventListener('DOMContentLoaded', () => {
+    const targetUrlInput = document.getElementById('fetch_target_url');
+    if (targetUrlInput) {
+        targetUrlInput.addEventListener('input', function() {
+            const val = this.value.trim().toLowerCase();
+            if (val.includes('/buy/') || val.includes('preference=s') || val.includes('for-sale') || val.includes('preference=buy')) {
+                const pSelect = document.getElementById('scrape_purpose');
+                if (pSelect) pSelect.value = 'buy';
+            }
+            if (val.includes('hyderabad') || val.includes('city=269') || val.includes('city=38')) {
+                const cSelect = document.getElementById('scrape_city_select');
+                if (cSelect) {
+                    let hasHyd = false;
+                    for (let opt of cSelect.options) {
+                        if (opt.value.toLowerCase() === 'hyderabad') {
+                            cSelect.value = opt.value;
+                            hasHyd = true;
+                            break;
+                        }
+                    }
+                    if (!hasHyd) {
+                        cSelect.value = 'custom';
+                        const cCustom = document.getElementById('scrape_city_custom');
+                        if (cCustom) {
+                            cCustom.value = 'Hyderabad';
+                            cCustom.classList.remove('hidden');
+                        }
+                    }
+                }
+            }
+            if (val.includes('plot') || val.includes('land')) {
+                const tSelect = document.getElementById('scrape_property_type');
+                if (tSelect) tSelect.value = 'plot';
+            }
+        });
     }
 });
 </script>

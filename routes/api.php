@@ -33,6 +33,9 @@ Route::match(['get', 'post'], '/properties/check-sync', [\App\Http\Controllers\A
 Route::match(['get', 'post'], '/properties/clean-duplicates', [\App\Http\Controllers\AdminController::class, 'apiCleanDuplicates']);
 Route::match(['get', 'post'], '/properties/fetch-and-post', [\App\Http\Controllers\AdminController::class, 'fetchAndPostFromUrl']);
 Route::match(['get', 'post'], '/properties/scrape-all-cities', [\App\Http\Controllers\AdminController::class, 'apiScrapeAllCities']);
+Route::match(['get', 'post'], '/session/ping', [\App\Http\Controllers\AdminController::class, 'sessionPing']);
+Route::match(['get', 'post'], '/session/keep-alive', [\App\Http\Controllers\AdminController::class, 'sessionPing']);
+Route::match(['get', 'post'], '/auth/status', [\App\Http\Controllers\AdminController::class, 'sessionPing']);
 
 /*
 |--------------------------------------------------------------------------

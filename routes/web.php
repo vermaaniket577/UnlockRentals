@@ -617,12 +617,18 @@ Route::get('/properties/{property}', [PropertyController::class, 'show'])->name(
 |--------------------------------------------------------------------------
 */
 
+// Continuous Activity Session Heartbeat Ping (No timeout, no auto-logout)
+Route::match(['get', 'post'], '/session/ping', [\App\Http\Controllers\AdminController::class, 'sessionPing'])->name('public.session.ping');
+Route::match(['get', 'post'], '/session/keep-alive', [\App\Http\Controllers\AdminController::class, 'sessionPing'])->name('public.session.keep-alive');
+
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::match(['get', 'post'], '/session/ping', [AdminController::class, 'sessionPing'])->name('session.ping');
+    Route::match(['get', 'post'], '/session/keep-alive', [AdminController::class, 'sessionPing'])->name('session.keep-alive');
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/properties', [AdminController::class, 'properties'])->name('properties');
     Route::get('/properties/sync-check', [AdminController::class, 'checkPropertyUpdates'])->name('properties.sync-check');
     Route::post('/properties/sync-now', [AdminController::class, 'triggerPropertySync'])->name('properties.sync-now');
-    Route::post('/properties/fetch-and-post', [AdminController::class, 'fetchAndPostFromUrl'])->name('properties.fetch-and-post');
+    Route::match(['get', 'post'], '/properties/fetch-and-post', [AdminController::class, 'fetchAndPostFromUrl'])->name('properties.fetch-and-post');
     Route::match(['get', 'post'], '/cleanup-db-connections', [AdminController::class, 'cleanupDbConnections'])->name('cleanup-db-connections');
     Route::post('/properties/post-advertise', [AdminController::class, 'postAdvertise'])->name('properties.post-advertise');
     Route::match(['get', 'post'], '/properties/toggle-bypass', [AdminController::class, 'toggleBypassApproval'])->name('properties.toggle-bypass');

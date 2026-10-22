@@ -44,25 +44,18 @@ class ScrapeCityCommand extends Command
         if (preg_match('/^(https?:\/\/|www\.)/i', $rawArg) || str_contains($rawArg, '99acres')) {
             [$city, $state] = Property::extractCityAndStateFromUrl($rawArg);
             $targetUrl = Property::applyPageToUrl($rawArg, $page);
+            $urlPurpose = Property::extractPurposeFromUrl($rawArg);
+            if ($urlPurpose && $purpose === 'rent') {
+                $purpose = $urlPurpose;
+            }
+            $urlType = Property::extractPropertyTypeFromUrl($rawArg);
+            if ($urlType && $type === 'all') {
+                $type = $urlType;
+            }
         } else {
-            $city = trim($rawArg) ?: 'Gurgaon';
-            $map = [
-                'indore'    => 'Madhya Pradesh',
-                'bhopal'    => 'Madhya Pradesh',
-                'gurgaon'   => 'Haryana',
-                'gurugram'  => 'Haryana',
-                'noida'     => 'Uttar Pradesh',
-                'delhi'     => 'Delhi',
-                'bangalore' => 'Karnataka',
-                'bengaluru' => 'Karnataka',
-                'mumbai'    => 'Maharashtra',
-                'pune'      => 'Maharashtra',
-                'hyderabad' => 'Telangana',
-                'chennai'   => 'Tamil Nadu',
-                'kolkata'   => 'West Bengal',
-                'jaipur'    => 'Rajasthan',
-            ];
-            $state = $map[strtolower($city)] ?? 'India';
+            [$resolvedCity, $resolvedState] = Property::extractCityAndStateFromUrl($rawArg);
+            $city = $resolvedCity ?: (trim($rawArg) ?: 'Hyderabad');
+            $state = $resolvedState ?: 'India';
             $targetUrl = null;
         }
 

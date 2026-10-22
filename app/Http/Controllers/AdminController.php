@@ -2712,10 +2712,71 @@ class AdminController extends Controller
      */
     public function apiSyncCrawler(Request $request)
     {
-        $city = $request->get('city', 'Gurgaon');
+        $url = trim((string) $request->input('url', ''));
+        $rawCity = trim((string) $request->input('city', ''));
+
+        // If URL was sent in the city field
+        if (empty($url) && (preg_match('/^(https?:\/\/|www\.)/i', $rawCity) || str_contains($rawCity, '99acres'))) {
+            $url = $rawCity;
+            $rawCity = '';
+        }
+
+        // Reconstruct URL query parameters if they were split by query string parser
+        if (!empty($url) && !str_contains($url, '?') && ($request->has('city') || $request->has('preference') || $request->has('keyword'))) {
+            $rebuildQuery = [];
+            foreach (['city', 'keyword', 'preference', 'res_com', 'isPreLeased', 'budget_min', 'budget_max'] as $qp) {
+                if ($request->has($qp) && !str_contains($url, "{$qp}=")) {
+                    $rebuildQuery[$qp] = $request->get($qp);
+                }
+            }
+            if (!empty($rebuildQuery)) {
+                $url .= '?' . http_build_query($rebuildQuery);
+            }
+        }
+
+        // If direct fetch-and-post is requested via check-sync or sync-crawler
+        if ($request->boolean('fetch_and_post') || $request->get('mode') === 'fetch_and_post') {
+            return $this->fetchAndPostFromUrl($request);
+        }
+
+        $purpose = $request->input('purpose');
+        if (empty($purpose) && !empty($url)) {
+            $purpose = Property::extractPurposeFromUrl($url);
+        }
+        $purpose = $purpose ?: 'rent';
+
+        $type = $request->input('type') ?? $request->input('property_type');
+        if (empty($type) && !empty($url)) {
+            $type = Property::extractPropertyTypeFromUrl($url);
+        }
+        $type = $type ?: 'all';
+
+        $city = 'Hyderabad';
+        if (!empty($url)) {
+            [$urlCity] = Property::extractCityAndStateFromUrl($url);
+            $city = $urlCity ?: 'Hyderabad';
+        } elseif (!empty($rawCity)) {
+            [$resolvedCity] = Property::extractCityAndStateFromUrl($rawCity);
+            $city = $resolvedCity ?: $rawCity;
+        }
+
         $count = (int) $request->get('count', 2);
         $page = max(1, (int) $request->get('page', 1));
         $autoClean = $request->boolean('clean_duplicates', true);
+
+        // Current authentication status
+        $isLoggedIn = auth()->check();
+        $currentUser = auth()->user();
+        $authStatus = [
+            'is_logged_in'   => $isLoggedIn,
+            'user_id'        => $currentUser ? $currentUser->id : null,
+            'user_name'      => $currentUser ? $currentUser->name : 'System Admin (Auto Fallback)',
+            'role'           => $currentUser ? $currentUser->role : 'admin',
+            'session_id'     => session()->getId(),
+            'session_active' => true,
+            'keep_alive'     => true,
+            'timestamp'      => now()->toIso8601String(),
+        ];
 
         // Allow direct JSON property payload ingestion
         if ($request->has('properties') && is_array($request->input('properties'))) {
@@ -2737,7 +2798,7 @@ class AdminController extends Controller
                     'location'      => $item['location'] ?? $city,
                     'locality'      => $item['locality'] ?? '',
                     'price'         => $item['price'] ?? 25000,
-                    'purpose'       => $item['purpose'] ?? 'rent',
+                    'purpose'       => $item['purpose'] ?? $purpose,
                     'bedrooms'      => $item['bedrooms'] ?? 2,
                     'images'        => $item['images'] ?? [],
                     'contact_phone' => $item['contact_phone'] ?? null,
@@ -2757,13 +2818,13 @@ class AdminController extends Controller
                     'slug'          => $slug,
                     'description'   => $item['description'] ?? "Listing in " . ($item['locality'] ?? $city),
                     'type'          => $item['type'] ?? 'house',
-                    'purpose'       => $item['purpose'] ?? 'rent',
+                    'purpose'       => $item['purpose'] ?? $purpose,
                     'price'         => $item['price'] ?? 25000,
                     'price_period'  => 'month',
-                    'state'         => $item['state'] ?? 'Haryana',
+                    'state'         => $item['state'] ?? 'Telangana',
                     'location'      => $item['location'] ?? $city,
-                    'locality'      => $item['locality'] ?? 'Sector 70',
-                    'address'       => $item['address'] ?? (($item['locality'] ?? 'Sector 70') . ', ' . $city),
+                    'locality'      => $item['locality'] ?? $city,
+                    'address'       => $item['address'] ?? (($item['locality'] ?? $city) . ', ' . $city),
                     'contact_phone' => $item['contact_phone'] ?? '+91 98765 43210',
                     'bedrooms'      => $item['bedrooms'] ?? 2,
                     'bathrooms'     => $item['bathrooms'] ?? 2,
@@ -2801,25 +2862,31 @@ class AdminController extends Controller
                 'total_properties'     => Property::count(),
                 'latest_id'            => Property::latest('id')->first()?->id ?? 0,
                 'synced_at'            => now()->toDateTimeString(),
+                'auth_status'          => $authStatus,
             ]);
         }
 
         $lock = Cache::lock('ur_scraper_crawler_lock', 90);
         if (!$lock->get()) {
             return response()->json([
-                'status'  => 'busy',
-                'success' => false,
-                'message' => 'Crawler is already actively executing in background.',
+                'status'      => 'busy',
+                'success'     => false,
+                'message'     => 'Crawler is already actively executing in background.',
+                'auth_status' => $authStatus,
             ], 429);
         }
 
         try {
             try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
 
+            $scrapeTarget = !empty($url) ? $url : $city;
+
             \Illuminate\Support\Facades\Artisan::call('scrape:city', [
-                'city' => $city,
-                '--count' => $count,
-                '--page' => $page,
+                'city'        => $scrapeTarget,
+                '--count'     => $count,
+                '--page'      => $page,
+                '--purpose'   => $purpose,
+                '--type'      => $type,
                 '--auto-next' => true,
             ]);
 
@@ -2841,25 +2908,73 @@ class AdminController extends Controller
             return response()->json([
                 'status'               => 'success',
                 'success'              => true,
-                'message'              => "Checked and synced {$city} (Page {$page}). Duplicates checked & filtered.",
+                'message'              => "Checked and synced " . (!empty($url) ? $url : $city) . " (Page {$page}). Duplicates checked & filtered.",
                 'city'                 => $city,
+                'url'                  => $url ?: null,
+                'purpose'              => $purpose,
+                'property_type'        => $type,
                 'page_scraped'         => $page,
                 'next_page'            => $page + 1,
                 'duplicates_cleaned'   => $cleanedCount,
                 'synced_at'            => now()->toDateTimeString(),
                 'total_properties'     => Property::count(),
                 'latest_id'            => $latestProp ? $latestProp->id : 0,
+                'auth_status'          => $authStatus,
             ]);
         } catch (\Throwable $e) {
             return response()->json([
-                'status'  => 'error',
-                'success' => false,
-                'message' => $e->getMessage(),
+                'status'      => 'error',
+                'success'     => false,
+                'message'     => $e->getMessage(),
+                'auth_status' => $authStatus,
             ], 500);
         } finally {
             optional($lock)->release();
             try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
         }
+    }
+
+    /**
+     * Session Keep-Alive & Auth Status Heartbeat Ping.
+     * Continuously touches the session so no timeout or logout occurs,
+     * and reports detailed authentication status to client/mobile app.
+     */
+    public function sessionPing(Request $request)
+    {
+        $isLoggedIn = auth()->check();
+        $user = auth()->user();
+
+        if ($isLoggedIn) {
+            session(['last_user_activity_time' => time()]);
+            session(['last_activity' => time()]);
+            try {
+                $request->session()->save();
+            } catch (\Throwable $e) {}
+        }
+
+        $sessionLifetime = (int) config('session.lifetime', 525600);
+
+        return response()->json([
+            'success'          => true,
+            'status'           => 'active',
+            'is_logged_in'     => $isLoggedIn,
+            'user'             => $user ? [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'role'  => $user->role,
+            ] : null,
+            'user_name'        => $user ? $user->name : 'Guest / System Service',
+            'role'             => $user ? $user->role : 'guest',
+            'session_id'       => session()->getId(),
+            'session_active'   => true,
+            'keep_alive'       => true,
+            'session_lifetime' => $sessionLifetime,
+            'timestamp'        => now()->toIso8601String(),
+            'message'          => $isLoggedIn
+                ? "Session active for {$user->name} ({$user->role}). Auto-logout prevented."
+                : "Session active (Guest / Public API).",
+        ]);
     }
 
     /**
@@ -2885,18 +3000,73 @@ class AdminController extends Controller
      */
     public function fetchAndPostFromUrl(Request $request)
     {
-        $city = trim((string) $request->input('city', ''));
-        $purpose = strtolower(trim((string) $request->input('purpose', 'rent')));
-        $propertyType = strtolower(trim((string) $request->input('property_type', 'all')));
         $url = trim((string) $request->input('url', ''));
+        $city = trim((string) $request->input('city', ''));
 
-        if (empty($city) && !empty($url)) {
-            [$extractedCity] = Property::extractCityAndStateFromUrl($url);
-            $city = $extractedCity ?: 'Delhi';
+        // If URL was sent in the city field
+        if (empty($url) && (preg_match('/^(https?:\/\/|www\.)/i', $city) || str_contains($city, '99acres'))) {
+            $url = $city;
+            $city = '';
         }
 
+        // Reconstruct URL query parameters if they were split by query string parser
+        if (!empty($url) && !str_contains($url, '?') && ($request->has('city') || $request->has('preference') || $request->has('keyword'))) {
+            $rebuildQuery = [];
+            foreach (['city', 'keyword', 'preference', 'res_com', 'isPreLeased', 'budget_min', 'budget_max', 'property_type'] as $qp) {
+                if ($request->has($qp) && !str_contains($url, "{$qp}=")) {
+                    $rebuildQuery[$qp] = $request->get($qp);
+                }
+            }
+            if (!empty($rebuildQuery)) {
+                $url .= '?' . http_build_query($rebuildQuery);
+            }
+        }
+
+        // Auto-detect purpose from URL if not explicitly chosen or default
+        $urlPurpose = !empty($url) ? Property::extractPurposeFromUrl($url) : null;
+        $explicitPurpose = $request->input('purpose');
+        $purpose = $explicitPurpose ? strtolower(trim((string) $explicitPurpose)) : ($urlPurpose ?: 'rent');
+
+        // Auto-detect property type from URL
+        $urlType = !empty($url) ? Property::extractPropertyTypeFromUrl($url) : null;
+        $explicitType = $request->input('property_type') ?? $request->input('type');
+        $propertyType = $explicitType ? strtolower(trim((string) $explicitType)) : ($urlType ?: 'all');
+
+        // Auto-detect city & state
+        if (empty($city) && !empty($url)) {
+            [$extractedCity] = Property::extractCityAndStateFromUrl($url);
+            $city = $extractedCity ?: 'Hyderabad';
+        }
+        if (empty($city) && $request->has('keyword')) {
+            [$extractedCity] = Property::extractCityAndStateFromUrl((string) $request->input('keyword'));
+            $city = $extractedCity ?: 'Hyderabad';
+        }
+        if (empty($city)) {
+            $city = 'Hyderabad';
+        }
+
+        // Touch session to prevent idle timeout
+        $isLoggedIn = auth()->check();
+        $currentUser = auth()->user();
+        if ($isLoggedIn) {
+            session(['last_user_activity_time' => time()]);
+            session(['last_activity' => time()]);
+            try { $request->session()->save(); } catch (\Throwable $e) {}
+        }
+
+        $authStatus = [
+            'is_logged_in'   => $isLoggedIn,
+            'user_id'        => $currentUser ? $currentUser->id : null,
+            'user_name'      => $currentUser ? $currentUser->name : 'System Admin (Auto Fallback)',
+            'role'           => $currentUser ? $currentUser->role : 'admin',
+            'session_id'     => session()->getId(),
+            'session_active' => true,
+            'keep_alive'     => true,
+            'timestamp'      => now()->toIso8601String(),
+        ];
+
         // If direct URL is given, use it. Otherwise, target the city (or 'all' for all cities)
-        $target = !empty($url) ? $url : (!empty($city) ? $city : 'delhi');
+        $target = !empty($url) ? $url : (!empty($city) ? $city : 'Hyderabad');
 
         $count = max(1, min(60, (int) $request->input('count', 10)));
         $page = max(1, (int) $request->input('page', 1));
@@ -2912,8 +3082,9 @@ class AdminController extends Controller
         $lock = Cache::lock('ur_scraper_crawler_lock', 120);
         if (!$lock->get()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Another property crawl/fetch task is currently running. Please wait a minute for it to finish.',
+                'success'     => false,
+                'message'     => 'Another property crawl/fetch task is currently running. Please wait a minute for it to finish.',
+                'auth_status' => $authStatus,
             ], 429);
         }
 
@@ -2973,6 +3144,7 @@ class AdminController extends Controller
                     'latest_id'        => Property::latest('id')->first()?->id ?? 0,
                     'accounts_created' => User::where('role', 'owner')->whereDate('created_at', now()->toDateString())->count(),
                     'synced_at'        => now()->toDateTimeString(),
+                    'auth_status'      => $authStatus,
                 ]);
             }
 
@@ -3186,11 +3358,13 @@ class AdminController extends Controller
                 'total_properties'     => Property::count(),
                 'latest_id'            => Property::latest('id')->first()?->id ?? 0,
                 'synced_at'            => now()->toDateTimeString(),
+                'auth_status'          => $authStatus,
             ]);
         } catch (\Throwable $e) {
             return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
+                'success'     => false,
+                'message'     => 'Error: ' . $e->getMessage(),
+                'auth_status' => $authStatus ?? null,
             ], 500);
         } finally {
             optional($lock)->release();
