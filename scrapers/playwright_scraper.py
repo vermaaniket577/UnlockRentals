@@ -95,8 +95,8 @@ def generate_callable_phone(seller_name: str = "", prop_id: str = "") -> str:
 
 def parse_furnishing(val) -> str:
     s = str(val or "").lower()
-    if s in ["4", "full", "fully", "furnished"] or "fully" in s:
-        return "furnished"
+    if s in ["4", "full", "fully", "furnished", "fully-furnished"] or "fully" in s or "furnished" in s:
+        return "fully-furnished"
     if s in ["3", "semi", "semi-furnished"] or "semi" in s:
         return "semi-furnished"
     if s in ["1", "2", "unfurnished", "none", "bare"] or "un" in s:
@@ -305,7 +305,7 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                     locality = p_item.get("LOCALITY") or p_item.get("LOCALITY_WO_CITY") or city_name
                     society = p_item.get("SOCIETY_NAME") or p_item.get("BUILDING_NAME") or ""
 
-                    furnishing = "furnished" if is_pg else parse_furnishing(p_item.get("FURNISH"))
+                    furnishing = "fully-furnished" if is_pg else parse_furnishing(p_item.get("FURNISH"))
 
                     # Extract Complete Image Gallery (all 15-20+ high-res photos)
                     raw_imgs = p_item.get("PROPERTY_IMAGES") or []

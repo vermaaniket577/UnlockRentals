@@ -2800,7 +2800,7 @@ class AdminController extends Controller
                     'bedrooms'      => $itemType === 'plot' ? 0 : ($item['bedrooms'] ?? 2),
                     'bathrooms'     => $itemType === 'plot' ? 0 : ($item['bathrooms'] ?? 1),
                     'area_sqft'     => $item['area_sqft'] ?? 800,
-                    'furnishing'    => $itemType === 'plot' ? 'unfurnished' : ($item['furnishing'] ?? 'semi-furnished'),
+                    'furnishing'    => $itemType === 'plot' ? 'unfurnished' : (in_array(strtolower(trim((string)($item['furnishing'] ?? ''))), ['furnished', 'fully', 'fully-furnished', 'full']) ? 'fully-furnished' : (str_contains(strtolower(trim((string)($item['furnishing'] ?? ''))), 'semi') ? 'semi-furnished' : 'unfurnished')),
                     'status'        => $autoApprove ? 'approved' : 'pending',
                     'approved_at'   => $autoApprove ? now() : null,
                     'is_featured'   => false,

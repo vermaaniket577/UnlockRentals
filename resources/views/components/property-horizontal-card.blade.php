@@ -273,7 +273,7 @@
                         </h2>
                     </a>
                     <div class="flex items-center gap-1.5 shrink-0">
-                        @if($isPg || ($property->furnishing ?? '') === 'furnished')
+                        @if($isPg || in_array($property->furnishing ?? '', ['furnished', 'fully-furnished']))
                             <span class="px-2 py-0.5 rounded text-[9.5px] font-semibold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
                                 FURNISHED
                             </span>

@@ -572,4 +572,19 @@ class Property extends Model
 
         return $this->memoizedPrimaryImageUrl = $url;
     }
+
+    /**
+     * Mutator to guarantee furnishing always matches MySQL enum: ['unfurnished', 'semi-furnished', 'fully-furnished']
+     */
+    public function setFurnishingAttribute($value): void
+    {
+        $v = strtolower(trim((string) $value));
+        if ($v === 'furnished' || $v === 'fully-furnished' || $v === 'full' || $v === 'fully' || str_contains($v, 'full') || str_contains($v, 'furnish')) {
+            $this->attributes['furnishing'] = ($v === 'unfurnished' || str_starts_with($v, 'un')) ? 'unfurnished' : (str_contains($v, 'semi') ? 'semi-furnished' : 'fully-furnished');
+        } elseif ($v === 'semi-furnished' || $v === 'semi' || str_contains($v, 'semi')) {
+            $this->attributes['furnishing'] = 'semi-furnished';
+        } else {
+            $this->attributes['furnishing'] = 'unfurnished';
+        }
+    }
 }

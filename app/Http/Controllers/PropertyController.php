@@ -116,9 +116,14 @@ class PropertyController extends Controller
 
         // Filter by furnishing
         if ($request->filled('furnishing')) {
-            $query->where('furnishing', $request->furnishing);
+            $fVal = $request->furnishing;
+            if ($fVal === 'furnished' || $fVal === 'fully-furnished') {
+                $query->whereIn('furnishing', ['fully-furnished', 'furnished']);
+            } else {
+                $query->where('furnishing', $fVal);
+            }
         } elseif ($request->boolean('furnished')) {
-            $query->whereIn('furnishing', ['furnished', 'semi-furnished']);
+            $query->whereIn('furnishing', ['fully-furnished', 'semi-furnished', 'furnished']);
         }
 
         // Verified Filter (Featured / Verified)
