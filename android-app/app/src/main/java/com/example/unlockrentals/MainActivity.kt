@@ -408,6 +408,9 @@ class MainActivity : AppCompatActivity() {
                 dismissSplash()
                 swipeRefresh.isRefreshing = false
                 progressBar.visibility = View.GONE
+                try {
+                    CookieManager.getInstance().flush()
+                } catch (_: Exception) {}
                 injectInstantPerformanceScript(view)
             }
 

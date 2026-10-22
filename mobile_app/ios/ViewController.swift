@@ -9,6 +9,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
 
     override func loadView() {
         let webConfiguration = WKWebViewConfiguration()
+        webConfiguration.websiteDataStore = WKWebsiteDataStore.default()
         webConfiguration.allowsInlineMediaPlayback = true
         webConfiguration.preferences.javaScriptEnabled = true
         webConfiguration.suppressesIncrementalRendering = false

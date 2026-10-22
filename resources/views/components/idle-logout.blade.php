@@ -1,4 +1,19 @@
 @auth
+@php
+    $userAgent = request()->userAgent() ?? '';
+    $isMobileApp = str_contains($userAgent, 'UnlockRentals')
+        || str_contains($userAgent, 'UnlockRentalsMobileApp')
+        || str_contains($userAgent, 'UnlockRentalsApp')
+        || str_contains($userAgent, 'UnlockRentalsIOSApp')
+        || request()->query('app') === '1'
+        || session('is_mobile_app') === true
+        || request()->cookie('is_mobile_app') === '1'
+        || preg_match('/(android|iphone|ipad|ipod|mobile)/i', $userAgent);
+
+    $idleLogoutEnabled = config('session.auto_logout_inactivity', false) && auth()->user()->isAdmin() && !$isMobileApp;
+@endphp
+
+@if($idleLogoutEnabled)
 {{-- Session Inactivity Warning Modal --}}
 <div id="idle-warning-modal" class="fixed inset-0 z-[999999] hidden items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 animate-fade-in" style="display: none;">
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center">
@@ -25,6 +40,13 @@
 
 <script>
 (function() {
+    // Safety check: Never run idle logout inside mobile app or mobile devices
+    if (/UnlockRentals|UnlockRentalsMobileApp|UnlockRentalsApp|UnlockRentalsIOSApp|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+        window.location.search.includes('app=1') ||
+        document.cookie.includes('is_mobile_app=1')) {
+        return;
+    }
+
     // 15 minutes total timeout (900,000 ms), warning appears at 14 minutes (840,000 ms)
     const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
     const WARNING_TIME_MS = 14 * 60 * 1000;
@@ -151,4 +173,5 @@
     resetActivity();
 })();
 </script>
+@endif
 @endauth

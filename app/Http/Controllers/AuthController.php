@@ -13,6 +13,34 @@ use Illuminate\Support\Str;
 class AuthController extends Controller
 {
     /**
+     * Check if request originates from the UnlockRentals Mobile App.
+     */
+    public static function isMobileApp(Request $request): bool
+    {
+        $userAgent = $request->userAgent() ?? '';
+        return str_contains($userAgent, 'UnlockRentals')
+            || str_contains($userAgent, 'UnlockRentalsMobileApp')
+            || str_contains($userAgent, 'UnlockRentalsApp')
+            || str_contains($userAgent, 'UnlockRentalsIOSApp')
+            || $request->query('app') === '1'
+            || $request->header('X-UnlockRentals-App') === '1'
+            || session('is_mobile_app') === true
+            || $request->cookie('is_mobile_app') === '1';
+    }
+
+    /**
+     * Check if request originates from a mobile app or mobile device.
+     */
+    public static function isMobileDevice(Request $request): bool
+    {
+        if (self::isMobileApp($request)) {
+            return true;
+        }
+        $userAgent = $request->userAgent() ?? '';
+        return (bool) preg_match('/(android|iphone|ipad|ipod|mobile)/i', $userAgent);
+    }
+
+    /**
      * Redirect to social provider.
      */
     public function redirectToProvider($provider)
@@ -81,10 +109,16 @@ class AuthController extends Controller
         }
 
         $request = request();
+        $isMobile = self::isMobileDevice($request);
         $redirectPath = $user->isAdmin() ? '/admin' : '/';
 
         $request->session()->regenerate();
         session()->forget('url.intended');
+
+        if ($isMobile) {
+            session(['is_mobile_app' => true]);
+            cookie()->queue(cookie()->forever('is_mobile_app', '1'));
+        }
 
         // If explicitly requested from the native mobile app via app parameter
         if ($request->query('app') === '1' || session('is_mobile_app')) {
@@ -116,6 +150,8 @@ class AuthController extends Controller
                 Auth::login($user, true);
                 $request->session()->regenerate();
                 session()->forget('url.intended');
+                session(['is_mobile_app' => true]);
+                cookie()->queue(cookie()->forever('is_mobile_app', '1'));
                 $target = $user->isAdmin() ? route('admin.dashboard') : route('home');
                 return redirect($target)->with('success', 'Welcome, ' . $user->name . '!');
             }
@@ -148,9 +184,18 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $isMobile = self::isMobileDevice($request);
+        // On mobile apps or mobile devices, ALWAYS keep user logged in with remember token
+        $remember = $request->boolean('remember') || $isMobile;
+
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
             session()->forget('url.intended');
+
+            if ($isMobile) {
+                session(['is_mobile_app' => true]);
+                cookie()->queue(cookie()->forever('is_mobile_app', '1'));
+            }
 
             $targetUrl = auth()->user()->isAdmin() ? route('admin.dashboard') : route('home');
 
@@ -224,10 +269,16 @@ class AuthController extends Controller
             'phone_verified_at' => $phoneVerifiedAt,
         ]);
 
-        Auth::login($user);
+        $isMobile = self::isMobileDevice($request);
+        Auth::login($user, true);
 
         $request->session()->regenerate();
         session()->forget('url.intended');
+
+        if ($isMobile) {
+            session(['is_mobile_app' => true]);
+            cookie()->queue(cookie()->forever('is_mobile_app', '1'));
+        }
 
         $targetUrl = $user->isAdmin() ? route('admin.dashboard') : route('home');
 

@@ -60,10 +60,11 @@ public class MainActivity extends AppCompatActivity {
         webView.setFocusableInTouchMode(true);
         webView.setHapticFeedbackEnabled(true);
 
-        // Configure CookieManager
+        // Configure CookieManager for persistent sessions across app restarts
         android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
         cookieManager.setAcceptThirdPartyCookies(webView, true);
+        cookieManager.flush();
 
         // Configure WebSettings for instant tap response and fastest page rendering
         WebSettings webSettings = webView.getSettings();
@@ -122,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 progressBar.setVisibility(View.GONE);
                 swipeRefreshLayout.setRefreshing(false);
+                // Persist session and authentication cookies to SQLite disk storage
+                android.webkit.CookieManager.getInstance().flush();
             }
 
             @Override
@@ -396,10 +399,13 @@ public class MainActivity extends AppCompatActivity {
             webView.onPause();
             webView.pauseTimers();
         }
+        // Force flush all session and login cookies to SQLite disk before app enters background
+        android.webkit.CookieManager.getInstance().flush();
     }
 
     @Override
     protected void onDestroy() {
+        android.webkit.CookieManager.getInstance().flush();
         if (webView != null) {
             webView.destroy();
         }

@@ -155,6 +155,11 @@ class OtpController extends Controller
         $request->session()->regenerate();
         session()->forget('url.intended');
 
+        if (\App\Http\Controllers\AuthController::isMobileDevice($request)) {
+            session(['is_mobile_app' => true]);
+            cookie()->queue(cookie()->forever('is_mobile_app', '1'));
+        }
+
         $redirect = route('home');
 
         return response()->json([
