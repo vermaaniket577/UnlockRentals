@@ -32,9 +32,39 @@ class ScrapeCityCommand extends Command
     public function handle(): int
     {
         $rawArg = (string) $this->argument('city');
-        $count = (int) $this->option('count');
+        $count = (int) ($this->option('count') ?: 10);
+        $type = (string) ($this->option('type') ?: 'all');
+        $purpose = (string) ($this->option('purpose') ?: 'rent');
+        $engine = (string) ($this->option('engine') ?: 'playwright');
+        $createAccounts = (bool) $this->option('create-accounts');
 
-        $this->info("Starting scraper for: {$city} (Target: {$count} listings, Type: {$type}, Purpose: {$purpose})...");
+        // Check if raw argument is a URL or contains 99acres
+        if (preg_match('/^(https?:\/\/|www\.)/i', $rawArg) || str_contains($rawArg, '99acres')) {
+            [$city, $state] = Property::extractCityAndStateFromUrl($rawArg);
+            $targetUrl = $rawArg;
+        } else {
+            $city = trim($rawArg) ?: 'Gurgaon';
+            $map = [
+                'indore'    => 'Madhya Pradesh',
+                'bhopal'    => 'Madhya Pradesh',
+                'gurgaon'   => 'Haryana',
+                'gurugram'  => 'Haryana',
+                'noida'     => 'Uttar Pradesh',
+                'delhi'     => 'Delhi',
+                'bangalore' => 'Karnataka',
+                'bengaluru' => 'Karnataka',
+                'mumbai'    => 'Maharashtra',
+                'pune'      => 'Maharashtra',
+                'hyderabad' => 'Telangana',
+                'chennai'   => 'Tamil Nadu',
+                'kolkata'   => 'West Bengal',
+                'jaipur'    => 'Rajasthan',
+            ];
+            $state = $map[strtolower($city)] ?? 'India';
+            $targetUrl = null;
+        }
+
+        $this->info("Starting scraper for: {$city} (Target: {$count} listings, Type: {$type}, Purpose: {$purpose}, Engine: {$engine})...");
 
         $scriptPath = base_path('scrapers/crawl_and_import.py');
         if (!file_exists($scriptPath)) {
@@ -52,7 +82,10 @@ class ScrapeCityCommand extends Command
         $targetToScrape = $targetUrl ?: $city;
         $escapedTarget = escapeshellarg($targetToScrape);
         $escapedScript = escapeshellarg($scriptPath);
-        $command = "{$pythonBinary} {$escapedScript} {$escapedCity} {$count} --json";
+        $escapedPurpose = escapeshellarg($purpose ?: 'rent');
+        $escapedType = escapeshellarg($type ?: 'all');
+        $escapedEngine = escapeshellarg($engine ?: 'playwright');
+        $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine}";
         $this->line("Running: {$command}");
 
         exec($command, $output, $returnCode);
@@ -69,7 +102,7 @@ class ScrapeCityCommand extends Command
 
         if (empty($items) || !is_array($items)) {
             $this->warn("Live python scraper did not return listings (Code: {$returnCode}). Using verified listings pool for {$city}...");
-            $items = $this->getFallbackProperties($city, $count);
+            $items = $this->getFallbackProperties($city, $count, $type, $state);
         }
 
         $adminUser = User::where('role', 'admin')->first() ?? User::first();
@@ -90,7 +123,7 @@ class ScrapeCityCommand extends Command
             $propertyUserId = $defaultUserId;
             $sellerName = trim($item['seller_name'] ?? '');
 
-            if (!empty($sellerName) && strtolower($sellerName) !== 'property owner') {
+            if ($createAccounts && !empty($sellerName) && strtolower($sellerName) !== 'property owner') {
                 $contactPhone = $item['contact_phone'] ?? null;
                 $company = $item['seller_company'] ?? null;
                 $photo = $item['seller_photo'] ?? null;
@@ -140,6 +173,23 @@ class ScrapeCityCommand extends Command
 
             $itemType = in_array($item['type'] ?? '', ['house', 'shop', 'pg-hostel', 'hotel', 'plot']) ? $item['type'] : 'house';
             $itemPurpose = in_array($item['purpose'] ?? '', ['rent', 'buy']) ? $item['purpose'] : 'rent';
+
+            // Explicit PG & Hostel Detection
+            $isPg = in_array(strtolower($itemType), ['pg', 'pg-hostel']) || 
+                    in_array(strtolower($type ?? ''), ['pg', 'pg-hostel']) || 
+                    str_contains(strtolower($item['title'] ?? ''), 'pg') || 
+                    str_contains(strtolower($item['title'] ?? ''), 'paying guest') ||
+                    str_contains(strtolower($item['category_name'] ?? ''), 'pg');
+
+            if ($isPg) {
+                $itemType = 'pg-hostel';
+                $itemPurpose = 'rent';
+                $pgCategory = Category::where('slug', 'pg-hostel')->orWhere('name', 'like', '%PG%')->first();
+                if ($pgCategory) {
+                    $itemCategoryId = $pgCategory->id;
+                    $category = $pgCategory;
+                }
+            }
 
             $itemCity = Property::cleanUrlFromText($item['city'] ?? $city, true) ?: $city;
             $itemState = Property::cleanUrlFromText($item['state'] ?? $state, false) ?: $state;
@@ -201,10 +251,16 @@ class ScrapeCityCommand extends Command
     /**
      * Fallback verified property listings pool if Python scraper is unavailable on shared hosting.
      */
-    private function getFallbackProperties(string $city, int $count, string $type = 'all', string $state = 'Haryana'): array
+    private function getFallbackProperties(string $city, int $count, string $type = 'all', string $state = 'India'): array
     {
-        $cleanCity = Property::cleanUrlFromText($city, true) ?: 'Gurgaon';
-        $cleanState = Property::cleanUrlFromText($state, false) ?: 'Haryana';
+        if (preg_match('/^(https?:\/\/|www\.)/i', $city) || str_contains($city, '99acres')) {
+            [$extractedCity, $extractedState] = Property::extractCityAndStateFromUrl($city);
+            $cleanCity = $extractedCity ?: 'Gurgaon';
+            $cleanState = $extractedState ?: 'India';
+        } else {
+            $cleanCity = Property::cleanUrlFromText($city, true) ?: 'Gurgaon';
+            $cleanState = Property::cleanUrlFromText($state, false) ?: 'India';
+        }
 
         $isPg = in_array(strtolower($type), ['pg', 'pg-hostel', 'hostel']) || str_contains(strtolower($city), 'pg');
         if ($isPg) {

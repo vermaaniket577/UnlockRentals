@@ -2611,6 +2611,11 @@ class AdminController extends Controller
         $propertyType = strtolower(trim((string) $request->input('property_type', 'all')));
         $url = trim((string) $request->input('url', ''));
 
+        if (empty($city) && !empty($url)) {
+            [$extractedCity] = Property::extractCityAndStateFromUrl($url);
+            $city = $extractedCity ?: 'Delhi';
+        }
+
         // If direct URL is given, use it. Otherwise, target the city (or 'all' for all cities)
         $target = !empty($url) ? $url : (!empty($city) ? $city : 'delhi');
 

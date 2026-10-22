@@ -6,7 +6,12 @@ import random
 import json
 import sqlite3
 import signal
-from curl_cffi import requests
+try:
+    from curl_cffi import requests
+    HAS_CURL_CFFI = True
+except ImportError:
+    import requests
+    HAS_CURL_CFFI = False
 from bs4 import BeautifulSoup
 
 # Global hard timeout for Linux environments to prevent zombie processes
@@ -216,7 +221,10 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
     state = config.get("state", "India")
 
     try:
-        response = requests.get(url, headers=HEADERS, impersonate="chrome120", timeout=25)
+        if HAS_CURL_CFFI:
+            response = requests.get(url, headers=HEADERS, impersonate="chrome120", timeout=25)
+        else:
+            response = requests.get(url, headers=HEADERS, timeout=25)
     except Exception as e:
         sys.stderr.write(f"Fetch error: {e}\n")
         return []
