@@ -234,6 +234,7 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
         return []
 
     items = []
+    seen_batch_keys = set()
 
     # Priority 1: Extract complete rich gallery & property details from window.__initialData__
     match = re.search(r'window\.__initialData__\s*=\s*(\{.*?\});', response.text)
@@ -311,6 +312,11 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                     desc = p.get("description", {}).get("text") or ""
                     if len(desc) < 30:
                         desc = f"Premium {title} situated in {locality}, {item_city}. Masterfully planned by {builder} with lifestyle amenities, grand architecture, and high connectivity."
+
+                    batch_key = f"{item_city.lower()}_{price}_{re.sub(r'[^a-z0-9]', '', title.lower())}"
+                    if batch_key in seen_batch_keys:
+                        continue
+                    seen_batch_keys.add(batch_key)
 
                     items.append({
                         "title": title,
@@ -399,6 +405,11 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                     clean_title = clean_text_no_urls(title, f"Property in {item_city}")
                     clean_locality = clean_text_no_urls(locality, item_city)
                     clean_desc = clean_text_no_urls(desc, f"{clean_title} in {clean_locality}, {item_city}.")
+
+                    batch_key = f"{item_city.lower()}_{price}_{re.sub(r'[^a-z0-9]', '', clean_title.lower())}"
+                    if batch_key in seen_batch_keys:
+                        continue
+                    seen_batch_keys.add(batch_key)
 
                     items.append({
                         "title": clean_title,

@@ -587,4 +587,177 @@ class Property extends Model
             $this->attributes['furnishing'] = 'unfurnished';
         }
     }
+
+    /**
+     * Check if a property matching the incoming item already exists in the database.
+     * Uses a multi-tier precision algorithm:
+     * 1. Primary image URL / filename match (99acres photo CDN URLs are globally unique to a listing)
+     * 2. Exact Title + City + Price + Purpose match
+     * 3. Normalized Title + City + Locality match
+     * 4. City + Locality + Price + Bedrooms match
+     * 5. High title similarity (>=85%) + City + Price match
+     */
+    public static function findDuplicate(array $data): ?self
+    {
+        $cleanTitle = self::cleanUrlFromText($data['title'] ?? '', true);
+        if (empty($cleanTitle)) {
+            return null;
+        }
+
+        $city = self::cleanUrlFromText($data['city'] ?? $data['location'] ?? '', true);
+        $price = (float) ($data['price'] ?? 0);
+        $purpose = strtolower(trim((string) ($data['purpose'] ?? 'rent')));
+        $locality = self::cleanUrlFromText($data['locality'] ?? '', false);
+        $bedrooms = isset($data['bedrooms']) ? (int) $data['bedrooms'] : null;
+
+        // Check 1: Image Match (99acres photo filenames e.g. 498255979M are unique to the listing)
+        if (!empty($data['images']) && is_array($data['images'])) {
+            $firstImg = trim((string) reset($data['images']));
+            if (!empty($firstImg) && !str_contains($firstImg, 'property_placeholder') && !str_contains($firstImg, 'unsplash')) {
+                $baseImg = basename(preg_replace('/(\?.*)$/', '', $firstImg));
+                if (!empty($baseImg) && strlen($baseImg) > 6) {
+                    $matchedImg = \App\Models\PropertyImage::where('path', $firstImg)
+                        ->orWhere('path', 'like', "%{$baseImg}%")
+                        ->first();
+                    if ($matchedImg && $matchedImg->property_id) {
+                        $prop = self::find($matchedImg->property_id);
+                        if ($prop) {
+                            return $prop;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check 2: Exact Title + City + Purpose match
+        $query = self::query();
+        if (!empty($city)) {
+            $query->where(function ($q) use ($city) {
+                $q->where('location', 'like', "%{$city}%")
+                  ->orWhere('address', 'like', "%{$city}%");
+            });
+        }
+        if (!empty($purpose)) {
+            $query->where('purpose', $purpose);
+        }
+
+        $exactMatch = (clone $query)->where('title', $cleanTitle);
+        if ($price > 0) {
+            $exactMatch->whereBetween('price', [$price * 0.95, $price * 1.05]);
+        }
+        $found = $exactMatch->first();
+        if ($found) {
+            return $found;
+        }
+
+        // Check 3: Normalized Title (alphanumeric only) + City
+        $normalizedSearchTitle = preg_replace('/[^a-z0-9]/', '', strtolower($cleanTitle));
+        if (strlen($normalizedSearchTitle) >= 8) {
+            $candidates = (clone $query);
+            if ($price > 0) {
+                $candidates->whereBetween('price', [$price * 0.90, $price * 1.10]);
+            }
+            $candidatesList = $candidates->limit(30)->get();
+
+            foreach ($candidatesList as $cand) {
+                $candNorm = preg_replace('/[^a-z0-9]/', '', strtolower($cand->title));
+                if ($candNorm === $normalizedSearchTitle) {
+                    return $cand;
+                }
+
+                // Check 4: Same locality + same bedrooms + same price
+                if (!empty($locality) && $bedrooms !== null && $cand->bedrooms == $bedrooms) {
+                    $candLocNorm = preg_replace('/[^a-z0-9]/', '', strtolower($cand->locality ?? ''));
+                    $searchLocNorm = preg_replace('/[^a-z0-9]/', '', strtolower($locality));
+                    if (!empty($candLocNorm) && !empty($searchLocNorm) && (str_contains($candLocNorm, $searchLocNorm) || str_contains($searchLocNorm, $candLocNorm))) {
+                        if ($price > 0 && abs($cand->price - $price) / $price <= 0.05) {
+                            return $cand;
+                        }
+                    }
+                }
+
+                // Check 5: Title similarity percentage
+                similar_text($candNorm, $normalizedSearchTitle, $percent);
+                if ($percent >= 85) {
+                    return $cand;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Merge and clean duplicate property listings in the database.
+     * Retains the primary (best) listing, migrates all inquiries/leads/images,
+     * and deletes redundant copies.
+     */
+    public static function cleanDuplicates(): int
+    {
+        $deletedCount = 0;
+
+        $properties = self::with(['images', 'inquiries'])->orderBy('id', 'asc')->get();
+        $grouped = [];
+
+        foreach ($properties as $prop) {
+            $cleanTitle = self::cleanUrlFromText($prop->title, true);
+            $normTitle = preg_replace('/[^a-z0-9]/', '', strtolower($cleanTitle));
+            $normCity = strtolower(trim((string) $prop->location));
+            $normPrice = round((float) $prop->price, -2);
+            $normPurpose = strtolower(trim((string) $prop->purpose));
+
+            // Generate fingerprint key
+            $key = "{$normCity}_{$normPurpose}_{$normPrice}_{$normTitle}";
+            $grouped[$key][] = $prop;
+        }
+
+        foreach ($grouped as $key => $props) {
+            if (count($props) <= 1) {
+                continue;
+            }
+
+            // Sort: best record first (most images, approved, oldest ID)
+            usort($props, function ($a, $b) {
+                $imgDiff = ($b->images?->count() ?? 0) - ($a->images?->count() ?? 0);
+                if ($imgDiff !== 0) return $imgDiff;
+
+                if ($a->status === 'approved' && $b->status !== 'approved') return -1;
+                if ($b->status === 'approved' && $a->status !== 'approved') return 1;
+
+                return $a->id - $b->id;
+            });
+
+            $primary = array_shift($props);
+
+            foreach ($props as $dupe) {
+                // Re-link inquiries and leads to primary
+                \App\Models\Inquiry::where('property_id', $dupe->id)->update(['property_id' => $primary->id]);
+                \App\Models\Lead::where('property_id', $dupe->id)->update(['property_id' => $primary->id]);
+
+                // Migrate unique images if primary has fewer than 10
+                if (($primary->images?->count() ?? 0) < 10 && $dupe->images) {
+                    foreach ($dupe->images as $dupeImg) {
+                        $exists = \App\Models\PropertyImage::where('property_id', $primary->id)
+                            ->where('path', $dupeImg->path)
+                            ->exists();
+                        if (!$exists) {
+                            $dupeImg->update(['property_id' => $primary->id]);
+                        }
+                    }
+                }
+
+                \App\Models\PropertyImage::where('property_id', $dupe->id)->delete();
+                $dupe->delete();
+                $deletedCount++;
+            }
+        }
+
+        if ($deletedCount > 0) {
+            \Illuminate\Support\Facades\Cache::forget('home_featured_rentals');
+            \Illuminate\Support\Facades\Cache::forget('home_featured_properties');
+            \Illuminate\Support\Facades\Cache::forget('admin_dashboard_stats');
+        }
+
+        return $deletedCount;
+    }
 }

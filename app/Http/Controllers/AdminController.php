@@ -2494,10 +2494,12 @@ class AdminController extends Controller
     {
         $city = $request->get('city', 'Gurgaon');
         $count = (int) $request->get('count', 2);
+        $autoClean = $request->boolean('clean_duplicates', true);
 
         // Allow direct JSON property payload ingestion
         if ($request->has('properties') && is_array($request->input('properties'))) {
             $inserted = 0;
+            $duplicatesSkipped = 0;
             $adminUser = User::where('role', 'admin')->first() ?? User::first();
             $userId = $adminUser ? $adminUser->id : 1;
             $category = \App\Models\Category::first();
@@ -2506,6 +2508,26 @@ class AdminController extends Controller
 
             foreach ($request->input('properties') as $item) {
                 if (empty($item['title'])) continue;
+
+                // Check duplicate before creation
+                $candidateCheck = [
+                    'title'         => $item['title'],
+                    'city'          => $item['location'] ?? $city,
+                    'location'      => $item['location'] ?? $city,
+                    'locality'      => $item['locality'] ?? '',
+                    'price'         => $item['price'] ?? 25000,
+                    'purpose'       => $item['purpose'] ?? 'rent',
+                    'bedrooms'      => $item['bedrooms'] ?? 2,
+                    'images'        => $item['images'] ?? [],
+                    'contact_phone' => $item['contact_phone'] ?? null,
+                ];
+
+                $existing = Property::findDuplicate($candidateCheck);
+                if ($existing) {
+                    $duplicatesSkipped++;
+                    continue;
+                }
+
                 $slug = Str::slug($item['title']) . '-' . rand(10000, 99999);
                 $prop = Property::create([
                     'user_id'       => $userId,
@@ -2548,11 +2570,14 @@ class AdminController extends Controller
             Cache::forget('admin_dashboard_stats');
 
             return response()->json([
-                'status'           => 'success',
-                'message'          => "Imported {$inserted} direct listings",
-                'total_properties' => Property::count(),
-                'latest_id'        => Property::latest('id')->first()?->id ?? 0,
-                'synced_at'        => now()->toDateTimeString(),
+                'status'               => 'success',
+                'success'              => true,
+                'message'              => "Imported {$inserted} direct listings ({$duplicatesSkipped} duplicates skipped)",
+                'new_imported'         => $inserted,
+                'duplicates_prevented' => $duplicatesSkipped,
+                'total_properties'     => Property::count(),
+                'latest_id'            => Property::latest('id')->first()?->id ?? 0,
+                'synced_at'            => now()->toDateTimeString(),
             ]);
         }
 
@@ -2560,6 +2585,7 @@ class AdminController extends Controller
         if (!$lock->get()) {
             return response()->json([
                 'status'  => 'busy',
+                'success' => false,
                 'message' => 'Crawler is already actively executing in background.',
             ], 429);
         }
@@ -2576,6 +2602,11 @@ class AdminController extends Controller
                 \Illuminate\Support\Facades\Artisan::call('properties:enrich-images');
             } catch (\Throwable $e) {}
 
+            $cleanedCount = 0;
+            if ($autoClean) {
+                $cleanedCount = Property::cleanDuplicates();
+            }
+
             Cache::forget('home_featured_rentals');
             Cache::forget('home_featured_properties');
             Cache::forget('admin_dashboard_stats');
@@ -2583,21 +2614,42 @@ class AdminController extends Controller
             $latestProp = Property::latest('id')->first();
 
             return response()->json([
-                'status'           => 'success',
-                'message'          => "Scraped and synced {$city}",
-                'synced_at'        => now()->toDateTimeString(),
-                'total_properties' => Property::count(),
-                'latest_id'        => $latestProp ? $latestProp->id : 0,
+                'status'               => 'success',
+                'success'              => true,
+                'message'              => "Checked and synced {$city}. Duplicates checked & filtered.",
+                'city'                 => $city,
+                'duplicates_cleaned'   => $cleanedCount,
+                'synced_at'            => now()->toDateTimeString(),
+                'total_properties'     => Property::count(),
+                'latest_id'            => $latestProp ? $latestProp->id : 0,
             ]);
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'error',
+                'success' => false,
                 'message' => $e->getMessage(),
             ], 500);
         } finally {
             optional($lock)->release();
             try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
         }
+    }
+
+    /**
+     * Dedicated API endpoint to clean duplicate properties on demand.
+     */
+    public function apiCleanDuplicates(Request $request)
+    {
+        $cleaned = Property::cleanDuplicates();
+        return response()->json([
+            'status'             => 'success',
+            'success'            => true,
+            'message'            => "Cleaned {$cleaned} duplicate property records from database.",
+            'duplicates_cleaned' => $cleaned,
+            'total_properties'   => Property::count(),
+            'latest_id'          => Property::latest('id')->first()?->id ?? 0,
+            'cleaned_at'         => now()->toDateTimeString(),
+        ]);
     }
 
     /**
@@ -2692,9 +2744,40 @@ class AdminController extends Controller
 
             $createdAccounts = [];
             $createdProperties = [];
+            $duplicatesSkippedCount = 0;
 
             foreach ($items as $item) {
                 if (empty($item['title'])) continue;
+
+                // Precision duplicate check before creating accounts or listings
+                $candidateCheck = [
+                    'title'         => $item['title'],
+                    'city'          => $item['city'] ?? $city,
+                    'location'      => $item['city'] ?? $city,
+                    'locality'      => $item['locality'] ?? '',
+                    'price'         => $item['price'] ?? 25000,
+                    'purpose'       => $item['purpose'] ?? $purpose,
+                    'bedrooms'      => $item['bedrooms'] ?? 2,
+                    'images'        => $item['images'] ?? [],
+                    'contact_phone' => $item['contact_phone'] ?? null,
+                ];
+
+                $existing = Property::findDuplicate($candidateCheck);
+                if ($existing) {
+                    $duplicatesSkippedCount++;
+                    // Enrich images if existing property has no photos
+                    if ($existing->images()->count() === 0 && !empty($item['images']) && is_array($item['images'])) {
+                        foreach ($item['images'] as $idx => $imgUrl) {
+                            \App\Models\PropertyImage::create([
+                                'property_id' => $existing->id,
+                                'path'        => $imgUrl,
+                                'is_primary'  => ($idx === 0),
+                                'sort_order'  => $idx,
+                            ]);
+                        }
+                    }
+                    continue;
+                }
 
                 $propertyUserId = $defaultUserId;
                 $ownerName = 'Admin';
@@ -2851,10 +2934,11 @@ class AdminController extends Controller
 
             return response()->json([
                 'success'              => true,
-                'message'              => "Successfully fetched & posted " . count($createdProperties) . " properties and created/linked " . count($createdAccounts) . " owner accounts using " . strtoupper($engine) . " engine!",
+                'message'              => "Fetched listings: " . count($createdProperties) . " newly posted, " . $duplicatesSkippedCount . " duplicates skipped (prevented), " . count($createdAccounts) . " owner accounts linked.",
                 'url'                  => $url,
                 'engine'               => $engine,
                 'imported_count'       => count($createdProperties),
+                'duplicates_prevented' => $duplicatesSkippedCount,
                 'accounts_created'     => count($createdAccounts),
                 'accounts'             => $createdAccounts,
                 'properties'           => $createdProperties,

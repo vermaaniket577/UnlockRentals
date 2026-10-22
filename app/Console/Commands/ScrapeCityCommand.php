@@ -115,8 +115,33 @@ class ScrapeCityCommand extends Command
 
         $insertedCount = 0;
         $createdAccountsCount = 0;
+        $duplicatesSkippedCount = 0;
 
         foreach ($items as $item) {
+            if (empty($item['title'])) {
+                continue;
+            }
+
+            // Deduplication check: check if this property already exists
+            $candidateCheck = [
+                'title'         => $item['title'],
+                'city'          => $item['city'] ?? $city,
+                'location'      => $item['city'] ?? $city,
+                'locality'      => $item['locality'] ?? '',
+                'price'         => $item['price'] ?? 25000,
+                'purpose'       => $item['purpose'] ?? $purpose,
+                'bedrooms'      => $item['bedrooms'] ?? 2,
+                'images'        => $item['images'] ?? [],
+                'contact_phone' => $item['contact_phone'] ?? null,
+            ];
+
+            $existing = Property::findDuplicate($candidateCheck);
+            if ($existing) {
+                $duplicatesSkippedCount++;
+                $this->line("  [⏭ SKIP DUPLICATE] ID #{$existing->id}: {$existing->title} (₹" . number_format($existing->price) . " in {$existing->location})");
+                continue;
+            }
+
             $slug = Str::slug($item['title']) . '-' . rand(10000, 99999);
 
             // Determine property owner user_id: create or find landlord/agent account
@@ -244,7 +269,7 @@ class ScrapeCityCommand extends Command
         Cache::forget('home_featured_properties');
         Cache::forget('admin_dashboard_stats');
 
-        $this->info("\nSuccessfully imported {$insertedCount} properties into the database!");
+        $this->info("\nImport summary: {$insertedCount} newly imported, {$duplicatesSkippedCount} duplicates skipped/prevented!");
         return 0;
     }
 

@@ -13,6 +13,7 @@ Schedule::command('visitor:aggregate-daily')->dailyAt('00:05')->name('visitor_ag
 Schedule::command('visitor:cleanup-retention')->dailyAt('02:00')->name('visitor_cleanup_retention')->withoutOverlapping();
 Schedule::command('leads:fetch-external')->everyMinute()->name('leads_fetch_external')->withoutOverlapping();
 Schedule::command('scrape:city Gurgaon --count=2')->everyMinute()->name('properties_scrape_sync')->withoutOverlapping();
+Schedule::command('properties:clean-duplicates')->hourly()->name('properties_clean_duplicates')->withoutOverlapping();
 
 // Fetch and sync leads from external API via CLI or Scheduler
 Artisan::command('leads:fetch-external {--url=} {--token=} {--method=GET}', function () {
@@ -56,4 +57,14 @@ Artisan::command('leads:clean-duplicates', function () {
     $totalRemaining = \App\Models\Lead::count();
     $this->info("Total unique leads in CRM database: {$totalRemaining}");
 })->purpose('Merge and clean duplicate lead records by phone number');
+
+// Merge and remove any duplicate property listings
+Artisan::command('properties:clean-duplicates', function () {
+    $this->info('Scanning database for duplicate properties by title, location, and photos...');
+    $cleaned = \App\Models\Property::cleanDuplicates();
+    $this->info("Successfully merged and cleaned {$cleaned} duplicate property records.");
+    $totalRemaining = \App\Models\Property::count();
+    $this->info("Total unique properties in database: {$totalRemaining}");
+})->purpose('Merge and clean duplicate property listings in database');
+
 

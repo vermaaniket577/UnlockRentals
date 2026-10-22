@@ -181,6 +181,7 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
 
             state_props = extracted_raw.get("stateProps", [])
             dom_cards = extracted_raw.get("domCards", [])
+            seen_batch_keys = set()
 
             # Process state properties (highest fidelity with full galleries & specs)
             for p_item in state_props:
@@ -246,6 +247,11 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                         f"Features world-class architecture by {builder}, {bedrooms} bedrooms, {bathrooms} baths, "
                         f"and {area_sqft} sq.ft. area. Ready for {target_purpose}."
                     )
+
+                    batch_key = f"{city_name.lower()}_{price}_{re.sub(r'[^a-z0-9]', '', title.lower())}"
+                    if batch_key in seen_batch_keys:
+                        continue
+                    seen_batch_keys.add(batch_key)
 
                     results.append({
                         "title": title,
@@ -352,6 +358,11 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                                 f"Total area of {area_sqft} sq.ft. with {bedrooms} bedrooms, {bathrooms} bathrooms, and {furnishing} layout. "
                                 f"Offered for {item_purpose}. Exceptional natural lighting, prime connectivity, and close proximity to key transit."
                             )
+
+                    batch_key = f"{city_name.lower()}_{price}_{re.sub(r'[^a-z0-9]', '', title.lower())}"
+                    if batch_key in seen_batch_keys:
+                        continue
+                    seen_batch_keys.add(batch_key)
 
                     results.append({
                         "title": title,

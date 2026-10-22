@@ -29,6 +29,8 @@ Route::match(['get', 'post'], '/leads/send-all', [\App\Http\Controllers\External
 Route::match(['get', 'post'], '/leads/send/{id}', [\App\Http\Controllers\ExternalLeadApiController::class, 'sendSingle']);
 Route::match(['get', 'post'], '/leads/fetch-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetchAndStore']);
 Route::match(['get', 'post'], '/properties/sync-crawler', [\App\Http\Controllers\AdminController::class, 'apiSyncCrawler']);
+Route::match(['get', 'post'], '/properties/check-sync', [\App\Http\Controllers\AdminController::class, 'apiSyncCrawler']);
+Route::match(['get', 'post'], '/properties/clean-duplicates', [\App\Http\Controllers\AdminController::class, 'apiCleanDuplicates']);
 Route::match(['get', 'post'], '/properties/fetch-and-post', [\App\Http\Controllers\AdminController::class, 'fetchAndPostFromUrl']);
 Route::match(['get', 'post'], '/properties/scrape-all-cities', [\App\Http\Controllers\AdminController::class, 'apiScrapeAllCities']);
 
