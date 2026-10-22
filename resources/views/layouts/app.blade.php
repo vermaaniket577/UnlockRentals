@@ -241,7 +241,7 @@
     @endif
 
     {{-- Premium UnlockRentals Styles --}}
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20261022-hcard-buttons-v3">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20261022-gradient-buttons-engine">
     <style>
         @keyframes premiumShine {
             0% { transform: translateX(-140%); }

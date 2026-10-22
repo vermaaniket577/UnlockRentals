@@ -147,10 +147,11 @@
                 {{-- Fetch & Post from URL Button --}}
                 <button type="button" 
                         onclick="openFetchUrlModal()" 
-                        class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 px-3.5 py-2 rounded-lg shadow-sm transition-all cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-95 border border-indigo-400/30"
+                        class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-violet-600 via-indigo-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 px-3.5 py-2 rounded-lg shadow-sm transition-all cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-95 border"
+                        style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #2563eb 100%) !important; background-color: #4f46e5 !important; color: #ffffff !important; border-color: rgba(99, 102, 241, 0.4) !important;"
                         title="Fetch listings from 99acres URL, auto-create owner accounts, and post directly">
-                    <i class="ph-bold ph-magnifying-glass-plus text-sm"></i>
-                    <span>Search &amp; Scrape (99acres)</span>
+                    <i class="ph-bold ph-magnifying-glass-plus text-sm" style="color: #ffffff !important;"></i>
+                    <span style="color: #ffffff !important;">Search &amp; Scrape (99acres)</span>
                 </button>
 
                 {{-- Live 1-Minute Auto-Sync Controls --}}
@@ -604,12 +605,16 @@
 
                 {{-- Modal Action Buttons --}}
                 <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeFetchUrlModal()" class="px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer">
+                    <button type="button" onclick="closeFetchUrlModal()" 
+                            class="px-4 py-2.5 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                            style="background-color: #f1f5f9 !important; color: #334155 !important; border: 1px solid #cbd5e1 !important;">
                         Cancel
                     </button>
-                    <button type="submit" id="fetchSubmitBtn" class="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-black text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-xl shadow-md transition-all cursor-pointer hover:shadow-lg disabled:opacity-50 active:scale-95">
-                        <i class="ph-bold ph-download-simple text-sm" id="fetchSubmitIcon"></i>
-                        <span id="fetchSubmitText">Scrape &amp; Publish in Website</span>
+                    <button type="submit" id="fetchSubmitBtn" 
+                            class="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-black text-white rounded-xl shadow-md transition-all cursor-pointer hover:shadow-lg disabled:opacity-50 active:scale-95"
+                            style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important; background-color: #4f46e5 !important; color: #ffffff !important; border: 1px solid #4338ca !important;">
+                        <i class="ph-bold ph-download-simple text-sm" id="fetchSubmitIcon" style="color: #ffffff !important;"></i>
+                        <span id="fetchSubmitText" style="color: #ffffff !important;">Scrape &amp; Publish in Website</span>
                     </button>
                 </div>
             </form>
