@@ -145,6 +145,35 @@ class Property extends Model
     }
 
     /**
+     * Apply or update pagination page number on any 99acres or search URL.
+     */
+    public static function applyPageToUrl(?string $url, int $page = 1): string
+    {
+        if (empty($url)) {
+            return '';
+        }
+
+        if ($page <= 1) {
+            $cleaned = preg_replace('/-page-\d+/', '', $url);
+            return rtrim(preg_replace('/([?&])page=\d+&?/', '$1', $cleaned), '?&');
+        }
+
+        if (str_contains($url, '-ffid')) {
+            if (str_contains($url, '-page-')) {
+                return preg_replace('/-page-\d+/', "-page-{$page}", $url);
+            }
+            return str_replace('-ffid', "-ffid-page-{$page}", $url);
+        }
+
+        if (str_contains($url, 'page=')) {
+            return preg_replace('/([?&]page=)\d+/', "\${1}{$page}", $url);
+        }
+
+        $sep = str_contains($url, '?') ? '&' : '?';
+        return "{$url}{$sep}page={$page}";
+    }
+
+    /**
      * Bulletproof sanitization to remove all 99acres URLs, domains, and artifacts from any text.
      */
     public static function cleanUrlFromText(?string $text, bool $extractCity = false): string

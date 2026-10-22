@@ -591,34 +591,55 @@ def save_items_to_sqlite(items):
     conn.close()
     return saved
 
-def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: str = "all") -> str:
+def apply_page_to_url(url: str, page: int = 1) -> str:
+    if not url:
+        return url
+    if page <= 1:
+        cleaned = re.sub(r"-page-\d+", "", url)
+        cleaned = re.sub(r"([?&])page=\d+&?", r"\1", cleaned).rstrip("?&")
+        return cleaned
+
+    if "-ffid" in url:
+        if "-page-" in url:
+            return re.sub(r"-page-\d+", f"-page-{page}", url)
+        return url.replace("-ffid", f"-ffid-page-{page}")
+
+    if "page=" in url:
+        return re.sub(r"([?&]page=)\d+", f"\\g<1>{page}", url)
+
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}page={page}"
+
+def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: str = "all", page: int = 1) -> str:
     city_slug = re.sub(r"[^a-zA-Z0-9]+", "-", city_name.lower()).strip("-")
     pt = str(property_type).lower().strip()
     purp_str = str(purpose).lower().strip()
 
     # Dedicated 99acres PG & Hostel URL format: https://www.99acres.com/pg-in-{city}-ffid
     if any(k in pt for k in ["pg", "hostel", "paying-guest", "paying guest", "coliving"]) or purp_str == "pg":
-        return f"https://www.99acres.com/pg-in-{city_slug}-ffid"
-
-    purp = "sale" if purp_str in ["buy", "sale", "s"] else "rent"
-    
-    if "builder" in pt:
-        type_slug = "builder-floor"
-    elif "flat" in pt or "apartment" in pt:
-        type_slug = "flats"
-    elif "villa" in pt or "house" in pt:
-        type_slug = "independent-house"
-    elif "plot" in pt or "land" in pt:
-        type_slug = "plots"
-    elif "commercial" in pt or "office" in pt or "shop" in pt:
-        type_slug = "commercial-property"
+        base_url = f"https://www.99acres.com/pg-in-{city_slug}-ffid"
     else:
-        type_slug = "property"
+        purp = "sale" if purp_str in ["buy", "sale", "s"] else "rent"
+        
+        if "builder" in pt:
+            type_slug = "builder-floor"
+        elif "flat" in pt or "apartment" in pt:
+            type_slug = "flats"
+        elif "villa" in pt or "house" in pt:
+            type_slug = "independent-house"
+        elif "plot" in pt or "land" in pt:
+            type_slug = "plots"
+        elif "commercial" in pt or "office" in pt or "shop" in pt:
+            type_slug = "commercial-property"
+        else:
+            type_slug = "property"
 
-    if purp == "sale" and city_slug == "indore" and type_slug == "property":
-        return "https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R"
+        if purp == "sale" and city_slug == "indore" and type_slug == "property":
+            base_url = "https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R"
+        else:
+            base_url = f"https://www.99acres.com/{type_slug}-for-{purp}-in-{city_slug}-ffid"
 
-    return f"https://www.99acres.com/{type_slug}-for-{purp}-in-{city_slug}-ffid"
+    return apply_page_to_url(base_url, page)
 
 def fetch_properties_smart(url: str, city_name: str, state_name: str, max_items: int = 10, purpose: str = "rent", engine: str = "playwright", is_json: bool = False):
     items = []
@@ -647,9 +668,15 @@ if __name__ == "__main__":
     is_json = "--json" in args
 
     engine = "playwright"
+    page_num = 1
     for a in args:
         if a.startswith("--engine="):
             engine = a.split("=", 1)[1].lower()
+        elif a.startswith("--page="):
+            try:
+                page_num = max(1, int(a.split("=", 1)[1]))
+            except:
+                page_num = 1
 
     clean_args = [a for a in args if not a.startswith("--")]
 
@@ -660,11 +687,11 @@ if __name__ == "__main__":
 
     # Support custom 99acres URL directly
     if target_city.startswith("http://") or target_city.startswith("https://"):
-        custom_url = target_city
+        custom_url = apply_page_to_url(target_city, page_num)
         city_name, state = resolve_location(custom_url)
 
         if not is_json:
-            print(f"\n[*] Crawling custom URL for {city_name}, {state} (up to {max_count} listings, engine={engine})...")
+            print(f"\n[*] Crawling custom URL (Page {page_num}) for {city_name}, {state} (up to {max_count} listings, engine={engine}) -> {custom_url}...")
         items = fetch_properties_smart(custom_url, city_name, state, max_items=max_count, purpose=target_purpose, engine=engine, is_json=is_json)
 
         if is_json:
@@ -695,9 +722,9 @@ if __name__ == "__main__":
         all_items = []
         per_city = max(2, max_count // len(ALL_CITIES)) if max_count > 10 else max_count
         for c_name, c_state in ALL_CITIES:
-            c_url = generate_99acres_url(c_name, target_purpose, target_type)
+            c_url = generate_99acres_url(c_name, target_purpose, target_type, page=page_num)
             if not is_json:
-                print(f"\n[*] Crawling {c_name} ({target_purpose}, {target_type}, engine={engine}) -> {c_url}...")
+                print(f"\n[*] Crawling {c_name} (Page {page_num}, {target_purpose}, {target_type}, engine={engine}) -> {c_url}...")
             c_items = fetch_properties_smart(c_url, c_name, c_state, max_items=per_city, purpose=target_purpose, engine=engine, is_json=is_json)
             all_items.extend(c_items)
             time.sleep(random.uniform(0.8, 1.8))
@@ -717,9 +744,9 @@ if __name__ == "__main__":
         city_name = matched[0] if matched else target_city.title()
         state = matched[1] if matched else "India"
 
-        url = generate_99acres_url(city_name, target_purpose, target_type)
+        url = generate_99acres_url(city_name, target_purpose, target_type, page=page_num)
         if not is_json:
-            print(f"\n[*] Crawling {city_name}, {state} ({target_purpose}, {target_type}, engine={engine}) -> {url}...")
+            print(f"\n[*] Crawling {city_name}, {state} (Page {page_num}, {target_purpose}, {target_type}, engine={engine}) -> {url}...")
         items = fetch_properties_smart(url, city_name, state, max_items=max_count, purpose=target_purpose, engine=engine, is_json=is_json)
 
         if is_json:

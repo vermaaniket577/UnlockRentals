@@ -574,7 +574,7 @@
                     </select>
                 </div>
 
-                {{-- Quantity & Automation Options --}}
+                {{-- Quantity & Pagination Options --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                     <div>
                         <label for="fetch_count" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
@@ -588,16 +588,48 @@
                             <option value="30">30 Listings (Deep scrape)</option>
                         </select>
                     </div>
-                    <div class="flex flex-col justify-center gap-2 pt-1 sm:pt-4">
-                        <label class="inline-flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="fetch_create_accounts" name="create_accounts" value="1" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300">
-                            <span class="text-xs font-bold text-slate-800">Auto-create Landlord/Owner Accounts</span>
-                        </label>
-                        <label class="inline-flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="fetch_auto_approve" name="auto_approve" value="1" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
-                            <span class="text-xs font-bold text-slate-800">Publish Immediately (Approved)</span>
-                        </label>
+
+                    {{-- Page Number & Next Page Buttons --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="scrape_page_num" class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1">
+                                <i class="ph-bold ph-file-text text-indigo-600"></i> Page Number
+                            </label>
+                            <span class="text-[10px] text-indigo-600 font-semibold" id="scrape_page_indicator">Page 1 Active</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="decrementScrapePage()" title="Previous Page" class="px-2.5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer shadow-2xs transition-colors">
+                                ◀
+                            </button>
+                            <input type="number" 
+                                   id="scrape_page_num" 
+                                   name="page" 
+                                   value="1" 
+                                   min="1" 
+                                   max="100" 
+                                   onchange="onScrapePageChange()" 
+                                   class="w-16 text-center font-black text-xs px-2 py-2.5 rounded-xl border border-indigo-300 bg-white text-indigo-950 focus:ring-2 focus:ring-indigo-100 outline-none">
+                            <button type="button" onclick="incrementScrapePage()" title="Next Page" class="flex-1 px-3 py-2.5 rounded-xl border border-indigo-300 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-700 font-bold text-xs cursor-pointer shadow-2xs flex items-center justify-center gap-1 transition-colors">
+                                <span>Next Page ▶</span>
+                            </button>
+                        </div>
                     </div>
+                </div>
+
+                {{-- Automation Options --}}
+                <div class="bg-slate-50/60 p-3 rounded-xl border border-slate-200/60 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="fetch_auto_next" name="auto_next_page" value="1" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300">
+                        <span class="font-bold text-slate-800">Auto-advance if page already scraped</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="fetch_create_accounts" name="create_accounts" value="1" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300">
+                        <span class="font-bold text-slate-800">Auto-create Accounts</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="fetch_auto_approve" name="auto_approve" value="1" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+                        <span class="font-bold text-slate-800">Publish Immediately</span>
+                    </label>
                 </div>
 
                 {{-- Live Results Container --}}
@@ -935,12 +967,55 @@ function handleCitySelectChange() {
     updateGeneratedScrapeUrl();
 }
 
+function getScrapePage() {
+    const el = document.getElementById('scrape_page_num');
+    const val = parseInt(el ? el.value : '1', 10);
+    return isNaN(val) || val < 1 ? 1 : val;
+}
+
+function setScrapePage(page) {
+    const p = Math.max(1, parseInt(page, 10) || 1);
+    const el = document.getElementById('scrape_page_num');
+    if (el) el.value = p;
+    const ind = document.getElementById('scrape_page_indicator');
+    if (ind) {
+        ind.textContent = `Page ${p} Active`;
+    }
+    updateGeneratedScrapeUrl();
+}
+
+function incrementScrapePage() {
+    setScrapePage(getScrapePage() + 1);
+}
+
+function decrementScrapePage() {
+    setScrapePage(Math.max(1, getScrapePage() - 1));
+}
+
+function onScrapePageChange() {
+    setScrapePage(getScrapePage());
+}
+
+function scrapeSpecificPage(pageNum) {
+    setScrapePage(pageNum);
+    const form = document.getElementById('fetchUrlForm');
+    if (form) {
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+        } else {
+            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+    }
+}
+
 function updateGeneratedScrapeUrl() {
     const purpose = document.getElementById('scrape_purpose')?.value || 'rent';
     const propType = document.getElementById('scrape_property_type')?.value || 'all';
     const citySelect = document.getElementById('scrape_city_select')?.value || 'Gurgaon';
     const cityCustom = document.getElementById('scrape_city_custom')?.value.trim();
     const city = (citySelect === 'custom' && cityCustom) ? cityCustom : citySelect;
+    const page = getScrapePage();
+    const pageSuffix = page > 1 ? `-page-${page}` : '';
 
     const urlInput = document.getElementById('fetch_target_url');
     if (!urlInput) return;
@@ -950,15 +1025,15 @@ function updateGeneratedScrapeUrl() {
     // Dedicated 99acres PG & Hostel URL format: https://www.99acres.com/pg-in-{city}-ffid
     if (propType === 'pg' || propType === 'pg-hostel' || purpose === 'pg') {
         if (city === 'all') {
-            urlInput.value = 'Bulk Scrape: All Top Indian Cities (PG & Hostel / Paying Guest)';
+            urlInput.value = `Bulk Scrape: All Top Indian Cities (PG & Hostel${page > 1 ? ' - Page ' + page : ''})`;
         } else {
-            urlInput.value = `https://www.99acres.com/pg-in-${citySlug}-ffid`;
+            urlInput.value = `https://www.99acres.com/pg-in-${citySlug}-ffid${pageSuffix}`;
         }
         return;
     }
 
     if (city === 'all') {
-        urlInput.value = 'Bulk Scrape: All Top Indian Cities (' + (purpose === 'buy' ? 'For Sale' : 'For Rent') + ')';
+        urlInput.value = `Bulk Scrape: All Top Indian Cities (${purpose === 'buy' ? 'For Sale' : 'For Rent'}${page > 1 ? ' - Page ' + page : ''})`;
         return;
     }
 
@@ -972,9 +1047,9 @@ function updateGeneratedScrapeUrl() {
     else if (propType.includes('commercial') || propType.includes('office')) typeSlug = 'commercial-property';
 
     if (purp === 'sale' && citySlug === 'indore' && typeSlug === 'property') {
-        urlInput.value = 'https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R';
+        urlInput.value = `https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R${page > 1 ? '&page=' + page : ''}`;
     } else {
-        urlInput.value = `https://www.99acres.com/${typeSlug}-for-${purp}-in-${citySlug}-ffid`;
+        urlInput.value = `https://www.99acres.com/${typeSlug}-for-${purp}-in-${citySlug}-ffid${pageSuffix}`;
     }
 }
 
@@ -1007,20 +1082,22 @@ async function handleFetchUrlSubmit(e) {
     const engineVal = document.getElementById('fetch_engine')?.value || 'playwright';
     const urlVal = document.getElementById('fetch_target_url').value.trim();
     const countVal = document.getElementById('fetch_count').value;
+    const pageVal = getScrapePage();
+    const autoNextVal = document.getElementById('fetch_auto_next')?.checked ?? true;
     const createAccounts = document.getElementById('fetch_create_accounts').checked;
     const autoApprove = document.getElementById('fetch_auto_approve').checked;
 
     btn.disabled = true;
     icon.className = 'ph-bold ph-arrows-clockwise text-sm animate-spin';
-    text.textContent = `Scraping with ${engineVal === 'playwright' ? 'Playwright' : 'High-Speed'}...`;
+    text.textContent = `Scraping Page ${pageVal}...`;
 
     const cityLabel = cityVal === 'all' ? 'All Top Indian Cities' : cityVal;
     resultBox.className = 'p-4 rounded-2xl border border-indigo-200 bg-indigo-50/70 text-indigo-900 flex items-center gap-3 text-xs font-semibold';
     resultBox.innerHTML = `
         <span class="w-4 h-4 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin shrink-0"></span>
         <div class="min-w-0 flex-1">
-            <p class="font-bold">Scraping ${cityLabel} listings for ${purposeVal.toUpperCase()} using ${engineVal.toUpperCase()}...</p>
-            <p class="text-[11px] text-indigo-700 font-normal mt-0.5">Playwright browser engine loading deep image galleries, specs, and verified contact numbers...</p>
+            <p class="font-bold">Scraping ${cityLabel} (Page ${pageVal}) for ${purposeVal.toUpperCase()} using ${engineVal.toUpperCase()}...</p>
+            <p class="text-[11px] text-indigo-700 font-normal mt-0.5">Filtering duplicates against database, importing fresh listings &amp; owner accounts...</p>
         </div>
     `;
     resultBox.classList.remove('hidden');
@@ -1046,6 +1123,8 @@ async function handleFetchUrlSubmit(e) {
                 engine: engineVal,
                 url: isRawUrl ? urlVal : '',
                 count: parseInt(countVal, 10),
+                page: pageVal,
+                auto_next_page: autoNextVal,
                 create_accounts: createAccounts,
                 auto_approve: autoApprove
             })
@@ -1054,99 +1133,152 @@ async function handleFetchUrlSubmit(e) {
         const data = await res.json();
 
         if (data.success) {
-            let accountsHtml = '';
-            if (data.accounts && data.accounts.length > 0) {
-                accountsHtml = `
-                    <div class="mt-3 pt-3 border-t border-emerald-200/80">
-                        <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-2">👤 Created Landlord &amp; Dealer Accounts (${data.accounts.length}):</p>
-                        <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
-                            ${data.accounts.map(acc => `
-                                <div class="flex items-center justify-between bg-white/95 p-2 rounded-xl border border-emerald-200/70 text-[11px] shadow-2xs">
-                                    <div class="flex items-center gap-2 min-w-0">
-                                        <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-black flex items-center justify-center text-[10px] shrink-0">
-                                            ${acc.name.charAt(0).toUpperCase()}
-                                        </div>
-                                        <span class="font-bold text-slate-800 truncate">${acc.name}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 shrink-0">
-                                        ${acc.phone ? `<a href="tel:${acc.phone}" class="font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] flex items-center gap-1"><i class="ph-bold ph-phone"></i> ${acc.phone}</a>` : ''}
-                                        <span class="text-slate-400 font-mono text-[10px] hidden sm:inline">${acc.email}</span>
-                                    </div>
-                                </div>
-                            `).join('')}
+            const hasNewProps = data.properties && data.properties.length > 0;
+            const nextPageNum = data.next_page || (pageVal + 1);
+
+            if (data.already_scraped || (!hasNewProps && (data.duplicates_prevented > 0 || data.duplicates_cleaned > 0))) {
+                // Page was already scraped
+                resultBox.className = 'p-4 rounded-2xl border border-amber-300 bg-amber-50 text-amber-950 text-xs shadow-xs';
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="ph-fill ph-check-circle text-2xl text-emerald-600 shrink-0 mt-0.5"></i>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between flex-wrap gap-2">
+                                <p class="font-black text-sm text-slate-900">
+                                    ✓ Page ${data.page_scraped || pageVal} is already scraped!
+                                </p>
+                                <span class="px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-900 font-black text-[10px] uppercase tracking-wide">
+                                    ${data.duplicates_prevented || 0} Duplicates Filtered
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-amber-900 font-medium mt-1">
+                                All properties on Page ${data.page_scraped || pageVal} already exist in UnlockRentals. Zero duplicates inserted.
+                            </p>
+                            <div class="mt-3.5 pt-3 border-t border-amber-200/80 flex items-center justify-between flex-wrap gap-2">
+                                <span class="text-[11px] text-slate-600 font-semibold">Advance to fresh listings:</span>
+                                <button type="button" onclick="scrapeSpecificPage(${nextPageNum})" 
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black text-white shadow-md hover:shadow-lg transition-all cursor-pointer"
+                                        style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;">
+                                    <span>Scrape Page ${nextPageNum} Now ▶</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
-            }
+                showAdminToast(`Page ${pageVal} already scraped. Ready to scrape Page ${nextPageNum}`, 'info');
 
-            let propsHtml = '';
-            if (data.properties && data.properties.length > 0) {
-                propsHtml = `
-                    <div class="mt-3 pt-3 border-t border-emerald-200/80">
-                        <div class="flex items-center justify-between mb-2">
-                            <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800">🏡 Published Listings (${data.properties.length}):</p>
-                            ${data.engine ? `<span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">⚡ Engine: ${data.engine}</span>` : ''}
+                // If auto-advance is enabled, prepare the input for next page
+                if (autoNextVal) {
+                    setScrapePage(nextPageNum);
+                }
+            } else {
+                let accountsHtml = '';
+                if (data.accounts && data.accounts.length > 0) {
+                    accountsHtml = `
+                        <div class="mt-3 pt-3 border-t border-emerald-200/80">
+                            <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800 mb-2">👤 Created Landlord &amp; Dealer Accounts (${data.accounts.length}):</p>
+                            <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                                ${data.accounts.map(acc => `
+                                    <div class="flex items-center justify-between bg-white/95 p-2 rounded-xl border border-emerald-200/70 text-[11px] shadow-2xs">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-black flex items-center justify-center text-[10px] shrink-0">
+                                                ${acc.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <span class="font-bold text-slate-800 truncate">${acc.name}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 shrink-0">
+                                            ${acc.phone ? `<a href="tel:${acc.phone}" class="font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] flex items-center gap-1"><i class="ph-bold ph-phone"></i> ${acc.phone}</a>` : ''}
+                                            <span class="text-slate-400 font-mono text-[10px] hidden sm:inline">${acc.email}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
-                        <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                            ${data.properties.map(p => `
-                                <div class="flex items-start justify-between bg-white/95 p-2.5 rounded-2xl border border-emerald-200/80 text-[11px] gap-3 shadow-xs hover:border-emerald-300 transition-all">
-                                    <div class="flex items-start gap-2.5 min-w-0 flex-1">
-                                        ${p.thumbnail ? `
-                                            <img src="${p.thumbnail}" alt="" class="w-14 h-14 rounded-xl object-cover shrink-0 border border-slate-200 shadow-2xs">
-                                        ` : `
-                                            <div class="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 text-slate-400 text-lg border border-slate-200">
-                                                <i class="ph-bold ph-image"></i>
-                                            </div>
-                                        `}
-                                        <div class="min-w-0 flex-1">
-                                            <div class="flex items-center gap-1.5 flex-wrap">
-                                                <span class="font-bold text-slate-900 truncate max-w-[220px]" title="${p.title}">#${p.id} ${p.title}</span>
-                                                <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wide ${p.purpose === 'buy' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">${p.purpose === 'buy' ? 'For Sale' : 'For Rent'}</span>
-                                                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-100 text-slate-600">${p.category}</span>
-                                                ${p.furnishing ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-amber-50 text-amber-800 border border-amber-200/60 capitalize">${p.furnishing}</span>` : ''}
-                                            </div>
-                                            <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
-                                                <span>📍 ${p.locality || p.city}, ${p.city}</span>
-                                                ${p.bedrooms ? `<span>🛏️ ${p.bedrooms} Beds</span>` : ''}
-                                                ${p.bathrooms ? `<span>🚿 ${p.bathrooms} Baths</span>` : ''}
-                                                ${p.area_sqft ? `<span>📐 ${p.area_sqft} sqft</span>` : ''}
-                                                <span class="font-semibold text-slate-700">👤 ${p.owner}</span>
-                                            </div>
-                                            ${p.contact_phone ? `
-                                                <div class="mt-1 flex items-center gap-2 flex-wrap">
-                                                    <a href="tel:${p.contact_phone}" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200/60" title="Click to Call Contact">
-                                                        <i class="ph-bold ph-phone-call"></i> ${p.contact_phone}
-                                                    </a>
-                                                    ${p.view_url ? `<a href="${p.view_url}" target="_blank" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800">View Listing &rarr;</a>` : ''}
+                    `;
+                }
+
+                let propsHtml = '';
+                if (data.properties && data.properties.length > 0) {
+                    propsHtml = `
+                        <div class="mt-3 pt-3 border-t border-emerald-200/80">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="font-bold text-[11px] uppercase tracking-wide text-emerald-800">🏡 Published Listings (${data.properties.length}):</p>
+                                ${data.engine ? `<span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">⚡ Engine: ${data.engine}</span>` : ''}
+                            </div>
+                            <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                                ${data.properties.map(p => `
+                                    <div class="flex items-start justify-between bg-white/95 p-2.5 rounded-2xl border border-emerald-200/80 text-[11px] gap-3 shadow-xs hover:border-emerald-300 transition-all">
+                                        <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                                            ${p.thumbnail ? `
+                                                <img src="${p.thumbnail}" alt="" class="w-14 h-14 rounded-xl object-cover shrink-0 border border-slate-200 shadow-2xs">
+                                            ` : `
+                                                <div class="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 text-slate-400 text-lg border border-slate-200">
+                                                    <i class="ph-bold ph-image"></i>
                                                 </div>
-                                            ` : ''}
+                                            `}
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex items-center gap-1.5 flex-wrap">
+                                                    <span class="font-bold text-slate-900 truncate max-w-[220px]" title="${p.title}">#${p.id} ${p.title}</span>
+                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wide ${p.purpose === 'buy' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">${p.purpose === 'buy' ? 'For Sale' : 'For Rent'}</span>
+                                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-100 text-slate-600">${p.category}</span>
+                                                    ${p.furnishing ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-amber-50 text-amber-800 border border-amber-200/60 capitalize">${p.furnishing}</span>` : ''}
+                                                </div>
+                                                <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                                                    <span>📍 ${p.locality || p.city}, ${p.city}</span>
+                                                    ${p.bedrooms ? `<span>🛏️ ${p.bedrooms} Beds</span>` : ''}
+                                                    ${p.bathrooms ? `<span>🚿 ${p.bathrooms} Baths</span>` : ''}
+                                                    ${p.area_sqft ? `<span>📐 ${p.area_sqft} sqft</span>` : ''}
+                                                    <span class="font-semibold text-slate-700">👤 ${p.owner}</span>
+                                                </div>
+                                                ${p.contact_phone ? `
+                                                    <div class="mt-1 flex items-center gap-2 flex-wrap">
+                                                        <a href="tel:${p.contact_phone}" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200/60" title="Click to Call Contact">
+                                                            <i class="ph-bold ph-phone-call"></i> ${p.contact_phone}
+                                                        </a>
+                                                        ${p.view_url ? `<a href="${p.view_url}" target="_blank" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800">View Listing &rarr;</a>` : ''}
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <div class="font-black text-xs text-emerald-700">₹${Number(p.price).toLocaleString()}${p.purpose === 'rent' ? '<span class="text-[9px] font-normal text-slate-500">/mo</span>' : ''}</div>
+                                            <span class="inline-block mt-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-200/60">${p.images_count} 📸 Photos</span>
                                         </div>
                                     </div>
-                                    <div class="text-right shrink-0">
-                                        <div class="font-black text-xs text-emerald-700">₹${Number(p.price).toLocaleString()}${p.purpose === 'rent' ? '<span class="text-[9px] font-normal text-slate-500">/mo</span>' : ''}</div>
-                                        <span class="inline-block mt-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-200/60">${p.images_count} 📸 Photos</span>
-                                    </div>
-                                </div>
-                            `).join('')}
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                resultBox.className = 'p-4 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-xs shadow-xs';
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-2.5">
+                        <i class="ph-fill ph-check-circle text-xl text-emerald-600 shrink-0 mt-0.5"></i>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between flex-wrap gap-2">
+                                <p class="font-bold text-sm">${data.message || 'Listings successfully scraped and published!'}</p>
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold text-[10px]">Page ${data.page_scraped || pageVal} Complete</span>
+                            </div>
+                            ${accountsHtml}
+                            ${propsHtml}
+                            <div class="mt-3.5 pt-3 border-t border-emerald-200/80 flex items-center justify-between flex-wrap gap-2">
+                                <span class="text-[11px] text-emerald-800 font-medium">Total Properties Live on UnlockRentals: <strong>${data.total_properties}</strong></span>
+                                <button type="button" onclick="scrapeSpecificPage(${nextPageNum})" 
+                                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-black text-white shadow-xs hover:shadow-md transition-all cursor-pointer"
+                                        style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;">
+                                    <span>Scrape Page ${nextPageNum} ▶</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
+
+                showAdminToast(data.message || 'Properties scraped and published successfully!', 'success');
+
+                // Advance page number so next click scrapes the subsequent page
+                setScrapePage(nextPageNum);
             }
-
-            resultBox.className = 'p-4 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-xs shadow-xs';
-            resultBox.innerHTML = `
-                <div class="flex items-start gap-2.5">
-                    <i class="ph-fill ph-check-circle text-xl text-emerald-600 shrink-0 mt-0.5"></i>
-                    <div class="min-w-0 flex-1">
-                        <p class="font-bold text-sm">${data.message || 'Listings successfully scraped and published!'}</p>
-                        ${accountsHtml}
-                        ${propsHtml}
-                        <p class="text-[11px] text-emerald-700 mt-2.5 font-medium">Total Properties Live on UnlockRentals: <strong>${data.total_properties}</strong></p>
-                    </div>
-                </div>
-            `;
-
-            showAdminToast(data.message || 'Properties scraped and published successfully!', 'success');
 
             // Silently refresh properties table so they appear live
             if (typeof refreshPropertiesTableSilently === 'function') {

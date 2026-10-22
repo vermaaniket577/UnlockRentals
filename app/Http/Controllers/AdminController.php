@@ -2494,6 +2494,7 @@ class AdminController extends Controller
     {
         $city = $request->get('city', 'Gurgaon');
         $count = (int) $request->get('count', 2);
+        $page = max(1, (int) $request->get('page', 1));
         $autoClean = $request->boolean('clean_duplicates', true);
 
         // Allow direct JSON property payload ingestion
@@ -2573,6 +2574,8 @@ class AdminController extends Controller
                 'status'               => 'success',
                 'success'              => true,
                 'message'              => "Imported {$inserted} direct listings ({$duplicatesSkipped} duplicates skipped)",
+                'page_scraped'         => $page,
+                'next_page'            => $page + 1,
                 'new_imported'         => $inserted,
                 'duplicates_prevented' => $duplicatesSkipped,
                 'total_properties'     => Property::count(),
@@ -2596,6 +2599,8 @@ class AdminController extends Controller
             \Illuminate\Support\Facades\Artisan::call('scrape:city', [
                 'city' => $city,
                 '--count' => $count,
+                '--page' => $page,
+                '--auto-next' => true,
             ]);
 
             try {
@@ -2616,8 +2621,10 @@ class AdminController extends Controller
             return response()->json([
                 'status'               => 'success',
                 'success'              => true,
-                'message'              => "Checked and synced {$city}. Duplicates checked & filtered.",
+                'message'              => "Checked and synced {$city} (Page {$page}). Duplicates checked & filtered.",
                 'city'                 => $city,
+                'page_scraped'         => $page,
+                'next_page'            => $page + 1,
                 'duplicates_cleaned'   => $cleanedCount,
                 'synced_at'            => now()->toDateTimeString(),
                 'total_properties'     => Property::count(),
@@ -2672,9 +2679,15 @@ class AdminController extends Controller
         $target = !empty($url) ? $url : (!empty($city) ? $city : 'delhi');
 
         $count = max(1, min(60, (int) $request->input('count', 10)));
+        $page = max(1, (int) $request->input('page', 1));
+        $autoNextPage = $request->boolean('auto_next_page', true);
         $engine = strtolower(trim((string) $request->input('engine', 'playwright')));
         $createAccounts = $request->boolean('create_accounts', true);
         $autoApprove = $request->boolean('auto_approve', true);
+
+        if (!empty($target) && (str_starts_with($target, 'http://') || str_starts_with($target, 'https://'))) {
+            $target = Property::applyPageToUrl($target, $page);
+        }
 
         $lock = Cache::lock('ur_scraper_crawler_lock', 120);
         if (!$lock->get()) {
@@ -2697,7 +2710,7 @@ class AdminController extends Controller
             $escapedPurpose = escapeshellarg($purpose ?: 'rent');
             $escapedType = escapeshellarg($propertyType ?: 'all');
             $escapedEngine = escapeshellarg($engine ?: 'playwright');
-            $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine}";
+            $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine} --page={$page}";
 
             // Free DB connection while Python is crawling external web pages
             try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
@@ -2715,6 +2728,8 @@ class AdminController extends Controller
                 \Illuminate\Support\Facades\Artisan::call('scrape:city', [
                     'city' => $url ?: $city,
                     '--count' => $count,
+                    '--page' => $page,
+                    '--auto-next' => $autoNextPage,
                     '--type' => $propertyType,
                     '--purpose' => $purpose,
                     '--create-accounts' => true,
@@ -2730,8 +2745,10 @@ class AdminController extends Controller
 
                 return response()->json([
                     'success'          => true,
-                    'message'          => "Successfully fetched and posted {$count} listings for " . ($url ?: $city),
-                    'url'              => $url,
+                    'message'          => "Successfully fetched listings for " . ($url ?: $city) . " (Page {$page})",
+                    'url'              => $target,
+                    'page_scraped'     => $page,
+                    'next_page'        => $page + 1,
                     'total_properties' => Property::count(),
                     'latest_id'        => Property::latest('id')->first()?->id ?? 0,
                     'accounts_created' => User::where('role', 'owner')->whereDate('created_at', now()->toDateString())->count(),
@@ -2932,11 +2949,15 @@ class AdminController extends Controller
             Cache::forget('home_featured_properties');
             Cache::forget('admin_dashboard_stats');
 
+            $nextPage = $page + 1;
             return response()->json([
                 'success'              => true,
-                'message'              => "Fetched listings: " . count($createdProperties) . " newly posted, " . $duplicatesSkippedCount . " duplicates skipped (prevented), " . count($createdAccounts) . " owner accounts linked.",
-                'url'                  => $url,
+                'message'              => "Fetched listings (Page {$page}): " . count($createdProperties) . " newly posted, " . $duplicatesSkippedCount . " duplicates skipped (prevented), " . count($createdAccounts) . " owner accounts linked.",
+                'url'                  => $target,
                 'engine'               => $engine,
+                'page_scraped'         => $page,
+                'next_page'            => $nextPage,
+                'already_scraped'      => ($duplicatesSkippedCount > 0 && count($createdProperties) === 0),
                 'imported_count'       => count($createdProperties),
                 'duplicates_prevented' => $duplicatesSkippedCount,
                 'accounts_created'     => count($createdAccounts),

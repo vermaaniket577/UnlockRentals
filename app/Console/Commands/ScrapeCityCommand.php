@@ -17,7 +17,7 @@ class ScrapeCityCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'scrape:city {city=Gurgaon : Name of city, "all", or 99acres URL} {--count=10 : Number of properties to scrape} {--type=all : Property type (e.g. pg, flats, builder-floor, house, all)} {--purpose=rent : Purpose (rent, buy, pg)} {--engine=playwright : Scraper engine} {--create-accounts : Create user accounts for property owners/agents}';
+    protected $signature = 'scrape:city {city=Gurgaon : Name of city, "all", or 99acres URL} {--count=10 : Number of properties to scrape} {--page=1 : Page number to scrape} {--auto-next : Automatically advance to next page if current page listings already exist} {--type=all : Property type (e.g. pg, flats, builder-floor, house, all)} {--purpose=rent : Purpose (rent, buy, pg)} {--engine=playwright : Scraper engine} {--create-accounts : Create user accounts for property owners/agents}';
 
     /**
      * The console command description.
@@ -33,6 +33,8 @@ class ScrapeCityCommand extends Command
     {
         $rawArg = (string) $this->argument('city');
         $count = (int) ($this->option('count') ?: 10);
+        $page = max(1, (int) ($this->option('page') ?: 1));
+        $autoNext = (bool) $this->option('auto-next');
         $type = (string) ($this->option('type') ?: 'all');
         $purpose = (string) ($this->option('purpose') ?: 'rent');
         $engine = (string) ($this->option('engine') ?: 'playwright');
@@ -41,7 +43,7 @@ class ScrapeCityCommand extends Command
         // Check if raw argument is a URL or contains 99acres
         if (preg_match('/^(https?:\/\/|www\.)/i', $rawArg) || str_contains($rawArg, '99acres')) {
             [$city, $state] = Property::extractCityAndStateFromUrl($rawArg);
-            $targetUrl = $rawArg;
+            $targetUrl = Property::applyPageToUrl($rawArg, $page);
         } else {
             $city = trim($rawArg) ?: 'Gurgaon';
             $map = [
@@ -64,7 +66,7 @@ class ScrapeCityCommand extends Command
             $targetUrl = null;
         }
 
-        $this->info("Starting scraper for: {$city} (Target: {$count} listings, Type: {$type}, Purpose: {$purpose}, Engine: {$engine})...");
+        $this->info("Starting scraper for: {$city} (Target: {$count} listings, Page: {$page}, Type: {$type}, Purpose: {$purpose}, Engine: {$engine})...");
 
         $scriptPath = base_path('scrapers/crawl_and_import.py');
         if (!file_exists($scriptPath)) {
@@ -85,7 +87,7 @@ class ScrapeCityCommand extends Command
         $escapedPurpose = escapeshellarg($purpose ?: 'rent');
         $escapedType = escapeshellarg($type ?: 'all');
         $escapedEngine = escapeshellarg($engine ?: 'playwright');
-        $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine}";
+        $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine} --page={$page}";
         $this->line("Running: {$command}");
 
         exec($command, $output, $returnCode);
@@ -270,6 +272,23 @@ class ScrapeCityCommand extends Command
         Cache::forget('admin_dashboard_stats');
 
         $this->info("\nImport summary: {$insertedCount} newly imported, {$duplicatesSkippedCount} duplicates skipped/prevented!");
+
+        // If all items on this page were already scraped and auto-next is enabled, automatically scrape next page
+        if ($insertedCount === 0 && $duplicatesSkippedCount > 0 && ($autoNext || $this->option('auto-next')) && $page < 10) {
+            $nextPage = $page + 1;
+            $this->warn("All listings on Page {$page} were already in the database. Auto-advancing to scrape Page {$nextPage}...");
+            return (int) $this->call('scrape:city', [
+                'city' => $rawArg,
+                '--count' => $count,
+                '--page' => $nextPage,
+                '--auto-next' => true,
+                '--type' => $type,
+                '--purpose' => $purpose,
+                '--engine' => $engine,
+                '--create-accounts' => $createAccounts,
+            ]);
+        }
+
         return 0;
     }
 
