@@ -20,8 +20,11 @@
     </div>
 
     @if($showText)
-        <span class="{{ $textClass }}">
-            Unlock<span class="{{ $accentClass }}">Rentals</span>
-        </span>
+        <div class="flex flex-col justify-center">
+            <span class="{{ $textClass }} leading-none">
+                Unlock<span class="text-amber-500">Rentals</span>
+            </span>
+            <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 tracking-wider mt-0.5">Rent &bull; Buy &bull; Sell</span>
+        </div>
     @endif
 </a>

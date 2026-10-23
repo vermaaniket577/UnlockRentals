@@ -2164,267 +2164,291 @@
     </div>
     @endauth
 
-    <section class="hero-section hidden lg:block">
-        <div class="hero-bg">
-            <div class="glow-orb orb-1"></div>
-            <div class="glow-orb orb-2"></div>
-            <picture>
-                <source srcset="{{ asset('images/hero-bg.webp') }}" type="image/webp">
-                <img src="{{ asset('images/hero-bg.webp') }}" 
-                     alt="Premium Indian City Skyline Real Estate" 
-                     title="Premium Indian City Skyline Real Estate" 
-                     width="1024" 
-                     height="1024" 
-                     loading="eager" 
-                     fetchpriority="high" 
-                     decoding="async">
-            </picture>
-            <div class="overlay-gradient"></div>
+    {{-- ====================================================
+         DESKTOP HERO SECTION (Matching User Reference Image)
+         ==================================================== --}}
+    <section class="hidden lg:block relative w-full overflow-visible" style="background-color: #0b192c;">
+        {{-- Hero Dusk Architecture Background --}}
+        <div class="relative w-full overflow-hidden" style="min-height: 520px;">
+            <img src="{{ asset('images/hero_dusk_complex.jpg') }}" 
+                 alt="Luxury Real Estate Community at Dusk" 
+                 class="absolute inset-0 w-full h-full object-cover object-center" 
+                 fetchpriority="high"
+                 decoding="async">
+            
+            {{-- Dark Dusk Cinematic Gradient Overlay (Dark on Left, Transparent on Right) --}}
+            <div class="absolute inset-0" style="background: linear-gradient(90deg, rgba(7, 18, 36, 0.94) 0%, rgba(7, 18, 36, 0.82) 42%, rgba(7, 18, 36, 0.35) 75%, rgba(7, 18, 36, 0.05) 100%);"></div>
+
+            {{-- Main Hero Container (Left Content & Right Floating Card) --}}
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-24 flex items-center justify-between gap-8 z-10" style="min-height: 500px;">
+                
+                {{-- Left Column: Headings, CTAs, 3 Feature Badges --}}
+                <div class="max-w-2xl text-left">
+                    {{-- Badge: FIND YOUR NEXT HOME --}}
+                    <div class="inline-flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-widest mb-3.5">
+                        <i class="ph-bold ph-house text-amber-400 text-sm"></i>
+                        <span>FIND YOUR NEXT HOME</span>
+                    </div>
+
+                    {{-- Main Headline --}}
+                    <h1 class="text-4xl xl:text-5xl font-black text-white tracking-tight leading-[1.18] mb-4">
+                        Find Your Perfect Home.<br>
+                        <span class="text-amber-400">Without the Brokerage Hassle.</span>
+                    </h1>
+
+                    {{-- Subtitle --}}
+                    <p class="text-slate-200 text-sm xl:text-[15.5px] max-w-xl font-normal leading-relaxed mb-7 drop-shadow-xs">
+                        Discover rooms, flats, and houses across India. Connect directly with property owners and make your next move simpler with UnlockRentals.
+                    </p>
+
+                    {{-- Action Buttons --}}
+                    <div class="flex items-center gap-3.5 mb-9">
+                        <a href="{{ url('/properties') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-95" id="hero-btn-explore">
+                            <i class="ph-bold ph-magnifying-glass text-base"></i>
+                            <span>Explore Properties</span>
+                            <i class="ph-bold ph-arrow-right text-xs"></i>
+                        </a>
+                        <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-black/35 hover:bg-black/50 text-white font-bold text-sm border border-white/60 backdrop-blur-md transition-all hover:scale-[1.02] active:scale-95" id="hero-btn-post">
+                            <i class="ph-bold ph-plus text-xs"></i>
+                            <span>List Your Property Free</span>
+                        </a>
+                    </div>
+
+                    {{-- 3 Circular Feature Badges --}}
+                    <div class="flex items-center flex-wrap gap-8 text-white text-xs font-semibold">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 flex-shrink-0 shadow-sm">
+                                <i class="ph-bold ph-house text-base"></i>
+                            </div>
+                            <span class="leading-tight">Homes for<br>Every Budget</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 flex-shrink-0 shadow-sm">
+                                <i class="ph-bold ph-users text-base"></i>
+                            </div>
+                            <span class="leading-tight">Direct Owner<br>Connections</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 flex-shrink-0 shadow-sm">
+                                <i class="ph-bold ph-file-text text-base"></i>
+                            </div>
+                            <span class="leading-tight">Easy Property<br>Listing</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Right Column: Floating Property Card --}}
+                <div class="hidden xl:flex justify-end items-center flex-shrink-0">
+                    <div class="w-[330px] bg-white rounded-2xl p-3 shadow-2xl shadow-black/50 border border-white/80 transition-all hover:shadow-3xl hover:-translate-y-1">
+                        <div class="relative rounded-xl overflow-hidden aspect-[4/3] mb-3">
+                            <img src="{{ asset('images/hero_card_living.jpg') }}" alt="Beautiful 2 BHK Apartment" class="w-full h-full object-cover">
+                            <div class="absolute top-2.5 right-2.5">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[11px] font-bold shadow-md">
+                                    For Rent
+                                </span>
+                            </div>
+                        </div>
+                        <div class="px-1.5 pb-1">
+                            <h3 class="font-extrabold text-slate-900 text-sm leading-snug">Beautiful 2 BHK Apartment</h3>
+                            <div class="flex items-center gap-1 text-slate-500 text-xs mt-1">
+                                <i class="ph-bold ph-map-pin text-slate-400 text-xs"></i>
+                                <span>Gurgaon, Haryana</span>
+                            </div>
+                            <div class="flex items-baseline gap-1 mt-2.5">
+                                <span class="text-base font-extrabold text-blue-700">₹18,000</span>
+                                <span class="text-xs font-semibold text-slate-400">/ month</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-xs font-medium text-slate-600 mt-2.5 pt-2 border-t border-slate-100">
+                                <span class="flex items-center gap-1.5">
+                                    <i class="ph-bold ph-bed text-slate-400"></i>
+                                    <span>2 Beds</span>
+                                </span>
+                                <span class="flex items-center gap-1.5">
+                                    <i class="ph-bold ph-bathtub text-slate-400"></i>
+                                    <span>2 Baths</span>
+                                </span>
+                            </div>
+                            <div class="mt-2.5 pt-2 border-t border-slate-100">
+                                <a href="{{ url('/properties') }}" class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors">
+                                    <span>View Property</span>
+                                    <i class="ph-bold ph-arrow-right text-[11px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <div class="hero-container">
-            <div class="hero-badge badge-animate">
-                <span class="badge-dot"></span>
-                Verified Premium Listings
-            </div>
-
-            <h1 class="hero-title title-animate" style="max-width: 820px; margin-left: auto; margin-right: auto;">
-                <span style="background: linear-gradient(135deg, #93c5fd 0%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Unlock Rent</span> With Zero Brokerage <br class="hidden sm:inline">
-                Rent <span style="background: linear-gradient(90deg, #dbeafe 0%, #60a5fa 40%, #2563EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Flats, Rooms & Houses</span> By Direct Owners
-            </h1>
-
-            <p class="hero-subtitle subtitle-animate">
-                UnlockRentals connects you directly with verified property owners. Rent rooms, 1RK, flats, PGs & houses across India with 100% zero brokerage.
-            </p>
-
-            {{-- Quick SEO Shortcuts / Near Me Badges --}}
-            <div class="flex items-center justify-center flex-wrap gap-2 mb-3 px-2">
-                <a href="{{ url('/room-near-my-location') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600/40 hover:bg-blue-600 text-blue-100 hover:text-white text-[11px] font-bold border border-blue-400/40 transition shadow-sm" title="Rooms Near My Location">
-                    <i class="ph-bold ph-map-pin text-xs text-blue-300"></i>
-                    <span>📍 Rooms Near My Location</span>
-                </a>
-                <a href="{{ url('/flat-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[11px] font-semibold border border-white/15 transition shadow-sm" title="Flats Near Me">
-                    <i class="ph-bold ph-buildings text-xs text-sky-300"></i>
-                    <span>Flats Near Me</span>
-                </a>
-                <a href="{{ url('/pg-near-me') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[11px] font-semibold border border-white/15 transition shadow-sm" title="PG Near Me">
-                    <i class="ph-bold ph-bed text-xs text-amber-300"></i>
-                    <span>PG Near Me</span>
-                </a>
-                <a href="{{ url('/house-for-rent-near-me') }}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[11px] font-semibold border border-white/15 transition shadow-sm" title="House For Rent Near Me">
-                    <i class="ph-bold ph-house text-xs text-emerald-300"></i>
-                    <span>House Near Me</span>
-                </a>
-            </div>
-
-            <form class="search-glass-panel panel-animate" action="{{ route('properties.index') }}" method="GET" data-ur-loader-msg="Searching premium properties&#8230;" onsubmit="handleHeroSearchSubmit(this)">
-
-                <!-- ─ Row 1: Primary Filters ─ -->
-                <div class="search-filters-row">
-
-                    <div class="filter-group">
-                        <div class="filter-icon">
-                            <i class="ph-bold ph-map-pin" style="font-size: 20px; color: var(--primary);"></i>
-                        </div>
-                        <div class="filter-input-wrap">
-                            <label for="state-select" class="filter-label">Region / State</label>
-                            <select class="filter-input" id="state-select" name="state" onchange="if(window.handleLocationStateChange) window.handleLocationStateChange(this, 'city-select', 'locality-select');">
-                                <option value="">&nbsp;&nbsp;Select State</option>
-                                @php $statesList = $globalAllStates ?? $allStates ?? []; @endphp
-                                @if(!empty($statesList) && count($statesList) > 0)
-                                    @foreach($statesList as $code => $name)
-                                        <option value="{{ $code }}" {{ request('state') == $code ? 'selected' : '' }}>&nbsp;&nbsp;{{ $name }}</option>
-                                    @endforeach
-                                @else
-                                    <option value="AP">&nbsp;&nbsp;Andhra Pradesh</option>
-                                    <option value="AR">&nbsp;&nbsp;Arunachal Pradesh</option>
-                                    <option value="AS">&nbsp;&nbsp;Assam</option>
-                                    <option value="BR">&nbsp;&nbsp;Bihar</option>
-                                    <option value="CT">&nbsp;&nbsp;Chhattisgarh</option>
-                                    <option value="GA">&nbsp;&nbsp;Goa</option>
-                                    <option value="GJ">&nbsp;&nbsp;Gujarat</option>
-                                    <option value="HR">&nbsp;&nbsp;Haryana</option>
-                                    <option value="HP">&nbsp;&nbsp;Himachal Pradesh</option>
-                                    <option value="JH">&nbsp;&nbsp;Jharkhand</option>
-                                    <option value="KA">&nbsp;&nbsp;Karnataka</option>
-                                    <option value="KL">&nbsp;&nbsp;Kerala</option>
-                                    <option value="MP">&nbsp;&nbsp;Madhya Pradesh</option>
-                                    <option value="MH">&nbsp;&nbsp;Maharashtra</option>
-                                    <option value="MN">&nbsp;&nbsp;Manipur</option>
-                                    <option value="ML">&nbsp;&nbsp;Meghalaya</option>
-                                    <option value="MZ">&nbsp;&nbsp;Mizoram</option>
-                                    <option value="NL">&nbsp;&nbsp;Nagaland</option>
-                                    <option value="OR">&nbsp;&nbsp;Odisha</option>
-                                    <option value="PB">&nbsp;&nbsp;Punjab</option>
-                                    <option value="RJ">&nbsp;&nbsp;Rajasthan</option>
-                                    <option value="SK">&nbsp;&nbsp;Sikkim</option>
-                                    <option value="TN">&nbsp;&nbsp;Tamil Nadu</option>
-                                    <option value="TS">&nbsp;&nbsp;Telangana</option>
-                                    <option value="TR">&nbsp;&nbsp;Tripura</option>
-                                    <option value="UP">&nbsp;&nbsp;Uttar Pradesh</option>
-                                    <option value="UK">&nbsp;&nbsp;Uttarakhand</option>
-                                    <option value="WB">&nbsp;&nbsp;West Bengal</option>
-                                    <option value="DL">&nbsp;&nbsp;Delhi</option>
-                                    <option value="CH">&nbsp;&nbsp;Chandigarh</option>
-                                @endif
-                            </select>
-                        </div>
-                        <div class="dropdown-chevron">
-                            <i class="ph ph-caret-down"></i>
-                        </div>
-                    </div>
-
-                    <div class="filter-group">
-                        <div class="filter-icon">
-                            <i class="ph-bold ph-city" style="font-size: 20px; color: var(--primary);"></i>
-                        </div>
-                        <div class="filter-input-wrap">
-                            <label for="city-select" class="filter-label">City / District</label>
-                            <select class="filter-input" id="city-select" name="district" onchange="if(window.handleLocationCityChange) window.handleLocationCityChange(this, 'locality-select', 'state-select');">
-                                <option value="">&nbsp;&nbsp;All Cities / Districts</option>
-                                <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>&nbsp;&nbsp;Gurugram (HR)</option>
-                                <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>&nbsp;&nbsp;New Delhi (DL)</option>
-                                <option value="South Delhi" {{ request('district') == 'South Delhi' ? 'selected' : '' }}>&nbsp;&nbsp;South Delhi (DL)</option>
-                                <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>&nbsp;&nbsp;Noida (UP)</option>
-                                <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>&nbsp;&nbsp;Ghaziabad (UP)</option>
-                                <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>&nbsp;&nbsp;Faridabad (HR)</option>
-                                <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>&nbsp;&nbsp;Bengaluru (KA)</option>
-                                <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>&nbsp;&nbsp;Mumbai (MH)</option>
-                                <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>&nbsp;&nbsp;Pune (MH)</option>
-                                <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>&nbsp;&nbsp;Hyderabad (TS)</option>
-                                <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>&nbsp;&nbsp;Jaipur (RJ)</option>
-                                <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>&nbsp;&nbsp;Chandigarh (CH)</option>
-                                <option value="Kolkata" {{ request('district') == 'Kolkata' ? 'selected' : '' }}>&nbsp;&nbsp;Kolkata (WB)</option>
-                                <option value="Chennai" {{ request('district') == 'Chennai' ? 'selected' : '' }}>&nbsp;&nbsp;Chennai (TN)</option>
-                                <option value="Ahmedabad" {{ request('district') == 'Ahmedabad' ? 'selected' : '' }}>&nbsp;&nbsp;Ahmedabad (GJ)</option>
-                            </select>
-                        </div>
-                        <div class="dropdown-chevron">
-                            <i class="ph ph-caret-down"></i>
-                        </div>
-                    </div>
-
-                    <div class="filter-group">
-                        <div class="filter-icon">
-                            <i class="ph-bold ph-map-trifold" style="font-size: 20px; color: var(--primary);"></i>
-                        </div>
-                        <div class="filter-input-wrap">
-                            <label for="locality-select" class="filter-label">Locality / Area</label>
-                            <select class="filter-input" id="locality-select" name="locality">
-                                <option value="">&nbsp;&nbsp;Select Locality</option>
-                            </select>
-                        </div>
-                        <div class="dropdown-chevron">
-                            <i class="ph ph-caret-down"></i>
-                        </div>
-                    </div>
-
-                </div><!-- end .search-filters-row -->
-
-                <!-- ─ Row 2: Configs & Actions ─ -->
-                <div class="search-actions-row">
-                    <div class="search-quick-configs">
-                        
-                        <div class="config-item">
-                            <label>Property Type</label>
-                            <select name="type">
-                                <option value="all">Any Type</option>
-                                <option value="house">House / Villa</option>
-                                <option value="shop">Shop / Commercial</option>
-                                <option value="pg-hostel">PG / Hostel</option>
-                                <option value="hotel">Hotel</option>
-                            </select>
-                        </div>
-
-                        <div class="config-divider"></div>
-
-                        <div class="config-item">
-                            <label>Budget</label>
-                            <select name="price">
-                                <option value="any">Any Price</option>
-                                <option value="0-20000">Up to ₹20,000</option>
-                                <option value="20000-50000">₹20K – ₹50K</option>
-                                <option value="50000-plus">₹50,000+</option>
-                            </select>
-                        </div>
-                        
-                        <div class="config-item">
-                            <label>Layout</label>
-                            <div class="pill-group">
-                                <input type="hidden" name="rooms" id="rooms-input" value="{{ request('rooms', 'any') }}">
-                                <button type="button" class="pill-btn {{ request('rooms', 'any') == 'any' ? 'active' : '' }}" data-value="any" onclick="window.setPill(this, 'any', 'rooms-input')">Any</button>
-                                <button type="button" class="pill-btn {{ request('rooms') == '1bhk' ? 'active' : '' }}" data-value="1bhk" onclick="window.setPill(this, '1bhk', 'rooms-input')">1 BHK</button>
-                                <button type="button" class="pill-btn {{ request('rooms') == '2bhk' ? 'active' : '' }}" data-value="2bhk" onclick="window.setPill(this, '2bhk', 'rooms-input')">2 BHK</button>
-                                <button type="button" class="pill-btn {{ in_array(request('rooms'), ['3bhk-plus', '3bhk', '3plus']) ? 'active' : '' }}" data-value="3bhk-plus" onclick="window.setPill(this, '3bhk-plus', 'rooms-input')">3+</button>
-                            </div>
-                        </div>
-
-                        <div class="config-divider"></div>
-
-                        <div class="config-item">
-                            <label>Intent</label>
-                            <div class="pill-group">
-                                <input type="hidden" name="purpose" id="purpose-input" value="{{ request('purpose', 'rent') }}">
-                                <button type="button" class="pill-btn {{ request('purpose', 'rent') == 'rent' ? 'active' : '' }}" data-value="rent" onclick="window.setPill(this, 'rent', 'purpose-input')">Rent</button>
-                                <button type="button" class="pill-btn {{ request('purpose') == 'buy' ? 'active' : '' }}" data-value="buy" onclick="window.setPill(this, 'buy', 'purpose-input')">Buy</button>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <button type="submit" class="btn-search-premium">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <span>Find Now</span>
+        {{-- Floating "Find a Property" Search Card (Overlap Card) --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-30">
+            <div class="bg-white rounded-2xl shadow-xl shadow-slate-900/10 border border-slate-100 p-5 lg:p-6">
+                <div class="flex items-center justify-between mb-3.5">
+                    <h2 class="text-base lg:text-lg font-black text-slate-900">Find a Property</h2>
+                    <button type="button" onclick="clearHeroSearchFilters()" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors cursor-pointer">
+                        <i class="ph-bold ph-arrows-clockwise text-xs"></i>
+                        <span>Clear All</span>
                     </button>
                 </div>
-
-            </form>
-
-            <div class="actions-wrapper actions-animate">
-                <button type="button" id="btnNearMe" onclick="searchNearMe()" class="btn-outline-blue" style="background: rgba(37,99,235,0.25); border-color: #3b82f6; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <i class="ph-fill ph-navigation-arrow" style="font-size: 16px; color: #60a5fa;"></i>
-                    <span>Search House Near Me</span>
-                </button>
-                <span class="action-text">Own a property?</span>
-                <a href="{{ route('properties.create') }}" class="btn-outline-blue" title="Post Free Advertise">Post Free Advertise</a>
-                <a href="{{ route('properties.index') }}" class="btn-text-link" title="View Showreel">
-                    <div class="play-icon">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <form id="heroFindPropertyForm" action="{{ route('properties.index') }}" method="GET" class="grid grid-cols-12 gap-2.5 items-center">
+                    {{-- 1. I Want To --}}
+                    <div class="col-span-2 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
+                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
+                            <i class="ph-bold ph-house text-slate-500 text-xs"></i>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">I Want To</span>
+                        </div>
+                        <select name="purpose" id="hero_purpose" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer">
+                            <option value="rent" {{ request('purpose', 'rent') == 'rent' && request('type') !== 'pg-hostel' ? 'selected' : '' }}>Rent</option>
+                            <option value="buy" {{ request('purpose') == 'buy' ? 'selected' : '' }}>Buy</option>
+                            <option value="pg" {{ request('type') == 'pg-hostel' ? 'selected' : '' }}>PG</option>
+                        </select>
                     </div>
-                    View Showreel
-                </a>
+
+                    {{-- 2. Property Type --}}
+                    <div class="col-span-2 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
+                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
+                            <i class="ph-bold ph-buildings text-slate-500 text-xs"></i>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Property Type</span>
+                        </div>
+                        <select name="type" id="hero_type" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer">
+                            <option value="apartment">Flat / Apartment</option>
+                            <option value="house">House / Villa</option>
+                            <option value="pg-hostel">PG / Hostel</option>
+                            <option value="commercial">Shop / Commercial</option>
+                            <option value="plot">Plot / Land</option>
+                        </select>
+                    </div>
+
+                    {{-- 3. Location --}}
+                    <div class="col-span-3 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
+                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
+                            <i class="ph-bold ph-map-pin text-slate-500 text-xs"></i>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Location</span>
+                        </div>
+                        <select name="district" id="hero_district" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer truncate">
+                            <option value="">City, locality or PIN code</option>
+                            <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurgaon / Gurugram</option>
+                            <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>New Delhi</option>
+                            <option value="South Delhi" {{ request('district') == 'South Delhi' ? 'selected' : '' }}>South Delhi</option>
+                            <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>Noida</option>
+                            <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>Bengaluru</option>
+                            <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>Mumbai</option>
+                            <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>Pune</option>
+                            <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>Hyderabad</option>
+                            <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>Faridabad</option>
+                            <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>Ghaziabad</option>
+                            <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>Jaipur</option>
+                            <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>Chandigarh</option>
+                        </select>
+                    </div>
+
+                    {{-- 4. Budget --}}
+                    <div class="col-span-2 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
+                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
+                            <span class="text-xs font-bold text-slate-500">₹</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Budget</span>
+                        </div>
+                        <select name="price" id="hero_price" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer">
+                            <option value="any">Min - Max</option>
+                            <option value="0-15000">Up to ₹15,000</option>
+                            <option value="15000-30000">₹15,000 – ₹30,000</option>
+                            <option value="30000-50000">₹30,000 – ₹50,000</option>
+                            <option value="50000-plus">₹50,000+</option>
+                        </select>
+                    </div>
+
+                    {{-- 5. Bedrooms --}}
+                    <div class="col-span-2 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
+                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
+                            <i class="ph-bold ph-bed text-slate-500 text-xs"></i>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Bedrooms</span>
+                        </div>
+                        <select name="rooms" id="hero_rooms" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer">
+                            <option value="1bhk">1 BHK</option>
+                            <option value="2bhk">2 BHK</option>
+                            <option value="3bhk-plus">3+ BHK</option>
+                            <option value="any">Any BHK</option>
+                        </select>
+                    </div>
+
+                    {{-- 6. Search Button --}}
+                    <div class="col-span-1">
+                        <button type="submit" class="w-full h-full min-h-[52px] rounded-xl bg-[#0d4b8f] hover:bg-[#0a3a70] text-white font-bold flex items-center justify-center gap-1.5 shadow-md shadow-[#0d4b8f]/20 active:scale-95 transition-all cursor-pointer" id="heroSearchBtn">
+                            <i class="ph-bold ph-magnifying-glass text-base"></i>
+                            <span class="text-xs">Search</span>
+                        </button>
+                    </div>
+                </form>
             </div>
+        </div>
 
-            <div class="trust-indicators indicators-animate">
-                <div class="indicator-box">
-                    <div class="indicator-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        {{-- Value Proposition Ribbon (Below Search Card) --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 pb-6">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-xs py-4 px-5 grid grid-cols-4 divide-x divide-slate-100">
+                {{-- 1. Direct Owner Connections --}}
+                <div class="flex items-center gap-3.5 px-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i class="ph ph-users text-xl"></i>
                     </div>
-                    <div class="indicator-text">
-                        <span class="val">10,000+</span>
-                        <span class="lbl">Luxury Properties</span>
-                    </div>
-                </div>
-                <div class="indicator-box">
-                    <div class="indicator-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    </div>
-                    <div class="indicator-text">
-                        <span class="val">100%</span>
-                        <span class="lbl">Verified Listings</span>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-900 leading-tight">Direct Owner Connections</h4>
+                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">Talk to owners, skip brokers</p>
                     </div>
                 </div>
-                <div class="indicator-box">
-                    <div class="indicator-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+
+                {{-- 2. Easy Property Discovery --}}
+                <div class="flex items-center gap-3.5 px-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i class="ph ph-magnifying-glass text-xl"></i>
                     </div>
-                    <div class="indicator-text">
-                        <span class="val">24/7</span>
-                        <span class="lbl">Concierge Support</span>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-900 leading-tight">Easy Property Discovery</h4>
+                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">Search by location, budget &amp; more</p>
+                    </div>
+                </div>
+
+                {{-- 3. Free Property Posting --}}
+                <div class="flex items-center gap-3.5 px-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i class="ph ph-plus-circle text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-900 leading-tight">Free Property Posting</h4>
+                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">List your property in minutes</p>
+                    </div>
+                </div>
+
+                {{-- 4. Listings Across India --}}
+                <div class="flex items-center gap-3.5 px-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <i class="ph ph-map-pin text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-900 leading-tight">Listings Across India</h4>
+                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">From metros to small towns</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <script>
+            function clearHeroSearchFilters() {
+                var f = document.getElementById('heroFindPropertyForm');
+                if (f) {
+                    var p = document.getElementById('hero_purpose');
+                    var t = document.getElementById('hero_type');
+                    var d = document.getElementById('hero_district');
+                    var pr = document.getElementById('hero_price');
+                    var r = document.getElementById('hero_rooms');
+                    if (p) p.value = 'rent';
+                    if (t) t.value = 'apartment';
+                    if (d) d.value = '';
+                    if (pr) pr.value = 'any';
+                    if (r) r.value = '1bhk';
+                }
+            }
+        </script>
     </section>
 
     {{-- ====================================================
@@ -3228,10 +3252,17 @@
                         Showing <strong>{{ $featuredRentals->count() }}</strong> {{ Str::plural('property', $featuredRentals->count()) }} matching your criteria.
                     </p>
                 </div>
+                @else
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Popular Properties</h2>
+                </div>
                 @endif
 
-                <!-- Clean Standard Custom Dropdown -->
-                <div class="flex items-center gap-2.5 flex-shrink-0 ml-auto">
+                <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0 ml-auto">
+                    <a href="{{ route('properties.index') }}" class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors" title="View All Properties">
+                        <span>View All</span>
+                        <i class="ph-bold ph-arrow-right text-xs"></i>
+                    </a>
                     <div class="relative" id="featuredCustomDropdown">
                         <button type="button" 
                                 id="featuredDropdownBtn" 

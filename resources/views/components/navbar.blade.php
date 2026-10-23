@@ -15,57 +15,80 @@
                 />
             </div>
 
-            {{-- Right: Desktop Navigation Links (Responsive, Non-overlapping) --}}
-            <nav class="main-nav hidden lg:flex items-center gap-0.5 xl:gap-1 flex-shrink ml-auto">
-                <a href="{{ url('/') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('/') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-home" title="Home">
-                    <i class="ph-bold ph-house text-xs xl:text-sm text-blue-600"></i>
+            {{-- Right: Desktop Navigation Links (Matching Reference Screenshot) --}}
+            <nav class="main-nav hidden lg:flex items-center gap-1 xl:gap-2 flex-shrink ml-auto">
+                <a href="{{ url('/') }}" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap {{ request()->is('/') ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-slate-700 hover:text-blue-700' }}" id="nav-home" title="Home">
                     <span>Home</span>
                 </a>
-                <a href="{{ url('/properties') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('properties') && !request('purpose') && !request('type') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-discover" title="Discover">
-                    <i class="ph-bold ph-compass text-xs xl:text-sm text-blue-600"></i>
-                    <span>Discover</span>
+                <a href="{{ url('/properties') }}" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap {{ request()->is('properties') && !request('purpose') && !request('type') ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-slate-700 hover:text-blue-700' }}" id="nav-properties" title="Properties">
+                    <span>Properties</span>
                 </a>
-                <a href="{{ url('/properties?purpose=buy') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request('purpose') == 'buy' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-buy" title="Buy">
-                    <i class="ph-bold ph-shopping-bag text-xs xl:text-sm text-blue-600"></i>
-                    <span>Buy</span>
-                </a>
-                <a href="{{ url('/properties?purpose=rent') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request('purpose') == 'rent' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-rent" title="Rent">
-                    <i class="ph-bold ph-key text-xs xl:text-sm text-blue-600"></i>
-                    <span>Rent</span>
-                </a>
-                <a href="{{ url('/properties?type=commercial') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request('type') == 'commercial' || request('type') == 'shop' ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-commercial" title="Commercial">
-                    <i class="ph-bold ph-buildings text-xs xl:text-sm text-blue-600"></i>
-                    <span>Commercial</span>
-                </a>
-                <a href="{{ route('services.index') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('services*') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20 text-blue-600' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-local-professionals" title="Local Professionals">
-                    <i class="ph-bold ph-toolbox text-xs xl:text-sm text-blue-600"></i>
-                    <span>Local Professionals</span>
-                </a>
-                <a href="{{ url('/how-it-works') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('how-it-works') || request()->is('process') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-process" title="Process">
-                    <i class="ph-bold ph-git-merge text-xs xl:text-sm text-blue-600"></i>
-                    <span>Process</span>
-                </a>
-                <a href="{{ url('/blog') }}" class="ur-nav-link px-2 xl:px-2.5 py-1 rounded-md text-[12px] xl:text-[12.5px] font-semibold transition-all flex items-center gap-1 whitespace-nowrap {{ request()->is('blog*') ? 'active-nav-link bg-blue-50/50 dark:bg-blue-900/20' : 'hover:bg-stone-50 dark:hover:bg-slate-800' }}" id="nav-blog" title="Blog">
-                    <i class="ph-bold ph-newspaper text-xs xl:text-sm text-blue-600"></i>
-                    <span>Blog</span>
+
+                {{-- Rent Dropdown --}}
+                <div class="relative group">
+                    <button type="button" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap flex items-center gap-1 {{ request('purpose') == 'rent' ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-slate-700 hover:text-blue-700' }}" id="nav-rent" title="Rent">
+                        <span>Rent</span>
+                        <i class="ph ph-caret-down text-[11px] text-slate-500 transition-transform group-hover:rotate-180"></i>
+                    </button>
+                    <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
+                        <a href="{{ url('/properties?purpose=rent&type=apartment') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Flats &amp; Apartments</a>
+                        <a href="{{ url('/properties?purpose=rent&type=house') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Independent Houses</a>
+                        <a href="{{ url('/properties?purpose=rent&type=pg-hostel') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">PG &amp; Hostels</a>
+                        <a href="{{ url('/properties?purpose=rent&type=commercial') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Commercial Spaces</a>
+                    </div>
+                </div>
+
+                {{-- Buy Dropdown --}}
+                <div class="relative group">
+                    <button type="button" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap flex items-center gap-1 {{ request('purpose') == 'buy' ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-slate-700 hover:text-blue-700' }}" id="nav-buy" title="Buy">
+                        <span>Buy</span>
+                        <i class="ph ph-caret-down text-[11px] text-slate-500 transition-transform group-hover:rotate-180"></i>
+                    </button>
+                    <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
+                        <a href="{{ url('/properties?purpose=buy&type=apartment') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Ready to Move Flats</a>
+                        <a href="{{ url('/properties?purpose=buy&type=house') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Independent Villas</a>
+                        <a href="{{ url('/properties?purpose=buy&type=plot') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Plots &amp; Land</a>
+                        <a href="{{ url('/properties?purpose=buy&type=commercial') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Commercial Shops</a>
+                    </div>
+                </div>
+
+                {{-- Sell Dropdown --}}
+                <div class="relative group">
+                    <button type="button" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap flex items-center gap-1 text-slate-700 hover:text-blue-700" id="nav-sell" title="Sell">
+                        <span>Sell</span>
+                        <i class="ph ph-caret-down text-[11px] text-slate-500 transition-transform group-hover:rotate-180"></i>
+                    </button>
+                    <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
+                        <a href="{{ route('properties.create') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Post Property Free</a>
+                        <a href="{{ url('/how-it-works') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Seller Guide &amp; Process</a>
+                        <a href="{{ url('/properties?purpose=buy') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">View Resale Listings</a>
+                    </div>
+                </div>
+
+                <a href="{{ route('properties.create') }}" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap text-slate-700 hover:text-blue-700" id="nav-list-property" title="List Your Property">
+                    <span>List Your Property</span>
                 </a>
             </nav>
 
-            {{-- Right Side: Auth Actions & Top-Right Theme Toggle --}}
-            <div class="flex items-center gap-1.5 xl:gap-2.5 flex-shrink-0">
+            {{-- Right Side: Auth Actions & Post Property Button --}}
+            <div class="flex items-center gap-2 xl:gap-3 flex-shrink-0">
                 @guest
-                    {{-- Mobile Top Login Button (Standardized 32px Height, Refined Look) --}}
+                    {{-- Mobile Top Login Button --}}
                     <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="lg:hidden inline-flex items-center justify-center gap-1.5 px-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 active:scale-95 transition-all whitespace-nowrap cursor-pointer" style="height: 32px; text-decoration: none; color: #ffffff !important;" id="nav-mobile-top-login" title="Login">
                         <i class="ph-bold ph-sign-in text-sm" style="color: #ffffff !important;"></i>
                         <span style="color: #ffffff !important;">Login</span>
                     </a>
 
-                    {{-- Desktop Sign In & Get Started --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex px-2.5 py-1 text-xs xl:text-[12.5px] font-semibold text-zinc-600 hover:text-zinc-900 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer" id="nav-login" title="Sign In">
-                        Sign In
+                    {{-- Desktop Login / Sign Up --}}
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 text-[13.5px] font-semibold text-slate-700 hover:text-blue-700 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer" id="nav-login" title="Login / Sign Up">
+                        <i class="ph ph-user text-base text-slate-600 dark:text-slate-400"></i>
+                        <span>Login / Sign Up</span>
                     </a>
-                    <a href="{{ route('register') }}" onclick="event.preventDefault(); window.openAuthModal('register');" class="hidden lg:inline-flex px-3 py-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold rounded-lg shadow-sm shadow-[#2563EB]/20 transition-all whitespace-nowrap cursor-pointer" id="nav-register" title="Get Started">
-                        Get Started
+                    
+                    {{-- Desktop Post Property Free Navy Button --}}
+                    <a href="{{ route('properties.create') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-[#0c365a] hover:bg-[#082640] text-white text-xs xl:text-[13px] font-bold rounded-full shadow-sm shadow-[#0c365a]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" id="nav-post-free" title="Post Property Free">
+                        <i class="ph-bold ph-plus text-xs text-white"></i>
+                        <span class="text-white">Post Property Free</span>
                     </a>
                 @else
                     @php
@@ -73,12 +96,10 @@
                         $navPlanName = strtolower($navActivePlan?->plan?->name ?? '');
                         $navBadgeClass = str_contains($navPlanName, 'enterprise') ? 'from-slate-900 to-teal-500' : (str_contains($navPlanName, 'platinum') ? 'from-blue-600 to-violet-600' : (str_contains($navPlanName, 'gold') ? 'from-amber-500 to-yellow-300' : 'from-slate-400 to-sky-300'));
                     @endphp
-                    @if(auth()->user()->isOwner() || auth()->user()->isAdmin())
-                    <a href="{{ route('properties.create') }}" class="hidden lg:inline-flex items-center gap-1 px-3 py-1.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold rounded-lg shadow-sm shadow-[#2563EB]/25 transition-all whitespace-nowrap active:scale-95" style="color: #ffffff !important;" id="nav-add-property" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle text-sm" style="color: #ffffff !important;"></i>
-                        <span style="color: #ffffff !important;">Post Free Advertise</span>
+                    <a href="{{ route('properties.create') }}" class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-[#0c365a] hover:bg-[#082640] text-white text-xs xl:text-[13px] font-bold rounded-full shadow-sm shadow-[#0c365a]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" id="nav-add-property" title="Post Property Free">
+                        <i class="ph-bold ph-plus text-xs text-white"></i>
+                        <span class="text-white">Post Property Free</span>
                     </a>
-                    @endif
 
                     {{-- User Menu --}}
                     <div class="relative">
