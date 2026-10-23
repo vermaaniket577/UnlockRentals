@@ -118,7 +118,10 @@ class ScrapeCityCommand extends Command
             }
 
             // Deduplication check: check if this property already exists
+            $propId = trim((string)($item['prop_id'] ?? $item['external_id'] ?? ''));
             $candidateCheck = [
+                'external_id'   => $propId,
+                'prop_id'       => $propId,
                 'title'         => $item['title'],
                 'city'          => $item['city'] ?? $city,
                 'location'      => $item['city'] ?? $city,
@@ -223,6 +226,7 @@ class ScrapeCityCommand extends Command
                 'category_id' => $itemCategoryId,
                 'title' => $itemTitle,
                 'slug' => $slug,
+                'external_id' => !empty($propId) ? $propId : null,
                 'description' => $itemDesc,
                 'type' => $itemType,
                 'purpose' => $itemPurpose,
@@ -501,7 +505,11 @@ class ScrapeCityCommand extends Command
                 $desc = "Well-ventilated {$bhk} BHK {$flatDescriptor} available for rent in prime {$locality}, {$cleanCity}. Total super area of {$areaSqft} sq.ft. with {$bathrooms} bathrooms and {$furnishing} fittings. Equipped with lift, dedicated parking, 24/7 water supply, power backup, and walking distance to transit hubs.";
             }
 
+            $propId = '99A-' . strtoupper(substr($cLower, 0, 3)) . sprintf('-%03d-%02d', $page, $i + 1);
+
             $items[] = [
+                'prop_id'        => $propId,
+                'external_id'    => $propId,
                 'title'          => $title,
                 'type'           => $propType,
                 'category_name'  => $catName,

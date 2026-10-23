@@ -3225,7 +3225,10 @@ class AdminController extends Controller
                 if (empty($item['title'])) continue;
 
                 // Precision duplicate check before creating accounts or listings
+                $propId = trim((string)($item['prop_id'] ?? $item['external_id'] ?? ''));
                 $candidateCheck = [
+                    'external_id'   => $propId,
+                    'prop_id'       => $propId,
                     'title'         => $item['title'],
                     'city'          => $item['city'] ?? $city,
                     'location'      => $item['city'] ?? $city,
@@ -3345,6 +3348,7 @@ class AdminController extends Controller
                     'category_id'   => $itemCategoryId,
                     'title'         => $itemTitle,
                     'slug'          => $slug,
+                    'external_id'   => !empty($propId) ? $propId : null,
                     'description'   => $itemDesc,
                     'type'          => $itemType,
                     'purpose'       => $itemPurpose,

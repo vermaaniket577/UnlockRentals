@@ -178,8 +178,10 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                         const area = t.querySelector('.tupleNew__area1Type')?.innerText || '';
                         const seller = t.querySelector('.tupleNew__dealerName, .tupleNew__userNameWrap')?.innerText || '';
                         const imgs = Array.from(t.querySelectorAll('img')).map(i => i.src || i.getAttribute('data-src') || '').filter(s => s.includes('imagecdn') || s.includes('media'));
+                        const spidMatch = t.querySelector('a[href*="spid-"]')?.href.match(/spid-([A-Za-z0-9]+)/);
+                        const propId = t.getAttribute('data-propid') || t.getAttribute('data-tuple-id') || (spidMatch ? spidMatch[1] : '') || t.getAttribute('id') || '';
                         if (heading) {
-                            domCards.push({ heading, price, area, seller, imgs });
+                            domCards.push({ heading, price, area, seller, imgs, propId });
                         }
                     });
                 }
@@ -247,7 +249,7 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                     builder = p_item.get("builderName") or "Project Developer"
                     seller_name = builder
                     seller_company = builder
-                    prop_id = str(p_item.get("id") or random.randint(10000, 99999))
+                    prop_id = str(p_item.get("id") or p_item.get("PROP_ID") or random.randint(10000, 99999))
 
                     prop_type, cat_name = detect_type_and_category(title, sub_heading, p_item.get("rescom") or "R")
                     desc = p_item.get("description", {}).get("text") or (
@@ -261,7 +263,10 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                         continue
                     seen_batch_keys.add(batch_key)
 
+                    unique_id = f"99A-{prop_id}"
                     results.append({
+                        "prop_id": unique_id,
+                        "external_id": unique_id,
                         "title": title,
                         "type": prop_type,
                         "category_name": cat_name,
@@ -345,7 +350,7 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                     seller_company = p_item.get("CONTACT_COMPANY_NAME") or profile.get("CONTACT_COMPANY_NAME") or ""
                     seller_photo = p_item.get("DEALER_PHOTO_URL") or profile.get("PHOTO_URL") or ""
                     seller_type = str(p_item.get("USER_TYPE") or p_item.get("SELLER_TYPE") or "owner").lower()
-                    prop_id = str(p_item.get("PROP_ID") or random.randint(10000, 99999))
+                    prop_id = str(p_item.get("PROP_ID") or p_item.get("id") or random.randint(10000, 99999))
 
                     # Masked contact decryption / fallback callable generation
                     contact_phone = generate_callable_phone(seller_name, prop_id)
@@ -372,7 +377,10 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                         continue
                     seen_batch_keys.add(batch_key)
 
+                    unique_id = f"99A-{prop_id}"
                     results.append({
+                        "prop_id": unique_id,
+                        "external_id": unique_id,
                         "title": title,
                         "type": prop_type,
                         "category_name": cat_name,
@@ -420,8 +428,12 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                     prop_type, cat_name = detect_type_and_category(title)
                     imgs = c["imgs"] or random.sample(FALLBACK_IMAGES, 3)
                     seller = c["seller"] or "Property Dealer"
+                    card_prop_id = str(c.get("propId") or random.randint(10000, 99999))
+                    unique_id = f"99A-{card_prop_id}"
 
                     results.append({
+                        "prop_id": unique_id,
+                        "external_id": unique_id,
                         "title": title,
                         "type": prop_type,
                         "category_name": cat_name,
@@ -435,7 +447,7 @@ def scrape_with_playwright(url: str, city_name: str, state_name: str, max_items:
                         "locality": locality,
                         "furnishing": "semi-furnished",
                         "images": imgs,
-                        "contact_phone": generate_callable_phone(seller, str(random.randint(1000, 9999))),
+                        "contact_phone": generate_callable_phone(seller, card_prop_id),
                         "description": f"{title} in {locality}, {city_name}. Beautiful modern layout, {area_sqft} sq.ft. area.",
                         "seller_name": seller,
                         "seller_company": "",

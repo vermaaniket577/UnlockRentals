@@ -17,6 +17,7 @@ class Property extends Model
         'category_id',
         'title',
         'slug',
+        'external_id',
         'description',
         'type',
         'purpose',
@@ -731,6 +732,18 @@ class Property extends Model
      */
     public static function findDuplicate(array $data): ?self
     {
+        // Check 0: 99acres Unique ID Number (prop_id / external_id) - 100% definitive check
+        $externalId = trim((string) ($data['external_id'] ?? $data['prop_id'] ?? ''));
+        if (!empty($externalId)) {
+            $found = self::where('external_id', $externalId)->first();
+            if ($found) {
+                return $found;
+            }
+            // If 99acres unique ID is supplied and not found in DB, this is definitively a new listing!
+            // Bypass loose title/image heuristics so fresh 99acres listings are never falsely blocked.
+            return null;
+        }
+
         $cleanTitle = self::cleanUrlFromText($data['title'] ?? '', true);
         if (empty($cleanTitle)) {
             return null;
@@ -842,14 +855,16 @@ class Property extends Model
         $grouped = [];
 
         foreach ($properties as $prop) {
-            $cleanTitle = self::cleanUrlFromText($prop->title, true);
-            $normTitle = preg_replace('/[^a-z0-9]/', '', strtolower($cleanTitle));
-            $normCity = strtolower(trim((string) $prop->location));
-            $normPrice = round((float) $prop->price, -2);
-            $normPurpose = strtolower(trim((string) $prop->purpose));
-
-            // Generate fingerprint key
-            $key = "{$normCity}_{$normPurpose}_{$normPrice}_{$normTitle}";
+            if (!empty($prop->external_id)) {
+                $key = "ext_" . trim($prop->external_id);
+            } else {
+                $cleanTitle = self::cleanUrlFromText($prop->title, true);
+                $normTitle = preg_replace('/[^a-z0-9]/', '', strtolower($cleanTitle));
+                $normCity = strtolower(trim((string) $prop->location));
+                $normPrice = round((float) $prop->price, -2);
+                $normPurpose = strtolower(trim((string) $prop->purpose));
+                $key = "{$normCity}_{$normPurpose}_{$normPrice}_{$normTitle}";
+            }
             $grouped[$key][] = $prop;
         }
 

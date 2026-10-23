@@ -370,7 +370,10 @@ def generate_fallback_properties(city_name: str, state_name: str, max_items: int
                 f"Equipped with lift, dedicated parking, 24/7 water supply, power backup, and walking distance to transit hubs."
             )
 
+        prop_id = f"99A-{c_lower[:3].upper()}-{page_num:03d}-{i+1:02d}"
         items.append({
+            "prop_id": prop_id,
+            "external_id": prop_id,
             "title": title,
             "type": prop_type,
             "category_name": cat_name,
@@ -592,7 +595,12 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                         continue
                     seen_batch_keys.add(batch_key)
 
+                    prop_id = str(p.get("id") or p.get("PROP_ID") or random.randint(10000, 99999))
+                    unique_id = f"99A-{prop_id}"
+
                     items.append({
+                        "prop_id": unique_id,
+                        "external_id": unique_id,
                         "title": title,
                         "type": prop_type,
                         "category_name": cat_name,
@@ -685,7 +693,12 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                         continue
                     seen_batch_keys.add(batch_key)
 
+                    prop_id = str(p.get("PROP_ID") or p.get("id") or random.randint(10000, 99999))
+                    unique_id = f"99A-{prop_id}"
+
                     items.append({
+                        "prop_id": unique_id,
+                        "external_id": unique_id,
                         "title": clean_title,
                         "type": prop_type,
                         "category_name": cat_name,
@@ -767,7 +780,18 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                 clean_locality = clean_text_no_urls(locality, item_city)
                 clean_desc = clean_text_no_urls(f"{clean_title} available for {purpose} in {clean_locality}, {item_city}. Area of {area_sqft} sq.ft.")
 
+                spid_match = card.find("a", href=re.compile(r"spid-([A-Za-z0-9]+)"))
+                spid_val = ""
+                if spid_match and spid_match.get("href"):
+                    sm = re.search(r"spid-([A-Za-z0-9]+)", spid_match.get("href"))
+                    if sm:
+                        spid_val = sm.group(1)
+                card_id = card.get("data-propid") or card.get("data-tuple-id") or spid_val or f"DOM{idx+1:03d}"
+                unique_id = f"99A-{card_id}"
+
                 items.append({
+                    "prop_id": unique_id,
+                    "external_id": unique_id,
                     "title": clean_title,
                     "type": prop_type,
                     "category_name": cat_name,
@@ -834,15 +858,22 @@ def save_items_to_sqlite(items):
                 """, (seller_name, email, phone))
                 user_id = cursor.lastrowid
 
+        ext_id = str(item.get("external_id") or item.get("prop_id") or "").strip()
+        if ext_id:
+            cursor.execute("SELECT id FROM properties WHERE external_id = ? LIMIT 1", (ext_id,))
+            if cursor.fetchone():
+                print(f"  [⏭ Skip Duplicate] Property with external_id '{ext_id}' already exists in database.")
+                continue
+
         cursor.execute("""
             INSERT INTO properties (
-                user_id, category_id, title, slug, description, type, purpose,
+                user_id, category_id, title, slug, external_id, description, type, purpose,
                 price, price_period, state, location, locality, address,
                 contact_phone, bedrooms, bathrooms, area_sqft, furnishing,
                 status, is_featured, is_booked, approved_at, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'month', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, 0, datetime('now'), datetime('now'), datetime('now'))
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'month', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, 0, datetime('now'), datetime('now'), datetime('now'))
         """, (
-            user_id, category_id, item["title"], slug, item["description"],
+            user_id, category_id, item["title"], slug, ext_id or None, item["description"],
             item.get("type", "house"), item.get("purpose", "rent"),
             item["price"], item["state"], item["city"], item["locality"],
             f"{item['locality']}, {item['city']}", item["contact_phone"],
