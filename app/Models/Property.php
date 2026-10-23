@@ -722,6 +722,36 @@ class Property extends Model
     }
 
     /**
+     * Ensure external_id column exists in the database table.
+     * Auto-migrates the column on-the-fly if missing so production MySQL environments
+     * never crash with 1054 Unknown column 'external_id'.
+     */
+    public static function ensureExternalIdColumnExists(): bool
+    {
+        static $hasColumn = null;
+        if ($hasColumn !== null) {
+            return $hasColumn;
+        }
+
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('properties', 'external_id')) {
+                \Illuminate\Support\Facades\Schema::table('properties', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('external_id', 150)->nullable()->index()->after('slug');
+                });
+            }
+            $hasColumn = true;
+        } catch (\Throwable $e) {
+            try {
+                $hasColumn = \Illuminate\Support\Facades\Schema::hasColumn('properties', 'external_id');
+            } catch (\Throwable $ex) {
+                $hasColumn = false;
+            }
+        }
+
+        return (bool) $hasColumn;
+    }
+
+    /**
      * Check if a property matching the incoming item already exists in the database.
      * Uses a multi-tier precision algorithm:
      * 1. Primary image URL / filename match (99acres photo CDN URLs are globally unique to a listing)
@@ -735,13 +765,19 @@ class Property extends Model
         // Check 0: 99acres Unique ID Number (prop_id / external_id) - 100% definitive check
         $externalId = trim((string) ($data['external_id'] ?? $data['prop_id'] ?? ''));
         if (!empty($externalId)) {
-            $found = self::where('external_id', $externalId)->first();
-            if ($found) {
-                return $found;
+            if (self::ensureExternalIdColumnExists()) {
+                try {
+                    $found = self::where('external_id', $externalId)->first();
+                    if ($found) {
+                        return $found;
+                    }
+                    // If 99acres unique ID is supplied and not found in DB, this is definitively a new listing!
+                    // Bypass loose title/image heuristics so fresh 99acres listings are never falsely blocked.
+                    return null;
+                } catch (\Throwable $e) {
+                    // If DB fails to query column, fall through to title/heuristic checks
+                }
             }
-            // If 99acres unique ID is supplied and not found in DB, this is definitively a new listing!
-            // Bypass loose title/image heuristics so fresh 99acres listings are never falsely blocked.
-            return null;
         }
 
         $cleanTitle = self::cleanUrlFromText($data['title'] ?? '', true);
@@ -854,8 +890,9 @@ class Property extends Model
         $properties = self::with(['images', 'inquiries'])->orderBy('id', 'asc')->get();
         $grouped = [];
 
+        $hasExtCol = self::ensureExternalIdColumnExists();
         foreach ($properties as $prop) {
-            if (!empty($prop->external_id)) {
+            if ($hasExtCol && !empty($prop->external_id)) {
                 $key = "ext_" . trim($prop->external_id);
             } else {
                 $cleanTitle = self::cleanUrlFromText($prop->title, true);

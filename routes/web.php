@@ -936,6 +936,7 @@ Route::get('/run-migrations', function (\Illuminate\Http\Request $request) {
             '2026_10_10_170000_add_ip_address_to_visitors_table.php',
             '2026_10_10_180000_seed_sector_13_gurugram.php',
             '2026_10_17_190000_add_original_price_to_plans_table.php',
+            '2026_10_23_093000_add_external_id_to_properties_table.php',
         ];
 
         // Check for leftover duplicate migration files on the server

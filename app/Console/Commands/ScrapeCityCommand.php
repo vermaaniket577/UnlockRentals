@@ -221,12 +221,11 @@ class ScrapeCityCommand extends Command
             $itemDesc = Property::cleanUrlFromText($item['description'] ?? ("{$itemTitle} in {$itemLocality}, {$itemCity}"), false);
             $itemAddress = Property::cleanUrlFromText($item['address'] ?? "{$itemLocality}, {$itemCity}", true) ?: "{$itemLocality}, {$itemCity}";
 
-            $property = Property::create([
+            $propertyData = [
                 'user_id' => $propertyUserId,
                 'category_id' => $itemCategoryId,
                 'title' => $itemTitle,
                 'slug' => $slug,
-                'external_id' => !empty($propId) ? $propId : null,
                 'description' => $itemDesc,
                 'type' => $itemType,
                 'purpose' => $itemPurpose,
@@ -245,7 +244,11 @@ class ScrapeCityCommand extends Command
                 'is_featured' => ($insertedCount < 3),
                 'is_booked' => false,
                 'approved_at' => $approvedAt,
-            ]);
+            ];
+            if (Property::ensureExternalIdColumnExists() && !empty($propId)) {
+                $propertyData['external_id'] = $propId;
+            }
+            $property = Property::create($propertyData);
 
             if (!empty($item['images']) && is_array($item['images'])) {
                 foreach ($item['images'] as $idx => $imgUrl) {

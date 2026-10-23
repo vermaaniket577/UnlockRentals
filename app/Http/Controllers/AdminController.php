@@ -3343,12 +3343,11 @@ class AdminController extends Controller
                 $itemAddress = Property::cleanUrlFromText($item['address'] ?? "{$itemLocality}, {$itemCity}", true) ?: "{$itemLocality}, {$itemCity}";
 
                 $slug = Str::slug($itemTitle) . '-' . rand(10000, 99999);
-                $prop = Property::create([
+                $propPayload = [
                     'user_id'       => $propertyUserId,
                     'category_id'   => $itemCategoryId,
                     'title'         => $itemTitle,
                     'slug'          => $slug,
-                    'external_id'   => !empty($propId) ? $propId : null,
                     'description'   => $itemDesc,
                     'type'          => $itemType,
                     'purpose'       => $itemPurpose,
@@ -3367,7 +3366,11 @@ class AdminController extends Controller
                     'approved_at'   => $autoApprove ? now() : null,
                     'is_featured'   => false,
                     'is_booked'     => false,
-                ]);
+                ];
+                if (Property::ensureExternalIdColumnExists() && !empty($propId)) {
+                    $propPayload['external_id'] = $propId;
+                }
+                $prop = Property::create($propPayload);
 
                 if (!empty($item['images']) && is_array($item['images'])) {
                     foreach ($item['images'] as $idx => $imgUrl) {

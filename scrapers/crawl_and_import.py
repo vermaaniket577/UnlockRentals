@@ -829,6 +829,19 @@ def save_items_to_sqlite(items):
     user_row = cursor.fetchone()
     default_user_id = user_row[0] if user_row else 1
 
+    # Ensure external_id column exists in SQLite table
+    has_ext_col = False
+    try:
+        cursor.execute("PRAGMA table_info(properties)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if "external_id" not in columns:
+            cursor.execute("ALTER TABLE properties ADD COLUMN external_id VARCHAR(150)")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_properties_external_id ON properties (external_id)")
+            conn.commit()
+        has_ext_col = True
+    except Exception:
+        pass
+
     saved = 0
     for idx, item in enumerate(items):
         slug_base = re.sub(r"[^a-zA-Z0-9]+", "-", item["title"].lower()).strip("-")
@@ -859,27 +872,44 @@ def save_items_to_sqlite(items):
                 user_id = cursor.lastrowid
 
         ext_id = str(item.get("external_id") or item.get("prop_id") or "").strip()
-        if ext_id:
+        if ext_id and has_ext_col:
             cursor.execute("SELECT id FROM properties WHERE external_id = ? LIMIT 1", (ext_id,))
             if cursor.fetchone():
                 print(f"  [⏭ Skip Duplicate] Property with external_id '{ext_id}' already exists in database.")
                 continue
 
-        cursor.execute("""
-            INSERT INTO properties (
-                user_id, category_id, title, slug, external_id, description, type, purpose,
-                price, price_period, state, location, locality, address,
-                contact_phone, bedrooms, bathrooms, area_sqft, furnishing,
-                status, is_featured, is_booked, approved_at, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'month', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, 0, datetime('now'), datetime('now'), datetime('now'))
-        """, (
-            user_id, category_id, item["title"], slug, ext_id or None, item["description"],
-            item.get("type", "house"), item.get("purpose", "rent"),
-            item["price"], item["state"], item["city"], item["locality"],
-            f"{item['locality']}, {item['city']}", item["contact_phone"],
-            item["bedrooms"], item["bathrooms"], item["area_sqft"], item["furnishing"],
-            1 if idx < 3 else 0
-        ))
+        if has_ext_col:
+            cursor.execute("""
+                INSERT INTO properties (
+                    user_id, category_id, title, slug, external_id, description, type, purpose,
+                    price, price_period, state, location, locality, address,
+                    contact_phone, bedrooms, bathrooms, area_sqft, furnishing,
+                    status, is_featured, is_booked, approved_at, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'month', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, 0, datetime('now'), datetime('now'), datetime('now'))
+            """, (
+                user_id, category_id, item["title"], slug, ext_id or None, item["description"],
+                item.get("type", "house"), item.get("purpose", "rent"),
+                item["price"], item["state"], item["city"], item["locality"],
+                f"{item['locality']}, {item['city']}", item["contact_phone"],
+                item["bedrooms"], item["bathrooms"], item["area_sqft"], item["furnishing"],
+                1 if idx < 3 else 0
+            ))
+        else:
+            cursor.execute("""
+                INSERT INTO properties (
+                    user_id, category_id, title, slug, description, type, purpose,
+                    price, price_period, state, location, locality, address,
+                    contact_phone, bedrooms, bathrooms, area_sqft, furnishing,
+                    status, is_featured, is_booked, approved_at, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'month', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', ?, 0, datetime('now'), datetime('now'), datetime('now'))
+            """, (
+                user_id, category_id, item["title"], slug, item["description"],
+                item.get("type", "house"), item.get("purpose", "rent"),
+                item["price"], item["state"], item["city"], item["locality"],
+                f"{item['locality']}, {item['city']}", item["contact_phone"],
+                item["bedrooms"], item["bathrooms"], item["area_sqft"], item["furnishing"],
+                1 if idx < 3 else 0
+            ))
 
         prop_id = cursor.lastrowid
         for img_idx, img_url in enumerate(item["images"]):
