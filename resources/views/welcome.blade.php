@@ -826,29 +826,37 @@
             .main-header {
                 box-sizing: border-box !important;
                 max-width: 100% !important;
-                padding: 6px 18px !important;
-                height: 50px !important;
-                min-height: 50px !important;
-                gap: 10px !important;
+                padding: 0 28px !important;
+                height: 64px !important;
+                min-height: 64px !important;
+                gap: 12px !important;
+                background: #ffffff !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                position: relative !important;
+                top: 0 !important;
+                left: 0 !important;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
             }
             .main-header .main-nav {
                 display: flex !important;
                 flex-wrap: nowrap !important;
                 align-items: center !important;
-                gap: 8px !important;
+                gap: 6px !important;
                 margin-left: auto !important;
             }
             .main-header .nav-link {
                 white-space: nowrap !important;
                 flex-shrink: 0 !important;
-                font-size: 12px !important;
-                font-weight: 500 !important;
-                padding: 4px 7px !important;
+                font-size: 13.5px !important;
+                font-weight: 600 !important;
+                color: #334155 !important;
+                padding: 6px 12px !important;
                 gap: 4px !important;
-                border-radius: 6px !important;
+                border-radius: 8px !important;
+                transition: color 0.15s ease !important;
             }
-            .main-header .nav-link i {
-                font-size: 14px !important;
+            .main-header .nav-link:hover {
+                color: #1d4ed8 !important;
             }
             .main-header .hamburger {
                 display: none !important;
@@ -857,21 +865,21 @@
                 display: none !important;
             }
             .logo-text {
-                color: #ffffff !important;
-                font-size: 15px !important;
+                color: #0f172a !important;
+                font-size: 17px !important;
+                font-weight: 900 !important;
             }
             .logo-text .logo-accent {
-                color: #60a5fa !important;
+                color: #ca8a04 !important;
             }
             .btn-cta-premium-header {
-                height: 32px !important;
-                padding: 0 12px !important;
-                font-size: 11.5px !important;
+                height: 38px !important;
+                padding: 0 18px !important;
+                font-size: 13px !important;
                 font-weight: 700 !important;
-                gap: 5px !important;
-            }
-            .btn-cta-premium-header i {
-                font-size: 13.5px !important;
+                border-radius: 9999px !important;
+                background-color: #0d3b66 !important;
+                color: #ffffff !important;
             }
         }
         @media (min-width: 1024px) and (max-width: 1320px) {
@@ -1674,56 +1682,78 @@
     {{-- Premium Page Loader --}}
     @include('components.page-loader')
 
-    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; padding: 6px 18px; height: 50px; min-height: 50px;">
+    <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; padding: 0 28px; height: 64px; min-height: 64px; background: #ffffff !important; border-bottom: 1px solid #e2e8f0 !important; position: relative !important;">
         <div class="logo-wrapper" style="flex-shrink: 0;">
-            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 6px !important; flex-direction: row !important; white-space: nowrap !important;" title="UnlockRentals">
-                <div style="width: 28px; height: 28px; border-radius: 7px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.2); flex-shrink: 0;">
-                    <img src="{{ asset('images/logo-icon.png') }}" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="28" height="28" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high" decoding="async" loading="eager" onerror="this.src='https://ui-avatars.com/api/?name=UR&background=2563EB&color=fff'">
+            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important; text-decoration: none !important;" title="UnlockRentals">
+                <div style="width: 38px; height: 38px; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; flex-shrink: 0;">
+                    <img src="{{ asset('images/logo-icon.png') }}" onerror="this.onerror=null;this.src='/images/logo-icon.png';" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="32" height="32" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high">
                 </div>
-                <span class="logo-text" style="font-size: 15px !important; font-weight: 800 !important; letter-spacing: -0.3px !important; white-space: nowrap !important;">Unlock<span class="logo-accent">Rentals</span></span>
+                <div style="display: flex; flex-direction: column; justify-content: center;">
+                    <span class="logo-text" style="font-size: 17px !important; font-weight: 900 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; color: #0f172a !important; line-height: 1 !important;">Unlock<span class="logo-accent" style="color: #ca8a04 !important;">Rentals</span></span>
+                    <span style="font-size: 9.5px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; color: #64748b !important; margin-top: 3px !important; line-height: 1 !important;">Rent • Buy • Sell</span>
+                </div>
             </a>
         </div>
-        <nav class="main-nav hidden lg:flex" style="gap: 8px !important; align-items: center !important; margin-left: auto !important;">
-            <a href="{{ route('properties.index') }}" class="nav-link" title="Discover" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
-                <i class="ph-bold ph-compass" style="font-size: 14px !important;"></i>
-                Discover
+        <nav class="main-nav hidden lg:flex" style="gap: 12px !important; align-items: center !important; margin-left: auto !important;">
+            <a href="{{ url('/') }}" class="nav-link" title="Home" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 13.5px !important; font-weight: 700 !important; color: #1d4ed8 !important; padding: 6px 10px !important; border-bottom: 2px solid #1d4ed8 !important; border-radius: 0 !important;">
+                Home
             </a>
-            <a href="{{ route('properties.index', ['purpose' => 'buy']) }}" class="nav-link" title="Buy" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
-                <i class="ph-bold ph-shopping-bag" style="font-size: 14px !important;"></i>
-                Buy
+            <a href="{{ route('properties.index') }}" class="nav-link" title="Properties" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;">
+                Properties
             </a>
-            <a href="{{ route('properties.index', ['purpose' => 'rent']) }}" class="nav-link" title="Rent" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
-                <i class="ph-bold ph-key" style="font-size: 14px !important;"></i>
-                Rent
-            </a>
-            <a href="{{ route('properties.index', ['type' => 'commercial']) }}" class="nav-link" title="Commercial" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
-                <i class="ph-bold ph-buildings" style="font-size: 14px !important;"></i>
-                Commercial
-            </a>
-            <a href="{{ route('properties.index', ['type' => 'plot']) }}" class="nav-link" title="Plots / Land" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
-                <i class="ph-bold ph-map-trifold" style="font-size: 14px !important;"></i>
-                Plots
-            </a>
-            <a href="{{ route('services.index') }}" class="nav-link" title="Local Professionals" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
-                <i class="ph-bold ph-toolbox" style="font-size: 14px !important;"></i>
-                Local Professionals
-            </a>
-            <a href="{{ url('/how-it-works') }}" class="nav-link" title="Process" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
-                <i class="ph-bold ph-git-merge" style="font-size: 14px !important;"></i>
-                Process
-            </a>
-            <a href="{{ url('/blog') }}" class="nav-link" title="Blog" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important; border-radius: 6px !important;">
-                <i class="ph-bold ph-newspaper" style="font-size: 14px !important;"></i>
-                Blog
+            
+            {{-- Rent Dropdown --}}
+            <div class="relative group" style="position: relative; display: inline-block;">
+                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
+                    <span>Rent</span>
+                    <i class="ph ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
+                </button>
+                <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white border border-slate-100 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
+                    <a href="{{ url('/properties?purpose=rent&type=apartment') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Flats &amp; Apartments</a>
+                    <a href="{{ url('/properties?purpose=rent&type=house') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Independent Houses</a>
+                    <a href="{{ url('/properties?purpose=rent&type=pg-hostel') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">PG &amp; Hostels</a>
+                    <a href="{{ url('/properties?purpose=rent&type=commercial') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Commercial Spaces</a>
+                </div>
+            </div>
+
+            {{-- Buy Dropdown --}}
+            <div class="relative group" style="position: relative; display: inline-block;">
+                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
+                    <span>Buy</span>
+                    <i class="ph ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
+                </button>
+                <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white border border-slate-100 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
+                    <a href="{{ url('/properties?purpose=buy&type=apartment') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Ready to Move Flats</a>
+                    <a href="{{ url('/properties?purpose=buy&type=house') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Independent Villas</a>
+                    <a href="{{ url('/properties?purpose=buy&type=plot') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Plots &amp; Land</a>
+                    <a href="{{ url('/properties?purpose=buy&type=commercial') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Commercial Shops</a>
+                </div>
+            </div>
+
+            {{-- Sell Dropdown --}}
+            <div class="relative group" style="position: relative; display: inline-block;">
+                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
+                    <span>Sell</span>
+                    <i class="ph ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
+                </button>
+                <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white border border-slate-100 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
+                    <a href="{{ route('properties.create') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Post Property Free</a>
+                    <a href="{{ url('/how-it-works') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Seller Guide &amp; Process</a>
+                    <a href="{{ url('/properties?purpose=buy') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">View Resale Listings</a>
+                </div>
+            </div>
+
+            <a href="{{ route('properties.create') }}" class="nav-link" title="List Your Property" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;">
+                List Your Property
             </a>
         </nav>
-        <div class="auth-nav" style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-left: 6px;">
+        <div class="auth-nav" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: 12px;">
             @if (Route::has('login'))
                 @auth
-                    {{-- Desktop Only: Post Ad CTA (hidden on mobile to prevent overlap) --}}
-                    <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space: nowrap !important; flex-shrink: 0; padding: 0 12px; height: 32px; align-items: center; gap: 5px; color: #ffffff !important; font-size: 11.5px !important; font-weight: 700 !important;" title="Post Free Advertise">
-                        <i class="ph-bold ph-plus-circle" style="font-size: 13.5px; color: #ffffff !important;"></i>
-                        <span style="color: #ffffff !important; white-space: nowrap !important; font-size: 11.5px !important; font-weight: 700 !important;">Post Free Advertise</span>
+                    {{-- Desktop Only: Post Ad CTA --}}
+                    <a href="{{ route('properties.create') }}" class="hidden lg:inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#0d3b66] hover:bg-[#082947] text-white text-xs xl:text-sm font-bold rounded-full shadow-sm transition-all whitespace-nowrap active:scale-95" style="background-color: #0d3b66 !important; color: #ffffff !important;" title="Post Property Free">
+                        <i class="ph-bold ph-plus text-xs" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Post Property Free</span>
                     </a>
 
                     {{-- Compact User Account Pill --}}
@@ -1898,7 +1928,7 @@
                         #userDropdown button.dropdown-item:hover { background: #fef2f2 !important; color: #dc2626 !important; }
                     </style>
                 @else
-                    {{-- Mobile Top Login Button (Standardized 34px Height, Refined Look) --}}
+                    {{-- Mobile Top Login Button --}}
                     <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" 
                        class="inline-flex lg:hidden items-center justify-center gap-1.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 active:scale-95 transition-all whitespace-nowrap cursor-pointer" 
                        style="height: 34px; text-decoration:none; color: #ffffff !important;" 
@@ -1908,17 +1938,15 @@
                         <span style="color: #ffffff !important;">Login</span>
                     </a>
 
-                    {{-- Desktop Sign In & Post Free Advertise --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden lg:inline-flex" style="margin-right: 4px; cursor: pointer; white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 12px !important; font-weight: 500 !important; padding: 4px 7px !important;" title="Log in">
-                        <i class="ph ph-user-circle" style="font-size: 14px !important;"></i>
-                        Log in
+                    {{-- Desktop Login / Sign Up --}}
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden lg:inline-flex" style="margin-right: 6px; cursor: pointer; white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;" title="Login / Sign Up">
+                        <i class="ph ph-user text-base" style="font-size: 17px !important; color: #475569 !important;"></i>
+                        <span>Login / Sign Up</span>
                     </a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('properties.create') }}" class="btn-primary-sm btn-cta-premium btn-cta-premium-header hidden lg:inline-flex" style="white-space: nowrap !important; flex-shrink: 0; padding: 0 12px; height: 32px; align-items: center; gap: 5px; color: #ffffff !important; font-size: 11.5px !important; font-weight: 700 !important;" title="Post Free Advertise">
-                            <i class="ph-bold ph-plus-circle" style="font-size: 13.5px; color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important; white-space: nowrap !important; font-size: 11.5px !important; font-weight: 700 !important;">Post Free Advertise</span>
-                        </a>
-                    @endif
+                    <a href="{{ route('properties.create') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#0d3b66] hover:bg-[#082947] text-white text-xs xl:text-sm font-bold rounded-full shadow-sm shadow-[#0d3b66]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" style="background-color: #0d3b66 !important; color: #ffffff !important;" title="Post Property Free">
+                        <i class="ph-bold ph-plus text-xs" style="color: #ffffff !important;"></i>
+                        <span style="color: #ffffff !important;">Post Property Free</span>
+                    </a>
                 @endauth
             @endif
             <button class="hamburger inline-flex lg:hidden" onclick="toggleMobileNav()" aria-label="Open menu" style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; color: #334155; cursor: pointer; flex-shrink: 0;">
@@ -2169,18 +2197,19 @@
          ==================================================== --}}
     <section class="hidden lg:block relative w-full overflow-visible" style="background-color: #0b192c;">
         {{-- Hero Dusk Architecture Background --}}
-        <div class="relative w-full overflow-hidden" style="min-height: 520px;">
+        <div class="relative w-full overflow-hidden" style="min-height: 540px; background-color: #0b192c; background-image: url('{{ asset('images/hero_dusk_complex.jpg') }}'), url('/images/hero_dusk_complex.jpg'); background-size: cover; background-position: right center; background-repeat: no-repeat;">
             <img src="{{ asset('images/hero_dusk_complex.jpg') }}" 
+                 onerror="this.onerror=null;this.src='/images/hero_dusk_complex.jpg';"
                  alt="Luxury Real Estate Community at Dusk" 
-                 class="absolute inset-0 w-full h-full object-cover object-center" 
+                 class="absolute inset-0 w-full h-full object-cover object-right" 
                  fetchpriority="high"
                  decoding="async">
             
-            {{-- Dark Dusk Cinematic Gradient Overlay (Dark on Left, Transparent on Right) --}}
-            <div class="absolute inset-0" style="background: linear-gradient(90deg, rgba(7, 18, 36, 0.94) 0%, rgba(7, 18, 36, 0.82) 42%, rgba(7, 18, 36, 0.35) 75%, rgba(7, 18, 36, 0.05) 100%);"></div>
+            {{-- Dark Dusk Cinematic Gradient Overlay (Dark on Left behind text, transparent on Right) --}}
+            <div class="absolute inset-0" style="background: linear-gradient(90deg, rgba(7, 18, 36, 0.94) 0%, rgba(7, 18, 36, 0.78) 36%, rgba(7, 18, 36, 0.15) 65%, rgba(7, 18, 36, 0) 100%); pointer-events: none;"></div>
 
             {{-- Main Hero Container (Left Content & Right Floating Card) --}}
-            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-24 flex items-center justify-between gap-8 z-10" style="min-height: 500px;">
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 flex items-center justify-between gap-8 z-10" style="min-height: 500px;">
                 
                 {{-- Left Column: Headings, CTAs, 3 Feature Badges --}}
                 <div class="max-w-2xl text-left">
@@ -2208,9 +2237,9 @@
                             <span>Explore Properties</span>
                             <i class="ph-bold ph-arrow-right text-xs"></i>
                         </a>
-                        <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-black/35 hover:bg-black/50 text-white font-bold text-sm border border-white/60 backdrop-blur-md transition-all hover:scale-[1.02] active:scale-95" id="hero-btn-post">
-                            <i class="ph-bold ph-plus text-xs"></i>
-                            <span>List Your Property Free</span>
+                        <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold text-sm backdrop-blur-md transition-all hover:scale-[1.02] active:scale-95" style="color: #ffffff !important; border: 1.5px solid rgba(255, 255, 255, 0.75) !important; background: rgba(0, 0, 0, 0.3) !important;" id="hero-btn-post">
+                            <i class="ph-bold ph-plus text-xs" style="color: #ffffff !important;"></i>
+                            <span style="color: #ffffff !important;">List Your Property Free</span>
                         </a>
                     </div>
 
@@ -2238,10 +2267,10 @@
                 </div>
 
                 {{-- Right Column: Floating Property Card --}}
-                <div class="hidden xl:flex justify-end items-center flex-shrink-0">
+                <div class="hidden lg:flex justify-end items-center flex-shrink-0">
                     <div class="w-[330px] bg-white rounded-2xl p-3 shadow-2xl shadow-black/50 border border-white/80 transition-all hover:shadow-3xl hover:-translate-y-1">
                         <div class="relative rounded-xl overflow-hidden aspect-[4/3] mb-3">
-                            <img src="{{ asset('images/hero_card_living.jpg') }}" alt="Beautiful 2 BHK Apartment" class="w-full h-full object-cover">
+                            <img src="{{ asset('images/hero_card_living.jpg') }}" onerror="this.onerror=null;this.src='/images/hero_card_living.jpg';" alt="Beautiful 2 BHK Apartment" class="w-full h-full object-cover">
                             <div class="absolute top-2.5 right-2.5">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[11px] font-bold shadow-md">
                                     For Rent
