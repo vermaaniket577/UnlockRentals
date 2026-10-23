@@ -2195,113 +2195,574 @@
     {{-- ====================================================
          DESKTOP HERO SECTION (Matching User Reference Image)
          ==================================================== --}}
-    <section class="hidden lg:block relative w-full overflow-visible" style="background-color: #0b192c;">
+    <section class="hidden lg:block relative w-full overflow-visible ur-hero-desktop-section" style="background-color: #0c1c30;">
+        <style>
+            .ur-hero-desktop-section {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            }
+            .ur-hero-dusk-bg-container {
+                position: relative;
+                width: 100%;
+                min-height: 520px;
+                overflow: hidden;
+                background-color: #0c1c30;
+                background-size: cover;
+                background-position: right center;
+                background-repeat: no-repeat;
+            }
+            .ur-hero-gradient-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, rgba(8, 20, 38, 0.90) 0%, rgba(8, 20, 38, 0.74) 40%, rgba(8, 20, 38, 0.22) 68%, rgba(8, 20, 38, 0) 100%);
+                z-index: 2;
+                pointer-events: none;
+            }
+            .ur-hero-inner {
+                position: relative;
+                max-w: 1240px;
+                max-width: 1240px;
+                margin: 0 auto;
+                padding: 44px 24px 92px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 32px;
+                z-index: 10;
+                min-height: 480px;
+                box-sizing: border-box;
+            }
+            .ur-hero-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                color: #f59e0b;
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                margin-bottom: 14px;
+            }
+            .ur-hero-title {
+                font-size: 44px;
+                font-weight: 900;
+                color: #ffffff;
+                line-height: 1.16;
+                letter-spacing: -0.02em;
+                margin: 0 0 16px 0;
+            }
+            .ur-hero-title span {
+                color: #f59e0b;
+            }
+            .ur-hero-subtitle {
+                font-size: 15px;
+                font-weight: 400;
+                color: #e2e8f0;
+                line-height: 1.6;
+                max-width: 540px;
+                margin: 0 0 28px 0;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            }
+            .ur-hero-cta-group {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                margin-bottom: 32px;
+            }
+            .ur-hero-btn-primary {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 26px;
+                border-radius: 9999px;
+                background: #2563eb;
+                color: #ffffff !important;
+                font-weight: 700;
+                font-size: 14px;
+                text-decoration: none;
+                box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+                transition: all 0.2s ease;
+            }
+            .ur-hero-btn-primary:hover {
+                background: #1d4ed8;
+                transform: translateY(-1px);
+                box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+            }
+            .ur-hero-btn-secondary {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 24px;
+                border-radius: 9999px;
+                background: rgba(15, 23, 42, 0.45);
+                border: 1.5px solid rgba(255, 255, 255, 0.75);
+                color: #ffffff !important;
+                font-weight: 700;
+                font-size: 14px;
+                text-decoration: none;
+                backdrop-filter: blur(8px);
+                transition: all 0.2s ease;
+            }
+            .ur-hero-btn-secondary:hover {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: #ffffff;
+                transform: translateY(-1px);
+            }
+            .ur-hero-badges-row {
+                display: flex;
+                align-items: center;
+                gap: 28px;
+                flex-wrap: wrap;
+            }
+            .ur-hero-badge-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: #ffffff;
+                font-size: 12px;
+                font-weight: 600;
+                line-height: 1.25;
+            }
+            .ur-hero-badge-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: rgba(245, 158, 11, 0.18);
+                border: 1px solid rgba(245, 158, 11, 0.45);
+                color: #fbbf24;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 17px;
+                flex-shrink: 0;
+            }
+
+            /* Floating Property Card */
+            .ur-hero-card-container {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                flex-shrink: 0;
+            }
+            .ur-hero-card {
+                width: 320px;
+                background: #ffffff;
+                border-radius: 18px;
+                padding: 12px;
+                box-shadow: 0 20px 45px rgba(0, 0, 0, 0.32);
+                border: 1px solid rgba(255, 255, 255, 0.9);
+                transition: transform 0.25s ease, box-shadow 0.25s ease;
+                box-sizing: border-box;
+            }
+            .ur-hero-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 24px 50px rgba(0, 0, 0, 0.38);
+            }
+            .ur-hero-card-img-box {
+                position: relative;
+                border-radius: 12px;
+                overflow: hidden;
+                height: 185px;
+                width: 100%;
+                background: #f1f5f9;
+            }
+            .ur-hero-card-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+            .ur-hero-card-badge {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: #059669;
+                color: #ffffff;
+                font-size: 11px;
+                font-weight: 800;
+                padding: 3px 10px;
+                border-radius: 9999px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+                text-transform: uppercase;
+                letter-spacing: 0.02em;
+            }
+            .ur-hero-card-body {
+                padding: 10px 4px 4px;
+            }
+            .ur-hero-card-title {
+                font-size: 14.5px;
+                font-weight: 800;
+                color: #0f172a;
+                margin: 0 0 4px 0;
+                line-height: 1.3;
+            }
+            .ur-hero-card-location {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 12px;
+                color: #64748b;
+                font-weight: 500;
+                margin-bottom: 8px;
+            }
+            .ur-hero-card-price {
+                display: flex;
+                align-items: baseline;
+                gap: 4px;
+                margin-bottom: 8px;
+            }
+            .ur-hero-card-price .amount {
+                font-size: 17px;
+                font-weight: 900;
+                color: #0d4b8f;
+            }
+            .ur-hero-card-price .period {
+                font-size: 12px;
+                font-weight: 600;
+                color: #94a3b8;
+            }
+            .ur-hero-card-specs {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #475569;
+                border-top: 1px solid #f1f5f9;
+                padding-top: 8px;
+                margin-bottom: 8px;
+            }
+            .ur-hero-card-specs span {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            .ur-hero-card-footer {
+                border-top: 1px solid #f1f5f9;
+                padding-top: 8px;
+            }
+            .ur-hero-card-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 12px;
+                font-weight: 700;
+                color: #0d4b8f;
+                text-decoration: none;
+                transition: gap 0.2s ease;
+            }
+            .ur-hero-card-link:hover {
+                gap: 6px;
+                color: #072a52;
+            }
+
+            /* Single-Row Horizontal Search Filter Bar */
+            .ur-hero-search-wrapper {
+                position: relative;
+                max-width: 1240px;
+                margin: -50px auto 0;
+                padding: 0 24px;
+                z-index: 30;
+                box-sizing: border-box;
+            }
+            .ur-hero-search-card {
+                background: #ffffff;
+                border-radius: 18px;
+                box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
+                border: 1px solid #e2e8f0;
+                padding: 18px 22px;
+                box-sizing: border-box;
+            }
+            .ur-hero-search-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 12px;
+            }
+            .ur-hero-search-title {
+                font-size: 16px;
+                font-weight: 800;
+                color: #0f172a;
+                margin: 0;
+            }
+            .ur-hero-search-clear {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                background: none;
+                border: none;
+                font-size: 12.5px;
+                font-weight: 600;
+                color: #2563eb;
+                cursor: pointer;
+                transition: color 0.15s ease;
+                padding: 0;
+            }
+            .ur-hero-search-clear:hover {
+                color: #1d4ed8;
+                text-decoration: underline;
+            }
+            .ur-hero-search-form {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: stretch !important;
+                gap: 10px !important;
+                width: 100% !important;
+                margin: 0 !important;
+                box-sizing: border-box !important;
+            }
+            .ur-hero-search-col {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                background: #ffffff !important;
+                border: 1.5px solid #e2e8f0 !important;
+                border-radius: 12px !important;
+                padding: 8px 12px !important;
+                transition: border-color 0.18s ease, box-shadow 0.18s ease !important;
+                position: relative !important;
+                box-sizing: border-box !important;
+            }
+            .ur-hero-search-col:focus-within,
+            .ur-hero-search-col:hover {
+                border-color: #2563eb !important;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+            }
+            .ur-hero-col-purpose { flex: 1.1 !important; min-width: 120px !important; }
+            .ur-hero-col-type    { flex: 1.3 !important; min-width: 155px !important; }
+            .ur-hero-col-location{ flex: 1.8 !important; min-width: 210px !important; }
+            .ur-hero-col-budget  { flex: 1.2 !important; min-width: 135px !important; }
+            .ur-hero-col-rooms   { flex: 1.1 !important; min-width: 120px !important; }
+            .ur-hero-col-submit  { flex: 0 0 135px !important; min-width: 120px !important; display: flex !important; padding: 0 !important; border: none !important; background: transparent !important; }
+
+            .ur-hero-label {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 10.5px;
+                font-weight: 700;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                margin-bottom: 2px;
+                pointer-events: none;
+            }
+            .ur-hero-label i {
+                font-size: 12px;
+                color: #64748b;
+            }
+            .ur-hero-select {
+                width: 100%;
+                background: transparent;
+                border: none;
+                outline: none;
+                font-size: 13px;
+                font-weight: 700;
+                color: #0f172a;
+                cursor: pointer;
+                padding: 0 18px 0 0;
+                margin: 0;
+                appearance: none;
+                -webkit-appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 256 256'%3E%3Cpath fill='%2364748b' d='M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right center;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+            .ur-hero-btn-search {
+                width: 100%;
+                height: 100%;
+                min-height: 52px;
+                background: #0d4b8f;
+                color: #ffffff;
+                border: none;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                cursor: pointer;
+                box-shadow: 0 4px 14px rgba(13, 75, 143, 0.28);
+                transition: all 0.2s ease;
+            }
+            .ur-hero-btn-search:hover {
+                background: #093769;
+                box-shadow: 0 6px 18px rgba(13, 75, 143, 0.38);
+                transform: translateY(-1px);
+            }
+            .ur-hero-btn-search:active {
+                transform: scale(0.98);
+            }
+
+            /* Value Proposition Ribbon */
+            .ur-hero-ribbon-wrapper {
+                max-width: 1240px;
+                margin: 16px auto 0;
+                padding: 0 24px 24px;
+                box-sizing: border-box;
+            }
+            .ur-hero-ribbon {
+                background: #ffffff;
+                border-radius: 16px;
+                border: 1px solid #f1f5f9;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+                padding: 14px 16px;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .ur-hero-ribbon-col {
+                flex: 1 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+                padding: 4px 14px !important;
+            }
+            .ur-hero-ribbon-col:not(:last-child) {
+                border-right: 1px solid #f1f5f9 !important;
+            }
+            .ur-hero-ribbon-icon {
+                width: 40px !important;
+                height: 40px !important;
+                border-radius: 50% !important;
+                border: 1.5px solid #2563eb !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #2563eb !important;
+                font-size: 18px !important;
+                flex-shrink: 0 !important;
+                background: rgba(37, 99, 235, 0.04) !important;
+            }
+            .ur-hero-ribbon-title {
+                font-size: 12.5px;
+                font-weight: 800;
+                color: #0f172a;
+                margin: 0 0 2px 0;
+                line-height: 1.25;
+            }
+            .ur-hero-ribbon-desc {
+                font-size: 11px;
+                font-weight: 500;
+                color: #64748b;
+                margin: 0;
+                line-height: 1.2;
+            }
+        </style>
+
         {{-- Hero Dusk Architecture Background --}}
-        <div class="relative w-full overflow-hidden" style="min-height: 540px; background-color: #0b192c; background-image: url('{{ asset('images/hero_dusk_complex.jpg') }}'); background-size: cover; background-position: right center; background-repeat: no-repeat;">
-            <img src="{{ asset('images/hero_dusk_complex.jpg') }}" 
-                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80';"
+        <div class="ur-hero-dusk-bg-container" style="background-image: url('{{ asset('images/hero_dusk_complex.jpg') }}');">
+            <img id="heroDesktopDuskBg" 
+                 src="{{ asset('images/hero_dusk_complex.jpg') }}" 
+                 onerror="handleHeroImgFallback(this, 'hero_dusk_complex.jpg')"
                  alt="Luxury Real Estate Community at Dusk" 
-                 class="absolute inset-0 w-full h-full object-cover object-right" 
-                 style="z-index: 1;"
+                 class="ur-hero-card-img" 
+                 style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: right center; z-index: 1;"
                  fetchpriority="high"
                  decoding="async">
             
             {{-- Dark Dusk Cinematic Gradient Overlay (Dark on Left behind text, transparent on Right) --}}
-            <div class="absolute inset-0" style="z-index: 2; background: linear-gradient(90deg, rgba(7, 18, 36, 0.85) 0%, rgba(7, 18, 36, 0.65) 40%, rgba(7, 18, 36, 0.15) 70%, rgba(7, 18, 36, 0) 100%); pointer-events: none;"></div>
+            <div class="ur-hero-gradient-overlay"></div>
 
             {{-- Main Hero Container (Left Content & Right Floating Card) --}}
-            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 flex items-center justify-between gap-8 z-10" style="min-height: 500px;">
+            <div class="ur-hero-inner">
                 
                 {{-- Left Column: Headings, CTAs, 3 Feature Badges --}}
-                <div class="max-w-2xl text-left">
+                <div style="max-width: 620px; text-align: left; z-index: 10;">
                     {{-- Badge: FIND YOUR NEXT HOME --}}
-                    <div class="inline-flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-widest mb-3.5">
-                        <i class="ph-bold ph-house text-amber-400 text-sm"></i>
+                    <div class="ur-hero-tag">
+                        <i class="ph-bold ph-house" style="color: #f59e0b; font-size: 14px;"></i>
                         <span>FIND YOUR NEXT HOME</span>
                     </div>
 
                     {{-- Main Headline --}}
-                    <h1 class="text-4xl xl:text-5xl font-black text-white tracking-tight leading-[1.18] mb-4">
+                    <h1 class="ur-hero-title">
                         Find Your Perfect Home.<br>
-                        <span class="text-amber-400">Without the Brokerage Hassle.</span>
+                        <span>Without the Brokerage Hassle.</span>
                     </h1>
 
                     {{-- Subtitle --}}
-                    <p class="text-slate-200 text-sm xl:text-[15.5px] max-w-xl font-normal leading-relaxed mb-7 drop-shadow-xs">
+                    <p class="ur-hero-subtitle">
                         Discover rooms, flats, and houses across India. Connect directly with property owners and make your next move simpler with UnlockRentals.
                     </p>
 
                     {{-- Action Buttons --}}
-                    <div class="flex items-center gap-3.5 mb-9">
-                        <a href="{{ url('/properties') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-95" id="hero-btn-explore">
-                            <i class="ph-bold ph-magnifying-glass text-base"></i>
+                    <div class="ur-hero-cta-group">
+                        <a href="{{ url('/properties') }}" class="ur-hero-btn-primary" id="hero-btn-explore">
+                            <i class="ph-bold ph-magnifying-glass" style="font-size: 15px;"></i>
                             <span>Explore Properties</span>
-                            <i class="ph-bold ph-arrow-right text-xs"></i>
+                            <i class="ph-bold ph-arrow-right" style="font-size: 12px;"></i>
                         </a>
-                        <a href="{{ route('properties.create') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold text-sm backdrop-blur-md transition-all hover:scale-[1.02] active:scale-95" style="color: #ffffff !important; border: 1.5px solid rgba(255, 255, 255, 0.75) !important; background: rgba(0, 0, 0, 0.3) !important;" id="hero-btn-post">
-                            <i class="ph-bold ph-plus text-xs" style="color: #ffffff !important;"></i>
-                            <span style="color: #ffffff !important;">List Your Property Free</span>
+                        <a href="{{ route('properties.create') }}" class="ur-hero-btn-secondary" id="hero-btn-post">
+                            <i class="ph-bold ph-plus" style="font-size: 12px; color: #ffffff !important;"></i>
+                            <span>List Your Property Free</span>
                         </a>
                     </div>
 
                     {{-- 3 Circular Feature Badges --}}
-                    <div class="flex items-center flex-wrap gap-8 text-white text-xs font-semibold">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 flex-shrink-0 shadow-sm">
-                                <i class="ph-bold ph-house text-base"></i>
+                    <div class="ur-hero-badges-row">
+                        <div class="ur-hero-badge-item">
+                            <div class="ur-hero-badge-icon">
+                                <i class="ph-bold ph-house"></i>
                             </div>
-                            <span class="leading-tight">Homes for<br>Every Budget</span>
+                            <span>Homes for<br>Every Budget</span>
                         </div>
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 flex-shrink-0 shadow-sm">
-                                <i class="ph-bold ph-users text-base"></i>
+                        <div class="ur-hero-badge-item">
+                            <div class="ur-hero-badge-icon">
+                                <i class="ph-bold ph-users"></i>
                             </div>
-                            <span class="leading-tight">Direct Owner<br>Connections</span>
+                            <span>Direct Owner<br>Connections</span>
                         </div>
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 flex-shrink-0 shadow-sm">
-                                <i class="ph-bold ph-file-text text-base"></i>
+                        <div class="ur-hero-badge-item">
+                            <div class="ur-hero-badge-icon">
+                                <i class="ph-bold ph-file-text"></i>
                             </div>
-                            <span class="leading-tight">Easy Property<br>Listing</span>
+                            <span>Easy Property<br>Listing</span>
                         </div>
                     </div>
                 </div>
 
                 {{-- Right Column: Floating Property Card --}}
-                <div class="hidden lg:flex justify-end items-center flex-shrink-0">
-                    <div class="w-[330px] bg-white rounded-2xl p-3 shadow-2xl shadow-black/50 border border-white/80 transition-all hover:shadow-3xl hover:-translate-y-1">
-                        <div class="relative rounded-xl overflow-hidden aspect-[4/3] mb-3">
-                            <img src="{{ asset('images/hero_card_living.jpg') }}" onerror="this.onerror=null;this.src='/images/hero_card_living.jpg';" alt="Beautiful 2 BHK Apartment" class="w-full h-full object-cover">
-                            <div class="absolute top-2.5 right-2.5">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[11px] font-bold shadow-md">
-                                    For Rent
-                                </span>
+                <div class="ur-hero-card-container">
+                    <div class="ur-hero-card">
+                        <div class="ur-hero-card-img-box">
+                            <img src="{{ asset('images/hero_card_living.jpg') }}" 
+                                 onerror="handleHeroImgFallback(this, 'hero_card_living.jpg')" 
+                                 alt="Beautiful 2 BHK Apartment" 
+                                 class="ur-hero-card-img">
+                            <div class="ur-hero-card-badge">
+                                For Rent
                             </div>
                         </div>
-                        <div class="px-1.5 pb-1">
-                            <h3 class="font-extrabold text-slate-900 text-sm leading-snug">Beautiful 2 BHK Apartment</h3>
-                            <div class="flex items-center gap-1 text-slate-500 text-xs mt-1">
-                                <i class="ph-bold ph-map-pin text-slate-400 text-xs"></i>
+                        <div class="ur-hero-card-body">
+                            <h3 class="ur-hero-card-title">Beautiful 2 BHK Apartment</h3>
+                            <div class="ur-hero-card-location">
+                                <i class="ph-bold ph-map-pin" style="color: #94a3b8; font-size: 12px;"></i>
                                 <span>Gurgaon, Haryana</span>
                             </div>
-                            <div class="flex items-baseline gap-1 mt-2.5">
-                                <span class="text-base font-extrabold text-blue-700">₹18,000</span>
-                                <span class="text-xs font-semibold text-slate-400">/ month</span>
+                            <div class="ur-hero-card-price">
+                                <span class="amount">₹18,000</span>
+                                <span class="period">/ month</span>
                             </div>
-                            <div class="flex items-center gap-4 text-xs font-medium text-slate-600 mt-2.5 pt-2 border-t border-slate-100">
-                                <span class="flex items-center gap-1.5">
-                                    <i class="ph-bold ph-bed text-slate-400"></i>
+                            <div class="ur-hero-card-specs">
+                                <span>
+                                    <i class="ph-bold ph-bed" style="color: #94a3b8;"></i>
                                     <span>2 Beds</span>
                                 </span>
-                                <span class="flex items-center gap-1.5">
-                                    <i class="ph-bold ph-bathtub text-slate-400"></i>
+                                <span>
+                                    <i class="ph-bold ph-bathtub" style="color: #94a3b8;"></i>
                                     <span>2 Baths</span>
                                 </span>
                             </div>
-                            <div class="mt-2.5 pt-2 border-t border-slate-100">
-                                <a href="{{ url('/properties') }}" class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors">
+                            <div class="ur-hero-card-footer">
+                                <a href="{{ url('/properties') }}" class="ur-hero-card-link">
                                     <span>View Property</span>
-                                    <i class="ph-bold ph-arrow-right text-[11px]"></i>
+                                    <i class="ph-bold ph-arrow-right" style="font-size: 11px;"></i>
                                 </a>
                             </div>
                         </div>
@@ -2312,23 +2773,23 @@
         </div>
 
         {{-- Floating "Find a Property" Search Card (Overlap Card) --}}
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-14 relative z-30">
-            <div class="bg-white rounded-2xl shadow-xl shadow-slate-900/10 border border-slate-100 p-5 lg:p-6">
-                <div class="flex items-center justify-between mb-3.5">
-                    <h2 class="text-base lg:text-lg font-black text-slate-900">Find a Property</h2>
-                    <button type="button" onclick="clearHeroSearchFilters()" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors cursor-pointer">
-                        <i class="ph-bold ph-arrows-clockwise text-xs"></i>
+        <div class="ur-hero-search-wrapper">
+            <div class="ur-hero-search-card">
+                <div class="ur-hero-search-header">
+                    <h2 class="ur-hero-search-title">Find a Property</h2>
+                    <button type="button" onclick="clearHeroSearchFilters()" class="ur-hero-search-clear">
+                        <i class="ph-bold ph-arrows-clockwise" style="font-size: 12px;"></i>
                         <span>Clear All</span>
                     </button>
                 </div>
-                <form id="heroFindPropertyForm" action="{{ route('properties.index') }}" method="GET" class="grid grid-cols-12 gap-2.5 items-center">
+                <form id="heroFindPropertyForm" action="{{ route('properties.index') }}" method="GET" class="ur-hero-search-form">
                     {{-- 1. I Want To --}}
-                    <div class="col-span-2 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
-                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
-                            <i class="ph-bold ph-house text-slate-500 text-xs"></i>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">I Want To</span>
+                    <div class="ur-hero-search-col ur-hero-col-purpose">
+                        <div class="ur-hero-label">
+                            <i class="ph-bold ph-house"></i>
+                            <span>I Want To</span>
                         </div>
-                        <select name="purpose" id="hero_purpose" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer">
+                        <select name="purpose" id="hero_purpose" class="ur-hero-select">
                             <option value="rent" {{ request('purpose', 'rent') == 'rent' && request('type') !== 'pg-hostel' ? 'selected' : '' }}>Rent</option>
                             <option value="buy" {{ request('purpose') == 'buy' ? 'selected' : '' }}>Buy</option>
                             <option value="pg" {{ request('type') == 'pg-hostel' ? 'selected' : '' }}>PG</option>
@@ -2336,12 +2797,12 @@
                     </div>
 
                     {{-- 2. Property Type --}}
-                    <div class="col-span-2 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
-                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
-                            <i class="ph-bold ph-buildings text-slate-500 text-xs"></i>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Property Type</span>
+                    <div class="ur-hero-search-col ur-hero-col-type">
+                        <div class="ur-hero-label">
+                            <i class="ph-bold ph-buildings"></i>
+                            <span>Property Type</span>
                         </div>
-                        <select name="type" id="hero_type" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer">
+                        <select name="type" id="hero_type" class="ur-hero-select">
                             <option value="apartment">Flat / Apartment</option>
                             <option value="house">House / Villa</option>
                             <option value="pg-hostel">PG / Hostel</option>
@@ -2351,12 +2812,12 @@
                     </div>
 
                     {{-- 3. Location --}}
-                    <div class="col-span-3 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
-                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
-                            <i class="ph-bold ph-map-pin text-slate-500 text-xs"></i>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Location</span>
+                    <div class="ur-hero-search-col ur-hero-col-location">
+                        <div class="ur-hero-label">
+                            <i class="ph-bold ph-map-pin"></i>
+                            <span>Location</span>
                         </div>
-                        <select name="district" id="hero_district" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer truncate">
+                        <select name="district" id="hero_district" class="ur-hero-select">
                             <option value="">City, locality or PIN code</option>
                             <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurgaon / Gurugram</option>
                             <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>New Delhi</option>
@@ -2374,12 +2835,12 @@
                     </div>
 
                     {{-- 4. Budget --}}
-                    <div class="col-span-2 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
-                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
-                            <span class="text-xs font-bold text-slate-500">₹</span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Budget</span>
+                    <div class="ur-hero-search-col ur-hero-col-budget">
+                        <div class="ur-hero-label">
+                            <span style="font-size: 11px; font-weight: 800; color: #64748b;">₹</span>
+                            <span>Budget</span>
                         </div>
-                        <select name="price" id="hero_price" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer">
+                        <select name="price" id="hero_price" class="ur-hero-select">
                             <option value="any">Min - Max</option>
                             <option value="0-15000">Up to ₹15,000</option>
                             <option value="15000-30000">₹15,000 – ₹30,000</option>
@@ -2389,12 +2850,12 @@
                     </div>
 
                     {{-- 5. Bedrooms --}}
-                    <div class="col-span-2 relative rounded-xl border border-slate-200 hover:border-slate-300 p-2.5 bg-slate-50/40 focus-within:bg-white focus-within:border-blue-500 transition-all">
-                        <div class="flex items-center gap-1.5 text-slate-400 text-xs mb-1">
-                            <i class="ph-bold ph-bed text-slate-500 text-xs"></i>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Bedrooms</span>
+                    <div class="ur-hero-search-col ur-hero-col-rooms">
+                        <div class="ur-hero-label">
+                            <i class="ph-bold ph-bed"></i>
+                            <span>Bedrooms</span>
                         </div>
-                        <select name="rooms" id="hero_rooms" class="w-full bg-transparent font-bold text-xs text-slate-800 focus:outline-none cursor-pointer">
+                        <select name="rooms" id="hero_rooms" class="ur-hero-select">
                             <option value="1bhk">1 BHK</option>
                             <option value="2bhk">2 BHK</option>
                             <option value="3bhk-plus">3+ BHK</option>
@@ -2403,10 +2864,10 @@
                     </div>
 
                     {{-- 6. Search Button --}}
-                    <div class="col-span-1">
-                        <button type="submit" class="w-full h-full min-h-[52px] rounded-xl bg-[#0d4b8f] hover:bg-[#0a3a70] text-white font-bold flex items-center justify-center gap-1.5 shadow-md shadow-[#0d4b8f]/20 active:scale-95 transition-all cursor-pointer" id="heroSearchBtn">
-                            <i class="ph-bold ph-magnifying-glass text-base"></i>
-                            <span class="text-xs">Search</span>
+                    <div class="ur-hero-col-submit">
+                        <button type="submit" class="ur-hero-btn-search" id="heroSearchBtn">
+                            <i class="ph-bold ph-magnifying-glass" style="font-size: 16px;"></i>
+                            <span>Search</span>
                         </button>
                     </div>
                 </form>
@@ -2414,49 +2875,49 @@
         </div>
 
         {{-- Value Proposition Ribbon (Below Search Card) --}}
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 pb-6">
-            <div class="bg-white rounded-2xl border border-slate-100 shadow-xs py-4 px-5 grid grid-cols-4 divide-x divide-slate-100">
+        <div class="ur-hero-ribbon-wrapper">
+            <div class="ur-hero-ribbon">
                 {{-- 1. Direct Owner Connections --}}
-                <div class="flex items-center gap-3.5 px-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                        <i class="ph ph-users text-xl"></i>
+                <div class="ur-hero-ribbon-col">
+                    <div class="ur-hero-ribbon-icon">
+                        <i class="ph ph-users"></i>
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-900 leading-tight">Direct Owner Connections</h4>
-                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">Talk to owners, skip brokers</p>
+                        <h4 class="ur-hero-ribbon-title">Direct Owner Connections</h4>
+                        <p class="ur-hero-ribbon-desc">Talk to owners, skip brokers</p>
                     </div>
                 </div>
 
                 {{-- 2. Easy Property Discovery --}}
-                <div class="flex items-center gap-3.5 px-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                        <i class="ph ph-magnifying-glass text-xl"></i>
+                <div class="ur-hero-ribbon-col">
+                    <div class="ur-hero-ribbon-icon">
+                        <i class="ph ph-magnifying-glass"></i>
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-900 leading-tight">Easy Property Discovery</h4>
-                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">Search by location, budget &amp; more</p>
+                        <h4 class="ur-hero-ribbon-title">Easy Property Discovery</h4>
+                        <p class="ur-hero-ribbon-desc">Search by location, budget &amp; more</p>
                     </div>
                 </div>
 
                 {{-- 3. Free Property Posting --}}
-                <div class="flex items-center gap-3.5 px-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                        <i class="ph ph-plus-circle text-xl"></i>
+                <div class="ur-hero-ribbon-col">
+                    <div class="ur-hero-ribbon-icon">
+                        <i class="ph ph-plus-circle"></i>
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-900 leading-tight">Free Property Posting</h4>
-                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">List your property in minutes</p>
+                        <h4 class="ur-hero-ribbon-title">Free Property Posting</h4>
+                        <p class="ur-hero-ribbon-desc">List your property in minutes</p>
                     </div>
                 </div>
 
                 {{-- 4. Listings Across India --}}
-                <div class="flex items-center gap-3.5 px-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                        <i class="ph ph-map-pin text-xl"></i>
+                <div class="ur-hero-ribbon-col">
+                    <div class="ur-hero-ribbon-icon">
+                        <i class="ph ph-map-pin"></i>
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-900 leading-tight">Listings Across India</h4>
-                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">From metros to small towns</p>
+                        <h4 class="ur-hero-ribbon-title">Listings Across India</h4>
+                        <p class="ur-hero-ribbon-desc">From metros to small towns</p>
                     </div>
                 </div>
             </div>
@@ -2478,6 +2939,23 @@
                     if (r) r.value = '1bhk';
                 }
             }
+
+            window.handleHeroImgFallback = function(img, filename) {
+                if (!img) return;
+                var count = parseInt(img.getAttribute('data-err-count') || '0', 10);
+                var candidatePaths = [
+                    'images/' + filename,
+                    '/UnlockRentals-main/UnlockRentals-main/public/images/' + filename,
+                    '/UnlockRentals-main/images/' + filename,
+                    '/images/' + filename,
+                    window.location.origin + '/images/' + filename,
+                    window.location.origin + '/UnlockRentals-main/UnlockRentals-main/public/images/' + filename
+                ];
+                if (count < candidatePaths.length) {
+                    img.setAttribute('data-err-count', count + 1);
+                    img.src = candidatePaths[count];
+                }
+            };
         </script>
     </section>
 
