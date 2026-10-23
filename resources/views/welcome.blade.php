@@ -2197,16 +2197,17 @@
          ==================================================== --}}
     <section class="hidden lg:block relative w-full overflow-visible" style="background-color: #0b192c;">
         {{-- Hero Dusk Architecture Background --}}
-        <div class="relative w-full overflow-hidden" style="min-height: 540px; background-color: #0b192c; background-image: url('{{ asset('images/hero_dusk_complex.jpg') }}'), url('/images/hero_dusk_complex.jpg'); background-size: cover; background-position: right center; background-repeat: no-repeat;">
+        <div class="relative w-full overflow-hidden" style="min-height: 540px; background-color: #0b192c; background-image: url('{{ asset('images/hero_dusk_complex.jpg') }}'); background-size: cover; background-position: right center; background-repeat: no-repeat;">
             <img src="{{ asset('images/hero_dusk_complex.jpg') }}" 
-                 onerror="this.onerror=null;this.src='/images/hero_dusk_complex.jpg';"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80';"
                  alt="Luxury Real Estate Community at Dusk" 
                  class="absolute inset-0 w-full h-full object-cover object-right" 
+                 style="z-index: 1;"
                  fetchpriority="high"
                  decoding="async">
             
             {{-- Dark Dusk Cinematic Gradient Overlay (Dark on Left behind text, transparent on Right) --}}
-            <div class="absolute inset-0" style="background: linear-gradient(90deg, rgba(7, 18, 36, 0.94) 0%, rgba(7, 18, 36, 0.78) 36%, rgba(7, 18, 36, 0.15) 65%, rgba(7, 18, 36, 0) 100%); pointer-events: none;"></div>
+            <div class="absolute inset-0" style="z-index: 2; background: linear-gradient(90deg, rgba(7, 18, 36, 0.85) 0%, rgba(7, 18, 36, 0.65) 40%, rgba(7, 18, 36, 0.15) 70%, rgba(7, 18, 36, 0) 100%); pointer-events: none;"></div>
 
             {{-- Main Hero Container (Left Content & Right Floating Card) --}}
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 flex items-center justify-between gap-8 z-10" style="min-height: 500px;">
