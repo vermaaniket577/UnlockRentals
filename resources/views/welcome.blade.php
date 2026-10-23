@@ -2655,10 +2655,17 @@
             }
         </style>
 
+        @php
+            $heroDuskCdn = 'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_dusk_complex.jpg';
+            $heroCardCdn = 'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_card_living.jpg';
+            $heroDuskSrc = file_exists(public_path('images/hero_dusk_complex.jpg')) ? asset('images/hero_dusk_complex.jpg') : $heroDuskCdn;
+            $heroCardSrc = file_exists(public_path('images/hero_card_living.jpg')) ? asset('images/hero_card_living.jpg') : $heroCardCdn;
+        @endphp
+
         {{-- Hero Dusk Architecture Background --}}
-        <div class="ur-hero-dusk-bg-container" style="background-image: url('{{ asset('images/hero_dusk_complex.jpg') }}');">
+        <div class="ur-hero-dusk-bg-container" style="background-image: url('{{ $heroDuskSrc }}'), url('{{ $heroDuskCdn }}');">
             <img id="heroDesktopDuskBg" 
-                 src="{{ asset('images/hero_dusk_complex.jpg') }}" 
+                 src="{{ $heroDuskSrc }}" 
                  onerror="handleHeroImgFallback(this, 'hero_dusk_complex.jpg')"
                  alt="Luxury Real Estate Community at Dusk" 
                  class="ur-hero-card-img" 
@@ -2731,10 +2738,11 @@
                 <div class="ur-hero-card-container">
                     <div class="ur-hero-card">
                         <div class="ur-hero-card-img-box">
-                            <img src="{{ asset('images/hero_card_living.jpg') }}" 
+                            <img src="{{ $heroCardSrc }}" 
                                  onerror="handleHeroImgFallback(this, 'hero_card_living.jpg')" 
                                  alt="Beautiful 2 BHK Apartment" 
-                                 class="ur-hero-card-img">
+                                 class="ur-hero-card-img"
+                                 style="width: 100%; height: 100%; object-fit: cover; display: block;">
                             <div class="ur-hero-card-badge">
                                 For Rent
                             </div>
@@ -2944,16 +2952,22 @@
                 if (!img) return;
                 var count = parseInt(img.getAttribute('data-err-count') || '0', 10);
                 var candidatePaths = [
+                    'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/' + filename,
+                    'https://raw.githubusercontent.com/vermaaniket577/UnlockRentals/main/public/images/' + filename,
                     'images/' + filename,
                     '/UnlockRentals-main/UnlockRentals-main/public/images/' + filename,
-                    '/UnlockRentals-main/images/' + filename,
                     '/images/' + filename,
-                    window.location.origin + '/images/' + filename,
-                    window.location.origin + '/UnlockRentals-main/UnlockRentals-main/public/images/' + filename
+                    window.location.origin + '/images/' + filename
                 ];
                 if (count < candidatePaths.length) {
                     img.setAttribute('data-err-count', count + 1);
                     img.src = candidatePaths[count];
+                    if (img.id === 'heroDesktopDuskBg') {
+                        var bgContainer = img.closest('.ur-hero-dusk-bg-container');
+                        if (bgContainer) {
+                            bgContainer.style.backgroundImage = 'url("' + candidatePaths[count] + '")';
+                        }
+                    }
                 }
             };
         </script>
