@@ -11,7 +11,7 @@ Artisan::command('inspire', function () {
 // Visitor CRM Scheduled Tasks
 Schedule::command('visitor:aggregate-daily')->dailyAt('00:05')->name('visitor_aggregate_daily')->withoutOverlapping();
 Schedule::command('visitor:cleanup-retention')->dailyAt('02:00')->name('visitor_cleanup_retention')->withoutOverlapping();
-Schedule::command('leads:fetch-external')->everyMinute()->name('leads_fetch_external')->withoutOverlapping();
+// Schedule::command('leads:fetch-external')->everyMinute()->name('leads_fetch_external')->withoutOverlapping(); // Manual sync only
 Schedule::command('scrape:city Gurgaon --count=2')->everyMinute()->name('properties_scrape_sync')->withoutOverlapping();
 Schedule::command('properties:clean-duplicates')->hourly()->name('properties_clean_duplicates')->withoutOverlapping();
 

@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    {{-- Quick Category Filter Chips & Live Clock / Auto-Update Controller --}}
+    {{-- Quick Category Filter Chips & Live Clock / Sync Leads Controller --}}
     @php
         $currentCat = request('category', 'all');
         if (empty($currentCat)) { $currentCat = 'all'; }
@@ -173,7 +173,7 @@
             @endif
         </div>
 
-        {{-- Live Real-time Date, Clock & Auto-Update Controller --}}
+        {{-- Live Real-time Date, Clock & Sync Leads Controller --}}
         <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap self-start lg:self-auto">
             <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200/90 shadow-xs">
                 <span class="flex h-2 w-2 relative">
@@ -184,13 +184,8 @@
                     <span class="text-[11px] font-bold text-slate-400 uppercase">Live Clock:</span>
                     <span id="crmLiveClock" class="font-mono font-extrabold text-slate-800 text-xs">{{ now()->format('d M Y, h:i:s A') }}</span>
                 </div>
-                <span class="text-slate-200">|</span>
-                <button type="button" id="crmAutoRefreshToggle" onclick="toggleCrmAutoRefresh()" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer" title="Auto-syncs live updates every 30s">
-                    <i class="ph-bold ph-arrows-clockwise text-xs animate-spin" id="crmRefreshIcon"></i>
-                    <span id="crmRefreshText">Auto-Update: 30s</span>
-                </button>
             </div>
-            <button type="button" id="btnInstantApiSync" onclick="triggerInstantApiSync(false)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs hover:from-blue-700 hover:to-indigo-700 active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0" title="Fetch latest enquiry leads from Admission Search / External API right now">
+            <button type="button" id="btnInstantApiSync" onclick="triggerInstantApiSync()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs hover:from-blue-700 hover:to-indigo-700 active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0" title="Fetch latest enquiry leads from Admission Search / External API right now">
                 <i class="ph-bold ph-lightning text-xs" id="syncBtnIcon"></i>
                 <span id="syncBtnText">Sync Leads Now</span>
             </button>
@@ -950,13 +945,13 @@
         }, 3500);
     }
 
-    // Instant One-Click Lead Synchronization from Admission Search / External API
-    async function triggerInstantApiSync(isSilent = false) {
+    // Instant One-Click Lead Synchronization from Admission Search / External API (Manual Only)
+    async function triggerInstantApiSync() {
         const btn = document.getElementById('btnInstantApiSync');
         const icon = document.getElementById('syncBtnIcon');
         const text = document.getElementById('syncBtnText');
 
-        if (!isSilent && btn) {
+        if (btn) {
             btn.disabled = true;
             btn.classList.add('opacity-75');
             if (icon) icon.className = 'ph-bold ph-arrows-clockwise text-xs animate-spin';
@@ -984,28 +979,16 @@
                     ? `Synced ${data.imported_count} new & ${data.updated_count} updated leads from Admission Search!`
                     : 'All leads up to date with Admission Search!';
                 
-                if (!isSilent) {
-                    showCrmToast(countMsg, 'success');
-                    setTimeout(() => window.location.reload(), 1200);
-                } else {
-                    window.location.reload();
-                }
+                showCrmToast(countMsg, 'success');
+                setTimeout(() => window.location.reload(), 1200);
             } else {
-                if (!isSilent) {
-                    showCrmToast(data.message || 'Unable to sync leads from Admission Search.', 'error');
-                } else {
-                    window.location.reload();
-                }
+                showCrmToast(data.message || 'Unable to sync leads from Admission Search.', 'error');
             }
         } catch (err) {
             console.error('Lead sync error:', err);
-            if (!isSilent) {
-                showCrmToast('Network error while connecting to Admission Search API.', 'error');
-            } else {
-                window.location.reload();
-            }
+            showCrmToast('Network error while connecting to Admission Search API.', 'error');
         } finally {
-            if (!isSilent && btn) {
+            if (btn) {
                 btn.disabled = false;
                 btn.classList.remove('opacity-75');
                 if (icon) icon.className = 'ph-bold ph-lightning text-xs';
@@ -1013,56 +996,5 @@
             }
         }
     }
-
-    // Auto-Refresh CRM (every 30 seconds, toggleable)
-    let autoRefreshTimer = null;
-    let autoRefreshCountdown = 30;
-    let autoRefreshEnabled = true;
-
-    function startAutoRefresh() {
-        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-        autoRefreshCountdown = 30;
-        autoRefreshTimer = setInterval(() => {
-            if (!autoRefreshEnabled) return;
-            autoRefreshCountdown--;
-            const textEl = document.getElementById('crmRefreshText');
-            if (textEl) textEl.textContent = `Auto-Update: ${autoRefreshCountdown}s`;
-            
-            if (autoRefreshCountdown <= 0) {
-                // Don't refresh if user is currently interacting with modal or typing in search
-                const searchInput = document.querySelector('input[name="search"]');
-                const isSearching = searchInput && document.activeElement === searchInput;
-                const isModalOpen = !document.getElementById('fetchLeadsModal')?.classList.contains('hidden') 
-                                 || !document.getElementById('externalSyncModal')?.classList.contains('hidden')
-                                 || !document.getElementById('createLeadModal')?.classList.contains('hidden');
-                if (!isSearching && !isModalOpen) {
-                    // Silently pull newest leads from API before reloading
-                    triggerInstantApiSync(true);
-                } else {
-                    autoRefreshCountdown = 30; // Reset countdown without interrupting user
-                }
-            }
-        }, 1000);
-    }
-
-    function toggleCrmAutoRefresh() {
-        autoRefreshEnabled = !autoRefreshEnabled;
-        const icon = document.getElementById('crmRefreshIcon');
-        const text = document.getElementById('crmRefreshText');
-        const btn = document.getElementById('crmAutoRefreshToggle');
-
-        if (autoRefreshEnabled) {
-            autoRefreshCountdown = 30;
-            if (icon) icon.className = 'ph-bold ph-arrows-clockwise text-xs animate-spin';
-            if (text) text.textContent = 'Auto-Update: 30s';
-            if (btn) btn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer';
-        } else {
-            if (icon) icon.className = 'ph-bold ph-pause text-xs';
-            if (text) text.textContent = 'Auto-Update: Paused';
-            if (btn) btn.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition-colors cursor-pointer';
-        }
-    }
-
-    startAutoRefresh();
 </script>
 @endsection
