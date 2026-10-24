@@ -438,7 +438,7 @@
 
                     {{-- Filmstrip Thumbnails Row --}}
                     @if($galleryImages->count() > 1)
-                        <div class="pt-1 flex items-center gap-2.5 overflow-x-auto no-scrollbar">
+                        <div id="gallery-thumbs-row" class="pt-1 flex items-center gap-2.5 overflow-x-auto no-scrollbar">
                             @foreach($galleryImages->take(6) as $idx => $img)
                                 @if($idx === 5 && $galleryImages->count() > 6)
                                     <div class="relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border border-slate-300 dark:border-slate-700 group/more"
@@ -1324,6 +1324,8 @@
     let autoSlideInterval = null;
     const AUTO_SLIDE_DELAY = 3500; // Auto-slide every 3.5s from right to left
 
+    let galleryInView = true;
+
     function selectGallerySlide(idx) {
         if (idx < 0 || idx >= totalPhotos) return;
         currentSlide = idx;
@@ -1335,10 +1337,15 @@
         if (badge) {
             badge.innerHTML = `<svg class="w-3.5 h-3.5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> <span>${idx + 1}/${totalPhotos} Photos</span>`;
         }
+        const thumbsContainer = document.getElementById('gallery-thumbs-row');
         document.querySelectorAll('.gallery-thumb-item').forEach((btn, i) => {
             if (i === idx) {
                 btn.className = 'gallery-thumb-item relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border-2 border-blue-600 ring-2 ring-blue-500/20 transition-all';
-                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                // Only scroll inside the thumbnails row, NEVER scroll the main window/page!
+                if (thumbsContainer) {
+                    const scrollTarget = btn.offsetLeft - (thumbsContainer.clientWidth / 2) + (btn.clientWidth / 2);
+                    thumbsContainer.scrollTo({ left: Math.max(0, scrollTarget), behavior: 'smooth' });
+                }
             } else {
                 btn.className = 'gallery-thumb-item relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border-2 border-transparent opacity-75 hover:opacity-100 transition-all';
             }
@@ -1346,7 +1353,7 @@
     }
 
     function startAutoSlide() {
-        if (totalPhotos <= 1 || autoSlideInterval) return;
+        if (totalPhotos <= 1 || autoSlideInterval || !galleryInView) return;
         autoSlideInterval = setInterval(() => {
             const nextIdx = (currentSlide + 1) % totalPhotos;
             selectGallerySlide(nextIdx);
@@ -1442,11 +1449,13 @@
         }
     }
 
-    // Touch swipe & Mouse Hover for gallery container
+    // Touch swipe, Mouse Hover & Intersection Observer for gallery container
     const galleryEl = document.getElementById('gallery-main-container');
     if (galleryEl) {
         galleryEl.addEventListener('mouseenter', pauseAutoSlide);
-        galleryEl.addEventListener('mouseleave', startAutoSlide);
+        galleryEl.addEventListener('mouseleave', () => {
+            if (galleryInView) startAutoSlide();
+        });
 
         let touchStartX = 0;
         galleryEl.addEventListener('touchstart', (e) => {
@@ -1463,14 +1472,28 @@
                 // Swipe Right -> Previous slide
                 selectGallerySlide((currentSlide - 1 + totalPhotos) % totalPhotos);
             }
-            resetAutoSlide();
+            if (galleryInView) resetAutoSlide();
         }, { passive: true });
-    }
 
-    // Auto-start slide on page readiness
-    document.addEventListener('DOMContentLoaded', () => {
+        // Auto-pause when scrolled down out of view, auto-resume when scrolled back into view
+        if ('IntersectionObserver' in window) {
+            const galleryObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    galleryInView = entry.isIntersecting;
+                    if (entry.isIntersecting) {
+                        startAutoSlide();
+                    } else {
+                        pauseAutoSlide();
+                    }
+                });
+            }, { threshold: 0.1 });
+            galleryObserver.observe(galleryEl);
+        } else {
+            startAutoSlide();
+        }
+    } else {
         startAutoSlide();
-    });
+    }
 
     // Book visit form handling
     const visitForm = document.getElementById('book-visit-form');
