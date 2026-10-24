@@ -981,7 +981,7 @@
                                        onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $checkoutUrl }}');"
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
                                        title="Buy Plan &amp; Unlock Verified Contacts">
-                                        <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                        <i class="ph-fill ph-lightning pay-now-icon"></i>
                                         <span>Buy Plan</span>
                                         <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
@@ -989,7 +989,7 @@
                                     <a href="{{ $checkoutUrl }}" 
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
                                        title="Buy Plan &amp; Unlock Verified Contacts">
-                                        <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                        <i class="ph-fill ph-lightning pay-now-icon"></i>
                                         <span>Buy Plan</span>
                                         <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
@@ -1192,7 +1192,7 @@
                                        onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal('login', '{{ $checkoutUrl }}');"
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
                                        title="Buy Plan &amp; Unlock Verified Contacts">
-                                        <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                        <i class="ph-fill ph-lightning pay-now-icon"></i>
                                         <span>Buy Plan</span>
                                         <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>
@@ -1200,7 +1200,7 @@
                                     <a href="{{ $checkoutUrl }}" 
                                        class="ur-plan-card__cta-btn {{ ($isGold || $isPlatinum) ? 'ur-plan-card__cta-btn--primary' : 'ur-plan-card__cta-btn--secondary' }} plan-checkout-link" 
                                        title="Buy Plan &amp; Unlock Verified Contacts">
-                                        <i class="ph-bold ph-lightning-fill pay-now-icon"></i>
+                                        <i class="ph-fill ph-lightning pay-now-icon"></i>
                                         <span>Buy Plan</span>
                                         <span class="pay-amount-pill">₹{{ number_format($price, 0) }}</span>
                                     </a>

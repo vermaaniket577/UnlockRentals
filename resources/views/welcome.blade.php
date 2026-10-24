@@ -375,7 +375,11 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://images.unsplash.com">
 
-    <!-- Phosphor Icons (Regular, Bold, Fill) -->
+    <!-- Phosphor Icons (Local First with CDN Fallback) -->
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/regular/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/bold/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/fill/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/duotone/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">

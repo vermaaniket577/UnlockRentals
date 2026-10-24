@@ -221,7 +221,11 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     </noscript>
 
-    {{-- Phosphor Icon Systems (Bold, Regular, Fill, Duotone) --}}
+    {{-- Phosphor Icon Systems (Local First to prevent ISP/Adblock blocking, with CDN Fallback) --}}
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/bold/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/regular/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/fill/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/duotone/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">

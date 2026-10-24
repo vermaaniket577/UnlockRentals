@@ -642,7 +642,11 @@
                     <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                         <div>
                             <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <i class="ph-bold ph-sparkle text-blue-600"></i>
+                                <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="m12 2 2.4 5.2 5.6.8-4 4 1 5.8-5-2.8-5 2.8 1-5.8-4-4 5.6-.8L12 2z"/>
+                                    </svg>
+                                </div>
                                 <span>Society Amenities & Features</span>
                             </h2>
                             <p class="text-xs text-slate-400 mt-0.5">Clubhouse, sports & convenience amenities</p>
@@ -654,63 +658,111 @@
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                         {{-- 1. Swimming Pool --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-swimming-pool text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-cyan-200 dark:hover:border-cyan-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 13c1.5 1 3 1 4.5 0s3-1 4.5 0 3 1 4.5 0 3-1 4.5 0M2 18c1.5 1 3 1 4.5 0s3-1 4.5 0 3 1 4.5 0 3-1 4.5 0M6 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm4 3-2-2 1.5-1.5 2 1.5 2.5-1.5"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Olympic Pool</span>
                         </div>
                         {{-- 2. Gym --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-barbell text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-violet-200 dark:hover:border-violet-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m6.5 6.5 11 11M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Fitness Gym</span>
                         </div>
                         {{-- 3. Security --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-shield-check text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-emerald-200 dark:hover:border-emerald-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">24/7 CCTV & Guards</span>
                         </div>
                         {{-- 4. Power Backup --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-lightning text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-amber-200 dark:hover:border-amber-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">100% Power Backup</span>
                         </div>
                         {{-- 5. Covered Parking --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-car text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-blue-200 dark:hover:border-blue-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9C2.1 11.2 2 11.6 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Covered Parking</span>
                         </div>
                         {{-- 6. Clubhouse --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-house-line text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-indigo-200 dark:hover:border-indigo-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Modern Clubhouse</span>
                         </div>
                         {{-- 7. Kids Play Area --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-soccer-ball text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-rose-200 dark:hover:border-rose-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Children's Play Park</span>
                         </div>
                         {{-- 8. Lifts / Elevators --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-arrows-down-up text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-sky-200 dark:hover:border-sky-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">High-speed Lifts</span>
                         </div>
                         {{-- 9. Tennis / Badminton --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-tennis-ball text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-emerald-200 dark:hover:border-emerald-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Badminton Court</span>
                         </div>
                         {{-- 10. Intercom --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-phone-call text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-cyan-200 dark:hover:border-cyan-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Intercom Facility</span>
                         </div>
                         {{-- 11. Garden & Walking Track --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-tree text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-green-200 dark:hover:border-green-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-green-50 dark:bg-green-950/60 text-green-600 dark:text-green-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22v-7M12 15a7 7 0 1 0-7-7c0 2 1 3.5 2 4.5l5 2.5zM12 15a7 7 0 1 1 7-7c0 2-1 3.5-2 4.5l-5 2.5z"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">Jogging & Park</span>
                         </div>
                         {{-- 12. EV Charging --}}
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
-                            <i class="ph-bold ph-charging-station text-blue-600 text-lg shrink-0"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5 hover:border-teal-200 dark:hover:border-teal-800/50 transition-colors">
+                            <div class="w-7 h-7 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2M23 13v-2M11 6l-2 5h4l-2 5"/>
+                                </svg>
+                            </div>
                             <span class="text-xs font-semibold text-slate-800 dark:text-white truncate">EV Charging Bay</span>
                         </div>
                     </div>
@@ -723,13 +775,22 @@
                     <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                         <div>
                             <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <i class="ph-bold ph-map-trifold text-blue-600"></i>
+                                <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                                        <line x1="9" y1="3" x2="9" y2="18"/>
+                                        <line x1="15" y1="6" x2="15" y2="21"/>
+                                    </svg>
+                                </div>
                                 <span>Transit & Neighborhood Commutes</span>
                             </h2>
                             <p class="text-xs text-slate-400 mt-0.5">Prime location in {{ $localityName }}, {{ $cleanLocation }}</p>
                         </div>
-                        <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
-                            <i class="ph-bold ph-navigation-arrow text-xs"></i> Live Commutes
+                        <span class="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/50">
+                            <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="m3 3 7 18 3-7 7-3L3 3z"/>
+                            </svg>
+                            Live Commutes
                         </span>
                     </div>
 
@@ -760,23 +821,35 @@
 
                     {{-- Commute Distances Strip --}}
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                            <div class="flex items-center gap-2">
-                                <i class="ph-bold ph-train text-blue-600 text-base"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs hover:border-blue-200 dark:hover:border-blue-800/50 transition-colors">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><circle cx="8" cy="15" r="1"/><circle cx="16" cy="15" r="1"/>
+                                    </svg>
+                                </div>
                                 <span class="font-semibold text-slate-800 dark:text-slate-200">Metro Station</span>
                             </div>
                             <span class="font-bold text-blue-600 dark:text-blue-400">450 m (5 mins)</span>
                         </div>
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                            <div class="flex items-center gap-2">
-                                <i class="ph-bold ph-storefront text-blue-600 text-base"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs hover:border-indigo-200 dark:hover:border-indigo-800/50 transition-colors">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/>
+                                    </svg>
+                                </div>
                                 <span class="font-semibold text-slate-800 dark:text-slate-200">Mall & Market</span>
                             </div>
                             <span class="font-bold text-slate-600 dark:text-slate-300">1.2 km (4 mins)</span>
                         </div>
-                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                            <div class="flex items-center gap-2">
-                                <i class="ph-bold ph-first-aid-kit text-blue-600 text-base"></i>
+                        <div class="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs hover:border-rose-200 dark:hover:border-rose-800/50 transition-colors">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5v6"/><path d="M9 8h6"/>
+                                    </svg>
+                                </div>
                                 <span class="font-semibold text-slate-800 dark:text-slate-200">Hospital</span>
                             </div>
                             <span class="font-bold text-slate-600 dark:text-slate-300">3.5 km (8 mins)</span>

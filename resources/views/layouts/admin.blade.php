@@ -33,7 +33,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    {{-- Phosphor Icons --}}
+    {{-- Phosphor Icons (Local First with CDN Fallback) --}}
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/regular/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/bold/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/phosphor/fill/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
