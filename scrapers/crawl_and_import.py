@@ -325,12 +325,40 @@ def generate_fallback_properties(city_name: str, state_name: str, max_items: int
         phone_end = f"{((page_num * 31 + i * 23) % 8999) + 1000:04d}"
         contact_phone = f"+91 98{phone_mid} {phone_end}"
 
+        t_lower = str(property_type).lower().strip()
+        is_shop = any(k in t_lower for k in ["shop", "commercial-shops", "commercial", "retail", "store"])
+        is_1rk = "1rk" in t_lower or "1-rk" in t_lower or "studio" in t_lower
+        is_1bhk = "1bhk" in t_lower or "1-bhk" in t_lower
+        is_2bhk = "2bhk" in t_lower or "2-bhk" in t_lower
+        is_3bhk = "3bhk" in t_lower or "3-bhk" in t_lower
+
         # Configuration (BHK, bathrooms, area, price)
-        bhk = ((page_num + i) % 3) + 1
-        if (page_num + i) % 5 == 0:
-            bhk = 4
-        bathrooms = max(1, bhk - (1 if i % 2 == 1 else 0))
-        area_sqft = bhk * 450 + 200 + ((page_num * 41 + i * 19) % 200)
+        if is_1rk:
+            bhk = 1
+            bathrooms = 1
+            area_sqft = 350 + ((page_num * 17 + i * 13) % 100)
+        elif is_1bhk:
+            bhk = 1
+            bathrooms = 1
+            area_sqft = 550 + ((page_num * 19 + i * 15) % 150)
+        elif is_2bhk:
+            bhk = 2
+            bathrooms = 2
+            area_sqft = 950 + ((page_num * 23 + i * 17) % 200)
+        elif is_3bhk:
+            bhk = 3
+            bathrooms = 3
+            area_sqft = 1450 + ((page_num * 31 + i * 19) % 300)
+        elif is_shop:
+            bhk = 0
+            bathrooms = 1
+            area_sqft = 300 + ((page_num * 37 + i * 29) % 700)
+        else:
+            bhk = ((page_num + i) % 3) + 1
+            if (page_num + i) % 5 == 0:
+                bhk = 4
+            bathrooms = max(1, bhk - (1 if i % 2 == 1 else 0))
+            area_sqft = bhk * 450 + 200 + ((page_num * 41 + i * 19) % 200)
 
         furnish_opts = ["semi-furnished", "fully-furnished", "unfurnished"]
         furnishing = "fully-furnished" if is_pg else furnish_opts[((page_num + i) % len(furnish_opts))]
@@ -346,26 +374,70 @@ def generate_fallback_properties(city_name: str, state_name: str, max_items: int
                 f"Includes high-speed WiFi, attached bathroom, 3 home-style meals, housekeeping, "
                 f"and 24/7 security with power backup. Perfect for working professionals and students."
             )
+        elif is_shop:
+            prop_type = "shop"
+            cat_name = "Commercial Shop"
+            item_purpose = "buy" if is_buy else "rent"
+            if is_buy:
+                price = (area_sqft * 12000.0) + float(((page_num * 83 + i * 67) % 20) * 100000)
+                title = f"Prime Commercial Retail Shop for Sale in {locality}, {clean_city}"
+                desc = (
+                    f"High-visibility commercial retail shop ({area_sqft} sq.ft.) for sale in prime market hub of {locality}, {clean_city}. "
+                    f"Ideal for retail store, boutique, pharmacy, clinic, or showroom. Excellent footfall with main road facing frontage."
+                )
+            else:
+                price = 22000.0 + float(((page_num * 37 + i * 29) % 35) * 1000)
+                title = f"Commercial Retail Shop for Rent in {locality}, {clean_city}"
+                desc = (
+                    f"Ready-to-occupy commercial shop ({area_sqft} sq.ft.) available for rent in bustling {locality}, {clean_city}. "
+                    f"Features heavy pedestrian footfall, glass frontage, high ceiling, 24/7 power backup, and ample customer parking."
+                )
         elif is_buy:
-            prop_type = "plot" if "plot" in str(property_type).lower() else "house"
-            cat_name = "Residential Land" if prop_type == "plot" else ("House / Villa" if bhk >= 4 else "Flat / Apartment")
+            prop_type = "plot" if "plot" in t_lower else "house"
+            if is_1rk:
+                cat_name = "Studio Apartment"
+                title = f"1 RK Studio Apartment for Sale in {locality}, {clean_city}"
+                price = 2200000.0 + float(((page_num * 47 + i * 31) % 15) * 50000)
+            elif is_1bhk:
+                cat_name = "Flat / Apartment"
+                title = f"1 BHK Modern Apartment for Sale in {locality}, {clean_city}"
+                price = 3800000.0 + float(((page_num * 53 + i * 37) % 20) * 80000)
+            elif is_2bhk:
+                cat_name = "Flat / Apartment"
+                title = f"2 BHK Spacious Apartment for Sale in {locality}, {clean_city}"
+                price = 6800000.0 + float(((page_num * 61 + i * 41) % 25) * 100000)
+            else:
+                cat_name = "Residential Land" if prop_type == "plot" else ("House / Villa" if bhk >= 4 else "Flat / Apartment")
+                price = (bhk * 3500000.0) + 1500000.0 + float(((page_num * 83 + i * 67) % 25) * 100000)
+                title = f"{bhk} BHK {cat_name} for sale in {locality}, {clean_city}"
             item_purpose = "buy"
-            price = (bhk * 3500000.0) + 1500000.0 + float(((page_num * 83 + i * 67) % 25) * 100000)
-            title = f"{bhk} BHK {cat_name} for sale in {locality}, {clean_city}"
             desc = (
-                f"Spacious and premium {bhk} BHK {cat_name} available for sale in prime {locality}, {clean_city}. "
+                f"Spacious and premium {cat_name} available for sale in prime {locality}, {clean_city}. "
                 f"Covering {area_sqft} sq.ft. of carpet area with {bathrooms} bathrooms and {furnishing} interiors. "
                 f"Features modern clubhouse, covered car parking, Vastu compliant layout, and superior metro connectivity."
             )
         else:
             prop_type = "house"
-            cat_name = "Flat / Apartment"
             item_purpose = "rent"
-            price = (bhk * 12000.0) + 6000.0 + float(((page_num * 73 + i * 47) % 15) * 1000)
-            flat_descriptor = "Builder Floor" if (i % 2 == 1) else "Flat"
-            title = f"{bhk} BHK {flat_descriptor} for rent in {locality}, {clean_city}"
+            if is_1rk:
+                cat_name = "Studio Apartment"
+                price = 9500.0 + float(((page_num * 31 + i * 17) % 8) * 1000)
+                title = f"1 RK Cozy Studio Apartment for rent in {locality}, {clean_city}"
+            elif is_1bhk:
+                cat_name = "Flat / Apartment"
+                price = 15000.0 + float(((page_num * 37 + i * 19) % 10) * 1000)
+                title = f"1 BHK Well-Designed Flat for rent in {locality}, {clean_city}"
+            elif is_2bhk:
+                cat_name = "Flat / Apartment"
+                price = 24000.0 + float(((page_num * 43 + i * 23) % 12) * 1000)
+                title = f"2 BHK Modern Apartment for rent in {locality}, {clean_city}"
+            else:
+                cat_name = "Flat / Apartment"
+                price = (bhk * 12000.0) + 6000.0 + float(((page_num * 73 + i * 47) % 15) * 1000)
+                flat_descriptor = "Builder Floor" if (i % 2 == 1) else "Flat"
+                title = f"{bhk} BHK {flat_descriptor} for rent in {locality}, {clean_city}"
             desc = (
-                f"Well-ventilated {bhk} BHK {flat_descriptor} available for rent in prime {locality}, {clean_city}. "
+                f"Well-ventilated {cat_name} available for rent in prime {locality}, {clean_city}. "
                 f"Total super area of {area_sqft} sq.ft. with {bathrooms} bathrooms and {furnishing} fittings. "
                 f"Equipped with lift, dedicated parking, 24/7 water supply, power backup, and walking distance to transit hubs."
             )
@@ -956,7 +1028,17 @@ def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: s
     else:
         purp = "sale" if purp_str in ["buy", "sale", "s"] else "rent"
         
-        if "builder" in pt:
+        if "1rk" in pt or "1-rk" in pt or "studio" in pt:
+            type_slug = "1-rk"
+        elif "1bhk" in pt or "1-bhk" in pt:
+            type_slug = "1-bhk"
+        elif "2bhk" in pt or "2-bhk" in pt:
+            type_slug = "2-bhk"
+        elif "3bhk" in pt or "3-bhk" in pt:
+            type_slug = "3-bhk"
+        elif "shop" in pt or "commercial-shops" in pt or "retail" in pt:
+            type_slug = "commercial-shops"
+        elif "builder" in pt:
             type_slug = "builder-floor"
         elif "flat" in pt or "apartment" in pt:
             type_slug = "flats"
@@ -964,7 +1046,7 @@ def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: s
             type_slug = "independent-house"
         elif "plot" in pt or "land" in pt:
             type_slug = "plots"
-        elif "commercial" in pt or "office" in pt or "shop" in pt:
+        elif "commercial" in pt or "office" in pt:
             type_slug = "commercial-property"
         else:
             type_slug = "property"

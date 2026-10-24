@@ -226,6 +226,21 @@ class Property extends Model
 
         $urlLower = strtolower($url);
 
+        if (str_contains($urlLower, '1-rk') || str_contains($urlLower, '1rk') || str_contains($urlLower, 'studio')) {
+            return '1rk';
+        }
+        if (str_contains($urlLower, '1-bhk') || str_contains($urlLower, '1bhk')) {
+            return '1bhk';
+        }
+        if (str_contains($urlLower, '2-bhk') || str_contains($urlLower, '2bhk')) {
+            return '2bhk';
+        }
+        if (str_contains($urlLower, '3-bhk') || str_contains($urlLower, '3bhk')) {
+            return '3bhk';
+        }
+        if (str_contains($urlLower, 'commercial-shops') || str_contains($urlLower, 'shop') || str_contains($urlLower, 'retail')) {
+            return 'commercial-shops';
+        }
         if (str_contains($urlLower, 'plot') || str_contains($urlLower, 'land') || str_contains($urlLower, 'residential-land')) {
             return 'plot';
         }
@@ -241,7 +256,7 @@ class Property extends Model
         if (str_contains($urlLower, 'villa') || str_contains($urlLower, 'independent-house') || str_contains($urlLower, 'house')) {
             return 'house';
         }
-        if (str_contains($urlLower, 'commercial') || str_contains($urlLower, 'office') || str_contains($urlLower, 'shop')) {
+        if (str_contains($urlLower, 'commercial') || str_contains($urlLower, 'office')) {
             return 'commercial';
         }
 

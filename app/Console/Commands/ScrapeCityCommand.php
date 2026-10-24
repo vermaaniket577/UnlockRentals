@@ -474,12 +474,41 @@ class ScrapeCityCommand extends Command
             $phoneEnd = sprintf('%04d', (($page * 31 + $i * 23) % 8999) + 1000);
             $contactPhone = "+91 98{$phoneMid} {$phoneEnd}";
 
-            $bhk = (($page + $i) % 3) + 1;
-            if (($page + $i) % 5 === 0) {
-                $bhk = 4;
+            $tLower = strtolower($type);
+            $isShop = str_contains($tLower, 'shop') || str_contains($tLower, 'commercial-shops') || str_contains($tLower, 'retail') || str_contains($tLower, 'commercial');
+            $is1rk = str_contains($tLower, '1rk') || str_contains($tLower, '1-rk') || str_contains($tLower, 'studio');
+            $is1bhk = str_contains($tLower, '1bhk') || str_contains($tLower, '1-bhk');
+            $is2bhk = str_contains($tLower, '2bhk') || str_contains($tLower, '2-bhk');
+            $is3bhk = str_contains($tLower, '3bhk') || str_contains($tLower, '3-bhk');
+
+            if ($is1rk) {
+                $bhk = 1;
+                $bathrooms = 1;
+                $areaSqft = 350 + (($page * 17 + $i * 13) % 100);
+            } elseif ($is1bhk) {
+                $bhk = 1;
+                $bathrooms = 1;
+                $areaSqft = 550 + (($page * 19 + $i * 15) % 150);
+            } elseif ($is2bhk) {
+                $bhk = 2;
+                $bathrooms = 2;
+                $areaSqft = 950 + (($page * 23 + $i * 17) % 200);
+            } elseif ($is3bhk) {
+                $bhk = 3;
+                $bathrooms = 3;
+                $areaSqft = 1450 + (($page * 31 + $i * 19) % 300);
+            } elseif ($isShop) {
+                $bhk = 0;
+                $bathrooms = 1;
+                $areaSqft = 300 + (($page * 37 + $i * 29) % 700);
+            } else {
+                $bhk = (($page + $i) % 3) + 1;
+                if (($page + $i) % 5 === 0) {
+                    $bhk = 4;
+                }
+                $bathrooms = max(1, $bhk - ($i % 2 === 1 ? 1 : 0));
+                $areaSqft = $bhk * 450 + 200 + (($page * 41 + $i * 19) % 200);
             }
-            $bathrooms = max(1, $bhk - ($i % 2 === 1 ? 1 : 0));
-            $areaSqft = $bhk * 450 + 200 + (($page * 41 + $i * 19) % 200);
 
             $furnishOpts = ['semi-furnished', 'fully-furnished', 'unfurnished'];
             $furnishing = $isPg ? 'fully-furnished' : $furnishOpts[(($page + $i) % count($furnishOpts))];
@@ -491,21 +520,62 @@ class ScrapeCityCommand extends Command
                 $price = 8500.0 + (float) ((($page * 19 + $i * 13) % 9) * 1000);
                 $title = "Luxury PG & Co-Living Stay in {$locality}, {$cleanCity}";
                 $desc = "Fully-managed co-living PG accommodation in {$locality}, {$cleanCity}. Includes high-speed WiFi, attached bathroom, 3 home-style meals, housekeeping, and 24/7 security with power backup. Perfect for working professionals and students.";
+            } elseif ($isShop) {
+                $propType = 'shop';
+                $catName = 'Commercial Shop';
+                $itemPurpose = $isBuy ? 'buy' : 'rent';
+                if ($isBuy) {
+                    $price = ($areaSqft * 12000.0) + (float) ((($page * 83 + $i * 67) % 20) * 100000);
+                    $title = "Prime Commercial Retail Shop for Sale in {$locality}, {$cleanCity}";
+                    $desc = "High-visibility commercial retail shop ({$areaSqft} sq.ft.) for sale in prime market hub of {$locality}, {$cleanCity}. Ideal for retail store, boutique, pharmacy, clinic, or showroom. Excellent footfall with main road facing frontage.";
+                } else {
+                    $price = 22000.0 + (float) ((($page * 37 + $i * 29) % 35) * 1000);
+                    $title = "Commercial Retail Shop for Rent in {$locality}, {$cleanCity}";
+                    $desc = "Ready-to-occupy commercial shop ({$areaSqft} sq.ft.) available for rent in bustling {$locality}, {$cleanCity}. Features heavy pedestrian footfall, glass frontage, high ceiling, 24/7 power backup, and ample customer parking.";
+                }
             } elseif ($isBuy) {
-                $propType = str_contains(strtolower($type), 'plot') ? 'plot' : 'house';
-                $catName = $propType === 'plot' ? 'Residential Land' : ($bhk >= 4 ? 'House / Villa' : 'Flat / Apartment');
+                $propType = str_contains($tLower, 'plot') ? 'plot' : 'house';
+                if ($is1rk) {
+                    $catName = 'Studio Apartment';
+                    $title = "1 RK Studio Apartment for Sale in {$locality}, {$cleanCity}";
+                    $price = 2200000.0 + (float) ((($page * 47 + $i * 31) % 15) * 50000);
+                } elseif ($is1bhk) {
+                    $catName = 'Flat / Apartment';
+                    $title = "1 BHK Modern Apartment for Sale in {$locality}, {$cleanCity}";
+                    $price = 3800000.0 + (float) ((($page * 53 + $i * 37) % 20) * 80000);
+                } elseif ($is2bhk) {
+                    $catName = 'Flat / Apartment';
+                    $title = "2 BHK Spacious Apartment for Sale in {$locality}, {$cleanCity}";
+                    $price = 6800000.0 + (float) ((($page * 61 + $i * 41) % 25) * 100000);
+                } else {
+                    $catName = $propType === 'plot' ? 'Residential Land' : ($bhk >= 4 ? 'House / Villa' : 'Flat / Apartment');
+                    $price = ($bhk * 3500000.0) + 1500000.0 + (float) ((($page * 83 + $i * 67) % 25) * 100000);
+                    $title = "{$bhk} BHK {$catName} for sale in {$locality}, {$cleanCity}";
+                }
                 $itemPurpose = 'buy';
-                $price = ($bhk * 3500000.0) + 1500000.0 + (float) ((($page * 83 + $i * 67) % 25) * 100000);
-                $title = "{$bhk} BHK {$catName} for sale in {$locality}, {$cleanCity}";
-                $desc = "Spacious and premium {$bhk} BHK {$catName} available for sale in prime {$locality}, {$cleanCity}. Covering {$areaSqft} sq.ft. of carpet area with {$bathrooms} bathrooms and {$furnishing} interiors. Features modern clubhouse, covered car parking, Vastu compliant layout, and superior metro connectivity.";
+                $desc = "Spacious and premium {$catName} available for sale in prime {$locality}, {$cleanCity}. Covering {$areaSqft} sq.ft. of carpet area with {$bathrooms} bathrooms and {$furnishing} interiors. Features modern clubhouse, covered car parking, Vastu compliant layout, and superior metro connectivity.";
             } else {
                 $propType = 'house';
-                $catName = 'Flat / Apartment';
                 $itemPurpose = 'rent';
-                $price = ($bhk * 12000.0) + 6000.0 + (float) ((($page * 73 + $i * 47) % 15) * 1000);
-                $flatDescriptor = ($i % 2 === 1) ? 'Builder Floor' : 'Flat';
-                $title = "{$bhk} BHK {$flatDescriptor} for rent in {$locality}, {$cleanCity}";
-                $desc = "Well-ventilated {$bhk} BHK {$flatDescriptor} available for rent in prime {$locality}, {$cleanCity}. Total super area of {$areaSqft} sq.ft. with {$bathrooms} bathrooms and {$furnishing} fittings. Equipped with lift, dedicated parking, 24/7 water supply, power backup, and walking distance to transit hubs.";
+                if ($is1rk) {
+                    $catName = 'Studio Apartment';
+                    $price = 9500.0 + (float) ((($page * 31 + $i * 17) % 8) * 1000);
+                    $title = "1 RK Cozy Studio Apartment for rent in {$locality}, {$cleanCity}";
+                } elseif ($is1bhk) {
+                    $catName = 'Flat / Apartment';
+                    $price = 15000.0 + (float) ((($page * 37 + $i * 19) % 10) * 1000);
+                    $title = "1 BHK Well-Designed Flat for rent in {$locality}, {$cleanCity}";
+                } elseif ($is2bhk) {
+                    $catName = 'Flat / Apartment';
+                    $price = 24000.0 + (float) ((($page * 43 + $i * 23) % 12) * 1000);
+                    $title = "2 BHK Modern Apartment for rent in {$locality}, {$cleanCity}";
+                } else {
+                    $catName = 'Flat / Apartment';
+                    $price = ($bhk * 12000.0) + 6000.0 + (float) ((($page * 73 + $i * 47) % 15) * 1000);
+                    $flatDescriptor = ($i % 2 === 1) ? 'Builder Floor' : 'Flat';
+                    $title = "{$bhk} BHK {$flatDescriptor} for rent in {$locality}, {$cleanCity}";
+                }
+                $desc = "Well-ventilated {$catName} available for rent in prime {$locality}, {$cleanCity}. Total super area of {$areaSqft} sq.ft. with {$bathrooms} bathrooms and {$furnishing} fittings. Equipped with lift, dedicated parking, 24/7 water supply, power backup, and walking distance to transit hubs.";
             }
 
             $propId = '99A-' . strtoupper(substr($cLower, 0, 3)) . sprintf('-%03d-%02d', $page, $i + 1);

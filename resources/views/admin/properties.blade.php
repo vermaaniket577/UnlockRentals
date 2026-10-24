@@ -466,11 +466,16 @@
                             </label>
                             <select id="scrape_property_type" name="property_type" onchange="updateGeneratedScrapeUrl()" class="w-full text-xs font-semibold px-3 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none bg-white">
                                 <option value="all">All Property Types</option>
+                                <option value="1rk">🛏️ 1 RK / Studio Apartment</option>
+                                <option value="1bhk">🚪 1 BHK Flat / Apartment</option>
+                                <option value="2bhk">🏡 2 BHK Flat / Apartment</option>
+                                <option value="3bhk">🏢 3+ BHK Flat / Luxury</option>
+                                <option value="commercial-shops">🏪 Commercial Shop / Retail Store</option>
+                                <option value="commercial">🏢 Commercial Office / Complex</option>
                                 <option value="pg">🛏️ PG / Paying Guest &amp; Hostel (Featured)</option>
                                 <option value="builder-floor" selected>Builder Floor</option>
-                                <option value="flats">Flats &amp; Apartments</option>
+                                <option value="flats">Flats &amp; Apartments (All)</option>
                                 <option value="house">Independent House / Villa</option>
-                                <option value="commercial">Commercial / Office Space</option>
                                 <option value="plots">Plots &amp; Land</option>
                             </select>
                         </div>
@@ -519,9 +524,13 @@
                             {{-- Quick City Selector Chips --}}
                             <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quick:</span>
-                                <button type="button" onclick="quickSelectPgAllCities()" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200/80 hover:bg-purple-100 transition-colors cursor-pointer">🛏️ All Cities (PG)</button>
-                                <button type="button" onclick="quickSelectCity('all')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition-colors cursor-pointer">🌟 All Cities</button>
-                                <button type="button" onclick="quickSelectCity('Gurgaon', 'pg')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/80 hover:bg-indigo-100 transition-colors cursor-pointer">🛏️ Gurgaon PG</button>
+                                <button type="button" onclick="quickSelectType('1rk')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/80 hover:bg-sky-100 transition-colors cursor-pointer">🛏️ 1 RK</button>
+                                <button type="button" onclick="quickSelectType('1bhk')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200/80 hover:bg-blue-100 transition-colors cursor-pointer">🚪 1 BHK</button>
+                                <button type="button" onclick="quickSelectType('2bhk')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-emerald-100 transition-colors cursor-pointer">🏡 2 BHK</button>
+                                <button type="button" onclick="quickSelectType('commercial-shops')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100 transition-colors cursor-pointer">🏪 Shop / Retail</button>
+                                <button type="button" onclick="quickSelectPgAllCities()" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200/80 hover:bg-purple-100 transition-colors cursor-pointer">🛏️ PG</button>
+                                <button type="button" onclick="quickSelectCity('all')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 border border-slate-200/80 hover:bg-slate-200 transition-colors cursor-pointer">🌟 All Cities</button>
+                                <button type="button" onclick="quickSelectCity('Gurgaon')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Gurgaon</button>
                                 <button type="button" onclick="quickSelectCity('Delhi')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Delhi</button>
                                 <button type="button" onclick="quickSelectCity('Bangalore')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Bangalore</button>
                                 <button type="button" onclick="quickSelectCity('Mumbai')" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Mumbai</button>
@@ -1008,6 +1017,14 @@ function scrapeSpecificPage(pageNum) {
     }
 }
 
+function quickSelectType(typeName) {
+    const typeSel = document.getElementById('scrape_property_type');
+    if (typeSel) typeSel.value = typeName;
+    updateGeneratedScrapeUrl();
+    const typeLabel = typeSel ? typeSel.options[typeSel.selectedIndex]?.text : typeName;
+    if (window.showAdminToast) showAdminToast(`Selected Type: ${typeLabel}`, 'info');
+}
+
 function updateGeneratedScrapeUrl() {
     const purpose = document.getElementById('scrape_purpose')?.value || 'rent';
     const propType = document.getElementById('scrape_property_type')?.value || 'all';
@@ -1040,11 +1057,27 @@ function updateGeneratedScrapeUrl() {
     const purp = (purpose === 'buy') ? 'sale' : 'rent';
 
     let typeSlug = 'property';
-    if (propType.includes('builder')) typeSlug = 'builder-floor';
-    else if (propType.includes('flat') || propType.includes('apartment')) typeSlug = 'flats';
-    else if (propType.includes('villa') || propType.includes('house')) typeSlug = 'independent-house';
-    else if (propType.includes('plot') || propType.includes('land')) typeSlug = 'plots';
-    else if (propType.includes('commercial') || propType.includes('office')) typeSlug = 'commercial-property';
+    if (propType === '1rk' || propType.includes('1rk') || propType.includes('studio')) {
+        typeSlug = '1-rk';
+    } else if (propType === '1bhk' || propType.includes('1bhk')) {
+        typeSlug = '1-bhk';
+    } else if (propType === '2bhk' || propType.includes('2bhk')) {
+        typeSlug = '2-bhk';
+    } else if (propType === '3bhk' || propType.includes('3bhk')) {
+        typeSlug = '3-bhk';
+    } else if (propType === 'commercial-shops' || propType.includes('shop') || propType.includes('retail')) {
+        typeSlug = 'commercial-shops';
+    } else if (propType.includes('builder')) {
+        typeSlug = 'builder-floor';
+    } else if (propType.includes('flat') || propType.includes('apartment')) {
+        typeSlug = 'flats';
+    } else if (propType.includes('villa') || propType.includes('house')) {
+        typeSlug = 'independent-house';
+    } else if (propType.includes('plot') || propType.includes('land')) {
+        typeSlug = 'plots';
+    } else if (propType.includes('commercial') || propType.includes('office')) {
+        typeSlug = 'commercial-property';
+    }
 
     if (purp === 'sale' && citySlug === 'indore' && typeSlug === 'property') {
         urlInput.value = `https://www.99acres.com/search/property/buy/indore?city=142&preference=S&res_com=R${page > 1 ? '&page=' + page : ''}`;
@@ -1402,7 +1435,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            if (val.includes('plot') || val.includes('land')) {
+            if (val.includes('1-rk') || val.includes('1rk') || val.includes('studio')) {
+                const tSelect = document.getElementById('scrape_property_type');
+                if (tSelect) tSelect.value = '1rk';
+            } else if (val.includes('1-bhk') || val.includes('1bhk')) {
+                const tSelect = document.getElementById('scrape_property_type');
+                if (tSelect) tSelect.value = '1bhk';
+            } else if (val.includes('2-bhk') || val.includes('2bhk')) {
+                const tSelect = document.getElementById('scrape_property_type');
+                if (tSelect) tSelect.value = '2bhk';
+            } else if (val.includes('3-bhk') || val.includes('3bhk')) {
+                const tSelect = document.getElementById('scrape_property_type');
+                if (tSelect) tSelect.value = '3bhk';
+            } else if (val.includes('commercial-shops') || val.includes('shop') || val.includes('retail')) {
+                const tSelect = document.getElementById('scrape_property_type');
+                if (tSelect) tSelect.value = 'commercial-shops';
+            } else if (val.includes('plot') || val.includes('land')) {
                 const tSelect = document.getElementById('scrape_property_type');
                 if (tSelect) tSelect.value = 'plot';
             }
