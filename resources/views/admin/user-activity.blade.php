@@ -71,14 +71,18 @@
 
                 <div class="bg-white border border-stone-200 rounded-sm p-6 shadow-sm">
                     <h2 class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">User Statistics</h2>
-                    <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="grid grid-cols-3 gap-2 text-center">
                         <div class="p-3 bg-stone-50 rounded-sm">
-                            <p class="text-xl font-bold text-zinc-900">{{ $user->inquiries->count() }}</p>
-                            <p class="text-[10px] text-zinc-500 uppercase">Inquiries</p>
+                            <p class="text-lg font-bold text-zinc-900">{{ $user->inquiries->count() }}</p>
+                            <p class="text-[9px] text-zinc-500 uppercase font-semibold">Inquiries</p>
                         </div>
                         <div class="p-3 bg-stone-50 rounded-sm">
-                            <p class="text-xl font-bold text-zinc-900">{{ $contactViews->count() }}</p>
-                            <p class="text-[10px] text-zinc-500 uppercase">Total Unlocks</p>
+                            <p class="text-lg font-bold text-zinc-900">{{ $contactViews->count() }}</p>
+                            <p class="text-[9px] text-zinc-500 uppercase font-semibold">Unlocks</p>
+                        </div>
+                        <div class="p-3 bg-stone-50 rounded-sm">
+                            <p class="text-lg font-bold text-blue-600">{{ $searchEvents->count() }}</p>
+                            <p class="text-[9px] text-zinc-500 uppercase font-semibold">Searches</p>
                         </div>
                     </div>
                 </div>
@@ -87,6 +91,66 @@
             <!-- Main Content: Activity Timeline -->
             <div class="lg:col-span-2 space-y-8">
                 
+                <!-- Property Searches & Requirement Criteria -->
+                <div class="bg-white border border-stone-200 rounded-sm overflow-hidden shadow-sm">
+                    <div class="px-6 py-4 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+                        <h2 class="text-sm font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-2">
+                            <i class="ph ph-magnifying-glass text-blue-600"></i> Property Searches & Requirements
+                        </h2>
+                        <span class="text-xs text-zinc-400 font-semibold">{{ $searchEvents->count() }} Search Events</span>
+                    </div>
+                    @if($searchEvents->count() > 0)
+                        <div class="divide-y divide-stone-100">
+                            @foreach($searchEvents as $search)
+                                @php
+                                    $criteria = $search->getSearchCriteriaList();
+                                    $targetLoc = $search->getTargetLocationDisplay();
+                                @endphp
+                                <div class="p-5 hover:bg-stone-50/50 transition-colors">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                                        <div class="flex items-center gap-2.5">
+                                            <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                                <i class="ph ph-map-pin font-bold"></i>
+                                            </span>
+                                            <div>
+                                                <h3 class="font-bold text-zinc-900 text-sm">{{ $targetLoc }}</h3>
+                                                <p class="text-[10px] text-zinc-400">{{ $search->created_at->format('d M Y, h:i A') }} ({{ $search->created_at->diffForHumans() }})</p>
+                                            </div>
+                                        </div>
+                                        @if($search->page_url || $search->url)
+                                            <a href="{{ $search->page_url ?: $search->url }}" target="_blank"
+                                               class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-md self-start sm:self-auto transition-colors" title="View Search Results">
+                                                <span>View Search Results</span>
+                                                <i class="ph ph-arrow-up-right"></i>
+                                            </a>
+                                        @endif
+                                    </div>
+                                    @if(!empty($criteria))
+                                        <div class="flex flex-wrap gap-1.5 mt-2.5 pl-10">
+                                            @foreach($criteria as $c)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold border {{ $c['badge'] ?? 'bg-stone-100 text-stone-700 border-stone-200' }}">
+                                                    <span class="opacity-70">{{ $c['label'] }}:</span>
+                                                    <strong>{{ $c['value'] }}</strong>
+                                                </span>
+                                            @endforeach
+                                            @if($search->getResultsCount() > 0)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    <strong>{{ $search->getResultsCount() }}</strong> results shown
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="p-10 text-center">
+                            <i class="ph ph-magnifying-glass text-4xl text-stone-200 mb-2"></i>
+                            <p class="text-sm text-zinc-400">No property search telemetry recorded yet for this member.</p>
+                        </div>
+                    @endif
+                </div>
+
                 <!-- Unlocked Properties -->
                 <div class="bg-white border border-stone-200 rounded-sm overflow-hidden shadow-sm">
                     <div class="px-6 py-4 border-b border-stone-100 flex justify-between items-center">

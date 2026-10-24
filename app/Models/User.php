@@ -132,6 +132,30 @@ class User extends Authenticatable
     }
 
     /**
+     * Get telemetry events recorded for this user.
+     */
+    public function visitorEvents(): HasMany
+    {
+        return $this->hasMany(VisitorEvent::class);
+    }
+
+    /**
+     * Get all property search events performed by this user.
+     */
+    public function searchEvents(): HasMany
+    {
+        return $this->hasMany(VisitorEvent::class)->where('event_name', 'search')->latest('created_at');
+    }
+
+    /**
+     * Get latest property search event.
+     */
+    public function getLatestSearchEventAttribute(): ?VisitorEvent
+    {
+        return $this->searchEvents()->first();
+    }
+
+    /**
      * Get the user's current active plan subscription.
      * Optionally filtered by purpose ('rent', 'buy'/'sale').
      */

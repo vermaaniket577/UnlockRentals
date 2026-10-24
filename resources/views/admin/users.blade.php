@@ -202,17 +202,19 @@
             </div>
         </a>
 
-        {{-- Tenants --}}
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-soft flex items-center justify-between">
+        {{-- Tenants / Property Searchers --}}
+        <a href="{{ route('admin.users', ['filter' => request('filter') === 'searchers' ? null : 'searchers']) }}"
+           class="p-4 rounded-2xl border transition-all flex items-center justify-between group {{ request('filter') === 'searchers' ? 'bg-indigo-600 text-white border-indigo-600 shadow-md ring-2 ring-indigo-300' : 'bg-white border-slate-200/80 shadow-soft hover:border-indigo-300 hover:bg-indigo-50/20' }}"
+           title="Filter members searching for property">
             <div>
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Tenants</p>
-                <h3 class="text-2xl font-black text-emerald-600 mt-1">{{ number_format($stats['tenants'] ?? 0) }}</h3>
-                <span class="text-[11px] font-semibold text-slate-500 mt-0.5 block">Rent seekers</span>
+                <p class="text-[11px] font-bold uppercase tracking-wider {{ request('filter') === 'searchers' ? 'text-indigo-100' : 'text-slate-400' }}">Property Seekers</p>
+                <h3 class="text-2xl font-black mt-1 {{ request('filter') === 'searchers' ? 'text-white' : 'text-indigo-600' }}">{{ number_format($stats['searchers'] ?? $stats['tenants'] ?? 0) }}</h3>
+                <span class="text-[11px] font-semibold mt-0.5 block {{ request('filter') === 'searchers' ? 'text-indigo-100' : 'text-slate-500' }}">Rent & Buy Searchers</span>
             </div>
-            <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-xs">
-                <i class="ph-bold ph-user-circle"></i>
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-xs {{ request('filter') === 'searchers' ? 'bg-white/20 text-white' : 'bg-indigo-50 text-indigo-600' }}">
+                <i class="ph-bold ph-magnifying-glass"></i>
             </div>
-        </div>
+        </a>
 
         {{-- Owners / Landlords --}}
         <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-soft flex items-center justify-between">
@@ -334,6 +336,15 @@
 
             <div class="h-4 w-px bg-slate-200 mx-1"></div>
 
+            {{-- Dedicated Property Searchers / Seekers Tab --}}
+            <a href="{{ route('admin.users', array_merge(request()->except(['page']), ['filter' => request('filter') === 'searchers' ? null : 'searchers'])) }}"
+               class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request('filter') === 'searchers' ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/25 ring-2 ring-indigo-300' : 'bg-indigo-50 border border-indigo-200 text-indigo-800 hover:bg-indigo-100/80' }}"
+               title="Filter members actively searching for properties">
+                <i class="ph-bold ph-magnifying-glass text-xs"></i>
+                <span>Property Searchers</span>
+                <span class="px-1.5 py-0.2 rounded-md {{ request('filter') === 'searchers' ? 'bg-white/20 text-white' : 'bg-indigo-200 text-indigo-900 font-black' }} text-[10px]">{{ $stats['searchers'] ?? 0 }}</span>
+            </a>
+
             <a href="{{ route('admin.users', array_merge(request()->except('page'), ['role' => 'tenant'])) }}"
                class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap {{ request('role') === 'tenant' ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/25' : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80' }}">
                 <i class="ph-bold ph-user-circle text-xs"></i>
@@ -368,7 +379,7 @@
                             <th class="py-3.5 px-4">Contact & Phone</th>
                             <th class="py-3.5 px-4">Role</th>
                             <th class="py-3.5 px-4">Membership Plan</th>
-                            <th class="py-3.5 px-4">Activity</th>
+                            <th class="py-3.5 px-4">Property Search & Activity</th>
                             <th class="py-3.5 px-4">Joined On</th>
                             <th class="py-3.5 px-5 text-right">Actions</th>
                         </tr>
@@ -379,6 +390,60 @@
                                 $userActivePlan = $user->activePlan();
                                 $planName = $userActivePlan?->plan?->name;
                                 $isVerified = !empty($user->phone_verified_at);
+                                
+                                $latestSearch = $user->relationLoaded('visitorEvents') ? $user->visitorEvents->first() : $user->latestSearchEvent;
+                                $searchesCount = $user->searches_count ?? ($user->relationLoaded('visitorEvents') ? $user->visitorEvents->count() : 0);
+                                $unlocksCount = $user->contact_views_count ?? ($user->relationLoaded('contactViews') ? $user->contactViews->count() : 0);
+                                $inquiriesCount = $user->inquiries_count ?? ($user->relationLoaded('inquiries') ? $user->inquiries->count() : 0);
+                                $isSearcher = ($user->role === 'tenant') || ($searchesCount > 0) || ($unlocksCount > 0) || ($inquiriesCount > 0);
+
+                                $memberSearches = ($user->visitorEvents ?? collect())->map(function($ev) {
+                                    return [
+                                        'target' => $ev->getTargetLocationDisplay(),
+                                        'criteria' => $ev->getSearchCriteriaList(),
+                                        'url' => $ev->page_url ?: $ev->url,
+                                        'results_count' => $ev->getResultsCount(),
+                                        'time_ago' => $ev->created_at ? $ev->created_at->diffForHumans() : '',
+                                        'date' => $ev->created_at ? $ev->created_at->format('M d, H:i') : '',
+                                    ];
+                                })->values();
+
+                                $memberUnlocks = ($user->contactViews ?? collect())->map(function($cv) {
+                                    return [
+                                        'title' => $cv->property?->title ?? 'Property #' . $cv->property_id,
+                                        'location' => trim(($cv->property?->locality ? $cv->property->locality . ', ' : '') . ($cv->property?->city ?? 'Unknown location')),
+                                        'price' => $cv->property ? '₹' . number_format($cv->property->price) . '/mo' : '',
+                                        'phone' => $cv->property?->contact_phone ?: 'Unlocked',
+                                        'date' => $cv->created_at ? $cv->created_at->format('M d, Y') : '',
+                                    ];
+                                })->values();
+
+                                $memberInquiries = ($user->inquiries ?? collect())->map(function($inq) {
+                                    return [
+                                        'title' => $inq->property?->title ?? 'General Inquiry',
+                                        'message' => $inq->message,
+                                        'date' => $inq->created_at ? $inq->created_at->format('M d, Y') : '',
+                                    ];
+                                })->values();
+
+                                $seekerData = [
+                                    'id' => $user->id,
+                                    'name' => $user->name,
+                                    'email' => $user->email,
+                                    'phone' => $user->formatted_phone ?: ($user->phone ?: 'No phone provided'),
+                                    'raw_phone' => preg_replace('/[^0-9]/', '', $user->phone ?? ''),
+                                    'is_verified' => $isVerified,
+                                    'role' => $user->role,
+                                    'joined_on' => $user->created_at->format('M d, Y'),
+                                    'plan_name' => $planName ?: 'Free Member',
+                                    'contacts_left' => $userActivePlan ? $userActivePlan->remaining_contacts : 0,
+                                    'searches_count' => $searchesCount,
+                                    'unlocks_count' => $unlocksCount,
+                                    'inquiries_count' => $inquiriesCount,
+                                    'searches' => $memberSearches,
+                                    'unlocks' => $memberUnlocks,
+                                    'inquiries' => $memberInquiries,
+                                ];
                             @endphp
                             <tr class="hover:bg-slate-50/80 transition-colors group">
                                 
@@ -468,17 +533,56 @@
                                     @endif
                                 </td>
 
-                                {{-- Activity --}}
+                                {{-- Property Search & Activity --}}
                                 <td class="py-4 px-4 whitespace-nowrap">
-                                    <div class="space-y-1">
-                                        <div class="flex items-center gap-1.5 text-slate-700 font-semibold text-xs">
-                                            <i class="ph-bold ph-house text-blue-600"></i>
-                                            <span>{{ $user->properties_count }} Properties</span>
-                                        </div>
-                                        <div class="flex items-center gap-1.5 text-slate-500 text-[11px]">
-                                            <i class="ph-bold ph-chat-circle-dots text-slate-400"></i>
-                                            <span>{{ $user->inquiries_count ?? 0 }} Inquiries</span>
-                                        </div>
+                                    <div class="space-y-1.5">
+                                        @if($latestSearch)
+                                            <div class="flex items-center gap-1.5 max-w-[240px]">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200 text-[11px] font-bold truncate">
+                                                    <i class="ph-bold ph-map-pin text-rose-500 text-xs shrink-0"></i>
+                                                    <span class="truncate">{{ $latestSearch->getTargetLocationDisplay() }}</span>
+                                                </span>
+                                            </div>
+                                            @php
+                                                $criteriaList = $latestSearch->getSearchCriteriaList();
+                                            @endphp
+                                            @if(!empty($criteriaList))
+                                                <div class="flex items-center gap-1 flex-wrap">
+                                                    @foreach(array_slice($criteriaList, 0, 2) as $c)
+                                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200/80">
+                                                            {{ $c['label'] }}: <strong>{{ $c['value'] }}</strong>
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                            <div class="flex items-center gap-2 text-[10px] text-slate-500">
+                                                <span class="font-bold text-blue-600 flex items-center gap-0.5"><i class="ph-bold ph-magnifying-glass"></i> {{ $searchesCount }} searches</span>
+                                                <span>•</span>
+                                                <span class="font-bold text-emerald-600 flex items-center gap-0.5"><i class="ph-bold ph-lock-key-open"></i> {{ $unlocksCount }} unlocks</span>
+                                            </div>
+                                        @elseif($isSearcher)
+                                            <div class="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold">
+                                                    <i class="ph-bold ph-user-focus"></i> Property Seeker
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center gap-2 text-[10px] text-slate-500">
+                                                <span class="font-bold text-emerald-600 flex items-center gap-0.5"><i class="ph-bold ph-lock-key-open"></i> {{ $unlocksCount }} unlocks</span>
+                                                <span>•</span>
+                                                <span class="font-bold text-slate-600 flex items-center gap-0.5"><i class="ph-bold ph-chat-circle-dots"></i> {{ $inquiriesCount }} inquiries</span>
+                                            </div>
+                                        @elseif($user->role === 'owner')
+                                            <div class="flex items-center gap-1.5 text-slate-700 font-semibold text-xs">
+                                                <i class="ph-bold ph-house text-blue-600"></i>
+                                                <span>{{ $user->properties_count }} Properties Listed</span>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 text-slate-500 text-[11px]">
+                                                <i class="ph-bold ph-chat-circle-dots text-slate-400"></i>
+                                                <span>{{ $user->inquiries_count ?? 0 }} Inquiries Received</span>
+                                            </div>
+                                        @else
+                                            <div class="text-xs text-slate-500 italic">No activity recorded</div>
+                                        @endif
                                     </div>
                                 </td>
 
@@ -491,16 +595,28 @@
                                 {{-- Action Buttons --}}
                                 <td class="py-4 px-5 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ route('properties.create', ['behalf_mode' => 'existing', 'behalf_user_id' => $user->id]) }}"
-                                           class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 hover:text-orange-800 font-bold text-xs transition-all border border-orange-200/80 hover:border-orange-300 shadow-2xs"
-                                           title="Post Property / Advertise on behalf of {{ $user->name }}">
-                                            <i class="ph-bold ph-megaphone text-xs text-orange-600"></i>
-                                            <span>Post Ad</span>
-                                        </a>
+                                        {{-- Complete Search Information Modal Button --}}
+                                        <button type="button"
+                                                onclick='openMemberSearchModal(@json($seekerData))'
+                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs transition-all shadow-xs hover:shadow-md cursor-pointer"
+                                                title="View Complete Search Requirements & Member Profile">
+                                            <i class="ph-bold ph-magnifying-glass text-xs"></i>
+                                            <span>Search Info</span>
+                                        </button>
+
+                                        @if($user->role === 'owner' || $user->role === 'admin' || $user->properties_count > 0)
+                                            <a href="{{ route('properties.create', ['behalf_mode' => 'existing', 'behalf_user_id' => $user->id]) }}"
+                                               class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 hover:text-orange-800 font-bold text-xs transition-all border border-orange-200/80 hover:border-orange-300 shadow-2xs"
+                                               title="Post Property / Advertise on behalf of {{ $user->name }}">
+                                                <i class="ph-bold ph-megaphone text-xs text-orange-600"></i>
+                                                <span>Post Ad</span>
+                                            </a>
+                                        @endif
+
                                         <a href="{{ route('admin.users.activity', $user) }}"
-                                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 font-bold text-xs transition-all border border-slate-200/80 hover:border-blue-300 shadow-2xs"
+                                           class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 font-bold text-xs transition-all border border-slate-200/80 hover:border-blue-300 shadow-2xs"
                                            title="View User Details & Activity">
-                                            <span>View Details</span>
+                                            <span>Activity</span>
                                             <i class="ph-bold ph-arrow-right text-xs"></i>
                                         </a>
                                     </div>
@@ -714,6 +830,197 @@ function generateRandomPassword() {
     if (input) input.value = pass;
 }
 
+// =========================================================================
+// MEMBER COMPLETE SEARCH INFORMATION MODAL
+// =========================================================================
+window.openMemberSearchModal = function(data) {
+    const modal = document.getElementById('memberSearchModal');
+    if (!modal) return;
+
+    // Header info
+    document.getElementById('msm-name').textContent = data.name;
+    document.getElementById('msm-avatar').textContent = (data.name || 'U').charAt(0).toUpperCase();
+    document.getElementById('msm-email').textContent = data.email;
+    document.getElementById('msm-phone').textContent = data.phone;
+    document.getElementById('msm-joined').textContent = 'Joined ' + data.joined_on;
+    document.getElementById('msm-plan').textContent = data.plan_name;
+    document.getElementById('msm-contacts-left').textContent = data.contacts_left + ' unlocks left';
+
+    // Verification badge
+    const verBadge = document.getElementById('msm-verified-badge');
+    if (verBadge) {
+        if (data.is_verified) {
+            verBadge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold';
+            verBadge.innerHTML = '<i class="ph-bold ph-check-circle text-xs"></i> Phone Verified';
+        } else {
+            verBadge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold';
+            verBadge.innerHTML = '<i class="ph-bold ph-warning-circle text-xs"></i> Unverified';
+        }
+    }
+
+    // Role badge
+    const roleBadge = document.getElementById('msm-role-badge');
+    if (roleBadge) {
+        roleBadge.textContent = data.role.toUpperCase();
+    }
+
+    // Counters
+    document.getElementById('msm-searches-count').textContent = data.searches_count;
+    document.getElementById('msm-unlocks-count').textContent = data.unlocks_count;
+    document.getElementById('msm-inquiries-count').textContent = data.inquiries_count;
+
+    // Direct Action Links
+    const waBtn = document.getElementById('msm-wa-btn');
+    if (waBtn) {
+        if (data.raw_phone && data.raw_phone.length >= 10) {
+            const cleanPhone = data.raw_phone.startsWith('91') ? data.raw_phone : '91' + data.raw_phone.slice(-10);
+            waBtn.href = 'https://wa.me/' + cleanPhone + '?text=' + encodeURIComponent('Hello ' + data.name + ', greeting from UnlockRentals! Regarding your recent property search:');
+            waBtn.classList.remove('hidden');
+        } else {
+            waBtn.classList.add('hidden');
+        }
+    }
+
+    const callBtn = document.getElementById('msm-call-btn');
+    if (callBtn) {
+        if (data.raw_phone) {
+            callBtn.href = 'tel:' + data.raw_phone;
+            callBtn.classList.remove('hidden');
+        } else {
+            callBtn.classList.add('hidden');
+        }
+    }
+
+    const assignPlanBtn = document.getElementById('msm-assign-plan-btn');
+    if (assignPlanBtn) {
+        assignPlanBtn.href = '/admin/subscriptions/assign?user_id=' + data.id;
+    }
+
+    const fullActivityBtn = document.getElementById('msm-full-activity-btn');
+    if (fullActivityBtn) {
+        fullActivityBtn.href = '/admin/users/' + data.id + '/activity';
+    }
+
+    // Render Searches List
+    const searchContainer = document.getElementById('msm-searches-list');
+    if (searchContainer) {
+        if (data.searches && data.searches.length > 0) {
+            let html = '<div class="space-y-3">';
+            data.searches.forEach((s, idx) => {
+                let critBadges = '';
+                if (s.criteria && s.criteria.length > 0) {
+                    critBadges = s.criteria.map(c => `
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${c.badge || 'bg-slate-100 text-slate-700 border-slate-200'}">
+                            <strong>${c.label}:</strong> ${c.value}
+                        </span>
+                    `).join('');
+                }
+
+                html += `
+                    <div class="p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-1.5 hover:bg-slate-100/60 transition-colors">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                                <i class="ph-bold ph-map-pin text-rose-500 text-sm"></i>
+                                ${s.target || 'General Search'}
+                            </span>
+                            <span class="text-[10px] font-semibold text-slate-400 whitespace-nowrap">${s.time_ago} (${s.date})</span>
+                        </div>
+                        ${critBadges ? `<div class="flex items-center gap-1.5 flex-wrap pt-0.5">${critBadges}</div>` : ''}
+                        ${s.url ? `
+                            <div class="pt-1 text-right">
+                                <a href="${s.url}" target="_blank" class="text-[11px] font-bold text-blue-600 hover:underline inline-flex items-center gap-0.5">
+                                    <span>View matching results (${s.results_count})</span>
+                                    <i class="ph-bold ph-arrow-up-right text-xs"></i>
+                                </a>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            html += '</div>';
+            searchContainer.innerHTML = html;
+        } else {
+            searchContainer.innerHTML = `
+                <div class="p-8 text-center bg-slate-50/70 border border-dashed border-slate-200 rounded-2xl">
+                    <i class="ph-bold ph-magnifying-glass text-3xl text-slate-300 mx-auto mb-2"></i>
+                    <p class="text-xs font-bold text-slate-700">No telemetry search events recorded yet</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">This member has registered as a ${data.role}. Search criteria will show up automatically when they filter listings.</p>
+                </div>
+            `;
+        }
+    }
+
+    // Render Unlocked Properties List
+    const unlocksContainer = document.getElementById('msm-unlocks-list');
+    if (unlocksContainer) {
+        if (data.unlocks && data.unlocks.length > 0) {
+            let html = '<div class="space-y-2.5">';
+            data.unlocks.forEach(u => {
+                html += `
+                    <div class="p-3 bg-emerald-50/60 border border-emerald-200/80 rounded-xl flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold text-slate-900 truncate">${u.title}</p>
+                            <p class="text-[10px] font-semibold text-slate-500">${u.location} • <strong class="text-emerald-700">${u.price}</strong></p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                                <i class="ph-bold ph-phone text-xs"></i> ${u.phone}
+                            </span>
+                            <p class="text-[9px] text-slate-400 mt-0.5">${u.date}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            unlocksContainer.innerHTML = html;
+        } else {
+            unlocksContainer.innerHTML = `
+                <div class="p-6 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-xl">
+                    <p class="text-xs text-slate-400 font-semibold">No property contacts unlocked yet.</p>
+                </div>
+            `;
+        }
+    }
+
+    // Render Inquiries List
+    const inquiriesContainer = document.getElementById('msm-inquiries-list');
+    if (inquiriesContainer) {
+        if (data.inquiries && data.inquiries.length > 0) {
+            let html = '<div class="space-y-2.5">';
+            data.inquiries.forEach(inq => {
+                html += `
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs font-bold text-slate-900 truncate">${inq.title}</p>
+                            <span class="text-[10px] text-slate-400">${inq.date}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600 italic leading-relaxed">"${inq.message || 'No message'}"</p>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            inquiriesContainer.innerHTML = html;
+        } else {
+            inquiriesContainer.innerHTML = `
+                <div class="p-6 text-center bg-slate-50/50 border border-dashed border-slate-200 rounded-xl">
+                    <p class="text-xs text-slate-400 font-semibold">No direct inquiries submitted yet.</p>
+                </div>
+            `;
+        }
+    }
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeMemberSearchModal = function() {
+    const modal = document.getElementById('memberSearchModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const addModal = document.getElementById('addUserModal');
     if (addModal) {
@@ -729,12 +1036,146 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const searchModal = document.getElementById('memberSearchModal');
+    if (searchModal) {
+        searchModal.addEventListener('click', (e) => {
+            if (e.target === searchModal) closeMemberSearchModal();
+        });
+    }
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeAddUserModal();
             closePostAdvertiseModal();
+            closeMemberSearchModal();
         }
     });
 });
 </script>
+
+{{-- COMPLETE MEMBER & SEARCH INFORMATION MODAL DIALOG --}}
+<div id="memberSearchModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 hidden">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden animate-scale-up">
+        
+        {{-- Modal Header --}}
+        <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 text-white flex items-start justify-between gap-4 shrink-0">
+            <div class="flex items-center gap-3.5">
+                <div id="msm-avatar" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 text-white font-black text-lg flex items-center justify-center ring-2 ring-white/20 shadow-lg">
+                    U
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h3 id="msm-name" class="text-base font-extrabold text-white">Member Name</h3>
+                        <span id="msm-role-badge" class="px-2 py-0.5 rounded-full bg-white/15 text-white text-[10px] font-bold tracking-wider">TENANT</span>
+                        <span id="msm-verified-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
+                            Phone Verified
+                        </span>
+                    </div>
+                    <p class="text-xs text-white/70 flex items-center gap-3 mt-1">
+                        <span id="msm-email">email@example.com</span>
+                        <span>•</span>
+                        <span id="msm-phone" class="font-bold text-white">+91 00000 00000</span>
+                    </p>
+                </div>
+            </div>
+            <button type="button" onclick="closeMemberSearchModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer" aria-label="Close">
+                <i class="ph-bold ph-x text-sm"></i>
+            </button>
+        </div>
+
+        {{-- Metrics Ribbon --}}
+        <div class="grid grid-cols-4 divide-x divide-slate-100 bg-slate-50/80 border-b border-slate-200 text-center py-2.5 px-3 shrink-0 text-xs">
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Searches</span>
+                <strong id="msm-searches-count" class="text-base font-black text-blue-600">0</strong>
+            </div>
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Unlocks</span>
+                <strong id="msm-unlocks-count" class="text-base font-black text-emerald-600">0</strong>
+            </div>
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Inquiries</span>
+                <strong id="msm-inquiries-count" class="text-base font-black text-indigo-600">0</strong>
+            </div>
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Membership</span>
+                <strong id="msm-plan" class="text-xs font-black text-amber-700 block truncate">Free Member</strong>
+                <span id="msm-contacts-left" class="text-[9px] text-slate-500 font-semibold block">0 left</span>
+            </div>
+        </div>
+
+        {{-- Scrollable Content --}}
+        <div class="p-5 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
+            
+            {{-- Section 1: Property Search Requirements & History --}}
+            <div>
+                <div class="flex items-center justify-between mb-2.5">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                        <i class="ph-bold ph-magnifying-glass text-blue-600 text-sm"></i>
+                        <span>Property Searches & Requirements</span>
+                    </h4>
+                    <span class="text-[10px] text-slate-400 font-semibold">Latest queries by this member</span>
+                </div>
+                <div id="msm-searches-list">
+                    {{-- Dynamically populated --}}
+                </div>
+            </div>
+
+            {{-- Section 2: Properties Unlocked --}}
+            <div>
+                <div class="flex items-center justify-between mb-2.5">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                        <i class="ph-bold ph-lock-key-open text-emerald-600 text-sm"></i>
+                        <span>Unlocked Owner Contacts</span>
+                    </h4>
+                </div>
+                <div id="msm-unlocks-list">
+                    {{-- Dynamically populated --}}
+                </div>
+            </div>
+
+            {{-- Section 3: Inquiries Sent --}}
+            <div>
+                <div class="flex items-center justify-between mb-2.5">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                        <i class="ph-bold ph-chat-circle-dots text-indigo-600 text-sm"></i>
+                        <span>Recent Inquiries Sent</span>
+                    </h4>
+                </div>
+                <div id="msm-inquiries-list">
+                    {{-- Dynamically populated --}}
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Modal Footer with Direct Contact Actions --}}
+        <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+            <span id="msm-joined" class="text-[11px] text-slate-400 font-semibold">Joined Oct 24, 2026</span>
+            
+            <div class="flex items-center gap-2">
+                <a id="msm-wa-btn" href="#" target="_blank"
+                   class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-sm flex items-center gap-1.5">
+                    <i class="ph-bold ph-whatsapp-logo text-sm"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <a id="msm-call-btn" href="#"
+                   class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-sm flex items-center gap-1.5">
+                    <i class="ph-bold ph-phone-call text-sm"></i>
+                    <span>Call Now</span>
+                </a>
+                <a id="msm-assign-plan-btn" href="#"
+                   class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs transition-all shadow-sm flex items-center gap-1.5">
+                    <i class="ph-bold ph-crown text-sm"></i>
+                    <span>Assign Plan</span>
+                </a>
+                <a id="msm-full-activity-btn" href="#"
+                   class="px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs transition-all">
+                    <span>Full Activity →</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
 @endsection

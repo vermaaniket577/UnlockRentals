@@ -476,6 +476,16 @@ class AdminController extends Controller
             }
         }
 
+        // Property Searchers / Seekers filter
+        if ($request->get('filter') === 'searchers' || $request->get('role') === 'searcher') {
+            $query->where(function ($q) {
+                $q->where('role', 'tenant')
+                  ->orWhereHas('visitorEvents', fn($ev) => $ev->where('event_name', 'search'))
+                  ->orWhereHas('contactViews')
+                  ->orWhereHas('inquiries');
+            });
+        }
+
         // KPI Stats
         $stats = [
             'total'      => User::count(),
@@ -486,15 +496,30 @@ class AdminController extends Controller
             'unverified' => User::whereNull('phone_verified_at')->count(),
             'paid'       => User::whereHas('userPlans', fn ($q) => $q->active())->count(),
             'free'       => User::whereDoesntHave('userPlans', fn ($q) => $q->active())->count(),
+            'searchers'  => User::where(function ($q) {
+                $q->where('role', 'tenant')
+                  ->orWhereHas('visitorEvents', fn($ev) => $ev->where('event_name', 'search'))
+                  ->orWhereHas('contactViews')
+                  ->orWhereHas('inquiries');
+            })->count(),
         ];
 
         $plans = Plan::where('is_active', true)->orderBy('price')->get();
         $allUsersList = User::orderBy('name')->select('id', 'name', 'phone', 'email', 'role')->get();
 
-        $users = $query->withCount(['properties', 'inquiries'])
-            ->with(['userPlans' => function ($q) {
-                $q->active()->with('plan');
-            }])
+        $users = $query->withCount([
+                'properties',
+                'inquiries',
+                'contactViews',
+                'visitorEvents as searches_count' => fn($q) => $q->where('event_name', 'search'),
+            ])
+            ->with([
+                'userPlans' => fn($q) => $q->active()->with('plan'),
+                'visitorEvents' => fn($q) => $q->where('event_name', 'search')->latest('created_at')->take(5),
+                'contactViews.property',
+                'inquiries.property',
+                'visitors',
+            ])
             ->latest()
             ->paginate(15)
             ->withQueryString();
@@ -1609,14 +1634,25 @@ class AdminController extends Controller
      */
     public function userActivity(User $user)
     {
-        $user->load(['userPlans.plan', 'inquiries.property']);
+        $user->load(['userPlans.plan', 'inquiries.property', 'visitors']);
         
         $contactViews = \App\Models\ContactView::where('user_id', $user->id)
             ->with('property')
             ->latest()
             ->get();
 
-        return view('admin.user-activity', compact('user', 'contactViews'));
+        $searchEvents = \App\Models\VisitorEvent::where(function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+                $visitorIds = $user->visitors->pluck('id')->filter()->all();
+                if (!empty($visitorIds)) {
+                    $q->orWhereIn('visitor_id', $visitorIds);
+                }
+            })
+            ->where('event_name', 'search')
+            ->latest('created_at')
+            ->get();
+
+        return view('admin.user-activity', compact('user', 'contactViews', 'searchEvents'));
     }
 
     /**
