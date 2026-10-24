@@ -351,13 +351,15 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
         btn.classList.add('opacity-75');
 
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+            || document.querySelector('input[name="_token"]')?.value;
 
-        fetch("{{ url('/admin/chats/reply') }}", {
+        fetch("{{ route('admin.chats.reply') }}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRF-TOKEN": csrfToken,
+                "X-Requested-With": "XMLHttpRequest",
                 "Accept": "application/json"
             },
             body: JSON.stringify({
@@ -365,7 +367,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 message: messageText
             })
         })
-        .then(res => res.json())
+        .then(async res => {
+            let data = null;
+            try {
+                data = await res.json();
+            } catch (e) {
+                // Ignore parse error
+            }
+            if (!res.ok || !data || data.status === 'error') {
+                const errMsg = (data && data.message) ? data.message : 'Server returned an error (' + res.status + ')';
+                throw new Error(errMsg);
+            }
+            return data;
+        })
         .then(data => {
             btn.disabled = false;
             btn.classList.remove('opacity-75');
@@ -391,11 +405,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 msgBox.insertAdjacentHTML('beforeend', bubbleHtml);
                 msgBox.scrollTop = msgBox.scrollHeight;
             }
+
+            // Update session snippet and time on left list item if present
+            const sessionItem = document.querySelector(`.session-item[data-session="${sessionId}"]`);
+            if (sessionItem) {
+                const snippetEl = sessionItem.querySelector('p');
+                const timeEl = sessionItem.querySelector('span.text-\\[10px\\]');
+                if (snippetEl) snippetEl.textContent = data.message || messageText;
+                if (timeEl) timeEl.textContent = timeStr;
+            }
         })
         .catch(err => {
             btn.disabled = false;
             btn.classList.remove('opacity-75');
-            alert('Failed to send reply. Please try again.');
+            alert(err.message || 'Failed to send reply. Please try again.');
         });
     };
 

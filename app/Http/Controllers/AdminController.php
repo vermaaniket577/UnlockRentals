@@ -818,26 +818,42 @@ class AdminController extends Controller
             'message' => 'required|string|max:2000',
         ]);
 
-        $firstMsg = \App\Models\ChatbotMessage::where('session_id', $request->session_id)->first();
-        $userId = $firstMsg ? $firstMsg->user_id : null;
+        try {
+            $firstMsg = \App\Models\ChatbotMessage::where('session_id', $request->session_id)->first();
+            $userId = $firstMsg ? $firstMsg->user_id : null;
 
-        $msg = \App\Models\ChatbotMessage::create([
-            'user_id' => $userId,
-            'session_id' => $request->session_id,
-            'message' => trim($request->message),
-            'sender' => 'bot',
-            'is_read' => true,
-        ]);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'status' => 'success',
-                'message' => $msg->message,
-                'time' => $msg->created_at->format('h:i A'),
+            $msg = \App\Models\ChatbotMessage::create([
+                'user_id' => $userId,
+                'session_id' => $request->session_id,
+                'message' => trim($request->message),
+                'sender' => 'bot',
+                'is_read' => true,
             ]);
-        }
 
-        return redirect()->back()->with('success', 'Reply sent successfully.');
+            if ($request->expectsJson() || $request->ajax() || $request->wantsJson() || $request->isJson()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $msg->message,
+                    'time' => $msg->created_at ? $msg->created_at->format('h:i A') : now()->format('h:i A'),
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Reply sent successfully.');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Chat reply error: ' . $e->getMessage(), [
+                'session_id' => $request->session_id,
+                'exception' => $e
+            ]);
+
+            if ($request->expectsJson() || $request->ajax() || $request->wantsJson() || $request->isJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to send reply: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Failed to send reply: ' . $e->getMessage());
+        }
     }
 
     /**
