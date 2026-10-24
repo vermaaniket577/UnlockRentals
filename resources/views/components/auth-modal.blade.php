@@ -6,7 +6,7 @@
         
         {{-- Close Button --}}
         <button type="button" onclick="window.closeAuthModal()" class="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer" title="Close" aria-label="Close modal">
-            <i class="ph-bold ph-x text-sm"></i>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
 
         {{-- Top Header --}}
@@ -47,12 +47,12 @@
                 <div class="grid grid-cols-2 p-1 mb-3.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl">
                     <button type="button" id="modal-login-type-phone" onclick="window.switchLoginMethod('phone')"
                             class="py-2 text-[12.5px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-phone text-sm"></i>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                         <span>Mobile No.</span>
                     </button>
                     <button type="button" id="modal-login-type-email" onclick="window.switchLoginMethod('email')"
                             class="py-2 text-[12.5px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-envelope text-sm"></i>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                         <span>Email & Password</span>
                     </button>
                 </div>
@@ -71,7 +71,7 @@
                             </div>
                             <button type="button" id="modal-login-send-otp-btn" onclick="window.modalSendLoginOtp()"
                                     class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[12px] font-medium rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
-                                <i class="ph-bold ph-paper-plane-tilt text-sm"></i>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                 <span>Send OTP</span>
                             </button>
                         </div>
@@ -94,7 +94,7 @@
                         <button type="button" id="modal-login-verify-btn" onclick="window.modalVerifyLoginOtp()"
                                 class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
                             <span>Verify & Sign In</span>
-                            <i class="ph-bold ph-arrow-right text-xs"></i>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                         </button>
                     </div>
                 </div>
@@ -107,7 +107,7 @@
                     <div>
                         <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email Address <span class="text-rose-500">*</span></label>
                         <div class="relative">
-                            <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                             <input type="email" name="email" required autocomplete="email"
                                    placeholder="you@example.com"
                                    class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
@@ -120,12 +120,12 @@
                             <a href="{{ route('password.request') }}" class="text-[12px] font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline" title="Forgot Password?">Forgot?</a>
                         </div>
                         <div class="relative">
-                            <i class="ph-bold ph-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
                             <input type="password" name="password" id="ur-login-password-input" required autocomplete="current-password"
                                    placeholder="••••••••"
                                    class="ur-auth-input w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                             <button type="button" onclick="window.toggleModalPassword('ur-login-password-input', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
-                                <i class="ph-bold ph-eye text-base"></i>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
                     </div>
@@ -139,7 +139,7 @@
 
                     <button type="submit" id="ur-modal-login-submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
                         <span>Sign In</span>
-                        <i class="ph-bold ph-arrow-right text-xs"></i>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
                 </form>
             </div>
@@ -154,7 +154,7 @@
                             Full Name <span class="text-rose-500">*</span>
                         </label>
                         <div class="relative">
-                            <i class="ph-bold ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
                             <input type="text" id="modal-reg-phone-name" name="name" required autocomplete="name"
                                    placeholder="e.g. Rahul Sharma"
                                    class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
@@ -176,7 +176,7 @@
                             </div>
                             <button type="button" id="modal-reg-send-otp-btn" onclick="window.modalSendRegisterOtp()"
                                     class="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[12px] font-medium rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
-                                <i class="ph-bold ph-paper-plane-tilt text-sm"></i>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                 <span>Send OTP</span>
                             </button>
                         </div>
@@ -204,7 +204,7 @@
                             Email Address <span class="text-rose-500">*</span>
                         </label>
                         <div class="relative">
-                            <i class="ph-bold ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                             <input type="email" id="modal-reg-phone-email" name="email" required autocomplete="email"
                                    placeholder="you@example.com"
                                    class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
@@ -221,7 +221,7 @@
                                        placeholder="Min 8 chars"
                                        class="ur-auth-input-no-icon w-full pl-3.5 pr-9 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                                 <button type="button" onclick="window.toggleModalPassword('modal-reg-phone-password', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
-                                    <i class="ph-bold ph-eye text-base"></i>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
                         </div>
@@ -234,7 +234,7 @@
                                        placeholder="Repeat"
                                        class="ur-auth-input-no-icon w-full pl-3.5 pr-9 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
                                 <button type="button" onclick="window.toggleModalPassword('modal-reg-phone-confirm', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
-                                    <i class="ph-bold ph-eye text-base"></i>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
                         </div>
@@ -243,7 +243,7 @@
                     <button type="submit" id="modal-reg-phone-submit"
                             class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
                         <span>Create Free Account</span>
-                        <i class="ph-bold ph-arrow-right text-xs"></i>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
                 </form>
             </div>
@@ -256,10 +256,46 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-#ur-auth-modal,
-#ur-auth-modal * {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+#ur-auth-modal {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     box-sizing: border-box;
+}
+#ur-auth-modal *:not(i):not([class*="ph-"]):not(svg):not(path) {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    box-sizing: border-box;
+}
+#ur-auth-modal .ph-bold,
+#ur-auth-modal [class*="ph-bold"] {
+    font-family: "Phosphor-Bold" !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    display: inline-block;
+}
+#ur-auth-modal .ph,
+#ur-auth-modal [class*="ph-regular"] {
+    font-family: "Phosphor" !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    display: inline-block;
+}
+#ur-auth-modal .ph-fill,
+#ur-auth-modal [class*="ph-fill"] {
+    font-family: "Phosphor-Fill" !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    display: inline-block;
 }
 #ur-auth-modal .ur-auth-input {
     padding-left: 2.6rem !important;
@@ -807,19 +843,15 @@ function startTimer(timerEl, resendBtn, timerVarName) {
 window.toggleModalPassword = function(inputId, btn) {
     const input = document.getElementById(inputId);
     if (!input) return;
-    const icon = btn.querySelector('i');
+    const eyeSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const eyeSlashSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
+
     if (input.type === 'password') {
         input.type = 'text';
-        if (icon) {
-            icon.classList.remove('ph-eye');
-            icon.classList.add('ph-eye-slash');
-        }
+        btn.innerHTML = eyeSlashSvg;
     } else {
         input.type = 'password';
-        if (icon) {
-            icon.classList.remove('ph-eye-slash');
-            icon.classList.add('ph-eye');
-        }
+        btn.innerHTML = eyeSvg;
     }
 };
 
