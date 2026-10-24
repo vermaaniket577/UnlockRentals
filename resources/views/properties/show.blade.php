@@ -1098,9 +1098,10 @@
 
 {{-- ========================================================
      4. FIXED BOTTOM STICKY ACTION BAR (MOBILE / TABLET ONLY)
-     Notice: block lg:hidden prevents floating bar on desktop!
+     Positioned seamlessly ABOVE mobile-bottom-nav so bottom navigation
+     is 100% accessible and NEVER hidden when viewing property details.
      ======================================================== --}}
-<div class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-3 px-4 z-[990] shadow-[0_-8px_30px_rgba(0,0,0,0.08)] block lg:hidden">
+<div class="fixed left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800/90 py-2.5 px-4 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] block lg:hidden" id="property-mobile-action-bar">
     <div class="max-w-md mx-auto flex items-center gap-3">
         
         {{-- Button 1: Schedule Visit --}}
@@ -1160,6 +1161,50 @@
         @endif
     </div>
 </div>
+
+<style>
+    /* ─── Seamless Mobile Action Bar & Bottom Nav Stacking ─── */
+    @media (max-width: 767px) {
+        /* Lift the Property Action Bar so it sits cleanly above the Mobile Bottom Navigation Bar */
+        #property-mobile-action-bar {
+            bottom: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        .is-mobile-app #property-mobile-action-bar {
+            bottom: 4rem !important;
+        }
+        
+        /* Ensure the body has enough padding so bottom content isn't obscured by both bars */
+        body {
+            padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        .is-mobile-app body {
+            padding-bottom: 8rem !important;
+        }
+        
+        /* Harmonize the Post Ad button on mobile navbar so it doesn't collide with the action bar */
+        #mobile-bottom-nav .mobile-post-ad-wrapper {
+            margin-top: 0 !important;
+        }
+        #mobile-bottom-nav .mobile-post-ad-btn {
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25) !important;
+        }
+        #mobile-bottom-nav .mobile-post-ad-btn i {
+            font-size: 1rem !important;
+        }
+    }
+    
+    @media (min-width: 768px) and (max-width: 1023px) {
+        /* Tablet view: mobile-bottom-nav is hidden by md:hidden, so action bar sits flush at bottom */
+        #property-mobile-action-bar {
+            bottom: 0 !important;
+        }
+        body {
+            padding-bottom: 4.5rem !important;
+        }
+    }
+</style>
 
 {{-- ========================================================
      MODALS: BOOK VISIT MODAL
