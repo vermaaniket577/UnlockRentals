@@ -372,23 +372,29 @@
                         {{-- Left & Right Slider Arrows (Desktop visible on hover) --}}
                         @if($galleryImages->count() > 1)
                             <button type="button"
-                                    onclick="event.stopPropagation(); selectGallerySlide((currentSlide - 1 + totalPhotos) % totalPhotos);"
-                                    class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-lg flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-20 cursor-pointer"
+                                    onclick="event.stopPropagation(); selectGallerySlide((currentSlide - 1 + totalPhotos) % totalPhotos); resetAutoSlide();"
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-lg flex items-center justify-center transition-all opacity-85 hover:opacity-100 z-20 cursor-pointer hover:scale-105 active:scale-95"
                                     aria-label="Previous Photo">
-                                <i class="ph-bold ph-caret-left text-lg"></i>
+                                <svg class="w-5 h-5 text-slate-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m15 18-6-6 6-6"/>
+                                </svg>
                             </button>
                             <button type="button"
-                                    onclick="event.stopPropagation(); selectGallerySlide((currentSlide + 1) % totalPhotos);"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-lg flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-20 cursor-pointer"
+                                    onclick="event.stopPropagation(); selectGallerySlide((currentSlide + 1) % totalPhotos); resetAutoSlide();"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-800 shadow-lg flex items-center justify-center transition-all opacity-85 hover:opacity-100 z-20 cursor-pointer hover:scale-105 active:scale-95"
                                     aria-label="Next Photo">
-                                <i class="ph-bold ph-caret-right text-lg"></i>
+                                <svg class="w-5 h-5 text-slate-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="m9 18 6-6-6-6"/>
+                                </svg>
                             </button>
                         @endif
 
                         {{-- Top Badges on Image --}}
                         <div class="absolute top-3 left-3 flex items-center gap-2 z-20 pointer-events-none">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white text-[11px] font-bold shadow-sm">
-                                <i class="ph-fill ph-shield-check text-emerald-600"></i>
+                                <svg class="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
+                                </svg>
                                 <span>Zero Brokerage</span>
                             </span>
                         </div>
@@ -399,15 +405,21 @@
                                 @if($property->hasVideo())
                                     <button type="button"
                                             onclick="openLightboxModal(0)"
-                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-purple-700 text-xs font-bold shadow-md transition-all cursor-pointer">
-                                        <i class="ph-bold ph-video-camera text-purple-600"></i>
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-purple-700 text-xs font-bold shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95">
+                                        <svg class="w-3.5 h-3.5 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="m10 8 6 4-6 4V8z"/><rect width="20" height="16" x="2" y="4" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
                                         <span>Video Tour</span>
                                     </button>
                                 @else
                                     <button type="button"
                                             onclick="openLightboxModal(0)"
-                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-blue-700 text-xs font-bold shadow-md transition-all cursor-pointer">
-                                        <i class="ph-bold ph-cube text-blue-600"></i>
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-white text-blue-700 text-xs font-bold shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95">
+                                        <svg class="w-3.5 h-3.5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                                        </svg>
                                         <span>360° Virtual Tour</span>
                                     </button>
                                 @endif
@@ -415,8 +427,10 @@
 
                             <button type="button"
                                     onclick="openLightboxModal(currentSlide)"
-                                    class="pointer-events-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/75 hover:bg-black/90 backdrop-blur-xs text-white text-xs font-semibold shadow-md transition-all cursor-pointer" id="gallery-counter-badge">
-                                <i class="ph-bold ph-images text-xs"></i>
+                                    class="pointer-events-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/75 hover:bg-black/90 backdrop-blur-xs text-white text-xs font-semibold shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95" id="gallery-counter-badge">
+                                <svg class="w-3.5 h-3.5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                                </svg>
                                 <span>1/{{ $totalPhotos }} Photos</span>
                             </button>
                         </div>
@@ -437,7 +451,7 @@
                                     </div>
                                 @else
                                     <button type="button"
-                                            onclick="selectGallerySlide({{ $idx }})"
+                                            onclick="selectGallerySlide({{ $idx }}); resetAutoSlide();"
                                             class="gallery-thumb-item relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border-2 {{ $idx === 0 ? 'border-blue-600 ring-2 ring-blue-500/20' : 'border-transparent opacity-75 hover:opacity-100' }} transition-all">
                                         <img src="{{ $img->imageUrl() }}" alt="" class="w-full h-full object-cover">
                                     </button>
@@ -1284,11 +1298,15 @@
         <img id="lightbox-img" src="" alt="{{ $cleanTitle }}" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl">
     </div>
     @if($galleryImages->count() > 1)
-        <button type="button" onclick="event.stopPropagation(); prevLightboxImage()" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-2xl z-20 cursor-pointer">
-            <i class="ph-bold ph-caret-left"></i>
+        <button type="button" onclick="event.stopPropagation(); prevLightboxImage()" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-2xl z-20 cursor-pointer transition-all" aria-label="Previous">
+            <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6"/>
+            </svg>
         </button>
-        <button type="button" onclick="event.stopPropagation(); nextLightboxImage()" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-2xl z-20 cursor-pointer">
-            <i class="ph-bold ph-caret-right"></i>
+        <button type="button" onclick="event.stopPropagation(); nextLightboxImage()" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-2xl z-20 cursor-pointer transition-all" aria-label="Next">
+            <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 18 6-6-6-6"/>
+            </svg>
         </button>
     @endif
 </div>
@@ -1303,6 +1321,8 @@
     const totalPhotos = {{ $galleryImages->count() }};
     let currentSlide = 0;
     let lightboxIdx = 0;
+    let autoSlideInterval = null;
+    const AUTO_SLIDE_DELAY = 3500; // Auto-slide every 3.5s from right to left
 
     function selectGallerySlide(idx) {
         if (idx < 0 || idx >= totalPhotos) return;
@@ -1313,19 +1333,41 @@
         }
         const badge = document.getElementById('gallery-counter-badge');
         if (badge) {
-            badge.innerHTML = `<i class="ph-bold ph-images text-xs"></i> <span>${idx + 1}/${totalPhotos} Photos</span>`;
+            badge.innerHTML = `<svg class="w-3.5 h-3.5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> <span>${idx + 1}/${totalPhotos} Photos</span>`;
         }
         document.querySelectorAll('.gallery-thumb-item').forEach((btn, i) => {
             if (i === idx) {
                 btn.className = 'gallery-thumb-item relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border-2 border-blue-600 ring-2 ring-blue-500/20 transition-all';
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             } else {
                 btn.className = 'gallery-thumb-item relative w-20 sm:w-24 h-14 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer border-2 border-transparent opacity-75 hover:opacity-100 transition-all';
             }
         });
     }
 
+    function startAutoSlide() {
+        if (totalPhotos <= 1 || autoSlideInterval) return;
+        autoSlideInterval = setInterval(() => {
+            const nextIdx = (currentSlide + 1) % totalPhotos;
+            selectGallerySlide(nextIdx);
+        }, AUTO_SLIDE_DELAY);
+    }
+
+    function pauseAutoSlide() {
+        if (autoSlideInterval) {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = null;
+        }
+    }
+
+    function resetAutoSlide() {
+        pauseAutoSlide();
+        startAutoSlide();
+    }
+
     function openLightboxModal(idx) {
         if (!propertyGallery || propertyGallery.length === 0) return;
+        pauseAutoSlide();
         lightboxIdx = idx !== undefined ? idx : currentSlide;
         const modal = document.getElementById('gallery-lightbox');
         const img = document.getElementById('lightbox-img');
@@ -1346,6 +1388,7 @@
             modal.classList.remove('flex');
             document.body.style.overflow = '';
         }
+        startAutoSlide();
     }
 
     function nextLightboxImage() {
@@ -1399,22 +1442,35 @@
         }
     }
 
-    // Touch swipe for gallery
-    let touchStartX = 0;
+    // Touch swipe & Mouse Hover for gallery container
     const galleryEl = document.getElementById('gallery-main-container');
     if (galleryEl) {
+        galleryEl.addEventListener('mouseenter', pauseAutoSlide);
+        galleryEl.addEventListener('mouseleave', startAutoSlide);
+
+        let touchStartX = 0;
         galleryEl.addEventListener('touchstart', (e) => {
+            pauseAutoSlide();
             touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
+
         galleryEl.addEventListener('touchend', (e) => {
             const touchEndX = e.changedTouches[0].screenX;
-            if (touchStartX - touchEndX > 45 && currentSlide < totalPhotos - 1) {
-                selectGallerySlide(currentSlide + 1);
-            } else if (touchEndX - touchStartX > 45 && currentSlide > 0) {
-                selectGallerySlide(currentSlide - 1);
+            if (touchStartX - touchEndX > 45) {
+                // Swipe Left -> Advance slide (Right to Left motion)
+                selectGallerySlide((currentSlide + 1) % totalPhotos);
+            } else if (touchEndX - touchStartX > 45) {
+                // Swipe Right -> Previous slide
+                selectGallerySlide((currentSlide - 1 + totalPhotos) % totalPhotos);
             }
+            resetAutoSlide();
         }, { passive: true });
     }
+
+    // Auto-start slide on page readiness
+    document.addEventListener('DOMContentLoaded', () => {
+        startAutoSlide();
+    });
 
     // Book visit form handling
     const visitForm = document.getElementById('book-visit-form');
@@ -1476,6 +1532,9 @@
 
     // Expose globals
     window.selectGallerySlide = selectGallerySlide;
+    window.startAutoSlide = startAutoSlide;
+    window.pauseAutoSlide = pauseAutoSlide;
+    window.resetAutoSlide = resetAutoSlide;
     window.openLightboxModal = openLightboxModal;
     window.closeLightboxModal = closeLightboxModal;
     window.nextLightboxImage = nextLightboxImage;
