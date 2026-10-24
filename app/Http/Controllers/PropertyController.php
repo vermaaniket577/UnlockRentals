@@ -59,10 +59,19 @@ class PropertyController extends Controller
         // Smart Search Home Page Filters:
         if ($request->filled('district')) {
             $districtName = str_replace('-', ' ', $request->district);
-            $query->where(function ($q) use ($districtName) {
-                $q->where('location', 'like', '%' . $districtName . '%')
-                  ->orWhere('locality', 'like', '%' . $districtName . '%')
-                  ->orWhere('address', 'like', '%' . $districtName . '%');
+            $searchTerms = [$districtName];
+            $dLower = strtolower($districtName);
+            if ($dLower === 'gurugram' || $dLower === 'gurgaon') {
+                $searchTerms = ['Gurugram', 'Gurgaon'];
+            } elseif ($dLower === 'bengaluru' || $dLower === 'bangalore') {
+                $searchTerms = ['Bengaluru', 'Bangalore'];
+            }
+            $query->where(function ($q) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $q->orWhere('location', 'like', '%' . $term . '%')
+                      ->orWhere('locality', 'like', '%' . $term . '%')
+                      ->orWhere('address', 'like', '%' . $term . '%');
+                }
             });
         }
 

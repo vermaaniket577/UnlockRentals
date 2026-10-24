@@ -2826,18 +2826,44 @@
                         </div>
                         <select name="district" id="hero_district" class="ur-hero-select">
                             <option value="">City, locality or PIN code</option>
-                            <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurgaon / Gurugram</option>
-                            <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>New Delhi</option>
-                            <option value="South Delhi" {{ request('district') == 'South Delhi' ? 'selected' : '' }}>South Delhi</option>
-                            <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>Noida</option>
-                            <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>Bengaluru</option>
-                            <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>Mumbai</option>
-                            <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>Pune</option>
-                            <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>Hyderabad</option>
-                            <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>Faridabad</option>
-                            <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>Ghaziabad</option>
-                            <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>Jaipur</option>
-                            <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>Chandigarh</option>
+                            @php
+                                $selectedDist = request('district');
+                                $popularCityNames = [
+                                    'Gurugram' => 'Gurgaon / Gurugram',
+                                    'New Delhi' => 'New Delhi',
+                                    'South Delhi' => 'South Delhi',
+                                    'Noida' => 'Noida',
+                                    'Bengaluru' => 'Bengaluru',
+                                    'Mumbai' => 'Mumbai',
+                                    'Pune' => 'Pune',
+                                    'Hyderabad' => 'Hyderabad',
+                                    'Faridabad' => 'Faridabad',
+                                    'Ghaziabad' => 'Ghaziabad',
+                                    'Jaipur' => 'Jaipur',
+                                    'Chandigarh' => 'Chandigarh',
+                                ];
+                                $allDistrictsList = $globalAllDistricts ?? [];
+                            @endphp
+                            <optgroup label="Popular Cities">
+                                @foreach($popularCityNames as $val => $label)
+                                    <option value="{{ $val }}" {{ ($selectedDist === $val || (strtolower($selectedDist) === 'gurgaon' && $val === 'Gurugram') || (strtolower($selectedDist) === 'bangalore' && $val === 'Bengaluru')) ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                            @if(!empty($allDistrictsList) && count($allDistrictsList) > 0)
+                                <optgroup label="All Cities (Admin Added & Nationwide)">
+                                    @foreach($allDistrictsList as $d)
+                                        @php
+                                            $dName = $d['name'];
+                                            $isSelected = ($selectedDist === $dName || $selectedDist === ($d['slug'] ?? ''));
+                                        @endphp
+                                        <option value="{{ $dName }}" {{ $isSelected ? 'selected' : '' }}>
+                                            {{ $dName }}{{ !empty($d['state_code']) ? ' (' . $d['state_code'] . ')' : '' }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
                         </select>
                     </div>
 
@@ -3134,17 +3160,43 @@
                                         id="mobile_city_select"
                                         class="w-full appearance-none pl-3 pr-7 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-500">
                                     <option value="">All Top Cities</option>
-                                    <option value="Gurugram" {{ request('district') == 'Gurugram' ? 'selected' : '' }}>Gurugram</option>
-                                    <option value="New Delhi" {{ request('district') == 'New Delhi' ? 'selected' : '' }}>Delhi NCR</option>
-                                    <option value="Noida" {{ request('district') == 'Noida' ? 'selected' : '' }}>Noida</option>
-                                    <option value="Faridabad" {{ request('district') == 'Faridabad' ? 'selected' : '' }}>Faridabad</option>
-                                    <option value="Ghaziabad" {{ request('district') == 'Ghaziabad' ? 'selected' : '' }}>Ghaziabad</option>
-                                    <option value="Bengaluru" {{ request('district') == 'Bengaluru' ? 'selected' : '' }}>Bengaluru</option>
-                                    <option value="Mumbai" {{ request('district') == 'Mumbai' ? 'selected' : '' }}>Mumbai</option>
-                                    <option value="Pune" {{ request('district') == 'Pune' ? 'selected' : '' }}>Pune</option>
-                                    <option value="Hyderabad" {{ request('district') == 'Hyderabad' ? 'selected' : '' }}>Hyderabad</option>
-                                    <option value="Jaipur" {{ request('district') == 'Jaipur' ? 'selected' : '' }}>Jaipur</option>
-                                    <option value="Chandigarh" {{ request('district') == 'Chandigarh' ? 'selected' : '' }}>Chandigarh</option>
+                                    @php
+                                        $selectedDist = request('district');
+                                        $popularCityNames = [
+                                            'Gurugram' => 'Gurugram',
+                                            'New Delhi' => 'Delhi NCR',
+                                            'Noida' => 'Noida',
+                                            'Faridabad' => 'Faridabad',
+                                            'Ghaziabad' => 'Ghaziabad',
+                                            'Bengaluru' => 'Bengaluru',
+                                            'Mumbai' => 'Mumbai',
+                                            'Pune' => 'Pune',
+                                            'Hyderabad' => 'Hyderabad',
+                                            'Jaipur' => 'Jaipur',
+                                            'Chandigarh' => 'Chandigarh',
+                                        ];
+                                        $allDistrictsList = $globalAllDistricts ?? [];
+                                    @endphp
+                                    <optgroup label="Popular Cities">
+                                        @foreach($popularCityNames as $val => $label)
+                                            <option value="{{ $val }}" {{ ($selectedDist === $val || (strtolower($selectedDist) === 'gurgaon' && $val === 'Gurugram') || (strtolower($selectedDist) === 'bangalore' && $val === 'Bengaluru')) ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                    @if(!empty($allDistrictsList) && count($allDistrictsList) > 0)
+                                        <optgroup label="All Cities (Admin Added & Nationwide)">
+                                            @foreach($allDistrictsList as $d)
+                                                @php
+                                                    $dName = $d['name'];
+                                                    $isSelected = ($selectedDist === $dName || $selectedDist === ($d['slug'] ?? ''));
+                                                @endphp
+                                                <option value="{{ $dName }}" {{ $isSelected ? 'selected' : '' }}>
+                                                    {{ $dName }}{{ !empty($d['state_code']) ? ' (' . $d['state_code'] . ')' : '' }}
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endif
                                 </select>
                                 <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                             </div>

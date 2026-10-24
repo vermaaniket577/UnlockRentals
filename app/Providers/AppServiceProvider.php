@@ -143,8 +143,8 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        // Share states list globally without heavy location dataset overhead
-        View::composer(['welcome', 'layouts.app', 'properties.*', 'admin.*', 'components.navbar'], function ($view) {
+        // Share states and cities/districts list globally
+        View::composer(['welcome', 'layouts.app', 'properties.*', 'admin.*', 'components.navbar', 'components.search-filters'], function ($view) {
             static $states = null;
             if ($states === null) {
                 $states = [
@@ -159,6 +159,31 @@ class AppServiceProvider extends ServiceProvider
                 ];
             }
             $view->with('globalAllStates', $states);
+
+            static $districts = null;
+            if ($districts === null) {
+                $districts = \Illuminate\Support\Facades\Cache::remember('all_db_districts_list_v2', 3600, function () {
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('districts')) {
+                            return \App\Models\District::with('state:id,name,code')
+                                ->orderBy('name', 'asc')
+                                ->get(['id', 'state_id', 'name', 'slug'])
+                                ->map(function ($d) {
+                                    return [
+                                        'id' => $d->id,
+                                        'name' => $d->name,
+                                        'slug' => $d->slug,
+                                        'state_code' => $d->state ? $d->state->code : '',
+                                        'state_name' => $d->state ? $d->state->name : '',
+                                    ];
+                                })
+                                ->toArray();
+                        }
+                    } catch (\Throwable $e) {}
+                    return [];
+                });
+            }
+            $view->with('globalAllDistricts', $districts);
         });
     }
 
@@ -169,6 +194,7 @@ class AppServiceProvider extends ServiceProvider
     {
         try {
             \Illuminate\Support\Facades\Cache::forget('indian_location_data');
+            \Illuminate\Support\Facades\Cache::forget('all_db_districts_list_v2');
             \Illuminate\Support\Facades\Cache::forget('db_districts_by_state_v3');
             \Illuminate\Support\Facades\Cache::forget('db_localities_by_district_v1');
             \Illuminate\Support\Facades\Cache::forget('db_localities_by_district_v2');
@@ -293,6 +319,13 @@ class AppServiceProvider extends ServiceProvider
                             $districtToStateMap[strtolower($d->name)] = $stateCode;
                             $districtToStateMap[$d->name] = $stateCode;
                         }
+
+                        $allDistricts[] = [
+                            'name' => $d->name,
+                            'slug' => $dSlug,
+                            'state_code' => $stateCode,
+                            'state_name' => $d->state ? $d->state->name : '',
+                        ];
                     }
 
                     foreach ($dbLocalities as $l) {
