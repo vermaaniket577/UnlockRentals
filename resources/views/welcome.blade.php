@@ -375,15 +375,10 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://images.unsplash.com">
 
-    <!-- Non-Blocking Phosphor Icons (Regular, Bold, Fill) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    </noscript>
+    <!-- Phosphor Icons (Regular, Bold, Fill) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
     {{-- Preload Largest Contentful Paint (LCP) Image --}}
     <link rel="preload" as="image" href="{{ asset('images/hero-bg.webp') }}" type="image/webp" fetchpriority="high">
@@ -2683,7 +2678,7 @@
                 <div style="max-width: 620px; text-align: left; z-index: 10;">
                     {{-- Badge: FIND YOUR NEXT HOME --}}
                     <div class="ur-hero-tag">
-                        <i class="ph-bold ph-house" style="color: #f59e0b; font-size: 14px;"></i>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                         <span>FIND YOUR NEXT HOME</span>
                     </div>
 
@@ -2701,12 +2696,12 @@
                     {{-- Action Buttons --}}
                     <div class="ur-hero-cta-group">
                         <a href="{{ url('/properties') }}" class="ur-hero-btn-primary" id="hero-btn-explore">
-                            <i class="ph-bold ph-magnifying-glass" style="font-size: 15px;"></i>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                             <span>Explore Properties</span>
-                            <i class="ph-bold ph-arrow-right" style="font-size: 12px;"></i>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                         </a>
                         <a href="{{ route('properties.create') }}" class="ur-hero-btn-secondary" id="hero-btn-post">
-                            <i class="ph-bold ph-plus" style="font-size: 12px; color: #ffffff !important;"></i>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                             <span>List Your Property Free</span>
                         </a>
                     </div>
@@ -2715,19 +2710,19 @@
                     <div class="ur-hero-badges-row">
                         <div class="ur-hero-badge-item">
                             <div class="ur-hero-badge-icon">
-                                <i class="ph-bold ph-house"></i>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                             </div>
                             <span>Homes for<br>Every Budget</span>
                         </div>
                         <div class="ur-hero-badge-item">
                             <div class="ur-hero-badge-icon">
-                                <i class="ph-bold ph-users"></i>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                             </div>
                             <span>Direct Owner<br>Connections</span>
                         </div>
                         <div class="ur-hero-badge-item">
                             <div class="ur-hero-badge-icon">
-                                <i class="ph-bold ph-file-text"></i>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
                             </div>
                             <span>Easy Property<br>Listing</span>
                         </div>
@@ -2750,7 +2745,7 @@
                         <div class="ur-hero-card-body">
                             <h3 class="ur-hero-card-title">Beautiful 2 BHK Apartment</h3>
                             <div class="ur-hero-card-location">
-                                <i class="ph-bold ph-map-pin" style="color: #94a3b8; font-size: 12px;"></i>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                                 <span>Gurgaon, Haryana</span>
                             </div>
                             <div class="ur-hero-card-price">
@@ -2759,18 +2754,18 @@
                             </div>
                             <div class="ur-hero-card-specs">
                                 <span>
-                                    <i class="ph-bold ph-bed" style="color: #94a3b8;"></i>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
                                     <span>2 Beds</span>
                                 </span>
                                 <span>
-                                    <i class="ph-bold ph-bathtub" style="color: #94a3b8;"></i>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.68 3 4 3.68 4 4.5V17a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/><line x1="10" y1="5" x2="8" y2="7"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
                                     <span>2 Baths</span>
                                 </span>
                             </div>
                             <div class="ur-hero-card-footer">
                                 <a href="{{ url('/properties') }}" class="ur-hero-card-link">
                                     <span>View Property</span>
-                                    <i class="ph-bold ph-arrow-right" style="font-size: 11px;"></i>
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                                 </a>
                             </div>
                         </div>
@@ -2786,7 +2781,7 @@
                 <div class="ur-hero-search-header">
                     <h2 class="ur-hero-search-title">Find a Property</h2>
                     <button type="button" onclick="clearHeroSearchFilters()" class="ur-hero-search-clear">
-                        <i class="ph-bold ph-arrows-clockwise" style="font-size: 12px;"></i>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
                         <span>Clear All</span>
                     </button>
                 </div>
@@ -2794,7 +2789,7 @@
                     {{-- 1. I Want To --}}
                     <div class="ur-hero-search-col ur-hero-col-purpose">
                         <div class="ur-hero-label">
-                            <i class="ph-bold ph-house"></i>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                             <span>I Want To</span>
                         </div>
                         <select name="purpose" id="hero_purpose" class="ur-hero-select">
@@ -2807,7 +2802,7 @@
                     {{-- 2. Property Type --}}
                     <div class="ur-hero-search-col ur-hero-col-type">
                         <div class="ur-hero-label">
-                            <i class="ph-bold ph-buildings"></i>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
                             <span>Property Type</span>
                         </div>
                         <select name="type" id="hero_type" class="ur-hero-select">
@@ -2822,7 +2817,7 @@
                     {{-- 3. Location --}}
                     <div class="ur-hero-search-col ur-hero-col-location">
                         <div class="ur-hero-label">
-                            <i class="ph-bold ph-map-pin"></i>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                             <span>Location</span>
                         </div>
                         <select name="district" id="hero_district" class="ur-hero-select">
@@ -2860,7 +2855,7 @@
                     {{-- 5. Bedrooms --}}
                     <div class="ur-hero-search-col ur-hero-col-rooms">
                         <div class="ur-hero-label">
-                            <i class="ph-bold ph-bed"></i>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
                             <span>Bedrooms</span>
                         </div>
                         <select name="rooms" id="hero_rooms" class="ur-hero-select">
@@ -2874,7 +2869,7 @@
                     {{-- 6. Search Button --}}
                     <div class="ur-hero-col-submit">
                         <button type="submit" class="ur-hero-btn-search" id="heroSearchBtn">
-                            <i class="ph-bold ph-magnifying-glass" style="font-size: 16px;"></i>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                             <span>Search</span>
                         </button>
                     </div>
@@ -2888,7 +2883,7 @@
                 {{-- 1. Direct Owner Connections --}}
                 <div class="ur-hero-ribbon-col">
                     <div class="ur-hero-ribbon-icon">
-                        <i class="ph ph-users"></i>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
                     <div>
                         <h4 class="ur-hero-ribbon-title">Direct Owner Connections</h4>
@@ -2899,7 +2894,7 @@
                 {{-- 2. Easy Property Discovery --}}
                 <div class="ur-hero-ribbon-col">
                     <div class="ur-hero-ribbon-icon">
-                        <i class="ph ph-magnifying-glass"></i>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </div>
                     <div>
                         <h4 class="ur-hero-ribbon-title">Easy Property Discovery</h4>
@@ -2910,7 +2905,7 @@
                 {{-- 3. Free Property Posting --}}
                 <div class="ur-hero-ribbon-col">
                     <div class="ur-hero-ribbon-icon">
-                        <i class="ph ph-plus-circle"></i>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
                     </div>
                     <div>
                         <h4 class="ur-hero-ribbon-title">Free Property Posting</h4>
@@ -2921,7 +2916,7 @@
                 {{-- 4. Listings Across India --}}
                 <div class="ur-hero-ribbon-col">
                     <div class="ur-hero-ribbon-icon">
-                        <i class="ph ph-map-pin"></i>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                     </div>
                     <div>
                         <h4 class="ur-hero-ribbon-title">Listings Across India</h4>
