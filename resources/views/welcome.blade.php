@@ -2569,6 +2569,163 @@
                 white-space: nowrap;
                 overflow: hidden;
             }
+            .ur-hero-input-wrap {
+                position: relative;
+                display: flex;
+                align-items: center;
+                width: 100%;
+            }
+            .ur-hero-input {
+                width: 100%;
+                background: transparent;
+                border: none;
+                outline: none;
+                font-size: 13px;
+                font-weight: 700;
+                color: #0f172a;
+                padding: 0 32px 0 0;
+                margin: 0;
+                font-family: inherit;
+                text-overflow: ellipsis;
+                box-sizing: border-box;
+            }
+            .ur-hero-input::placeholder {
+                color: #64748b;
+                font-weight: 600;
+            }
+            .ur-hero-input-arrow {
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                pointer-events: none;
+                transition: transform 0.2s ease;
+            }
+            .ur-hero-col-location.dropdown-open .ur-hero-input-arrow {
+                transform: translateY(-50%) rotate(180deg);
+            }
+            .ur-hero-input-clear {
+                position: absolute;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #f1f5f9;
+                color: #64748b;
+                border: none;
+                width: 17px;
+                height: 17px;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                padding: 0;
+            }
+            .ur-hero-input-clear:hover {
+                background: #e2e8f0;
+                color: #0f172a;
+            }
+            .ur-hero-input-clear.hidden {
+                display: none !important;
+            }
+
+            /* Autocomplete Suggestions Floating Dropdown */
+            .ur-hero-location-dropdown {
+                position: absolute;
+                top: calc(100% + 8px);
+                left: 0;
+                width: 320px;
+                max-width: calc(100vw - 32px);
+                background: #ffffff;
+                border: 1.5px solid #e2e8f0;
+                border-radius: 16px;
+                box-shadow: 0 20px 40px -4px rgba(15, 23, 42, 0.18), 0 6px 14px -2px rgba(15, 23, 42, 0.08);
+                z-index: 99999;
+                max-height: 340px;
+                overflow-y: auto;
+                padding: 6px;
+                box-sizing: border-box;
+                font-family: inherit;
+            }
+            .ur-hero-location-dropdown.hidden {
+                display: none !important;
+            }
+            .ur-loc-section-title {
+                font-size: 10px;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: #64748b;
+                padding: 6px 10px 4px 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .ur-loc-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 10px;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: background 0.15s ease, transform 0.1s ease;
+                text-decoration: none;
+                color: #0f172a;
+                user-select: none;
+            }
+            .ur-loc-item:hover,
+            .ur-loc-item.active {
+                background: #f1f5f9;
+            }
+            .ur-loc-icon {
+                width: 28px;
+                height: 28px;
+                border-radius: 8px;
+                background: #eff6ff;
+                color: #2563eb;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                font-size: 14px;
+            }
+            .ur-loc-info {
+                flex: 1;
+                min-width: 0;
+            }
+            .ur-loc-title {
+                font-size: 13px;
+                font-weight: 700;
+                color: #0f172a;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                line-height: 1.3;
+            }
+            .ur-loc-subtitle {
+                font-size: 11px;
+                font-weight: 500;
+                color: #64748b;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                line-height: 1.2;
+            }
+            .ur-loc-badge {
+                font-size: 9.5px;
+                font-weight: 700;
+                padding: 2px 6px;
+                border-radius: 6px;
+                background: #f1f5f9;
+                color: #475569;
+                flex-shrink: 0;
+            }
+            .ur-loc-item:hover .ur-loc-badge,
+            .ur-loc-item.active .ur-loc-badge {
+                background: #e2e8f0;
+                color: #1e293b;
+            }
             .ur-hero-btn-search {
                 width: 100%;
                 height: 100%;
@@ -2818,53 +2975,51 @@
                         </select>
                     </div>
 
-                    {{-- 3. Location --}}
-                    <div class="ur-hero-search-col ur-hero-col-location">
+                    {{-- 3. Location (Interactive Text Input with Autocomplete Suggestions Dropdown) --}}
+                    @php
+                        $selectedDist = request('district');
+                        $popularCities = [
+                            ['name' => 'Gurugram', 'display' => 'Gurgaon / Gurugram', 'state' => 'Haryana'],
+                            ['name' => 'Noida', 'display' => 'Noida', 'state' => 'Uttar Pradesh'],
+                            ['name' => 'South Delhi', 'display' => 'South Delhi', 'state' => 'Delhi'],
+                            ['name' => 'New Delhi', 'display' => 'New Delhi', 'state' => 'Delhi'],
+                            ['name' => 'Bengaluru', 'display' => 'Bengaluru / Bangalore', 'state' => 'Karnataka'],
+                            ['name' => 'Mumbai', 'display' => 'Mumbai', 'state' => 'Maharashtra'],
+                            ['name' => 'Pune', 'display' => 'Pune', 'state' => 'Maharashtra'],
+                            ['name' => 'Hyderabad', 'display' => 'Hyderabad', 'state' => 'Telangana'],
+                            ['name' => 'Faridabad', 'display' => 'Faridabad', 'state' => 'Haryana'],
+                            ['name' => 'Ghaziabad', 'display' => 'Ghaziabad', 'state' => 'Uttar Pradesh'],
+                            ['name' => 'Jaipur', 'display' => 'Jaipur', 'state' => 'Rajasthan'],
+                            ['name' => 'Chandigarh', 'display' => 'Chandigarh', 'state' => 'Punjab / HR'],
+                        ];
+                        $allDistrictsList = $globalAllDistricts ?? [];
+                    @endphp
+                    <div class="ur-hero-search-col ur-hero-col-location" id="heroLocationCol">
                         <div class="ur-hero-label">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                             <span>Location</span>
                         </div>
-                        <select name="district" id="hero_district" class="ur-hero-select">
-                            <option value="">City, locality or PIN code</option>
-                            @php
-                                $selectedDist = request('district');
-                                $popularCityNames = [
-                                    'Gurugram' => 'Gurgaon / Gurugram',
-                                    'New Delhi' => 'New Delhi',
-                                    'South Delhi' => 'South Delhi',
-                                    'Noida' => 'Noida',
-                                    'Bengaluru' => 'Bengaluru',
-                                    'Mumbai' => 'Mumbai',
-                                    'Pune' => 'Pune',
-                                    'Hyderabad' => 'Hyderabad',
-                                    'Faridabad' => 'Faridabad',
-                                    'Ghaziabad' => 'Ghaziabad',
-                                    'Jaipur' => 'Jaipur',
-                                    'Chandigarh' => 'Chandigarh',
-                                ];
-                                $allDistrictsList = $globalAllDistricts ?? [];
-                            @endphp
-                            <optgroup label="Popular Cities">
-                                @foreach($popularCityNames as $val => $label)
-                                    <option value="{{ $val }}" {{ ($selectedDist === $val || (strtolower($selectedDist) === 'gurgaon' && $val === 'Gurugram') || (strtolower($selectedDist) === 'bangalore' && $val === 'Bengaluru')) ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endforeach
-                            </optgroup>
-                            @if(!empty($allDistrictsList) && count($allDistrictsList) > 0)
-                                <optgroup label="All Cities (Admin Added & Nationwide)">
-                                    @foreach($allDistrictsList as $d)
-                                        @php
-                                            $dName = $d['name'];
-                                            $isSelected = ($selectedDist === $dName || $selectedDist === ($d['slug'] ?? ''));
-                                        @endphp
-                                        <option value="{{ $dName }}" {{ $isSelected ? 'selected' : '' }}>
-                                            {{ $dName }}{{ !empty($d['state_code']) ? ' (' . $d['state_code'] . ')' : '' }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endif
-                        </select>
+                        <div class="ur-hero-input-wrap">
+                            <input type="text"
+                                   name="district"
+                                   id="hero_district"
+                                   value="{{ $selectedDist }}"
+                                   placeholder="City, locality or PIN code"
+                                   autocomplete="off"
+                                   class="ur-hero-input"
+                                   aria-label="Location (City, locality or PIN code)">
+                            <button type="button" 
+                                    id="heroDistrictClearBtn" 
+                                    class="ur-hero-input-clear {{ $selectedDist ? '' : 'hidden' }}" 
+                                    onclick="clearHeroLocationInput(event)" 
+                                    title="Clear location">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                            </button>
+                            <svg class="ur-hero-input-arrow" width="12" height="12" viewBox="0 0 256 256"><path fill="#64748b" d="M213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32z"/></svg>
+                        </div>
+
+                        {{-- Floating Autocomplete Suggestions Dropdown --}}
+                        <div id="heroLocationDropdown" class="ur-hero-location-dropdown hidden"></div>
                     </div>
 
                     {{-- 4. Budget --}}
@@ -2957,6 +3112,286 @@
         </div>
 
         <script>
+            // =========================================================================
+            // HERO LOCATION AUTOCOMPLETE CONTROLLER
+            // =========================================================================
+            (function() {
+                var popularCities = @json($popularCities);
+                var allDbDistricts = @json(array_values(array_map(function($d) {
+                    return [
+                        'name' => $d['name'],
+                        'state' => $d['state_name'] ?: ($d['state_code'] ?? '')
+                    ];
+                }, $allDistrictsList)));
+
+                var col = document.getElementById('heroLocationCol');
+                var input = document.getElementById('hero_district');
+                var clearBtn = document.getElementById('heroDistrictClearBtn');
+                var dropdown = document.getElementById('heroLocationDropdown');
+                if (!col || !input || !dropdown) return;
+
+                var activeIndex = -1;
+                var debounceTimer = null;
+                var currentSuggestions = [];
+
+                function escapeHtml(str) {
+                    if (!str) return '';
+                    return String(str)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#039;');
+                }
+
+                function highlightMatch(text, query) {
+                    if (!query || !text) return escapeHtml(text);
+                    var escapedText = escapeHtml(text);
+                    var q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    return escapedText.replace(new RegExp('(' + q + ')', 'gi'), '<strong style="color: #2563eb; font-weight: 900;">$1</strong>');
+                }
+
+                function renderDropdown(items, sectionTitle) {
+                    currentSuggestions = items || [];
+                    activeIndex = -1;
+                    if (!items || items.length === 0) {
+                        dropdown.innerHTML = '<div style="padding: 12px; text-align: center; color: #64748b; font-size: 12px; font-weight: 600;">No matching locations found</div>';
+                        dropdown.classList.remove('hidden');
+                        col.classList.add('dropdown-open');
+                        return;
+                    }
+
+                    var html = '';
+                    if (sectionTitle) {
+                        html += '<div class="ur-loc-section-title"><span>' + escapeHtml(sectionTitle) + '</span></div>';
+                    }
+
+                    var currentQ = input.value.trim();
+                    items.forEach(function(item, idx) {
+                        var iconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+                        if (item.type === 'locality') {
+                            iconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+                        } else if (item.type === 'city') {
+                            iconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>';
+                        }
+
+                        html += '<div class="ur-loc-item" data-index="' + idx + '" onclick="selectHeroLocation(' + idx + ')">';
+                        html += '  <div class="ur-loc-icon">' + iconSvg + '</div>';
+                        html += '  <div class="ur-loc-info">';
+                        html += '    <div class="ur-loc-title">' + highlightMatch(item.title, currentQ) + '</div>';
+                        if (item.subtitle) {
+                            html += '    <div class="ur-loc-subtitle">' + escapeHtml(item.subtitle) + '</div>';
+                        }
+                        html += '  </div>';
+                        if (item.badge) {
+                            html += '  <span class="ur-loc-badge">' + escapeHtml(item.badge) + '</span>';
+                        }
+                        html += '</div>';
+                    });
+
+                    // Search raw query fallback option
+                    if (currentQ.length > 0) {
+                        html += '<div class="ur-loc-item" style="border-top: 1px dashed #e2e8f0; margin-top: 4px;" onclick="selectHeroLocationRaw(\'' + escapeHtml(currentQ).replace(/'/g, "\\'") + '\')">';
+                        html += '  <div class="ur-loc-icon" style="background: #f8fafc; color: #64748b;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>';
+                        html += '  <div class="ur-loc-info">';
+                        html += '    <div class="ur-loc-title">Search "<strong>' + escapeHtml(currentQ) + '</strong>"</div>';
+                        html += '    <div class="ur-loc-subtitle">Search across all properties &amp; pin codes</div>';
+                        html += '  </div>';
+                        html += '</div>';
+                    }
+
+                    dropdown.innerHTML = html;
+                    dropdown.classList.remove('hidden');
+                    col.classList.add('dropdown-open');
+                }
+
+                window.selectHeroLocation = function(idx) {
+                    if (currentSuggestions[idx]) {
+                        var item = currentSuggestions[idx];
+                        input.value = item.query || item.title;
+                        if (clearBtn) clearBtn.classList.remove('hidden');
+                        closeDropdown();
+                    }
+                };
+
+                window.selectHeroLocationRaw = function(val) {
+                    input.value = val;
+                    if (clearBtn) clearBtn.classList.remove('hidden');
+                    closeDropdown();
+                };
+
+                window.clearHeroLocationInput = function(e) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    input.value = '';
+                    if (clearBtn) clearBtn.classList.add('hidden');
+                    input.focus();
+                    showPopularCities();
+                };
+
+                function closeDropdown() {
+                    dropdown.classList.add('hidden');
+                    col.classList.remove('dropdown-open');
+                    activeIndex = -1;
+                }
+
+                function showPopularCities() {
+                    var items = popularCities.map(function(c) {
+                        return {
+                            type: 'city',
+                            title: c.display || c.name,
+                            subtitle: c.state ? ('City in ' + c.state) : 'Popular City',
+                            badge: 'Popular',
+                            query: c.name
+                        };
+                    });
+                    renderDropdown(items, 'Popular Cities');
+                }
+
+                function filterLocations(query) {
+                    var q = (query || '').trim().toLowerCase();
+                    if (!q) {
+                        showPopularCities();
+                        return;
+                    }
+
+                    // 1. Instant local search (0ms)
+                    var matchedLocal = [];
+                    var seen = {};
+
+                    popularCities.forEach(function(c) {
+                        var nameLower = c.name.toLowerCase();
+                        var dispLower = (c.display || '').toLowerCase();
+                        if (nameLower.indexOf(q) !== -1 || dispLower.indexOf(q) !== -1) {
+                            seen[nameLower] = true;
+                            matchedLocal.push({
+                                type: 'city',
+                                title: c.name,
+                                subtitle: c.state ? ('City in ' + c.state) : 'City',
+                                badge: 'Popular',
+                                query: c.name
+                            });
+                        }
+                    });
+
+                    allDbDistricts.forEach(function(d) {
+                        var k = d.name.toLowerCase();
+                        if (!seen[k] && (k.indexOf(q) !== -1 || (d.state && d.state.toLowerCase().indexOf(q) !== -1))) {
+                            seen[k] = true;
+                            matchedLocal.push({
+                                type: 'city',
+                                title: d.name,
+                                subtitle: d.state ? ('District in ' + d.state) : 'City',
+                                badge: 'City',
+                                query: d.name
+                            });
+                        }
+                    });
+
+                    renderDropdown(matchedLocal.slice(0, 8), 'Matching Locations');
+
+                    // 2. Fetch server suggestions with debounce for 18,000+ localities & pincodes
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(function() {
+                        fetch('/api/locations/suggest?q=' + encodeURIComponent(q))
+                            .then(function(res) { return res.json(); })
+                            .then(function(serverResults) {
+                                if (!serverResults || serverResults.length === 0) return;
+                                var merged = [].concat(matchedLocal);
+                                serverResults.forEach(function(sr) {
+                                    var key = (sr.title + '-' + sr.subtitle).toLowerCase();
+                                    if (!seen[key] && !seen[sr.title.toLowerCase()]) {
+                                        seen[key] = true;
+                                        merged.push(sr);
+                                    }
+                                });
+                                if (input.value.trim().toLowerCase() === q) {
+                                    renderDropdown(merged.slice(0, 10), 'Suggestions');
+                                }
+                            })
+                            .catch(function() {});
+                    }, 140);
+                }
+
+                input.addEventListener('focus', function() {
+                    if (!input.value.trim()) {
+                        showPopularCities();
+                    } else {
+                        filterLocations(input.value);
+                    }
+                });
+
+                input.addEventListener('click', function() {
+                    if (dropdown.classList.contains('hidden')) {
+                        if (!input.value.trim()) {
+                            showPopularCities();
+                        } else {
+                            filterLocations(input.value);
+                        }
+                    }
+                });
+
+                input.addEventListener('input', function() {
+                    if (clearBtn) {
+                        if (input.value.length > 0) {
+                            clearBtn.classList.remove('hidden');
+                        } else {
+                            clearBtn.classList.add('hidden');
+                        }
+                    }
+                    filterLocations(input.value);
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    var items = dropdown.querySelectorAll('.ur-loc-item');
+                    if (items.length === 0 || dropdown.classList.contains('hidden')) {
+                        if (e.key === 'ArrowDown') {
+                            showPopularCities();
+                            e.preventDefault();
+                        }
+                        return;
+                    }
+
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        activeIndex = (activeIndex + 1) % items.length;
+                        updateActiveItem(items);
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        activeIndex = (activeIndex - 1 + items.length) % items.length;
+                        updateActiveItem(items);
+                    } else if (e.key === 'Enter') {
+                        if (activeIndex >= 0 && items[activeIndex]) {
+                            e.preventDefault();
+                            items[activeIndex].click();
+                        }
+                    } else if (e.key === 'Escape') {
+                        closeDropdown();
+                    }
+                });
+
+                function updateActiveItem(items) {
+                    items.forEach(function(it, idx) {
+                        if (idx === activeIndex) {
+                            it.classList.add('active');
+                            if (typeof it.scrollIntoView === 'function') {
+                                it.scrollIntoView({ block: 'nearest' });
+                            }
+                        } else {
+                            it.classList.remove('active');
+                        }
+                    });
+                }
+
+                document.addEventListener('click', function(e) {
+                    if (!col.contains(e.target)) {
+                        closeDropdown();
+                    }
+                });
+            })();
+
             function clearHeroSearchFilters() {
                 var f = document.getElementById('heroFindPropertyForm');
                 if (f) {
@@ -2967,7 +3402,11 @@
                     var r = document.getElementById('hero_rooms');
                     if (p) p.value = 'rent';
                     if (t) t.value = 'apartment';
-                    if (d) d.value = '';
+                    if (d) {
+                        d.value = '';
+                        var cBtn = document.getElementById('heroDistrictClearBtn');
+                        if (cBtn) cBtn.classList.add('hidden');
+                    }
                     if (pr) pr.value = 'any';
                     if (r) r.value = '1bhk';
                 }

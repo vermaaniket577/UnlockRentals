@@ -58,18 +58,30 @@ class PropertyController extends Controller
 
         // Smart Search Home Page Filters:
         if ($request->filled('district')) {
-            $districtName = str_replace('-', ' ', $request->district);
-            $searchTerms = [$districtName];
-            $dLower = strtolower($districtName);
-            if ($dLower === 'gurugram' || $dLower === 'gurgaon') {
-                $searchTerms = ['Gurugram', 'Gurgaon'];
-            } elseif ($dLower === 'bengaluru' || $dLower === 'bangalore') {
-                $searchTerms = ['Bengaluru', 'Bangalore'];
+            $rawDistrict = trim($request->district);
+            $parts = array_filter(array_map('trim', explode(',', $rawDistrict)));
+            
+            $searchTerms = [$rawDistrict];
+            foreach ($parts as $p) {
+                $pClean = str_replace('-', ' ', $p);
+                $searchTerms[] = $pClean;
+                $pLower = strtolower($pClean);
+                if ($pLower === 'gurugram' || $pLower === 'gurgaon') {
+                    $searchTerms[] = 'Gurugram';
+                    $searchTerms[] = 'Gurgaon';
+                } elseif ($pLower === 'bengaluru' || $pLower === 'bangalore') {
+                    $searchTerms[] = 'Bengaluru';
+                    $searchTerms[] = 'Bangalore';
+                }
             }
+            $searchTerms = array_values(array_unique(array_filter($searchTerms)));
+
             $query->where(function ($q) use ($searchTerms) {
                 foreach ($searchTerms as $term) {
                     $q->orWhere('location', 'like', '%' . $term . '%')
                       ->orWhere('locality', 'like', '%' . $term . '%')
+                      ->orWhere('city', 'like', '%' . $term . '%')
+                      ->orWhere('pincode', 'like', '%' . $term . '%')
                       ->orWhere('address', 'like', '%' . $term . '%');
                 }
             });

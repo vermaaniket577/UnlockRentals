@@ -1458,6 +1458,122 @@ Route::get('/api/locations/localities', function(\Illuminate\Http\Request $reque
     return response()->json($formatted)->header('Cache-Control', 'no-cache, no-store, must-revalidate');
 })->name('api.locations.localities');
 
+// Live Autocomplete Suggestions for Location Filter Input
+Route::get('/api/locations/suggest', function(\Illuminate\Http\Request $request) {
+    $q = trim((string)$request->get('q', ''));
+    if (strlen($q) < 1) {
+        return response()->json([]);
+    }
+
+    $results = [];
+    $seen = [];
+    $safeQ = str_replace(['%', '_'], ['\%', '\_'], $q);
+
+    // 1. Match Districts / Cities from Database
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('districts')) {
+            $districts = \App\Models\District::with('state:id,name,code')
+                ->where('name', 'like', "%{$safeQ}%")
+                ->orderByRaw("CASE WHEN name LIKE '{$safeQ}%' THEN 0 ELSE 1 END")
+                ->orderBy('name')
+                ->take(6)
+                ->get(['id', 'state_id', 'name', 'slug']);
+
+            foreach ($districts as $d) {
+                $key = 'city:' . strtolower($d->name);
+                if (!isset($seen[$key])) {
+                    $seen[$key] = true;
+                    $stateCode = $d->state ? ($d->state->code ?? $d->state->name) : '';
+                    $stateName = $d->state ? $d->state->name : '';
+                    $results[] = [
+                        'type' => 'city',
+                        'title' => $d->name,
+                        'subtitle' => $stateName ? "City in {$stateName}" : 'City',
+                        'badge' => $stateCode ?: 'City',
+                        'query' => $d->name,
+                    ];
+                }
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    // 2. Match Localities / Sectors from Database (over 18,000 localities)
+    try {
+        if (\Illuminate\Support\Facades\Schema::hasTable('localities')) {
+            $localities = \App\Models\Locality::with(['district.state'])
+                ->where('name', 'like', "%{$safeQ}%")
+                ->orderByRaw("CASE WHEN name LIKE '{$safeQ}%' THEN 0 ELSE 1 END")
+                ->orderBy('name')
+                ->take(8)
+                ->get(['id', 'district_id', 'name']);
+
+            foreach ($localities as $loc) {
+                $distName = $loc->district?->name ?? '';
+                $stateCode = $loc->district?->state?->code ?? '';
+                $key = 'loc:' . strtolower($loc->name . '-' . $distName);
+                if (!isset($seen[$key])) {
+                    $seen[$key] = true;
+                    $subParts = array_filter([$distName, $stateCode]);
+                    $results[] = [
+                        'type' => 'locality',
+                        'title' => $loc->name,
+                        'subtitle' => !empty($subParts) ? implode(', ', $subParts) : 'Locality',
+                        'badge' => 'Locality',
+                        'query' => $distName ? "{$loc->name}, {$distName}" : $loc->name,
+                    ];
+                }
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    // 3. Match from active Properties (distinct locations, localities, pincodes)
+    try {
+        $propMatches = \App\Models\Property::where('status', 'approved')
+            ->where(function($p) use ($safeQ) {
+                $p->where('location', 'like', "%{$safeQ}%")
+                  ->orWhere('locality', 'like', "%{$safeQ}%")
+                  ->orWhere('city', 'like', "%{$safeQ}%")
+                  ->orWhere('pincode', 'like', "{$safeQ}%");
+            })
+            ->select('location', 'locality', 'city', 'pincode')
+            ->distinct()
+            ->take(6)
+            ->get();
+
+        foreach ($propMatches as $pm) {
+            if (!empty($pm->locality)) {
+                $key = 'ploc:' . strtolower($pm->locality);
+                if (!isset($seen[$key])) {
+                    $seen[$key] = true;
+                    $results[] = [
+                        'type' => 'locality',
+                        'title' => $pm->locality,
+                        'subtitle' => $pm->city ?: ($pm->location ?: 'Popular Area'),
+                        'badge' => 'Verified Area',
+                        'query' => $pm->city ? "{$pm->locality}, {$pm->city}" : $pm->locality,
+                    ];
+                }
+            }
+            if (is_numeric($safeQ) && !empty($pm->pincode) && str_starts_with($pm->pincode, $safeQ)) {
+                $key = 'pin:' . $pm->pincode;
+                if (!isset($seen[$key])) {
+                    $seen[$key] = true;
+                    $results[] = [
+                        'type' => 'pincode',
+                        'title' => 'PIN ' . $pm->pincode,
+                        'subtitle' => $pm->city ?: ($pm->location ?: 'PIN Code Area'),
+                        'badge' => 'PIN Code',
+                        'query' => $pm->pincode,
+                    ];
+                }
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    return response()->json(array_slice($results, 0, 10))
+        ->header('Cache-Control', 'public, max-age=120');
+})->name('api.locations.suggest');
+
 // Legal & Compliance Pages
 Route::view('/privacy-policy', 'privacy')->name('privacy');
 Route::view('/privacy', 'privacy');
