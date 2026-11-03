@@ -99,11 +99,20 @@
     $cleanPhone = preg_replace('/\D/', '', $ownerPhone);
     $postedTime = $property->created_at ? $property->created_at->diffForHumans(null, true) . ' ago' : 'Recently';
 
+    // Clean out scraping artifacts like "Ffid", "Page 2", "Page 3" from title/locality/city
+    $cleanScrapedText = function(?string $str): string {
+        if (empty($str)) return '';
+        $s = preg_replace('/\b(ffid|page[\s_-]*\d+)\b/i', '', $str);
+        $s = preg_replace('/\s*,\s*,+/', ', ', $s);
+        $s = preg_replace('/\s{2,}/', ' ', $s);
+        return trim($s, " \t\n\r\0\x0B,-/|");
+    };
+
     // Locality and Subtitle: Strictly sanitize and eliminate any URLs or 99acres references
-    $rawLocality = $property->locality ?: ($property->location ?: 'Delhi NCR');
-    $rawCity = $property->location ?: 'Delhi';
-    $locality = \App\Models\Property::cleanUrlFromText($rawLocality, false) ?: 'Delhi NCR';
-    $city = \App\Models\Property::cleanUrlFromText($rawCity, true) ?: 'Delhi';
+    $rawLocality = $cleanScrapedText($property->locality ?: ($property->location ?: 'Delhi NCR'));
+    $rawCity = $cleanScrapedText($property->location ?: 'Delhi');
+    $locality = $cleanScrapedText(\App\Models\Property::cleanUrlFromText($rawLocality, false) ?: 'Delhi NCR');
+    $city = $cleanScrapedText(\App\Models\Property::cleanUrlFromText($rawCity, true) ?: 'Delhi');
 
     // Prevent duplicate city names in heading (e.g. "Sector 48, Noida, Noida")
     if (strcasecmp($locality, $city) === 0 || str_contains(strtolower($locality), strtolower($city))) {
@@ -111,7 +120,7 @@
     } else {
         $headingLocation = "{$locality}, {$city}";
     }
-    $headingLocation = \App\Models\Property::cleanUrlFromText($headingLocation, false);
+    $headingLocation = $cleanScrapedText(\App\Models\Property::cleanUrlFromText($headingLocation, false));
 
     $propTypeLabel = $property->type === 'house' ? 'Builder Floor' : ($property->type === 'plot' ? 'Plot' : ($property->type === 'shop' ? 'Commercial' : ($property->category?->name ?? 'Flat')));
     $subheading = "{$beds} BHK {$propTypeLabel} {$purposeText} in {$locality}";
@@ -184,7 +193,7 @@
     {{-- ============================================================
          LEFT COLUMN: Large Property Image & Interactive Badges
          ============================================================ --}}
-    <div class="hcard-image-col relative w-full md:w-[260px] lg:w-[275px] min-h-[180px] md:min-h-full bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
+    <div class="hcard-image-col relative w-full md:w-[275px] lg:w-[290px] xl:w-[300px] h-[210px] sm:h-[220px] md:h-[240px] bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
         
         @php
             $hasMultipleImages = $cardImages->count() > 1;
@@ -566,6 +575,13 @@ html.dark .property-horizontal-card .hcard-image-col,
         height: 100% !important;
     }
 
+    .property-horizontal-card .hcard-image-slider {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
     .property-horizontal-card .hcard-content-col {
         padding: 1rem 1.25rem !important;
         min-height: 100% !important;
@@ -649,6 +665,8 @@ html.dark .property-horizontal-card .hcard-footer-row,
     position: relative;
     width: 100%;
     height: 100%;
+    min-height: 100%;
+    max-height: 100%;
     overflow: hidden;
     touch-action: pan-y pinch-zoom;
 }
@@ -656,6 +674,8 @@ html.dark .property-horizontal-card .hcard-footer-row,
     display: flex;
     width: 100%;
     height: 100%;
+    min-height: 100%;
+    max-height: 100%;
     transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
     will-change: transform;
 }
@@ -663,7 +683,25 @@ html.dark .property-horizontal-card .hcard-footer-row,
     flex: 0 0 100%;
     width: 100%;
     height: 100%;
+    min-height: 100%;
+    max-height: 100%;
     position: relative;
+    overflow: hidden;
+}
+.card-slide > a {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+.card-slide img,
+.card-image-slider img {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
 }
 </style>
 
