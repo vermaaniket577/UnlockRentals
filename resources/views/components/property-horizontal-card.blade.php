@@ -186,67 +186,83 @@
          ============================================================ --}}
     <div class="hcard-image-col relative w-full md:w-[260px] lg:w-[275px] min-h-[180px] md:min-h-full bg-slate-100 dark:bg-slate-800 shrink-0 overflow-hidden">
         
-        {{-- Clickable Image Link --}}
-        <a href="{{ $propertyUrl }}" class="hcard-image-link block w-full h-full relative group/img overflow-hidden" title="{{ $cleanTitle }}">
-            <img src="{{ $primaryUrl }}"
-                 data-orig-src="{{ $primaryUrl }}"
-                 data-fallback-url="{{ $cardFallbackPhoto }}"
-                 alt="{{ $cleanTitle }}"
-                 loading="lazy"
-                 referrerpolicy="no-referrer"
-                 class="hcard-img w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-400 ease-out select-none"
-                 onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $cardFallbackPhoto }}'; } else { this.onerror=null; }">
+        @php
+            $hasMultipleImages = $cardImages->count() > 1;
+        @endphp
 
-            {{-- Subtle Vignette Gradients --}}
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25 pointer-events-none"></div>
-        </a>
-
-        {{-- Top-Left Badge: FEATURED --}}
-        <div class="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-            <span class="px-2 py-0.5 rounded text-[9.5px] font-black uppercase tracking-wider text-white shadow-sm"
-                  style="background: #1e293b; letter-spacing: 0.05em;">
-                FEATURED
-            </span>
-        </div>
-
-        {{-- Top-Right Action Buttons: Favorite Heart & Audio/Video --}}
-        <div class="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 pointer-events-auto">
-            @auth
-                <button type="button"
-                        onclick="event.preventDefault(); event.stopPropagation(); window.togglePropertyFavorite ? window.togglePropertyFavorite({{ $property->id }}, this) : null;"
-                        class="w-7 h-7 rounded-full bg-black/45 hover:bg-black/70 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-110 active:scale-95"
-                        title="Shortlist / Save Property"
-                        aria-label="Save Property">
-                    <i class="ph-bold ph-heart text-xs"></i>
-                </button>
-            @else
-                <button type="button"
-                        onclick="event.preventDefault(); event.stopPropagation(); window.openAuthModal ? window.openAuthModal('login', '{{ $propertyUrl }}') : null;"
-                        class="w-7 h-7 rounded-full bg-black/45 hover:bg-black/70 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-110 active:scale-95"
-                        title="Save Property"
-                        aria-label="Save Property">
-                    <i class="ph-bold ph-heart text-xs"></i>
-                </button>
-            @endauth
-
-            @if($property->hasVideo())
-                <div class="w-7 h-7 rounded-full bg-black/45 backdrop-blur-md text-white flex items-center justify-center shadow-sm" title="Video Tour Available">
-                    <i class="ph-fill ph-video-camera text-xs text-white"></i>
+        @if($hasMultipleImages)
+            {{-- Multi-Image Auto-Slider (Slides Right to Left smoothly) --}}
+            <div class="card-image-slider hcard-image-slider relative w-full h-full overflow-hidden select-none"
+                 data-card-slider="hcard-{{ $property->id }}"
+                 data-total-slides="{{ $cardImages->count() }}">
+                
+                {{-- Slider Track (Translates horizontally for right-to-left slide) --}}
+                <div class="card-slider-track flex h-full w-full"
+                     style="transform: translate3d(0, 0, 0);">
+                    @foreach($cardImages as $idx => $img)
+                        <div class="card-slide flex-shrink-0 w-full h-full relative">
+                            <a href="{{ $propertyUrl }}" class="block w-full h-full relative" title="{{ $cleanTitle }} - Photo {{ $idx + 1 }}">
+                                <img src="{{ $img->imageUrl() }}"
+                                     data-orig-src="{{ $img->imageUrl() }}"
+                                     data-fallback-url="{{ $cardFallbackPhoto }}"
+                                     alt="{{ $cleanTitle }} - Photo {{ $idx + 1 }}"
+                                     loading="{{ $idx === 0 ? 'lazy' : 'lazy' }}"
+                                     referrerpolicy="no-referrer"
+                                     class="hcard-img w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-400 ease-out select-none pointer-events-none"
+                                     onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $cardFallbackPhoto }}'; } else { this.onerror=null; }">
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
-            @else
-                <div class="w-7 h-7 rounded-full bg-black/45 backdrop-blur-md text-white/90 flex items-center justify-center shadow-sm" title="Verified Photos">
-                    <i class="ph-bold ph-speaker-slash text-[11px]"></i>
-                </div>
-            @endif
-        </div>
 
-        {{-- Bottom-Right Photo Counter Badge (e.g. 📷 6) --}}
-        <div class="absolute bottom-2.5 right-2.5 z-20 pointer-events-none">
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black/65 backdrop-blur-md text-white text-[10px] font-extrabold shadow-sm border border-white/10">
-                <i class="ph-bold ph-camera text-[11px] text-white"></i>
-                <span>{{ $imagesCount }}</span>
-            </span>
-        </div>
+                {{-- Subtle Vignette Gradients --}}
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25 pointer-events-none z-10"></div>
+
+                {{-- Micro Pagination Dots (Centered at bottom, z-20) --}}
+                <div class="card-slider-dots absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs pointer-events-auto"
+                     onclick="event.stopPropagation();">
+                    @foreach($cardImages as $idx => $img)
+                        <button type="button"
+                                onclick="event.preventDefault(); event.stopPropagation(); window.cardSliderGoTo('hcard-{{ $property->id }}', {{ $idx }});"
+                                class="card-slider-dot h-1.5 rounded-full transition-all duration-300 {{ $idx === 0 ? 'w-3 bg-white shadow-xs' : 'w-1.5 bg-white/50 hover:bg-white/80' }}"
+                                data-dot-index="{{ $idx }}"
+                                aria-label="Go to photo {{ $idx + 1 }}">
+                        </button>
+                    @endforeach
+                </div>
+
+                {{-- Bottom-Right Photo Counter Badge (e.g. 📷 1/5) --}}
+                <div class="absolute bottom-2.5 right-2.5 z-20 pointer-events-none">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black/65 backdrop-blur-md text-white text-[10px] font-extrabold shadow-sm border border-white/10">
+                        <i class="ph-bold ph-camera text-[11px] text-white"></i>
+                        <span class="card-slide-counter">1/{{ $cardImages->count() }}</span>
+                    </span>
+                </div>
+            </div>
+        @else
+            {{-- Clickable Image Link --}}
+            <a href="{{ $propertyUrl }}" class="hcard-image-link block w-full h-full relative group/img overflow-hidden" title="{{ $cleanTitle }}">
+                <img src="{{ $primaryUrl }}"
+                     data-orig-src="{{ $primaryUrl }}"
+                     data-fallback-url="{{ $cardFallbackPhoto }}"
+                     alt="{{ $cleanTitle }}"
+                     loading="lazy"
+                     referrerpolicy="no-referrer"
+                     class="hcard-img w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-400 ease-out select-none"
+                     onerror="if(!this.dataset.fallbackApplied){ this.dataset.fallbackApplied='1'; this.src='{{ $cardFallbackPhoto }}'; } else { this.onerror=null; }">
+
+                {{-- Subtle Vignette Gradients --}}
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25 pointer-events-none"></div>
+            </a>
+
+            {{-- Bottom-Right Photo Counter Badge (e.g. 📷 6) --}}
+            <div class="absolute bottom-2.5 right-2.5 z-20 pointer-events-none">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black/65 backdrop-blur-md text-white text-[10px] font-extrabold shadow-sm border border-white/10">
+                    <i class="ph-bold ph-camera text-[11px] text-white"></i>
+                    <span>{{ $imagesCount }}</span>
+                </span>
+            </div>
+        @endif
 
         {{-- Diagonal BOOKED Corner Ribbon --}}
         @if($property->is_booked)
@@ -627,6 +643,28 @@ html.dark .property-horizontal-card .hcard-footer-row,
 .dark .property-horizontal-card .hcard-footer-row {
     border-color: #1e293b !important;
 }
+
+/* ─── CARD MULTI-IMAGE AUTO-SLIDER (RIGHT-TO-LEFT) ─── */
+.card-image-slider {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: pan-y pinch-zoom;
+}
+.card-slider-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+}
+.card-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
 </style>
 
 <script>
@@ -639,5 +677,194 @@ html.dark .property-horizontal-card .hcard-footer-row,
             btn.onclick = null;
         };
     }
+
+    (function() {
+        if (window._urCardSliderLoaded) {
+            if (window._urCardSliderInit) window._urCardSliderInit();
+            return;
+        }
+        window._urCardSliderLoaded = true;
+
+        const sliderStates = new Map();
+        let cardObserver = null;
+
+        function initCardSliders() {
+            const sliders = document.querySelectorAll('[data-card-slider]');
+            sliders.forEach(slider => {
+                const id = slider.dataset.cardSlider;
+                const total = parseInt(slider.dataset.totalSlides, 10);
+                if (!id || total <= 1 || sliderStates.has(id)) return;
+
+                const state = {
+                    id: id,
+                    current: 0,
+                    total: total,
+                    element: slider,
+                    track: slider.querySelector('.card-slider-track'),
+                    counter: slider.querySelector('.card-slide-counter'),
+                    dots: slider.querySelectorAll('.card-slider-dot'),
+                    timer: null,
+                    isHovered: false,
+                    isVisible: false
+                };
+                sliderStates.set(id, state);
+
+                // Desktop hover pause/resume
+                slider.addEventListener('mouseenter', () => {
+                    state.isHovered = true;
+                    pauseSlider(state);
+                });
+                slider.addEventListener('mouseleave', () => {
+                    state.isHovered = false;
+                    if (state.isVisible) startSlider(state);
+                });
+
+                // Mobile touch swipe support
+                let startX = 0;
+                let startY = 0;
+                let isSwiping = false;
+
+                slider.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) {
+                        startX = e.touches[0].clientX;
+                        startY = e.touches[0].clientY;
+                        isSwiping = true;
+                        pauseSlider(state);
+                    }
+                }, { passive: true });
+
+                slider.addEventListener('touchend', (e) => {
+                    if (!isSwiping || !e.changedTouches || e.changedTouches.length === 0) return;
+                    isSwiping = false;
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    const diffX = endX - startX;
+                    const diffY = endY - startY;
+
+                    if (Math.abs(diffX) > 28 && Math.abs(diffX) > Math.abs(diffY)) {
+                        if (diffX < 0) {
+                            nextSlide(state);
+                        } else {
+                            prevSlide(state);
+                        }
+                    }
+                    if (state.isVisible && !state.isHovered) {
+                        startSlider(state);
+                    }
+                }, { passive: true });
+
+                // IntersectionObserver: auto-slide only when card is visible in viewport
+                if (!cardObserver && 'IntersectionObserver' in window) {
+                    cardObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            const sid = entry.target.dataset.cardSlider;
+                            const sstate = sliderStates.get(sid);
+                            if (!sstate) return;
+
+                            if (entry.isIntersecting) {
+                                sstate.isVisible = true;
+                                if (!sstate.isHovered) startSlider(sstate);
+                            } else {
+                                sstate.isVisible = false;
+                                pauseSlider(sstate);
+                            }
+                        });
+                    }, { threshold: 0.25 });
+                }
+
+                if (cardObserver) {
+                    cardObserver.observe(slider);
+                } else {
+                    state.isVisible = true;
+                    startSlider(state);
+                }
+            });
+        }
+
+        function goToSlide(state, index) {
+            state.current = (index + state.total) % state.total;
+            if (state.track) {
+                state.track.style.transform = 'translate3d(-' + (state.current * 100) + '%, 0, 0)';
+            }
+            if (state.counter) {
+                state.counter.textContent = (state.current + 1) + '/' + state.total;
+            }
+            if (state.dots && state.dots.length > 0) {
+                state.dots.forEach((dot, idx) => {
+                    if (idx === state.current) {
+                        dot.className = 'card-slider-dot h-1.5 rounded-full transition-all duration-300 w-3.5 bg-white shadow-xs';
+                    } else {
+                        dot.className = 'card-slider-dot h-1.5 rounded-full transition-all duration-300 w-1.5 bg-white/50 hover:bg-white/80';
+                    }
+                });
+            }
+        }
+
+        function nextSlide(state) {
+            goToSlide(state, state.current + 1);
+        }
+
+        function prevSlide(state) {
+            goToSlide(state, state.current - 1);
+        }
+
+        function startSlider(state) {
+            pauseSlider(state);
+            const cardIdNum = parseInt(state.id.replace(/\D/g, ''), 10) || 0;
+            const staggerDelay = (cardIdNum % 5) * 400;
+
+            setTimeout(() => {
+                if (!state.isVisible || state.isHovered || state.timer) return;
+                nextSlide(state);
+                state.timer = setInterval(() => {
+                    if (state.isVisible && !state.isHovered) {
+                        nextSlide(state);
+                    }
+                }, 3600);
+            }, staggerDelay + 1800);
+        }
+
+        function pauseSlider(state) {
+            if (state.timer) {
+                clearInterval(state.timer);
+                state.timer = null;
+            }
+        }
+
+        window.cardSliderNext = function(id) {
+            const state = sliderStates.get(String(id));
+            if (state) {
+                nextSlide(state);
+                startSlider(state);
+            }
+        };
+
+        window.cardSliderPrev = function(id) {
+            const state = sliderStates.get(String(id));
+            if (state) {
+                prevSlide(state);
+                startSlider(state);
+            }
+        };
+
+        window.cardSliderGoTo = function(id, index) {
+            const state = sliderStates.get(String(id));
+            if (state) {
+                goToSlide(state, index);
+                startSlider(state);
+            }
+        };
+
+        window._urCardSliderInit = initCardSliders;
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCardSliders);
+        } else {
+            initCardSliders();
+        }
+
+        document.addEventListener('ur:page-loaded', initCardSliders);
+        window.addEventListener('popstate', () => setTimeout(initCardSliders, 150));
+    })();
 </script>
 @endonce
