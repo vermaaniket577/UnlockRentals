@@ -1634,10 +1634,17 @@ class AdminController extends Controller
      */
     public function userActivity(User $user)
     {
-        $user->load(['userPlans.plan', 'inquiries.property', 'visitors']);
+        $user->load([
+            'userPlans.plan',
+            'inquiries.property',
+            'properties' => function ($q) {
+                $q->latest()->limit(20);
+            },
+            'visitors',
+        ]);
         
         $contactViews = \App\Models\ContactView::where('user_id', $user->id)
-            ->with('property')
+            ->with(['property', 'userPlan.plan'])
             ->latest()
             ->get();
 
