@@ -226,15 +226,12 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     </noscript>
 
-    {{-- Phosphor Icon Systems (Non-blocking high performance with swap) --}}
-    <link rel="preload" as="style" href="{{ asset('css/phosphor/bold/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" as="style" href="{{ asset('css/phosphor/regular/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" as="style" href="{{ asset('css/phosphor/fill/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="{{ asset('css/phosphor/bold/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/phosphor/regular/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/phosphor/fill/style.css') }}">
-    </noscript>
+    {{-- Phosphor Icon Systems (High-Speed Global CDN) --}}
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
     {{-- Precompiled High-Performance Tailwind CSS (Zero Runtime JS Overhead) --}}
     @if(file_exists(public_path('build/manifest.json')))

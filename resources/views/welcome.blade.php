@@ -380,15 +380,10 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://images.unsplash.com">
 
-    <!-- Phosphor Icons (Non-blocking high-performance font-display: swap) -->
-    <link rel="preload" as="style" href="{{ asset('css/phosphor/regular/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" as="style" href="{{ asset('css/phosphor/bold/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" as="style" href="{{ asset('css/phosphor/fill/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="{{ asset('css/phosphor/regular/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/phosphor/bold/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/phosphor/fill/style.css') }}">
-    </noscript>
+    <!-- Phosphor Icons (High-Speed Global CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 
     {{-- Preload Mobile Largest Contentful Paint (LCP) Image --}}
     <link rel="preload" as="image" href="{{ asset('images/hero_apartment.webp') }}" type="image/webp" fetchpriority="high">
