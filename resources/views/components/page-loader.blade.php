@@ -19,12 +19,12 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease, width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    animation: ur-bar-shimmer 1.2s infinite linear;
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.8), 0 0 5px rgba(56, 189, 248, 0.6);
 }
 
 #ur-progress-bar-top.ur-active {
     opacity: 1;
+    animation: ur-bar-shimmer 1.2s infinite linear;
 }
 
 /* Glowing Leading Tip (NProgress / Next.js Style) */

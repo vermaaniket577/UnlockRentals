@@ -207,14 +207,16 @@
                                         <a href="{{ route('login', ['redirect' => $checkoutUrl]) }}" 
                                            onclick="event.preventDefault(); event.stopPropagation(); if(window.openAuthModal) { window.openAuthModal('login', '{{ $checkoutUrl }}'); } else { window.location.href='{{ route('login', ['redirect' => $checkoutUrl]) }}'; }"
                                            class="ur-dc-btn" 
-                                           title="Unlock Direct Contacts">
+                                           title="Unlock {{ $plan->name ?? 'Direct Contacts' }}"
+                                           aria-label="Unlock {{ $plan->name ?? 'Direct Contacts' }}">
                                             <span>Unlock Now</span>
                                             <i class="ph-bold ph-arrow-right"></i>
                                         </a>
                                     @else
                                         <a href="{{ $checkoutUrl }}" 
                                            class="ur-dc-btn" 
-                                           title="Unlock Direct Contacts">
+                                           title="Unlock {{ $plan->name ?? 'Direct Contacts' }}"
+                                           aria-label="Unlock {{ $plan->name ?? 'Direct Contacts' }}">
                                             <span>Unlock Now</span>
                                             <i class="ph-bold ph-arrow-right"></i>
                                         </a>
@@ -463,14 +465,14 @@
     align-items: center;
     justify-content: center;
     gap: 0.35rem;
-    background: #10b981;
+    background: #047857;
     color: #ffffff !important;
     font-size: 0.76rem;
     font-weight: 700;
     padding: 0.48rem 0.95rem;
     border-radius: 10px;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
     cursor: pointer;
@@ -480,9 +482,9 @@
 }
 
 .ur-dc-btn:hover {
-    background: #059669;
+    background: #065f46;
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 6px 16px rgba(4, 120, 87, 0.4);
 }
 
 .ur-dc-btn:active {

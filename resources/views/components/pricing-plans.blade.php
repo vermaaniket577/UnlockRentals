@@ -142,12 +142,12 @@
 .ur-billing-seg-btn .ur-seg-sub {
     font-size: 0.74rem;
     font-weight: 600;
-    color: #94a3b8;
+    color: #475569;
     margin-left: 2px;
 }
 
 .ur-billing-seg-btn.active .ur-seg-sub {
-    color: #64748b;
+    color: #1e40af;
 }
 
 .ur-billing-seg-btn .ur-discount-chip {

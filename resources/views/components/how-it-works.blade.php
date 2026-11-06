@@ -422,7 +422,14 @@
                             @if(str_starts_with(trim($step->icon_svg), '<svg'))
                                 {!! $step->icon_svg !!}
                             @elseif(Str::endsWith($step->icon_svg, ['.png', '.jpg', '.jpeg', '.gif', '.svg']) || str_contains($step->icon_svg, '/'))
-                                <img class="ur-how__icon-svg" src="{{ asset($step->icon_svg) }}" alt="{{ $step->title }}" title="{{ $step->title }}" width="36" height="36">
+                                @php
+                                    $stepIcon = $step->icon_svg;
+                                    $svgAlternative = preg_replace('/\.(png|jpe?g)$/i', '.svg', $stepIcon);
+                                    if (file_exists(public_path($svgAlternative))) {
+                                        $stepIcon = $svgAlternative;
+                                    }
+                                @endphp
+                                <img class="ur-how__icon-svg" src="{{ asset($stepIcon) }}" alt="{{ $step->title }}" title="{{ $step->title }}" width="36" height="36" loading="lazy" decoding="async">
                             @elseif($step->icon_svg)
                                 <i class="{{ $step->icon_svg }}"></i>
                             @else

@@ -75,8 +75,15 @@ else
     echo -e "${GREEN}✓ Storage link generated successfully.${NC}"
 fi
 
-# 7. Finalize and report permissions reminder
-echo -e "\n${BLUE}⚙️  7. Cleaning up system queues...${NC}"
+# 7. Sync public assets to public_html (cPanel / LiteSpeed shared hosting)
+if [ -d "../public_html" ]; then
+    echo -e "\n${BLUE}📂 7. Syncing public assets to ../public_html...${NC}"
+    cp -ru public/* ../public_html/ 2>/dev/null || rsync -av --update public/ ../public_html/ 2>/dev/null || cp -r public/* ../public_html/
+    echo -e "${GREEN}✓ Assets synced to ../public_html.${NC}"
+fi
+
+# 8. Finalize and report permissions reminder
+echo -e "\n${BLUE}⚙️  8. Cleaning up system queues...${NC}"
 php artisan queue:restart || true
 
 echo -e "${BLUE}=====================================================================${NC}"

@@ -1117,6 +1117,92 @@ Route::get('/run-git-pull', function (\Illuminate\Http\Request $request) {
 });
 
 // Universal route to serve images directly from storage/app/public without a symlink
+if (!function_exists('ur_serve_optimized_image')) {
+    function ur_serve_optimized_image(string $filePath) {
+        $finalPath = $filePath;
+        $mime = 'image/jpeg';
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        if (extension_loaded('gd') && function_exists('imagewebp') && in_array($ext, ['png', 'jpg', 'jpeg', 'webp'])) {
+            $fsize = @filesize($filePath);
+            if ($fsize !== false && $fsize > 180 * 1024) {
+                $cacheDir = storage_path('framework/cache/img_opt');
+                if (!is_dir($cacheDir)) {
+                    @mkdir($cacheDir, 0775, true);
+                }
+                $cacheFile = $cacheDir . '/opt_' . md5($filePath . filemtime($filePath)) . '.webp';
+                if (file_exists($cacheFile) && filesize($cacheFile) > 0) {
+                    $finalPath = $cacheFile;
+                    $mime = 'image/webp';
+                } else {
+                    try {
+                        $im = null;
+                        if ($ext === 'png') {
+                            $im = @imagecreatefrompng($filePath);
+                            if ($im) {
+                                imagepalettetotruecolor($im);
+                                imagealphablending($im, true);
+                                imagesavealpha($im, true);
+                            }
+                        } elseif ($ext === 'webp') {
+                            $im = @imagecreatefromwebp($filePath);
+                        } else {
+                            $im = @imagecreatefromjpeg($filePath);
+                        }
+
+                        if ($im) {
+                            $w = imagesx($im);
+                            $h = imagesy($im);
+                            $maxW = 1200;
+                            if ($w > $maxW) {
+                                $newW = $maxW;
+                                $newH = (int) round(($h * $maxW) / $w);
+                                $resized = imagecreatetruecolor($newW, $newH);
+                                imagealphablending($resized, false);
+                                imagesavealpha($resized, true);
+                                imagecopyresampled($resized, $im, 0, 0, 0, 0, $newW, $newH, $w, $h);
+                                imagedestroy($im);
+                                $im = $resized;
+                            }
+                            @imagewebp($im, $cacheFile, 82);
+                            imagedestroy($im);
+                            if (file_exists($cacheFile) && filesize($cacheFile) > 0) {
+                                $finalPath = $cacheFile;
+                                $mime = 'image/webp';
+                            }
+                        }
+                    } catch (\Throwable $e) {}
+                }
+            }
+        }
+
+        if ($mime !== 'image/webp') {
+            $mime = match($ext) {
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+                'webp' => 'image/webp',
+                'svg' => 'image/svg+xml',
+                'avif' => 'image/avif',
+                default => 'image/jpeg'
+            };
+        }
+
+        $etag = '"ur-img-' . md5($finalPath . filemtime($finalPath)) . '"';
+        if (request()->header('If-None-Match') === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+
+        return response()->file($finalPath, [
+            'Content-Type' => $mime,
+            'ETag' => $etag,
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+            'Access-Control-Allow-Origin' => '*',
+        ]);
+    }
+}
+
 Route::withoutMiddleware([
     \Illuminate\Session\Middleware\StartSession::class,
     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
@@ -1161,29 +1247,7 @@ Route::withoutMiddleware([
         return response('', 404);
     }
 
-    $etag = '"pif-' . md5($foundPath . filemtime($foundPath)) . '"';
-    if (request()->header('If-None-Match') === $etag) {
-        return response('', 304)
-            ->header('ETag', $etag)
-            ->header('Cache-Control', 'public, max-age=31536000, immutable');
-    }
-
-    $ext = strtolower(pathinfo($foundPath, PATHINFO_EXTENSION));
-    $mime = match($ext) {
-        'png' => 'image/png',
-        'gif' => 'image/gif',
-        'webp' => 'image/webp',
-        'svg' => 'image/svg+xml',
-        'avif' => 'image/avif',
-        default => 'image/jpeg'
-    };
-
-    return response()->file($foundPath, [
-        'Content-Type' => $mime,
-        'ETag' => $etag,
-        'Cache-Control' => 'public, max-age=31536000, immutable',
-        'Access-Control-Allow-Origin' => '*',
-    ]);
+    return ur_serve_optimized_image($foundPath);
 })->where('path', '.*')->name('property.image.file');
 
 // Universal high-speed storage file serving route (Direct stream, zero redirect)
@@ -1197,34 +1261,56 @@ Route::withoutMiddleware([
     $directPath = storage_path('app/public/' . $cleanPath);
 
     if (is_file($directPath)) {
-        $etag = '"st-' . md5($directPath . filemtime($directPath)) . '"';
-        if (request()->header('If-None-Match') === $etag) {
-            return response('', 304)
-                ->header('ETag', $etag)
-                ->header('Cache-Control', 'public, max-age=31536000, immutable');
-        }
-
-        $ext = strtolower(pathinfo($directPath, PATHINFO_EXTENSION));
-        $mime = match($ext) {
-            'png' => 'image/png',
-            'gif' => 'image/gif',
-            'webp' => 'image/webp',
-            'svg' => 'image/svg+xml',
-            'avif' => 'image/avif',
-            default => 'image/jpeg'
-        };
-
-        return response()->file($directPath, [
-            'Content-Type' => $mime,
-            'ETag' => $etag,
-            'Cache-Control' => 'public, max-age=31536000, immutable',
-            'Access-Control-Allow-Origin' => '*',
-        ]);
+        return ur_serve_optimized_image($directPath);
     }
 
     // Fallback to full resolver
     return redirect()->route('property.image.file', ['path' => $cleanPath]);
 })->where('path', '.*')->name('storage.file');
+
+// Direct public image route to eliminate 404 when public_html is separated
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+])->get('/images/{path}', function ($path) {
+    $cleanPath = ltrim($path, '/');
+    $candidates = [
+        public_path('images/' . $cleanPath),
+        base_path('public/images/' . $cleanPath),
+    ];
+    foreach ($candidates as $cand) {
+        if (file_exists($cand) && is_file($cand)) {
+            return ur_serve_optimized_image($cand);
+        }
+    }
+    return response('', 404);
+})->where('path', '.*')->name('public.images.file');
+
+// Direct public video route
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+])->get('/videos/{path}', function ($path) {
+    $cleanPath = ltrim($path, '/');
+    $candidates = [
+        public_path('videos/' . $cleanPath),
+        base_path('public/videos/' . $cleanPath),
+    ];
+    foreach ($candidates as $cand) {
+        if (file_exists($cand) && is_file($cand)) {
+            return response()->file($cand, [
+                'Content-Type' => 'video/mp4',
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+                'Access-Control-Allow-Origin' => '*',
+            ]);
+        }
+    }
+    return response('', 404);
+})->where('path', '.*');
 
 // Direct blogs image file route (301 Permanent Redirect)
 Route::get('/blogs/authors/{filename}', function ($filename) {

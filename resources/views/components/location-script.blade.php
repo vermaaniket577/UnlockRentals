@@ -119,11 +119,16 @@
     window._dbLocationData.localities = Object.assign(window._dbLocationData.localities || {}, @json($dbLocalitiesByDistrict));
     @endif
 </script>
-<script defer src="{{ asset('js/location-data.js') }}?v={{ file_exists(public_path('js/location-data.js')) ? filemtime(public_path('js/location-data.js')) : time() }}_s13v{{ time() }}"></script>
+@php
+    $locJsAsset = file_exists(public_path('js/location-data.min.js')) ? 'js/location-data.min.js' : 'js/location-data.js';
+@endphp
+<script defer src="{{ asset($locJsAsset) }}?v={{ file_exists(public_path($locJsAsset)) ? filemtime(public_path($locJsAsset)) : '20261106' }}" onload="if(window.patchLocalities) window.patchLocalities();"></script>
 <script>
 (function() {
+    var patched = false;
     function patchLocalities() {
-        if (!window.IndianLocationData) return;
+        if (patched || !window.IndianLocationData) return;
+        patched = true;
         window.IndianLocationData.localities = window.IndianLocationData.localities || {};
 
         if (window._dbLocationData && window._dbLocationData.localities) {
@@ -162,11 +167,13 @@
         });
     }
 
-    patchLocalities();
-    window.addEventListener('load', patchLocalities);
-    document.addEventListener('DOMContentLoaded', patchLocalities);
-    var pInt = setInterval(patchLocalities, 100);
-    setTimeout(function() { clearInterval(pInt); }, 4000);
+    window.patchLocalities = patchLocalities;
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        patchLocalities();
+    } else {
+        document.addEventListener('DOMContentLoaded', patchLocalities, { once: true });
+    }
+    window.addEventListener('load', patchLocalities, { once: true });
 
     window.ensureSector13InSelect = function(locSelect, cityEl) {
         if (!locSelect) return;

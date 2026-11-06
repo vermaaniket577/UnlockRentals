@@ -229,9 +229,22 @@
     {{-- Phosphor Icon Systems (High-Speed Global CDN) --}}
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <style>
+        @font-face { font-family: "Phosphor-Bold"; font-display: swap; }
+        @font-face { font-family: "Phosphor"; font-display: swap; }
+        @font-face { font-family: "Phosphor-Fill"; font-display: swap; }
+    </style>
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    </noscript>
 
     {{-- Precompiled High-Performance Tailwind CSS (Zero Runtime JS Overhead) --}}
     @if(file_exists(public_path('build/manifest.json')))
@@ -241,7 +254,10 @@
     @endif
 
     {{-- Premium UnlockRentals Styles --}}
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20261022-gradient-buttons-engine">
+    @php
+        $appCssAsset = file_exists(public_path('css/unlock-rental.min.css')) ? 'css/unlock-rental.min.css' : 'css/unlock-rental.css';
+    @endphp
+    <link rel="stylesheet" href="{{ asset($appCssAsset) }}?v={{ file_exists(public_path($appCssAsset)) ? filemtime(public_path($appCssAsset)) : '20261106' }}&cb=20261106v1">
     <style>
         @keyframes premiumShine {
             0% { transform: translateX(-140%); }

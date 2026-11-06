@@ -293,7 +293,7 @@
 .ur-footer__legal-link {
     font-size: 0.75rem;
     font-weight: 900;
-    color: #71717a;
+    color: #cbd5e1;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     text-decoration: none;
@@ -312,7 +312,7 @@
 .ur-footer__copy-text {
     font-size: 0.625rem;
     font-weight: 900;
-    color: #52525b;
+    color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.4em;
 }
@@ -332,7 +332,7 @@
 .ur-footer__excellence-text {
     font-size: 0.625rem;
     font-weight: 700;
-    color: #3f3f46;
+    color: #94a3b8;
     font-style: italic;
     letter-spacing: 0.1em;
 }

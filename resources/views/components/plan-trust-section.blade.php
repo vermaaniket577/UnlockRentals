@@ -537,7 +537,7 @@
     gap: 0.25rem;
     font-size: 0.7rem;
     font-weight: 600;
-    color: #059669;
+    color: #047857;
 }
 .dark .ur-review-badge { color: #34d399; }
 
@@ -851,16 +851,16 @@
     gap: 0.5rem;
     padding: 0.75rem 1.35rem;
     border-radius: 0.85rem;
-    background: #25d366;
+    background: #128c7e;
     color: #ffffff;
     font-size: 0.85rem;
     font-weight: 700;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+    box-shadow: 0 4px 12px rgba(18, 140, 126, 0.25);
     transition: all 0.2s ease;
 }
 .ur-btn-wa:hover {
-    background: #20bd5a;
+    background: #0f766e;
     transform: translateY(-1px);
 }
 
@@ -1256,7 +1256,7 @@
                                     <p class="ur-review-name">{{ $firstName }}</p>
                                     <p class="ur-review-badge">
                                         <i class="ph-bold ph-seal-check"></i> {{ $roleLabel }}
-                                        <span class="text-slate-400 font-normal">· {{ $fb->created_at ? $fb->created_at->format('M Y') : '' }}</span>
+                                        <span class="text-slate-600 dark:text-slate-400 font-medium">· {{ $fb->created_at ? $fb->created_at->format('M Y') : '' }}</span>
                                     </p>
                                 </div>
                             </div>

@@ -3,17 +3,20 @@
 <div class="chat-backdrop" id="chatBackdrop" onclick="window.closeSupportChat(event)"></div>
 
 <!-- Chatbot Overlay Button & Window -->
-<div class="chatbot-trigger" id="chatTrigger" onclick="window.toggleSupportChat(event)" style="overflow: hidden; padding: 0; background: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" title="Open Chat Support" role="button" aria-label="Open Chatbot">
-    <video src="{{ asset('videos/chatbot.mp4') }}" autoplay loop muted playsinline preload="metadata" aria-label="Support chatbot animation" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%;">
+<div class="chatbot-trigger" id="chatTrigger" onclick="window.toggleSupportChat(event)" style="overflow: hidden; padding: 0; background: linear-gradient(135deg, #1d4ed8, #2563eb); box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; position: fixed;" title="Open Chat Support" role="button" aria-label="Open Chatbot">
+    <video id="chatbotTriggerVideo" data-src="{{ asset('videos/chatbot.mp4') }}" loop muted playsinline preload="none" aria-label="Support chatbot animation" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease;">
         <track kind="captions" src="data:text/vtt,WEBVTT" srclang="en" label="English" default>
     </video>
+    <div id="chatbotTriggerPlaceholder" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </div>
 </div>
 
 <div class="chat-window" id="chatWindow" aria-live="polite" role="dialog" aria-modal="true" aria-label="Unlock Support Chat">
     <div class="chat-header">
         <div class="chat-header-content">
-            <div class="chat-avatar">
-                <img src="{{ asset('images/icons/chatbot.png') }}" alt="Bot" title="Unlock Support Bot" width="24" height="24" loading="lazy" decoding="async" style="width: 24px; height: 24px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
+            <div class="chat-avatar" style="display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.18); border-radius: 50%; width: 28px; height: 28px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8.01" y2="16"></line><line x1="16" y1="16" x2="16.01" y2="16"></line></svg>
             </div>
             <div class="chat-header-info">
                 <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Unlock Support</div>
@@ -256,6 +259,31 @@
                 setTimeout(() => {
                     window.openSupportChat();
                 }, 400);
+            }
+
+            // High-Performance Deferred Video Loader (Saves ~1.3MB initial payload)
+            function loadChatbotVideo() {
+                var v = document.getElementById('chatbotTriggerVideo');
+                if (!v || v.dataset.loaded) return;
+                v.dataset.loaded = 'true';
+                if (v.dataset.src) {
+                    v.src = v.dataset.src;
+                    v.oncanplay = function() {
+                        v.style.opacity = '1';
+                        var ph = document.getElementById('chatbotTriggerPlaceholder');
+                        if (ph) ph.style.display = 'none';
+                    };
+                    v.load();
+                    v.play().catch(function() {});
+                }
+            }
+            ['scroll', 'mousemove', 'touchstart', 'click'].forEach(function(evt) {
+                window.addEventListener(evt, loadChatbotVideo, { once: true, passive: true });
+            });
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(function() { setTimeout(loadChatbotVideo, 3500); });
+            } else {
+                setTimeout(loadChatbotVideo, 4500);
             }
         }
 

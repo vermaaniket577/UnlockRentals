@@ -9,14 +9,19 @@
 
 <a href="{{ $href }}" {{ $attributes->merge(['class' => 'inline-flex items-center gap-2.5 group']) }} title="{{ $showText ? 'UnlockRentals' : '' }}">
     <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white flex items-center justify-center p-1.5 shadow-sm shadow-blue-950/20 ring-1 ring-slate-900/10 dark:ring-white/25 flex-shrink-0 transition-transform duration-200 group-hover:scale-105">
-        <img
-            src="{{ asset('images/logo-icon.png') }}"
-            alt="{{ $alt }}"
-            title="{{ $alt }}"
-            class="w-full h-full object-contain"
-            fetchpriority="high"
-            decoding="async"
-        >
+        <picture>
+            <source srcset="{{ asset('images/logo-icon.webp') }}" type="image/webp">
+            <img
+                src="{{ asset('images/logo-icon.png') }}"
+                alt="{{ $alt }}"
+                title="{{ $alt }}"
+                width="32"
+                height="32"
+                class="w-full h-full object-contain"
+                fetchpriority="high"
+                decoding="async"
+            >
+        </picture>
     </div>
 
     @if($showText)
@@ -24,7 +29,7 @@
             <span class="{{ $textClass }} leading-none">
                 Unlock<span class="text-amber-500">Rentals</span>
             </span>
-            <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 tracking-wider mt-0.5">Rent &bull; Buy &bull; Sell</span>
+            <span class="text-[9px] font-bold text-slate-700 dark:text-slate-300 tracking-wider mt-0.5">Rent &bull; Buy &bull; Sell</span>
         </div>
     @endif
 </a>

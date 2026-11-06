@@ -373,20 +373,37 @@
     @endif
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : time() }}&cb=20260926v2">
+    @php
+        $cssAsset = file_exists(public_path('css/unlock-rental.min.css')) ? 'css/unlock-rental.min.css' : 'css/unlock-rental.css';
+    @endphp
+    <link rel="stylesheet" href="{{ asset($cssAsset) }}?v={{ file_exists(public_path($cssAsset)) ? filemtime(public_path($cssAsset)) : '20261106' }}&cb=20261106v1">
 
     <!-- High-Performance Preconnects & Resource Hints -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://images.unsplash.com">
 
-    <!-- Phosphor Icons (High-Speed Global CDN) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <!-- Phosphor Icons (Non-blocking with Font Display Swap) -->
+    <style>
+        @font-face { font-family: "Phosphor-Bold"; font-display: swap; }
+        @font-face { font-family: "Phosphor"; font-display: swap; }
+        @font-face { font-family: "Phosphor-Fill"; font-display: swap; }
+    </style>
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    </noscript>
 
-    {{-- Preload Mobile Largest Contentful Paint (LCP) Image --}}
-    <link rel="preload" as="image" href="{{ asset('images/hero_apartment.webp') }}" type="image/webp" fetchpriority="high">
+    {{-- Preload Largest Contentful Paint (LCP) Image for Mobile & Desktop --}}
+    <link rel="preload" as="image" href="{{ asset('images/hero_apartment.webp') }}" type="image/webp" media="(max-width: 767px)" fetchpriority="high">
+    <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_dusk_complex.webp" type="image/webp" media="(min-width: 768px)" fetchpriority="high">
 
     <!-- PWA Configuration -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2393,7 +2410,7 @@
                 position: absolute;
                 top: 10px;
                 right: 10px;
-                background: #059669;
+                background: #047857;
                 color: #ffffff;
                 font-size: 11px;
                 font-weight: 800;
@@ -2418,7 +2435,7 @@
                 align-items: center;
                 gap: 4px;
                 font-size: 12px;
-                color: #64748b;
+                color: #475569;
                 font-weight: 500;
                 margin-bottom: 8px;
             }
@@ -2436,7 +2453,7 @@
             .ur-hero-card-price .period {
                 font-size: 12px;
                 font-weight: 600;
-                color: #94a3b8;
+                color: #475569;
             }
             .ur-hero-card-specs {
                 display: flex;
@@ -2831,23 +2848,23 @@
         </style>
 
         @php
-            $heroDuskCdn = 'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_dusk_complex.jpg';
-            $heroCardCdn = 'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_card_living.jpg';
-            $heroDuskSrc = file_exists(public_path('images/hero_dusk_complex.webp')) ? asset('images/hero_dusk_complex.webp') : (file_exists(public_path('images/hero_dusk_complex.jpg')) ? asset('images/hero_dusk_complex.jpg') : $heroDuskCdn);
-            $heroCardSrc = file_exists(public_path('images/hero_card_living.webp')) ? asset('images/hero_card_living.webp') : (file_exists(public_path('images/hero_card_living.jpg')) ? asset('images/hero_card_living.jpg') : $heroCardCdn);
+            $heroDuskCdn = 'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_dusk_complex.webp';
+            $heroCardCdn = 'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_card_living_sm.webp';
+            $heroDuskSrc = file_exists(public_path('images/hero_dusk_complex.webp')) ? asset('images/hero_dusk_complex.webp') : $heroDuskCdn;
+            $heroCardSrc = file_exists(public_path('images/hero_card_living_sm.webp')) ? asset('images/hero_card_living_sm.webp') : (file_exists(public_path('images/hero_card_living.webp')) ? asset('images/hero_card_living.webp') : $heroCardCdn);
         @endphp
 
         {{-- Hero Dusk Architecture Background --}}
         <div class="ur-hero-dusk-bg-container" style="background-image: url('{{ $heroDuskSrc }}'), url('{{ $heroDuskCdn }}');">
             <img id="heroDesktopDuskBg" 
                  src="{{ $heroDuskSrc }}" 
-                 onerror="handleHeroImgFallback(this, 'hero_dusk_complex.jpg')"
+                 onerror="handleHeroImgFallback(this, 'hero_dusk_complex.webp')"
                  alt="Luxury Real Estate Community at Dusk" 
                  class="ur-hero-card-img" 
                  style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: right center; z-index: 1;"
-                 loading="lazy"
-                 fetchpriority="low"
-                 decoding="async">
+                 loading="eager"
+                 fetchpriority="high"
+                 decoding="sync">
             
             {{-- Dark Dusk Cinematic Gradient Overlay (Dark on Left behind text, transparent on Right) --}}
             <div class="ur-hero-gradient-overlay"></div>
@@ -2915,16 +2932,20 @@
                     <div class="ur-hero-card">
                         <div class="ur-hero-card-img-box">
                             <img src="{{ $heroCardSrc }}" 
-                                 onerror="handleHeroImgFallback(this, 'hero_card_living.jpg')" 
+                                 onerror="handleHeroImgFallback(this, 'hero_card_living_sm.webp')" 
                                  alt="Beautiful 2 BHK Apartment" 
                                  class="ur-hero-card-img"
+                                 width="331"
+                                 height="185"
+                                 loading="lazy"
+                                 decoding="async"
                                  style="width: 100%; height: 100%; object-fit: cover; display: block;">
                             <div class="ur-hero-card-badge">
                                 For Rent
                             </div>
                         </div>
                         <div class="ur-hero-card-body">
-                            <h3 class="ur-hero-card-title">Beautiful 2 BHK Apartment</h3>
+                            <div class="ur-hero-card-title">Beautiful 2 BHK Apartment</div>
                             <div class="ur-hero-card-location">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                                 <span>Gurgaon, Haryana</span>
@@ -2969,11 +2990,11 @@
                 <form id="heroFindPropertyForm" role="search" aria-label="Find Properties" action="{{ route('properties.index') }}" method="GET" class="ur-hero-search-form">
                     {{-- 1. I Want To --}}
                     <div class="ur-hero-search-col ur-hero-col-purpose">
-                        <div class="ur-hero-label">
+                        <label class="ur-hero-label" for="hero_purpose">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                             <span>I Want To</span>
-                        </div>
-                        <select name="purpose" id="hero_purpose" class="ur-hero-select">
+                        </label>
+                        <select name="purpose" id="hero_purpose" class="ur-hero-select" aria-label="I Want To">
                             <option value="rent" {{ request('purpose', 'rent') == 'rent' && request('type') !== 'pg-hostel' ? 'selected' : '' }}>Rent</option>
                             <option value="buy" {{ request('purpose') == 'buy' ? 'selected' : '' }}>Buy</option>
                             <option value="pg" {{ request('type') == 'pg-hostel' ? 'selected' : '' }}>PG</option>
@@ -2982,11 +3003,11 @@
 
                     {{-- 2. Property Type --}}
                     <div class="ur-hero-search-col ur-hero-col-type">
-                        <div class="ur-hero-label">
+                        <label class="ur-hero-label" for="hero_type">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
                             <span>Property Type</span>
-                        </div>
-                        <select name="type" id="hero_type" class="ur-hero-select">
+                        </label>
+                        <select name="type" id="hero_type" class="ur-hero-select" aria-label="Property Type">
                             <option value="apartment">Flat / Apartment</option>
                             <option value="house">House / Villa</option>
                             <option value="pg-hostel">PG / Hostel</option>
@@ -3015,10 +3036,10 @@
                         $allDistrictsList = $globalAllDistricts ?? [];
                     @endphp
                     <div class="ur-hero-search-col ur-hero-col-location" id="heroLocationCol">
-                        <div class="ur-hero-label">
+                        <label class="ur-hero-label" for="hero_district">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                             <span>Location</span>
-                        </div>
+                        </label>
                         <div class="ur-hero-input-wrap">
                             <input type="text"
                                    name="district"
@@ -3044,11 +3065,11 @@
 
                     {{-- 4. Budget --}}
                     <div class="ur-hero-search-col ur-hero-col-budget">
-                        <div class="ur-hero-label">
+                        <label class="ur-hero-label" for="hero_price">
                             <span style="font-size: 11px; font-weight: 800; color: #64748b;">₹</span>
                             <span>Budget</span>
-                        </div>
-                        <select name="price" id="hero_price" class="ur-hero-select">
+                        </label>
+                        <select name="price" id="hero_price" class="ur-hero-select" aria-label="Budget">
                             <option value="any">Min - Max</option>
                             <option value="0-15000">Up to ₹15,000</option>
                             <option value="15000-30000">₹15,000 – ₹30,000</option>
@@ -3059,11 +3080,11 @@
 
                     {{-- 5. Bedrooms --}}
                     <div class="ur-hero-search-col ur-hero-col-rooms">
-                        <div class="ur-hero-label">
+                        <label class="ur-hero-label" for="hero_rooms">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
                             <span>Bedrooms</span>
-                        </div>
-                        <select name="rooms" id="hero_rooms" class="ur-hero-select">
+                        </label>
+                        <select name="rooms" id="hero_rooms" class="ur-hero-select" aria-label="Bedrooms">
                             <option value="1bhk">1 BHK</option>
                             <option value="2bhk">2 BHK</option>
                             <option value="3bhk-plus">3+ BHK</option>
@@ -3091,7 +3112,7 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
                     <div>
-                        <h4 class="ur-hero-ribbon-title">Direct Owner Connections</h4>
+                        <div class="ur-hero-ribbon-title">Direct Owner Connections</div>
                         <p class="ur-hero-ribbon-desc">Talk to owners, skip brokers</p>
                     </div>
                 </div>
@@ -3102,7 +3123,7 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </div>
                     <div>
-                        <h4 class="ur-hero-ribbon-title">Easy Property Discovery</h4>
+                        <div class="ur-hero-ribbon-title">Easy Property Discovery</div>
                         <p class="ur-hero-ribbon-desc">Search by location, budget &amp; more</p>
                     </div>
                 </div>
@@ -3113,7 +3134,7 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
                     </div>
                     <div>
-                        <h4 class="ur-hero-ribbon-title">Free Property Posting</h4>
+                        <div class="ur-hero-ribbon-title">Free Property Posting</div>
                         <p class="ur-hero-ribbon-desc">List your property in minutes</p>
                     </div>
                 </div>
@@ -3124,7 +3145,7 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                     </div>
                     <div>
-                        <h4 class="ur-hero-ribbon-title">Listings Across India</h4>
+                        <div class="ur-hero-ribbon-title">Listings Across India</div>
                         <p class="ur-hero-ribbon-desc">From metros to small towns</p>
                     </div>
                 </div>
@@ -5275,8 +5296,8 @@
 
     @if(($site_settings['feedback_enabled'] ?? '1') == '1')
     <!-- Feedback Modal Trigger (Hidden on mobile to avoid overlapping navigation) -->
-    <button class="feedback-modal-trigger hidden md:flex" onclick="openFeedbackModal()" style="position: fixed; left: 30px; bottom: 30px; width: 60px; height: 60px; background: rgba(25, 25, 30, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; color: var(--primary); font-size: 24px; cursor: pointer; z-index: 9998; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s;">
-        <img src="{{ asset('images/icons/feedback.png') }}" alt="Feedback" title="Send Platform Feedback" width="32" height="32" loading="lazy" decoding="async" style="width: 32px; height: 32px; object-fit: contain; filter: invert(1) grayscale(1) brightness(200%); mix-blend-mode: screen;">
+    <button class="feedback-modal-trigger hidden md:flex" onclick="openFeedbackModal()" aria-label="Open Platform Feedback" title="Send Platform Feedback" style="position: fixed; left: 30px; bottom: 30px; width: 60px; height: 60px; background: rgba(25, 25, 30, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; color: #ffffff; cursor: pointer; z-index: 9998; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
     </button>
 
     <!-- Feedback Modal Overlay -->
@@ -5374,7 +5395,10 @@
     <x-subscription.payment-success-modal />
 
     <!-- Deferred Non-Critical Scripts -->
-    <script defer src="{{ asset('js/otp-verification.js') }}?v=20260916"></script>
+    @php
+        $otpJsAsset = file_exists(public_path('js/otp-verification.min.js')) ? 'js/otp-verification.min.js' : 'js/otp-verification.js';
+    @endphp
+    <script defer src="{{ asset($otpJsAsset) }}?v={{ file_exists(public_path($otpJsAsset)) ? filemtime(public_path($otpJsAsset)) : '20261106' }}"></script>
     @include('components.location-script')
     @include('components.push-notification-deliverer')
 </body>
