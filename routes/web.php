@@ -1312,6 +1312,58 @@ Route::withoutMiddleware([
     return response('', 404);
 })->where('path', '.*');
 
+// Direct public CSS route to eliminate 404 when public_html is separated
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+])->get('/css/{path}', function ($path) {
+    $cleanPath = ltrim($path, '/');
+    $candidates = [
+        public_path('css/' . $cleanPath),
+        base_path('public/css/' . $cleanPath),
+        public_path('css/' . str_replace('.min.css', '.css', $cleanPath)),
+        base_path('public/css/' . str_replace('.min.css', '.css', $cleanPath)),
+    ];
+    foreach ($candidates as $cand) {
+        if (file_exists($cand) && is_file($cand)) {
+            return response()->file($cand, [
+                'Content-Type' => 'text/css; charset=utf-8',
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+                'Access-Control-Allow-Origin' => '*',
+            ]);
+        }
+    }
+    return response('', 404);
+})->where('path', '.*')->name('public.css.file');
+
+// Direct public JS route to eliminate 404 when public_html is separated
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+])->get('/js/{path}', function ($path) {
+    $cleanPath = ltrim($path, '/');
+    $candidates = [
+        public_path('js/' . $cleanPath),
+        base_path('public/js/' . $cleanPath),
+        public_path('js/' . str_replace('.min.js', '.js', $cleanPath)),
+        base_path('public/js/' . str_replace('.min.js', '.js', $cleanPath)),
+    ];
+    foreach ($candidates as $cand) {
+        if (file_exists($cand) && is_file($cand)) {
+            return response()->file($cand, [
+                'Content-Type' => 'application/javascript; charset=utf-8',
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+                'Access-Control-Allow-Origin' => '*',
+            ]);
+        }
+    }
+    return response('', 404);
+})->where('path', '.*')->name('public.js.file');
+
 // Direct blogs image file route (301 Permanent Redirect)
 Route::get('/blogs/authors/{filename}', function ($filename) {
     return redirect()->route('property.image.file', ['path' => 'blogs/authors/' . $filename], 301);

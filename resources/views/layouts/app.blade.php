@@ -254,10 +254,7 @@
     @endif
 
     {{-- Premium UnlockRentals Styles --}}
-    @php
-        $appCssAsset = file_exists(public_path('css/unlock-rental.min.css')) ? 'css/unlock-rental.min.css' : 'css/unlock-rental.css';
-    @endphp
-    <link rel="stylesheet" href="{{ asset($appCssAsset) }}?v={{ file_exists(public_path($appCssAsset)) ? filemtime(public_path($appCssAsset)) : '20261106' }}&cb=20261106v1">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : '20261106' }}&cb=20261106v2">
     <style>
         @keyframes premiumShine {
             0% { transform: translateX(-140%); }

@@ -119,10 +119,7 @@
     window._dbLocationData.localities = Object.assign(window._dbLocationData.localities || {}, @json($dbLocalitiesByDistrict));
     @endif
 </script>
-@php
-    $locJsAsset = file_exists(public_path('js/location-data.min.js')) ? 'js/location-data.min.js' : 'js/location-data.js';
-@endphp
-<script defer src="{{ asset($locJsAsset) }}?v={{ file_exists(public_path($locJsAsset)) ? filemtime(public_path($locJsAsset)) : '20261106' }}" onload="if(window.patchLocalities) window.patchLocalities();"></script>
+<script defer src="{{ asset('js/location-data.js') }}?v={{ file_exists(public_path('js/location-data.js')) ? filemtime(public_path('js/location-data.js')) : '20261106' }}" onload="if(window.patchLocalities) window.patchLocalities();"></script>
 <script>
 (function() {
     var patched = false;

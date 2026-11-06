@@ -373,10 +373,7 @@
     @endif
 
     <!-- CSS -->
-    @php
-        $cssAsset = file_exists(public_path('css/unlock-rental.min.css')) ? 'css/unlock-rental.min.css' : 'css/unlock-rental.css';
-    @endphp
-    <link rel="stylesheet" href="{{ asset($cssAsset) }}?v={{ file_exists(public_path($cssAsset)) ? filemtime(public_path($cssAsset)) : '20261106' }}&cb=20261106v1">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : '20261106' }}&cb=20261106v2">
 
     <!-- High-Performance Preconnects & Resource Hints -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -1997,11 +1994,54 @@
     <style>
         #mobileNav,
         .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: -340px;
+            width: 300px;
+            max-width: 85vw;
+            height: 100vh;
             background: #ffffff !important;
             background-color: #ffffff !important;
             color: #0f172a !important;
             border-left: 1px solid #e2e8f0 !important;
             box-shadow: -12px 0 40px rgba(15, 23, 42, 0.15) !important;
+            z-index: 999999;
+            padding: 24px 20px 40px;
+            overflow-y: auto;
+            transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #mobileNav.active,
+        .mobile-nav.active {
+            display: block !important;
+            right: 0 !important;
+        }
+        #mobileOverlay,
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45) !important;
+            z-index: 999998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #mobileOverlay.active,
+        .mobile-nav-overlay.active {
+            display: block !important;
+            opacity: 1 !important;
+        }
+        @media (min-width: 1024px) {
+            #mobileNav,
+            .mobile-nav,
+            #mobileOverlay,
+            .mobile-nav-overlay {
+                display: none !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+            }
         }
         #mobileNav .mobile-nav-link,
         .mobile-nav .mobile-nav-link {
@@ -2026,13 +2066,9 @@
             background-color: #f1f5f9 !important;
             color: #475569 !important;
         }
-        #mobileOverlay,
-        .mobile-nav-overlay {
-            background: rgba(15, 23, 42, 0.45) !important;
-        }
     </style>
-    <div class="mobile-nav-overlay" id="mobileOverlay" onclick="toggleMobileNav()" style="background: rgba(15, 23, 42, 0.45) !important;"></div>
-    <nav class="mobile-nav" id="mobileNav" style="background: #ffffff !important; background-color: #ffffff !important; color: #0f172a !important; border-left: 1px solid #e2e8f0 !important; box-shadow: -12px 0 40px rgba(15, 23, 42, 0.15) !important;">
+    <div class="mobile-nav-overlay hidden lg:hidden" id="mobileOverlay" onclick="toggleMobileNav()" style="background: rgba(15, 23, 42, 0.45) !important;"></div>
+    <nav class="mobile-nav hidden lg:hidden" id="mobileNav" style="background: #ffffff !important; background-color: #ffffff !important; color: #0f172a !important; border-left: 1px solid #e2e8f0 !important; box-shadow: -12px 0 40px rgba(15, 23, 42, 0.15) !important;">
         {{-- Drawer Header with Brand and Close Button --}}
         <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100" style="border-bottom: 1px solid #f1f5f9 !important;">
             <x-brand-logo
@@ -5395,10 +5431,7 @@
     <x-subscription.payment-success-modal />
 
     <!-- Deferred Non-Critical Scripts -->
-    @php
-        $otpJsAsset = file_exists(public_path('js/otp-verification.min.js')) ? 'js/otp-verification.min.js' : 'js/otp-verification.js';
-    @endphp
-    <script defer src="{{ asset($otpJsAsset) }}?v={{ file_exists(public_path($otpJsAsset)) ? filemtime(public_path($otpJsAsset)) : '20261106' }}"></script>
+    <script defer src="{{ asset('js/otp-verification.js') }}?v={{ file_exists(public_path('js/otp-verification.js')) ? filemtime(public_path('js/otp-verification.js')) : '20261106' }}"></script>
     @include('components.location-script')
     @include('components.push-notification-deliverer')
 </body>
