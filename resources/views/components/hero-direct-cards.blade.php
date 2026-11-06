@@ -37,7 +37,7 @@
         {{-- Section Header with Purpose Filter Tabs & Slider Controls --}}
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-2.5 sm:mb-3">
             <div>
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wider mb-1">
                     <i class="ph-bold ph-shield-check text-xs"></i>
                     <span>Zero Brokerage Guaranteed</span>
                 </div>
@@ -236,9 +236,9 @@
                 return $p->isRentPlan();
             })->values();
         @endphp
-        <div class="flex items-center justify-center gap-1.5 mt-2 sm:mt-3" id="urDirectSliderDots" style="{{ $initialMatchingPlans->count() <= 1 ? 'display: none;' : '' }}">
+        <div class="flex items-center justify-center gap-1.5 mt-2 sm:mt-3" id="urDirectSliderDots" role="tablist" aria-label="Direct Passes" style="{{ $initialMatchingPlans->count() <= 1 ? 'display: none;' : '' }}">
             @foreach($initialMatchingPlans as $idx => $p)
-                <button type="button" onclick="scrollDirectPassToIndex({{ $idx }}); resetDirectPassAutoTimer();" class="ur-ds-dot {{ $idx === 0 ? 'active' : '' }}" aria-label="Go to pass {{ $idx + 1 }}"></button>
+                <button type="button" role="tab" onclick="scrollDirectPassToIndex({{ $idx }}); resetDirectPassAutoTimer();" class="ur-ds-dot {{ $idx === 0 ? 'active' : '' }}" aria-selected="{{ $idx === 0 ? 'true' : 'false' }}" aria-label="Go to pass {{ $idx + 1 }}"></button>
             @endforeach
         </div>
 
@@ -562,19 +562,30 @@
 
 /* Slider Dots */
 .ur-ds-dot {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.ur-ds-dot::before {
+    content: '';
+    display: block;
     width: 6px;
     height: 6px;
     border-radius: 9999px;
     background: #cbd5e1;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 0.25s ease, background-color 0.25s ease;
 }
 
-.ur-ds-dot.active {
-    width: 20px;
-    background: #10b981;
+.ur-ds-dot.active::before {
+    transform: scaleX(2.6);
+    background: #059669;
 }
 
 /* ─── COMPACT MOBILE & MOBILE APP VIEWPORT (REDUCED HEIGHT & TEXT SIZES) ─── */
@@ -709,15 +720,6 @@
 
     .ur-dc-btn i {
         font-size: 0.75rem !important;
-    }
-
-    .ur-ds-dot {
-        width: 5px !important;
-        height: 5px !important;
-    }
-
-    .ur-ds-dot.active {
-        width: 14px !important;
     }
 }
 
@@ -895,7 +897,9 @@ function updateDirectPassDots() {
 
     directPassCurrentIndex = closestIndex;
     dots.forEach((d, idx) => {
-        d.classList.toggle('active', idx === closestIndex);
+        const isActive = (idx === closestIndex);
+        d.classList.toggle('active', isActive);
+        d.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
 }
 
@@ -923,7 +927,9 @@ function buildDirectPassDots() {
     visibleCards.forEach((c, idx) => {
         const dot = document.createElement('button');
         dot.type = 'button';
+        dot.setAttribute('role', 'tab');
         dot.className = 'ur-ds-dot' + (idx === 0 ? ' active' : '');
+        dot.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
         dot.setAttribute('aria-label', 'Go to pass ' + (idx + 1));
         dot.onclick = () => {
             scrollDirectPassToIndex(idx);

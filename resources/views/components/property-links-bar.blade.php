@@ -63,17 +63,17 @@
         <div class="ur-links-bar__flex">
             @php
                 $links = [
-                    ['label' => 'Flats for Sale', 'active' => true],
-                    ['label' => 'Flats for Rent', 'active' => false],
-                    ['label' => 'PG / Hostels', 'active' => false],
-                    ['label' => 'Commercial Properties', 'active' => false],
-                    ['label' => 'New Projects', 'active' => false],
-                    ['label' => 'Independent Houses', 'active' => false],
-                    ['label' => 'Plots / Land', 'active' => false],
+                    ['label' => 'Flats for Sale', 'url' => route('properties.index', ['purpose' => 'sale', 'type' => 'apartment']), 'active' => true],
+                    ['label' => 'Flats for Rent', 'url' => route('properties.index', ['purpose' => 'rent', 'type' => 'apartment']), 'active' => false],
+                    ['label' => 'PG / Hostels', 'url' => route('properties.index', ['type' => 'pg']), 'active' => false],
+                    ['label' => 'Commercial Properties', 'url' => route('properties.index', ['type' => 'commercial']), 'active' => false],
+                    ['label' => 'New Projects', 'url' => route('properties.index', ['purpose' => 'sale']), 'active' => false],
+                    ['label' => 'Independent Houses', 'url' => route('properties.index', ['type' => 'house']), 'active' => false],
+                    ['label' => 'Plots / Land', 'url' => route('properties.index', ['type' => 'plot']), 'active' => false],
                 ];
             @endphp
             @foreach($links as $link)
-            <a href="#" class="ur-links-bar__link {{ $link['active'] ? 'ur-links-bar__link--active' : '' }}" title="UnlockRentals">
+            <a href="{{ $link['url'] }}" class="ur-links-bar__link {{ $link['active'] ? 'ur-links-bar__link--active' : '' }}" aria-label="{{ $link['label'] }}">
                 {{ $link['label'] }}
             </a>
             @endforeach

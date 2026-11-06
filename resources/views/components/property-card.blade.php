@@ -330,7 +330,7 @@
                         </span>
                     @endforeach
                 @else
-                    <span class="text-[8.5px] sm:text-[10px] text-slate-400 italic">Ready to Move</span>
+                    <span class="text-[8.5px] sm:text-[10px] text-slate-500 dark:text-slate-400 italic">Ready to Move</span>
                 @endif
             </div>
         </div>
@@ -340,14 +340,14 @@
             {{-- Compact Price Display --}}
             <div class="flex flex-col min-w-0 flex-1">
                 @if($hasFixedPrice)
-                    <span class="text-[7.5px] sm:text-[8.5px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5">
+                    <span class="text-[7.5px] sm:text-[8.5px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider leading-none mb-0.5">
                         {{ $isSale ? 'Price' : 'Rent' }}
                     </span>
                     <span class="text-xs sm:text-sm md:text-[15px] font-black text-slate-900 dark:text-white tracking-tight leading-none truncate">
                         {{ $property->formatted_price }}
                     </span>
                 @else
-                    <span class="text-[7.5px] sm:text-[8.5px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5">Pricing</span>
+                    <span class="text-[7.5px] sm:text-[8.5px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider leading-none mb-0.5">Pricing</span>
                     <span class="text-[9.5px] sm:text-xs font-bold text-blue-600 dark:text-blue-400 tracking-tight leading-none truncate">
                         On Request
                     </span>

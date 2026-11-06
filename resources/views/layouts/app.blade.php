@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth" itemscope itemtype="https://schema.org/WebPage">
 <head>
+    @php
+        $gtagId = env('GOOGLE_ANALYTICS_ID', '');
+    @endphp
+    @if(!empty($gtagId) && $gtagId !== 'G-RJ2TX883V4')
     <!-- Google tag (gtag.js) Non-Blocking -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       window.gtag = gtag;
       gtag('js', new Date());
-      gtag('config', 'G-RJ2TX883V4');
+      gtag('config', '{{ $gtagId }}');
 
       (function() {
           var gtagLoaded = false;
@@ -16,19 +20,20 @@
               gtagLoaded = true;
               var s = document.createElement('script');
               s.async = true;
-              s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RJ2TX883V4';
+              s.src = 'https://www.googletagmanager.com/gtag/js?id={{ $gtagId }}';
               document.head.appendChild(s);
           }
           if ('requestIdleCallback' in window) {
-              requestIdleCallback(function() { setTimeout(loadGtag, 1500); });
+              requestIdleCallback(function() { setTimeout(loadGtag, 2500); });
           } else {
-              setTimeout(loadGtag, 2000);
+              setTimeout(loadGtag, 3500);
           }
-          ['scroll', 'mousemove', 'touchstart', 'click', 'keydown'].forEach(function(e) {
+          ['scroll', 'touchstart', 'click'].forEach(function(e) {
               window.addEventListener(e, loadGtag, { once: true, passive: true });
           });
       })();
     </script>
+    @endif
     <script>
         (function () {
             var isApp = /UnlockRentals|wv|Version\/[0-9.]+/i.test(navigator.userAgent) || window.isNativeApp === true || new URLSearchParams(window.location.search).get('app') === '1';
@@ -108,7 +113,7 @@
         }
     </style>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="description" content="@yield('meta_description', 'Rent verified flats, rooms, 1BHK & PGs with zero brokerage on UnlockRentals. Connect directly with owners across India and save 100% on broker commissions.')">
@@ -221,15 +226,15 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     </noscript>
 
-    {{-- Phosphor Icon Systems (Local First to prevent ISP/Adblock blocking, with CDN Fallback) --}}
-    <link rel="stylesheet" href="{{ asset('vendor/phosphor/bold/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/phosphor/regular/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/phosphor/fill/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/phosphor/duotone/style.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+    {{-- Phosphor Icon Systems (Non-blocking high performance with swap) --}}
+    <link rel="preload" as="style" href="{{ asset('css/phosphor/bold/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="{{ asset('css/phosphor/regular/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="{{ asset('css/phosphor/fill/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/phosphor/bold/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/phosphor/regular/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/phosphor/fill/style.css') }}">
+    </noscript>
 
     {{-- Precompiled High-Performance Tailwind CSS (Zero Runtime JS Overhead) --}}
     @if(file_exists(public_path('build/manifest.json')))

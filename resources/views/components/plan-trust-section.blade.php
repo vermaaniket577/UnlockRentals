@@ -312,7 +312,7 @@
     gap: 0.35rem;
     font-size: 0.72rem;
     font-weight: 600;
-    color: #059669;
+    color: #047857;
     background: #ecfdf5;
     padding: 0.3rem 0.65rem;
     border-radius: 0.5rem;
@@ -1241,7 +1241,7 @@
                         @endphp
                         <div class="ur-review-card">
                             <div>
-                                <div class="ur-review-stars" aria-label="{{ $fb->rating }} out of 5 stars">
+                                <div class="ur-review-stars" role="img" aria-label="{{ $fb->rating }} out of 5 stars">
                                     @for($i = 1; $i <= 5; $i++)
                                         <i class="ph-fill ph-star {{ $i <= $fb->rating ? 'text-amber-400' : 'text-slate-300 dark:text-slate-700' }}"></i>
                                     @endfor

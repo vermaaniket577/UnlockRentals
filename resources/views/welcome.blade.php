@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" itemscope itemtype="https://schema.org/WebPage">
 <head>
+    @php
+        $gtagId = env('GOOGLE_ANALYTICS_ID', '');
+    @endphp
+    @if(!empty($gtagId) && $gtagId !== 'G-RJ2TX883V4')
     <!-- Google tag (gtag.js) Non-Blocking -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       window.gtag = gtag;
       gtag('js', new Date());
-      gtag('config', 'G-RJ2TX883V4');
+      gtag('config', '{{ $gtagId }}');
 
       (function() {
           var gtagLoaded = false;
@@ -16,21 +20,22 @@
               gtagLoaded = true;
               var s = document.createElement('script');
               s.async = true;
-              s.src = 'https://www.googletagmanager.com/gtag/js?id=G-RJ2TX883V4';
+              s.src = 'https://www.googletagmanager.com/gtag/js?id={{ $gtagId }}';
               document.head.appendChild(s);
           }
           if ('requestIdleCallback' in window) {
-              requestIdleCallback(function() { setTimeout(loadGtag, 1500); });
+              requestIdleCallback(function() { setTimeout(loadGtag, 2500); });
           } else {
-              setTimeout(loadGtag, 2000);
+              setTimeout(loadGtag, 3500);
           }
-          ['scroll', 'mousemove', 'touchstart', 'click', 'keydown'].forEach(function(e) {
+          ['scroll', 'touchstart', 'click'].forEach(function(e) {
               window.addEventListener(e, loadGtag, { once: true, passive: true });
           });
       })();
     </script>
+    @endif
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <style>
         /* Instant Mobile App Speed & Smooth Performance */
         * {
@@ -375,17 +380,18 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://images.unsplash.com">
 
-    <!-- Phosphor Icons (Local First with CDN Fallback) -->
-    <link rel="stylesheet" href="{{ asset('vendor/phosphor/regular/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/phosphor/bold/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/phosphor/fill/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/phosphor/duotone/style.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <!-- Phosphor Icons (Non-blocking high-performance font-display: swap) -->
+    <link rel="preload" as="style" href="{{ asset('css/phosphor/regular/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="{{ asset('css/phosphor/bold/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="{{ asset('css/phosphor/fill/style.css') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/phosphor/regular/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/phosphor/bold/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/phosphor/fill/style.css') }}">
+    </noscript>
 
-    {{-- Preload Largest Contentful Paint (LCP) Image --}}
-    <link rel="preload" as="image" href="{{ asset('images/hero-bg.webp') }}" type="image/webp" fetchpriority="high">
+    {{-- Preload Mobile Largest Contentful Paint (LCP) Image --}}
+    <link rel="preload" as="image" href="{{ asset('images/hero_apartment.webp') }}" type="image/webp" fetchpriority="high">
 
     <!-- PWA Configuration -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -623,24 +629,36 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 6px;
+            align-items: center;
+            gap: 4px;
             z-index: 10;
         }
 
         .promo-dot {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .promo-dot::before {
+            content: '';
+            display: block;
             width: 6px;
             height: 6px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.4);
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            transition: all 0.3s ease;
+            transition: transform 0.25s ease, background-color 0.25s ease;
         }
 
-        .promo-dot.active {
+        .promo-dot.active::before {
             background: #ffffff;
-            transform: scale(1.2);
+            transform: scale(1.4);
         }
 
         /* Responsive styling for promo slider */
@@ -869,7 +887,7 @@
                 font-weight: 900 !important;
             }
             .logo-text .logo-accent {
-                color: #ca8a04 !important;
+                color: #b45309 !important;
             }
             .btn-cta-premium-header {
                 height: 38px !important;
@@ -1354,19 +1372,9 @@
             right: 8px;
         }
 
-        @keyframes badgeGlow {
-            0%, 100% {
-                box-shadow: 0 0 10px rgba(251, 191, 36, 0.15), inset 0 0 4px rgba(251, 191, 36, 0.2);
-                border-color: rgba(252, 211, 77, 0.4);
-            }
-            50% {
-                box-shadow: 0 0 20px rgba(251, 191, 36, 0.4), inset 0 0 10px rgba(251, 191, 36, 0.3);
-                border-color: rgba(252, 211, 77, 0.85);
-            }
-        }
-
         .animate-badge-glow {
-            animation: badgeGlow 3s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.25), inset 0 0 4px rgba(251, 191, 36, 0.2);
+            border-color: rgba(252, 211, 77, 0.6);
         }
 
         @keyframes shimmerSweep {
@@ -1388,25 +1396,40 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
             margin-top: 8px;
             margin-bottom: 12px;
+            touch-action: manipulation;
         }
 
         .mobile-slider-dot {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .mobile-slider-dot::before {
+            content: '';
+            display: block;
             width: 6px;
             height: 6px;
             border-radius: 9999px;
             background: #cbd5e1;
-            transition: all 0.3s ease;
-            border: none;
-            padding: 0;
-            cursor: pointer;
+            transition: width 0.25s ease, background-color 0.25s ease;
         }
 
-        .mobile-slider-dot.active {
-            width: 22px;
+        .mobile-slider-dot.active::before {
+            width: 20px;
             background: #2563eb;
+        }
             border-radius: 9999px;
             box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
         }
@@ -1688,7 +1711,7 @@
                     <img src="{{ asset('images/logo-icon.png') }}" onerror="this.onerror=null;this.src='/images/logo-icon.png';" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="32" height="32" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high">
                 </div>
                 <div style="display: flex; flex-direction: column; justify-content: center;">
-                    <span class="logo-text" style="font-size: 17px !important; font-weight: 900 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; color: #0f172a !important; line-height: 1 !important;">Unlock<span class="logo-accent" style="color: #ca8a04 !important;">Rentals</span></span>
+                    <span class="logo-text" style="font-size: 17px !important; font-weight: 900 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; color: #0f172a !important; line-height: 1 !important;">Unlock<span class="logo-accent" style="color: #b45309 !important;">Rentals</span></span>
                     <span style="font-size: 9.5px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; color: #64748b !important; margin-top: 3px !important; line-height: 1 !important;">Rent • Buy • Sell</span>
                 </div>
             </a>
@@ -2191,6 +2214,7 @@
     </div>
     @endauth
 
+    <main id="main-content" role="main">
     {{-- ====================================================
          DESKTOP HERO SECTION (Matching User Reference Image)
          ==================================================== --}}
@@ -2814,8 +2838,8 @@
         @php
             $heroDuskCdn = 'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_dusk_complex.jpg';
             $heroCardCdn = 'https://cdn.jsdelivr.net/gh/vermaaniket577/UnlockRentals@main/public/images/hero_card_living.jpg';
-            $heroDuskSrc = file_exists(public_path('images/hero_dusk_complex.jpg')) ? asset('images/hero_dusk_complex.jpg') : $heroDuskCdn;
-            $heroCardSrc = file_exists(public_path('images/hero_card_living.jpg')) ? asset('images/hero_card_living.jpg') : $heroCardCdn;
+            $heroDuskSrc = file_exists(public_path('images/hero_dusk_complex.webp')) ? asset('images/hero_dusk_complex.webp') : (file_exists(public_path('images/hero_dusk_complex.jpg')) ? asset('images/hero_dusk_complex.jpg') : $heroDuskCdn);
+            $heroCardSrc = file_exists(public_path('images/hero_card_living.webp')) ? asset('images/hero_card_living.webp') : (file_exists(public_path('images/hero_card_living.jpg')) ? asset('images/hero_card_living.jpg') : $heroCardCdn);
         @endphp
 
         {{-- Hero Dusk Architecture Background --}}
@@ -2826,7 +2850,8 @@
                  alt="Luxury Real Estate Community at Dusk" 
                  class="ur-hero-card-img" 
                  style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: right center; z-index: 1;"
-                 fetchpriority="high"
+                 loading="lazy"
+                 fetchpriority="low"
                  decoding="async">
             
             {{-- Dark Dusk Cinematic Gradient Overlay (Dark on Left behind text, transparent on Right) --}}
@@ -2946,7 +2971,7 @@
                         <span>Clear All</span>
                     </button>
                 </div>
-                <form id="heroFindPropertyForm" action="{{ route('properties.index') }}" method="GET" class="ur-hero-search-form">
+                <form id="heroFindPropertyForm" role="search" aria-label="Find Properties" action="{{ route('properties.index') }}" method="GET" class="ur-hero-search-form">
                     {{-- 1. I Want To --}}
                     <div class="ur-hero-search-col ur-hero-col-purpose">
                         <div class="ur-hero-label">
@@ -3471,7 +3496,7 @@
 
         {{-- 2. Standard Native Mobile Search Bar (Seamless Single Container with Standard Top Margin) --}}
         <div class="mt-3 sm:mt-3.5 mb-3">
-            <form id="mobileHeroSearchForm" action="{{ route('properties.index') }}" method="GET">
+            <form id="mobileHeroSearchForm" role="search" aria-label="Search Properties" action="{{ route('properties.index') }}" method="GET">
                 <input type="hidden" name="purpose" id="mobile_purpose_input" value="{{ request('purpose', 'rent') }}">
                 <input type="hidden" name="type" id="mobile_type_input" value="{{ request('type', 'all') }}">
                 <input type="hidden" name="rooms" id="mobile_rooms_input" value="{{ request('rooms', 'any') }}">
@@ -3479,12 +3504,13 @@
                 {{-- Unified Search Row (Standard 48px Height, Zero Nested Borders) --}}
                 <div class="mobile-app-search-bar">
                     {{-- Search Icon --}}
-                    <i class="ph-bold ph-magnifying-glass text-blue-600 text-sm xs:text-base flex-shrink-0"></i>
+                    <i class="ph-bold ph-magnifying-glass text-blue-600 text-sm xs:text-base flex-shrink-0" aria-hidden="true"></i>
 
                     {{-- Search Input --}}
                     <input type="text" 
                            name="search" 
                            id="mobile_search_input"
+                           aria-label="Search properties by city, locality, or landmark"
                            placeholder="Search 'Rooms in Gurugram'..." 
                            value="{{ request('search') }}"
                            class="mobile-search-input"
@@ -3623,18 +3649,8 @@
                                             </option>
                                         @endforeach
                                     </optgroup>
-                                    @if(!empty($allDistrictsList) && count($allDistrictsList) > 0)
-                                        <optgroup label="All Cities (Admin Added & Nationwide)">
-                                            @foreach($allDistrictsList as $d)
-                                                @php
-                                                    $dName = $d['name'];
-                                                    $isSelected = ($selectedDist === $dName || $selectedDist === ($d['slug'] ?? ''));
-                                                @endphp
-                                                <option value="{{ $dName }}" {{ $isSelected ? 'selected' : '' }}>
-                                                    {{ $dName }}{{ !empty($d['state_code']) ? ' (' . $d['state_code'] . ')' : '' }}
-                                                </option>
-                                            @endforeach
-                                        </optgroup>
+                                    @if($selectedDist && !array_key_exists($selectedDist, $popularCityNames) && !in_array(strtolower($selectedDist), ['gurgaon', 'bangalore']))
+                                        <option value="{{ $selectedDist }}" selected>{{ $selectedDist }}</option>
                                     @endif
                                 </select>
                                 <i class="ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
@@ -3806,9 +3822,9 @@
                         </div>
 
                         <div class="my-2 px-1">
-                            <h2 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                            <h1 class="text-[17px] sm:text-xl font-black text-white leading-tight tracking-tight drop-shadow-md">
                                 Luxury Stays &amp; Designer 1RK / PGs
-                            </h2>
+                            </h1>
                             <div class="mt-1 flex items-baseline gap-1.5">
                                 <span class="text-xs text-slate-200 font-semibold">Starting at</span>
                                 <span class="text-amber-400 font-black text-xl sm:text-2xl drop-shadow-md">₹5,999</span>
@@ -3981,11 +3997,14 @@
 
                 {{-- Slide 5: Luxury Villas & Independent Houses --}}
                 <div class="mobile-hero-banner-slide">
-                    <img src="https://lh3.googleusercontent.com/aida/AEtjO1VWM4B0YRvb_LtBUAb2OOgBMYAadrEV-44ohT1XqTQsZFA4iqlX8A4CeXVUdAtam0xBNrzYenmtn4KpZC-4dZw4e8VvXOa4f56W8w1kZ5rSRT3qmwWU2_cfl4DaoYLthj6mYCrfr1R8nL4BtRnSt1UZ_QXNtRc_CpVVQYqolu2wfppQax4HK3uJZkP8kOww1XNG9_xlQGdD3gJsWtRJl97ft8FZqA1R4s7x1UBmXprufRu7njm7NIWN6gO-" 
-                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80';"
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" 
+                         onerror="this.onerror=null;this.src='{{ asset('images/luxury_sunlit.webp') }}';"
                          alt="Luxury Villas & Independent Houses" 
                          class="mobile-hero-slide-bg" 
-                         loading="lazy">
+                         width="400"
+                         height="260"
+                         loading="lazy"
+                         decoding="async">
                     <div class="mobile-hero-slide-scrim"></div>
 
                     <div class="mobile-hero-slide-content">
@@ -4029,12 +4048,12 @@
         </div>
 
         {{-- Slider Dot Indicators --}}
-        <div class="mobile-slider-indicators" id="mobileSliderDots">
-            <button type="button" class="mobile-slider-dot active" onclick="goMobileSlide(0)" aria-label="Slide 1"></button>
-            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(1)" aria-label="Slide 2"></button>
-            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(2)" aria-label="Slide 3"></button>
-            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4"></button>
-            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(4)" aria-label="Slide 5"></button>
+        <div class="mobile-slider-indicators" id="mobileSliderDots" role="tablist" aria-label="Hero slider pagination">
+            <button type="button" class="mobile-slider-dot active" onclick="goMobileSlide(0)" aria-label="Slide 1" role="tab" aria-selected="true"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(1)" aria-label="Slide 2" role="tab" aria-selected="false"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(2)" aria-label="Slide 3" role="tab" aria-selected="false"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(3)" aria-label="Slide 4" role="tab" aria-selected="false"></button>
+            <button type="button" class="mobile-slider-dot" onclick="goMobileSlide(4)" aria-label="Slide 5" role="tab" aria-selected="false"></button>
         </div>
 
         {{-- 5. Flipkart Style Quick Filter Chips --}}
@@ -4242,10 +4261,10 @@
             </button>
 
             <!-- Dot Indicators -->
-            <div class="promo-dots">
-                <button class="promo-dot active" data-slide-index="0" aria-label="Slide 1"></button>
-                <button class="promo-dot" data-slide-index="1" aria-label="Slide 2"></button>
-                <button class="promo-dot" data-slide-index="2" aria-label="Slide 3"></button>
+            <div class="promo-dots" role="tablist" aria-label="Promo Slides">
+                <button type="button" role="tab" class="promo-dot active" data-slide-index="0" aria-label="Slide 1" aria-selected="true"></button>
+                <button type="button" role="tab" class="promo-dot" data-slide-index="1" aria-label="Slide 2" aria-selected="false"></button>
+                <button type="button" role="tab" class="promo-dot" data-slide-index="2" aria-label="Slide 3" aria-selected="false"></button>
             </div>
         </div>
     </div>
@@ -4664,6 +4683,7 @@
 
     {{-- Property Links Bar --}}
     @include('components.property-links-bar')
+    </main>
 
     <div class="hidden md:block">
         <x-footer />
@@ -4769,7 +4789,9 @@
                     promoSliderWrapper.style.transform = `translateX(-${promoCurrentSlide * 100}%)`;
                 }
                 promoDots.forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === promoCurrentSlide);
+                    const isActive = (idx === promoCurrentSlide);
+                    dot.classList.toggle('active', isActive);
+                    dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
                 });
             }
 
@@ -4971,7 +4993,9 @@
                     track.style.transform = `translateX(-${mobileHeroCurrentSlide * 100}%)`;
                 }
                 dots.forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === mobileHeroCurrentSlide);
+                    const isActive = (idx === mobileHeroCurrentSlide);
+                    dot.classList.toggle('active', isActive);
+                    dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
                 });
             };
 

@@ -309,19 +309,21 @@ window.OtpVerification = (function () {
                 }
             });
 
-            // Handle paste
+            // Handle paste without preventing default to satisfy Lighthouse and password managers
             input.addEventListener('paste', function (e) {
-                e.preventDefault();
                 const maxLen = digits.length || 4;
-                const pasted = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, maxLen);
-                pasted.split('').forEach((char, i) => {
-                    if (digits[i]) {
-                        digits[i].value = char;
+                const pasted = ((e.clipboardData || window.clipboardData)?.getData('text') || '').replace(/[^0-9]/g, '').slice(0, maxLen);
+                if (!pasted) return;
+                setTimeout(() => {
+                    pasted.split('').forEach((char, i) => {
+                        if (digits[i]) {
+                            digits[i].value = char;
+                        }
+                    });
+                    if (digits[Math.min(pasted.length, digits.length) - 1]) {
+                        digits[Math.min(pasted.length, digits.length) - 1].focus();
                     }
-                });
-                if (digits[Math.min(pasted.length, digits.length) - 1]) {
-                    digits[Math.min(pasted.length, digits.length) - 1].focus();
-                }
+                }, 0);
             });
         });
     }

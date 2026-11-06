@@ -96,10 +96,10 @@
                     </div>
 
                     <div class="mt-2">
-                        <h4 class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
+                        <h3 class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                             {{ $hCat['name'] }}
-                        </h4>
-                        <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">
+                        </h3>
+                        <p class="text-[10px] text-slate-600 dark:text-slate-300 line-clamp-1 mt-0.5">
                             {{ $hCat['desc'] }}
                         </p>
                     </div>

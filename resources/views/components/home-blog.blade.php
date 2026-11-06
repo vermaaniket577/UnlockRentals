@@ -22,6 +22,7 @@
             if (!empty($savedSliderIds)) {
                 $articlesList = \App\Models\Blog::published()
                     ->whereIn('id', $savedSliderIds)
+                    ->take(6)
                     ->get();
             }
 
@@ -35,7 +36,7 @@
                         $q->orWhere('is_featured', true);
                     })
                     ->latest('published_at')
-                    ->take(10)
+                    ->take(6)
                     ->get();
             }
 
@@ -43,7 +44,7 @@
             if ($articlesList->isEmpty()) {
                 $articlesList = \App\Models\Blog::published()
                     ->latest('published_at')
-                    ->take(10)
+                    ->take(6)
                     ->get();
             }
         } catch (\Throwable $e) {
@@ -239,6 +240,9 @@
                     <a href="{{ url('/blog/' . $art['slug']) }}" class="blog-card-img-wrap block" title="{{ $art['title'] }}">
                         <img src="{{ $art['image'] }}" alt="{{ $art['title'] }}" title="{{ $art['title'] }}"
                              loading="lazy"
+                             decoding="async"
+                             width="400"
+                             height="208"
                              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80';"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <span class="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold bg-slate-950/80 backdrop-blur-md text-white shadow-sm border border-white/10">
@@ -311,10 +315,15 @@
         const originalCards = Array.from(track.children);
         if (originalCards.length === 0) return;
 
-        // Clone items once to allow seamless loop
+        // Clone items once to allow seamless loop, stripping focusability from clones
         originalCards.forEach(card => {
             const clone = card.cloneNode(true);
             clone.setAttribute('aria-hidden', 'true');
+            clone.setAttribute('inert', '');
+            clone.querySelectorAll('a, button, input').forEach(el => {
+                el.setAttribute('tabindex', '-1');
+                el.setAttribute('aria-hidden', 'true');
+            });
             track.appendChild(clone);
         });
 

@@ -1,16 +1,15 @@
-const CACHE_NAME = 'unlockrentals-v1.0.4';
+const CACHE_NAME = 'unlockrentals-v1.0.5';
 const OFFLINE_URL = '/offline';
 
 const ASSETS_TO_CACHE = [
     OFFLINE_URL,
     '/',
     '/css/unlock-rental.css',
+    '/css/tailwind-build.css',
+    '/css/phosphor/bold/style.css',
+    '/css/phosphor/regular/style.css',
     '/favicon.ico',
-    '/favicon.png',
-    '/images/logo.png',
-    'https://cdn.tailwindcss.com',
-    'https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.0/src/bold/style.css',
-    'https://unpkg.com/@phosphor-icons/web@2.1.1/src/style.css'
+    '/images/logo.png'
 ];
 
 // Install Event

@@ -165,7 +165,6 @@
 </style>
 
 {{-- Client-Side Confetti & Fallback Mounting Script --}}
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
 function closeSubscriptionSuccessModal() {
     const modal = document.getElementById('subscription-success-modal');
@@ -194,16 +193,27 @@ function closeSubscriptionSuccessModal() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Confetti Burst
+    // 1. Confetti Burst (dynamically loaded on demand)
     const fireCelebrationConfetti = () => {
-        if (typeof confetti !== 'function') return;
-        try {
-            confetti({ particleCount: 50, spread: 60, origin: { x: 0.15, y: 0.6 }, colors: ['#10B981', '#3B82F6', '#F59E0B', '#06B6D4'] });
-            confetti({ particleCount: 50, spread: 60, origin: { x: 0.85, y: 0.6 }, colors: ['#10B981', '#3B82F6', '#F59E0B', '#06B6D4'] });
-            setTimeout(() => {
-                confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.45 }, colors: ['#10B981', '#F59E0B', '#3B82F6', '#8B5CF6'] });
-            }, 300);
-        } catch (_) {}
+        const doFire = () => {
+            if (typeof confetti !== 'function') return;
+            try {
+                confetti({ particleCount: 50, spread: 60, origin: { x: 0.15, y: 0.6 }, colors: ['#10B981', '#3B82F6', '#F59E0B', '#06B6D4'] });
+                confetti({ particleCount: 50, spread: 60, origin: { x: 0.85, y: 0.6 }, colors: ['#10B981', '#3B82F6', '#F59E0B', '#06B6D4'] });
+                setTimeout(() => {
+                    confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.45 }, colors: ['#10B981', '#F59E0B', '#3B82F6', '#8B5CF6'] });
+                }, 300);
+            } catch (_) {}
+        };
+
+        if (typeof confetti === 'function') {
+            doFire();
+        } else {
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+            s.onload = doFire;
+            document.body.appendChild(s);
+        }
     };
 
     const hasServerModal = !!document.getElementById('subscription-success-modal');

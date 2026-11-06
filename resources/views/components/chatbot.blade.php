@@ -4,7 +4,9 @@
 
 <!-- Chatbot Overlay Button & Window -->
 <div class="chatbot-trigger" id="chatTrigger" onclick="window.toggleSupportChat(event)" style="overflow: hidden; padding: 0; background: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" title="Open Chat Support" role="button" aria-label="Open Chatbot">
-    <video src="{{ asset('videos/chatbot.mp4') }}" autoplay loop muted playsinline preload="metadata" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%;"></video>
+    <video src="{{ asset('videos/chatbot.mp4') }}" autoplay loop muted playsinline preload="metadata" aria-label="Support chatbot animation" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none; border-radius: 50%;">
+        <track kind="captions" src="data:text/vtt,WEBVTT" srclang="en" label="English" default>
+    </video>
 </div>
 
 <div class="chat-window" id="chatWindow" aria-live="polite" role="dialog" aria-modal="true" aria-label="Unlock Support Chat">

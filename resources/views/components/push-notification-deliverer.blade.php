@@ -184,11 +184,18 @@
             return div.innerHTML;
         }
 
-        // 1. Initial check when page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => setTimeout(window.checkLatestPushNotification, 1200));
+        // 1. Initial check after page is fully idle and loaded (avoids competing with critical paint)
+        function scheduleInitialPushCheck() {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => setTimeout(window.checkLatestPushNotification, 2000), { timeout: 6000 });
+            } else {
+                setTimeout(window.checkLatestPushNotification, 5000);
+            }
+        }
+        if (document.readyState === 'complete') {
+            scheduleInitialPushCheck();
         } else {
-            setTimeout(window.checkLatestPushNotification, 1200);
+            window.addEventListener('load', scheduleInitialPushCheck);
         }
 
         // 2. Periodic polling every 3 minutes (only if tab is actively visible)

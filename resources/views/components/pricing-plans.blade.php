@@ -151,7 +151,7 @@
 }
 
 .ur-billing-seg-btn .ur-discount-chip {
-    background: #10b981;
+    background: #047857;
     color: #ffffff;
     font-size: 0.68rem;
     font-weight: 800;
@@ -159,7 +159,7 @@
     border-radius: 9999px;
     margin-left: 0.25rem;
     letter-spacing: 0.02em;
-    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+    box-shadow: 0 2px 6px rgba(4, 120, 87, 0.25);
 }
 
 @media (max-width: 480px) {
@@ -358,23 +358,33 @@
 .ur-slider-dots {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .ur-slider-dot {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-    background: #cbd5e1;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
-    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.ur-slider-dot.active {
-    width: 1.65rem;
+.ur-slider-dot::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
     border-radius: 9999px;
+    background: #cbd5e1;
+    transition: transform 0.25s ease, background-color 0.25s ease;
+}
+
+.ur-slider-dot.active::before {
+    transform: scaleX(2.5);
     background: #2563eb;
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
@@ -1013,9 +1023,9 @@
                 <button type="button" class="ur-slider-btn ur-slider-btn--prev" aria-label="Previous Plan" title="Previous Plan">
                     <i class="ph-bold ph-caret-left"></i>
                 </button>
-                <div class="ur-slider-dots" role="tablist">
+                <div class="ur-slider-dots" role="tablist" aria-label="Rent Plans">
                     @foreach($rentPlans as $index => $plan)
-                        <button type="button" class="ur-slider-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}" aria-label="{{ $plan->name }}" title="{{ $plan->name }}"></button>
+                        <button type="button" role="tab" class="ur-slider-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}" aria-label="{{ $plan->name }}" aria-selected="{{ $index === 0 ? 'true' : 'false' }}" title="{{ $plan->name }}"></button>
                     @endforeach
                 </div>
                 <button type="button" class="ur-slider-btn ur-slider-btn--next" aria-label="Next Plan" title="Next Plan">
@@ -1224,9 +1234,9 @@
                 <button type="button" class="ur-slider-btn ur-slider-btn--prev" aria-label="Previous Plan" title="Previous Plan">
                     <i class="ph-bold ph-caret-left"></i>
                 </button>
-                <div class="ur-slider-dots" role="tablist">
+                <div class="ur-slider-dots" role="tablist" aria-label="Buy Plans">
                     @foreach($buyPlans as $index => $plan)
-                        <button type="button" class="ur-slider-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}" aria-label="{{ $plan->name }}" title="{{ $plan->name }}"></button>
+                        <button type="button" role="tab" class="ur-slider-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}" aria-label="{{ $plan->name }}" aria-selected="{{ $index === 0 ? 'true' : 'false' }}" title="{{ $plan->name }}"></button>
                     @endforeach
                 </div>
                 <button type="button" class="ur-slider-btn ur-slider-btn--next" aria-label="Next Plan" title="Next Plan">
@@ -1338,7 +1348,9 @@
             function updateUI(idx) {
                 currentIndex = idx;
                 dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === idx);
+                    const isActive = (i === idx);
+                    dot.classList.toggle('active', isActive);
+                    dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
                 });
                 if (prevBtn) {
                     prevBtn.style.opacity = idx === 0 ? '0.4' : '1';

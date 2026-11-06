@@ -22,11 +22,11 @@
             </p>
 
             {{-- Primary Tab Switcher --}}
-            <div class="grid grid-cols-2 p-1 mt-3 bg-slate-100 dark:bg-slate-800 rounded-xl" role="tablist">
-                <button type="button" id="tab-btn-login" onclick="window.switchAuthTab('login')" class="py-2.5 text-[13px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer">
+            <div class="grid grid-cols-2 p-1 mt-3 bg-slate-100 dark:bg-slate-800 rounded-xl" role="tablist" aria-label="Authentication Options">
+                <button type="button" role="tab" id="tab-btn-login" aria-selected="true" onclick="window.switchAuthTab('login')" class="py-2.5 text-[13px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer">
                     Sign In
                 </button>
-                <button type="button" id="tab-btn-register" onclick="window.switchAuthTab('register')" class="py-2.5 text-[13px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer">
+                <button type="button" role="tab" id="tab-btn-register" aria-selected="false" onclick="window.switchAuthTab('register')" class="py-2.5 text-[13px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer">
                     Create Account
                 </button>
             </div>
@@ -254,14 +254,12 @@
 
 {{-- Scoped Styles for Bulletproof Resilience Against Global Reset Conflicts --}}
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 #ur-auth-modal {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     box-sizing: border-box;
 }
 #ur-auth-modal *:not(i):not([class*="ph-"]):not(svg):not(path) {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     box-sizing: border-box;
 }
 #ur-auth-modal .ph-bold,
@@ -331,7 +329,7 @@
     opacity: 1;
 }
 #ur-auth-modal label {
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
     font-size: 12px !important;
     font-weight: 500 !important;
     letter-spacing: 0.01em !important;
@@ -411,9 +409,11 @@ window.switchAuthTab = function(tab) {
         if (regContainer) regContainer.classList.remove('hidden');
         if (tabReg) {
             tabReg.className = "py-2.5 text-[13px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer";
+            tabReg.setAttribute('aria-selected', 'true');
         }
         if (tabLogin) {
             tabLogin.className = "py-2.5 text-[13px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer";
+            tabLogin.setAttribute('aria-selected', 'false');
         }
     } else {
         const loginPhone = document.getElementById('modal-login-phone-input');
@@ -425,9 +425,11 @@ window.switchAuthTab = function(tab) {
         if (loginContainer) loginContainer.classList.remove('hidden');
         if (tabLogin) {
             tabLogin.className = "py-2.5 text-[13px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer";
+            tabLogin.setAttribute('aria-selected', 'true');
         }
         if (tabReg) {
             tabReg.className = "py-2.5 text-[13px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer";
+            tabReg.setAttribute('aria-selected', 'false');
         }
     }
 };
@@ -877,16 +879,17 @@ function setupOtpDigitInputs(containerSelector) {
         });
 
         input.addEventListener('paste', (e) => {
-            e.preventDefault();
-            const text = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+            const text = (e.clipboardData || window.clipboardData)?.getData('text')?.replace(/[^0-9]/g, '') || '';
             if (!text) return;
-            for (let i = 0; i < inputs.length; i++) {
-                if (i < text.length) {
-                    inputs[i].value = text[i];
+            setTimeout(() => {
+                for (let i = 0; i < inputs.length; i++) {
+                    if (i < text.length) {
+                        inputs[i].value = text[i];
+                    }
                 }
-            }
-            const targetIdx = Math.min(text.length, inputs.length - 1);
-            inputs[targetIdx].focus();
+                const targetIdx = Math.min(text.length, inputs.length - 1);
+                if (inputs[targetIdx]) inputs[targetIdx].focus();
+            }, 0);
         });
     });
 }

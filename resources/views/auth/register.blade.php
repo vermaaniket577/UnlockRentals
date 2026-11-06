@@ -471,17 +471,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         input.addEventListener('paste', function (e) {
-            e.preventDefault();
             const maxLen = digitInputs.length || 4;
-            const pasted = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, maxLen);
-            pasted.split('').forEach((char, i) => {
-                if (digitInputs[i]) digitInputs[i].value = char;
-            });
-            if (pasted.length === maxLen) {
-                verifyAndCompleteRegistration();
-            } else if (digitInputs[pasted.length]) {
-                digitInputs[pasted.length].focus();
-            }
+            const pasted = ((e.clipboardData || window.clipboardData)?.getData('text') || '').replace(/[^0-9]/g, '').slice(0, maxLen);
+            if (!pasted) return;
+            setTimeout(() => {
+                pasted.split('').forEach((char, i) => {
+                    if (digitInputs[i]) digitInputs[i].value = char;
+                });
+                if (pasted.length === maxLen) {
+                    verifyAndCompleteRegistration();
+                } else if (digitInputs[pasted.length]) {
+                    digitInputs[pasted.length].focus();
+                }
+            }, 0);
         });
     });
 
