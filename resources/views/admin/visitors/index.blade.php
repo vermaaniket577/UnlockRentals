@@ -537,11 +537,15 @@
                                 {{-- Origin Location Details --}}
                                 <td class="py-4 px-6 align-top">
                                     <div class="space-y-1">
-                                        <div class="flex items-center gap-1.5 font-extrabold text-slate-900 text-xs">
+                                        <div class="flex items-center flex-wrap gap-1.5 font-extrabold text-slate-900 text-xs">
                                             <i class="ph-bold ph-map-pin text-rose-500 text-sm"></i>
                                             <span>{{ $searchItem->getOriginCity() }}</span>
-                                            @if($searchItem->getOriginState())
+                                            @if($searchItem->getOriginState() && strcasecmp($searchItem->getOriginCity(), $searchItem->getOriginState()) !== 0)
                                                 <span class="text-slate-400 font-semibold">, {{ $searchItem->getOriginState() }}</span>
+                                            @endif
+                                            @php $origCountry = $searchItem->getOriginCountry(); @endphp
+                                            @if($origCountry && !in_array($origCountry, [$searchItem->getOriginCity(), $searchItem->getOriginState()]))
+                                                <span class="text-[9.5px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-bold uppercase">{{ $origCountry }}</span>
                                             @endif
                                         </div>
 

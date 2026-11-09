@@ -221,6 +221,7 @@ class AdminController extends Controller
                     ->join('visitors', 'visitor_events.visitor_id', '=', 'visitors.id')
                     ->whereNotNull('visitors.city')
                     ->where('visitors.city', '!=', '')
+                    ->whereNotIn('visitors.city', ['Location Detected', 'Detected Location'])
                     ->selectRaw('visitors.city, visitors.state, COUNT(visitor_events.id) as total_searches')
                     ->groupBy('visitors.city', 'visitors.state')
                     ->orderByDesc('total_searches')

@@ -291,9 +291,22 @@ class PropertyController extends Controller
         $properties = $query->paginate(12)->withQueryString();
 
         // Record search event with visitor origin location & query filters
-        if ($request->anyFilled(['search', 'district', 'state', 'locality', 'location', 'type', 'purpose', 'rooms', 'bedrooms', 'price', 'min_price', 'max_price', 'lat', 'lng', 'latitude', 'longitude', 'near_me'])) {
+        if ($request->anyFilled(['search', 'district', 'state', 'locality', 'location', 'type', 'purpose', 'rooms', 'bedrooms', 'price', 'min_price', 'max_price', 'lat', 'lng', 'latitude', 'longitude', 'near_me', 'owner', 'sort'])) {
             try {
-                app(\App\Services\VisitorTrackingService::class)->recordSearchEvent($request, (int) ($properties->total() ?? $properties->count()));
+                app(\App\Services\VisitorTrackingService::class)->recordSearchEvent($request, (int) ($properties->total() ?? $properties->count()), [
+                    'district' => $request->get('district', $request->get('location')),
+                    'locality' => $request->get('locality'),
+                    'state' => $request->get('state'),
+                    'type' => $request->get('type'),
+                    'purpose' => $request->get('purpose'),
+                    'rooms' => $request->get('rooms', $request->get('bedrooms')),
+                    'price' => $request->get('price'),
+                    'min_price' => $request->get('min_price'),
+                    'max_price' => $request->get('max_price'),
+                    'near_me' => $request->boolean('near_me'),
+                    'owner' => $request->boolean('owner'),
+                    'sort' => $request->get('sort'),
+                ]);
             } catch (\Throwable $e) {
                 // Ignore tracking failures to not disrupt search experience
             }

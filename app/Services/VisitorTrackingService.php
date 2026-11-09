@@ -39,10 +39,118 @@ class VisitorTrackingService
     ];
 
     /**
+     * Resolve the client's public IP address considering proxies/Cloudflare.
+     */
+    public static function getClientIp(Request $request): string
+    {
+        $headers = [
+            'CF-Connecting-IP',
+            'True-Client-IP',
+            'X-Real-IP',
+            'X-Forwarded-For',
+        ];
+        foreach ($headers as $h) {
+            $val = $request->header($h);
+            if ($val) {
+                $ips = array_map('trim', explode(',', $val));
+                foreach ($ips as $ip) {
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                        return $ip;
+                    }
+                }
+            }
+        }
+        return $request->ip() ?: '127.0.0.1';
+    }
+
+    /**
+     * Fast, resilient IP geolocation resolver with caching.
+     */
+    public static function resolveIpLocation(?string $ip): ?array
+    {
+        if (empty($ip)) {
+            return null;
+        }
+
+        // Handle private / reserved / loopback IPs (local dev fallback)
+        if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            return [
+                'city' => 'Gurugram',
+                'state' => 'Haryana',
+                'country' => 'India',
+                'lat' => 28.4595,
+                'lng' => 77.0266,
+            ];
+        }
+
+        $cacheKey = 'ur_geoip_' . md5($ip);
+
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 86400 * 30, function () use ($ip) {
+            // 1. Primary: ip-api.com
+            try {
+                $ch = curl_init("http://ip-api.com/json/{$ip}?fields=status,message,country,regionName,city,lat,lon");
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 2,
+                    CURLOPT_CONNECTTIMEOUT => 1,
+                    CURLOPT_USERAGENT => 'UnlockRentals/1.0',
+                ]);
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                if ($httpCode === 200 && $response) {
+                    $data = json_decode($response, true);
+                    if (($data['status'] ?? '') === 'success' && !empty($data['city'])) {
+                        return [
+                            'city' => ucwords(strtolower(trim($data['city']))),
+                            'state' => !empty($data['regionName']) ? ucwords(strtolower(trim($data['regionName']))) : null,
+                            'country' => !empty($data['country']) ? trim($data['country']) : 'India',
+                            'lat' => $data['lat'] ?? null,
+                            'lng' => $data['lon'] ?? null,
+                        ];
+                    }
+                }
+            } catch (\Throwable $e) {}
+
+            // 2. Secondary fallback: ipwho.is
+            try {
+                $ch = curl_init("https://ipwho.is/{$ip}");
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 2,
+                    CURLOPT_CONNECTTIMEOUT => 1,
+                    CURLOPT_USERAGENT => 'UnlockRentals/1.0',
+                ]);
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                if ($httpCode === 200 && $response) {
+                    $data = json_decode($response, true);
+                    if (!empty($data['success']) && !empty($data['city'])) {
+                        return [
+                            'city' => ucwords(strtolower(trim($data['city']))),
+                            'state' => !empty($data['region']) ? ucwords(strtolower(trim($data['region']))) : null,
+                            'country' => !empty($data['country']) ? trim($data['country']) : 'India',
+                            'lat' => $data['latitude'] ?? null,
+                            'lng' => $data['longitude'] ?? null,
+                        ];
+                    }
+                }
+            } catch (\Throwable $e) {}
+
+            return null;
+        });
+    }
+
+    /**
      * Detect visitor's physical geographical location (City, State, Country, IP).
      */
     public function detectLocation(Request $request): array
     {
+        $ip = static::getClientIp($request);
+
         $city = $request->header('CF-IPCity') 
             ?? $request->header('X-Geo-City') 
             ?? $request->header('X-AppEngine-City') 
@@ -56,25 +164,43 @@ class VisitorTrackingService
 
         $country = $request->header('CF-IPCountry') 
             ?? $request->header('X-Geo-Country') 
-            ?? 'India';
+            ?? null;
 
-        $ip = $request->ip();
+        // 1. Client explicit input override if available
+        if (empty($city) && $request->filled('detected_city')) {
+            $city = trim($request->input('detected_city'));
+            $state = trim($request->input('detected_state', ''));
+        }
 
-        // Check fast cached GeoIP if available without blocking requests
-        if (empty($city) && $ip && filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-            $cacheKey = 'ur_geoip_' . md5($ip);
-            $geo = \Illuminate\Support\Facades\Cache::get($cacheKey);
-            if ($geo && is_array($geo)) {
+        // 2. Check cookies for user's explicit / GPS selected city
+        if (empty($city)) {
+            $cookieCity = $request->cookie('ur_user_city');
+            $cookieLocality = $request->cookie('ur_user_locality');
+            $cookieExact = $request->cookie('ur_user_exact_location');
+            if ($cookieCity) {
+                $city = $cookieCity;
+                $state = $cookieLocality ?: $state;
+            } elseif ($cookieExact) {
+                $exactParts = array_map('trim', explode(',', $cookieExact));
+                $city = end($exactParts);
+                if (count($exactParts) > 1) {
+                    $state = $exactParts[0];
+                }
+            }
+        }
+
+        // 3. Fast GeoIP resolver if city or country is missing
+        if ((empty($city) || empty($country)) && $ip) {
+            $geo = static::resolveIpLocation($ip);
+            if (!empty($geo)) {
                 $city = $city ?: ($geo['city'] ?? null);
                 $state = $state ?: ($geo['state'] ?? null);
                 $country = $country ?: ($geo['country'] ?? 'India');
             }
         }
 
-        // Client explicit override if available
-        if (empty($city) && $request->filled('detected_city')) {
-            $city = trim($request->input('detected_city'));
-            $state = trim($request->input('detected_state', ''));
+        if (empty($country)) {
+            $country = 'India';
         }
 
         return [
@@ -148,18 +274,19 @@ class VisitorTrackingService
             $initialValues
         );
 
-        // Update location on returning visitors if previously unknown
+        // Update location on returning visitors if previously unknown or placeholder
         $updates = [];
-        if (empty($visitor->city) && !empty($loc['city'])) {
+        $isPlaceholderCity = in_array($visitor->city, ['Location Detected', 'Detected Location', null, ''], true);
+        if ($isPlaceholderCity && !empty($loc['city'])) {
             $updates['city'] = $loc['city'];
         }
-        if (empty($visitor->state) && !empty($loc['state'])) {
+        if ((empty($visitor->state) || $visitor->state === 'India') && !empty($loc['state'])) {
             $updates['state'] = $loc['state'];
         }
         if (empty($visitor->country) && !empty($loc['country'])) {
             $updates['country'] = $loc['country'];
         }
-        if (static::hasColumn('visitors', 'ip_address') && empty($visitor->ip_address) && !empty($loc['ip'])) {
+        if (static::hasColumn('visitors', 'ip_address') && (empty($visitor->ip_address) || $visitor->ip_address === '127.0.0.1') && !empty($loc['ip'])) {
             $updates['ip_address'] = $loc['ip'];
         }
 
@@ -250,19 +377,24 @@ class VisitorTrackingService
             $session = $this->resolveSession($visitor, $request);
         }
 
-        $searchQuery = trim((string) ($customCriteria['search'] ?? $request->get('search', '')));
-        $district = trim((string) ($customCriteria['district'] ?? $request->get('district', '')));
+        $searchQuery = trim((string) ($customCriteria['search'] ?? $request->get('search', $request->get('q', $request->get('query', '')))));
+        $district = trim((string) ($customCriteria['district'] ?? $request->get('district', $request->get('city', $request->get('location', '')))));
         $locality = trim((string) ($customCriteria['locality'] ?? $request->get('locality', '')));
         $state = trim((string) ($customCriteria['state'] ?? $request->get('state', '')));
         $type = trim((string) ($customCriteria['type'] ?? $request->get('type', '')));
+        $subType = trim((string) ($customCriteria['sub_type'] ?? $request->get('sub_type', '')));
+        $purpose = trim((string) ($customCriteria['purpose'] ?? $request->get('purpose', '')));
         $rooms = trim((string) ($customCriteria['rooms'] ?? $request->get('rooms', $request->get('bedrooms', ''))));
         $price = trim((string) ($customCriteria['price'] ?? $request->get('price', '')));
         $minPrice = $customCriteria['min_price'] ?? $request->get('min_price');
         $maxPrice = $customCriteria['max_price'] ?? $request->get('max_price');
         $nearMe = !empty($customCriteria['near_me']) || $request->boolean('near_me');
+        $ownerOnly = !empty($customCriteria['owner']) || $request->boolean('owner');
+        $sort = trim((string) ($customCriteria['sort'] ?? $request->get('sort', '')));
+        $page = (int) ($request->get('page', 1));
 
-        // Only record if at least one meaningful search parameter is provided
-        if (empty($searchQuery) && empty($district) && empty($locality) && empty($state) && empty($type) && empty($rooms) && empty($price) && empty($minPrice) && empty($maxPrice) && !$nearMe) {
+        // Only record if at least one meaningful search parameter or filter is provided
+        if (empty($searchQuery) && empty($district) && empty($locality) && empty($state) && empty($type) && empty($rooms) && empty($price) && empty($minPrice) && empty($maxPrice) && !$nearMe && empty($subType) && empty($purpose) && !$ownerOnly) {
             return null;
         }
 
@@ -306,24 +438,56 @@ class VisitorTrackingService
             }
         }
 
+        // User explicit / GPS saved location from cookies if no explicit district in URL
+        $userSelectedCity = $request->cookie('ur_user_city');
+        $userSelectedLocality = $request->cookie('ur_user_locality');
+        $userExactLocation = $request->cookie('ur_user_exact_location');
+
+        $targetScope = 'all_india';
+        if (!empty($district) || !empty($locality)) {
+            $targetScope = 'filtered';
+        } elseif ($nearMe) {
+            $targetScope = 'near_me';
+        } elseif (!empty($userSelectedCity)) {
+            $targetScope = 'user_selected';
+            $district = $userSelectedCity;
+            $locality = $userSelectedLocality ?: $locality;
+        }
+
+        // Detect real origin location (Where user is physically searching from)
+        $loc = $this->detectLocation($request);
+        if ((empty($visitor->city) || in_array($visitor->city, ['Location Detected', 'Detected Location'], true)) && !empty($loc['city'])) {
+            $visitor->updateQuietly([
+                'city' => $loc['city'],
+                'state' => $loc['state'],
+                'country' => $loc['country'],
+            ]);
+        }
+
         $metadata = [
             'search' => $searchQuery ?: null,
             'district' => $district ?: null,
             'locality' => $locality ?: null,
             'state' => $state ?: null,
             'type' => $type ?: null,
+            'sub_type' => $subType ?: null,
+            'purpose' => $purpose ?: null,
             'rooms' => $rooms ?: null,
             'price' => $priceDisplay ?: null,
+            'owner_only' => $ownerOnly ? true : null,
+            'sort' => $sort ?: null,
+            'page' => $page > 1 ? $page : null,
             'near_me' => $nearMe,
-            'exact_location' => $exactLocation ?: null,
+            'exact_location' => $exactLocation ?: ($userExactLocation ?? null),
+            'target_scope' => $targetScope,
             'lat' => $lat ?: null,
             'lng' => $lng ?: null,
             'results_count' => $resultsCount,
             // Origin Location where the user is physically searching from:
-            'visitor_city' => $visitor->city ?: 'Location Detected',
-            'visitor_state' => $visitor->state ?: 'India',
-            'visitor_country' => $visitor->country ?: 'India',
-            'visitor_ip' => $request->ip(),
+            'visitor_city' => $loc['city'] ?: ($visitor->city ?: 'Detected Location'),
+            'visitor_state' => $loc['state'] ?: ($visitor->state ?: 'India'),
+            'visitor_country' => $loc['country'] ?: ($visitor->country ?: 'India'),
+            'visitor_ip' => $loc['ip'] ?? static::getClientIp($request),
             'device_type' => $visitor->device_type ?? $this->detectDevice($request),
             'browser' => $visitor->browser ?? $this->detectBrowser($request),
         ];

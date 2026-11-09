@@ -127,12 +127,13 @@ class VisitorDashboardController extends Controller
                 ->limit(6)
                 ->get();
 
-            // Top Search Origins
+            // Top Search Origins (exclude placeholder values)
             $topSearchOrigins = VisitorEvent::where('event_name', 'search')
                 ->whereBetween('visitor_events.created_at', [$startDate, $endDate])
                 ->join('visitors', 'visitor_events.visitor_id', '=', 'visitors.id')
                 ->whereNotNull('visitors.city')
                 ->where('visitors.city', '!=', '')
+                ->whereNotIn('visitors.city', ['Location Detected', 'Detected Location'])
                 ->selectRaw('visitors.city, visitors.state, COUNT(visitor_events.id) as total_searches, COUNT(DISTINCT visitor_events.visitor_id) as unique_searchers')
                 ->groupBy('visitors.city', 'visitors.state')
                 ->orderByDesc('total_searches')
@@ -144,24 +145,11 @@ class VisitorDashboardController extends Controller
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->latest('created_at')
                 ->take(150)
-                ->get(['metadata']);
+                ->get(['id', 'metadata', 'page_url']);
 
             $targetCounts = [];
             foreach ($searchEventsForTargets as $se) {
-                $meta = $se->metadata ?? [];
-                $target = null;
-                if (!empty($meta['locality']) && !empty($meta['district'])) {
-                    $target = ucwords(str_replace('-', ' ', $meta['locality'])) . ', ' . ucwords(str_replace('-', ' ', $meta['district']));
-                } elseif (!empty($meta['locality'])) {
-                    $target = ucwords(str_replace('-', ' ', $meta['locality']));
-                } elseif (!empty($meta['district'])) {
-                    $target = ucwords(str_replace('-', ' ', $meta['district']));
-                } elseif (!empty($meta['search'])) {
-                    $target = \Illuminate\Support\Str::limit(trim($meta['search']), 30);
-                } elseif (!empty($meta['near_me'])) {
-                    $target = 'Near Me (GPS)';
-                }
-
+                $target = $se->getTargetLocationDisplay();
                 if ($target) {
                     $targetCounts[$target] = ($targetCounts[$target] ?? 0) + 1;
                 }
