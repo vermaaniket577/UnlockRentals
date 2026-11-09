@@ -14,14 +14,25 @@
     <div class="w-full max-w-[440px] relative z-10">
 
         {{-- Top Brand Icon / Badge --}}
-        <div class="text-center mb-8">
-            <a href="{{ url('/') }}" class="inline-flex items-center gap-2.5 group transition-transform duration-200 hover:scale-[1.02]" title="UnlockRentals">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-600/25 ring-4 ring-blue-50 dark:ring-blue-900/30 transition-all duration-300 group-hover:shadow-blue-600/35">
-                    <i class="ph-bold ph-lock text-xl"></i>
+        <div class="text-center mb-5">
+            <a href="{{ url('/') }}" class="inline-flex items-center justify-center group transition-transform duration-200 hover:scale-[1.04]" title="UnlockRentals">
+                <div class="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-md shadow-slate-900/5 dark:shadow-none flex items-center justify-center p-2 transition-all duration-300 group-hover:shadow-lg group-hover:border-blue-400">
+                    <picture>
+                        <source srcset="{{ asset('images/logo-icon.webp') }}" type="image/webp">
+                        <img src="{{ asset('images/logo-icon.png') }}"
+                             alt="UnlockRentals"
+                             title="UnlockRentals"
+                             class="w-full h-full object-contain"
+                             width="36"
+                             height="36"
+                             fetchpriority="high"
+                             decoding="async"
+                             onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
+                    </picture>
                 </div>
             </a>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-4">Create new password</h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">Please choose a strong password to protect your account</p>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mt-2.5">Create new password</h1>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Please choose a strong password to protect your account</p>
         </div>
 
         {{-- Main Card --}}
