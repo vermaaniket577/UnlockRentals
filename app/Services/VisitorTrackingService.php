@@ -86,42 +86,41 @@ class VisitorTrackingService
         $cacheKey = 'ur_geoip_' . md5($ip);
 
         return \Illuminate\Support\Facades\Cache::remember($cacheKey, 86400 * 30, function () use ($ip) {
-            // 1. Primary: ip-api.com
+            $defaultHeaders = [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 3,
+                CURLOPT_CONNECTTIMEOUT => 2,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            ];
+
+            // 1. Primary: ipapi.co (HTTPS, highly accurate for Indian ISPs like Jio, Airtel, ACT)
             try {
-                $ch = curl_init("http://ip-api.com/json/{$ip}?fields=status,message,country,regionName,city,lat,lon");
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_TIMEOUT => 2,
-                    CURLOPT_CONNECTTIMEOUT => 1,
-                    CURLOPT_USERAGENT => 'UnlockRentals/1.0',
-                ]);
+                $ch = curl_init("https://ipapi.co/{$ip}/json/");
+                curl_setopt_array($ch, $defaultHeaders);
                 $response = curl_exec($ch);
                 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
 
                 if ($httpCode === 200 && $response) {
                     $data = json_decode($response, true);
-                    if (($data['status'] ?? '') === 'success' && !empty($data['city'])) {
+                    if (!empty($data['city']) && empty($data['error'])) {
                         return [
                             'city' => ucwords(strtolower(trim($data['city']))),
-                            'state' => !empty($data['regionName']) ? ucwords(strtolower(trim($data['regionName']))) : null,
-                            'country' => !empty($data['country']) ? trim($data['country']) : 'India',
-                            'lat' => $data['lat'] ?? null,
-                            'lng' => $data['lon'] ?? null,
+                            'state' => !empty($data['region']) ? ucwords(strtolower(trim($data['region']))) : null,
+                            'country' => !empty($data['country_name']) ? trim($data['country_name']) : 'India',
+                            'lat' => $data['latitude'] ?? null,
+                            'lng' => $data['longitude'] ?? null,
                         ];
                     }
                 }
             } catch (\Throwable $e) {}
 
-            // 2. Secondary fallback: ipwho.is
+            // 2. Secondary: ipwho.is (HTTPS, fast global fallback)
             try {
                 $ch = curl_init("https://ipwho.is/{$ip}");
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_TIMEOUT => 2,
-                    CURLOPT_CONNECTTIMEOUT => 1,
-                    CURLOPT_USERAGENT => 'UnlockRentals/1.0',
-                ]);
+                curl_setopt_array($ch, $defaultHeaders);
                 $response = curl_exec($ch);
                 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
@@ -140,8 +139,127 @@ class VisitorTrackingService
                 }
             } catch (\Throwable $e) {}
 
+            // 3. Tertiary: ip-api.com (HTTP)
+            try {
+                $ch = curl_init("http://ip-api.com/json/{$ip}?fields=status,message,country,regionName,city,lat,lon");
+                curl_setopt_array($ch, $defaultHeaders);
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                if ($httpCode === 200 && $response) {
+                    $data = json_decode($response, true);
+                    if (($data['status'] ?? '') === 'success' && !empty($data['city'])) {
+                        return [
+                            'city' => ucwords(strtolower(trim($data['city']))),
+                            'state' => !empty($data['regionName']) ? ucwords(strtolower(trim($data['regionName']))) : null,
+                            'country' => !empty($data['country']) ? trim($data['country']) : 'India',
+                            'lat' => $data['lat'] ?? null,
+                            'lng' => $data['lon'] ?? null,
+                        ];
+                    }
+                }
+            } catch (\Throwable $e) {}
+
             return null;
         });
+    }
+
+    /**
+     * Smart Indian City & Locality Extractor from search query string.
+     */
+    public static function parseIndianLocationFromQuery(?string $query): ?array
+    {
+        if (empty($query)) return null;
+
+        $q = strtolower(trim($query));
+
+        // Mapping of popular Indian cities & localities
+        static $indianLocations = [
+            'gurugram' => ['city' => 'Gurugram', 'state' => 'Haryana'],
+            'gurgaon' => ['city' => 'Gurugram', 'state' => 'Haryana'],
+            'cyber city' => ['city' => 'Gurugram', 'locality' => 'Cyber City', 'state' => 'Haryana'],
+            'golf course road' => ['city' => 'Gurugram', 'locality' => 'Golf Course Road', 'state' => 'Haryana'],
+            'golf course ext' => ['city' => 'Gurugram', 'locality' => 'Golf Course Extension', 'state' => 'Haryana'],
+            'sohna road' => ['city' => 'Gurugram', 'locality' => 'Sohna Road', 'state' => 'Haryana'],
+            'noida' => ['city' => 'Noida', 'state' => 'Uttar Pradesh'],
+            'greater noida' => ['city' => 'Greater Noida', 'state' => 'Uttar Pradesh'],
+            'delhi' => ['city' => 'Delhi', 'state' => 'Delhi'],
+            'new delhi' => ['city' => 'New Delhi', 'state' => 'Delhi'],
+            'south delhi' => ['city' => 'South Delhi', 'state' => 'Delhi'],
+            'dwarka' => ['city' => 'Delhi', 'locality' => 'Dwarka', 'state' => 'Delhi'],
+            'saket' => ['city' => 'Delhi', 'locality' => 'Saket', 'state' => 'Delhi'],
+            'rohini' => ['city' => 'Delhi', 'locality' => 'Rohini', 'state' => 'Delhi'],
+            'bengaluru' => ['city' => 'Bengaluru', 'state' => 'Karnataka'],
+            'bangalore' => ['city' => 'Bengaluru', 'state' => 'Karnataka'],
+            'whitefield' => ['city' => 'Bengaluru', 'locality' => 'Whitefield', 'state' => 'Karnataka'],
+            'koramangala' => ['city' => 'Bengaluru', 'locality' => 'Koramangala', 'state' => 'Karnataka'],
+            'indiranagar' => ['city' => 'Bengaluru', 'locality' => 'Indiranagar', 'state' => 'Karnataka'],
+            'bellandur' => ['city' => 'Bengaluru', 'locality' => 'Bellandur', 'state' => 'Karnataka'],
+            'mumbai' => ['city' => 'Mumbai', 'state' => 'Maharashtra'],
+            'navi mumbai' => ['city' => 'Navi Mumbai', 'state' => 'Maharashtra'],
+            'thane' => ['city' => 'Thane', 'state' => 'Maharashtra'],
+            'andheri' => ['city' => 'Mumbai', 'locality' => 'Andheri', 'state' => 'Maharashtra'],
+            'bandra' => ['city' => 'Mumbai', 'locality' => 'Bandra', 'state' => 'Maharashtra'],
+            'powai' => ['city' => 'Mumbai', 'locality' => 'Powai', 'state' => 'Maharashtra'],
+            'pune' => ['city' => 'Pune', 'state' => 'Maharashtra'],
+            'hinjewadi' => ['city' => 'Pune', 'locality' => 'Hinjewadi', 'state' => 'Maharashtra'],
+            'wakad' => ['city' => 'Pune', 'locality' => 'Wakad', 'state' => 'Maharashtra'],
+            'baner' => ['city' => 'Pune', 'locality' => 'Baner', 'state' => 'Maharashtra'],
+            'hyderabad' => ['city' => 'Hyderabad', 'state' => 'Telangana'],
+            'gachibowli' => ['city' => 'Hyderabad', 'locality' => 'Gachibowli', 'state' => 'Telangana'],
+            'madhapur' => ['city' => 'Hyderabad', 'locality' => 'Madhapur', 'state' => 'Telangana'],
+            'hitec city' => ['city' => 'Hyderabad', 'locality' => 'HITEC City', 'state' => 'Telangana'],
+            'chennai' => ['city' => 'Chennai', 'state' => 'Tamil Nadu'],
+            'omr' => ['city' => 'Chennai', 'locality' => 'OMR', 'state' => 'Tamil Nadu'],
+            'kolkata' => ['city' => 'Kolkata', 'state' => 'West Bengal'],
+            'salt lake' => ['city' => 'Kolkata', 'locality' => 'Salt Lake', 'state' => 'West Bengal'],
+            'faridabad' => ['city' => 'Faridabad', 'state' => 'Haryana'],
+            'ghaziabad' => ['city' => 'Ghaziabad', 'state' => 'Uttar Pradesh'],
+            'indirapuram' => ['city' => 'Ghaziabad', 'locality' => 'Indirapuram', 'state' => 'Uttar Pradesh'],
+            'vaishali' => ['city' => 'Ghaziabad', 'locality' => 'Vaishali', 'state' => 'Uttar Pradesh'],
+            'jaipur' => ['city' => 'Jaipur', 'state' => 'Rajasthan'],
+            'chandigarh' => ['city' => 'Chandigarh', 'state' => 'Chandigarh'],
+            'mohali' => ['city' => 'Mohali', 'state' => 'Punjab'],
+            'panchkula' => ['city' => 'Panchkula', 'state' => 'Haryana'],
+            'lucknow' => ['city' => 'Lucknow', 'state' => 'Uttar Pradesh'],
+            'kanpur' => ['city' => 'Kanpur', 'state' => 'Uttar Pradesh'],
+            'ahmedabad' => ['city' => 'Ahmedabad', 'state' => 'Gujarat'],
+            'surat' => ['city' => 'Surat', 'state' => 'Gujarat'],
+            'indore' => ['city' => 'Indore', 'state' => 'Madhya Pradesh'],
+            'bhopal' => ['city' => 'Bhopal', 'state' => 'Madhya Pradesh'],
+            'patna' => ['city' => 'Patna', 'state' => 'Bihar'],
+            'dehradun' => ['city' => 'Dehradun', 'state' => 'Uttarakhand'],
+            'nagpur' => ['city' => 'Nagpur', 'state' => 'Maharashtra'],
+            'coimbatore' => ['city' => 'Coimbatore', 'state' => 'Tamil Nadu'],
+            'kochi' => ['city' => 'Kochi', 'state' => 'Kerala'],
+            'goa' => ['city' => 'Goa', 'state' => 'Goa'],
+        ];
+
+        $matchedLocality = null;
+        if (preg_match('/\b(sector|sec)\s*([0-9]+[a-z]?)\b/i', $query, $m)) {
+            $matchedLocality = 'Sector ' . strtoupper($m[2]);
+        }
+
+        foreach ($indianLocations as $keyword => $info) {
+            if (str_contains($q, $keyword)) {
+                return [
+                    'city' => $info['city'],
+                    'state' => $info['state'],
+                    'locality' => $matchedLocality ?: ($info['locality'] ?? null),
+                ];
+            }
+        }
+
+        if ($matchedLocality) {
+            return [
+                'city' => null,
+                'locality' => $matchedLocality,
+                'state' => null,
+            ];
+        }
+
+        return null;
     }
 
     /**
@@ -189,7 +307,48 @@ class VisitorTrackingService
             }
         }
 
-        // 3. Fast GeoIP resolver if city or country is missing
+        // 3. Cloudflare Indian Region Code to City/State mapping (instant 0ms resolution)
+        $cfRegion = strtoupper(trim((string) (
+            $request->header('CF-IPRegion') 
+            ?? $request->header('CF-Region') 
+            ?? $request->header('CF-Region-Code') 
+            ?? ''
+        )));
+
+        static $indiaRegionMap = [
+            'DL' => ['city' => 'New Delhi', 'state' => 'Delhi'],
+            'HR' => ['city' => 'Gurugram', 'state' => 'Haryana'],
+            'UP' => ['city' => 'Noida', 'state' => 'Uttar Pradesh'],
+            'KA' => ['city' => 'Bengaluru', 'state' => 'Karnataka'],
+            'MH' => ['city' => 'Mumbai', 'state' => 'Maharashtra'],
+            'TS' => ['city' => 'Hyderabad', 'state' => 'Telangana'],
+            'TG' => ['city' => 'Hyderabad', 'state' => 'Telangana'],
+            'TN' => ['city' => 'Chennai', 'state' => 'Tamil Nadu'],
+            'WB' => ['city' => 'Kolkata', 'state' => 'West Bengal'],
+            'RJ' => ['city' => 'Jaipur', 'state' => 'Rajasthan'],
+            'GJ' => ['city' => 'Ahmedabad', 'state' => 'Gujarat'],
+            'CH' => ['city' => 'Chandigarh', 'state' => 'Chandigarh'],
+            'PB' => ['city' => 'Chandigarh', 'state' => 'Punjab'],
+            'MP' => ['city' => 'Indore', 'state' => 'Madhya Pradesh'],
+            'BR' => ['city' => 'Patna', 'state' => 'Bihar'],
+            'UK' => ['city' => 'Dehradun', 'state' => 'Uttarakhand'],
+            'UA' => ['city' => 'Dehradun', 'state' => 'Uttarakhand'],
+            'AS' => ['city' => 'Guwahati', 'state' => 'Assam'],
+            'KL' => ['city' => 'Kochi', 'state' => 'Kerala'],
+            'AP' => ['city' => 'Visakhapatnam', 'state' => 'Andhra Pradesh'],
+            'JH' => ['city' => 'Ranchi', 'state' => 'Jharkhand'],
+            'OR' => ['city' => 'Bhubaneswar', 'state' => 'Odisha'],
+            'OD' => ['city' => 'Bhubaneswar', 'state' => 'Odisha'],
+            'GA' => ['city' => 'Panaji', 'state' => 'Goa'],
+        ];
+
+        if (empty($city) && !empty($cfRegion) && isset($indiaRegionMap[$cfRegion])) {
+            $city = $indiaRegionMap[$cfRegion]['city'];
+            $state = $state ?: $indiaRegionMap[$cfRegion]['state'];
+            $country = 'India';
+        }
+
+        // 4. Fast GeoIP resolver if city or country is missing
         if ((empty($city) || empty($country)) && $ip) {
             $geo = static::resolveIpLocation($ip);
             if (!empty($geo)) {
@@ -435,6 +594,16 @@ class VisitorTrackingService
                 if (!empty($locParts)) {
                     $exactLocation = implode(', ', $locParts);
                 }
+            }
+        }
+
+        // Auto-detect Indian city/locality from search query if district is empty
+        if (empty($district) && !empty($searchQuery)) {
+            $parsed = static::parseIndianLocationFromQuery($searchQuery);
+            if ($parsed) {
+                $district = $parsed['city'] ?? $district;
+                $locality = $locality ?: ($parsed['locality'] ?? null);
+                $state = $state ?: ($parsed['state'] ?? null);
             }
         }
 

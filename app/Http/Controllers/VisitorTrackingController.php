@@ -31,12 +31,31 @@ class VisitorTrackingController extends Controller
 
         $metadata = $validated['metadata'] ?? [];
         if ($validated['event_name'] === 'search') {
-            $metadata['visitor_city'] = $metadata['visitor_city'] ?? ($visitor->city ?: 'Location Detected');
-            $metadata['visitor_state'] = $metadata['visitor_state'] ?? ($visitor->state ?: 'India');
-            $metadata['visitor_country'] = $metadata['visitor_country'] ?? ($visitor->country ?: 'India');
-            $metadata['visitor_ip'] = $metadata['visitor_ip'] ?? $request->ip();
-            $metadata['device_type'] = $metadata['device_type'] ?? ($visitor->device_type ?? 'desktop');
-            $metadata['browser'] = $metadata['browser'] ?? ($visitor->browser ?? 'Browser');
+            $loc = $this->tracker->detectLocation($request);
+            if ((empty($visitor->city) || in_array($visitor->city, ['Location Detected', 'Detected Location'], true)) && !empty($loc['city'])) {
+                $visitor->updateQuietly([
+                    'city' => $loc['city'],
+                    'state' => $loc['state'],
+                    'country' => $loc['country'],
+                ]);
+            }
+
+            $metadata['visitor_city'] = $loc['city'] ?: ($visitor->city ?: 'Detected Location');
+            $metadata['visitor_state'] = $loc['state'] ?: ($visitor->state ?: 'India');
+            $metadata['visitor_country'] = $loc['country'] ?: ($visitor->country ?: 'India');
+            $metadata['visitor_ip'] = $loc['ip'] ?? VisitorTrackingService::getClientIp($request);
+            $metadata['device_type'] = $metadata['device_type'] ?? ($visitor->device_type ?? $this->tracker->detectDevice($request));
+            $metadata['browser'] = $metadata['browser'] ?? ($visitor->browser ?? $this->tracker->detectBrowser($request));
+
+            // Auto-detect Indian city/locality from query if not already passed
+            if (empty($metadata['district']) && !empty($metadata['search'])) {
+                $parsed = VisitorTrackingService::parseIndianLocationFromQuery($metadata['search']);
+                if ($parsed) {
+                    if (!empty($parsed['city'])) $metadata['district'] = $parsed['city'];
+                    if (!empty($parsed['locality']) && empty($metadata['locality'])) $metadata['locality'] = $parsed['locality'];
+                    if (!empty($parsed['state']) && empty($metadata['state'])) $metadata['state'] = $parsed['state'];
+                }
+            }
 
             if (!empty($metadata['near_me']) || str_contains(strtolower($metadata['search'] ?? ''), 'near me') || str_contains(strtolower($metadata['search'] ?? ''), 'near my')) {
                 $metadata['near_me'] = true;

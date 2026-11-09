@@ -318,6 +318,29 @@ class VisitorEvent extends Model
             $parts[] = ucwords(str_replace('-', ' ', $stateVal));
         }
 
+        // If still empty, check if free text query has an Indian city or locality
+        if (empty($parts)) {
+            $searchQueryText = $meta['search'] ?? null;
+            if (empty($searchQueryText) && !empty($this->page_url)) {
+                $queryStr = parse_url($this->page_url, PHP_URL_QUERY);
+                if ($queryStr) {
+                    parse_str($queryStr, $urlParams);
+                    $searchQueryText = $urlParams['search'] ?? $urlParams['q'] ?? null;
+                }
+            }
+            if (!empty($searchQueryText)) {
+                $parsed = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($searchQueryText);
+                if ($parsed) {
+                    if (!empty($parsed['locality'])) {
+                        $parts[] = $parsed['locality'];
+                    }
+                    if (!empty($parsed['city']) && !in_array($parsed['city'], $parts)) {
+                        $parts[] = $parsed['city'];
+                    }
+                }
+            }
+        }
+
         // If explicit locality or district target is found
         if (!empty($parts)) {
             $locStr = implode(', ', $parts);
@@ -384,6 +407,17 @@ class VisitorEvent extends Model
 
         $district = $meta['district'] ?? $urlParams['district'] ?? $urlParams['city'] ?? $urlParams['location'] ?? null;
         $locality = $meta['locality'] ?? $urlParams['locality'] ?? null;
+        $searchQueryVal = $meta['search'] ?? $urlParams['search'] ?? $urlParams['q'] ?? null;
+
+        // Auto-detect Indian city if district not explicitly present
+        if (empty($district) && !empty($searchQueryVal)) {
+            $parsed = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($searchQueryVal);
+            if ($parsed) {
+                if (!empty($parsed['city'])) $district = $parsed['city'];
+                if (empty($locality) && !empty($parsed['locality'])) $locality = $parsed['locality'];
+            }
+        }
+
         $type = $meta['type'] ?? $urlParams['type'] ?? null;
         $rooms = $meta['rooms'] ?? $urlParams['rooms'] ?? $urlParams['bedrooms'] ?? null;
         $sort = $meta['sort'] ?? $urlParams['sort'] ?? null;

@@ -293,10 +293,25 @@ class PropertyController extends Controller
         // Record search event with visitor origin location & query filters
         if ($request->anyFilled(['search', 'district', 'state', 'locality', 'location', 'type', 'purpose', 'rooms', 'bedrooms', 'price', 'min_price', 'max_price', 'lat', 'lng', 'latitude', 'longitude', 'near_me', 'owner', 'sort'])) {
             try {
+                $searchVal = $request->get('search');
+                $districtVal = $request->get('district', $request->get('location', $request->get('city')));
+                $localityVal = $request->get('locality');
+                $stateVal = $request->get('state');
+
+                if (empty($districtVal) && !empty($searchVal)) {
+                    $parsed = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($searchVal);
+                    if ($parsed) {
+                        $districtVal = $parsed['city'] ?? $districtVal;
+                        $localityVal = $localityVal ?: ($parsed['locality'] ?? null);
+                        $stateVal = $stateVal ?: ($parsed['state'] ?? null);
+                    }
+                }
+
                 app(\App\Services\VisitorTrackingService::class)->recordSearchEvent($request, (int) ($properties->total() ?? $properties->count()), [
-                    'district' => $request->get('district', $request->get('location')),
-                    'locality' => $request->get('locality'),
-                    'state' => $request->get('state'),
+                    'search' => $searchVal,
+                    'district' => $districtVal,
+                    'locality' => $localityVal,
+                    'state' => $stateVal,
                     'type' => $request->get('type'),
                     'purpose' => $request->get('purpose'),
                     'rooms' => $request->get('rooms', $request->get('bedrooms')),

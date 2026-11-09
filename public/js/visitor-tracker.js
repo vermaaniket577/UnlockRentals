@@ -57,6 +57,37 @@
         init: function () {
             const currentUrl = window.location.href;
 
+            // 0. Client-Side Location Bridge (Auto-detect Indian City via Browser)
+            if (!localStorage.getItem('ur_user_city')) {
+                fetch('https://ipapi.co/json/')
+                    .then(function(r) { return r.json(); })
+                    .then(function(d) {
+                        if (d && d.city) {
+                            localStorage.setItem('ur_user_city', d.city);
+                            if (d.region) localStorage.setItem('ur_user_state', d.region);
+                            if (d.country_name) localStorage.setItem('ur_user_country', d.country_name);
+                            document.cookie = "ur_user_city=" + encodeURIComponent(d.city) + ";path=/;max-age=2592000;SameSite=Lax";
+                            document.cookie = "ur_user_state=" + encodeURIComponent(d.region || '') + ";path=/;max-age=2592000;SameSite=Lax";
+                            document.cookie = "ur_user_country=" + encodeURIComponent(d.country_name || 'India') + ";path=/;max-age=2592000;SameSite=Lax";
+                        }
+                    })
+                    .catch(function() {
+                        fetch('https://ipwho.is/')
+                            .then(function(r) { return r.json(); })
+                            .then(function(d) {
+                                if (d && d.city) {
+                                    localStorage.setItem('ur_user_city', d.city);
+                                    if (d.region) localStorage.setItem('ur_user_state', d.region);
+                                    if (d.country) localStorage.setItem('ur_user_country', d.country);
+                                    document.cookie = "ur_user_city=" + encodeURIComponent(d.city) + ";path=/;max-age=2592000;SameSite=Lax";
+                                    document.cookie = "ur_user_state=" + encodeURIComponent(d.region || '') + ";path=/;max-age=2592000;SameSite=Lax";
+                                    document.cookie = "ur_user_country=" + encodeURIComponent(d.country || 'India') + ";path=/;max-age=2592000;SameSite=Lax";
+                                }
+                            })
+                            .catch(function() {});
+                    });
+            }
+
             // 1. Property View Auto-Detection
             const propMeta = document.querySelector('meta[name="property-id"]');
             const propId = propMeta ? propMeta.getAttribute('content') : null;

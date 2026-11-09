@@ -106,15 +106,45 @@ class VisitorDashboardController extends Controller
                 ->orderByDesc('count')
                 ->get();
 
-            // Top Indian Cities & States
-            $topCities = Visitor::whereBetween('created_at', [$startDate, $endDate])
-                ->whereNotNull('city')
-                ->where('city', '!=', '')
-                ->selectRaw('city, state, COUNT(*) as total_visits')
-                ->groupBy('city', 'state')
-                ->orderByDesc('total_visits')
-                ->limit(8)
+            // Top Indian Cities & States (Auto-resolved from visitors)
+            $recentVisitors = Visitor::whereBetween('created_at', [$startDate, $endDate])
+                ->latest('last_seen_at')
+                ->take(150)
                 ->get();
+
+            $cityVisits = [];
+            $cityStates = [];
+
+            foreach ($recentVisitors as $v) {
+                $c = $v->city;
+                if (empty($c) || in_array($c, ['Location Detected', 'Detected Location'], true)) {
+                    if ($v->ip_address) {
+                        $geo = \App\Services\VisitorTrackingService::resolveIpLocation($v->ip_address);
+                        if (!empty($geo['city'])) {
+                            $c = $geo['city'];
+                            $v->updateQuietly([
+                                'city' => $geo['city'],
+                                'state' => $geo['state'] ?? $v->state,
+                                'country' => $geo['country'] ?? 'India',
+                            ]);
+                        }
+                    }
+                }
+                if ($c && !in_array($c, ['Location Detected', 'Detected Location'], true)) {
+                    $cityVisits[$c] = ($cityVisits[$c] ?? 0) + 1;
+                    $cityStates[$c] = $v->state ?: 'India';
+                }
+            }
+
+            arsort($cityVisits);
+            $topCities = collect();
+            foreach (array_slice($cityVisits, 0, 8, true) as $cityName => $count) {
+                $topCities->push((object)[
+                    'city' => $cityName,
+                    'state' => $cityStates[$cityName] ?? 'India',
+                    'total_visits' => $count,
+                ]);
+            }
 
             // Top Viewed Properties
             $topProperties = VisitorEvent::whereBetween('visitor_events.created_at', [$startDate, $endDate])
@@ -127,18 +157,37 @@ class VisitorDashboardController extends Controller
                 ->limit(6)
                 ->get();
 
-            // Top Search Origins (exclude placeholder values)
-            $topSearchOrigins = VisitorEvent::where('event_name', 'search')
-                ->whereBetween('visitor_events.created_at', [$startDate, $endDate])
-                ->join('visitors', 'visitor_events.visitor_id', '=', 'visitors.id')
-                ->whereNotNull('visitors.city')
-                ->where('visitors.city', '!=', '')
-                ->whereNotIn('visitors.city', ['Location Detected', 'Detected Location'])
-                ->selectRaw('visitors.city, visitors.state, COUNT(visitor_events.id) as total_searches, COUNT(DISTINCT visitor_events.visitor_id) as unique_searchers')
-                ->groupBy('visitors.city', 'visitors.state')
-                ->orderByDesc('total_searches')
-                ->limit(8)
+            // Top Search Origins (using resolved origin city from search events & visitors)
+            $searchEventsForOrigins = VisitorEvent::where('event_name', 'search')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->with('visitor')
+                ->latest('created_at')
+                ->take(150)
                 ->get();
+
+            $originCounts = [];
+            $originStates = [];
+            $uniqueSearchers = [];
+
+            foreach ($searchEventsForOrigins as $se) {
+                $c = $se->getOriginCity();
+                if ($c && !in_array($c, ['Location Detected', 'Detected Location', 'Unknown'], true)) {
+                    $originCounts[$c] = ($originCounts[$c] ?? 0) + 1;
+                    $uniqueSearchers[$c][$se->visitor_id] = true;
+                    $originStates[$c] = $se->getOriginState();
+                }
+            }
+
+            arsort($originCounts);
+            $topSearchOrigins = collect();
+            foreach (array_slice($originCounts, 0, 8, true) as $cityName => $count) {
+                $topSearchOrigins->push((object)[
+                    'city' => $cityName,
+                    'state' => $originStates[$cityName] ?? 'India',
+                    'total_searches' => $count,
+                    'unique_searchers' => count($uniqueSearchers[$cityName] ?? []),
+                ]);
+            }
 
             // Top Searched Demands & Targets (capped at 150 events for speed)
             $searchEventsForTargets = VisitorEvent::where('event_name', 'search')
