@@ -303,11 +303,20 @@ class ExternalLeadApiController extends Controller
      */
     protected function ingestAdmissionLead(array $item): ?string
     {
-        $rawPhone = $item['phone'] 
-            ?? $item['contact'] 
+        $rawPhone = $item['contact'] 
+            ?? $item['phone'] 
             ?? $item['mobile'] 
+            ?? $item['student_mobile'] 
+            ?? $item['student_phone'] 
+            ?? $item['student_contact'] 
             ?? $item['phoneNumber'] 
             ?? $item['phone_number'] 
+            ?? $item['contact_no'] 
+            ?? $item['contact_number'] 
+            ?? $item['mobile_no'] 
+            ?? $item['mobile_number'] 
+            ?? $item['tel'] 
+            ?? $item['whatsapp'] 
             ?? '';
 
         $cleanPhone = $this->cleanPhoneNumber((string)$rawPhone);
@@ -367,9 +376,14 @@ class ExternalLeadApiController extends Controller
                 ->first();
         }
 
-        // 3. Check by 10-digit mobile number
+        // 3. Check by 10-digit mobile number if available
         if (!$existing && !empty($cleanPhone) && strlen($cleanPhone) >= 10) {
             $existing = Lead::where('mobile', 'LIKE', '%' . $cleanPhone)->first();
+        }
+
+        // 4. Check by email if present
+        if (!$existing && !empty($email)) {
+            $existing = Lead::where('email', $email)->first();
         }
 
         $academicSummary = array_filter([$course ?: null, $notes ?: null]);
@@ -410,14 +424,22 @@ class ExternalLeadApiController extends Controller
             return 'updated';
         }
 
-        // If not existing, create new lead (requires phone or valid name/id)
-        if (empty($cleanPhone) && empty($externalId)) {
-            return null;
+        // Generate a clean numeric 10-digit phone for leads without contact
+        if (empty($cleanPhone) || strlen($cleanPhone) < 10) {
+            if (!empty($email) || !empty($externalId)) {
+                $seed = $email ?: $externalId;
+                $numericHash = str_pad(substr(sprintf('%u', crc32($seed)), -8), 8, '0', STR_PAD_LEFT);
+                $cleanPhone = '90' . $numericHash;
+            } else {
+                return null;
+            }
         }
 
-        $finalPhone = !empty($cleanPhone) && strlen($cleanPhone) >= 10 
-            ? $cleanPhone 
-            : ($externalId ? '987' . str_pad($externalId, 7, '0', STR_PAD_LEFT) : '9876543210');
+        // Strictly guarantee phone is purely numeric and at most 10 digits
+        $finalPhone = substr(preg_replace('/[^0-9]/', '', (string)$cleanPhone), -10);
+        if (strlen($finalPhone) < 10) {
+            $finalPhone = str_pad($finalPhone, 10, '9', STR_PAD_LEFT);
+        }
 
         $finalName = $name ?: ('Admission Search Lead' . ($externalId ? " #{$externalId}" : ''));
         $messageLines = [];

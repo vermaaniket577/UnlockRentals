@@ -117,9 +117,19 @@ class Lead extends Model
         return $this->mobile;
     }
 
+    public function setMobileAttribute($value)
+    {
+        $clean = preg_replace('/[^0-9]/', '', (string)$value);
+        if (strlen($clean) >= 10) {
+            $this->attributes['mobile'] = substr($clean, -10);
+        } else {
+            $this->attributes['mobile'] = substr((string)($clean ?: $value), 0, 20);
+        }
+    }
+
     public function setPhoneAttribute($value)
     {
-        $this->attributes['mobile'] = $value;
+        $this->setMobileAttribute($value);
     }
 
     public function getIntentAttribute()
