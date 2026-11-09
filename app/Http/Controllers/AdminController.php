@@ -175,18 +175,8 @@ class AdminController extends Controller
             ];
         });
 
-        // Recent high-intent CRM leads
+        // Recent high-intent CRM leads (leads display disabled on dashboard)
         $recentCrmLeads = collect();
-        if (Schema::hasTable('leads')) {
-            try {
-                $recentCrmLeads = Lead::with(['property', 'assignedTo'])
-                    ->latest()
-                    ->take(5)
-                    ->get();
-            } catch (\Throwable $e) {
-                $recentCrmLeads = collect();
-            }
-        }
 
         // Recent urgent callbacks awaiting action
         $recentCallbacks = collect();

@@ -526,90 +526,8 @@
             </div>
         </div>
 
-        {{-- Side-by-Side Dual Activity Feeds: Recent Leads & Urgent Callbacks --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-1">
-            
-            {{-- Left Feed: Recent CRM Leads --}}
-            <div class="border border-slate-200/80 rounded-2xl overflow-hidden flex flex-col justify-between bg-white shadow-xs">
-                <div>
-                    <div class="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-blue-600"></span>
-                            <h4 class="text-sm font-extrabold text-slate-900">Recent Inbound Leads</h4>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">{{ $recentCrmLeads->count() }}</span>
-                        </div>
-                        <a href="{{ route('admin.leads.index') }}" class="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
-                            View All Leads →
-                        </a>
-                    </div>
-
-                    <div class="divide-y divide-slate-100">
-                        @forelse($recentCrmLeads as $lead)
-                        <div class="p-4 hover:bg-slate-50/60 transition-colors">
-                            <div class="flex items-start justify-between gap-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
-                                        {{ strtoupper(substr($lead->name ?? 'L', 0, 2)) }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="flex items-center gap-2">
-                                            <a href="{{ route('admin.leads.show', $lead) }}" class="text-xs sm:text-sm font-bold text-slate-900 hover:text-blue-600 truncate transition-colors">
-                                                {{ $lead->name ?? 'Customer' }}
-                                            </a>
-                                            @php
-                                                $badge = $lead->status_badge ?? ['bg' => 'bg-slate-100 text-slate-700', 'label' => ucfirst($lead->lead_status ?? 'New')];
-                                            @endphp
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $badge['bg'] }} flex-shrink-0">
-                                                {{ $badge['label'] }}
-                                            </span>
-                                        </div>
-                                        <div class="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 truncate">
-                                            <span>{{ $lead->formatted_phone ?? $lead->mobile }}</span>
-                                            @if($lead->preferred_city)
-                                                <span>·</span>
-                                                <span><i class="ph ph-map-pin"></i> {{ $lead->preferred_city }}</span>
-                                            @endif
-                                            @if($lead->purpose)
-                                                <span>·</span>
-                                                <span class="capitalize">{{ $lead->purpose }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- Quick Actions --}}
-                                <div class="flex items-center gap-1.5 flex-shrink-0">
-                                    @if($lead->mobile)
-                                    <a href="https://wa.me/{{ $lead->whatsapp_phone ?? preg_replace('/[^0-9]/', '', $lead->mobile) }}" target="_blank" class="w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-500 text-emerald-600 hover:text-white flex items-center justify-center text-base transition-colors" title="Chat on WhatsApp">
-                                        <i class="ph-bold ph-whatsapp-logo"></i>
-                                    </a>
-                                    @endif
-                                    <a href="{{ route('admin.leads.show', $lead) }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-blue-600 text-slate-700 hover:text-white rounded-lg text-xs font-bold transition-colors">
-                                        Open
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        @empty
-                        <div class="p-8 text-center">
-                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-2xl mx-auto mb-2">
-                                <i class="ph-bold ph-funnel"></i>
-                            </div>
-                            <h5 class="text-xs font-bold text-slate-700">No leads recorded yet</h5>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Incoming leads from the website and app will appear here in real time.</p>
-                        </div>
-                        @endforelse
-                    </div>
-                </div>
-
-                <div class="p-3 bg-slate-50/50 border-t border-slate-100 text-center">
-                    <a href="{{ route('admin.leads.index') }}" class="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1">
-                        Go to Leads Pipeline ({{ $crmStats['total_leads'] ?? 0 }} Total) →
-                    </a>
-                </div>
-            </div>
-
-            {{-- Right Feed: Urgent Callbacks & Inquiries --}}
+        {{-- Activity Feed: Urgent Callbacks & Inquiries --}}
+        <div class="pt-1">
             <div class="border border-slate-200/80 rounded-2xl overflow-hidden flex flex-col justify-between bg-white shadow-xs">
                 <div>
                     <div class="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
@@ -689,6 +607,7 @@
                     </a>
                 </div>
             </div>
+        </div>
 
         {{-- Where Users Are Searching From (Live Search Origins & Queries) --}}
         <div class="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-xs">
