@@ -1181,6 +1181,21 @@ a { text-decoration: none; color: inherit; }
     }
     .hamburger { display: flex !important; }
     .mobile-nav { display: block; }
+    #welcome-desktop-login,
+    #welcome-desktop-post,
+    #nav-login,
+    #nav-post-free,
+    #nav-add-property,
+    .auth-nav .nav-link,
+    .main-header #welcome-desktop-login,
+    .main-header #welcome-desktop-post {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+    }
     #welcome-mobile-top-login,
     #nav-mobile-top-login {
         display: inline-flex !important;
@@ -1233,6 +1248,15 @@ a { text-decoration: none; color: inherit; }
     }
 
     .section-title { font-size: 2.2rem; }
+}
+
+@media (min-width: 1025px) {
+    #welcome-mobile-top-login,
+    #nav-mobile-top-login {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
 }
 
 /* ─── MOBILE (≤ 768px) ───────────────── */

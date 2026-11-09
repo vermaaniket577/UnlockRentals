@@ -373,7 +373,7 @@
     @endif
 
     <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : '20261106' }}&cb=20261106v2">
+    <link rel="stylesheet" href="{{ asset('css/unlock-rental.css') }}?v={{ file_exists(public_path('css/unlock-rental.css')) ? filemtime(public_path('css/unlock-rental.css')) : '20261109' }}&cb=20261109v1">
 
     <!-- High-Performance Preconnects & Resource Hints -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -794,6 +794,18 @@
                 align-items: center !important;
                 gap: 8px !important;
             }
+            #welcome-desktop-login,
+            #welcome-desktop-post,
+            .auth-nav .nav-link,
+            .main-header #welcome-desktop-login,
+            .main-header #welcome-desktop-post {
+                display: none !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                position: absolute !important;
+            }
             #welcome-mobile-top-login {
                 display: inline-flex !important;
                 visibility: visible !important;
@@ -890,6 +902,10 @@
             #welcome-mobile-top-login {
                 display: none !important;
             }
+            #welcome-desktop-login,
+            #welcome-desktop-post {
+                display: inline-flex !important;
+            }
             .logo-text {
                 color: #0f172a !important;
                 font-size: 17px !important;
@@ -984,6 +1000,18 @@
                 align-items: center !important;
                 gap: 8px !important;
             }
+            #welcome-desktop-login,
+            #welcome-desktop-post,
+            .auth-nav .nav-link,
+            .main-header #welcome-desktop-login,
+            .main-header #welcome-desktop-post {
+                display: none !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                position: absolute !important;
+            }
             #welcome-mobile-top-login {
                 display: inline-flex !important;
                 visibility: visible !important;
@@ -1063,6 +1091,20 @@
             display: inline-flex !important;
             visibility: visible !important;
             opacity: 1 !important;
+        }
+        .is-mobile-app #welcome-desktop-login,
+        .is-mobile-app #welcome-desktop-post,
+        .is-mobile-app .auth-nav #welcome-desktop-login,
+        .is-mobile-app .auth-nav #welcome-desktop-post,
+        .is-mobile-app #nav-login,
+        .is-mobile-app #nav-post-free,
+        .is-mobile-app #nav-add-property {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            position: absolute !important;
         }
         .is-mobile-app .mobile-app-hero-slider-section {
             padding-top: 8px !important;
@@ -1970,11 +2012,11 @@
                     </a>
 
                     {{-- Desktop Login / Sign Up --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden lg:inline-flex" style="margin-right: 6px; cursor: pointer; white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 6px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;" title="Login / Sign Up">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="nav-link hidden lg:inline-flex" id="welcome-desktop-login" style="margin-right: 6px; cursor: pointer; white-space: nowrap !important; align-items: center !important; gap: 6px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;" title="Login / Sign Up">
                         <i class="ph ph-user text-base" style="font-size: 17px !important; color: #475569 !important;"></i>
                         <span>Login / Sign Up</span>
                     </a>
-                    <a href="{{ route('properties.create') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#0d3b66] hover:bg-[#082947] text-white text-xs xl:text-sm font-bold rounded-full shadow-sm shadow-[#0d3b66]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" style="background-color: #0d3b66 !important; color: #ffffff !important;" title="Post Property Free">
+                    <a href="{{ route('properties.create') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#0d3b66] hover:bg-[#082947] text-white text-xs xl:text-sm font-bold rounded-full shadow-sm shadow-[#0d3b66]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" id="welcome-desktop-post" style="background-color: #0d3b66 !important; color: #ffffff !important;" title="Post Property Free">
                         <i class="ph-bold ph-plus text-xs" style="color: #ffffff !important;"></i>
                         <span style="color: #ffffff !important;">Post Property Free</span>
                     </a>

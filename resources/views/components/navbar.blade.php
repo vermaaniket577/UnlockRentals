@@ -717,7 +717,10 @@ html.dark #main-nav .ur-nav-link.active-nav-link {
 
 @media (max-width: 1023px) {
     #main-nav .main-nav,
-    #main-nav nav.hidden {
+    #main-nav nav.hidden,
+    #nav-login,
+    #nav-post-free,
+    #nav-add-property {
         display: none !important;
         visibility: hidden !important;
         pointer-events: none !important;
@@ -731,7 +734,18 @@ html.dark #main-nav .ur-nav-link.active-nav-link {
     }
 }
 
-.is-mobile-app #main-nav .main-nav {
+@media (min-width: 1024px) {
+    #nav-mobile-top-login {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+}
+
+.is-mobile-app #main-nav .main-nav,
+.is-mobile-app #nav-login,
+.is-mobile-app #nav-post-free,
+.is-mobile-app #nav-add-property {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
