@@ -110,37 +110,69 @@
                                     e.stopPropagation();
                                 }
                                 if (window.innerWidth < 768) {
-                                    window.openUserAccountModal();
+                                    if (typeof window.openUserAccountModal === 'function') {
+                                        window.openUserAccountModal();
+                                    } else if (typeof window.openWelcomeAccountModal === 'function') {
+                                        window.openWelcomeAccountModal();
+                                    }
                                     return;
                                 }
-                                var dd = document.getElementById('nav-user-dropdown');
-                                var bd = document.getElementById('nav-user-backdrop');
+                                var dd = document.getElementById('nav-user-dropdown') || document.getElementById('userDropdown');
+                                var bd = document.getElementById('nav-user-backdrop') || document.getElementById('userDropdownBackdrop');
                                 if (!dd) return;
-                                if (dd.classList.contains('hidden')) {
+                                var isHidden = dd.classList.contains('hidden') || dd.style.display === 'none' || window.getComputedStyle(dd).display === 'none';
+                                if (isHidden) {
                                     dd.classList.remove('hidden');
-                                    if (bd) bd.classList.remove('hidden');
+                                    dd.style.display = 'block';
+                                    dd.style.visibility = 'visible';
+                                    dd.style.opacity = '1';
+                                    if (bd) {
+                                        bd.classList.remove('hidden');
+                                        bd.style.display = 'block';
+                                    }
                                 } else {
                                     dd.classList.add('hidden');
-                                    if (bd) bd.classList.add('hidden');
+                                    dd.style.display = 'none';
+                                    if (bd) {
+                                        bd.classList.add('hidden');
+                                        bd.style.display = 'none';
+                                    }
                                 }
                             };
                             window.closeUserDropdown = function() {
-                                var dd = document.getElementById('nav-user-dropdown');
-                                var bd = document.getElementById('nav-user-backdrop');
-                                if (dd) dd.classList.add('hidden');
-                                if (bd) bd.classList.add('hidden');
+                                var dd = document.getElementById('nav-user-dropdown') || document.getElementById('userDropdown');
+                                var bd = document.getElementById('nav-user-backdrop') || document.getElementById('userDropdownBackdrop');
+                                if (dd) {
+                                    dd.classList.add('hidden');
+                                    dd.style.display = 'none';
+                                }
+                                if (bd) {
+                                    bd.classList.add('hidden');
+                                    bd.style.display = 'none';
+                                }
                             };
+                            document.addEventListener('click', function(e) {
+                                var menuBtn = document.getElementById('nav-user-menu') || document.getElementById('userDropdownBtn');
+                                var dd = document.getElementById('nav-user-dropdown') || document.getElementById('userDropdown');
+                                if (!dd) return;
+                                if (dd.classList.contains('hidden') || dd.style.display === 'none') return;
+                                if (menuBtn && menuBtn.contains(e.target)) return;
+                                if (dd.contains(e.target)) return;
+                                window.closeUserDropdown();
+                            });
                             window.openUserAccountModal = function() {
-                                var modal = document.getElementById('mobile-account-modal');
+                                var modal = document.getElementById('mobile-account-modal') || document.getElementById('welcome-account-modal') || document.getElementById('welcomeAccountModal');
                                 if (modal) {
                                     modal.classList.remove('hidden');
+                                    modal.style.display = 'flex';
                                     document.body.style.overflow = 'hidden';
                                 }
                             };
                             window.closeUserAccountModal = function() {
-                                var modal = document.getElementById('mobile-account-modal');
+                                var modal = document.getElementById('mobile-account-modal') || document.getElementById('welcome-account-modal') || document.getElementById('welcomeAccountModal');
                                 if (modal) {
                                     modal.classList.add('hidden');
+                                    modal.style.display = 'none';
                                     document.body.style.overflow = '';
                                 }
                             };
@@ -189,9 +221,9 @@
                         </script>
 
                         {{-- Dropdown Backdrop for Desktop --}}
-                        <div id="nav-user-backdrop" class="fixed inset-0 z-[99999] hidden bg-black/20 dark:bg-black/60" onclick="window.closeUserDropdown()"></div>
+                        <div id="nav-user-backdrop" class="fixed inset-0 z-[99999] hidden bg-black/20 dark:bg-black/60" style="position: fixed; inset: 0; z-index: 99999;" onclick="window.closeUserDropdown()"></div>
 
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="group flex items-center gap-2 pl-1.5 pr-2.5 sm:pr-3 py-1 rounded-full bg-slate-50/90 hover:bg-slate-100/90 dark:bg-slate-800/60 dark:hover:bg-slate-800 border border-slate-200/90 hover:border-slate-300 dark:border-slate-700/80 dark:hover:border-slate-600 shadow-2xs hover:shadow-xs transition-all duration-200 relative cursor-pointer z-[100000] focus:outline-none focus:ring-2 focus:ring-blue-500/25 active:scale-[0.98]" id="nav-user-menu" aria-label="User Account">
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="group flex items-center gap-2 pl-1.5 pr-2.5 sm:pr-3 py-1 rounded-full bg-slate-50/90 hover:bg-slate-100/90 dark:bg-slate-800/60 dark:hover:bg-slate-800 border border-slate-200/90 hover:border-slate-300 dark:border-slate-700/80 dark:hover:border-slate-600 shadow-2xs hover:shadow-xs transition-all duration-200 relative cursor-pointer z-[100000] focus:outline-none focus:ring-2 focus:ring-blue-500/25 active:scale-[0.98]" style="position: relative; z-index: 100000;" id="nav-user-menu" aria-label="User Account">
                             <div class="relative pointer-events-none flex-shrink-0">
                                 <div class="w-9 h-9 rounded-full flex items-center justify-center text-white relative overflow-hidden {{ $navActivePlan ? 'bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 ring-2 ring-amber-400/95 shadow-sm shadow-amber-500/25' : 'bg-gradient-to-br from-blue-600 to-indigo-600 ring-1.5 ring-blue-500/20 shadow-xs' }}">
                                     <span class="text-xs sm:text-[13px] font-black tracking-tight text-white select-none drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.35)]">
@@ -218,7 +250,7 @@
                         </button>
 
                         {{-- Dropdown Menu --}}
-                        <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(15,23,42,0.18)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.6)] overflow-hidden z-[100000]">
+                        <div id="nav-user-dropdown" class="hidden absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(15,23,42,0.18)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.6)] overflow-hidden z-[100000]" style="position: absolute; top: calc(100% + 8px); right: 0; width: 320px; max-width: calc(100vw - 1.5rem); background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 20px 45px -10px rgba(15,23,42,0.18), 0 10px 20px -5px rgba(15,23,42,0.08); z-index: 100000;">
                             <div class="p-4 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-800/40">
                                 <div class="flex items-center gap-3">
                                     <div class="relative flex-shrink-0">

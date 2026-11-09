@@ -297,7 +297,7 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
 
-            const main = doc.getElementById('ur-main-container') || doc.querySelector('main');
+            const main = doc.getElementById('ur-main-container');
             if (!main) return null; // Not a standard app page, fallback
 
             const title = doc.title || '';
@@ -511,7 +511,7 @@
         // DOM Swap with Native View Transition API or CSS crossfade fallback
         const applySwap = () => {
             // Verify main container exists BEFORE modifying history or DOM
-            const mainEl = document.getElementById('ur-main-container') || document.querySelector('main');
+            const mainEl = document.getElementById('ur-main-container');
             if (!mainEl || !pageData || !pageData.mainHtml) {
                 window.location.href = targetUrl.href;
                 return;
@@ -593,7 +593,7 @@
 
     // Cache initial boot page for instant 0ms Back-navigation
     const initialKey = normalizeUrlKey(window.location.href);
-    const initialMain = document.getElementById('ur-main-container') || document.querySelector('main');
+    const initialMain = document.getElementById('ur-main-container');
     if (initialMain) {
         setCache(initialKey, {
             title: document.title,
@@ -648,9 +648,9 @@
 
         try {
             const url = new URL(href, window.location.origin);
-            const currentHasMain = !!(document.getElementById('ur-main-container') || document.querySelector('main'));
+            const currentHasMain = !!document.getElementById('ur-main-container');
 
-            // If current page is a standalone view without <main> (like welcome.blade.php)
+            // If current page is a standalone view without <main id="ur-main-container"> (like welcome.blade.php)
             // OR if target route is not SPA-eligible (forms, /create, /edit, homepage, etc.),
             // do NOT intercept! Allow natural browser navigation with top progress bar!
             if (!currentHasMain || !isSpaEligible(url)) {
@@ -669,7 +669,7 @@
     // Browser Back and Forward Button Support with 0ms Instant Cache Swap
     window.addEventListener('popstate', function () {
         try {
-            const currentHasMain = !!(document.getElementById('ur-main-container') || document.querySelector('main'));
+            const currentHasMain = !!document.getElementById('ur-main-container');
             const url = new URL(window.location.href);
             if (currentHasMain && isSpaEligible(url)) {
                 urNavigateTo(window.location.href, true, false);
@@ -679,7 +679,7 @@
 
     // Predictive Preloading On Touch & Hover
     function onInteractionPrefetch(e) {
-        const currentHasMain = !!(document.getElementById('ur-main-container') || document.querySelector('main'));
+        const currentHasMain = !!document.getElementById('ur-main-container');
         if (!currentHasMain) return;
 
         const link = e.target.closest('a[href]');

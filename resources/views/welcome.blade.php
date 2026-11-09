@@ -1838,37 +1838,69 @@
                                     e.stopPropagation();
                                 }
                                 if (window.innerWidth < 768) {
-                                    window.openWelcomeAccountModal();
+                                    if (typeof window.openWelcomeAccountModal === 'function') {
+                                        window.openWelcomeAccountModal();
+                                    } else if (typeof window.openUserAccountModal === 'function') {
+                                        window.openUserAccountModal();
+                                    }
                                     return;
                                 }
-                                var dd = document.getElementById('userDropdown');
-                                var bd = document.getElementById('userDropdownBackdrop');
+                                var dd = document.getElementById('userDropdown') || document.getElementById('nav-user-dropdown');
+                                var bd = document.getElementById('userDropdownBackdrop') || document.getElementById('nav-user-backdrop');
                                 if (!dd) return;
-                                if (dd.classList.contains('hidden')) {
+                                var isHidden = dd.classList.contains('hidden') || dd.style.display === 'none' || window.getComputedStyle(dd).display === 'none';
+                                if (isHidden) {
                                     dd.classList.remove('hidden');
-                                    if (bd) bd.classList.remove('hidden');
+                                    dd.style.display = 'block';
+                                    dd.style.visibility = 'visible';
+                                    dd.style.opacity = '1';
+                                    if (bd) {
+                                        bd.classList.remove('hidden');
+                                        bd.style.display = 'block';
+                                    }
                                 } else {
                                     dd.classList.add('hidden');
-                                    if (bd) bd.classList.add('hidden');
+                                    dd.style.display = 'none';
+                                    if (bd) {
+                                        bd.classList.add('hidden');
+                                        bd.style.display = 'none';
+                                    }
                                 }
                             };
                             window.closeUserDropdown = function() {
-                                var dd = document.getElementById('userDropdown');
-                                var bd = document.getElementById('userDropdownBackdrop');
-                                if (dd) dd.classList.add('hidden');
-                                if (bd) bd.classList.add('hidden');
+                                var dd = document.getElementById('userDropdown') || document.getElementById('nav-user-dropdown');
+                                var bd = document.getElementById('userDropdownBackdrop') || document.getElementById('nav-user-backdrop');
+                                if (dd) {
+                                    dd.classList.add('hidden');
+                                    dd.style.display = 'none';
+                                }
+                                if (bd) {
+                                    bd.classList.add('hidden');
+                                    bd.style.display = 'none';
+                                }
                             };
+                            document.addEventListener('click', function(e) {
+                                var menuBtn = document.getElementById('userDropdownBtn') || document.getElementById('nav-user-menu');
+                                var dd = document.getElementById('userDropdown') || document.getElementById('nav-user-dropdown');
+                                if (!dd) return;
+                                if (dd.classList.contains('hidden') || dd.style.display === 'none') return;
+                                if (menuBtn && menuBtn.contains(e.target)) return;
+                                if (dd.contains(e.target)) return;
+                                window.closeUserDropdown();
+                            });
                             window.openWelcomeAccountModal = function() {
-                                var modal = document.getElementById('welcome-account-modal');
+                                var modal = document.getElementById('welcome-account-modal') || document.getElementById('mobile-account-modal');
                                 if (modal) {
                                     modal.classList.remove('hidden');
+                                    modal.style.display = 'flex';
                                     document.body.style.overflow = 'hidden';
                                 }
                             };
                             window.closeWelcomeAccountModal = function() {
-                                var modal = document.getElementById('welcome-account-modal');
+                                var modal = document.getElementById('welcome-account-modal') || document.getElementById('mobile-account-modal');
                                 if (modal) {
                                     modal.classList.add('hidden');
+                                    modal.style.display = 'none';
                                     document.body.style.overflow = '';
                                 }
                             };
@@ -1917,12 +1949,12 @@
                         </script>
 
                         {{-- Desktop Dropdown Backdrop --}}
-                        <div id="userDropdownBackdrop" class="fixed inset-0 z-[99999] hidden bg-slate-950/20 backdrop-blur-[1px]" onclick="window.closeUserDropdown()"></div>
+                        <div id="userDropdownBackdrop" class="fixed inset-0 z-[99999] hidden bg-slate-950/20 backdrop-blur-[1px]" style="position: fixed; inset: 0; z-index: 99999;" onclick="window.closeUserDropdown()"></div>
 
                         @php
                             $welcomeActivePlan = auth()->user()->activePlan();
                         @endphp
-                        <button type="button" onclick="window.toggleUserDropdown(event)" class="group flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-full hover:bg-white/10 transition-all border border-white/20 bg-white/5 backdrop-blur-md shadow-2xs hover:shadow-xs relative z-[100000] cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 active:scale-[0.98]" id="userDropdownBtn" aria-label="User Account">
+                        <button type="button" onclick="window.toggleUserDropdown(event)" class="group flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-full hover:bg-slate-100 transition-all border border-slate-200 bg-slate-50 shadow-2xs hover:shadow-xs relative z-[100000] cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 active:scale-[0.98]" style="border: 1px solid #e2e8f0 !important; background: #f8fafc !important; position: relative; z-index: 100000;" id="userDropdownBtn" aria-label="User Account">
                             <div class="relative pointer-events-none flex-shrink-0">
                                 <div style="width:28px; height:28px; border-radius:50%; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 1.5px rgba(245,158,11,0.8), 0 2px 8px rgba(245,158,11,0.4);' : 'background:linear-gradient(135deg, #2563eb, #6366f1); box-shadow:0 2px 6px rgba(37,99,235,0.4);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11.5px; flex-shrink:0;">
                                     <span style="filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35));">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
@@ -1933,14 +1965,14 @@
                                     </span>
                                 @endif
                             </div>
-                            <span class="hidden md:inline-block text-xs font-bold text-white max-w-[110px] lg:max-w-[130px] truncate tracking-tight pointer-events-none">{{ auth()->user()->name }}</span>
+                            <span class="hidden md:inline-block text-xs font-bold max-w-[110px] lg:max-w-[130px] truncate tracking-tight pointer-events-none" style="color: #0f172a !important;">{{ auth()->user()->name }}</span>
                             @if($welcomeActivePlan)
                                 <x-premium-badge :plan="$welcomeActivePlan" size="xs" :showPlan="false" class="hidden sm:inline-flex pointer-events-none" />
                             @endif
-                            <i class="ph-bold ph-caret-down text-[9px] text-white/70 transition-transform duration-200 group-hover:translate-y-0.5 pointer-events-none"></i>
+                            <i class="ph-bold ph-caret-down text-[9px] transition-transform duration-200 group-hover:translate-y-0.5 pointer-events-none" style="color: #64748b !important;"></i>
                         </button>
                         
-                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 10px); right:0; width:320px; max-width:calc(100vw - 1.5rem); background:#ffffff; border:1px solid #e2e8f0; border-radius:18px; box-shadow:0 20px 45px -10px rgba(15,23,42,0.18), 0 10px 20px -5px rgba(15,23,42,0.08); overflow:hidden; z-index:100000;">
+                        <div id="userDropdown" class="hidden" style="position:absolute; top:calc(100% + 8px); right:0; width:320px; max-width:calc(100vw - 1.5rem); background:#ffffff; border:1px solid #e2e8f0; border-radius:18px; box-shadow:0 20px 45px -10px rgba(15,23,42,0.18), 0 10px 20px -5px rgba(15,23,42,0.08); overflow:hidden; z-index:100000;">
                             <div style="padding:14px 16px; border-bottom:1px solid #f1f5f9; background:#f8fafc;">
                                 <div style="display:flex; align-items:center; gap:11px;">
                                     <div style="width:38px; height:38px; border-radius:12px; {{ $welcomeActivePlan ? 'background:linear-gradient(135deg, #2563eb, #6366f1, #f59e0b); box-shadow:0 0 0 2px rgba(245,158,11,0.6);' : 'background:linear-gradient(135deg, #2563eb, #4f46e5);' }} color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; flex-shrink:0;">
