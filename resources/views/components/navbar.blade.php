@@ -415,13 +415,6 @@
                     </div>
                 @endguest
 
-                {{-- Theme Color Changer (Top-Right Corner) --}}
-                <div class="border-l border-stone-200/80 pl-2.5 ml-1 dark:border-slate-800 flex items-center">
-                    <button type="button" id="theme-toggle" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-200/80 bg-white text-zinc-500 transition hover:bg-stone-100 hover:text-zinc-900 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800" title="Toggle dark/light mode" aria-label="Toggle dark/light mode">
-                        <i class="ph-bold ph-moon text-base" id="theme-toggle-icon"></i>
-                    </button>
-                </div>
-
                 {{-- Mobile Menu Button --}}
                 <button type="button" onclick="toggleMobileDrawer(true)" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95 cursor-pointer" id="nav-mobile-toggle" aria-label="Open Mobile Menu">
                     <i class="ph-bold ph-list text-xl"></i>
