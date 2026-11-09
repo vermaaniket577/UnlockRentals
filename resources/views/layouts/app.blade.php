@@ -616,7 +616,7 @@
     @include('components.exit-intent-modal')
     @include('components.lead-modals')
 
-    <script src="{{ asset('js/otp-verification.js') }}?v=20260916" defer></script>
+    <script src="{{ asset('js/otp-verification-v2.js') }}?v=20261109v2" defer></script>
     <script src="{{ asset('js/visitor-tracker.js') }}?v=20260920" defer></script>
     @include('components.push-notification-deliverer')
     @stack('scripts')

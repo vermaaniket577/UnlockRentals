@@ -1351,6 +1351,8 @@ Route::withoutMiddleware([
         base_path('public/js/' . $cleanPath),
         public_path('js/' . str_replace('.min.js', '.js', $cleanPath)),
         base_path('public/js/' . str_replace('.min.js', '.js', $cleanPath)),
+        public_path('js/' . str_replace('-v2.js', '.js', $cleanPath)),
+        base_path('public/js/' . str_replace('-v2.js', '.js', $cleanPath)),
     ];
     foreach ($candidates as $cand) {
         if (file_exists($cand) && is_file($cand)) {

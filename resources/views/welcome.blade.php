@@ -5473,7 +5473,7 @@
     <x-subscription.payment-success-modal />
 
     <!-- Deferred Non-Critical Scripts -->
-    <script defer src="{{ asset('js/otp-verification.js') }}?v={{ file_exists(public_path('js/otp-verification.js')) ? filemtime(public_path('js/otp-verification.js')) : '20261106' }}"></script>
+    <script defer src="{{ asset('js/otp-verification-v2.js') }}?v={{ file_exists(public_path('js/otp-verification-v2.js')) ? filemtime(public_path('js/otp-verification-v2.js')) : '20261109' }}&cb=20261109v2"></script>
     @include('components.location-script')
     @include('components.push-notification-deliverer')
 </body>

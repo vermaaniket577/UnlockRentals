@@ -1,0 +1,889 @@
+/**
+ * OTP Verification Module — UnlockRentals
+ * Handles OTP send, verify, resend countdown, and digit auto-advance.
+ */
+window.OtpVerification = (function () {
+    'use strict';
+
+    let countdownTimer = null;
+
+    /**
+     * Initialize OTP verification for a form context.
+     * @param {Object} opts
+     * @param {string} opts.phoneInputId       - ID of the phone input field
+     * @param {string} opts.purpose            - 'register' | 'login'
+     * @param {string} opts.otpContainerId     - ID of the OTP input container
+     * @param {string} opts.sendBtnId          - ID of the "Send OTP" button
+     * @param {string} opts.verifyBtnId        - ID of the "Verify" button
+     * @param {string} opts.resendBtnId        - ID of the "Resend" button
+     * @param {string} opts.statusId           - ID of the status message element
+     * @param {string} opts.countdownId        - ID of the countdown timer element
+     * @param {string} [opts.submitBtnId]      - ID of the form submit button (to enable after verify)
+     * @param {string} [opts.verifiedFlagId]   - ID of a hidden input to flag verification
+     * @param {Function} [opts.onVerified]     - Callback after successful verification
+     * @param {Function} [opts.onLoginSuccess] - Callback after successful OTP login
+     */
+    function init(opts) {
+        const phoneInput    = document.getElementById(opts.phoneInputId);
+        const otpContainer  = document.getElementById(opts.otpContainerId);
+        const sendBtn       = document.getElementById(opts.sendBtnId);
+        const verifyBtn     = document.getElementById(opts.verifyBtnId);
+        const resendBtn     = document.getElementById(opts.resendBtnId);
+        const statusEl      = document.getElementById(opts.statusId);
+        const countdownEl   = document.getElementById(opts.countdownId);
+        const submitBtn     = opts.submitBtnId ? document.getElementById(opts.submitBtnId) : null;
+        const verifiedFlag  = opts.verifiedFlagId ? document.getElementById(opts.verifiedFlagId) : null;
+
+        if (!phoneInput || !sendBtn) return;
+
+        // Setup digit inputs auto-advance
+        setupDigitInputs(otpContainer);
+
+        // Send OTP
+        sendBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const phone = phoneInput.value.trim();
+            if (!validatePhone(phone)) {
+                showStatus(statusEl, 'Please enter a valid 10-digit phone number.', 'error');
+                return;
+            }
+            sendOtp(phone, opts.purpose, sendBtn, otpContainer, resendBtn, statusEl, countdownEl);
+        });
+
+        // Verify OTP
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const phone = phoneInput.value.trim();
+                let otp = getOtpValue(otpContainer);
+                const digitCount = otpContainer ? otpContainer.querySelectorAll('.otp-digit').length : 4;
+                const expectedLen = digitCount || 4;
+
+                // If getOtpValue is incomplete, check all active inputs on screen
+                if (!otp || otp.length < expectedLen) {
+                    const activeDigits = Array.from(document.querySelectorAll('.otp-digit')).filter(el => {
+                        const area = el.closest('.otp-input-area') || el.closest('#otp-verify-modal');
+                        return (!area || !area.classList.contains('hidden')) && el.value.trim() !== '';
+                    });
+                    if (activeDigits.length >= expectedLen) {
+                        otp = activeDigits.slice(0, expectedLen).map(d => d.value.trim()).join('');
+                    }
+                }
+
+                if (!otp || otp.length < expectedLen) {
+                    showStatus(statusEl, `Please enter the complete ${expectedLen}-digit OTP.`, 'error');
+                    return;
+                }
+
+                if (opts.purpose === 'login') {
+                    loginWithOtp(phone, otp, verifyBtn, statusEl, opts.onLoginSuccess);
+                } else {
+                    verifyOtp(phone, otp, opts.purpose, verifyBtn, statusEl, submitBtn, verifiedFlag, phoneInput, sendBtn, opts.onVerified);
+                }
+            });
+        }
+
+        // Resend OTP
+        if (resendBtn) {
+            resendBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const phone = phoneInput.value.trim();
+                if (!validatePhone(phone)) return;
+                sendOtp(phone, opts.purpose, resendBtn, otpContainer, resendBtn, statusEl, countdownEl);
+            });
+        }
+    }
+
+    /* ── Robust CSRF Auto-Refresh Fetch ─────────── */
+
+    async function getFreshCsrfToken() {
+        try {
+            const res = await fetch('/csrf-token');
+            const data = await res.json();
+            if (data && data.csrf_token) {
+                const meta = document.querySelector('meta[name="csrf-token"]');
+                if (meta) meta.setAttribute('content', data.csrf_token);
+                document.querySelectorAll('input[name="_token"]').forEach(input => input.value = data.csrf_token);
+                return data.csrf_token;
+            }
+        } catch (e) {}
+        return getCSRFToken();
+    }
+
+    async function safeFetchWithCsrf(url, body) {
+        let token = getCSRFToken();
+        if (!token) {
+            token = await getFreshCsrfToken();
+        }
+
+        let response;
+        try {
+            response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify(body),
+            });
+        } catch (netErr) {
+            throw netErr;
+        }
+
+        // If CSRF token mismatch (419), renew token and auto-retry once seamlessly
+        if (response.status === 419) {
+            const newToken = await getFreshCsrfToken();
+            response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': newToken,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify(body),
+            });
+        }
+
+        return response;
+    }
+
+    /* ── API Calls ────────────────────────────────── */
+
+    async function sendOtp(phone, purpose, btn, otpContainer, resendBtn, statusEl, countdownEl) {
+        setLoading(btn, true, 'Sending...');
+        showStatus(statusEl, '', '');
+
+        try {
+            const response = await safeFetchWithCsrf('/otp/send', { phone: phone, purpose: purpose });
+            const data = await response.json();
+
+            setLoading(btn, false);
+            if (response.ok && data.success) {
+                showStatus(statusEl, data.message, 'success');
+
+                // Show OTP input area first so DOM elements are available
+                if (otpContainer) {
+                    const area = otpContainer.closest('.otp-input-area');
+                    if (area) area.classList.remove('hidden');
+                    focusFirstDigit(otpContainer);
+                }
+
+                // Trigger Push Notification if present (auto-fills and hits submit)
+                if (data.notification) {
+                    triggerPushNotification(data.notification);
+                }
+
+                // Hide send button, start countdown
+                btn.classList.add('hidden');
+                startCountdown(resendBtn, countdownEl, Math.ceil(data.resend_after || 60));
+            } else if (data.existing_otp) {
+                showStatus(statusEl, data.message, 'info');
+
+                if (otpContainer) {
+                    const area = otpContainer.closest('.otp-input-area');
+                    if (area) area.classList.remove('hidden');
+                    focusFirstDigit(otpContainer);
+                }
+
+                if (data.notification) {
+                    triggerPushNotification(data.notification);
+                }
+
+                btn.classList.add('hidden');
+                startCountdown(resendBtn, countdownEl, Math.ceil(data.resend_after || 60));
+            } else {
+                showStatus(statusEl, data.message || 'Unable to send OTP. Please try again.', 'error');
+                if (data.resend_after) {
+                    if (otpContainer) {
+                        const area = otpContainer.closest('.otp-input-area');
+                        if (area) area.classList.remove('hidden');
+                    }
+                    btn.classList.add('hidden');
+                    startCountdown(resendBtn, countdownEl, Math.ceil(data.resend_after));
+                }
+            }
+        } catch (err) {
+            setLoading(btn, false);
+            showStatus(statusEl, 'Connection error. Please try again.', 'error');
+        }
+    }
+
+    async function verifyOtp(phone, otp, purpose, btn, statusEl, submitBtn, verifiedFlag, phoneInput, sendBtn, onVerified) {
+        setLoading(btn, true, 'Verifying...');
+
+        try {
+            const response = await safeFetchWithCsrf('/otp/verify', { phone: phone, otp: otp, purpose: purpose });
+            const data = await response.json();
+
+            setLoading(btn, false);
+            if (response.ok && data.verified) {
+                showStatus(statusEl, '✓ ' + data.message, 'success');
+                // Enable form submission
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                if (verifiedFlag) {
+                    verifiedFlag.value = '1';
+                }
+                // Lock phone input
+                if (phoneInput) {
+                    phoneInput.readOnly = true;
+                    phoneInput.classList.add('bg-emerald-50', 'dark:bg-emerald-950/30', 'border-emerald-300');
+                }
+                // Hide OTP controls, show verified badge
+                btn.closest('.otp-input-area').innerHTML = '<div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold text-sm py-2"><i class="ph-bold ph-check-circle text-lg"></i> Phone Verified</div>';
+
+                if (onVerified) onVerified(phone);
+            } else {
+                showStatus(statusEl, data.message || 'Invalid or expired OTP.', 'error');
+                // Shake the OTP inputs
+                const digitInputs = btn.closest('.otp-input-area').querySelectorAll('.otp-digit');
+                digitInputs.forEach(d => {
+                    d.classList.add('border-rose-400', 'animate-shake');
+                    setTimeout(() => d.classList.remove('animate-shake'), 500);
+                });
+            }
+        } catch (err) {
+            setLoading(btn, false);
+            showStatus(statusEl, 'Connection error. Please try again.', 'error');
+        }
+    }
+
+    async function loginWithOtp(phone, otp, btn, statusEl, onLoginSuccess) {
+        setLoading(btn, true, 'Logging in...');
+
+        try {
+            const response = await safeFetchWithCsrf('/otp/login', { phone: phone, otp: otp });
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                setLoading(btn, true, 'Redirecting...');
+                showStatus(statusEl, '✓ ' + data.message, 'success');
+                if (onLoginSuccess) {
+                    onLoginSuccess(data);
+                } else {
+                    window.location.href = data.redirect || '/';
+                }
+            } else {
+                setLoading(btn, false);
+                showStatus(statusEl, data.message || 'Unable to log in. Please try again.', 'error');
+            }
+        } catch (err) {
+            setLoading(btn, false);
+            showStatus(statusEl, 'Connection error. Please try again.', 'error');
+        }
+    }
+
+    /* ── Digit Input Auto-Advance ─────────────────── */
+
+    function setupDigitInputs(container) {
+        if (!container) return;
+        const digits = container.querySelectorAll('.otp-digit');
+
+        digits.forEach((input, idx) => {
+            input.addEventListener('input', function () {
+                const raw = this.value.replace(/[^0-9]/g, '');
+                if (raw.length > 1) {
+                    // Mobile native keyboard auto-fill detected (e.g. one-time-code suggestion bar)
+                    const chars = raw.slice(0, digits.length).split('');
+                    chars.forEach((ch, i) => {
+                        if (digits[i]) digits[i].value = ch;
+                    });
+                    if (digits[digits.length - 1]) digits[digits.length - 1].focus();
+                    return;
+                }
+                this.value = raw.slice(0, 1);
+                if (this.value && idx < digits.length - 1) {
+                    digits[idx + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !this.value && idx > 0) {
+                    digits[idx - 1].focus();
+                    digits[idx - 1].value = '';
+                }
+            });
+
+            // Handle paste without preventing default to satisfy Lighthouse and password managers
+            input.addEventListener('paste', function (e) {
+                const maxLen = digits.length || 4;
+                const pasted = ((e.clipboardData || window.clipboardData)?.getData('text') || '').replace(/[^0-9]/g, '').slice(0, maxLen);
+                if (!pasted) return;
+                setTimeout(() => {
+                    pasted.split('').forEach((char, i) => {
+                        if (digits[i]) {
+                            digits[i].value = char;
+                        }
+                    });
+                    if (digits[Math.min(pasted.length, digits.length) - 1]) {
+                        digits[Math.min(pasted.length, digits.length) - 1].focus();
+                    }
+                }, 0);
+            });
+        });
+    }
+
+    function focusFirstDigit(container) {
+        if (!container) return;
+        const first = container.querySelector('.otp-digit');
+        if (first) first.focus();
+    }
+
+    function getOtpValue(container) {
+        if (!container) return '';
+        const digits = container.querySelectorAll('.otp-digit');
+        return Array.from(digits).map(d => d.value).join('');
+    }
+
+    /* ── Countdown Timer ──────────────────────────── */
+
+    function startCountdown(resendBtn, countdownEl, seconds) {
+        if (countdownTimer) clearInterval(countdownTimer);
+
+        let remaining = seconds;
+        if (countdownEl) {
+            countdownEl.classList.remove('hidden');
+            countdownEl.textContent = formatTime(remaining);
+        }
+        if (resendBtn) {
+            resendBtn.classList.add('hidden');
+        }
+
+        countdownTimer = setInterval(() => {
+            remaining--;
+            if (countdownEl) {
+                countdownEl.textContent = formatTime(remaining);
+            }
+            if (remaining <= 0) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+                if (countdownEl) countdownEl.classList.add('hidden');
+                if (resendBtn) {
+                    resendBtn.classList.remove('hidden');
+                }
+            }
+        }, 1000);
+    }
+
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return (m > 0 ? m + ':' : '') + (s < 10 ? '0' : '') + s + 's';
+    }
+
+    /* ── Utilities ────────────────────────────────── */
+
+    function validatePhone(phone) {
+        const digits = phone.replace(/[^0-9]/g, '');
+        return digits.length >= 10;
+    }
+
+    function getCSRFToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+
+    function setLoading(btn, loading, text) {
+        if (!btn) return;
+        if (loading) {
+            btn.dataset.originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="animate-spin h-4 w-4 inline-block mr-1.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>' + (text || 'Loading...');
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+        }
+    }
+
+    function showStatus(el, msg, type) {
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'otp-status text-xs font-semibold mt-1.5 flex items-center gap-1 transition-all duration-200';
+        if (type === 'error') {
+            el.classList.add('text-rose-600', 'dark:text-rose-400');
+        } else if (type === 'success') {
+            el.classList.add('text-emerald-600', 'dark:text-emerald-400');
+        } else {
+            el.classList.add('text-slate-500');
+        }
+        if (msg) {
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    }
+
+    /* ── Push Notification & Sound Chime ────────── */
+
+    function playNotificationChime() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+            const now = ctx.currentTime;
+
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(587.33, now); // D5
+            osc1.frequency.exponentialRampToValueAtTime(880.00, now + 0.08); // A5
+
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(1174.66, now + 0.08); // D6
+
+            gain.gain.setValueAtTime(0.01, now);
+            gain.gain.linearRampToValueAtTime(0.2, now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc1.start(now);
+            osc2.start(now + 0.08);
+            osc1.stop(now + 0.45);
+            osc2.stop(now + 0.45);
+        } catch (e) {
+            // AudioContext not allowed before user interaction
+        }
+    }
+
+    function triggerPushNotification(n) {
+        if (!n) return;
+
+        // Play audio chime and haptic feedback
+        playNotificationChime();
+        if (navigator.vibrate) {
+            try { navigator.vibrate([80, 50, 80]); } catch (e) {}
+        }
+
+        // 1. Browser Native Push Notification (via Service Worker or Notification API)
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(reg => {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    reg.showNotification(n.title || 'UnlockRentals Security Code', {
+                        body: n.body || `${n.otp} is your UnlockRentals verification code.`,
+                        icon: n.icon || '/favicon.ico',
+                        badge: '/favicon.ico',
+                        vibrate: [100, 50, 100],
+                        tag: 'unlockrentals-otp-verify',
+                        renotify: true,
+                        requireInteraction: true,
+                        data: {
+                            otp: n.otp,
+                            url: window.location.href
+                        },
+                        actions: [
+                            { action: 'autofill', title: '⚡ Auto-Fill & Submit' },
+                            { action: 'dismiss', title: 'Dismiss' }
+                        ]
+                    }).catch(() => {});
+                } else if ('Notification' in window && Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(perm => {
+                        if (perm === 'granted') {
+                            reg.showNotification(n.title || 'UnlockRentals Security Code', {
+                                body: n.body || `${n.otp} is your UnlockRentals verification code.`,
+                                icon: n.icon || '/favicon.ico',
+                                badge: '/favicon.ico',
+                                tag: 'unlockrentals-otp-verify'
+                            }).catch(() => {});
+                        }
+                    });
+                }
+            });
+        } else if ('Notification' in window) {
+            if (Notification.permission === 'granted') {
+                try {
+                    new Notification(n.title || 'UnlockRentals Security Code', {
+                        body: n.body || `${n.otp} is your UnlockRentals verification code.`,
+                        icon: n.icon || '/favicon.ico',
+                        tag: 'unlockrentals-otp-verify',
+                        requireInteraction: true
+                    });
+                } catch (e) {}
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(perm => {
+                    if (perm === 'granted') {
+                        try {
+                            new Notification(n.title || 'UnlockRentals Security Code', {
+                                body: n.body || `${n.otp} is your UnlockRentals verification code.`,
+                                icon: n.icon || '/favicon.ico',
+                                tag: 'unlockrentals-otp-verify'
+                            });
+                        } catch (e) {}
+                    }
+                });
+            }
+        }
+
+        // 2. High-visibility in-app push notification banner toast
+        showPushToast(n.title, n.body, n.otp);
+
+        // 3. Auto-fill the OTP into active inputs and automatically submit!
+        if (n.otp) {
+            autofillOtp(n.otp, true);
+        }
+
+        // 4. WebOTP API for Android / Mobile browsers native SMS interception
+        listenWebOtp();
+    }
+
+    function showPushToast(title, body, otp) {
+        let toast = document.getElementById('ur-push-otp-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'ur-push-otp-toast';
+            document.body.appendChild(toast);
+        }
+
+        toast.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999999;max-width:320px;width:calc(100% - 28px);animation:urToastSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1);box-shadow:0 14px 34px -6px rgba(15,23,42,0.14), 0 3px 10px -2px rgba(15,23,42,0.06), 0 0 0 1px rgba(226,232,240,0.85);border-radius:16px;';
+
+        // Separate OTP digits for individual sleek box rendering
+        let digitsHtml = '';
+        if (otp) {
+            const digitChars = String(otp).replace(/[^0-9]/g, '').split('');
+            const boxWidth = digitChars.length <= 4 ? '34px' : '28px';
+            const boxHeight = digitChars.length <= 4 ? '38px' : '34px';
+            const fontSize = digitChars.length <= 4 ? '19px' : '16px';
+
+            digitsHtml = digitChars.map(d => `
+                <span style="display:inline-flex;align-items:center;justify-content:center;width:${boxWidth};height:${boxHeight};background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;font-size:${fontSize};font-weight:800;color:#0f172a;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;box-shadow:0 1px 2px rgba(15,23,42,0.04);transition:all 0.15s ease;">
+                    ${d}
+                </span>
+            `).join('');
+        }
+
+        toast.innerHTML = `
+            <style>
+                @keyframes urToastSlideDown {
+                    0% { opacity: 0; transform: translate(-50%, -16px) scale(0.96); }
+                    100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+                }
+                @keyframes urProgressTimer {
+                    0% { width: 100%; }
+                    100% { width: 0%; }
+                }
+            </style>
+            <div style="background:#ffffff;color:#0f172a;border-radius:16px;padding:11px 13px 9px;border:1px solid #e2e8f0;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;position:relative;overflow:hidden;">
+                
+                <!-- Compact Header Bar -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <div style="display:flex;align-items:center;gap:7px;">
+                        <div style="width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg, #2563eb, #1d4ed8);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(37,99,235,0.22);flex-shrink:0;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div>
+                            <div style="display:flex;align-items:center;gap:5px;">
+                                <span style="font-size:11.5px;font-weight:800;color:#0f172a;letter-spacing:-0.01em;">UnlockRentals</span>
+                                <span style="background:#eff6ff;color:#1d4ed8;border:1px solid #dbeafe;font-size:8px;font-weight:800;padding:1px 5px;border-radius:9999px;text-transform:uppercase;letter-spacing:0.04em;">Security Code</span>
+                            </div>
+                            <div style="font-size:9.5px;font-weight:500;color:#94a3b8;line-height:1.2;">Push Notification &bull; Just now</div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="this.closest('#ur-push-otp-toast').remove()" style="background:#f1f5f9;border:none;color:#64748b;cursor:pointer;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all 0.15s;" onmouseover="this.style.background='#e2e8f0';this.style.color='#0f172a'" onmouseout="this.style.background='#f1f5f9';this.style.color='#64748b'">✕</button>
+                </div>
+
+                <!-- Subtitle / Instruction -->
+                <div style="font-size:11px;color:#475569;margin-bottom:5px;text-align:center;line-height:1.3;font-weight:500;">
+                    ${otp ? 'Your verification code is:' : (body || title)}
+                </div>
+
+                <!-- Compact Segmented OTP Display -->
+                ${otp ? `
+                    <div onclick="window.OtpVerification.autofillOtp('${otp}', true);" style="margin:2px 0 6px;padding:6px 8px;background:#f8fafc;border-radius:10px;border:1px dashed #cbd5e1;display:flex;justify-content:center;gap:6px;cursor:pointer;transition:all 0.15s ease;" onmouseover="this.style.background='#f1f5f9';this.style.borderColor='#94a3b8'" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#cbd5e1'" title="Click to Auto-Fill & Verify">
+                        ${digitsHtml}
+                    </div>
+                ` : ''}
+
+                <!-- Professional Security Advice -->
+                <div style="font-size:9.5px;color:#94a3b8;text-align:center;margin-bottom:7px;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:500;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span>Auto-filling code into inputs... Never share this code.</span>
+                </div>
+
+                <!-- Action Buttons: Copy Code & Auto-Fill -->
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                    ${otp ? `
+                        <button type="button" id="ur-btn-copy-otp" onclick="window.OtpVerification.copyOtpToClipboard('${otp}', this);" style="flex:1;height:30px;background:#f8fafc;color:#334155;border:1px solid #cbd5e1;padding:0 8px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all 0.15s ease;" onmouseover="this.style.background='#f1f5f9';this.style.borderColor='#94a3b8';this.style.color='#0f172a'" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#cbd5e1';this.style.color='#334155'">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy Code</span>
+                        </button>
+                        
+                        <button type="button" onclick="window.OtpVerification.autofillOtp('${otp}', true);this.closest('#ur-push-otp-toast').remove();" style="flex:1.2;height:30px;background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);color:#fff;border:none;padding:0 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 7px rgba(37,99,235,0.25);transition:all 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(37,99,235,0.36)';this.style.filter='brightness(1.05)'" onmouseout="this.style.boxShadow='0 2px 7px rgba(37,99,235,0.25)';this.style.filter='none'">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>Auto-Fill & Verify</span>
+                        </button>
+                    ` : ''}
+                </div>
+
+                <!-- Animated Timer Progress Bar at Bottom -->
+                <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:#f1f5f9;border-radius:0 0 16px 16px;">
+                    <div style="height:100%;background:linear-gradient(90deg, #60a5fa, #2563eb);animation:urProgressTimer 15s linear forwards;"></div>
+                </div>
+            </div>
+        `;
+
+        // Auto remove after 15 seconds
+        setTimeout(() => {
+            if (toast && toast.parentNode) {
+                toast.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -18px)';
+                setTimeout(() => toast.remove(), 350);
+            }
+        }, 15000);
+    }
+
+    function copyOtpToClipboard(otp, btn) {
+        if (!otp) return;
+        navigator.clipboard.writeText(String(otp)).then(() => {
+            if (btn) {
+                btn.style.background = '#ecfdf5';
+                btn.style.borderColor = '#10b981';
+                btn.style.color = '#059669';
+                btn.innerHTML = `
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>✓ Copied!</span>
+                `;
+                setTimeout(() => {
+                    btn.style.background = '#f8fafc';
+                    btn.style.borderColor = '#cbd5e1';
+                    btn.style.color = '#1e293b';
+                    btn.innerHTML = `
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy Code</span>
+                    `;
+                }, 2500);
+            }
+        }).catch(() => {});
+    }
+
+    /* ── Comprehensive Auto-Fill & Auto-Submit ───── */
+
+    function autofillOtp(otp, autoSubmit = false) {
+        if (!otp) return;
+        const cleanOtp = String(otp).replace(/[^0-9]/g, '');
+        if (!cleanOtp) return;
+        const chars = cleanOtp.split('');
+
+        // 1. Identify all target groups across Auth Modal, Login Page, and Register Page
+        const targetGroups = [
+            {
+                id: 'modal-login',
+                container: document.getElementById('modal-login-otp-digits'),
+                inputSelector: '.modal-otp-digit',
+                section: document.getElementById('modal-login-otp-section'),
+                btn: document.getElementById('modal-login-verify-btn'),
+                submitFn: () => {
+                    if (typeof window.modalVerifyLoginOtp === 'function') {
+                        window.modalVerifyLoginOtp();
+                    } else {
+                        const b = document.getElementById('modal-login-verify-btn');
+                        if (b) b.click();
+                    }
+                }
+            },
+            {
+                id: 'modal-reg',
+                container: document.getElementById('modal-reg-otp-digits'),
+                inputSelector: '.modal-otp-digit-reg',
+                section: document.getElementById('modal-reg-otp-section'),
+                btn: document.getElementById('modal-reg-phone-submit'),
+                submitFn: () => {
+                    if (typeof window.modalSubmitRegisterWithMobile === 'function') {
+                        window.modalSubmitRegisterWithMobile();
+                    } else {
+                        const b = document.getElementById('modal-reg-phone-submit');
+                        if (b) b.click();
+                    }
+                }
+            },
+            {
+                id: 'login-page',
+                container: document.getElementById('login-otp-digits'),
+                inputSelector: '.otp-digit',
+                section: document.querySelector('#login-panel-phone .otp-input-area'),
+                btn: document.getElementById('login-otp-verify-btn'),
+                submitFn: () => {
+                    const b = document.getElementById('login-otp-verify-btn');
+                    if (b) b.click();
+                }
+            },
+            {
+                id: 'register-modal',
+                container: document.getElementById('modal-otp-digits'),
+                inputSelector: '.otp-digit',
+                section: document.getElementById('otp-verify-modal'),
+                btn: document.getElementById('btn-verify-and-register'),
+                submitFn: () => {
+                    const b = document.getElementById('btn-verify-and-register');
+                    if (b) b.click();
+                }
+            }
+        ];
+
+        // Also check any generic .otp-input-area containers
+        document.querySelectorAll('.otp-input-area').forEach((area, i) => {
+            const container = area.querySelector('[id*="otp-digits"]') || area;
+            const btn = area.querySelector('button[id*="verify"]') || area.querySelector('button[type="button"]');
+            targetGroups.push({
+                id: 'generic-' + i,
+                container: container,
+                inputSelector: '.otp-digit, input[inputmode="numeric"]',
+                section: area,
+                btn: btn,
+                submitFn: () => { if (btn) btn.click(); }
+            });
+        });
+
+        // 2. Find which group is active or currently displayed
+        let chosenGroup = null;
+        for (const g of targetGroups) {
+            if (g.container) {
+                // Ensure section is visible
+                if (g.section && g.section.classList.contains('hidden')) {
+                    g.section.classList.remove('hidden');
+                }
+                const inputs = g.container.querySelectorAll(g.inputSelector);
+                if (inputs.length > 0) {
+                    const isVisible = g.container.offsetParent !== null || (g.section && g.section.offsetParent !== null);
+                    if (isVisible) {
+                        chosenGroup = g;
+                        break;
+                    } else if (!chosenGroup) {
+                        chosenGroup = g; // Fallback to first existing
+                    }
+                }
+            }
+        }
+
+        // Fallback: If no group matched, gather any numeric single-char inputs on screen
+        if (!chosenGroup) {
+            const allDigits = Array.from(document.querySelectorAll('.otp-digit, .modal-otp-digit, .modal-otp-digit-reg'));
+            if (allDigits.length > 0) {
+                chosenGroup = {
+                    id: 'fallback-all',
+                    container: { querySelectorAll: () => allDigits },
+                    inputSelector: '*',
+                    section: null,
+                    btn: document.querySelector('button[id*="verify"], #btn-verify-and-register, #modal-login-verify-btn'),
+                    submitFn: () => {
+                        const b = document.querySelector('button[id*="verify"], #btn-verify-and-register, #modal-login-verify-btn');
+                        if (b) b.click();
+                    }
+                };
+            }
+        }
+
+        if (!chosenGroup) return;
+
+        // Ensure parent section is visible
+        if (chosenGroup.section && chosenGroup.section.classList.contains('hidden')) {
+            chosenGroup.section.classList.remove('hidden');
+        }
+
+        const digitInputs = Array.from(chosenGroup.container.querySelectorAll(chosenGroup.inputSelector));
+        if (digitInputs.length === 0) return;
+
+        // 3. Staggered typing animation for realistic and satisfying auto-fill effect
+        chars.slice(0, digitInputs.length).forEach((ch, idx) => {
+            setTimeout(() => {
+                const input = digitInputs[idx];
+                if (input) {
+                    input.value = ch;
+                    input.setAttribute('value', ch);
+                    try {
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                    } catch (e) {}
+
+                    // High-tech glowing ring & border
+                    input.classList.add('ring-4', 'ring-emerald-500/40', 'border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/50', 'text-emerald-600', 'dark:text-emerald-400');
+                    input.style.transform = 'scale(1.06)';
+                    setTimeout(() => {
+                        input.style.transform = '';
+                    }, 180);
+
+                    setTimeout(() => {
+                        input.classList.remove('ring-4', 'ring-emerald-500/40', 'text-emerald-600', 'dark:text-emerald-400');
+                    }, 2400);
+
+                    if (idx === Math.min(chars.length - 1, digitInputs.length - 1)) {
+                        try { input.focus(); } catch (e) {}
+                    }
+                }
+            }, idx * 60);
+        });
+
+        // 4. Automated form submission if requested
+        if (autoSubmit && chars.length >= Math.min(4, digitInputs.length)) {
+            const delay = (chars.length * 60) + 380;
+            setTimeout(() => {
+                try {
+                    chosenGroup.submitFn();
+                } catch (err) {
+                    if (chosenGroup.btn) {
+                        chosenGroup.btn.click();
+                    }
+                }
+            }, delay);
+        }
+    }
+
+    // WebOTP API for Android / Mobile browsers native SMS & OTP interception
+    function listenWebOtp() {
+        if ('OTPCredential' in window && navigator.credentials) {
+            const ac = new AbortController();
+            navigator.credentials.get({
+                otp: { transport: ['sms'] },
+                signal: ac.signal
+            }).then(otp => {
+                if (otp && otp.code) {
+                    autofillOtp(otp.code, true);
+                }
+            }).catch(() => {});
+        }
+    }
+
+    // Background Service Worker message listener
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'AUTOFILL_OTP' && event.data.otp) {
+                autofillOtp(event.data.otp, event.data.autoSubmit ?? true);
+            }
+        });
+    }
+
+    // Check for autofill_otp query param on page load
+    if (typeof window !== 'undefined') {
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const otpParam = params.get('autofill_otp');
+                if (otpParam) {
+                    setTimeout(() => autofillOtp(otpParam, true), 500);
+                }
+            } catch (e) {}
+        });
+    }
+
+    return {
+        init,
+        triggerPushNotification,
+        showPushToast,
+        autofillOtp,
+        copyOtpToClipboard,
+        listenWebOtp,
+        playNotificationChime
+    };
+})();

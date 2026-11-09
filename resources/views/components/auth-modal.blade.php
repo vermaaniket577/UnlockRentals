@@ -953,7 +953,7 @@ async function handleModalAuthSubmit(event, type) {
 <script>
 if (typeof window.OtpVerification === 'undefined') {
     const otpScript = document.createElement('script');
-    otpScript.src = "{{ asset('js/otp-verification.js') }}?v=20260916";
+    otpScript.src = "{{ asset('js/otp-verification-v2.js') }}?v=20261109v2";
     document.head.appendChild(otpScript);
 }
 </script>

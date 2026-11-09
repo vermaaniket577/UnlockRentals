@@ -289,7 +289,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/otp-verification.js') }}?v=20260903_v3"></script>
+<script src="{{ asset('js/otp-verification-v2.js') }}?v=20261109v2"></script>
 <script>
 function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);
