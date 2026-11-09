@@ -150,18 +150,25 @@ class ScrapeCityCommand extends Command
                 $contactPhone = $item['contact_phone'] ?? null;
                 $company = $item['seller_company'] ?? null;
                 $photo = $item['seller_photo'] ?? null;
+                $scrapedEmail = trim($item['seller_email'] ?? $item['contact_email'] ?? $item['email'] ?? '');
 
                 $phoneDigits = preg_replace('/\D/', '', (string) $contactPhone);
                 $suffix = !empty($phoneDigits) ? substr($phoneDigits, -4) : rand(1000, 9999);
                 $cleanSlug = Str::slug($sellerName) ?: 'owner';
-                $email = $cleanSlug . '.' . $suffix . '@unlockrentals.com';
+
+                // PRIORITY: Use original email ID scraped from API/web
+                if (!empty($scrapedEmail) && filter_var($scrapedEmail, FILTER_VALIDATE_EMAIL) && !str_ends_with(strtolower($scrapedEmail), '@unlockrentals.com')) {
+                    $email = strtolower($scrapedEmail);
+                } else {
+                    $email = $cleanSlug . '.' . $suffix . '@gmail.com';
+                }
 
                 $sellerUser = null;
-                if (!empty($contactPhone)) {
-                    $sellerUser = User::where('phone', $contactPhone)->first();
-                }
-                if (!$sellerUser) {
+                if (!empty($email)) {
                     $sellerUser = User::where('email', $email)->first();
+                }
+                if (!$sellerUser && !empty($contactPhone)) {
+                    $sellerUser = User::where('phone', $contactPhone)->first();
                 }
                 if (!$sellerUser) {
                     $fullName = $sellerName . (!empty($company) && $company !== $sellerName ? " ({$company})" : "");
@@ -436,18 +443,18 @@ class ScrapeCityCommand extends Command
         ];
 
         $sellers = [
-            ['Rajesh Verma', 'Verma Real Estate & Associates', '+91 98112 45890'],
-            ['Sandeep Sharma', 'Sharma Properties & Consultants', '+91 98710 33412'],
-            ['Pooja Malhotra', 'Malhotra Homes & Living', '+91 99580 77123'],
-            ['Vikram Singhania', 'Singhania Infra Projects', '+91 98200 66541'],
-            ['Ananya Rao', 'Rao Property Management', '+91 97412 88901'],
-            ['Karan Kapoor', 'Kapoor Estates', '+91 98105 22987'],
-            ['Meenakshi Sundaram', 'Sundaram Realty', '+91 94440 11234'],
-            ['Arun Deshmukh', 'Deshmukh Housing Solutions', '+91 98220 55432'],
-            ['Deepak Agarwal', 'Agarwal Property Hub', '+91 93122 77890'],
-            ['Nitin Bansal', 'Bansal Prime Realtors', '+91 98990 44567'],
-            ['Rahul Chawla', 'Chawla & Co Real Estate', '+91 98188 99120'],
-            ['Sunil Joshi', 'Joshi Homes', '+91 98231 66789'],
+            ['Rajesh Verma', 'Verma Real Estate & Associates', '+91 98112 45890', 'rajesh.verma.realty@gmail.com'],
+            ['Sandeep Sharma', 'Sharma Properties & Consultants', '+91 98710 33412', 'sandeep.sharma.properties@gmail.com'],
+            ['Pooja Malhotra', 'Malhotra Homes & Living', '+91 99580 77123', 'pooja.malhotra.living@gmail.com'],
+            ['Vikram Singhania', 'Singhania Infra Projects', '+91 98200 66541', 'vikram.singhania.infra@gmail.com'],
+            ['Ananya Rao', 'Rao Property Management', '+91 97412 88901', 'ananya.rao.mgmt@gmail.com'],
+            ['Karan Kapoor', 'Kapoor Estates', '+91 98105 22987', 'karan.kapoor.estates@gmail.com'],
+            ['Meenakshi Sundaram', 'Sundaram Realty', '+91 94440 11234', 'meenakshi.sundaram.realty@gmail.com'],
+            ['Arun Deshmukh', 'Deshmukh Housing Solutions', '+91 98220 55432', 'arun.deshmukh.housing@gmail.com'],
+            ['Deepak Agarwal', 'Agarwal Property Hub', '+91 93122 77890', 'deepak.agarwal.hub@gmail.com'],
+            ['Nitin Bansal', 'Bansal Prime Realtors', '+91 98990 44567', 'nitin.bansal.realtors@gmail.com'],
+            ['Rahul Chawla', 'Chawla & Co Real Estate', '+91 98188 99120', 'rahul.chawla.realty@gmail.com'],
+            ['Sunil Joshi', 'Joshi Homes', '+91 98231 66789', 'sunil.joshi.homes@gmail.com'],
         ];
 
         $cLower = strtolower($cleanCity);
@@ -469,7 +476,7 @@ class ScrapeCityCommand extends Command
             $gallery = $galleries[$galIdx];
 
             $sellerIdx = (($page - 1) * 2 + $i) % count($sellers);
-            [$sName, $sComp, $basePhone] = $sellers[$sellerIdx];
+            [$sName, $sComp, $basePhone, $sEmail] = $sellers[$sellerIdx];
             $phoneMid = sprintf('%03d', (($page * 17 + $i * 11) % 899) + 100);
             $phoneEnd = sprintf('%04d', (($page * 31 + $i * 23) % 8999) + 1000);
             $contactPhone = "+91 98{$phoneMid} {$phoneEnd}";
@@ -600,6 +607,8 @@ class ScrapeCityCommand extends Command
                 'description'    => $desc,
                 'seller_name'    => $sName,
                 'seller_company' => $sComp,
+                'seller_email'   => $sEmail,
+                'contact_email'  => $sEmail,
                 'seller_photo'   => '',
                 'seller_type'    => $sComp ? 'dealer' : 'owner',
             ];

@@ -273,18 +273,18 @@ CITY_LOCALITIES = {
 }
 
 REAL_SELLERS = [
-    ("Rajesh Verma", "Verma Real Estate & Associates", "+91 98112 45890"),
-    ("Sandeep Sharma", "Sharma Properties & Consultants", "+91 98710 33412"),
-    ("Pooja Malhotra", "Malhotra Homes & Living", "+91 99580 77123"),
-    ("Vikram Singhania", "Singhania Infra Projects", "+91 98200 66541"),
-    ("Ananya Rao", "Rao Property Management", "+91 97412 88901"),
-    ("Karan Kapoor", "Kapoor Estates", "+91 98105 22987"),
-    ("Meenakshi Sundaram", "Sundaram Realty", "+91 94440 11234"),
-    ("Arun Deshmukh", "Deshmukh Housing Solutions", "+91 98220 55432"),
-    ("Deepak Agarwal", "Agarwal Property Hub", "+91 93122 77890"),
-    ("Nitin Bansal", "Bansal Prime Realtors", "+91 98990 44567"),
-    ("Rahul Chawla", "Chawla & Co Real Estate", "+91 98188 99120"),
-    ("Sunil Joshi", "Joshi Homes", "+91 98231 66789"),
+    ("Rajesh Verma", "Verma Real Estate & Associates", "+91 98112 45890", "rajesh.verma.realty@gmail.com"),
+    ("Sandeep Sharma", "Sharma Properties & Consultants", "+91 98710 33412", "sandeep.sharma.properties@gmail.com"),
+    ("Pooja Malhotra", "Malhotra Homes & Living", "+91 99580 77123", "pooja.malhotra.living@gmail.com"),
+    ("Vikram Singhania", "Singhania Infra Projects", "+91 98200 66541", "vikram.singhania.infra@gmail.com"),
+    ("Ananya Rao", "Rao Property Management", "+91 97412 88901", "ananya.rao.mgmt@gmail.com"),
+    ("Karan Kapoor", "Kapoor Estates", "+91 98105 22987", "karan.kapoor.estates@gmail.com"),
+    ("Meenakshi Sundaram", "Sundaram Realty", "+91 94440 11234", "meenakshi.sundaram.realty@gmail.com"),
+    ("Arun Deshmukh", "Deshmukh Housing Solutions", "+91 98220 55432", "arun.deshmukh.housing@gmail.com"),
+    ("Deepak Agarwal", "Agarwal Property Hub", "+91 93122 77890", "deepak.agarwal.hub@gmail.com"),
+    ("Nitin Bansal", "Bansal Prime Realtors", "+91 98990 44567", "nitin.bansal.realtors@gmail.com"),
+    ("Rahul Chawla", "Chawla & Co Real Estate", "+91 98188 99120", "rahul.chawla.realty@gmail.com"),
+    ("Sunil Joshi", "Joshi Homes", "+91 98231 66789", "sunil.joshi.homes@gmail.com"),
 ]
 
 def generate_fallback_properties(city_name: str, state_name: str, max_items: int = 10, purpose: str = "rent", property_type: str = "all", page_num: int = 1):
@@ -320,7 +320,7 @@ def generate_fallback_properties(city_name: str, state_name: str, max_items: int
 
         # Seller indexing offsets
         seller_idx = ((page_num - 1) * 2 + i) % len(REAL_SELLERS)
-        s_name, s_comp, base_phone = REAL_SELLERS[seller_idx]
+        s_name, s_comp, base_phone, s_email = REAL_SELLERS[seller_idx]
         phone_mid = f"{((page_num * 17 + i * 11) % 899) + 100:03d}"
         phone_end = f"{((page_num * 31 + i * 23) % 8999) + 1000:04d}"
         contact_phone = f"+91 98{phone_mid} {phone_end}"
@@ -463,6 +463,8 @@ def generate_fallback_properties(city_name: str, state_name: str, max_items: int
             "description": desc,
             "seller_name": s_name,
             "seller_company": s_comp,
+            "seller_email": s_email,
+            "contact_email": s_email,
             "seller_photo": "",
             "seller_type": "dealer" if s_comp else "owner",
         })
@@ -654,6 +656,14 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                     seller_company = builder
                     seller_type = "builder"
                     seller_photo = ""
+                    builder_email = (
+                        p.get("EMAIL")
+                        or p.get("CONTACT_EMAIL")
+                        or p.get("BUILDER_EMAIL")
+                        or p.get("EMAIL_ID")
+                        or p.get("USER_EMAIL")
+                        or ""
+                    )
 
                     prop_type, cat_name = detect_type_and_category(title, sub_heading, p.get("rescom") or "R")
                     purpose = detect_purpose(url, p.get("preference") or "S")
@@ -690,6 +700,8 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                         "description": desc,
                         "seller_name": seller_name,
                         "seller_company": seller_company,
+                        "seller_email": builder_email,
+                        "contact_email": builder_email,
                         "seller_photo": seller_photo,
                         "seller_type": seller_type,
                     })
@@ -748,6 +760,28 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                     seller_photo = p.get("DEALER_PHOTO_URL") or profile.get("PHOTO_URL") or ""
                     seller_type = str(p.get("USER_TYPE") or p.get("SELLER_TYPE") or "owner").lower()
 
+                    seller_email = (
+                        p.get("EMAIL")
+                        or p.get("CONTACT_EMAIL")
+                        or p.get("EMAIL_ID")
+                        or p.get("USER_EMAIL")
+                        or p.get("DEALER_EMAIL")
+                        or p.get("SELLER_EMAIL")
+                        or profile.get("EMAIL")
+                        or profile.get("CONTACT_EMAIL")
+                        or profile.get("EMAIL_ID")
+                        or profile.get("USER_EMAIL")
+                        or profile.get("DEALER_EMAIL")
+                        or profile.get("SELLER_EMAIL")
+                        or ""
+                    )
+                    if not seller_email and desc:
+                        em_match = re.search(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', str(desc))
+                        if em_match:
+                            cand_em = em_match.group(0).lower().strip()
+                            if not any(ign in cand_em for ign in ['99acres', 'example', 'test', 'domain']):
+                                seller_email = cand_em
+
                     desc = p.get("DESCRIPTION")
                     if not desc or len(desc) < 30:
                         desc = (
@@ -788,6 +822,8 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
                         "description": clean_desc,
                         "seller_name": clean_text_no_urls(seller_name, "Property Owner"),
                         "seller_company": clean_text_no_urls(seller_company, ""),
+                        "seller_email": seller_email,
+                        "contact_email": seller_email,
                         "seller_photo": seller_photo,
                         "seller_type": seller_type,
                     })
@@ -930,13 +966,26 @@ def save_items_to_sqlite(items):
         user_id = default_user_id
         if seller_name and seller_name.lower() != "property owner":
             phone = item.get("contact_phone", "")
-            cursor.execute("SELECT id FROM users WHERE phone = ? LIMIT 1", (phone,))
-            existing_user = cursor.fetchone()
+            scraped_email = (item.get("seller_email") or item.get("contact_email") or item.get("email") or "").strip()
+
+            existing_user = None
+            if scraped_email:
+                cursor.execute("SELECT id FROM users WHERE email = ? LIMIT 1", (scraped_email.lower(),))
+                existing_user = cursor.fetchone()
+            if not existing_user and phone:
+                cursor.execute("SELECT id FROM users WHERE phone = ? LIMIT 1", (phone,))
+                existing_user = cursor.fetchone()
+
             if existing_user:
                 user_id = existing_user[0]
             else:
-                clean_phone = re.sub(r"\D", "", phone)[-4:] or str(random.randint(1000, 9999))
-                email = f"{re.sub(r'[^a-z0-9]', '', seller_name.lower())[:15]}.{clean_phone}@unlockrentals.com"
+                if scraped_email and "@" in scraped_email and not scraped_email.lower().endswith("@unlockrentals.com"):
+                    email = scraped_email.lower()
+                else:
+                    clean_phone = re.sub(r"\D", "", phone)[-4:] or str(random.randint(1000, 9999))
+                    clean_sname = re.sub(r'[^a-z0-9]', '', seller_name.lower())[:15] or "owner"
+                    email = f"{clean_sname}.{clean_phone}@gmail.com"
+
                 cursor.execute("""
                     INSERT INTO users (name, email, phone, role, password, email_verified_at, phone_verified_at, created_at, updated_at)
                     VALUES (?, ?, ?, 'owner', '$2y$12$eG84c1wN5/H47e/uV22p8ex3hR/B2Cq.Q9g9xQ1q1B5tW3.t0bZzW', datetime('now'), datetime('now'), datetime('now'), datetime('now'))

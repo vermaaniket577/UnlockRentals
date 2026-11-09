@@ -3324,18 +3324,25 @@ class AdminController extends Controller
                     $contactPhone = $item['contact_phone'] ?? null;
                     $company = $item['seller_company'] ?? null;
                     $photo = $item['seller_photo'] ?? null;
+                    $scrapedEmail = trim($item['seller_email'] ?? $item['contact_email'] ?? $item['email'] ?? '');
 
                     $phoneDigits = preg_replace('/\D/', '', (string) $contactPhone);
                     $suffix = !empty($phoneDigits) ? substr($phoneDigits, -4) : rand(1000, 9999);
                     $cleanSlug = Str::slug($sellerName) ?: 'owner';
-                    $email = $cleanSlug . '.' . $suffix . '@unlockrentals.com';
+
+                    // PRIORITY: Use original email ID scraped from API/web
+                    if (!empty($scrapedEmail) && filter_var($scrapedEmail, FILTER_VALIDATE_EMAIL) && !str_ends_with(strtolower($scrapedEmail), '@unlockrentals.com')) {
+                        $email = strtolower($scrapedEmail);
+                    } else {
+                        $email = $cleanSlug . '.' . $suffix . '@gmail.com';
+                    }
 
                     $sellerUser = null;
-                    if (!empty($contactPhone)) {
-                        $sellerUser = User::where('phone', $contactPhone)->first();
-                    }
-                    if (!$sellerUser) {
+                    if (!empty($email)) {
                         $sellerUser = User::where('email', $email)->first();
+                    }
+                    if (!$sellerUser && !empty($contactPhone)) {
+                        $sellerUser = User::where('phone', $contactPhone)->first();
                     }
                     if (!$sellerUser) {
                         $fullName = $sellerName . (!empty($company) && $company !== $sellerName ? " ({$company})" : "");
@@ -3593,9 +3600,9 @@ class AdminController extends Controller
                 if (!$ownerUser) {
                     $cleanNum = preg_replace('/[^0-9]/', '', $phone) ?: rand(1000, 9999);
                     $cleanSlug = Str::slug($name) ?: 'owner';
-                    $genEmail = !empty($email) ? $email : "{$cleanSlug}.{$cleanNum}@unlockrentals.com";
+                    $genEmail = !empty($email) ? $email : "{$cleanSlug}.{$cleanNum}@gmail.com";
                     if (User::where('email', $genEmail)->exists()) {
-                        $genEmail = "{$cleanSlug}.{$cleanNum}." . rand(100, 999) . "@unlockrentals.com";
+                        $genEmail = "{$cleanSlug}.{$cleanNum}." . rand(100, 999) . "@gmail.com";
                     }
 
                     $ownerUser = User::create([
