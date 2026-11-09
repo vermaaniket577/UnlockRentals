@@ -45,6 +45,20 @@
     .blog-article-content figcaption {
         text-align: left !important;
     }
+    .blog-article-content img {
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+        display: block !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        object-fit: contain !important;
+    }
+    .dark .blog-article-content img {
+        border-color: rgba(30, 41, 59, 0.8) !important;
+    }
 </style>
 
 <div class="min-h-screen bg-slate-50 dark:bg-slate-950 pt-24 pb-20">
@@ -108,11 +122,15 @@
             </div>
         </div>
 
-        {{-- Featured Hero Image --}}
-        <div class="rounded-2xl overflow-hidden mb-8 shadow-md border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center justify-center max-h-[340px]">
-            <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}"
-                 onerror="this.onerror=null;this.src='{{ $post->getDefaultCoverImage() }}';"
-                 class="w-full h-auto max-h-[280px] sm:max-h-[320px] md:max-h-[340px] object-contain block mx-auto">
+        {{-- Featured Hero Image with Dynamic Adaptive Frame --}}
+        <div class="w-full flex justify-center mb-8">
+            <div class="relative w-fit max-w-full mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-md hover:shadow-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-300" style="width: fit-content; max-width: 100%;">
+                <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}"
+                     onerror="this.onerror=null;this.src='{{ $post->getDefaultCoverImage() }}';"
+                     loading="eager" decoding="async"
+                     class="w-auto h-auto max-w-full max-h-[500px] sm:max-h-[580px] md:max-h-[640px] object-contain rounded-2xl sm:rounded-3xl block mx-auto transition-transform duration-300"
+                     style="max-height: 580px; width: auto; height: auto;">
+            </div>
         </div>
 
         {{-- Article Content --}}
