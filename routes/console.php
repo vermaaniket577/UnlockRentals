@@ -16,9 +16,9 @@ Schedule::command('scrape:city Gurgaon --count=2')->everyMinute()->name('propert
 Schedule::command('properties:clean-duplicates')->hourly()->name('properties_clean_duplicates')->withoutOverlapping();
 
 // Fetch and sync leads from external API via CLI or Scheduler
-Artisan::command('leads:fetch-external {--url=} {--token=} {--method=GET}', function () {
-    $rawUrl = $this->option('url') ?: env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry/all');
-    $method = strtoupper($this->option('method') ?: 'GET');
+Artisan::command('leads:fetch-external {--url=} {--token=} {--method=POST}', function () {
+    $rawUrl = $this->option('url') ?: env('EXTERNAL_FETCH_LEAD_API_URL', 'https://admissionsdekho.com/api/leads/update-all');
+    $method = strtoupper($this->option('method') ?: 'POST');
     $token = $this->option('token');
 
     // Auto-fix URL if user omitted /all for Anushram

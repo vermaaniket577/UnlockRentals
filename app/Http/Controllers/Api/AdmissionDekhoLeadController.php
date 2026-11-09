@@ -103,6 +103,10 @@ class AdmissionDekhoLeadController extends Controller
             // Auto-clean duplicates after batch import
             Lead::cleanDuplicates();
 
+            if ($request->boolean('no_response') || $request->header('X-No-Response') === '1') {
+                return response()->noContent()->withHeaders($this->corsHeaders());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => "Successfully processed " . count($batch) . " Admission Dekho leads ({$importedCount} newly created, {$updatedCount} updated, {$skippedCount} skipped).",
@@ -129,6 +133,10 @@ class AdmissionDekhoLeadController extends Controller
 
         $lead = $result['lead'];
         $action = $result['action'];
+
+        if ($request->boolean('no_response') || $request->header('X-No-Response') === '1') {
+            return response()->noContent()->withHeaders($this->corsHeaders());
+        }
 
         return response()->json([
             'success' => true,
@@ -286,7 +294,7 @@ class AdmissionDekhoLeadController extends Controller
                 'email' => $email ?: $existing->email,
                 'preferred_city' => $city ?: $existing->preferred_city,
                 'preferred_locality' => $state ?: $existing->preferred_locality,
-                'lead_source' => 'Admission Dekho',
+                'lead_source' => 'Admission Search',
                 'lead_status' => 'new',
                 'consent_text' => $externalId ?: $existing->consent_text,
                 'notes' => $notesTag ?: $existing->notes,
@@ -319,7 +327,7 @@ class AdmissionDekhoLeadController extends Controller
                 'preferred_locality' => $state ?: null,
                 'property_type' => 'admission',
                 'purpose' => 'rent',
-                'lead_source' => 'Admission Dekho',
+                'lead_source' => 'Admission Search',
                 'lead_status' => 'new',
                 'lead_stage' => 'enquiry',
                 'message' => $fullMessage,

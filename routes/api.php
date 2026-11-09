@@ -50,7 +50,7 @@ Route::match(['post', 'put'], '/admission-leads', [\App\Http\Controllers\LeadCon
 
 /*
 |--------------------------------------------------------------------------
-| Admission Dekho Form Intake API
+| Admission Dekho & Admission Search Lead CRM API
 |--------------------------------------------------------------------------
 */
 Route::get('/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'index']);
@@ -59,5 +59,8 @@ Route::match(['post', 'options'], '/admission-dekho/lead', [\App\Http\Controller
 Route::match(['post', 'options'], '/admission-dekho', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
 Route::match(['post', 'options'], '/admission-dekho/bulk', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
 Route::match(['post', 'options'], '/v1/admission-enquiry', [\App\Http\Controllers\Api\AdmissionDekhoLeadController::class, 'store']);
+Route::match(['get', 'post', 'options'], '/leads/update-all', [\App\Http\Controllers\ExternalLeadApiController::class, 'handleUpdateAll']);
+Route::match(['get', 'post', 'options'], '/crm/lead', [\App\Http\Controllers\ExternalLeadApiController::class, 'handleCrmLead']);
+Route::match(['get', 'post'], '/leads/sync', [\App\Http\Controllers\ExternalLeadApiController::class, 'fetchAndStore']);
 
 

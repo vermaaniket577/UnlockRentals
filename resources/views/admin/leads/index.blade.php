@@ -654,13 +654,13 @@
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-xs font-bold text-slate-700">External API / Webhook Source URL</label>
                         <div class="flex items-center gap-1.5 text-[10px]">
-                            <button type="button" onclick="document.getElementById('fetchSourceUrl').value='https://api.anushram.com/v1/api/general-enquiry/all'" class="text-blue-600 hover:underline font-bold cursor-pointer">PhD Students</button>
+                            <button type="button" onclick="document.getElementById('fetchSourceUrl').value='https://admissionsdekho.com/api/leads/update-all'; document.getElementById('fetchMethod').value='POST';" class="text-purple-600 hover:underline font-bold cursor-pointer">Admission Search</button>
                             <span class="text-slate-300">|</span>
-                            <button type="button" onclick="document.getElementById('fetchSourceUrl').value=window.location.origin + '/api/admission-dekho'" class="text-purple-600 hover:underline font-bold cursor-pointer">Admission Search</button>
+                            <button type="button" onclick="document.getElementById('fetchSourceUrl').value='https://api.anushram.com/v1/api/general-enquiry/all'; document.getElementById('fetchMethod').value='GET';" class="text-blue-600 hover:underline font-bold cursor-pointer">PhD Students</button>
                         </div>
                     </div>
-                    <input type="url" id="fetchSourceUrl" value="{{ env('EXTERNAL_FETCH_LEAD_API_URL', 'https://api.anushram.com/v1/api/general-enquiry/all') }}" class="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="https://api.example.com/leads">
-                    <p class="text-[10px] text-slate-400 mt-1">Default: <code class="text-emerald-700 font-mono">https://api.anushram.com/v1/api/general-enquiry/all</code></p>
+                    <input type="url" id="fetchSourceUrl" value="{{ env('EXTERNAL_FETCH_LEAD_API_URL', 'https://admissionsdekho.com/api/leads/update-all') }}" class="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="https://admissionsdekho.com/api/leads/update-all">
+                    <p class="text-[10px] text-slate-400 mt-1">Default: <code class="text-purple-700 font-mono">https://admissionsdekho.com/api/leads/update-all</code></p>
                 </div>
 
                 {{-- HTTP Method & Optional Token --}}
@@ -968,10 +968,17 @@
                     'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify({
-                    source_url: 'https://api.anushram.com/v1/api/general-enquiry/all',
-                    method: 'GET'
+                    source_url: 'https://admissionsdekho.com/api/leads/update-all',
+                    method: 'POST',
+                    params: { sync: true }
                 })
             });
+
+            if (response.status === 204) {
+                showCrmToast('Synced leads from Admission Search!', 'success');
+                setTimeout(() => window.location.reload(), 1200);
+                return;
+            }
 
             const data = await response.json();
             if (response.ok && data.success) {
