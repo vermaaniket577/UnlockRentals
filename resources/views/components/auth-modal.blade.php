@@ -2,7 +2,7 @@
 <div id="ur-auth-modal" class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-sm sm:backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none pb-[env(safe-area-inset-bottom,0px)]" style="display: none;" role="dialog" aria-modal="true">
     
     {{-- Modal Card Container (Standard Modern Proportionate UI) --}}
-    <div class="relative w-full max-w-[490px] sm:max-w-[520px] max-h-[94vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 my-auto" id="ur-auth-modal-card">
+    <div class="relative w-full max-w-md max-h-[92vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 my-auto" id="ur-auth-modal-card" style="max-width: 430px !important; width: 100% !important; margin: auto !important;">
         
         {{-- Close Button --}}
         <button type="button" onclick="window.closeAuthModal()" class="absolute top-3 right-3 z-20 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100/90 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer" title="Close" aria-label="Close modal">
@@ -148,50 +148,49 @@
                  TAB 2: CREATE ACCOUNT (Standard Modern Proportionate UI)
                  ================================================================ --}}
             <div id="ur-modal-register-container" class="hidden">
-                <form id="ur-modal-register-unified-form" class="space-y-2.5" onsubmit="event.preventDefault(); window.modalSubmitRegisterWithMobile();">
+                <form id="ur-modal-register-unified-form" class="space-y-3" onsubmit="event.preventDefault(); window.modalSubmitRegisterWithMobile();">
                     
-                    {{-- Row 1: Full Name & Mobile Number side-by-side in 2 columns --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <div>
-                            <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                Full Name <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
-                                <input type="text" id="modal-reg-phone-name" name="name" required autocomplete="name"
-                                       placeholder="e.g. Rahul Sharma"
-                                       class="ur-auth-input w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300">
-                                    Mobile Number <span class="text-rose-500">*</span>
-                                </label>
-                                <span id="modal-reg-verified-badge" class="hidden text-emerald-600 dark:text-emerald-400 font-bold text-[11px] items-center gap-1">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Verified
-                                </span>
-                            </div>
-                            <div class="flex gap-1.5">
-                                <div class="relative flex-1">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-[12.5px] select-none pointer-events-none">+91</span>
-                                    <input type="tel" id="modal-reg-phone-input" name="phone" maxlength="10" required autocomplete="tel"
-                                           placeholder="98765 43210"
-                                           class="w-full pl-11 pr-2 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all"
-                                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
-                                           onkeydown="if(event.key==='Enter'){event.preventDefault();window.modalSendRegisterOtp();}">
-                                </div>
-                                <button type="button" id="modal-reg-send-otp-btn" onclick="window.modalSendRegisterOtp()"
-                                        class="px-2.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[11.5px] font-semibold rounded-xl shadow-xs transition-all flex items-center gap-1 shrink-0 whitespace-nowrap cursor-pointer">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                                    <span>Send OTP</span>
-                                </button>
-                            </div>
+                    {{-- Full Name --}}
+                    <div>
+                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1">
+                            Full Name <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
+                            <input type="text" id="modal-reg-phone-name" name="name" required autocomplete="name"
+                                   placeholder="e.g. Rahul Sharma"
+                                   class="ur-auth-input w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
                         </div>
                     </div>
 
-                    {{-- Row 2: Compact Inline OTP Verification Panel (reveals when OTP is requested) --}}
+                    {{-- Mobile Number --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300">
+                                Mobile Number <span class="text-rose-500">*</span>
+                            </label>
+                            <span id="modal-reg-verified-badge" class="hidden text-emerald-600 dark:text-emerald-400 font-bold text-[11px] items-center gap-1">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Verified
+                            </span>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-[12.5px] select-none pointer-events-none">+91</span>
+                                <input type="tel" id="modal-reg-phone-input" name="phone" maxlength="10" required autocomplete="tel"
+                                       placeholder="98765 43210"
+                                       class="w-full pl-11 pr-2 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
+                                       onkeydown="if(event.key==='Enter'){event.preventDefault();window.modalSendRegisterOtp();}">
+                            </div>
+                            <button type="button" id="modal-reg-send-otp-btn" onclick="window.modalSendRegisterOtp()"
+                                    class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[12px] font-semibold rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                <span>Send OTP</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Compact Inline OTP Verification Panel (reveals when OTP is requested) --}}
                     <div id="modal-reg-otp-section" class="hidden bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 space-y-2">
                         <div class="flex items-center justify-between text-[11.5px]">
                             <span class="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
@@ -211,9 +210,9 @@
                         </div>
                     </div>
 
-                    {{-- Row 3: Email Address --}}
+                    {{-- Email Address --}}
                     <div>
-                        <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">
+                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1">
                             Email Address <span class="text-rose-500">*</span>
                         </label>
                         <div class="relative">
@@ -224,10 +223,10 @@
                         </div>
                     </div>
 
-                    {{-- Row 4: Password & Confirm Password in 2 columns --}}
+                    {{-- Password & Confirm Password in 2 columns --}}
                     <div class="grid grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">
+                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1">
                                 Password <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative">
@@ -240,7 +239,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">
+                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1">
                                 Confirm <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative">
@@ -254,7 +253,7 @@
                         </div>
                     </div>
 
-                    {{-- Row 5: Primary Submit Button --}}
+                    {{-- Primary Submit Button --}}
                     <button type="submit" id="modal-reg-phone-submit"
                             class="w-full py-2.5 sm:py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
                         <span>Create Free Account</span>
@@ -272,6 +271,12 @@
 #ur-auth-modal {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     box-sizing: border-box;
+}
+#ur-auth-modal-card {
+    width: 100% !important;
+    max-width: 430px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 #ur-auth-modal *:not(i):not([class*="ph-"]):not(svg):not(path) {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
