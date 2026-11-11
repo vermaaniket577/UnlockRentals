@@ -363,17 +363,32 @@
     position: relative !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    background: radial-gradient(130% 120% at 75% 0%, #0d1e3d 0%, #071328 65%, #050c1a 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    background: 
+        radial-gradient(100% 120% at 90% 15%, rgba(16, 185, 129, 0.22) 0%, transparent 60%),
+        radial-gradient(90% 110% at 10% 85%, rgba(59, 130, 246, 0.20) 0%, transparent 55%),
+        linear-gradient(135deg, #0b1528 0%, #0e243e 42%, #082d38 80%, #064038 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
     border-radius: 22px !important;
     padding: 1.45rem 1.35rem 1.3rem !important;
-    box-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
     overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
     color: #ffffff !important;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ur-dark-pass-card:hover,
+.ur-hps-pass-card.ur-dark-pass-card:hover,
+.ur-hps-mobile-card.ur-dark-pass-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: none !important;
+    border-color: rgba(52, 211, 153, 0.45) !important;
+    background: 
+        radial-gradient(110% 130% at 88% 12%, rgba(16, 185, 129, 0.32) 0%, transparent 65%),
+        radial-gradient(100% 120% at 10% 88%, rgba(59, 130, 246, 0.28) 0%, transparent 60%),
+        linear-gradient(135deg, #0e1b33 0%, #122f52 42%, #0a3a46 80%, #085248 100%) !important;
 }
 
 .ur-hps-pass-card.ur-dark-pass-card::before,
@@ -495,14 +510,15 @@
     align-items: center !important;
     justify-content: center !important;
     gap: 0.45rem !important;
-    background: #10b981 !important;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
     color: #ffffff !important;
     font-size: 0.92rem !important;
     font-weight: 700 !important;
     padding: 0.7rem 1.35rem !important;
     border-radius: 14px !important;
     text-decoration: none !important;
-    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     white-space: nowrap !important;
     cursor: pointer !important;
@@ -511,9 +527,10 @@
 }
 
 .ur-dark-unlock-btn:hover {
-    background: #059669 !important;
+    background: linear-gradient(135deg, #047857 0%, #059669 100%) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45) !important;
+    box-shadow: none !important;
+    filter: brightness(1.08) !important;
 }
 
 .ur-dark-unlock-btn:active {

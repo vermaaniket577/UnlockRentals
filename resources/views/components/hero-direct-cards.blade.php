@@ -282,24 +282,50 @@
     position: relative;
     width: 100%;
     box-sizing: border-box;
-    background: radial-gradient(130% 120% at 85% 20%, #0d1e3d 0%, #071328 65%, #050c1a 100%);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: 
+        radial-gradient(100% 120% at 90% 15%, rgba(16, 185, 129, 0.22) 0%, transparent 60%),
+        radial-gradient(90% 110% at 10% 85%, rgba(59, 130, 246, 0.20) 0%, transparent 55%),
+        linear-gradient(135deg, #0b1528 0%, #0e243e 42%, #082d38 80%, #064038 100%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 16px;
     padding: 1rem 1.15rem;
-    box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    box-shadow: none !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 0.85rem;
     color: #ffffff;
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     min-height: auto;
+    overflow: hidden;
+}
+
+.ur-direct-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent 0%, rgba(52, 211, 153, 0.7) 40%, rgba(96, 165, 250, 0.6) 70%, transparent 100%);
+    pointer-events-none;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
 }
 
 .ur-direct-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 36px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+    box-shadow: none !important;
+    border-color: rgba(52, 211, 153, 0.45);
+    background: 
+        radial-gradient(110% 130% at 88% 12%, rgba(16, 185, 129, 0.32) 0%, transparent 65%),
+        radial-gradient(100% 120% at 10% 88%, rgba(59, 130, 246, 0.28) 0%, transparent 60%),
+        linear-gradient(135deg, #0e1b33 0%, #122f52 42%, #0a3a46 80%, #085248 100%);
+}
+
+.ur-direct-card:hover::before {
+    opacity: 1;
 }
 
 .ur-dc-main {
@@ -405,13 +431,21 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    padding: 0.16rem 0.48rem;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    padding: 0.18rem 0.52rem;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #e2e8f0;
     font-size: 0.66rem;
     font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.ur-dc-feat-tag:hover {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: rgba(52, 211, 153, 0.4);
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
 .ur-dc-footer {
@@ -465,14 +499,15 @@
     align-items: center;
     justify-content: center;
     gap: 0.35rem;
-    background: #047857;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
     color: #ffffff !important;
     font-size: 0.76rem;
     font-weight: 700;
     padding: 0.48rem 0.95rem;
     border-radius: 10px;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3);
+    box-shadow: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
     cursor: pointer;
@@ -482,9 +517,10 @@
 }
 
 .ur-dc-btn:hover {
-    background: #065f46;
+    background: linear-gradient(135deg, #047857 0%, #059669 100%);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(4, 120, 87, 0.4);
+    box-shadow: none !important;
+    filter: brightness(1.08);
 }
 
 .ur-dc-btn:active {
@@ -622,7 +658,7 @@
         min-height: auto !important;
         gap: 0.5rem !important;
         border-radius: 16px !important;
-        box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.45) !important;
+        box-shadow: none !important;
     }
 
     .ur-dc-badges {
@@ -717,7 +753,7 @@
         font-size: 0.76rem !important;
         border-radius: 10px !important;
         gap: 0.35rem !important;
-        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3) !important;
+        box-shadow: none !important;
     }
 
     .ur-dc-btn i {
