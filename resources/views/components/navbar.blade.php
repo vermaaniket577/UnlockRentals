@@ -1,34 +1,34 @@
 {{-- Navigation Bar Component --}}
-<nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-stone-200/50 transition-all duration-300 dark:bg-slate-950/85 dark:border-slate-800/80">
+<nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200/80 transition-all duration-300 dark:bg-slate-950/90 dark:border-slate-800/80 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-12 lg:h-13 gap-2.5 xl:gap-4">
+        <div class="flex items-center justify-between h-16 gap-3 xl:gap-6">
 
             {{-- Left Side: Brand Logo --}}
-            <div class="flex-shrink-0 pr-4 xl:pr-6">
+            <div class="flex-shrink-0 pr-2 xl:pr-4">
                 <x-brand-logo
                     href="{{ url('/') }}"
                     id="nav-logo"
                     class="group flex-shrink-0"
-                    imageClass="h-7 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
-                    textClass="text-base xl:text-lg font-bold tracking-tight text-zinc-900 dark:text-white"
-                    accentClass="text-[#2563EB]"
+                    imageClass="h-8 w-auto transition-transform duration-300 group-hover:scale-[1.02]"
+                    textClass="text-[18px] sm:text-[19px] font-extrabold tracking-tight text-slate-900 dark:text-white"
+                    accentClass="text-amber-500"
                 />
             </div>
 
-            {{-- Right: Desktop Navigation Links (Matching Reference Screenshot) --}}
-            <nav class="main-nav hidden lg:flex items-center gap-1 xl:gap-2 flex-shrink ml-auto">
-                <a href="{{ url('/') }}" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap {{ request()->is('/') ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-slate-700 hover:text-blue-700' }}" id="nav-home" title="Home">
+            {{-- Right: Desktop Navigation Links (Standard Professional Typography) --}}
+            <nav class="main-nav hidden lg:flex items-center gap-1 xl:gap-1.5 flex-shrink ml-auto">
+                <a href="{{ url('/') }}" class="ur-nav-link px-3 py-1.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg {{ request()->is('/') ? 'text-blue-600 bg-blue-50/80 dark:bg-blue-950/50 dark:text-blue-400 font-bold' : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900/60 dark:hover:text-blue-400' }}" id="nav-home" title="Home">
                     <span>Home</span>
                 </a>
-                <a href="{{ url('/properties') }}" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap {{ request()->is('properties') && !request('purpose') && !request('type') ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-slate-700 hover:text-blue-700' }}" id="nav-properties" title="Properties">
+                <a href="{{ url('/properties') }}" class="ur-nav-link px-3 py-1.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg {{ request()->is('properties') && !request('purpose') && !request('type') ? 'text-blue-600 bg-blue-50/80 dark:bg-blue-950/50 dark:text-blue-400 font-bold' : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900/60 dark:hover:text-blue-400' }}" id="nav-properties" title="Properties">
                     <span>Properties</span>
                 </a>
 
                 {{-- Rent Dropdown --}}
                 <div class="relative group">
-                    <button type="button" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap flex items-center gap-1 {{ request('purpose') == 'rent' ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-slate-700 hover:text-blue-700' }}" id="nav-rent" title="Rent">
+                    <button type="button" class="ur-nav-link px-3 py-1.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg flex items-center gap-1.5 {{ request('purpose') == 'rent' ? 'text-blue-600 bg-blue-50/80 dark:bg-blue-950/50 dark:text-blue-400 font-bold' : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900/60 dark:hover:text-blue-400' }}" id="nav-rent" title="Rent">
                         <span>Rent</span>
-                        <i class="ph ph-caret-down text-[11px] text-slate-500 transition-transform group-hover:rotate-180"></i>
+                        <i class="ph-bold ph-caret-down text-xs text-slate-400 transition-transform duration-200 group-hover:rotate-180 group-hover:text-blue-600"></i>
                     </button>
                     <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
                         <a href="{{ url('/properties?purpose=rent&type=apartment') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Flats &amp; Apartments</a>
@@ -40,9 +40,9 @@
 
                 {{-- Buy Dropdown --}}
                 <div class="relative group">
-                    <button type="button" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap flex items-center gap-1 {{ request('purpose') == 'buy' ? 'text-blue-700 font-bold border-b-2 border-blue-700' : 'text-slate-700 hover:text-blue-700' }}" id="nav-buy" title="Buy">
+                    <button type="button" class="ur-nav-link px-3 py-1.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg flex items-center gap-1.5 {{ request('purpose') == 'buy' ? 'text-blue-600 bg-blue-50/80 dark:bg-blue-950/50 dark:text-blue-400 font-bold' : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900/60 dark:hover:text-blue-400' }}" id="nav-buy" title="Buy">
                         <span>Buy</span>
-                        <i class="ph ph-caret-down text-[11px] text-slate-500 transition-transform group-hover:rotate-180"></i>
+                        <i class="ph-bold ph-caret-down text-xs text-slate-400 transition-transform duration-200 group-hover:rotate-180 group-hover:text-blue-600"></i>
                     </button>
                     <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
                         <a href="{{ url('/properties?purpose=buy&type=apartment') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Ready to Move Flats</a>
@@ -54,9 +54,9 @@
 
                 {{-- Sell Dropdown --}}
                 <div class="relative group">
-                    <button type="button" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap flex items-center gap-1 text-slate-700 hover:text-blue-700" id="nav-sell" title="Sell">
+                    <button type="button" class="ur-nav-link px-3 py-1.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg flex items-center gap-1.5 text-slate-700 hover:text-blue-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900/60 dark:hover:text-blue-400" id="nav-sell" title="Sell">
                         <span>Sell</span>
-                        <i class="ph ph-caret-down text-[11px] text-slate-500 transition-transform group-hover:rotate-180"></i>
+                        <i class="ph-bold ph-caret-down text-xs text-slate-400 transition-transform duration-200 group-hover:rotate-180 group-hover:text-blue-600"></i>
                     </button>
                     <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
                         <a href="{{ route('properties.create') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600">Post Property Free</a>
@@ -65,7 +65,7 @@
                     </div>
                 </div>
 
-                <a href="{{ route('properties.create') }}" class="ur-nav-link px-2.5 py-1 text-[13.5px] font-semibold transition-all whitespace-nowrap text-slate-700 hover:text-blue-700" id="nav-list-property" title="List Your Property">
+                <a href="{{ route('properties.create') }}" class="ur-nav-link px-3 py-1.5 text-sm font-semibold transition-all whitespace-nowrap rounded-lg text-slate-700 hover:text-blue-600 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900/60 dark:hover:text-blue-400" id="nav-list-property" title="List Your Property">
                     <span>List Your Property</span>
                 </a>
             </nav>
@@ -80,13 +80,13 @@
                     </a>
 
                     {{-- Desktop Login / Sign Up --}}
-                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 text-[13.5px] font-semibold text-slate-700 hover:text-blue-700 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer" id="nav-login" title="Login / Sign Up">
+                    <a href="{{ route('login') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:text-blue-600 dark:text-slate-300 dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900/60" id="nav-login" title="Login / Sign Up">
                         <i class="ph ph-user text-base text-slate-600 dark:text-slate-400"></i>
                         <span>Login / Sign Up</span>
                     </a>
                     
                     {{-- Desktop Post Property Free Navy Button --}}
-                    <a href="{{ route('properties.create') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-[#0c365a] hover:bg-[#082640] text-white text-xs xl:text-[13px] font-bold rounded-full shadow-sm shadow-[#0c365a]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" id="nav-post-free" title="Post Property Free">
+                    <a href="{{ route('properties.create') }}" onclick="event.preventDefault(); window.openAuthModal('login');" class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-[#0c365a] hover:bg-[#082640] text-white text-xs sm:text-sm font-bold rounded-full shadow-sm shadow-[#0c365a]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" id="nav-post-free" title="Post Property Free">
                         <i class="ph-bold ph-plus text-xs text-white"></i>
                         <span class="text-white">Post Property Free</span>
                     </a>
@@ -96,7 +96,7 @@
                         $navPlanName = strtolower($navActivePlan?->plan?->name ?? '');
                         $navBadgeClass = str_contains($navPlanName, 'enterprise') ? 'from-slate-900 to-teal-500' : (str_contains($navPlanName, 'platinum') ? 'from-blue-600 to-violet-600' : (str_contains($navPlanName, 'gold') ? 'from-amber-500 to-yellow-300' : 'from-slate-400 to-sky-300'));
                     @endphp
-                    <a href="{{ route('properties.create') }}" class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-[#0c365a] hover:bg-[#082640] text-white text-xs xl:text-[13px] font-bold rounded-full shadow-sm shadow-[#0c365a]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" id="nav-add-property" title="Post Property Free">
+                    <a href="{{ route('properties.create') }}" class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-[#0c365a] hover:bg-[#082640] text-white text-xs sm:text-sm font-bold rounded-full shadow-sm shadow-[#0c365a]/25 transition-all whitespace-nowrap cursor-pointer active:scale-95" id="nav-add-property" title="Post Property Free">
                         <i class="ph-bold ph-plus text-xs text-white"></i>
                         <span class="text-white">Post Property Free</span>
                     </a>
@@ -711,6 +711,8 @@
 {{-- Scoped Styles to Guarantee Navbar Link Text Visibility Across All Pages --}}
 <style>
 #main-nav .ur-nav-link {
+    font-size: 14px !important;
+    font-weight: 600 !important;
     color: #334155 !important;
 }
 #main-nav .ur-nav-link:hover {
@@ -720,6 +722,8 @@
     color: #2563EB !important;
 }
 html.dark #main-nav .ur-nav-link {
+    font-size: 14px !important;
+    font-weight: 600 !important;
     color: #cbd5e1 !important;
 }
 html.dark #main-nav .ur-nav-link:hover {

@@ -1757,29 +1757,29 @@
 
     <header class="main-header" style="z-index: 9999; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; padding: 0 28px; height: 64px; min-height: 64px; background: #ffffff !important; border-bottom: 1px solid #e2e8f0 !important; position: relative !important;">
         <div class="logo-wrapper" style="flex-shrink: 0;">
-            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 8px !important; flex-direction: row !important; white-space: nowrap !important; text-decoration: none !important;" title="UnlockRentals">
-                <div style="width: 38px; height: 38px; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; flex-shrink: 0;">
+            <a href="{{ route('home') }}" class="logo" style="display: flex !important; align-items: center !important; gap: 10px !important; flex-direction: row !important; white-space: nowrap !important; text-decoration: none !important;" title="UnlockRentals">
+                <div style="width: 40px; height: 40px; border-radius: 12px; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 3px; border: 1px solid #e2e8f0; flex-shrink: 0;">
                     <img src="{{ asset('images/logo-icon.png') }}" onerror="this.onerror=null;this.src='/images/logo-icon.png';" alt="Unlock Rentals" title="Unlock Rentals" class="logo-img" width="32" height="32" style="width: 100% !important; height: 100% !important; flex-shrink: 0 !important; object-fit: contain !important;" fetchpriority="high">
                 </div>
                 <div style="display: flex; flex-direction: column; justify-content: center;">
-                    <span class="logo-text" style="font-size: 17px !important; font-weight: 900 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; color: #0f172a !important; line-height: 1 !important;">Unlock<span class="logo-accent" style="color: #b45309 !important;">Rentals</span></span>
-                    <span style="font-size: 9.5px !important; font-weight: 700 !important; letter-spacing: 0.5px !important; color: #64748b !important; margin-top: 3px !important; line-height: 1 !important;">Rent • Buy • Sell</span>
+                    <span class="logo-text" style="font-size: 19px !important; font-weight: 800 !important; letter-spacing: -0.3px !important; white-space: nowrap !important; color: #0f172a !important; line-height: 1 !important;">Unlock<span class="logo-accent" style="color: #f59e0b !important;">Rentals</span></span>
+                    <span style="font-size: 10px !important; font-weight: 600 !important; letter-spacing: 0.8px !important; text-transform: uppercase !important; color: #64748b !important; margin-top: 3px !important; line-height: 1 !important;">Rent • Buy • Sell</span>
                 </div>
             </a>
         </div>
         <nav class="main-nav hidden lg:flex" style="gap: 12px !important; align-items: center !important; margin-left: auto !important;">
-            <a href="{{ url('/') }}" class="nav-link" title="Home" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 13.5px !important; font-weight: 700 !important; color: #1d4ed8 !important; padding: 6px 10px !important; border-bottom: 2px solid #1d4ed8 !important; border-radius: 0 !important;">
+            <a href="{{ url('/') }}" class="nav-link" title="Home" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 14px !important; font-weight: 700 !important; color: #1d4ed8 !important; padding: 6px 10px !important; border-bottom: 2px solid #1d4ed8 !important; border-radius: 0 !important;">
                 Home
             </a>
-            <a href="{{ route('properties.index') }}" class="nav-link" title="Properties" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;">
+            <a href="{{ route('properties.index') }}" class="nav-link" title="Properties" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 14px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;">
                 Properties
             </a>
             
             {{-- Rent Dropdown --}}
             <div class="relative group" style="position: relative; display: inline-block;">
-                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
+                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 5px !important; font-size: 14px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
                     <span>Rent</span>
-                    <i class="ph ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
+                    <i class="ph-bold ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
                 </button>
                 <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white border border-slate-100 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
                     <a href="{{ url('/properties?purpose=rent&type=apartment') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Flats &amp; Apartments</a>
@@ -1791,9 +1791,9 @@
 
             {{-- Buy Dropdown --}}
             <div class="relative group" style="position: relative; display: inline-block;">
-                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
+                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 5px !important; font-size: 14px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
                     <span>Buy</span>
-                    <i class="ph ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
+                    <i class="ph-bold ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
                 </button>
                 <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white border border-slate-100 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
                     <a href="{{ url('/properties?purpose=buy&type=apartment') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Ready to Move Flats</a>
@@ -1805,9 +1805,9 @@
 
             {{-- Sell Dropdown --}}
             <div class="relative group" style="position: relative; display: inline-block;">
-                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
+                <button type="button" class="nav-link" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; gap: 5px !important; font-size: 14px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important; background: transparent; border: none; cursor: pointer;">
                     <span>Sell</span>
-                    <i class="ph ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
+                    <i class="ph-bold ph-caret-down" style="font-size: 11px !important; color: #64748b;"></i>
                 </button>
                 <div class="absolute top-full left-0 mt-1 hidden group-hover:block bg-white border border-slate-100 rounded-xl shadow-xl py-2 min-w-[200px] z-50">
                     <a href="{{ route('properties.create') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600">Post Property Free</a>
@@ -1816,7 +1816,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('properties.create') }}" class="nav-link" title="List Your Property" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 13.5px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;">
+            <a href="{{ route('properties.create') }}" class="nav-link" title="List Your Property" style="white-space: nowrap !important; display: inline-flex !important; align-items: center !important; font-size: 14px !important; font-weight: 600 !important; color: #334155 !important; padding: 6px 10px !important;">
                 List Your Property
             </a>
         </nav>

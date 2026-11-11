@@ -79,7 +79,7 @@
     $isRazorpay = $activeGateway && ($activeGateway['type'] ?? 'manual') === 'razorpay';
 @endphp
 
-<section class="checkout-stage min-h-screen py-6 sm:py-10 w-full" id="checkout-page">
+<section class="checkout-stage min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 w-full" id="checkout-page">
     <div class="mx-auto w-full max-w-5xl px-3 sm:px-6 lg:px-8">
         
         {{-- Back Navigation --}}
