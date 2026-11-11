@@ -27,7 +27,7 @@ class OtpService
             ->forPurpose($purpose)
             ->pending()
             ->where('created_at', '>', now()->subSeconds($resendSeconds))
-            ->latest()
+            ->latest('id')
             ->first();
 
         if ($recent) {
@@ -81,6 +81,7 @@ class OtpService
             'otp'        => $otp,
             'purpose'    => $purpose,
             'expires_at' => now()->addMinutes($expiryMinutes),
+            'created_at' => now(),
             'attempts'   => 0,
         ]);
 
@@ -124,11 +125,38 @@ class OtpService
         $phone = $this->normalizePhone($phone);
         $maxAttempts = (int) Setting::get('otp_max_attempts', config('otp.max_attempts', 3));
 
+        // 1. Check if this OTP was already successfully verified recently for this phone & purpose (prevents error on re-submit)
+        $alreadyVerified = OtpVerification::forPhone($phone)
+            ->forPurpose($purpose)
+            ->where('otp', $otp)
+            ->whereNotNull('verified_at')
+            ->where('verified_at', '>', now()->subMinutes(30))
+            ->exists();
+
+        if ($alreadyVerified) {
+            return [
+                'success'  => true,
+                'verified' => true,
+                'message'  => 'Phone number verified successfully!',
+            ];
+        }
+
+        // 2. Fetch active pending OTP record using latest id
         $record = OtpVerification::forPhone($phone)
             ->forPurpose($purpose)
             ->pending()
-            ->latest('created_at')
+            ->latest('id')
             ->first();
+
+        // 3. Fallback: if pending scope missed due to any server time offset, search recent unverified record in last 15 mins
+        if (!$record) {
+            $record = OtpVerification::forPhone($phone)
+                ->forPurpose($purpose)
+                ->whereNull('verified_at')
+                ->where('created_at', '>', now()->subMinutes(15))
+                ->latest('id')
+                ->first();
+        }
 
         if (!$record) {
             return [

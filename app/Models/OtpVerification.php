@@ -15,6 +15,7 @@ class OtpVerification extends Model
         'purpose',
         'expires_at',
         'verified_at',
+        'created_at',
         'attempts',
     ];
 
@@ -42,8 +43,11 @@ class OtpVerification extends Model
     public function scopePending($query)
     {
         return $query->whereNull('verified_at')
-                     ->where('expires_at', '>', now())
-                     ->where('attempts', '<', config('otp.max_attempts', 3));
+                     ->where(function ($q) {
+                         $q->where('expires_at', '>', now())
+                           ->orWhere('created_at', '>', now()->subMinutes(15));
+                     })
+                     ->where('attempts', '<', (int) \App\Models\Setting::get('otp_max_attempts', config('otp.max_attempts', 3)));
     }
 
     /* ── Helpers ─────────────────────────────────── */

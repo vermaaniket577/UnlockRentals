@@ -700,11 +700,18 @@ window.OtpVerification = (function () {
                 section: document.getElementById('modal-reg-otp-section'),
                 btn: document.getElementById('modal-reg-phone-submit'),
                 submitFn: () => {
-                    if (typeof window.modalSubmitRegisterWithMobile === 'function') {
-                        window.modalSubmitRegisterWithMobile();
-                    } else {
-                        const b = document.getElementById('modal-reg-phone-submit');
-                        if (b) b.click();
+                    const name = document.getElementById('modal-reg-phone-name')?.value?.trim();
+                    const email = document.getElementById('modal-reg-phone-email')?.value?.trim();
+                    const pwd = document.getElementById('modal-reg-phone-password')?.value;
+                    if (name && email && pwd && pwd.length >= 8) {
+                        if (typeof window.modalSubmitRegisterWithMobile === 'function') {
+                            window.modalSubmitRegisterWithMobile();
+                        } else {
+                            const b = document.getElementById('modal-reg-phone-submit');
+                            if (b) b.click();
+                        }
+                    } else if (typeof window.modalVerifyOnlyRegisterOtp === 'function') {
+                        window.modalVerifyOnlyRegisterOtp();
                     }
                 }
             },

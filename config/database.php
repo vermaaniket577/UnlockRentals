@@ -59,6 +59,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            'timezone' => env('DB_TIMEZONE', '+00:00'),
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 \PDO::ATTR_PERSISTENT => false,
                 \PDO::ATTR_TIMEOUT => 3,

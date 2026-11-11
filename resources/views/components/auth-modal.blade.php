@@ -1,42 +1,42 @@
 {{-- Universal Luxury Auth / Login Required Modal --}}
 <div id="ur-auth-modal" class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-sm sm:backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none pb-[env(safe-area-inset-bottom,0px)]" style="display: none;" role="dialog" aria-modal="true">
     
-    {{-- Modal Card Container --}}
-    <div class="relative w-full max-w-[430px] max-h-[92dvh] sm:max-h-[90vh] flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 my-auto" id="ur-auth-modal-card">
+    {{-- Modal Card Container (Standard Modern Proportionate UI) --}}
+    <div class="relative w-full max-w-[490px] sm:max-w-[520px] max-h-[94vh] flex flex-col bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-2xl overflow-hidden transform scale-95 transition-all duration-300 my-auto" id="ur-auth-modal-card">
         
         {{-- Close Button --}}
-        <button type="button" onclick="window.closeAuthModal()" class="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer" title="Close" aria-label="Close modal">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button type="button" onclick="window.closeAuthModal()" class="absolute top-3 right-3 z-20 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100/90 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer" title="Close" aria-label="Close modal">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
 
-        {{-- Top Header --}}
-        <div class="flex-shrink-0 pt-5 pb-3.5 px-6 text-center bg-gradient-to-b from-blue-50/70 dark:from-blue-950/30 to-transparent border-b border-slate-100 dark:border-slate-800/80">
-            <div class="w-11 h-11 mx-auto rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center p-2 shadow-xs ring-1 ring-slate-900/10 dark:ring-white/10 mb-2">
+        {{-- Top Header (Compact & Proportional) --}}
+        <div class="flex-shrink-0 pt-4 pb-2.5 px-5 sm:px-6 text-center bg-gradient-to-b from-blue-50/70 dark:from-blue-950/30 to-transparent border-b border-slate-100 dark:border-slate-800/80">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center p-1.5 shadow-xs ring-1 ring-slate-900/10 dark:ring-white/10 mb-1.5">
                 <img src="{{ asset('images/logo-icon.png') }}" alt="UnlockRentals" title="UnlockRentals" class="w-full h-full object-contain" onerror="this.src='{{ asset('images/icons/icon-192x192.png') }}'">
             </div>
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white tracking-tight leading-snug" id="ur-auth-title">
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight leading-snug" id="ur-auth-title">
                 Unlock Full Access
             </h3>
-            <p class="text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-normal max-w-xs mx-auto" id="ur-auth-subtitle">
-                Sign in to view direct owner contact & verified listings.
+            <p class="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5 leading-normal max-w-xs mx-auto" id="ur-auth-subtitle">
+                Sign in to view direct owner contact &amp; verified listings.
             </p>
 
             {{-- Primary Tab Switcher --}}
-            <div class="grid grid-cols-2 p-1 mt-3 bg-slate-100 dark:bg-slate-800 rounded-xl" role="tablist" aria-label="Authentication Options">
-                <button type="button" role="tab" id="tab-btn-login" aria-selected="true" onclick="window.switchAuthTab('login')" class="py-2.5 text-[13px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer">
+            <div class="grid grid-cols-2 p-1 mt-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl" role="tablist" aria-label="Authentication Options">
+                <button type="button" role="tab" id="tab-btn-login" aria-selected="true" onclick="window.switchAuthTab('login')" class="py-2 text-[12.5px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 shadow-xs cursor-pointer">
                     Sign In
                 </button>
-                <button type="button" role="tab" id="tab-btn-register" aria-selected="false" onclick="window.switchAuthTab('register')" class="py-2.5 text-[13px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer">
+                <button type="button" role="tab" id="tab-btn-register" aria-selected="false" onclick="window.switchAuthTab('register')" class="py-2 text-[12.5px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white cursor-pointer">
                     Create Account
                 </button>
             </div>
         </div>
 
         {{-- Forms Body --}}
-        <div class="overflow-y-auto flex-1 p-4 sm:p-6 overscroll-contain" id="ur-auth-modal-body">
+        <div class="overflow-y-auto flex-1 p-3.5 sm:p-5 overscroll-contain" id="ur-auth-modal-body">
             
             {{-- Flash Alert Box --}}
-            <div id="ur-auth-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-semibold flex items-center gap-2"></div>
+            <div id="ur-auth-alert" class="hidden mb-3 p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2"></div>
 
             {{-- ================================================================
                  TAB 1: SIGN IN (With Mobile OTP & Email Options)
@@ -44,88 +44,88 @@
             <div id="ur-modal-login-container">
                 
                 {{-- Sub-method selector: Mobile No. vs Email --}}
-                <div class="grid grid-cols-2 p-1 mb-3.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl">
+                <div class="grid grid-cols-2 p-1 mb-3 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl">
                     <button type="button" id="modal-login-type-phone" onclick="window.switchLoginMethod('phone')"
-                            class="py-2 text-[12.5px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            class="py-1.5 text-[12px] font-semibold rounded-lg transition-all bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                         <span>Mobile No.</span>
                     </button>
                     <button type="button" id="modal-login-type-email" onclick="window.switchLoginMethod('email')"
-                            class="py-2 text-[12.5px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                        <span>Email & Password</span>
+                            class="py-1.5 text-[12px] font-medium text-slate-500 dark:text-slate-400 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        <span>Email &amp; Password</span>
                     </button>
                 </div>
 
                 {{-- A. Mobile Phone OTP Login Form --}}
-                <div id="modal-login-panel-phone" class="space-y-3.5">
+                <div id="modal-login-panel-phone" class="space-y-3">
                     <div>
-                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mobile Number <span class="text-rose-500">*</span></label>
+                        <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">Mobile Number <span class="text-rose-500">*</span></label>
                         <div class="flex gap-2">
                             <div class="relative flex-1">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-medium text-[13px] select-none pointer-events-none">+91</span>
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-[12.5px] select-none pointer-events-none">+91</span>
                                 <input type="tel" id="modal-login-phone-input" maxlength="10" placeholder="98765 43210" autocomplete="tel"
-                                       class="w-full pl-12 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+                                       class="w-full pl-11 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all"
                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
                                        onkeydown="if(event.key==='Enter'){event.preventDefault();window.modalSendLoginOtp();}">
                             </div>
                             <button type="button" id="modal-login-send-otp-btn" onclick="window.modalSendLoginOtp()"
-                                    class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[12px] font-medium rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                    class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[12px] font-medium rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                 <span>Send OTP</span>
                             </button>
                         </div>
-                        <p id="modal-login-phone-hint" class="text-[11.5px] text-slate-400 dark:text-slate-500 mt-1">We will send a 4-digit verification code to this phone.</p>
+                        <p id="modal-login-phone-hint" class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">We will send a 4-digit verification code to this phone.</p>
                     </div>
 
                     {{-- 4-Digit OTP Input Section --}}
-                    <div id="modal-login-otp-section" class="hidden space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <label class="block text-center text-[12px] font-medium text-slate-700 dark:text-slate-300">Enter 4-Digit Verification Code</label>
-                        <div id="modal-login-otp-digits" class="flex justify-center gap-2.5 sm:gap-3">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white" autofocus>
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-4 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                    <div id="modal-login-otp-section" class="hidden space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <label class="block text-center text-[11.5px] font-medium text-slate-700 dark:text-slate-300">Enter 4-Digit Verification Code</label>
+                        <div id="modal-login-otp-digits" class="flex justify-center gap-2 sm:gap-2.5">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-10 h-11 sm:w-11 sm:h-12 text-center text-xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white" autofocus>
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-10 h-11 sm:w-11 sm:h-12 text-center text-xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-10 h-11 sm:w-11 sm:h-12 text-center text-xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit w-10 h-11 sm:w-11 sm:h-12 text-center text-xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15 focus:outline-none transition-all text-slate-900 dark:text-white">
                         </div>
                         <div class="flex items-center justify-between text-xs px-1">
-                            <span id="modal-login-otp-timer" class="text-slate-400 font-mono text-[11.5px]">Resend in 30s</span>
+                            <span id="modal-login-otp-timer" class="text-slate-400 font-mono text-[11px]">Resend in 30s</span>
                             <button type="button" id="modal-login-resend-btn" onclick="window.modalSendLoginOtp()" class="hidden text-emerald-600 dark:text-emerald-400 font-medium hover:underline cursor-pointer">Resend OTP</button>
                         </div>
                         <button type="button" id="modal-login-verify-btn" onclick="window.modalVerifyLoginOtp()"
-                                class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
-                            <span>Verify & Sign In</span>
+                                class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
+                            <span>Verify &amp; Sign In</span>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                         </button>
                     </div>
                 </div>
 
                 {{-- B. Email & Password Login Form --}}
-                <form id="ur-modal-login-form" method="POST" action="{{ route('login') }}" class="space-y-3.5 hidden" onsubmit="handleModalAuthSubmit(event, 'login')">
+                <form id="ur-modal-login-form" method="POST" action="{{ route('login') }}" class="space-y-3 hidden" onsubmit="handleModalAuthSubmit(event, 'login')">
                     @csrf
                     <input type="hidden" name="redirect" id="ur-login-redirect" value="">
 
                     <div>
-                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email Address <span class="text-rose-500">*</span></label>
+                        <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address <span class="text-rose-500">*</span></label>
                         <div class="relative">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                             <input type="email" name="email" required autocomplete="email"
                                    placeholder="you@example.com"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                   class="ur-auth-input w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
                         </div>
                     </div>
 
                     <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300">Password <span class="text-rose-500">*</span></label>
-                            <a href="{{ route('password.request') }}" class="text-[12px] font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline" title="Forgot Password?">Forgot?</a>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300">Password <span class="text-rose-500">*</span></label>
+                            <a href="{{ route('password.request') }}" class="text-[11.5px] font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 hover:underline" title="Forgot Password?">Forgot?</a>
                         </div>
                         <div class="relative">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
                             <input type="password" name="password" id="ur-login-password-input" required autocomplete="current-password"
                                    placeholder="••••••••"
-                                   class="ur-auth-input w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                            <button type="button" onclick="window.toggleModalPassword('ur-login-password-input', this)" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                   class="ur-auth-input w-full pl-9 pr-9 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
+                            <button type="button" onclick="window.toggleModalPassword('ur-login-password-input', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
                         </div>
                     </div>
@@ -133,11 +133,11 @@
                     <div class="flex items-center justify-between pt-0.5">
                         <label class="flex items-center gap-2 cursor-pointer select-none">
                             <input type="checkbox" name="remember" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
-                            <span class="text-[12.5px] font-normal text-slate-600 dark:text-slate-400">Remember me</span>
+                            <span class="text-[12px] font-normal text-slate-600 dark:text-slate-400">Remember me</span>
                         </label>
                     </div>
 
-                    <button type="submit" id="ur-modal-login-submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
+                    <button type="submit" id="ur-modal-login-submit" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-1 cursor-pointer">
                         <span>Sign In</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
@@ -145,103 +145,118 @@
             </div>
 
             {{-- ================================================================
-                 TAB 2: CREATE ACCOUNT (Unified Clean Professional Form)
+                 TAB 2: CREATE ACCOUNT (Standard Modern Proportionate UI)
                  ================================================================ --}}
             <div id="ur-modal-register-container" class="hidden">
-                <form id="ur-modal-register-unified-form" class="space-y-3" onsubmit="event.preventDefault(); window.modalSubmitRegisterWithMobile();">
-                    <div>
-                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Full Name <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
-                            <input type="text" id="modal-reg-phone-name" name="name" required autocomplete="name"
-                                   placeholder="e.g. Rahul Sharma"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Mobile Number <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="flex gap-2">
-                            <div class="relative flex-1">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-medium text-[13px] select-none pointer-events-none">+91</span>
-                                <input type="tel" id="modal-reg-phone-input" name="phone" maxlength="10" required autocomplete="tel"
-                                       placeholder="98765 43210"
-                                       class="w-full pl-12 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
-                                       onkeydown="if(event.key==='Enter'){event.preventDefault();window.modalSendRegisterOtp();}">
+                <form id="ur-modal-register-unified-form" class="space-y-2.5" onsubmit="event.preventDefault(); window.modalSubmitRegisterWithMobile();">
+                    
+                    {{-- Row 1: Full Name & Mobile Number side-by-side in 2 columns --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                Full Name <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
+                                <input type="text" id="modal-reg-phone-name" name="name" required autocomplete="name"
+                                       placeholder="e.g. Rahul Sharma"
+                                       class="ur-auth-input w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
                             </div>
-                            <button type="button" id="modal-reg-send-otp-btn" onclick="window.modalSendRegisterOtp()"
-                                    class="px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[12px] font-medium rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                                <span>Send OTP</span>
-                            </button>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300">
+                                    Mobile Number <span class="text-rose-500">*</span>
+                                </label>
+                                <span id="modal-reg-verified-badge" class="hidden text-emerald-600 dark:text-emerald-400 font-bold text-[11px] items-center gap-1">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Verified
+                                </span>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <div class="relative flex-1">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-[12.5px] select-none pointer-events-none">+91</span>
+                                    <input type="tel" id="modal-reg-phone-input" name="phone" maxlength="10" required autocomplete="tel"
+                                           placeholder="98765 43210"
+                                           class="w-full pl-11 pr-2 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);"
+                                           onkeydown="if(event.key==='Enter'){event.preventDefault();window.modalSendRegisterOtp();}">
+                                </div>
+                                <button type="button" id="modal-reg-send-otp-btn" onclick="window.modalSendRegisterOtp()"
+                                        class="px-2.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[11.5px] font-semibold rounded-xl shadow-xs transition-all flex items-center gap-1 shrink-0 whitespace-nowrap cursor-pointer">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                    <span>Send OTP</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    {{-- OTP Input Section for Registration (reveals only when OTP is requested) --}}
-                    <div id="modal-reg-otp-section" class="hidden space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <label class="block text-center text-[12px] font-medium text-slate-700 dark:text-slate-300">
-                            Enter 4-Digit Verification Code
-                        </label>
-                        <div id="modal-reg-otp-digits" class="flex justify-center gap-2.5 sm:gap-3">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
-                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-12 h-13 sm:w-13 sm:h-14 text-center text-2xl font-bold bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                    {{-- Row 2: Compact Inline OTP Verification Panel (reveals when OTP is requested) --}}
+                    <div id="modal-reg-otp-section" class="hidden bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 space-y-2">
+                        <div class="flex items-center justify-between text-[11.5px]">
+                            <span class="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 dark:text-blue-400"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                Enter 4-Digit OTP Code
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span id="modal-reg-otp-timer" class="text-slate-400 font-mono text-[11px]">Resend in 30s</span>
+                                <button type="button" id="modal-reg-resend-btn" onclick="window.modalSendRegisterOtp()" class="hidden text-emerald-600 dark:text-emerald-400 font-semibold text-[11.5px] hover:underline cursor-pointer">Resend OTP</button>
+                            </div>
                         </div>
-                        <div class="flex items-center justify-between text-xs px-1">
-                            <span id="modal-reg-otp-timer" class="text-slate-400 font-mono text-[11.5px]">Resend in 30s</span>
-                            <button type="button" id="modal-reg-resend-btn" onclick="window.modalSendRegisterOtp()" class="hidden text-emerald-600 dark:text-emerald-400 font-medium hover:underline cursor-pointer">Resend OTP</button>
+                        <div id="modal-reg-otp-digits" class="flex justify-center items-center gap-2 sm:gap-2.5">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-10 h-11 sm:w-11 sm:h-11 text-center text-xl font-bold bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-10 h-11 sm:w-11 sm:h-11 text-center text-xl font-bold bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-10 h-11 sm:w-11 sm:h-11 text-center text-xl font-bold bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
+                            <input type="text" inputmode="numeric" maxlength="1" class="modal-otp-digit-reg w-10 h-11 sm:w-11 sm:h-11 text-center text-xl font-bold bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 focus:outline-none transition-all text-slate-900 dark:text-white">
                         </div>
                     </div>
 
+                    {{-- Row 3: Email Address --}}
                     <div>
-                        <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">
                             Email Address <span class="text-rose-500">*</span>
                         </label>
                         <div class="relative">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                             <input type="email" id="modal-reg-phone-email" name="email" required autocomplete="email"
                                    placeholder="you@example.com"
-                                   class="ur-auth-input w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
+                                   class="ur-auth-input w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
                         </div>
                     </div>
 
+                    {{-- Row 4: Password & Confirm Password in 2 columns --}}
                     <div class="grid grid-cols-2 gap-2.5">
                         <div>
-                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">
                                 Password <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative">
                                 <input type="password" id="modal-reg-phone-password" name="password" minlength="8" required autocomplete="new-password"
                                        placeholder="Min 8 chars"
-                                       class="ur-auth-input-no-icon w-full pl-3.5 pr-9 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                                <button type="button" onclick="window.toggleModalPassword('modal-reg-phone-password', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                       class="ur-auth-input-no-icon w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
+                                <button type="button" onclick="window.toggleModalPassword('modal-reg-phone-password', this)" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-[12px] font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            <label class="block text-[11.5px] font-medium text-slate-700 dark:text-slate-300 mb-1">
                                 Confirm <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative">
                                 <input type="password" id="modal-reg-phone-confirm" name="password_confirmation" minlength="8" required autocomplete="new-password"
                                        placeholder="Repeat"
-                                       class="ur-auth-input-no-icon w-full pl-3.5 pr-9 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[14px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all">
-                                <button type="button" onclick="window.toggleModalPassword('modal-reg-phone-confirm', this)" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                       class="ur-auth-input-no-icon w-full pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-[13.5px] font-normal text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 transition-all">
+                                <button type="button" onclick="window.toggleModalPassword('modal-reg-phone-confirm', this)" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer" title="Toggle password visibility">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
                         </div>
                     </div>
 
+                    {{-- Row 5: Primary Submit Button --}}
                     <button type="submit" id="modal-reg-phone-submit"
-                            class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
+                            class="w-full py-2.5 sm:py-3 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-[13.5px] font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-[0.99] flex items-center justify-center gap-2 mt-2 cursor-pointer">
                         <span>Create Free Account</span>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </button>
@@ -296,29 +311,29 @@
     display: inline-block;
 }
 #ur-auth-modal .ur-auth-input {
-    padding-left: 2.6rem !important;
-    padding-right: 1rem !important;
-    padding-top: 0.65rem !important;
-    padding-bottom: 0.65rem !important;
-    height: 2.75rem !important;
+    padding-left: 2.35rem !important;
+    padding-right: 0.75rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    height: 2.5rem !important;
     font-size: 13.5px !important;
     line-height: 1.4 !important;
 }
 #ur-auth-modal .ur-auth-input-phone {
-    padding-left: 2.9rem !important;
+    padding-left: 2.75rem !important;
     padding-right: 0.75rem !important;
-    padding-top: 0.65rem !important;
-    padding-bottom: 0.65rem !important;
-    height: 2.75rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    height: 2.5rem !important;
     font-size: 13.5px !important;
     line-height: 1.4 !important;
 }
 #ur-auth-modal .ur-auth-input-no-icon {
-    padding-left: 0.875rem !important;
-    padding-right: 0.875rem !important;
-    padding-top: 0.65rem !important;
-    padding-bottom: 0.65rem !important;
-    height: 2.75rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 2rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    height: 2.5rem !important;
     font-size: 13.5px !important;
     line-height: 1.4 !important;
 }
@@ -330,10 +345,24 @@
 }
 #ur-auth-modal label {
     font-family: 'Inter', sans-serif !important;
-    font-size: 12px !important;
+    font-size: 11.5px !important;
     font-weight: 500 !important;
     letter-spacing: 0.01em !important;
     text-transform: none !important;
+}
+#ur-auth-modal-body::-webkit-scrollbar {
+    width: 5px;
+}
+#ur-auth-modal-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+#ur-auth-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.4);
+    border-radius: 9999px;
+}
+#ur-auth-modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
 }
 </style>
 
@@ -703,6 +732,50 @@ window.modalSendRegisterOtp = async function() {
     }
 };
 
+window.regOtpVerifiedPhone = '';
+
+window.markRegisterPhoneVerifiedUI = function(phone) {
+    const badge = document.getElementById('modal-reg-verified-badge');
+    if (badge) {
+        badge.classList.remove('hidden');
+        badge.classList.add('inline-flex');
+    }
+    const sendBtn = document.getElementById('modal-reg-send-otp-btn');
+    if (sendBtn) {
+        sendBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> <span>Verified</span>`;
+        sendBtn.className = 'px-2.5 py-2 bg-emerald-600 text-white text-[11.5px] font-semibold rounded-xl shadow-xs transition-all flex items-center gap-1 shrink-0 whitespace-nowrap cursor-default pointer-events-none';
+    }
+    const otpSection = document.getElementById('modal-reg-otp-section');
+    if (otpSection) {
+        otpSection.classList.add('bg-emerald-50/70', 'dark:bg-emerald-950/30', 'border-emerald-300', 'dark:border-emerald-700/60');
+    }
+};
+
+window.modalVerifyOnlyRegisterOtp = async function() {
+    const phoneInput = document.getElementById('modal-reg-phone-input');
+    const digits = document.querySelectorAll('#modal-reg-otp-digits .modal-otp-digit-reg');
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    let otp = '';
+    digits.forEach(d => otp += d.value.trim());
+
+    if (!phone || phone.length !== 10 || !otp || otp.length !== 4) return;
+    if (window.regOtpVerifiedPhone === phone) return;
+
+    try {
+        const verifyRes = await modalFetch('{{ route("otp.verify") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: phone, otp: otp, purpose: 'register' })
+        });
+        const verifyData = await verifyRes.json();
+        if (verifyRes.ok && verifyData.success) {
+            window.regOtpVerifiedPhone = phone;
+            window.markRegisterPhoneVerifiedUI(phone);
+            showModalAlert('Mobile number verified successfully! You can now finish creating your account.', 'success');
+        }
+    } catch (e) {}
+};
+
 /* ── 4. VERIFY OTP & CREATE ACCOUNT WITH MOBILE ───────── */
 window.modalSubmitRegisterWithMobile = async function() {
     const nameInput = document.getElementById('modal-reg-phone-name');
@@ -751,8 +824,8 @@ window.modalSubmitRegisterWithMobile = async function() {
     submitBtn.disabled = true;
 
     try {
-        // If user requested an OTP verification, verify the code first
-        if (isOtpActive) {
+        // If user requested an OTP verification and hasn't been verified yet, verify the code
+        if (isOtpActive && window.regOtpVerifiedPhone !== phone) {
             let otp = '';
             digits.forEach(d => otp += d.value.trim());
             if (!otp || otp.length !== 4) {
@@ -776,6 +849,9 @@ window.modalSubmitRegisterWithMobile = async function() {
                 submitBtn.innerHTML = `<span>Create Free Account</span> <i class="ph-bold ph-arrow-right text-xs"></i>`;
                 return;
             }
+
+            window.regOtpVerifiedPhone = phone;
+            window.markRegisterPhoneVerifiedUI(phone);
         }
 
         submitBtn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm"></i> Creating account...`;
@@ -870,6 +946,16 @@ function setupOtpDigitInputs(containerSelector) {
             if (input.value && index < inputs.length - 1) {
                 inputs[index + 1].focus();
             }
+
+            let fullOtp = '';
+            inputs.forEach(i => fullOtp += i.value.trim());
+            if (fullOtp.length === inputs.length) {
+                if (containerSelector.includes('reg') && typeof window.modalVerifyOnlyRegisterOtp === 'function') {
+                    window.modalVerifyOnlyRegisterOtp();
+                } else if (containerSelector.includes('login') && typeof window.modalVerifyLoginOtp === 'function') {
+                    window.modalVerifyLoginOtp();
+                }
+            }
         });
 
         input.addEventListener('keydown', (e) => {
@@ -889,6 +975,16 @@ function setupOtpDigitInputs(containerSelector) {
                 }
                 const targetIdx = Math.min(text.length, inputs.length - 1);
                 if (inputs[targetIdx]) inputs[targetIdx].focus();
+
+                let fullOtp = '';
+                inputs.forEach(i => fullOtp += i.value.trim());
+                if (fullOtp.length === inputs.length) {
+                    if (containerSelector.includes('reg') && typeof window.modalVerifyOnlyRegisterOtp === 'function') {
+                        window.modalVerifyOnlyRegisterOtp();
+                    } else if (containerSelector.includes('login') && typeof window.modalVerifyLoginOtp === 'function') {
+                        window.modalVerifyLoginOtp();
+                    }
+                }
             }, 0);
         });
     });
