@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\Category;
+use App\Models\User;
 use App\Http\Requests\StorePropertyRequest;
 use App\Http\Requests\UpdatePropertyRequest;
 use Illuminate\Http\Request;
