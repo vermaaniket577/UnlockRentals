@@ -3167,7 +3167,20 @@ class AdminController extends Controller
             $escapedPurpose = escapeshellarg($purpose ?: 'rent');
             $escapedType = escapeshellarg($propertyType ?: 'all');
             $escapedEngine = escapeshellarg($engine ?: 'playwright');
+            $requireLogin = $request->boolean('require_login', false);
+            $mobileInput = trim((string) $request->input('mobile', ''));
+            $otpInput = trim((string) $request->input('otp', ''));
+
             $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine} --page={$page}";
+            if ($requireLogin) {
+                $command .= " --require-login";
+            }
+            if (!empty($mobileInput)) {
+                $command .= " --mobile=" . escapeshellarg($mobileInput);
+            }
+            if (!empty($otpInput)) {
+                $command .= " --otp=" . escapeshellarg($otpInput);
+            }
 
             // Free DB connection while Python is crawling external web pages
             try { \Illuminate\Support\Facades\DB::disconnect(); } catch (\Throwable $e) {}
@@ -3178,6 +3191,21 @@ class AdminController extends Controller
             $items = [];
             if ($returnCode === 0 && preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
                 $items = json_decode($matches[1], true);
+            }
+
+            // Check if Python scraper reported login / OTP requirement
+            if (!empty($items) && is_array($items) && isset($items[0]['error'])) {
+                $errCode = $items[0]['error'];
+                if (in_array($errCode, ['LOGIN_REQUIRED', 'OTP_REQUIRED', 'OTP_LOGIN_FAILED'])) {
+                    return response()->json([
+                        'success'        => false,
+                        'requires_otp'   => true,
+                        'login_required' => true,
+                        'error_code'     => $errCode,
+                        'message'        => $items[0]['message'] ?? 'Target portal URL session is not logged in. First login with mobile OTP to scrape genuine data.',
+                        'mobile'         => $items[0]['mobile'] ?? $mobileInput,
+                    ]);
+                }
             }
 
             if (empty($items) || !is_array($items)) {
@@ -3536,6 +3564,151 @@ class AdminController extends Controller
             'engine'  => $request->input('engine', 'playwright'),
         ]);
         return $this->fetchAndPostFromUrl($request);
+    }
+
+    /**
+     * Get scraper's target portal login and session status.
+     */
+    public function scraperAuthStatus(Request $request)
+    {
+        $scriptPath = base_path('scrapers/crawl_and_import.py');
+        $pythonBinary = 'python3';
+        exec("python3 --version 2>&1", $out, $code);
+        if ($code !== 0) {
+            $pythonBinary = 'python';
+        }
+
+        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " --check-login --json";
+        exec($cmd, $output, $returnCode);
+
+        $rawOutput = implode("\n", (array) $output);
+        $status = [
+            'is_logged_in'     => false,
+            'has_session_file' => false,
+            'mobile'           => '',
+            'status'           => 'not_logged_in',
+        ];
+
+        if (preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
+            $parsed = json_decode($matches[1], true);
+            if (is_array($parsed)) {
+                $status = $parsed;
+            }
+        } elseif (!empty($rawOutput)) {
+            $parsed = json_decode($rawOutput, true);
+            if (is_array($parsed)) {
+                $status = $parsed;
+            }
+        }
+
+        return response()->json([
+            'success'     => true,
+            'auth_status' => $status,
+        ]);
+    }
+
+    /**
+     * Initiate mobile OTP login on target portal.
+     */
+    public function scraperSendOtp(Request $request)
+    {
+        $mobile = trim((string) $request->input('mobile', ''));
+        $cleanPhone = preg_replace('/\D/', '', $mobile);
+        if (strlen($cleanPhone) < 10) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide a valid 10-digit Indian mobile number.'
+            ], 422);
+        }
+        $cleanPhone = substr($cleanPhone, -10);
+
+        $scriptPath = base_path('scrapers/crawl_and_import.py');
+        $pythonBinary = 'python3';
+        exec("python3 --version 2>&1", $out, $code);
+        if ($code !== 0) {
+            $pythonBinary = 'python';
+        }
+
+        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " --send-otp " . escapeshellarg($cleanPhone) . " --json";
+        exec($cmd, $output, $returnCode);
+
+        $rawOutput = implode("\n", (array) $output);
+        $result = [];
+        if (preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
+            $result = json_decode($matches[1], true);
+        } elseif (!empty($rawOutput)) {
+            $result = json_decode($rawOutput, true);
+        }
+
+        $success = !empty($result['success']);
+        return response()->json([
+            'success'      => $success,
+            'requires_otp' => true,
+            'mobile'       => $cleanPhone,
+            'message'      => $result['message'] ?? ($success ? "OTP sent to +91 {$cleanPhone}." : "Failed to dispatch OTP on target portal."),
+        ]);
+    }
+
+    /**
+     * Verify mobile OTP code on target portal and save session.
+     */
+    public function scraperVerifyOtp(Request $request)
+    {
+        $otp = trim((string) $request->input('otp', ''));
+        $mobile = trim((string) $request->input('mobile', ''));
+        if (empty($otp)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please enter the OTP verification code.'
+            ], 422);
+        }
+
+        $scriptPath = base_path('scrapers/crawl_and_import.py');
+        $pythonBinary = 'python3';
+        exec("python3 --version 2>&1", $out, $code);
+        if ($code !== 0) {
+            $pythonBinary = 'python';
+        }
+
+        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " --verify-otp " . escapeshellarg($otp) . " --mobile=" . escapeshellarg($mobile) . " --json";
+        exec($cmd, $output, $returnCode);
+
+        $rawOutput = implode("\n", (array) $output);
+        $result = [];
+        if (preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
+            $result = json_decode($matches[1], true);
+        } elseif (!empty($rawOutput)) {
+            $result = json_decode($rawOutput, true);
+        }
+
+        $isLoggedIn = !empty($result['is_logged_in']);
+        return response()->json([
+            'success'      => $isLoggedIn,
+            'is_logged_in' => $isLoggedIn,
+            'message'      => $result['message'] ?? ($isLoggedIn ? 'Authenticated successfully!' : 'OTP verification failed.'),
+            'mobile'       => $mobile,
+        ]);
+    }
+
+    /**
+     * Clear scraper target portal session.
+     */
+    public function scraperLogout(Request $request)
+    {
+        $scriptPath = base_path('scrapers/crawl_and_import.py');
+        $pythonBinary = 'python3';
+        exec("python3 --version 2>&1", $out, $code);
+        if ($code !== 0) {
+            $pythonBinary = 'python';
+        }
+
+        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " --logout";
+        exec($cmd, $output, $returnCode);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Target portal scraper session cleared successfully.',
+        ]);
     }
 
     /**

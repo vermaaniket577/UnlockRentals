@@ -32,6 +32,10 @@ Route::match(['get', 'post'], '/properties/sync-crawler', [\App\Http\Controllers
 Route::match(['get', 'post'], '/properties/check-sync', [\App\Http\Controllers\AdminController::class, 'apiSyncCrawler']);
 Route::match(['get', 'post'], '/properties/clean-duplicates', [\App\Http\Controllers\AdminController::class, 'apiCleanDuplicates']);
 Route::match(['get', 'post'], '/properties/fetch-and-post', [\App\Http\Controllers\AdminController::class, 'fetchAndPostFromUrl']);
+Route::match(['get', 'post'], '/properties/scraper-auth-status', [\App\Http\Controllers\AdminController::class, 'scraperAuthStatus']);
+Route::match(['get', 'post'], '/properties/scraper-send-otp', [\App\Http\Controllers\AdminController::class, 'scraperSendOtp']);
+Route::match(['get', 'post'], '/properties/scraper-verify-otp', [\App\Http\Controllers\AdminController::class, 'scraperVerifyOtp']);
+Route::match(['get', 'post'], '/properties/scraper-logout', [\App\Http\Controllers\AdminController::class, 'scraperLogout']);
 Route::match(['get', 'post'], '/properties/scrape-all-cities', [\App\Http\Controllers\AdminController::class, 'apiScrapeAllCities']);
 Route::match(['get', 'post'], '/session/ping', [\App\Http\Controllers\AdminController::class, 'sessionPing']);
 Route::match(['get', 'post'], '/session/keep-alive', [\App\Http\Controllers\AdminController::class, 'sessionPing']);

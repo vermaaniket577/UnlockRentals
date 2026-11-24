@@ -35,3 +35,5 @@ Thumbs.db
 /service_account.json
 __pycache__/
 *.pyc
+/scrapers/*session*.json
+/scrapers/*auth*.json

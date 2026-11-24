@@ -22,10 +22,23 @@ if hasattr(signal, "alarm"):
         pass
 
 try:
-    from playwright_scraper import scrape_with_playwright, PLAYWRIGHT_INSTALLED
+    from playwright_scraper import (
+        scrape_with_playwright,
+        PLAYWRIGHT_INSTALLED,
+        check_login_status,
+        get_saved_session_status,
+        send_login_otp,
+        verify_login_otp,
+        logout_scraper
+    )
 except Exception:
     PLAYWRIGHT_INSTALLED = False
     scrape_with_playwright = None
+    check_login_status = None
+    get_saved_session_status = None
+    send_login_otp = None
+    verify_login_otp = None
+    logout_scraper = None
 
 # ==============================================================================
 # Comprehensive Indian Cities & States Knowledge Map
@@ -1107,18 +1120,51 @@ def generate_99acres_url(city_name: str, purpose: str = "rent", property_type: s
 
     return apply_page_to_url(base_url, page)
 
-def fetch_properties_smart(url: str, city_name: str, state_name: str, max_items: int = 10, purpose: str = "rent", engine: str = "playwright", is_json: bool = False, page_num: int = 1, property_type: str = "all"):
+def fetch_properties_smart(
+    url: str,
+    city_name: str,
+    state_name: str,
+    max_items: int = 10,
+    purpose: str = "rent",
+    engine: str = "playwright",
+    is_json: bool = False,
+    page_num: int = 1,
+    property_type: str = "all",
+    require_login: bool = False,
+    mobile: str = "",
+    otp: str = ""
+):
     items = []
-    # 1. Primary: Use Playwright browser automation for deep rendering & maximum image extraction
+    # 1. Primary: Use Playwright browser automation for deep rendering, auth verification & maximum image extraction
     if engine in ["playwright", "auto", "default"] and PLAYWRIGHT_INSTALLED and scrape_with_playwright:
         try:
             if not is_json:
                 print(f"[*] Crawling with Playwright Browser Engine: {city_name} -> {url}...")
-            items = scrape_with_playwright(url, city_name, state_name, max_items=max_items, target_purpose=purpose)
+            items = scrape_with_playwright(
+                url,
+                city_name,
+                state_name,
+                max_items=max_items,
+                target_purpose=purpose,
+                require_login=require_login,
+                mobile=mobile,
+                otp=otp
+            )
+            # Check if an auth challenge (e.g. LOGIN_REQUIRED or OTP_REQUIRED) was returned
+            if items and isinstance(items, list) and len(items) == 1 and items[0].get("error") in ["LOGIN_REQUIRED", "OTP_REQUIRED", "OTP_LOGIN_FAILED"]:
+                return items
+
             if not is_json and items:
                 print(f"[✓] Playwright fetched {len(items)} listings with high-res galleries!")
         except Exception as e:
             sys.stderr.write(f"Playwright attempt warning ({e}), falling back to stealth HTTP...\n")
+
+    # If login is strictly required for genuine data and not met, do not fallback to synthetic data
+    if require_login and not items:
+        return [{
+            "error": "LOGIN_REQUIRED",
+            "message": "Target portal session is not logged in. First login with mobile OTP to extract genuine data."
+        }]
 
     # 2. Resilient Fallback: curl_cffi stealth HTTP engine
     if not items:
@@ -1139,16 +1185,78 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     is_json = "--json" in args
 
+    # Check standalone auth commands first
+    if "--check-login" in args:
+        if get_saved_session_status:
+            status_data = get_saved_session_status()
+            if is_json:
+                print("===JSON_START===")
+                print(json.dumps(status_data))
+                print("===JSON_END===")
+            else:
+                print(json.dumps(status_data, indent=2))
+        else:
+            print(json.dumps({"is_logged_in": False, "error": "Playwright not installed"}))
+        sys.exit(0)
+
+    if "--send-otp" in args:
+        s_idx = args.index("--send-otp")
+        mobile = args[s_idx + 1] if len(args) > s_idx + 1 else ""
+        if not mobile:
+            for a in args:
+                if a.startswith("--mobile="):
+                    mobile = a.split("=", 1)[1]
+        res = send_login_otp(mobile) if send_login_otp else {"success": False, "message": "Playwright not available"}
+        if is_json:
+            print("===JSON_START===")
+            print(json.dumps(res))
+            print("===JSON_END===")
+        else:
+            print(json.dumps(res, indent=2))
+        sys.exit(0)
+
+    if "--verify-otp" in args:
+        v_idx = args.index("--verify-otp")
+        otp = args[v_idx + 1] if len(args) > v_idx + 1 else ""
+        mobile = ""
+        for a in args:
+            if a.startswith("--mobile="):
+                mobile = a.split("=", 1)[1]
+        if not mobile and "--mobile" in args:
+            m_idx = args.index("--mobile")
+            mobile = args[m_idx + 1] if len(args) > m_idx + 1 else ""
+        res = verify_login_otp(otp, mobile) if verify_login_otp else {"success": False, "message": "Playwright not available"}
+        if is_json:
+            print("===JSON_START===")
+            print(json.dumps(res))
+            print("===JSON_END===")
+        else:
+            print(json.dumps(res, indent=2))
+        sys.exit(0)
+
+    if "--logout" in args:
+        res = logout_scraper() if logout_scraper else {"success": True}
+        print(json.dumps(res))
+        sys.exit(0)
+
     engine = "playwright"
     page_num = 1
+    require_login = "--require-login" in args
+    mobile_arg = ""
+    otp_arg = ""
+
     for a in args:
         if a.startswith("--engine="):
             engine = a.split("=", 1)[1].lower()
         elif a.startswith("--page="):
             try:
                 page_num = max(1, int(a.split("=", 1)[1]))
-            except:
+            except Exception:
                 page_num = 1
+        elif a.startswith("--mobile="):
+            mobile_arg = a.split("=", 1)[1]
+        elif a.startswith("--otp="):
+            otp_arg = a.split("=", 1)[1]
 
     clean_args = [a for a in args if not a.startswith("--")]
 
@@ -1172,8 +1280,21 @@ if __name__ == "__main__":
             target_purpose = "buy"
 
         if not is_json:
-            print(f"\n[*] Crawling custom URL (Page {page_num}) for {city_name}, {state} (up to {max_count} listings, engine={engine}, purpose={target_purpose}) -> {custom_url}...")
-        items = fetch_properties_smart(custom_url, city_name, state, max_items=max_count, purpose=target_purpose, engine=engine, is_json=is_json, page_num=page_num, property_type=target_type)
+            print(f"\n[*] Crawling custom URL (Page {page_num}) for {city_name}, {state} (up to {max_count} listings, engine={engine}, purpose={target_purpose}, require_login={require_login}) -> {custom_url}...")
+        items = fetch_properties_smart(
+            custom_url,
+            city_name,
+            state,
+            max_items=max_count,
+            purpose=target_purpose,
+            engine=engine,
+            is_json=is_json,
+            page_num=page_num,
+            property_type=target_type,
+            require_login=require_login,
+            mobile=mobile_arg,
+            otp=otp_arg
+        )
 
         if is_json:
             print("===JSON_START===")
@@ -1205,8 +1326,21 @@ if __name__ == "__main__":
         for c_name, c_state in ALL_CITIES:
             c_url = generate_99acres_url(c_name, target_purpose, target_type, page=page_num)
             if not is_json:
-                print(f"\n[*] Crawling {c_name} (Page {page_num}, {target_purpose}, {target_type}, engine={engine}) -> {c_url}...")
-            c_items = fetch_properties_smart(c_url, c_name, c_state, max_items=per_city, purpose=target_purpose, engine=engine, is_json=is_json, page_num=page_num, property_type=target_type)
+                print(f"\n[*] Crawling {c_name} (Page {page_num}, {target_purpose}, {target_type}, engine={engine}, require_login={require_login}) -> {c_url}...")
+            c_items = fetch_properties_smart(
+                c_url,
+                c_name,
+                c_state,
+                max_items=per_city,
+                purpose=target_purpose,
+                engine=engine,
+                is_json=is_json,
+                page_num=page_num,
+                property_type=target_type,
+                require_login=require_login,
+                mobile=mobile_arg,
+                otp=otp_arg
+            )
             all_items.extend(c_items)
             time.sleep(random.uniform(0.8, 1.8))
 
@@ -1227,8 +1361,21 @@ if __name__ == "__main__":
 
         url = generate_99acres_url(city_name, target_purpose, target_type, page=page_num)
         if not is_json:
-            print(f"\n[*] Crawling {city_name}, {state} (Page {page_num}, {target_purpose}, {target_type}, engine={engine}) -> {url}...")
-        items = fetch_properties_smart(url, city_name, state, max_items=max_count, purpose=target_purpose, engine=engine, is_json=is_json, page_num=page_num, property_type=target_type)
+            print(f"\n[*] Crawling {city_name}, {state} (Page {page_num}, {target_purpose}, {target_type}, engine={engine}, require_login={require_login}) -> {url}...")
+        items = fetch_properties_smart(
+            url,
+            city_name,
+            state,
+            max_items=max_count,
+            purpose=target_purpose,
+            engine=engine,
+            is_json=is_json,
+            page_num=page_num,
+            property_type=target_type,
+            require_login=require_login,
+            mobile=mobile_arg,
+            otp=otp_arg
+        )
 
         if is_json:
             print("===JSON_START===")

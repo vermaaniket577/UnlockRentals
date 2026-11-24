@@ -563,6 +563,56 @@
                     </div>
                 </div>
 
+                {{-- Target Portal Authentication & Genuine Data Status --}}
+                <div id="target_portal_auth_card" class="p-3.5 rounded-2xl border transition-all bg-gradient-to-r from-slate-50 to-indigo-50/40 border-slate-200">
+                    <div class="flex items-center justify-between gap-3 flex-wrap">
+                        <div class="flex items-center gap-2.5">
+                            <span id="portal_auth_icon" class="w-8 h-8 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+                                <i class="ph-bold ph-shield-check"></i>
+                            </span>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-xs font-bold text-slate-900">Target Portal Login Check:</p>
+                                    <span id="portal_auth_badge" class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-slate-200 text-slate-700">
+                                        Checking...
+                                    </span>
+                                </div>
+                                <p id="portal_auth_desc" class="text-[11px] text-slate-500 mt-0.5">Checking if target URL session is logged in...</p>
+                            </div>
+                        </div>
+                        <div id="portal_auth_actions" class="flex items-center gap-2">
+                            <button type="button" onclick="checkScraperPortalAuth(true)" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
+                                <i class="ph-bold ph-arrows-clockwise text-xs"></i> Check Login
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Inline Mobile OTP Form (shows when not logged in) --}}
+                    <div id="portal_otp_login_form" class="mt-3 pt-3 border-t border-slate-200/80 hidden space-y-2.5">
+                        <div class="bg-white/80 p-3 rounded-xl border border-slate-200">
+                            <p class="text-[11px] font-bold text-slate-800 flex items-center gap-1.5 mb-2">
+                                <i class="ph-fill ph-device-mobile text-indigo-600"></i> Login with Mobile OTP to scrape 100% Genuine Data:
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-2.5 py-2 rounded-lg bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600">+91</span>
+                                    <input type="tel" id="portal_login_mobile" placeholder="10-digit mobile number" maxlength="10" class="flex-1 px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white">
+                                    <button type="button" id="portal_send_otp_btn" onclick="sendScraperPortalOtp()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer shadow-xs">
+                                        Send OTP
+                                    </button>
+                                </div>
+                                <div id="portal_otp_input_row" class="flex items-center gap-1.5 opacity-60 pointer-events-none">
+                                    <input type="text" id="portal_login_otp" placeholder="Enter 4-6 digit OTP" maxlength="6" class="flex-1 px-3 py-2 text-xs font-mono font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white">
+                                    <button type="button" id="portal_verify_otp_btn" onclick="verifyScraperPortalOtp()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer shadow-xs">
+                                        Verify &amp; Save
+                                    </button>
+                                </div>
+                            </div>
+                            <p id="portal_otp_msg" class="text-[11px] text-slate-500 mt-1.5"></p>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Scraper Engine Selector (Playwright vs High-Speed) --}}
                 <div class="bg-gradient-to-r from-indigo-50/80 to-purple-50/80 p-3.5 rounded-2xl border border-indigo-200/70 flex items-center justify-between gap-3 flex-wrap">
                     <div class="flex items-center gap-2.5">
@@ -928,6 +978,8 @@ function openFetchUrlModal() {
         card.classList.remove('scale-95');
         card.classList.add('scale-100');
     });
+    // Check target portal URL login status
+    checkScraperPortalAuth();
 }
 
 function closeFetchUrlModal() {
@@ -1360,6 +1412,31 @@ async function handleFetchUrlSubmit(e) {
             if (typeof refreshPropertiesTableSilently === 'function') {
                 refreshPropertiesTableSilently();
             }
+        } else if (data.requires_otp || data.login_required) {
+            resultBox.className = 'p-4 rounded-2xl border border-amber-300 bg-amber-50 text-amber-950 text-xs shadow-xs';
+            resultBox.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3">
+                        <i class="ph-fill ph-shield-warning text-2xl text-amber-600 shrink-0 mt-0.5"></i>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-black text-sm text-slate-900">Target Portal Login Required (Mobile OTP)</p>
+                            <p class="text-xs text-amber-900 mt-1">${data.message || 'Target URL session is not logged in. First login with mobile OTP to extract genuine unmasked contact data.'}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-amber-200 space-y-2.5">
+                        <p class="text-[11px] font-bold text-slate-800">
+                            Enter the OTP code received on ${data.mobile ? '+91 ' + data.mobile : 'your mobile'}:
+                        </p>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="inline_scrape_otp" placeholder="Enter 4-6 digit OTP" maxlength="6" class="flex-1 px-3 py-2 text-xs font-mono font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-600">
+                            <button type="button" onclick="submitInlineOtpAndResume('${data.mobile || ''}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors shadow-xs">
+                                Verify &amp; Scrape Genuine Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showAdminToast('Mobile OTP verification required on target portal', 'warning');
         } else {
             resultBox.className = 'p-3.5 rounded-2xl border border-rose-300 bg-rose-50 text-rose-900 text-xs';
             resultBox.innerHTML = `
@@ -1383,6 +1460,235 @@ async function handleFetchUrlSubmit(e) {
         btn.disabled = false;
         icon.className = 'ph-bold ph-download-simple text-sm';
         text.textContent = 'Scrape & Publish in Website';
+    }
+}
+
+// =========================================================================
+// TARGET PORTAL (99ACRES) AUTHENTICATION & MOBILE OTP HANDLERS
+// =========================================================================
+async function checkScraperPortalAuth(showToast = false) {
+    const badge = document.getElementById('portal_auth_badge');
+    const desc = document.getElementById('portal_auth_desc');
+    const card = document.getElementById('target_portal_auth_card');
+    const icon = document.getElementById('portal_auth_icon');
+    const actions = document.getElementById('portal_auth_actions');
+    const otpForm = document.getElementById('portal_otp_login_form');
+
+    if (badge) {
+        badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-slate-200 text-slate-700';
+        badge.textContent = 'Checking...';
+    }
+
+    try {
+        const res = await fetch('{{ route('admin.properties.scraper-auth-status') }}');
+        const data = await res.json();
+        const auth = data.auth_status || {};
+
+        if (auth.is_logged_in) {
+            if (badge) {
+                badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-300';
+                badge.innerHTML = '✓ Logged In (Genuine Data)';
+            }
+            if (card) {
+                card.className = 'p-3.5 rounded-2xl border transition-all bg-gradient-to-r from-emerald-50/80 to-teal-50/80 border-emerald-300';
+            }
+            if (icon) {
+                icon.className = 'w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0';
+                icon.innerHTML = '<i class="ph-bold ph-check"></i>';
+            }
+            if (desc) {
+                const phoneStr = auth.mobile ? `+91 ${auth.mobile}` : 'Verified Account';
+                desc.innerHTML = `Authenticated as <strong class="text-slate-800">${phoneStr}</strong>. Scraper extracts 100% genuine unmasked owner phones &amp; full galleries.`;
+            }
+            if (otpForm) otpForm.classList.add('hidden');
+            if (actions) {
+                actions.innerHTML = `
+                    <button type="button" onclick="logoutScraperPortal()" class="text-xs font-bold text-rose-600 hover:text-rose-800 flex items-center gap-1 cursor-pointer">
+                        <i class="ph-bold ph-sign-out text-xs"></i> Log Out
+                    </button>
+                    <button type="button" onclick="checkScraperPortalAuth(true)" class="text-xs font-bold text-slate-600 hover:text-slate-800 flex items-center gap-1 cursor-pointer">
+                        <i class="ph-bold ph-arrows-clockwise text-xs"></i> Refresh
+                    </button>
+                `;
+            }
+            if (showToast) showAdminToast('Target portal is logged in with genuine data active!', 'success');
+        } else {
+            if (badge) {
+                badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-amber-100 text-amber-800 border border-amber-300';
+                badge.innerHTML = '! Not Logged In';
+            }
+            if (card) {
+                card.className = 'p-3.5 rounded-2xl border transition-all bg-gradient-to-r from-amber-50/70 to-orange-50/70 border-amber-300';
+            }
+            if (icon) {
+                icon.className = 'w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0';
+                icon.innerHTML = '<i class="ph-bold ph-shield-warning"></i>';
+            }
+            if (desc) {
+                desc.innerHTML = 'Unmasked owner phone numbers require Mobile OTP login on target portal.';
+            }
+            if (otpForm) otpForm.classList.remove('hidden');
+            if (actions) {
+                actions.innerHTML = `
+                    <button type="button" onclick="checkScraperPortalAuth(true)" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
+                        <i class="ph-bold ph-arrows-clockwise text-xs"></i> Check Again
+                    </button>
+                `;
+            }
+            if (showToast) showAdminToast('Target portal is not logged in. Login with Mobile OTP for genuine data.', 'info');
+        }
+    } catch (e) {
+        if (badge) {
+            badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-slate-200 text-slate-700';
+            badge.textContent = 'Check Failed';
+        }
+    }
+}
+
+async function sendScraperPortalOtp() {
+    const mobileInput = document.getElementById('portal_login_mobile');
+    const sendBtn = document.getElementById('portal_send_otp_btn');
+    const msg = document.getElementById('portal_otp_msg');
+    const otpRow = document.getElementById('portal_otp_input_row');
+
+    const phone = mobileInput.value.replace(/\D/g, '');
+    if (phone.length < 10) {
+        showAdminToast('Please enter a valid 10-digit Indian mobile number.', 'warning');
+        mobileInput.focus();
+        return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<i class="ph-bold ph-arrows-clockwise animate-spin"></i> Sending...';
+    if (msg) {
+        msg.className = 'text-[11px] text-indigo-600 mt-1.5 font-semibold';
+        msg.textContent = `Connecting to 99acres and requesting OTP for +91 ${phone}...`;
+    }
+
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        const res = await fetch('{{ route('admin.properties.scraper-send-otp') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ mobile: phone })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            showAdminToast(data.message || 'OTP sent successfully! Enter code to authenticate.', 'success');
+            if (msg) {
+                msg.className = 'text-[11px] text-emerald-700 mt-1.5 font-bold';
+                msg.textContent = data.message || `OTP sent to +91 ${phone}! Enter the code below and click Verify.`;
+            }
+            if (otpRow) {
+                otpRow.classList.remove('opacity-60', 'pointer-events-none');
+            }
+            document.getElementById('portal_login_otp')?.focus();
+        } else {
+            showAdminToast(data.message || 'Failed to dispatch OTP. Please try again.', 'error');
+            if (msg) {
+                msg.className = 'text-[11px] text-rose-600 mt-1.5 font-semibold';
+                msg.textContent = data.message || 'Error sending OTP.';
+            }
+        }
+    } catch (err) {
+        showAdminToast('Network error while requesting OTP.', 'error');
+        if (msg) {
+            msg.className = 'text-[11px] text-rose-600 mt-1.5 font-semibold';
+            msg.textContent = 'Network error: ' + err.message;
+        }
+    } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Resend OTP';
+    }
+}
+
+async function verifyScraperPortalOtp() {
+    const mobileInput = document.getElementById('portal_login_mobile');
+    const otpInput = document.getElementById('portal_login_otp');
+    const verifyBtn = document.getElementById('portal_verify_otp_btn');
+    const msg = document.getElementById('portal_otp_msg');
+
+    const otp = otpInput.value.trim();
+    const phone = mobileInput.value.replace(/\D/g, '');
+
+    if (otp.length < 4) {
+        showAdminToast('Please enter the 4 to 6 digit OTP received on your mobile.', 'warning');
+        otpInput.focus();
+        return;
+    }
+
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML = '<i class="ph-bold ph-arrows-clockwise animate-spin"></i> Verifying...';
+
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        const res = await fetch('{{ route('admin.properties.scraper-verify-otp') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ otp, mobile: phone })
+        });
+        const data = await res.json();
+
+        if (data.success && data.is_logged_in) {
+            showAdminToast(data.message || 'Authenticated successfully! Ready to scrape genuine data.', 'success');
+            checkScraperPortalAuth(false);
+        } else {
+            showAdminToast(data.message || 'Invalid OTP code. Please check and try again.', 'error');
+            if (msg) {
+                msg.className = 'text-[11px] text-rose-600 mt-1.5 font-semibold';
+                msg.textContent = data.message || 'OTP verification failed.';
+            }
+        }
+    } catch (err) {
+        showAdminToast('Error verifying OTP: ' + err.message, 'error');
+    } finally {
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verify & Save';
+    }
+}
+
+async function logoutScraperPortal() {
+    if (!confirm('Are you sure you want to log out the scraper from the target portal?')) return;
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        await fetch('{{ route('admin.properties.scraper-logout') }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }
+        });
+        showAdminToast('Target portal session logged out.', 'info');
+        checkScraperPortalAuth(false);
+    } catch (e) {}
+}
+
+async function submitInlineOtpAndResume(mobile) {
+    const inlineOtp = document.getElementById('inline_scrape_otp')?.value.trim();
+    if (!inlineOtp || inlineOtp.length < 4) {
+        showAdminToast('Please enter the OTP code.', 'warning');
+        return;
+    }
+
+    // Fill into portal OTP inputs
+    const portalMobile = document.getElementById('portal_login_mobile');
+    const portalOtp = document.getElementById('portal_login_otp');
+    if (portalMobile && mobile) portalMobile.value = mobile;
+    if (portalOtp) portalOtp.value = inlineOtp;
+
+    // Verify OTP first
+    await verifyScraperPortalOtp();
+
+    // Now resume scraping
+    const form = document.getElementById('fetchUrlForm');
+    if (form) {
+        form.dispatchEvent(new Event('submit', { cancelable: true }));
     }
 }
 

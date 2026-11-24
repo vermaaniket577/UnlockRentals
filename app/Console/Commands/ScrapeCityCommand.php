@@ -17,20 +17,67 @@ class ScrapeCityCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'scrape:city {city=Gurgaon : Name of city, "all", or 99acres URL} {--count=10 : Number of properties to scrape} {--page=1 : Page number to scrape} {--auto-next : Automatically advance to next page if current page listings already exist} {--type=all : Property type (e.g. pg, flats, builder-floor, house, all)} {--purpose=rent : Purpose (rent, buy, pg)} {--engine=playwright : Scraper engine} {--create-accounts : Create user accounts for property owners/agents}';
+    protected $signature = 'scrape:city 
+                            {city=Gurgaon : Name of city, "all", or 99acres URL} 
+                            {--count=10 : Number of properties to scrape} 
+                            {--page=1 : Page number to scrape} 
+                            {--auto-next : Automatically advance to next page if current page listings already exist} 
+                            {--type=all : Property type (e.g. pg, flats, builder-floor, house, all)} 
+                            {--purpose=rent : Purpose (rent, buy, pg)} 
+                            {--engine=playwright : Scraper engine} 
+                            {--create-accounts : Create user accounts for property owners/agents}
+                            {--mobile= : Mobile number for target portal OTP login}
+                            {--otp= : OTP code for target portal verification}
+                            {--check-login : Check target portal login status without scraping}
+                            {--require-login : Enforce that target portal session must be logged in before scraping genuine data}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Crawl real estate and PG listings from 99acres and import directly into the database';
+    protected $description = 'Crawl real estate and PG listings from 99acres and import directly into the database with genuine unmasked owner data';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
+        $scriptPath = base_path('scrapers/crawl_and_import.py');
+        if (!file_exists($scriptPath)) {
+            $this->error("Scraper script not found at {$scriptPath}");
+            return 1;
+        }
+
+        // Try python3, then python
+        $pythonBinary = 'python3';
+        exec("python3 --version 2>&1", $out, $code);
+        if ($code !== 0) {
+            $pythonBinary = 'python';
+        }
+
+        // Check if only login status was requested
+        if ($this->option('check-login')) {
+            $this->info("Checking scraper target portal authentication status...");
+            exec("{$pythonBinary} " . escapeshellarg($scriptPath) . " --check-login --json", $authOut, $authCode);
+            $raw = implode("\n", (array) $authOut);
+            $status = [];
+            if (preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $raw, $m)) {
+                $status = json_decode($m[1], true);
+            } elseif (!empty($raw)) {
+                $status = json_decode($raw, true);
+            }
+            if (!empty($status['is_logged_in'])) {
+                $this->info("✓ Target portal session is LOGGED IN as: +91 " . ($status['mobile'] ?? 'Verified User'));
+                $this->line("  Genuine data extraction enabled: true");
+            } else {
+                $this->warn("! Target portal session is NOT LOGGED IN.");
+                $this->line("  Unmasked owner phone numbers require Mobile OTP authentication.");
+                $this->line("  Run with: php artisan scrape:city --mobile=<10-digit-phone> --require-login");
+            }
+            return 0;
+        }
+
         $rawArg = (string) $this->argument('city');
         $count = (int) ($this->option('count') ?: 10);
         $page = max(1, (int) ($this->option('page') ?: 1));
@@ -39,6 +86,9 @@ class ScrapeCityCommand extends Command
         $purpose = (string) ($this->option('purpose') ?: 'rent');
         $engine = (string) ($this->option('engine') ?: 'playwright');
         $createAccounts = (bool) $this->option('create-accounts');
+        $requireLogin = (bool) $this->option('require-login');
+        $mobile = (string) ($this->option('mobile') ?: '');
+        $otp = (string) ($this->option('otp') ?: '');
 
         // Check if raw argument is a URL or contains 99acres
         if (preg_match('/^(https?:\/\/|www\.)/i', $rawArg) || str_contains($rawArg, '99acres')) {
@@ -61,26 +111,24 @@ class ScrapeCityCommand extends Command
 
         $this->info("Starting scraper for: {$city} (Target: {$count} listings, Page: {$page}, Type: {$type}, Purpose: {$purpose}, Engine: {$engine})...");
 
-        $scriptPath = base_path('scrapers/crawl_and_import.py');
-        if (!file_exists($scriptPath)) {
-            $this->error("Scraper script not found at {$scriptPath}");
-            return 1;
-        }
-
-        // Try python3, then python
-        $pythonBinary = 'python3';
-        exec("python3 --version 2>&1", $out, $code);
-        if ($code !== 0) {
-            $pythonBinary = 'python';
-        }
-
         $targetToScrape = $targetUrl ?: $city;
         $escapedTarget = escapeshellarg($targetToScrape);
         $escapedScript = escapeshellarg($scriptPath);
         $escapedPurpose = escapeshellarg($purpose ?: 'rent');
         $escapedType = escapeshellarg($type ?: 'all');
         $escapedEngine = escapeshellarg($engine ?: 'playwright');
+
         $command = "{$pythonBinary} {$escapedScript} {$escapedTarget} {$count} {$escapedPurpose} {$escapedType} --json --engine={$escapedEngine} --page={$page}";
+        if ($requireLogin) {
+            $command .= " --require-login";
+        }
+        if (!empty($mobile)) {
+            $command .= " --mobile=" . escapeshellarg($mobile);
+        }
+        if (!empty($otp)) {
+            $command .= " --otp=" . escapeshellarg($otp);
+        }
+
         $this->line("Running: {$command}");
 
         exec($command, $output, $returnCode);
@@ -93,6 +141,21 @@ class ScrapeCityCommand extends Command
         $items = [];
         if ($returnCode === 0 && preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
             $items = json_decode($matches[1], true);
+        }
+
+        // Check if authentication challenge occurred
+        if (!empty($items) && is_array($items) && isset($items[0]['error'])) {
+            $err = $items[0]['error'];
+            if (in_array($err, ['LOGIN_REQUIRED', 'OTP_REQUIRED', 'OTP_LOGIN_FAILED'])) {
+                $this->warn("\n[!] TARGET PORTAL AUTH REQUIRED: " . ($items[0]['message'] ?? 'Login with mobile OTP required to scrape genuine data.'));
+                if (!empty($items[0]['mobile'])) {
+                    $this->line("  An OTP was dispatched to +91 {$items[0]['mobile']}.");
+                    $this->line("  To verify and resume: php artisan scrape:city \"{$targetToScrape}\" --mobile={$items[0]['mobile']} --otp=<CODE> --require-login");
+                } else {
+                    $this->line("  First authenticate with: php artisan scrape:city --mobile=<10-digit-phone> --require-login");
+                }
+                return 1;
+            }
         }
 
         if (empty($items) || !is_array($items)) {
@@ -270,7 +333,11 @@ class ScrapeCityCommand extends Command
 
             $insertedCount++;
             $priceSuffix = $itemPurpose === 'buy' ? ' [For Sale]' : '/mo [Rent]';
-            $this->line("  [✓] Imported ID #{$property->id}: {$property->title} | ₹" . number_format($property->price) . "{$priceSuffix} ({$property->location}, {$property->state})");
+            $genuineTag = !empty($item['is_genuine']) ? ' [🌟 GENUINE UNMASKED DATA]' : '';
+            $this->line("  [✓] Imported ID #{$property->id}: {$property->title} | ₹" . number_format($property->price) . "{$priceSuffix} ({$property->location}, {$property->state}){$genuineTag}");
+            if (!empty($item['is_genuine'])) {
+                $this->line("      📞 Verified Contact: {$property->contact_phone}");
+            }
         }
 
         // Invalidate homepage cache

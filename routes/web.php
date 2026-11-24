@@ -642,6 +642,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/properties/sync-check', [AdminController::class, 'checkPropertyUpdates'])->name('properties.sync-check');
     Route::post('/properties/sync-now', [AdminController::class, 'triggerPropertySync'])->name('properties.sync-now');
     Route::match(['get', 'post'], '/properties/fetch-and-post', [AdminController::class, 'fetchAndPostFromUrl'])->name('properties.fetch-and-post');
+    Route::get('/properties/scraper-auth-status', [AdminController::class, 'scraperAuthStatus'])->name('properties.scraper-auth-status');
+    Route::post('/properties/scraper-send-otp', [AdminController::class, 'scraperSendOtp'])->name('properties.scraper-send-otp');
+    Route::post('/properties/scraper-verify-otp', [AdminController::class, 'scraperVerifyOtp'])->name('properties.scraper-verify-otp');
+    Route::post('/properties/scraper-logout', [AdminController::class, 'scraperLogout'])->name('properties.scraper-logout');
     Route::match(['get', 'post'], '/cleanup-db-connections', [AdminController::class, 'cleanupDbConnections'])->name('cleanup-db-connections');
     Route::post('/properties/post-advertise', [AdminController::class, 'postAdvertise'])->name('properties.post-advertise');
     Route::match(['get', 'post'], '/properties/toggle-bypass', [AdminController::class, 'toggleBypassApproval'])->name('properties.toggle-bypass');
