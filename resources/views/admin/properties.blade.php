@@ -601,7 +601,7 @@
                                         Send OTP
                                     </button>
                                 </div>
-                                <div id="portal_otp_input_row" class="flex items-center gap-2 min-w-0 opacity-60 pointer-events-none">
+                                <div id="portal_otp_input_row" class="flex items-center gap-2 min-w-0">
                                     <input type="text" id="portal_login_otp" placeholder="Enter 4-6 digit OTP" maxlength="6" class="flex-1 min-w-0 px-3 py-2 text-xs font-mono font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white">
                                     <button type="button" id="portal_verify_otp_btn" onclick="verifyScraperPortalOtp()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer shadow-xs whitespace-nowrap">
                                         Verify &amp; Save
