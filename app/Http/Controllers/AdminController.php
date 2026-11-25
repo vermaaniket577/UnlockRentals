@@ -3156,11 +3156,7 @@ class AdminController extends Controller
 
         try {
             $scriptPath = base_path('scrapers/crawl_and_import.py');
-            $pythonBinary = 'python3';
-            exec("python3 --version 2>&1", $out, $code);
-            if ($code !== 0) {
-                $pythonBinary = 'python';
-            }
+            $pythonBinary = $this->resolveScraperPythonBinary() ?? 'python3';
 
             $escapedTarget = escapeshellarg($target);
             $escapedScript = escapeshellarg($scriptPath);
@@ -3567,18 +3563,10 @@ class AdminController extends Controller
     }
 
     /**
-     * Execute a scraper auth CLI command and decode its JSON output (capturing stderr for diagnostics).
+     * Resolve the best Python binary on the server (preferring one with Playwright installed).
      */
-    private function runScraperAuthCommand(string $arguments): array
+    private function resolveScraperPythonBinary(): ?string
     {
-        if (!function_exists('exec')) {
-            return [
-                'success' => false,
-                'message' => 'PHP exec() is disabled on this server. Cannot run Python Playwright OTP worker.',
-            ];
-        }
-
-        $scriptPath = base_path('scrapers/crawl_and_import.py');
         $candidates = array_filter([
             env('SCRAPER_PYTHON_BIN'),
             base_path('scrapers/venv/bin/python3'),
@@ -3596,15 +3584,13 @@ class AdminController extends Controller
             }
         }
 
-        $pythonBinary = null;
         $fallbackPython = null;
         foreach (array_unique($candidates) as $candidate) {
             $out = [];
             $code = 1;
             @exec(escapeshellarg($candidate) . " -c \"import playwright\" 2>&1", $out, $code);
             if ($code === 0) {
-                $pythonBinary = $candidate;
-                break;
+                return $candidate;
             }
             if ($fallbackPython === null) {
                 $vOut = [];
@@ -3615,7 +3601,24 @@ class AdminController extends Controller
                 }
             }
         }
-        $pythonBinary = $pythonBinary ?? $fallbackPython;
+
+        return $fallbackPython;
+    }
+
+    /**
+     * Execute a scraper auth CLI command and decode its JSON output (capturing stderr for diagnostics).
+     */
+    private function runScraperAuthCommand(string $arguments): array
+    {
+        if (!function_exists('exec')) {
+            return [
+                'success' => false,
+                'message' => 'PHP exec() is disabled on this server. Cannot run Python Playwright OTP worker.',
+            ];
+        }
+
+        $scriptPath = base_path('scrapers/crawl_and_import.py');
+        $pythonBinary = $this->resolveScraperPythonBinary();
 
         if (!$pythonBinary) {
             return [
