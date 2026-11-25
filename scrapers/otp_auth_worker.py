@@ -19,6 +19,32 @@ OTP_STATUS_FILE = os.path.join(SCRAPER_DIR, "otp_worker_status.json")
 OTP_SUBMIT_FILE = os.path.join(SCRAPER_DIR, "otp_submit.json")
 
 
+def get_proxy_config():
+    proxy_url = os.environ.get("SCRAPER_PROXY", "").strip()
+    if not proxy_url:
+        env_path = os.path.join(os.path.dirname(SCRAPER_DIR), ".env")
+        if os.path.isfile(env_path):
+            try:
+                with open(env_path, "r", encoding="utf-8", errors="ignore") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line.startswith("SCRAPER_PROXY=") and not line.startswith("#"):
+                            proxy_url = line.split("=", 1)[1].strip().strip('"').strip("'")
+                            break
+            except Exception:
+                pass
+    if not proxy_url:
+        return None
+    from urllib.parse import urlparse
+    parsed = urlparse(proxy_url)
+    cfg = {"server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}" if parsed.port else f"{parsed.scheme}://{parsed.hostname}"}
+    if parsed.username:
+        cfg["username"] = parsed.username
+    if parsed.password:
+        cfg["password"] = parsed.password
+    return cfg
+
+
 def find_chrome_executable():
     candidates = [
         r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
@@ -97,6 +123,9 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
     }
     if chrome_exe:
         launch_kwargs["executable_path"] = chrome_exe
+    proxy_cfg = get_proxy_config()
+    if proxy_cfg:
+        launch_kwargs["proxy"] = proxy_cfg
 
     with sync_playwright() as p:
         browser = None

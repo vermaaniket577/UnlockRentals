@@ -39,6 +39,32 @@ FALLBACK_IMAGES = [
     "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85"
 ]
 
+def get_proxy_config() -> Optional[Dict[str, str]]:
+    proxy_url = os.environ.get("SCRAPER_PROXY", "").strip()
+    if not proxy_url:
+        env_path = os.path.join(os.path.dirname(SCRAPER_DIR), ".env")
+        if os.path.isfile(env_path):
+            try:
+                with open(env_path, "r", encoding="utf-8", errors="ignore") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line.startswith("SCRAPER_PROXY=") and not line.startswith("#"):
+                            proxy_url = line.split("=", 1)[1].strip().strip('"').strip("'")
+                            break
+            except Exception:
+                pass
+    if not proxy_url:
+        return None
+    from urllib.parse import urlparse
+    parsed = urlparse(proxy_url)
+    cfg = {"server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}" if parsed.port else f"{parsed.scheme}://{parsed.hostname}"}
+    if parsed.username:
+        cfg["username"] = parsed.username
+    if parsed.password:
+        cfg["password"] = parsed.password
+    return cfg
+
+
 def find_chrome_executable() -> Optional[str]:
     """Find installed Google Chrome binary for maximum stealth and bypass of Akamai/Cloudflare."""
     candidates = [
@@ -422,6 +448,9 @@ def scrape_with_playwright(
     }
     if chrome_exe:
         launch_kwargs["executable_path"] = chrome_exe
+    proxy_cfg = get_proxy_config()
+    if proxy_cfg:
+        launch_kwargs["proxy"] = proxy_cfg
 
     url_l = str(url or "").lower()
     if target_purpose == "rent" and any(k in url_l for k in ["/buy/", "preference=s", "preference=buy", "for-sale", "for-buy", "property/buy"]):
