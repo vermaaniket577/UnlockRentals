@@ -3567,39 +3567,74 @@ class AdminController extends Controller
     }
 
     /**
+     * Execute a scraper auth CLI command and decode its JSON output (capturing stderr for diagnostics).
+     */
+    private function runScraperAuthCommand(string $arguments): array
+    {
+        if (!function_exists('exec')) {
+            return [
+                'success' => false,
+                'message' => 'PHP exec() is disabled on this server. Cannot run Python Playwright OTP worker.',
+            ];
+        }
+
+        $scriptPath = base_path('scrapers/crawl_and_import.py');
+        $pythonBinary = null;
+        foreach (['python3', '/usr/bin/python3', '/usr/local/bin/python3', 'python'] as $candidate) {
+            $out = [];
+            $code = 1;
+            @exec("{$candidate} --version 2>&1", $out, $code);
+            if ($code === 0) {
+                $pythonBinary = $candidate;
+                break;
+            }
+        }
+
+        if (!$pythonBinary) {
+            return [
+                'success' => false,
+                'message' => 'Python binary (python3/python) not found on server PATH.',
+            ];
+        }
+
+        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " {$arguments} 2>&1";
+        $output = [];
+        $returnCode = 1;
+        @exec($cmd, $output, $returnCode);
+
+        $rawOutput = trim(implode("\n", (array) $output));
+        if (preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
+            $parsed = json_decode($matches[1], true);
+            if (is_array($parsed)) {
+                return $parsed;
+            }
+        }
+
+        $parsed = json_decode($rawOutput, true);
+        if (is_array($parsed)) {
+            return $parsed;
+        }
+
+        return [
+            'success' => false,
+            'message' => $rawOutput !== ''
+                ? 'Target portal OTP error: ' . Str::limit(preg_replace('/\s+/', ' ', $rawOutput), 220)
+                : "Python scraper exited with code {$returnCode} and no output.",
+        ];
+    }
+
+    /**
      * Get scraper's target portal login and session status.
      */
     public function scraperAuthStatus(Request $request)
     {
-        $scriptPath = base_path('scrapers/crawl_and_import.py');
-        $pythonBinary = 'python3';
-        exec("python3 --version 2>&1", $out, $code);
-        if ($code !== 0) {
-            $pythonBinary = 'python';
-        }
-
-        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " --check-login --json";
-        exec($cmd, $output, $returnCode);
-
-        $rawOutput = implode("\n", (array) $output);
+        $parsed = $this->runScraperAuthCommand('--check-login --json');
         $status = [
-            'is_logged_in'     => false,
-            'has_session_file' => false,
-            'mobile'           => '',
-            'status'           => 'not_logged_in',
+            'is_logged_in'     => !empty($parsed['is_logged_in']),
+            'has_session_file' => !empty($parsed['has_session_file']),
+            'mobile'           => $parsed['mobile'] ?? '',
+            'status'           => $parsed['status'] ?? 'not_logged_in',
         ];
-
-        if (preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
-            $parsed = json_decode($matches[1], true);
-            if (is_array($parsed)) {
-                $status = $parsed;
-            }
-        } elseif (!empty($rawOutput)) {
-            $parsed = json_decode($rawOutput, true);
-            if (is_array($parsed)) {
-                $status = $parsed;
-            }
-        }
 
         return response()->json([
             'success'     => true,
@@ -3622,30 +3657,14 @@ class AdminController extends Controller
         }
         $cleanPhone = substr($cleanPhone, -10);
 
-        $scriptPath = base_path('scrapers/crawl_and_import.py');
-        $pythonBinary = 'python3';
-        exec("python3 --version 2>&1", $out, $code);
-        if ($code !== 0) {
-            $pythonBinary = 'python';
-        }
-
-        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " --send-otp " . escapeshellarg($cleanPhone) . " --json";
-        exec($cmd, $output, $returnCode);
-
-        $rawOutput = implode("\n", (array) $output);
-        $result = [];
-        if (preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
-            $result = json_decode($matches[1], true);
-        } elseif (!empty($rawOutput)) {
-            $result = json_decode($rawOutput, true);
-        }
-
+        $result = $this->runScraperAuthCommand('--send-otp ' . escapeshellarg($cleanPhone) . ' --json');
         $success = !empty($result['success']);
+
         return response()->json([
             'success'      => $success,
             'requires_otp' => true,
             'mobile'       => $cleanPhone,
-            'message'      => $result['message'] ?? ($success ? "OTP sent to +91 {$cleanPhone}." : "Failed to dispatch OTP on target portal."),
+            'message'      => $result['message'] ?? ($success ? "OTP sent to +91 {$cleanPhone}." : 'Failed to dispatch OTP on target portal.'),
         ]);
     }
 
@@ -3663,25 +3682,9 @@ class AdminController extends Controller
             ], 422);
         }
 
-        $scriptPath = base_path('scrapers/crawl_and_import.py');
-        $pythonBinary = 'python3';
-        exec("python3 --version 2>&1", $out, $code);
-        if ($code !== 0) {
-            $pythonBinary = 'python';
-        }
-
-        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " --verify-otp " . escapeshellarg($otp) . " --mobile=" . escapeshellarg($mobile) . " --json";
-        exec($cmd, $output, $returnCode);
-
-        $rawOutput = implode("\n", (array) $output);
-        $result = [];
-        if (preg_match('/===JSON_START===\s*(.*?)\s*===JSON_END===/s', $rawOutput, $matches)) {
-            $result = json_decode($matches[1], true);
-        } elseif (!empty($rawOutput)) {
-            $result = json_decode($rawOutput, true);
-        }
-
+        $result = $this->runScraperAuthCommand('--verify-otp ' . escapeshellarg($otp) . ' --mobile=' . escapeshellarg($mobile) . ' --json');
         $isLoggedIn = !empty($result['is_logged_in']);
+
         return response()->json([
             'success'      => $isLoggedIn,
             'is_logged_in' => $isLoggedIn,
@@ -3695,15 +3698,7 @@ class AdminController extends Controller
      */
     public function scraperLogout(Request $request)
     {
-        $scriptPath = base_path('scrapers/crawl_and_import.py');
-        $pythonBinary = 'python3';
-        exec("python3 --version 2>&1", $out, $code);
-        if ($code !== 0) {
-            $pythonBinary = 'python';
-        }
-
-        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " --logout";
-        exec($cmd, $output, $returnCode);
+        $this->runScraperAuthCommand('--logout');
 
         return response()->json([
             'success' => true,

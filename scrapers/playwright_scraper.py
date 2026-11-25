@@ -215,17 +215,23 @@ def send_login_otp(mobile_number: str, headless: bool = True) -> Dict[str, Any]:
             "message": "Invalid mobile number. Please provide a valid 10-digit Indian mobile number."
         }
 
-    # Clear stale status/submit files
-    for fpath in [OTP_STATUS_FILE, OTP_SUBMIT_FILE]:
+    log_file = os.path.join(SCRAPER_DIR, "otp_worker.log")
+    for fpath in [OTP_STATUS_FILE, OTP_SUBMIT_FILE, log_file]:
         if os.path.exists(fpath):
             try:
                 os.remove(fpath)
             except Exception:
                 pass
 
+    log_fh = None
+    try:
+        log_fh = open(log_file, "w", encoding="utf-8")
+    except Exception:
+        log_fh = subprocess.DEVNULL
+
     popen_kwargs = {
-        "stdout": subprocess.DEVNULL,
-        "stderr": subprocess.DEVNULL,
+        "stdout": log_fh,
+        "stderr": subprocess.STDOUT if log_fh != subprocess.DEVNULL else subprocess.DEVNULL,
         "stdin": subprocess.DEVNULL,
     }
     if os.name == "nt":
@@ -233,7 +239,7 @@ def send_login_otp(mobile_number: str, headless: bool = True) -> Dict[str, Any]:
     else:
         popen_kwargs["start_new_session"] = True
 
-    subprocess.Popen([sys.executable, OTP_WORKER_SCRIPT, clean_digits], **popen_kwargs)
+    proc = subprocess.Popen([sys.executable, OTP_WORKER_SCRIPT, clean_digits], **popen_kwargs)
 
     # Wait up to 25 seconds for worker to fill phone, click Continue, and reach OTP box
     start = time.time()
@@ -255,6 +261,18 @@ def send_login_otp(mobile_number: str, headless: bool = True) -> Dict[str, Any]:
                     return st
             except Exception:
                 pass
+        if proc.poll() is not None and not os.path.exists(OTP_STATUS_FILE):
+            err_tail = ""
+            if os.path.exists(log_file):
+                try:
+                    with open(log_file, "r", encoding="utf-8") as lf:
+                        err_tail = lf.read().strip()[-240:]
+                except Exception:
+                    pass
+            return {
+                "success": False,
+                "message": f"OTP worker exited early (code {proc.returncode}). {err_tail}".strip()
+            }
         time.sleep(0.4)
 
     return {

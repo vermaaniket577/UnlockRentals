@@ -89,6 +89,9 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
             "--disable-blink-features=AutomationControlled",
             "--no-sandbox",
             "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--single-process",
+            "--no-zygote",
             "--window-size=1920,1080",
         ]
     }
