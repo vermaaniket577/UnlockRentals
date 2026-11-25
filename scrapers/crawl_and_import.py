@@ -592,6 +592,23 @@ def parse_indian_price(price_val) -> float:
         return float(digits.group(1))
     return 0.0
 
+def load_saved_cookies_dict() -> dict:
+    session_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "auth_session.json")
+    cookies_dict = {}
+    if os.path.exists(session_file):
+        try:
+            with open(session_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for c in data.get("cookies", []):
+                name = c.get("name")
+                val = c.get("value")
+                if name and val is not None:
+                    cookies_dict[str(name)] = str(val)
+        except Exception:
+            pass
+    return cookies_dict
+
+
 def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
     if not HAS_REQUESTS or requests is None:
         sys.stderr.write("HTTP fallback unavailable: neither curl_cffi nor requests is installed.\n")
@@ -599,12 +616,13 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
 
     url = config["url"]
     state = config.get("state", "India")
+    saved_cookies = load_saved_cookies_dict()
 
     try:
         if HAS_CURL_CFFI:
-            response = requests.get(url, headers=HEADERS, impersonate="chrome120", timeout=25)
+            response = requests.get(url, headers=HEADERS, cookies=saved_cookies or None, impersonate="chrome120", timeout=25)
         else:
-            response = requests.get(url, headers=HEADERS, timeout=25)
+            response = requests.get(url, headers=HEADERS, cookies=saved_cookies or None, timeout=25)
     except Exception as e:
         sys.stderr.write(f"Fetch error: {e}\n")
         return []

@@ -3724,6 +3724,120 @@ class AdminController extends Controller
     }
 
     /**
+     * Import logged-in browser session JSON or raw Cookie header into scraper auth_session.json.
+     */
+    public function scraperImportSession(Request $request)
+    {
+        $raw = trim((string) $request->input('session_data', ''));
+        $mobile = preg_replace('/\D/', '', (string) $request->input('mobile', ''));
+        if (strlen($mobile) > 10) {
+            $mobile = substr($mobile, -10);
+        }
+
+        if ($raw === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please paste your 99acres Cookie string, Cookie-Editor JSON, or auth_session.json.',
+            ], 422);
+        }
+
+        $cookies = [];
+        $origins = [];
+        $decoded = json_decode($raw, true);
+
+        if (is_array($decoded)) {
+            $rawCookies = isset($decoded['cookies']) && is_array($decoded['cookies'])
+                ? $decoded['cookies']
+                : (array_is_list($decoded) ? $decoded : []);
+            if (isset($decoded['origins']) && is_array($decoded['origins'])) {
+                $origins = $decoded['origins'];
+            }
+
+            foreach ($rawCookies as $c) {
+                if (!is_array($c) || empty($c['name'])) {
+                    continue;
+                }
+                $sameSiteRaw = strtolower((string) ($c['sameSite'] ?? 'lax'));
+                $sameSite = match ($sameSiteRaw) {
+                    'strict' => 'Strict',
+                    'none', 'no_restriction' => 'None',
+                    default => 'Lax',
+                };
+                $expires = $c['expires'] ?? ($c['expirationDate'] ?? -1);
+                $cookies[] = [
+                    'name'     => (string) $c['name'],
+                    'value'    => (string) ($c['value'] ?? ''),
+                    'domain'   => (string) ($c['domain'] ?? '.99acres.com'),
+                    'path'     => (string) ($c['path'] ?? '/'),
+                    'expires'  => is_numeric($expires) ? (float) $expires : -1,
+                    'httpOnly' => (bool) ($c['httpOnly'] ?? false),
+                    'secure'   => (bool) ($c['secure'] ?? true),
+                    'sameSite' => $sameSite,
+                ];
+            }
+        } else {
+            // Parse raw "Cookie: key=val; key2=val2" header string
+            $cookieLine = preg_replace('/^cookie\s*:\s*/i', '', $raw);
+            foreach (explode(';', $cookieLine) as $pair) {
+                $pair = trim($pair);
+                if ($pair === '' || !str_contains($pair, '=')) {
+                    continue;
+                }
+                [$name, $val] = explode('=', $pair, 2);
+                $name = trim($name);
+                if ($name === '') {
+                    continue;
+                }
+                $cookies[] = [
+                    'name'     => $name,
+                    'value'    => trim($val),
+                    'domain'   => '.99acres.com',
+                    'path'     => '/',
+                    'expires'  => -1,
+                    'httpOnly' => false,
+                    'secure'   => true,
+                    'sameSite' => 'Lax',
+                ];
+            }
+        }
+
+        if (empty($cookies)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not parse any valid cookies from input. Paste JSON cookies or a "name=value; ..." Cookie header.',
+            ], 422);
+        }
+
+        $sessionFile = base_path('scrapers/auth_session.json');
+        $metaFile = base_path('scrapers/auth_session_meta.json');
+
+        $storageState = [
+            'cookies' => $cookies,
+            'origins' => $origins,
+        ];
+        file_put_contents($sessionFile, json_encode($storageState, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        $meta = [
+            'mobile'           => $mobile,
+            'is_logged_in'     => true,
+            'authenticated_at' => now()->format('Y-m-d H:i:s'),
+            'status'           => 'authenticated',
+            'method'           => 'imported_cookies',
+            'cookie_count'     => count($cookies),
+            'user_name'        => $mobile ? "User (+91 {$mobile})" : 'Imported Browser Session',
+        ];
+        file_put_contents($metaFile, json_encode($meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        return response()->json([
+            'success'      => true,
+            'is_logged_in' => true,
+            'cookie_count' => count($cookies),
+            'mobile'       => $mobile,
+            'message'      => 'Saved ' . count($cookies) . ' session cookies to scraper! Target portal session is now active.',
+        ]);
+    }
+
+    /**
      * Clear scraper target portal session.
      */
     public function scraperLogout(Request $request)

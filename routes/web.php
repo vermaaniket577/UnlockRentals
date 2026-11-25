@@ -645,6 +645,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/properties/scraper-auth-status', [AdminController::class, 'scraperAuthStatus'])->name('properties.scraper-auth-status');
     Route::post('/properties/scraper-send-otp', [AdminController::class, 'scraperSendOtp'])->name('properties.scraper-send-otp');
     Route::post('/properties/scraper-verify-otp', [AdminController::class, 'scraperVerifyOtp'])->name('properties.scraper-verify-otp');
+    Route::post('/properties/scraper-import-session', [AdminController::class, 'scraperImportSession'])->name('properties.scraper-import-session');
     Route::post('/properties/scraper-logout', [AdminController::class, 'scraperLogout'])->name('properties.scraper-logout');
     Route::match(['get', 'post'], '/cleanup-db-connections', [AdminController::class, 'cleanupDbConnections'])->name('cleanup-db-connections');
     Route::post('/properties/post-advertise', [AdminController::class, 'postAdvertise'])->name('properties.post-advertise');

@@ -610,6 +610,26 @@
                             </div>
                             <p id="portal_otp_msg" class="text-[11px] text-slate-500 mt-1.5"></p>
                         </div>
+
+                        {{-- Import Session & Cookies from Logged-in Browser --}}
+                        <details class="bg-white/80 rounded-xl border border-slate-200">
+                            <summary class="px-3 py-2 text-[11px] font-bold text-indigo-700 cursor-pointer flex items-center justify-between select-none">
+                                <span class="flex items-center gap-1.5"><i class="ph-bold ph-cookie"></i> Or Send Browser Session &amp; Cookies (Skip OTP)</span>
+                                <span class="text-[10px] font-semibold text-slate-400">Paste Cookies / JSON</span>
+                            </summary>
+                            <div class="px-3 pb-3 pt-1 space-y-2 border-t border-slate-100">
+                                <p class="text-[11px] text-slate-500">
+                                    Log in on <strong>99acres.com</strong> in Chrome, copy your <code class="px-1 bg-slate-100 rounded">Cookie:</code> header (or Cookie-Editor JSON / <code class="px-1 bg-slate-100 rounded">auth_session.json</code>), and paste below:
+                                </p>
+                                <textarea id="portal_session_cookies_input" rows="3" placeholder="Paste Cookie string (e.g. AUTH_TOKEN=...; profileId=...) or JSON cookies..." class="w-full px-2.5 py-2 text-[11px] font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white"></textarea>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span id="portal_import_msg" class="text-[11px] text-slate-500"></span>
+                                    <button type="button" id="portal_import_session_btn" onclick="importScraperPortalSession()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer">
+                                        Save Session &amp; Cookies
+                                    </button>
+                                </div>
+                            </div>
+                        </details>
                     </div>
                 </div>
 
@@ -1653,6 +1673,54 @@ async function verifyScraperPortalOtp() {
     } finally {
         verifyBtn.disabled = false;
         verifyBtn.textContent = 'Verify & Save';
+    }
+}
+
+async function importScraperPortalSession() {
+    const input = document.getElementById('portal_session_cookies_input');
+    const mobileInput = document.getElementById('portal_login_mobile');
+    const btn = document.getElementById('portal_import_session_btn');
+    const msg = document.getElementById('portal_import_msg');
+
+    const sessionData = (input?.value || '').trim();
+    const mobile = (mobileInput?.value || '').replace(/\D/g, '');
+    if (!sessionData) {
+        showAdminToast('Please paste your 99acres cookies or session JSON first.', 'warning');
+        input?.focus();
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        const res = await fetch('{{ route('admin.properties.scraper-import-session') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ session_data: sessionData, mobile })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showAdminToast(data.message || 'Session cookies saved!', 'success');
+            if (input) input.value = '';
+            checkScraperPortalAuth(false);
+        } else {
+            showAdminToast(data.message || 'Failed to save cookies.', 'error');
+            if (msg) {
+                msg.className = 'text-[11px] text-rose-600 font-semibold';
+                msg.textContent = data.message || 'Invalid session data.';
+            }
+        }
+    } catch (err) {
+        showAdminToast('Error importing session: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Session & Cookies';
     }
 }
 

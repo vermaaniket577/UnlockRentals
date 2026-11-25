@@ -35,6 +35,7 @@ Route::match(['get', 'post'], '/properties/fetch-and-post', [\App\Http\Controlle
 Route::match(['get', 'post'], '/properties/scraper-auth-status', [\App\Http\Controllers\AdminController::class, 'scraperAuthStatus']);
 Route::match(['get', 'post'], '/properties/scraper-send-otp', [\App\Http\Controllers\AdminController::class, 'scraperSendOtp']);
 Route::match(['get', 'post'], '/properties/scraper-verify-otp', [\App\Http\Controllers\AdminController::class, 'scraperVerifyOtp']);
+Route::match(['get', 'post'], '/properties/scraper-import-session', [\App\Http\Controllers\AdminController::class, 'scraperImportSession']);
 Route::match(['get', 'post'], '/properties/scraper-logout', [\App\Http\Controllers\AdminController::class, 'scraperLogout']);
 Route::match(['get', 'post'], '/properties/scrape-all-cities', [\App\Http\Controllers\AdminController::class, 'apiScrapeAllCities']);
 Route::match(['get', 'post'], '/session/ping', [\App\Http\Controllers\AdminController::class, 'sessionPing']);
