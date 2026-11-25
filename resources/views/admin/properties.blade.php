@@ -593,17 +593,17 @@
                             <p class="text-[11px] font-bold text-slate-800 flex items-center gap-1.5 mb-2">
                                 <i class="ph-fill ph-device-mobile text-indigo-600"></i> Login with Mobile OTP to scrape 100% Genuine Data:
                             </p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="px-2.5 py-2 rounded-lg bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600">+91</span>
-                                    <input type="tel" id="portal_login_mobile" placeholder="10-digit mobile number" maxlength="10" class="flex-1 px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white">
-                                    <button type="button" id="portal_send_otp_btn" onclick="sendScraperPortalOtp()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer shadow-xs">
+                            <div class="flex flex-col gap-2.5">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="px-2.5 py-2 rounded-lg bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 shrink-0">+91</span>
+                                    <input type="tel" id="portal_login_mobile" placeholder="10-digit mobile number" maxlength="10" class="flex-1 min-w-0 px-3 py-2 text-xs font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white">
+                                    <button type="button" id="portal_send_otp_btn" onclick="sendScraperPortalOtp()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer shadow-xs whitespace-nowrap">
                                         Send OTP
                                     </button>
                                 </div>
-                                <div id="portal_otp_input_row" class="flex items-center gap-1.5 opacity-60 pointer-events-none">
-                                    <input type="text" id="portal_login_otp" placeholder="Enter 4-6 digit OTP" maxlength="6" class="flex-1 px-3 py-2 text-xs font-mono font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white">
-                                    <button type="button" id="portal_verify_otp_btn" onclick="verifyScraperPortalOtp()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer shadow-xs">
+                                <div id="portal_otp_input_row" class="flex items-center gap-2 min-w-0 opacity-60 pointer-events-none">
+                                    <input type="text" id="portal_login_otp" placeholder="Enter 4-6 digit OTP" maxlength="6" class="flex-1 min-w-0 px-3 py-2 text-xs font-mono font-bold border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white">
+                                    <button type="button" id="portal_verify_otp_btn" onclick="verifyScraperPortalOtp()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer shadow-xs whitespace-nowrap">
                                         Verify &amp; Save
                                     </button>
                                 </div>
