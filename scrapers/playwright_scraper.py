@@ -87,6 +87,31 @@ def find_chrome_executable() -> Optional[str]:
             return p
     return None
 
+def build_chromium_launch_kwargs(headless: bool = True) -> Dict[str, Any]:
+    """Build Chromium launch options without Linux-only container flags on Windows."""
+    args = [
+        "--disable-blink-features=AutomationControlled",
+        "--disable-infobars",
+        "--window-size=1920,1080",
+    ]
+    if os.name != "nt":
+        args.extend([
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--single-process",
+            "--no-zygote",
+        ])
+    kwargs: Dict[str, Any] = {"headless": headless, "args": args}
+    chrome_exe = find_chrome_executable()
+    if chrome_exe:
+        kwargs["executable_path"] = chrome_exe
+    proxy_cfg = get_proxy_config()
+    if proxy_cfg:
+        kwargs["proxy"] = proxy_cfg
+    return kwargs
+
+
 def parse_indian_price(price_val) -> float:
     if isinstance(price_val, (int, float)):
         return float(price_val)
@@ -276,9 +301,9 @@ def send_login_otp(mobile_number: str, headless: bool = True) -> Dict[str, Any]:
 
     proc = subprocess.Popen([sys.executable, OTP_WORKER_SCRIPT, clean_digits], **popen_kwargs)
 
-    # Wait up to 25 seconds for worker to fill phone, click Continue, and reach OTP box
+    # Wait up to 40 seconds for worker to fill phone, click Continue, and reach OTP box
     start = time.time()
-    while time.time() - start < 25:
+    while time.time() - start < 40:
         if os.path.exists(OTP_STATUS_FILE):
             try:
                 with open(OTP_STATUS_FILE, "r", encoding="utf-8") as f:
@@ -438,25 +463,7 @@ def scrape_with_playwright(
         sys.stderr.write("Playwright not installed, skipping browser scrape.\n")
         return []
 
-    chrome_exe = find_chrome_executable()
-    launch_kwargs = {
-        "headless": True,
-        "args": [
-            "--disable-blink-features=AutomationControlled",
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-infobars",
-            "--disable-gpu",
-            "--single-process",
-            "--no-zygote",
-            "--window-size=1920,1080",
-        ]
-    }
-    if chrome_exe:
-        launch_kwargs["executable_path"] = chrome_exe
-    proxy_cfg = get_proxy_config()
-    if proxy_cfg:
-        launch_kwargs["proxy"] = proxy_cfg
+    launch_kwargs = build_chromium_launch_kwargs(headless=True)
 
     url_l = str(url or "").lower()
     if target_purpose == "rent" and any(k in url_l for k in ["/buy/", "preference=s", "preference=buy", "for-sale", "for-buy", "property/buy"]):

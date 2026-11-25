@@ -15,7 +15,7 @@ from playwright.sync_api import sync_playwright
 SCRAPER_DIR = os.path.dirname(os.path.abspath(__file__))
 if SCRAPER_DIR not in sys.path:
     sys.path.insert(0, SCRAPER_DIR)
-from playwright_scraper import get_proxy_config, find_chrome_executable
+from playwright_scraper import build_chromium_launch_kwargs
 
 AUTH_SESSION_FILE = os.path.join(SCRAPER_DIR, "auth_session.json")
 AUTH_META_FILE = os.path.join(SCRAPER_DIR, "auth_session_meta.json")
@@ -57,7 +57,7 @@ def check_logged_in(page) -> dict:
         return {"is_logged_in": False, "user_name": ""}
 
 
-def run_worker(mobile: str, timeout_seconds: int = 180):
+def run_worker(mobile: str, timeout_seconds: int = 600):
     clean_mobile = re.sub(r"\D", "", str(mobile))[-10:]
     if len(clean_mobile) != 10:
         write_status({"status": "error", "success": False, "message": "Invalid 10-digit mobile number."})
@@ -70,24 +70,7 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
         except Exception:
             pass
 
-    chrome_exe = find_chrome_executable()
-    launch_kwargs = {
-        "headless": True,
-        "args": [
-            "--disable-blink-features=AutomationControlled",
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-gpu",
-            "--single-process",
-            "--no-zygote",
-            "--window-size=1920,1080",
-        ]
-    }
-    if chrome_exe:
-        launch_kwargs["executable_path"] = chrome_exe
-    proxy_cfg = get_proxy_config()
-    if proxy_cfg:
-        launch_kwargs["proxy"] = proxy_cfg
+    launch_kwargs = build_chromium_launch_kwargs(headless=True)
 
     with sync_playwright() as p:
         browser = None
@@ -102,8 +85,8 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
             page = context.new_page()
             page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
-            page.goto("https://www.99acres.com", timeout=30000, wait_until="load")
-            time.sleep(2)
+            page.goto("https://www.99acres.com", timeout=30000, wait_until="domcontentloaded")
+            time.sleep(2.5)
 
             page_title = ""
             try:
@@ -253,7 +236,7 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
             time.sleep(0.5)
 
             # 7. Click Verify & Continue
-            verify_btn = page.locator('button:has-text("Verify & Continue"):visible, button:has-text("Verify"):visible').first
+            verify_btn = page.locator('[data-label*="VERIFY" i] button:visible, [data-label*="VERIFY" i]:visible, button:has-text("Verify & Continue"):visible, .phoneLogin__submitBtn:visible, button:has-text("Verify"):visible').first
             if verify_btn.count() > 0:
                 verify_btn.click()
 
