@@ -114,17 +114,58 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
             page.goto("https://www.99acres.com", timeout=30000, wait_until="domcontentloaded")
             time.sleep(2)
 
-            # 1. Open Login / Register modal
-            page.evaluate(r"""() => {
-                const btns = Array.from(document.querySelectorAll('[data-label="LR.INITIATE"]'));
-                for (const b of btns) { b.click(); }
-            }""")
-            time.sleep(1.5)
+            page_title = ""
+            try:
+                page_title = page.title() or ""
+            except Exception:
+                pass
+            if "access denied" in page_title.lower():
+                write_status({
+                    "status": "error",
+                    "success": False,
+                    "message": "99acres blocked this server IP (Akamai Access Denied). Try using a residential proxy or authenticating from local."
+                })
+                return
 
-            # 2. Fill mobile number into visible Phone Number input
-            phone_input = page.locator('input.commonInput__pl80:visible, input[placeholder*="Phone" i]:visible, input[placeholder*="mobile" i]:visible').first
+            # 1. Wait for and open Login / Register modal
+            login_selectors = [
+                '[data-label="LR.INITIATE"]',
+                'a:has-text("Login")',
+                'button:has-text("Login")',
+                '[class*="userProfile" i]',
+                '[class*="login" i]',
+            ]
+            clicked_login = False
+            for sel in login_selectors:
+                try:
+                    loc = page.locator(sel)
+                    loc.first.wait_for(state="attached", timeout=5000 if sel == login_selectors[0] else 1500)
+                    loc.evaluate_all("els => els.forEach(el => el.click())")
+                    clicked_login = True
+                    break
+                except Exception:
+                    continue
+
+            # 2. Wait for visible Phone Number input
+            phone_selector = 'input.commonInput__pl80:visible, input[placeholder*="Phone" i]:visible, input[placeholder*="mobile" i]:visible, input[type="tel"]:visible'
+            try:
+                page.wait_for_selector(phone_selector, timeout=7000)
+            except Exception:
+                pass
+
+            phone_input = page.locator(phone_selector).first
             if phone_input.count() == 0:
-                write_status({"status": "error", "success": False, "message": "Phone Number input not found on 99acres login modal."})
+                diag = page.evaluate("""() => ({
+                    title: document.title || '',
+                    url: location.href,
+                    lrCount: document.querySelectorAll('[data-label="LR.INITIATE"]').length,
+                    bodySnippet: (document.body ? document.body.innerText : '').slice(0, 120).replace(/\\s+/g, ' ')
+                })""")
+                write_status({
+                    "status": "error",
+                    "success": False,
+                    "message": f"Phone Number input not found on 99acres login modal (title='{diag.get('title')}', lr={diag.get('lrCount')}, clicked={clicked_login}, text='{diag.get('bodySnippet')}')."
+                })
                 return
 
             phone_input.click()
