@@ -709,7 +709,25 @@
                         <input type="checkbox" id="fetch_auto_approve" name="auto_approve" value="1" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
                         <span class="font-bold text-slate-800">Publish Immediately</span>
                     </label>
+                    @if(!str_contains(request()->getHost(), 'unlockrentals.com'))
+                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="fetch_sync_to_live" name="sync_to_live" value="1" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300">
+                        <span class="font-bold text-indigo-700">Sync to Live (unlockrentals.com)</span>
+                    </label>
+                    @endif
                 </div>
+
+                @if(!str_contains(request()->getHost(), 'unlockrentals.com'))
+                <div class="bg-indigo-50/70 p-2.5 rounded-xl border border-indigo-200/80 flex items-center justify-between gap-2 flex-wrap text-xs">
+                    <span class="text-[11px] font-semibold text-indigo-900 flex items-center gap-1.5">
+                        <i class="ph-bold ph-cloud-arrow-up text-indigo-600"></i>
+                        Local mode: scrape with your Indian IP and sync straight to <strong>unlockrentals.com</strong>.
+                    </span>
+                    <button type="button" id="pushLocalToLiveBtn" onclick="syncLocalPropertiesToLive()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[11px] rounded-lg transition-colors cursor-pointer shrink-0">
+                        Push Recent Local Listings to Live
+                    </button>
+                </div>
+                @endif
 
                 {{-- Live Results Container --}}
                 <div id="fetchResultBox" class="hidden p-4 rounded-2xl border text-xs"></div>
@@ -1191,6 +1209,7 @@ async function handleFetchUrlSubmit(e) {
     const autoNextVal = document.getElementById('fetch_auto_next')?.checked ?? true;
     const createAccounts = document.getElementById('fetch_create_accounts').checked;
     const autoApprove = document.getElementById('fetch_auto_approve').checked;
+    const syncToLive = document.getElementById('fetch_sync_to_live')?.checked ?? false;
 
     btn.disabled = true;
     icon.className = 'ph-bold ph-arrows-clockwise text-sm animate-spin';
@@ -1244,7 +1263,8 @@ async function handleFetchUrlSubmit(e) {
             page: pageVal,
             auto_next_page: autoNextVal,
             create_accounts: createAccounts,
-            auto_approve: autoApprove
+            auto_approve: autoApprove,
+            sync_to_live: syncToLive
         };
 
         let data;
@@ -1399,6 +1419,17 @@ async function handleFetchUrlSubmit(e) {
                     `;
                 }
 
+                let liveSyncBanner = '';
+                if (data.live_sync && !data.live_sync.skipped) {
+                    const lsOk = !!data.live_sync.success;
+                    liveSyncBanner = `
+                        <div class="mt-2.5 p-2.5 rounded-xl border text-[11px] font-bold flex items-center gap-2 ${lsOk ? 'bg-indigo-50 border-indigo-200 text-indigo-900' : 'bg-rose-50 border-rose-200 text-rose-800'}">
+                            <i class="ph-bold ${lsOk ? 'ph-cloud-check text-indigo-600' : 'ph-warning-circle text-rose-600'} text-base shrink-0"></i>
+                            <span>${data.live_sync.message || (lsOk ? 'Synced to unlockrentals.com!' : 'Live sync failed.')}</span>
+                        </div>
+                    `;
+                }
+
                 resultBox.className = 'p-4 rounded-2xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-xs shadow-xs';
                 resultBox.innerHTML = `
                     <div class="flex items-start gap-2.5">
@@ -1408,6 +1439,7 @@ async function handleFetchUrlSubmit(e) {
                                 <p class="font-bold text-sm">${data.message || 'Listings successfully scraped and published!'}</p>
                                 <span class="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold text-[10px]">Page ${data.page_scraped || pageVal} Complete</span>
                             </div>
+                            ${liveSyncBanner}
                             ${accountsHtml}
                             ${propsHtml}
                             <div class="mt-3.5 pt-3 border-t border-emerald-200/80 flex items-center justify-between flex-wrap gap-2">
@@ -1721,6 +1753,35 @@ async function importScraperPortalSession() {
     } finally {
         btn.disabled = false;
         btn.textContent = 'Save Session & Cookies';
+    }
+}
+
+async function syncLocalPropertiesToLive() {
+    const btn = document.getElementById('pushLocalToLiveBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Syncing to Live...';
+    }
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        const res = await fetch('{{ route('admin.properties.sync-to-live') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ limit: 20 })
+        });
+        const data = await res.json();
+        showAdminToast(data.message || (data.success ? 'Synced to live!' : 'Live sync failed.'), data.success ? 'success' : 'error');
+    } catch (err) {
+        showAdminToast('Error pushing to live: ' + err.message, 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Push Recent Local Listings to Live';
+        }
     }
 }
 

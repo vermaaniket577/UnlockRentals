@@ -29,7 +29,9 @@ class ScrapeCityCommand extends Command
                             {--mobile= : Mobile number for target portal OTP login}
                             {--otp= : OTP code for target portal verification}
                             {--check-login : Check target portal login status without scraping}
-                            {--require-login : Enforce that target portal session must be logged in before scraping genuine data}';
+                            {--require-login : Enforce that target portal session must be logged in before scraping genuine data}
+                            {--sync-live : Push scraped listings directly to the live UnlockRentals server}
+                            {--live-url= : Override live server URL for --sync-live (defaults to LIVE_SYNC_URL or https://www.unlockrentals.com)}';
 
     /**
      * The console command description.
@@ -133,7 +135,13 @@ class ScrapeCityCommand extends Command
 
         exec($command, $output, $returnCode);
 
-        $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '1') == '1';
+        $bypassApproval = true;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                $bypassApproval = \App\Models\Setting::get('bypass_property_approval', '1') == '1';
+            }
+        } catch (\Throwable $e) {
+        }
         $status = $bypassApproval ? 'approved' : 'pending';
         $approvedAt = $bypassApproval ? now() : null;
 
@@ -163,192 +171,70 @@ class ScrapeCityCommand extends Command
             $items = $this->getFallbackProperties($city, $count, $type, $state, $page, $purpose);
         }
 
-        $adminUser = User::where('role', 'admin')->first() ?? User::first();
-        $defaultUserId = $adminUser ? $adminUser->id : 1;
-
-        $category = Category::where('name', 'like', '%Flat%')
-            ->orWhere('name', 'like', '%Apartment%')
-            ->first() ?? Category::first();
-        $categoryId = $category ? $category->id : 1;
+        $syncLive = (bool) $this->option('sync-live');
+        $liveUrl = $this->option('live-url') ?: null;
+        $importer = app(\App\Services\PropertyScraperImportService::class);
 
         $insertedCount = 0;
-        $createdAccountsCount = 0;
         $duplicatesSkippedCount = 0;
 
-        foreach ($items as $item) {
-            if (empty($item['title'])) {
-                continue;
+        $hasLocalDb = false;
+        try {
+            $hasLocalDb = \Illuminate\Support\Facades\Schema::hasTable('properties');
+        } catch (\Throwable $e) {
+            $hasLocalDb = false;
+        }
+
+        if ($hasLocalDb) {
+            $importSummary = $importer->importItems($items, [
+                'city'            => $city,
+                'state'           => $state,
+                'purpose'         => $purpose,
+                'property_type'   => $type,
+                'engine'          => $engine,
+                'create_accounts' => $createAccounts,
+                'auto_approve'    => $bypassApproval,
+                'feature_first_n' => 3,
+            ]);
+            $insertedCount = $importSummary['imported_count'];
+            $duplicatesSkippedCount = $importSummary['duplicates_prevented'];
+
+            foreach ($importSummary['accounts'] as $acc) {
+                $this->line("  [👤] Created Owner Account: {$acc['name']} ({$acc['email']})");
             }
-
-            // Deduplication check: check if this property already exists
-            $propId = trim((string)($item['prop_id'] ?? $item['external_id'] ?? ''));
-            $candidateCheck = [
-                'external_id'   => $propId,
-                'prop_id'       => $propId,
-                'title'         => $item['title'],
-                'city'          => $item['city'] ?? $city,
-                'location'      => $item['city'] ?? $city,
-                'locality'      => $item['locality'] ?? '',
-                'price'         => $item['price'] ?? 25000,
-                'purpose'       => $item['purpose'] ?? $purpose,
-                'bedrooms'      => $item['bedrooms'] ?? 2,
-                'images'        => $item['images'] ?? [],
-                'contact_phone' => $item['contact_phone'] ?? null,
-            ];
-
-            $existing = Property::findDuplicate($candidateCheck);
-            if ($existing) {
-                $duplicatesSkippedCount++;
-                $this->line("  [⏭ SKIP DUPLICATE] ID #{$existing->id}: {$existing->title} (₹" . number_format($existing->price) . " in {$existing->location})");
-                continue;
-            }
-
-            $slug = Str::slug($item['title']) . '-' . rand(10000, 99999);
-
-            // Determine property owner user_id: create or find landlord/agent account
-            $propertyUserId = $defaultUserId;
-            $sellerName = trim($item['seller_name'] ?? '');
-
-            if ($createAccounts && !empty($sellerName) && strtolower($sellerName) !== 'property owner') {
-                $contactPhone = $item['contact_phone'] ?? null;
-                $company = $item['seller_company'] ?? null;
-                $photo = $item['seller_photo'] ?? null;
-                $scrapedEmail = trim($item['seller_email'] ?? $item['contact_email'] ?? $item['email'] ?? '');
-
-                $phoneDigits = preg_replace('/\D/', '', (string) $contactPhone);
-                $suffix = !empty($phoneDigits) ? substr($phoneDigits, -4) : rand(1000, 9999);
-                $cleanSlug = Str::slug($sellerName) ?: 'owner';
-
-                // PRIORITY: Use original email ID scraped from API/web
-                if (!empty($scrapedEmail) && filter_var($scrapedEmail, FILTER_VALIDATE_EMAIL) && !str_ends_with(strtolower($scrapedEmail), '@unlockrentals.com')) {
-                    $email = strtolower($scrapedEmail);
-                } else {
-                    $email = $cleanSlug . '.' . $suffix . '@gmail.com';
-                }
-
-                $sellerUser = null;
-                if (!empty($email)) {
-                    $sellerUser = User::where('email', $email)->first();
-                }
-                if (!$sellerUser && !empty($contactPhone)) {
-                    $sellerUser = User::where('phone', $contactPhone)->first();
-                }
-                if (!$sellerUser) {
-                    $fullName = $sellerName . (!empty($company) && $company !== $sellerName ? " ({$company})" : "");
-                    $sellerUser = User::create([
-                        'name'              => $fullName,
-                        'email'             => $email,
-                        'phone'             => $contactPhone,
-                        'password'          => \Illuminate\Support\Facades\Hash::make('Password@123'),
-                        'role'              => 'owner',
-                        'avatar'            => $photo ?: null,
-                        'email_verified_at' => now(),
-                        'phone_verified_at' => now(),
-                    ]);
-                    $createdAccountsCount++;
-                    $this->line("  [👤] Created Owner Account: {$fullName} ({$email})");
-                }
-                $propertyUserId = $sellerUser->id;
-            }
-
-            // Dynamically resolve category per listing
-            $catName = $item['category_name'] ?? 'Flat / Apartment';
-            $category = Category::where('name', $catName)
-                ->orWhere('name', 'like', "%{$catName}%")
-                ->first();
-            if (!$category) {
-                $category = Category::where('slug', Str::slug($catName))->first();
-            }
-            if (!$category) {
-                $category = Category::where('name', 'like', '%Flat%')->orWhere('name', 'like', '%Apartment%')->first() ?? Category::first();
-            }
-            $itemCategoryId = $category ? $category->id : 1;
-
-            $itemType = in_array($item['type'] ?? '', ['house', 'shop', 'pg-hostel', 'hotel', 'plot']) ? $item['type'] : 'house';
-            $itemPurpose = in_array($item['purpose'] ?? '', ['rent', 'buy']) ? $item['purpose'] : 'rent';
-
-            // Explicit PG & Hostel Detection
-            $isPg = in_array(strtolower($itemType), ['pg', 'pg-hostel']) || 
-                    in_array(strtolower($type ?? ''), ['pg', 'pg-hostel']) || 
-                    str_contains(strtolower($item['title'] ?? ''), 'pg') || 
-                    str_contains(strtolower($item['title'] ?? ''), 'paying guest') ||
-                    str_contains(strtolower($item['category_name'] ?? ''), 'pg');
-
-            if ($isPg) {
-                $itemType = 'pg-hostel';
-                $itemPurpose = 'rent';
-                $pgCategory = Category::where('slug', 'pg-hostel')->orWhere('name', 'like', '%PG%')->first();
-                if ($pgCategory) {
-                    $itemCategoryId = $pgCategory->id;
-                    $category = $pgCategory;
+            foreach ($importSummary['properties'] as $prop) {
+                $priceSuffix = $prop['purpose'] === 'buy' ? ' [For Sale]' : '/mo [Rent]';
+                $genuineTag = !empty($prop['is_genuine']) ? ' [🌟 GENUINE UNMASKED DATA]' : '';
+                $this->line("  [✓] Imported ID #{$prop['id']}: {$prop['title']} | ₹" . number_format((float) $prop['price']) . "{$priceSuffix} ({$prop['city']}, {$prop['state']}){$genuineTag}");
+                if (!empty($prop['is_genuine'])) {
+                    $this->line("      📞 Verified Contact: {$prop['contact_phone']}");
                 }
             }
+            $this->info("\nImport summary: {$insertedCount} newly imported, {$duplicatesSkippedCount} duplicates skipped/prevented!");
+        } elseif ($syncLive) {
+            $this->warn("Local database not configured; pushing " . count($items) . " scraped listings directly to live server...");
+        }
 
-            $itemCity = Property::cleanUrlFromText($item['city'] ?? $city, true) ?: $city;
-            $itemState = Property::cleanUrlFromText($item['state'] ?? $state, false) ?: $state;
-            $itemLocality = Property::cleanUrlFromText($item['locality'] ?? $itemCity, false) ?: $itemCity;
-            $itemTitle = Property::cleanUrlFromText($item['title'] ?? '', true) ?: ("{$item['bedrooms']} BHK Property in {$itemLocality}");
-            $itemDesc = Property::cleanUrlFromText($item['description'] ?? ("{$itemTitle} in {$itemLocality}, {$itemCity}"), false);
-            $itemAddress = Property::cleanUrlFromText($item['address'] ?? "{$itemLocality}, {$itemCity}", true) ?: "{$itemLocality}, {$itemCity}";
-
-            $propertyData = [
-                'user_id' => $propertyUserId,
-                'category_id' => $itemCategoryId,
-                'title' => $itemTitle,
-                'slug' => $slug,
-                'description' => $itemDesc,
-                'type' => $itemType,
-                'purpose' => $itemPurpose,
-                'price' => $item['price'] ?? 25000,
-                'price_period' => 'month',
-                'state' => $itemState,
-                'location' => $itemCity,
-                'locality' => $itemLocality,
-                'address' => $itemAddress,
-                'contact_phone' => $item['contact_phone'] ?? '+91 98765 43210',
-                'bedrooms' => $itemType === 'plot' ? 0 : ($item['bedrooms'] ?? 2),
-                'bathrooms' => $itemType === 'plot' ? 0 : ($item['bathrooms'] ?? 1),
-                'area_sqft' => $item['area_sqft'] ?? 800,
-                'furnishing' => $itemType === 'plot' ? 'unfurnished' : (in_array(strtolower(trim((string)($item['furnishing'] ?? ''))), ['furnished', 'fully', 'fully-furnished', 'full']) ? 'fully-furnished' : (str_contains(strtolower(trim((string)($item['furnishing'] ?? ''))), 'semi') ? 'semi-furnished' : 'unfurnished')),
-                'status' => $status,
-                'is_featured' => ($insertedCount < 3),
-                'is_booked' => false,
-                'approved_at' => $approvedAt,
-            ];
-            if (Property::ensureExternalIdColumnExists() && !empty($propId)) {
-                $propertyData['external_id'] = $propId;
-            }
-            $property = Property::create($propertyData);
-
-            if (!empty($item['images']) && is_array($item['images'])) {
-                foreach ($item['images'] as $idx => $imgUrl) {
-                    PropertyImage::create([
-                        'property_id' => $property->id,
-                        'path' => $imgUrl,
-                        'is_primary' => ($idx === 0),
-                        'sort_order' => $idx,
-                    ]);
-                }
-            }
-
-            $insertedCount++;
-            $priceSuffix = $itemPurpose === 'buy' ? ' [For Sale]' : '/mo [Rent]';
-            $genuineTag = !empty($item['is_genuine']) ? ' [🌟 GENUINE UNMASKED DATA]' : '';
-            $this->line("  [✓] Imported ID #{$property->id}: {$property->title} | ₹" . number_format($property->price) . "{$priceSuffix} ({$property->location}, {$property->state}){$genuineTag}");
-            if (!empty($item['is_genuine'])) {
-                $this->line("      📞 Verified Contact: {$property->contact_phone}");
+        if ($syncLive) {
+            $this->info("Pushing " . count($items) . " scraped listings to live server...");
+            $liveRes = $importer->pushItemsToLive($items, [
+                'live_url'        => $liveUrl,
+                'city'            => $city,
+                'purpose'         => $purpose,
+                'property_type'   => $type,
+                'create_accounts' => $createAccounts,
+                'auto_approve'    => $bypassApproval,
+                'page'            => $page,
+            ]);
+            if (!empty($liveRes['success'])) {
+                $this->info("  [✓ LIVE SYNC] " . $liveRes['message']);
+            } else {
+                $this->error("  [✗ LIVE SYNC FAILED] " . ($liveRes['message'] ?? 'Unknown error'));
             }
         }
 
-        // Invalidate homepage cache
-        Cache::forget('home_featured_rentals');
-        Cache::forget('home_featured_properties');
-        Cache::forget('admin_dashboard_stats');
-
-        $this->info("\nImport summary: {$insertedCount} newly imported, {$duplicatesSkippedCount} duplicates skipped/prevented!");
-
         // If all items on this page were already scraped and auto-next is enabled, automatically scrape next page
-        if ($insertedCount === 0 && $duplicatesSkippedCount > 0 && ($autoNext || $this->option('auto-next')) && $page < 10) {
+        if ($hasLocalDb && $insertedCount === 0 && $duplicatesSkippedCount > 0 && ($autoNext || $this->option('auto-next')) && $page < 10) {
             $nextPage = $page + 1;
             $this->warn("All listings on Page {$page} were already in the database. Auto-advancing to scrape Page {$nextPage}...");
             return (int) $this->call('scrape:city', [
@@ -360,6 +246,8 @@ class ScrapeCityCommand extends Command
                 '--purpose' => $purpose,
                 '--engine' => $engine,
                 '--create-accounts' => $createAccounts,
+                '--sync-live' => $syncLive,
+                '--live-url' => $liveUrl,
             ]);
         }
 
