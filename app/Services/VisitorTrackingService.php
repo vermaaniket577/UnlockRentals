@@ -166,13 +166,63 @@ class VisitorTrackingService
     }
 
     /**
+     * Check if the incoming request is from a known search crawler or automated bot.
+     */
+    public static function isBotRequest(Request $request): bool
+    {
+        $ua = strtolower((string) $request->header('User-Agent', ''));
+        if ($ua === '') {
+            return true;
+        }
+
+        static $crawlers = [
+            'googlebot', 'bingbot', 'yandex', 'duckduckbot', 'baiduspider', 'petalbot',
+            'ahrefsbot', 'semrushbot', 'mj12bot', 'dotbot', 'bytespider', 'gptbot',
+            'claudebot', 'applebot', 'twitterbot', 'facebookexternalhit', 'whatsapp',
+            'slurp', 'sogou', 'exabot', 'facebot', 'ia_archiver', 'headlesschrome',
+            'python-requests', 'python-urllib', 'curl/', 'wget/', 'scrapy', 'go-http-client',
+        ];
+
+        foreach ($crawlers as $crawler) {
+            if (str_contains($ua, $crawler)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a visitor/origin location is within India.
+     */
+    public static function isIndianOrigin(?string $country, ?string $city = null, ?string $state = null): bool
+    {
+        $c = strtolower(trim((string) $country));
+        if ($c === 'india' || $c === 'in') {
+            return true;
+        }
+        if ($c !== '' && !in_array($c, ['unknown', 'detected location', 'location detected'], true)) {
+            return false;
+        }
+
+        if (!empty($city) && static::parseIndianLocationFromQuery($city)) {
+            return true;
+        }
+        if (!empty($state) && static::parseIndianLocationFromQuery($state)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Smart Indian City & Locality Extractor from search query string.
      */
     public static function parseIndianLocationFromQuery(?string $query): ?array
     {
         if (empty($query)) return null;
 
-        $q = strtolower(trim($query));
+        $q = strtolower(trim(str_replace(['-', '_', '+'], ' ', $query)));
 
         // Mapping of popular Indian cities & localities
         static $indianLocations = [
@@ -182,58 +232,126 @@ class VisitorTrackingService
             'golf course road' => ['city' => 'Gurugram', 'locality' => 'Golf Course Road', 'state' => 'Haryana'],
             'golf course ext' => ['city' => 'Gurugram', 'locality' => 'Golf Course Extension', 'state' => 'Haryana'],
             'sohna road' => ['city' => 'Gurugram', 'locality' => 'Sohna Road', 'state' => 'Haryana'],
+            'dlf phase' => ['city' => 'Gurugram', 'locality' => 'DLF Phase', 'state' => 'Haryana'],
+            'sushant lok' => ['city' => 'Gurugram', 'locality' => 'Sushant Lok', 'state' => 'Haryana'],
             'noida' => ['city' => 'Noida', 'state' => 'Uttar Pradesh'],
             'greater noida' => ['city' => 'Greater Noida', 'state' => 'Uttar Pradesh'],
-            'delhi' => ['city' => 'Delhi', 'state' => 'Delhi'],
+            'noida extension' => ['city' => 'Greater Noida', 'locality' => 'Noida Extension', 'state' => 'Uttar Pradesh'],
             'new delhi' => ['city' => 'New Delhi', 'state' => 'Delhi'],
             'south delhi' => ['city' => 'South Delhi', 'state' => 'Delhi'],
+            'delhi' => ['city' => 'Delhi', 'state' => 'Delhi'],
             'dwarka' => ['city' => 'Delhi', 'locality' => 'Dwarka', 'state' => 'Delhi'],
             'saket' => ['city' => 'Delhi', 'locality' => 'Saket', 'state' => 'Delhi'],
             'rohini' => ['city' => 'Delhi', 'locality' => 'Rohini', 'state' => 'Delhi'],
+            'vasant kunj' => ['city' => 'Delhi', 'locality' => 'Vasant Kunj', 'state' => 'Delhi'],
+            'lajpat nagar' => ['city' => 'Delhi', 'locality' => 'Lajpat Nagar', 'state' => 'Delhi'],
+            'janakpuri' => ['city' => 'Delhi', 'locality' => 'Janakpuri', 'state' => 'Delhi'],
+            'karol bagh' => ['city' => 'Delhi', 'locality' => 'Karol Bagh', 'state' => 'Delhi'],
+            'hauz khas' => ['city' => 'Delhi', 'locality' => 'Hauz Khas', 'state' => 'Delhi'],
+            'greater kailash' => ['city' => 'Delhi', 'locality' => 'Greater Kailash', 'state' => 'Delhi'],
+            'uttam nagar' => ['city' => 'Delhi', 'locality' => 'Uttam Nagar', 'state' => 'Delhi'],
             'bengaluru' => ['city' => 'Bengaluru', 'state' => 'Karnataka'],
             'bangalore' => ['city' => 'Bengaluru', 'state' => 'Karnataka'],
             'whitefield' => ['city' => 'Bengaluru', 'locality' => 'Whitefield', 'state' => 'Karnataka'],
             'koramangala' => ['city' => 'Bengaluru', 'locality' => 'Koramangala', 'state' => 'Karnataka'],
             'indiranagar' => ['city' => 'Bengaluru', 'locality' => 'Indiranagar', 'state' => 'Karnataka'],
             'bellandur' => ['city' => 'Bengaluru', 'locality' => 'Bellandur', 'state' => 'Karnataka'],
-            'mumbai' => ['city' => 'Mumbai', 'state' => 'Maharashtra'],
+            'hsr layout' => ['city' => 'Bengaluru', 'locality' => 'HSR Layout', 'state' => 'Karnataka'],
+            'marathahalli' => ['city' => 'Bengaluru', 'locality' => 'Marathahalli', 'state' => 'Karnataka'],
+            'electronic city' => ['city' => 'Bengaluru', 'locality' => 'Electronic City', 'state' => 'Karnataka'],
+            'jp nagar' => ['city' => 'Bengaluru', 'locality' => 'JP Nagar', 'state' => 'Karnataka'],
+            'jayanagar' => ['city' => 'Bengaluru', 'locality' => 'Jayanagar', 'state' => 'Karnataka'],
             'navi mumbai' => ['city' => 'Navi Mumbai', 'state' => 'Maharashtra'],
+            'mumbai' => ['city' => 'Mumbai', 'state' => 'Maharashtra'],
             'thane' => ['city' => 'Thane', 'state' => 'Maharashtra'],
             'andheri' => ['city' => 'Mumbai', 'locality' => 'Andheri', 'state' => 'Maharashtra'],
             'bandra' => ['city' => 'Mumbai', 'locality' => 'Bandra', 'state' => 'Maharashtra'],
             'powai' => ['city' => 'Mumbai', 'locality' => 'Powai', 'state' => 'Maharashtra'],
+            'goregaon' => ['city' => 'Mumbai', 'locality' => 'Goregaon', 'state' => 'Maharashtra'],
+            'malad' => ['city' => 'Mumbai', 'locality' => 'Malad', 'state' => 'Maharashtra'],
             'pune' => ['city' => 'Pune', 'state' => 'Maharashtra'],
             'hinjewadi' => ['city' => 'Pune', 'locality' => 'Hinjewadi', 'state' => 'Maharashtra'],
             'wakad' => ['city' => 'Pune', 'locality' => 'Wakad', 'state' => 'Maharashtra'],
             'baner' => ['city' => 'Pune', 'locality' => 'Baner', 'state' => 'Maharashtra'],
+            'kothrud' => ['city' => 'Pune', 'locality' => 'Kothrud', 'state' => 'Maharashtra'],
+            'viman nagar' => ['city' => 'Pune', 'locality' => 'Viman Nagar', 'state' => 'Maharashtra'],
+            'kharadi' => ['city' => 'Pune', 'locality' => 'Kharadi', 'state' => 'Maharashtra'],
+            'magarpatta' => ['city' => 'Pune', 'locality' => 'Magarpatta', 'state' => 'Maharashtra'],
             'hyderabad' => ['city' => 'Hyderabad', 'state' => 'Telangana'],
             'gachibowli' => ['city' => 'Hyderabad', 'locality' => 'Gachibowli', 'state' => 'Telangana'],
             'madhapur' => ['city' => 'Hyderabad', 'locality' => 'Madhapur', 'state' => 'Telangana'],
             'hitec city' => ['city' => 'Hyderabad', 'locality' => 'HITEC City', 'state' => 'Telangana'],
+            'jubilee hills' => ['city' => 'Hyderabad', 'locality' => 'Jubilee Hills', 'state' => 'Telangana'],
+            'banjara hills' => ['city' => 'Hyderabad', 'locality' => 'Banjara Hills', 'state' => 'Telangana'],
+            'kondapur' => ['city' => 'Hyderabad', 'locality' => 'Kondapur', 'state' => 'Telangana'],
+            'kukatpally' => ['city' => 'Hyderabad', 'locality' => 'Kukatpally', 'state' => 'Telangana'],
             'chennai' => ['city' => 'Chennai', 'state' => 'Tamil Nadu'],
             'omr' => ['city' => 'Chennai', 'locality' => 'OMR', 'state' => 'Tamil Nadu'],
+            'anna nagar' => ['city' => 'Chennai', 'locality' => 'Anna Nagar', 'state' => 'Tamil Nadu'],
+            'velachery' => ['city' => 'Chennai', 'locality' => 'Velachery', 'state' => 'Tamil Nadu'],
+            'adyar' => ['city' => 'Chennai', 'locality' => 'Adyar', 'state' => 'Tamil Nadu'],
             'kolkata' => ['city' => 'Kolkata', 'state' => 'West Bengal'],
             'salt lake' => ['city' => 'Kolkata', 'locality' => 'Salt Lake', 'state' => 'West Bengal'],
+            'new town' => ['city' => 'Kolkata', 'locality' => 'New Town', 'state' => 'West Bengal'],
+            'rajarhat' => ['city' => 'Kolkata', 'locality' => 'Rajarhat', 'state' => 'West Bengal'],
             'faridabad' => ['city' => 'Faridabad', 'state' => 'Haryana'],
             'ghaziabad' => ['city' => 'Ghaziabad', 'state' => 'Uttar Pradesh'],
             'indirapuram' => ['city' => 'Ghaziabad', 'locality' => 'Indirapuram', 'state' => 'Uttar Pradesh'],
             'vaishali' => ['city' => 'Ghaziabad', 'locality' => 'Vaishali', 'state' => 'Uttar Pradesh'],
             'jaipur' => ['city' => 'Jaipur', 'state' => 'Rajasthan'],
+            'vaishali nagar' => ['city' => 'Jaipur', 'locality' => 'Vaishali Nagar', 'state' => 'Rajasthan'],
+            'mansarovar' => ['city' => 'Jaipur', 'locality' => 'Mansarovar', 'state' => 'Rajasthan'],
             'chandigarh' => ['city' => 'Chandigarh', 'state' => 'Chandigarh'],
             'mohali' => ['city' => 'Mohali', 'state' => 'Punjab'],
             'panchkula' => ['city' => 'Panchkula', 'state' => 'Haryana'],
             'lucknow' => ['city' => 'Lucknow', 'state' => 'Uttar Pradesh'],
+            'gomti nagar' => ['city' => 'Lucknow', 'locality' => 'Gomti Nagar', 'state' => 'Uttar Pradesh'],
             'kanpur' => ['city' => 'Kanpur', 'state' => 'Uttar Pradesh'],
             'ahmedabad' => ['city' => 'Ahmedabad', 'state' => 'Gujarat'],
             'surat' => ['city' => 'Surat', 'state' => 'Gujarat'],
+            'vadodara' => ['city' => 'Vadodara', 'state' => 'Gujarat'],
+            'rajkot' => ['city' => 'Rajkot', 'state' => 'Gujarat'],
             'indore' => ['city' => 'Indore', 'state' => 'Madhya Pradesh'],
+            'mahalakshmi nagar' => ['city' => 'Indore', 'locality' => 'Mahalakshmi Nagar', 'state' => 'Madhya Pradesh'],
+            'vijay nagar' => ['city' => 'Indore', 'locality' => 'Vijay Nagar', 'state' => 'Madhya Pradesh'],
+            'palasia' => ['city' => 'Indore', 'locality' => 'Palasia', 'state' => 'Madhya Pradesh'],
             'bhopal' => ['city' => 'Bhopal', 'state' => 'Madhya Pradesh'],
             'patna' => ['city' => 'Patna', 'state' => 'Bihar'],
             'dehradun' => ['city' => 'Dehradun', 'state' => 'Uttarakhand'],
             'nagpur' => ['city' => 'Nagpur', 'state' => 'Maharashtra'],
+            'nashik' => ['city' => 'Nashik', 'state' => 'Maharashtra'],
             'coimbatore' => ['city' => 'Coimbatore', 'state' => 'Tamil Nadu'],
             'kochi' => ['city' => 'Kochi', 'state' => 'Kerala'],
+            'thiruvananthapuram' => ['city' => 'Thiruvananthapuram', 'state' => 'Kerala'],
+            'trivandrum' => ['city' => 'Thiruvananthapuram', 'state' => 'Kerala'],
             'goa' => ['city' => 'Goa', 'state' => 'Goa'],
+            'guwahati' => ['city' => 'Guwahati', 'state' => 'Assam'],
+            'bhubaneswar' => ['city' => 'Bhubaneswar', 'state' => 'Odisha'],
+            'cuttack' => ['city' => 'Cuttack', 'state' => 'Odisha'],
+            'ranchi' => ['city' => 'Ranchi', 'state' => 'Jharkhand'],
+            'raipur' => ['city' => 'Raipur', 'state' => 'Chhattisgarh'],
+            'visakhapatnam' => ['city' => 'Visakhapatnam', 'state' => 'Andhra Pradesh'],
+            'vizag' => ['city' => 'Visakhapatnam', 'state' => 'Andhra Pradesh'],
+            'vijayawada' => ['city' => 'Vijayawada', 'state' => 'Andhra Pradesh'],
+            'ludhiana' => ['city' => 'Ludhiana', 'state' => 'Punjab'],
+            'amritsar' => ['city' => 'Amritsar', 'state' => 'Punjab'],
+            'jalandhar' => ['city' => 'Jalandhar', 'state' => 'Punjab'],
+            'varanasi' => ['city' => 'Varanasi', 'state' => 'Uttar Pradesh'],
+            'agra' => ['city' => 'Agra', 'state' => 'Uttar Pradesh'],
+            'prayagraj' => ['city' => 'Prayagraj', 'state' => 'Uttar Pradesh'],
+            'allahabad' => ['city' => 'Prayagraj', 'state' => 'Uttar Pradesh'],
+            'meerut' => ['city' => 'Meerut', 'state' => 'Uttar Pradesh'],
+            'mysuru' => ['city' => 'Mysuru', 'state' => 'Karnataka'],
+            'mysore' => ['city' => 'Mysuru', 'state' => 'Karnataka'],
+            'mangaluru' => ['city' => 'Mangaluru', 'state' => 'Karnataka'],
+            'madurai' => ['city' => 'Madurai', 'state' => 'Tamil Nadu'],
+            'udaipur' => ['city' => 'Udaipur', 'state' => 'Rajasthan'],
+            'jodhpur' => ['city' => 'Jodhpur', 'state' => 'Rajasthan'],
+            'kota' => ['city' => 'Kota', 'state' => 'Rajasthan'],
+            'shimla' => ['city' => 'Shimla', 'state' => 'Himachal Pradesh'],
+            'siliguri' => ['city' => 'Siliguri', 'state' => 'West Bengal'],
+            'pondicherry' => ['city' => 'Puducherry', 'state' => 'Puducherry'],
+            'puducherry' => ['city' => 'Puducherry', 'state' => 'Puducherry'],
         ];
 
         $matchedLocality = null;
@@ -526,6 +644,10 @@ class VisitorTrackingService
      */
     public function recordSearchEvent(Request $request, int $resultsCount = 0, array $customCriteria = []): ?VisitorEvent
     {
+        if (static::isBotRequest($request)) {
+            return null;
+        }
+
         $visitor = $request->attributes->get('visitor');
         if (!$visitor) {
             $visitor = $this->resolveVisitor($request);

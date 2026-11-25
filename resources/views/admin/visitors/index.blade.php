@@ -406,6 +406,7 @@
                     {{-- Search & Sort Filter Form --}}
                     <form method="GET" action="{{ route('admin.visitors.index') }}" class="flex flex-wrap items-center gap-2" id="search-feed-filter-form">
                         <input type="hidden" name="range" value="{{ $days }}">
+                        <input type="hidden" name="origin_scope" value="{{ $originScope ?? 'india' }}">
                         @if(request('device'))
                             <input type="hidden" name="device" value="{{ request('device') }}">
                         @endif
@@ -488,6 +489,19 @@
                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all {{ request('sort') === 'with_results' ? 'bg-teal-600 text-white shadow-xs' : 'bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200' }}">
                             <i class="ph-bold ph-check {{ request('sort') === 'with_results' ? 'text-white' : 'text-teal-500' }}"></i> Has Results
                         </a>
+
+                        {{-- Origin Scope: Indian Cities Only vs All Countries --}}
+                        <span class="text-slate-300 mx-1">|</span>
+                        <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['origin_scope' => 'india'])) }}#search-feed-table" 
+                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all {{ ($originScope ?? 'india') === 'india' ? 'bg-orange-600 text-white shadow-xs' : 'bg-orange-50 text-orange-800 hover:bg-orange-100 border border-orange-200' }}"
+                           title="Track & display Indian cities only">
+                            <span>🇮🇳 Indian Cities Only</span>
+                        </a>
+                        <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['origin_scope' => 'all'])) }}#search-feed-table" 
+                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all {{ ($originScope ?? 'india') === 'all' ? 'bg-slate-800 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' }}"
+                           title="Show all international & Indian visitors">
+                            <span>🌍 All Countries</span>
+                        </a>
                     </div>
 
                     {{-- Active Filter Tags --}}
@@ -524,7 +538,8 @@
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
                         <tr class="bg-slate-50 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider border-b border-slate-100">
-                            <th class="py-3.5 px-6">Origin Location (Where Searching From)</th>
+                            <th class="py-3.5 px-6">Origin Location (Indian City)</th>
+                            <th class="py-3.5 px-6">Searching For City</th>
                             <th class="py-3.5 px-6">Search Query & Applied Criteria</th>
                             <th class="py-3.5 px-6 text-center">Results Found</th>
                             <th class="py-3.5 px-6">When</th>
@@ -533,6 +548,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($recentSearches as $searchItem)
+                            @php $searchingCityInfo = $searchItem->getSearchingForCity(); @endphp
                             <tr class="hover:bg-blue-50/30 transition-colors">
                                 {{-- Origin Location Details --}}
                                 <td class="py-4 px-6 align-top">
@@ -544,7 +560,9 @@
                                                 <span class="text-slate-400 font-semibold">, {{ $searchItem->getOriginState() }}</span>
                                             @endif
                                             @php $origCountry = $searchItem->getOriginCountry(); @endphp
-                                            @if($origCountry && !in_array($origCountry, [$searchItem->getOriginCity(), $searchItem->getOriginState()]))
+                                            @if($searchItem->isIndianOrigin())
+                                                <span class="text-[9.5px] px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-bold uppercase">🇮🇳 India</span>
+                                            @elseif($origCountry && !in_array($origCountry, [$searchItem->getOriginCity(), $searchItem->getOriginState()]))
                                                 <span class="text-[9.5px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-bold uppercase">{{ $origCountry }}</span>
                                             @endif
                                         </div>
@@ -564,6 +582,37 @@
                                                 </span>
                                             @endif
                                         </div>
+                                    </div>
+                                </td>
+
+                                {{-- Searching For City (Target City) --}}
+                                <td class="py-4 px-6 align-top">
+                                    <div class="space-y-1">
+                                        @if(!$searchingCityInfo['is_pan_india'])
+                                            <a href="{{ route('admin.visitors.index', array_merge(request()->except('searches_page'), ['searching_for' => $searchingCityInfo['city']])) }}#search-feed-table"
+                                               class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 font-extrabold text-xs transition-colors shadow-2xs"
+                                               title="Filter searches for {{ $searchingCityInfo['city'] }}">
+                                                <i class="ph-fill ph-buildings text-blue-600"></i>
+                                                <span>{{ $searchingCityInfo['city'] }}</span>
+                                            </a>
+                                            @if(!empty($searchingCityInfo['state']) && strcasecmp($searchingCityInfo['city'], $searchingCityInfo['state']) !== 0)
+                                                <div class="text-[10.5px] text-slate-500 font-semibold pl-1">
+                                                    {{ $searchingCityInfo['state'] }}
+                                                </div>
+                                            @endif
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs">
+                                                <i class="ph-bold ph-globe-hemisphere-east text-slate-500"></i>
+                                                <span>Pan-India (All Cities)</span>
+                                            </span>
+                                        @endif
+
+                                        @if(!empty($searchingCityInfo['locality']))
+                                            <div class="text-[10.5px] text-indigo-700 font-bold flex items-center gap-1 pl-0.5">
+                                                <i class="ph-bold ph-navigation-arrow text-[10px]"></i>
+                                                <span>{{ $searchingCityInfo['locality'] }}</span>
+                                            </div>
+                                        @endif
                                     </div>
                                 </td>
 
@@ -657,7 +706,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="py-12 text-center">
+                                <td colspan="6" class="py-12 text-center">
                                     <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-2xl mx-auto mb-2">
                                         <i class="ph-bold ph-magnifying-glass"></i>
                                     </div>

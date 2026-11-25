@@ -55,15 +55,6 @@ class TrackVisitor
             return true;
         }
 
-        $ua = strtolower($request->header('User-Agent', ''));
-        $crawlers = ['googlebot', 'bingbot', 'yandex', 'duckduckbot', 'baiduspider', 'twitterbot', 'facebookexternalhit', 'whatsapp', 'slurp'];
-
-        foreach ($crawlers as $crawler) {
-            if (str_contains($ua, $crawler)) {
-                return true;
-            }
-        }
-
-        return false;
+        return VisitorTrackingService::isBotRequest($request);
     }
 }

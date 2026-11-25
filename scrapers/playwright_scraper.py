@@ -11,6 +11,7 @@ import sys
 import time
 import json
 import random
+import subprocess
 from typing import List, Dict, Any, Optional
 
 try:
@@ -23,6 +24,9 @@ SCRAPER_DIR = os.path.dirname(os.path.abspath(__file__))
 AUTH_SESSION_FILE = os.path.join(SCRAPER_DIR, "auth_session.json")
 PENDING_SESSION_FILE = os.path.join(SCRAPER_DIR, "pending_session.json")
 AUTH_META_FILE = os.path.join(SCRAPER_DIR, "auth_session_meta.json")
+OTP_STATUS_FILE = os.path.join(SCRAPER_DIR, "otp_worker_status.json")
+OTP_SUBMIT_FILE = os.path.join(SCRAPER_DIR, "otp_submit.json")
+OTP_WORKER_SCRIPT = os.path.join(SCRAPER_DIR, "otp_auth_worker.py")
 
 FALLBACK_IMAGES = [
     "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=85",
@@ -198,8 +202,8 @@ def get_saved_session_status() -> Dict[str, Any]:
 
 def send_login_otp(mobile_number: str, headless: bool = True) -> Dict[str, Any]:
     """
-    Open 99acres portal, trigger the login drawer, enter mobile number, and dispatch OTP.
-    Saves intermediate session state for subsequent OTP verification.
+    Launch persistent OTP worker: opens 99acres Login / Register modal,
+    fills the Phone Number input, clicks Continue, and waits on the OTP box (#otp1..#otp4).
     """
     if not PLAYWRIGHT_INSTALLED:
         return {"success": False, "message": "Playwright is not installed."}
@@ -211,120 +215,57 @@ def send_login_otp(mobile_number: str, headless: bool = True) -> Dict[str, Any]:
             "message": "Invalid mobile number. Please provide a valid 10-digit Indian mobile number."
         }
 
-    chrome_exe = find_chrome_executable()
-    launch_kwargs = {
-        "headless": headless,
-        "args": [
-            "--disable-blink-features=AutomationControlled",
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-            "--window-size=1920,1080",
-        ]
+    # Clear stale status/submit files
+    for fpath in [OTP_STATUS_FILE, OTP_SUBMIT_FILE]:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+            except Exception:
+                pass
+
+    popen_kwargs = {
+        "stdout": subprocess.DEVNULL,
+        "stderr": subprocess.DEVNULL,
+        "stdin": subprocess.DEVNULL,
     }
-    if chrome_exe:
-        launch_kwargs["executable_path"] = chrome_exe
+    if os.name == "nt":
+        popen_kwargs["creationflags"] = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        popen_kwargs["start_new_session"] = True
 
-    with sync_playwright() as p:
-        browser = None
-        try:
-            browser = p.chromium.launch(**launch_kwargs)
-            context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-                viewport={"width": 1920, "height": 1080},
-                locale="en-US",
-                timezone_id="Asia/Kolkata",
-            )
-            page = context.new_page()
-            page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    subprocess.Popen([sys.executable, OTP_WORKER_SCRIPT, clean_digits], **popen_kwargs)
 
-            # 1. Open 99acres home
-            page.goto("https://www.99acres.com", timeout=30000, wait_until="domcontentloaded")
-            time.sleep(2)
+    # Wait up to 25 seconds for worker to fill phone, click Continue, and reach OTP box
+    start = time.time()
+    while time.time() - start < 25:
+        if os.path.exists(OTP_STATUS_FILE):
+            try:
+                with open(OTP_STATUS_FILE, "r", encoding="utf-8") as f:
+                    st = json.load(f)
+                if st.get("status") == "otp_ready":
+                    with open(AUTH_META_FILE, "w", encoding="utf-8") as mf:
+                        json.dump({
+                            "mobile": clean_digits,
+                            "status": "pending_otp",
+                            "otp_sent_at": time.time(),
+                            "is_logged_in": False
+                        }, mf, indent=2)
+                    return st
+                if st.get("status") in ["error", "timeout"]:
+                    return st
+            except Exception:
+                pass
+        time.sleep(0.4)
 
-            # Check if already logged in
-            init_status = check_login_status(page)
-            if init_status.get("is_logged_in"):
-                context.storage_state(path=AUTH_SESSION_FILE)
-                return {
-                    "success": True,
-                    "already_logged_in": True,
-                    "is_logged_in": True,
-                    "message": "Already logged in to target portal!",
-                    "mobile": clean_digits
-                }
-
-            # 2. Click Login / Register button
-            login_btn = page.query_selector('[data-label="LR.INITIATE"], button:has-text("Login"), a:has-text("Login")')
-            if login_btn:
-                page.evaluate("el => el.click()", login_btn)
-                time.sleep(1.5)
-
-            # 3. Locate mobile number input
-            mobile_input = page.query_selector('input.commonInput__pl80, input[placeholder*="mobile" i], input[type="tel"]')
-            if not mobile_input:
-                # Retry clicking login
-                page.evaluate(r"""() => {
-                    const btn = document.querySelector('[data-label="LR.INITIATE"]') || Array.from(document.querySelectorAll('*')).find(e => /login \/ register/i.test(e.innerText || ''));
-                    if (btn) btn.click();
-                }""")
-                time.sleep(1.5)
-                mobile_input = page.query_selector('input.commonInput__pl80, input[placeholder*="mobile" i], input[type="tel"]')
-
-            if not mobile_input:
-                return {
-                    "success": False,
-                    "message": "Could not find mobile number input on target portal. Check portal accessibility."
-                }
-
-            # 4. Fill mobile number
-            mobile_input.click()
-            mobile_input.fill(clean_digits)
-            time.sleep(1)
-
-            # 5. Click Continue button
-            continue_btn = page.query_selector('button.buttons__primaryLarge:not(.buttons__disabled), button:has-text("Continue")')
-            if not continue_btn:
-                # Trigger click via JS
-                page.evaluate("""() => {
-                    const btn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('Continue'));
-                    if (btn) btn.click();
-                }""")
-            else:
-                page.evaluate("el => el.click()", continue_btn)
-
-            time.sleep(3)
-
-            # 6. Save pending session state
-            context.storage_state(path=PENDING_SESSION_FILE)
-            meta = {
-                "mobile": clean_digits,
-                "status": "pending_otp",
-                "otp_sent_at": time.time(),
-                "is_logged_in": False
-            }
-            with open(AUTH_META_FILE, "w", encoding="utf-8") as f:
-                json.dump(meta, f, indent=2)
-
-            return {
-                "success": True,
-                "requires_otp": True,
-                "mobile": clean_digits,
-                "message": f"OTP sent to +91 {clean_digits}! Enter the received OTP code to complete authentication and start scraping genuine data."
-            }
-
-        except Exception as e:
-            return {"success": False, "message": f"Error dispatching OTP on target portal: {str(e)}"}
-        finally:
-            if browser:
-                try:
-                    browser.close()
-                except Exception:
-                    pass
+    return {
+        "success": False,
+        "message": "Timed out waiting for 99acres OTP screen after clicking Continue."
+    }
 
 def verify_login_otp(otp_code: str, mobile_number: str = "", headless: bool = True) -> Dict[str, Any]:
     """
-    Submit the OTP received on the mobile phone to authenticate the scraper session.
-    On success, stores the persistent browser storage state into auth_session.json.
+    Submit the OTP to the active OTP worker page (#otp1..#otp4 -> Verify & Continue)
+    and persist the authenticated storage state into auth_session.json.
     """
     if not PLAYWRIGHT_INSTALLED:
         return {"success": False, "message": "Playwright is not installed."}
@@ -333,154 +274,47 @@ def verify_login_otp(otp_code: str, mobile_number: str = "", headless: bool = Tr
     if len(clean_otp) < 4:
         return {"success": False, "message": "Invalid OTP. Please enter a valid 4 to 6 digit code."}
 
-    meta = {}
-    if os.path.exists(AUTH_META_FILE):
-        try:
-            with open(AUTH_META_FILE, "r", encoding="utf-8") as f:
-                meta = json.load(f)
-        except Exception:
-            pass
+    if not os.path.exists(OTP_STATUS_FILE):
+        return {
+            "success": False,
+            "is_logged_in": False,
+            "message": "No active OTP session found. Please enter your mobile number and click Send OTP first."
+        }
 
-    clean_mobile = re.sub(r"\D", "", str(mobile_number or meta.get("mobile", "")))[-10:]
-
-    chrome_exe = find_chrome_executable()
-    launch_kwargs = {
-        "headless": headless,
-        "args": [
-            "--disable-blink-features=AutomationControlled",
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-            "--window-size=1920,1080",
-        ]
-    }
-    if chrome_exe:
-        launch_kwargs["executable_path"] = chrome_exe
-
-    with sync_playwright() as p:
-        browser = None
-        try:
-            browser = p.chromium.launch(**launch_kwargs)
-            context_kwargs = {
-                "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-                "viewport": {"width": 1920, "height": 1080},
-                "locale": "en-US",
-                "timezone_id": "Asia/Kolkata",
-            }
-            if os.path.exists(PENDING_SESSION_FILE):
-                context_kwargs["storage_state"] = PENDING_SESSION_FILE
-
-            context = browser.new_context(**context_kwargs)
-            page = context.new_page()
-            page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-
-            page.goto("https://www.99acres.com", timeout=30000, wait_until="domcontentloaded")
-            time.sleep(2)
-
-            # Check if already verified
-            status = check_login_status(page)
-            if not status.get("is_logged_in"):
-                # If OTP modal is not open, open it
-                login_btn = page.query_selector('[data-label="LR.INITIATE"], button:has-text("Login")')
-                if login_btn:
-                    page.evaluate("el => el.click()", login_btn)
-                    time.sleep(1.5)
-
-                # If on mobile number screen, enter mobile and click Continue
-                mobile_input = page.query_selector('input.commonInput__pl80, input[placeholder*="mobile" i], input[type="tel"]')
-                if mobile_input and clean_mobile:
-                    mobile_input.click()
-                    mobile_input.fill(clean_mobile)
-                    time.sleep(0.8)
-                    btn = page.query_selector('button.buttons__primaryLarge:not(.buttons__disabled), button:has-text("Continue")')
-                    if btn:
-                        page.evaluate("el => el.click()", btn)
-                        time.sleep(2.5)
-
-            # Fill OTP digits
-            filled = page.evaluate("""(otpStr) => {
-                const digits = otpStr.split('');
-                const otpInputs = Array.from(document.querySelectorAll('input[type="tel"], input[type="number"], input.otpInput, input[maxlength="1"], input[autocomplete="one-time-code"]')).filter(i => i.offsetParent !== null);
-                
-                if (otpInputs.length >= digits.length) {
-                    digits.forEach((d, idx) => {
-                        otpInputs[idx].focus();
-                        otpInputs[idx].value = d;
-                        otpInputs[idx].dispatchEvent(new Event('input', { bubbles: true }));
-                        otpInputs[idx].dispatchEvent(new Event('change', { bubbles: true }));
-                    });
-                    return true;
-                } else if (otpInputs.length === 1) {
-                    otpInputs[0].focus();
-                    otpInputs[0].value = otpStr;
-                    otpInputs[0].dispatchEvent(new Event('input', { bubbles: true }));
-                    otpInputs[0].dispatchEvent(new Event('change', { bubbles: true }));
-                    return true;
-                }
-                
-                // Fallback: any visible text input in the login drawer
-                const fallbackInput = document.querySelector('.drawer input, .sideCurtain input, [class*="login" i] input');
-                if (fallbackInput) {
-                    fallbackInput.value = otpStr;
-                    fallbackInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    return true;
-                }
-                return false;
-            }""", clean_otp)
-
-            time.sleep(1)
-
-            # Click Verify / Submit button
-            page.evaluate("""() => {
-                const verifyBtn = Array.from(document.querySelectorAll('button, div[role="button"]')).find(b => {
-                    const t = (b.innerText || '').toLowerCase();
-                    return (t.includes('verify') || t.includes('proceed') || t.includes('submit') || t.includes('login') || t.includes('continue')) && !b.className.includes('disabled');
-                });
-                if (verifyBtn) verifyBtn.click();
-            }""")
-
-            time.sleep(3.5)
-
-            # Verify login status
-            final_status = check_login_status(page)
-            # Save storage state regardless to preserve cookies
-            context.storage_state(path=AUTH_SESSION_FILE)
-
-            # Mark authenticated in meta
-            meta["is_logged_in"] = True
-            meta["mobile"] = clean_mobile
-            meta["authenticated_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
-            meta["status"] = "authenticated"
-            meta["user_name"] = final_status.get("user_name") or f"Owner (+91 {clean_mobile})"
-            with open(AUTH_META_FILE, "w", encoding="utf-8") as f:
-                json.dump(meta, f, indent=2)
-
-            # Clean pending session
-            if os.path.exists(PENDING_SESSION_FILE):
-                try:
-                    os.remove(PENDING_SESSION_FILE)
-                except Exception:
-                    pass
-
+    try:
+        with open(OTP_STATUS_FILE, "r", encoding="utf-8") as f:
+            st = json.load(f)
+        if st.get("status") != "otp_ready":
             return {
-                "success": True,
-                "is_logged_in": True,
-                "message": f"Successfully authenticated scraper on target portal for +91 {clean_mobile}! Subsequent scrapes will extract 100% genuine unmasked data.",
-                "mobile": clean_mobile,
-                "user_name": meta["user_name"]
+                "success": False,
+                "is_logged_in": False,
+                "message": st.get("message") or "OTP session is not ready. Please click Send OTP again."
             }
+    except Exception:
+        return {"success": False, "is_logged_in": False, "message": "Could not read OTP session state."}
 
-        except Exception as e:
-            return {"success": False, "message": f"Error verifying OTP on target portal: {str(e)}"}
-        finally:
-            if browser:
-                try:
-                    browser.close()
-                except Exception:
-                    pass
+    # Submit OTP to the waiting worker
+    with open(OTP_SUBMIT_FILE, "w", encoding="utf-8") as f:
+        json.dump({"otp": clean_otp}, f)
+
+    # Wait up to 20 seconds for verification result
+    start = time.time()
+    while time.time() - start < 20:
+        if os.path.exists(OTP_STATUS_FILE):
+            try:
+                with open(OTP_STATUS_FILE, "r", encoding="utf-8") as f:
+                    res = json.load(f)
+                if res.get("status") in ["verified", "otp_error", "error", "timeout"]:
+                    return res
+            except Exception:
+                pass
+        time.sleep(0.4)
+
+    return {"success": False, "is_logged_in": False, "message": "Timed out waiting for OTP verification."}
 
 def logout_scraper() -> Dict[str, Any]:
     """Clear all authenticated session cookies and credentials."""
-    for f in [AUTH_SESSION_FILE, PENDING_SESSION_FILE, AUTH_META_FILE]:
+    for f in [AUTH_SESSION_FILE, PENDING_SESSION_FILE, AUTH_META_FILE, OTP_STATUS_FILE, OTP_SUBMIT_FILE]:
         if os.path.exists(f):
             try:
                 os.remove(f)

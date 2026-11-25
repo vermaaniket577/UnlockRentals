@@ -285,63 +285,155 @@ class VisitorEvent extends Model
     }
 
     /**
+     * Check if the visitor origin is an Indian location.
+     */
+    public function isIndianOrigin(): bool
+    {
+        return \App\Services\VisitorTrackingService::isIndianOrigin(
+            $this->getOriginCountry(),
+            $this->getOriginCity(),
+            $this->getOriginState()
+        );
+    }
+
+    /**
+     * Resolve which city (and locality/state) the user is searching for.
+     *
+     * @return array{city: string, state: ?string, locality: ?string, is_pan_india: bool, is_near_me: bool}
+     */
+    public function getSearchingForCity(): array
+    {
+        $meta = $this->metadata ?? [];
+        $urlParams = [];
+        $urlPath = '';
+
+        if (!empty($this->page_url)) {
+            $parsedUrl = parse_url($this->page_url);
+            $urlPath = strtolower((string) ($parsedUrl['path'] ?? ''));
+            if (!empty($parsedUrl['query'])) {
+                parse_str($parsedUrl['query'], $urlParams);
+            }
+        }
+
+        $district = $meta['district'] ?? $urlParams['district'] ?? $urlParams['city'] ?? $urlParams['location'] ?? null;
+        $locality = $meta['locality'] ?? $urlParams['locality'] ?? null;
+        $state = $meta['state'] ?? $urlParams['state'] ?? null;
+        $searchQuery = $meta['search'] ?? $urlParams['search'] ?? $urlParams['q'] ?? null;
+
+        // 1. Parse Indian city/locality from free-text search query
+        if ((empty($district) || empty($locality)) && !empty($searchQuery)) {
+            $parsed = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($searchQuery);
+            if ($parsed) {
+                if (empty($district) && !empty($parsed['city'])) {
+                    $district = $parsed['city'];
+                }
+                if (empty($locality) && !empty($parsed['locality'])) {
+                    $locality = $parsed['locality'];
+                }
+                if (empty($state) && !empty($parsed['state'])) {
+                    $state = $parsed['state'];
+                }
+            }
+        }
+
+        // 2. Parse city from SEO URL slug (e.g. /pg-for-boys-in-indore, /flats-for-rent-in-delhi)
+        if (empty($district) && !empty($urlPath)) {
+            if (preg_match('/-in-([a-z0-9-]+?)(?:-(?:ffid|page-\d+))?(?:\/|$)/i', $urlPath, $m)) {
+                $slugCity = trim($m[1], '-');
+                if (!in_array($slugCity, ['near-me', 'near-my-location', 'india', 'all-cities', 'all'], true)) {
+                    $parsedSlug = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($slugCity);
+                    if ($parsedSlug && !empty($parsedSlug['city'])) {
+                        $district = $parsedSlug['city'];
+                        $state = $state ?: ($parsedSlug['state'] ?? null);
+                        $locality = $locality ?: ($parsedSlug['locality'] ?? null);
+                    } else {
+                        $district = ucwords(str_replace('-', ' ', $slugCity));
+                    }
+                }
+            }
+        }
+
+        // 3. Resolve parent city from locality if district is still empty
+        if (empty($district) && !empty($locality)) {
+            $cleanLoc = ucwords(str_replace('-', ' ', trim((string) $locality)));
+            $parsedLoc = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($cleanLoc);
+            if ($parsedLoc && !empty($parsedLoc['city'])) {
+                $district = $parsedLoc['city'];
+                $state = $state ?: ($parsedLoc['state'] ?? null);
+            } else {
+                // Cached DB lookup from properties table
+                try {
+                    $cacheKey = 'ur_loc_city_' . md5(strtolower($cleanLoc));
+                    $dbLoc = \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($cleanLoc) {
+                        return Property::where('locality', 'like', $cleanLoc)
+                            ->whereNotNull('location')
+                            ->first(['location', 'state']);
+                    });
+                    if ($dbLoc && !empty($dbLoc->location)) {
+                        $district = $dbLoc->location;
+                        $state = $state ?: $dbLoc->state;
+                    }
+                } catch (\Throwable $e) {
+                    // Ignore DB lookup errors in fallback paths
+                }
+            }
+        }
+
+        $isNearMe = $this->isNearMeSearch();
+
+        // 4. Near Me fallback to visitor's detected origin city
+        if (empty($district) && $isNearMe) {
+            $originCity = $this->getOriginCity();
+            if (!empty($originCity) && !in_array($originCity, ['Detected Location', 'Location Detected'], true)) {
+                $district = $originCity;
+                $state = $state ?: $this->getOriginState();
+            }
+        }
+
+        // Canonicalize Indian city name if known
+        if (!empty($district)) {
+            $cleanDist = ucwords(str_replace('-', ' ', trim((string) $district)));
+            $canonical = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($cleanDist);
+            if ($canonical && !empty($canonical['city'])) {
+                $cleanDist = $canonical['city'];
+                $state = $state ?: ($canonical['state'] ?? null);
+            }
+
+            return [
+                'city' => $cleanDist,
+                'state' => $state ? ucwords(str_replace('-', ' ', trim((string) $state))) : null,
+                'locality' => $locality ? ucwords(str_replace('-', ' ', trim((string) $locality))) : null,
+                'is_pan_india' => false,
+                'is_near_me' => $isNearMe,
+            ];
+        }
+
+        return [
+            'city' => 'All Cities (Pan-India)',
+            'state' => null,
+            'locality' => $locality ? ucwords(str_replace('-', ' ', trim((string) $locality))) : null,
+            'is_pan_india' => true,
+            'is_near_me' => $isNearMe,
+        ];
+    }
+
+    /**
      * Get human-readable target location & criteria searched for.
      */
     public function getTargetLocationDisplay(): string
     {
         $meta = $this->metadata ?? [];
+        $target = $this->getSearchingForCity();
         $parts = [];
 
-        $distVal = $meta['district'] ?? null;
-        $locVal = $meta['locality'] ?? null;
-        $stateVal = $meta['state'] ?? null;
-
-        // If missing from metadata, inspect page_url query parameters
-        if (empty($distVal) && empty($locVal) && !empty($this->page_url)) {
-            $queryStr = parse_url($this->page_url, PHP_URL_QUERY);
-            if ($queryStr) {
-                parse_str($queryStr, $urlParams);
-                $distVal = $urlParams['district'] ?? $urlParams['city'] ?? $urlParams['location'] ?? null;
-                $locVal = $urlParams['locality'] ?? null;
-            }
+        if (!empty($target['locality'])) {
+            $parts[] = $target['locality'];
+        }
+        if (!$target['is_pan_india'] && !empty($target['city']) && !in_array($target['city'], $parts, true)) {
+            $parts[] = $target['city'];
         }
 
-        if (!empty($locVal)) {
-            $parts[] = ucwords(str_replace('-', ' ', $locVal));
-        }
-        if (!empty($distVal)) {
-            $cleanDist = ucwords(str_replace('-', ' ', $distVal));
-            if (!in_array($cleanDist, $parts)) {
-                $parts[] = $cleanDist;
-            }
-        } elseif (!empty($stateVal)) {
-            $parts[] = ucwords(str_replace('-', ' ', $stateVal));
-        }
-
-        // If still empty, check if free text query has an Indian city or locality
-        if (empty($parts)) {
-            $searchQueryText = $meta['search'] ?? null;
-            if (empty($searchQueryText) && !empty($this->page_url)) {
-                $queryStr = parse_url($this->page_url, PHP_URL_QUERY);
-                if ($queryStr) {
-                    parse_str($queryStr, $urlParams);
-                    $searchQueryText = $urlParams['search'] ?? $urlParams['q'] ?? null;
-                }
-            }
-            if (!empty($searchQueryText)) {
-                $parsed = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($searchQueryText);
-                if ($parsed) {
-                    if (!empty($parsed['locality'])) {
-                        $parts[] = $parsed['locality'];
-                    }
-                    if (!empty($parsed['city']) && !in_array($parsed['city'], $parts)) {
-                        $parts[] = $parsed['city'];
-                    }
-                }
-            }
-        }
-
-        // If explicit locality or district target is found
+        // If explicit locality or city target is found
         if (!empty($parts)) {
             $locStr = implode(', ', $parts);
             $typeVal = $meta['type'] ?? null;
@@ -405,18 +497,9 @@ class VisitorEvent extends Model
             }
         }
 
-        $district = $meta['district'] ?? $urlParams['district'] ?? $urlParams['city'] ?? $urlParams['location'] ?? null;
-        $locality = $meta['locality'] ?? $urlParams['locality'] ?? null;
-        $searchQueryVal = $meta['search'] ?? $urlParams['search'] ?? $urlParams['q'] ?? null;
-
-        // Auto-detect Indian city if district not explicitly present
-        if (empty($district) && !empty($searchQueryVal)) {
-            $parsed = \App\Services\VisitorTrackingService::parseIndianLocationFromQuery($searchQueryVal);
-            if ($parsed) {
-                if (!empty($parsed['city'])) $district = $parsed['city'];
-                if (empty($locality) && !empty($parsed['locality'])) $locality = $parsed['locality'];
-            }
-        }
+        $target = $this->getSearchingForCity();
+        $district = !$target['is_pan_india'] ? $target['city'] : null;
+        $locality = $target['locality'];
 
         $type = $meta['type'] ?? $urlParams['type'] ?? null;
         $rooms = $meta['rooms'] ?? $urlParams['rooms'] ?? $urlParams['bedrooms'] ?? null;
@@ -424,13 +507,13 @@ class VisitorEvent extends Model
         $isOwner = !empty($meta['owner_only']) || !empty($urlParams['owner']);
 
         if (!empty($district)) {
-            $criteria[] = ['label' => 'Target City', 'value' => ucwords(str_replace('-', ' ', $district)), 'badge' => 'bg-blue-50 text-blue-700 border-blue-200'];
+            $criteria[] = ['label' => 'Target City', 'value' => $district, 'badge' => 'bg-blue-50 text-blue-700 border-blue-200'];
         } else {
             $criteria[] = ['label' => 'Target Scope', 'value' => 'All Cities (Pan-India)', 'badge' => 'bg-slate-100 text-slate-700 border-slate-200'];
         }
 
         if (!empty($locality)) {
-            $criteria[] = ['label' => 'Locality', 'value' => ucwords(str_replace('-', ' ', $locality)), 'badge' => 'bg-indigo-50 text-indigo-700 border-indigo-200'];
+            $criteria[] = ['label' => 'Locality', 'value' => $locality, 'badge' => 'bg-indigo-50 text-indigo-700 border-indigo-200'];
         }
         if (!empty($meta['search'])) {
             $criteria[] = ['label' => 'Query', 'value' => $meta['search'], 'badge' => 'bg-amber-50 text-amber-700 border-amber-200'];

@@ -131,8 +131,10 @@ class VisitorDashboardController extends Controller
                     }
                 }
                 if ($c && !in_array($c, ['Location Detected', 'Detected Location'], true)) {
-                    $cityVisits[$c] = ($cityVisits[$c] ?? 0) + 1;
-                    $cityStates[$c] = $v->state ?: 'India';
+                    if (\App\Services\VisitorTrackingService::isIndianOrigin($v->country, $c, $v->state)) {
+                        $cityVisits[$c] = ($cityVisits[$c] ?? 0) + 1;
+                        $cityStates[$c] = $v->state ?: 'India';
+                    }
                 }
             }
 
@@ -171,7 +173,7 @@ class VisitorDashboardController extends Controller
 
             foreach ($searchEventsForOrigins as $se) {
                 $c = $se->getOriginCity();
-                if ($c && !in_array($c, ['Location Detected', 'Detected Location', 'Unknown'], true)) {
+                if ($c && !in_array($c, ['Location Detected', 'Detected Location', 'Unknown'], true) && $se->isIndianOrigin()) {
                     $originCounts[$c] = ($originCounts[$c] ?? 0) + 1;
                     $uniqueSearchers[$c][$se->visitor_id] = true;
                     $originStates[$c] = $se->getOriginState();
@@ -235,9 +237,21 @@ class VisitorDashboardController extends Controller
         $sort = $request->get('sort', 'recent');
         $searchingFor = trim((string) $request->get('searching_for', ''));
         $searchOrigin = trim((string) $request->get('search_origin', ''));
+        $originScope = $request->get('origin_scope', 'india');
 
         $searchFeedQuery = VisitorEvent::with(['visitor', 'session'])
             ->where('visitor_events.event_name', 'search');
+
+        // Default: Track & display Indian cities only (excludes foreign bot/VPN noise unless 'all' is selected)
+        if ($originScope === 'india') {
+            $searchFeedQuery->where(function ($q) {
+                $q->whereHas('visitor', function ($vq) {
+                    $vq->whereIn('country', ['India', 'IN', 'india'])
+                       ->orWhereNull('country')
+                       ->orWhere('country', '');
+                })->orWhere('visitor_events.metadata->visitor_country', 'India');
+            });
+        }
 
         // Filter: What the user is searching for
         if (!empty($searchingFor)) {
@@ -356,7 +370,8 @@ class VisitorDashboardController extends Controller
             'topSearchOrigins',
             'topSearchTargets',
             'recentSearches',
-            'visitors'
+            'visitors',
+            'originScope'
         ));
     }
 

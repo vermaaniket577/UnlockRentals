@@ -37,3 +37,4 @@ __pycache__/
 *.pyc
 /scrapers/*session*.json
 /scrapers/*auth*.json
+/scrapers/*otp*.json
