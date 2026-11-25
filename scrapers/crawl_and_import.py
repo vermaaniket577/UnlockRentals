@@ -9,10 +9,20 @@ import signal
 try:
     from curl_cffi import requests
     HAS_CURL_CFFI = True
+    HAS_REQUESTS = True
 except ImportError:
-    import requests
     HAS_CURL_CFFI = False
-from bs4 import BeautifulSoup
+    try:
+        import requests
+        HAS_REQUESTS = True
+    except ImportError:
+        requests = None
+        HAS_REQUESTS = False
+
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    BeautifulSoup = None
 
 # Global hard timeout for Linux environments to prevent zombie processes
 if hasattr(signal, "alarm"):
@@ -21,6 +31,7 @@ if hasattr(signal, "alarm"):
     except Exception:
         pass
 
+PLAYWRIGHT_IMPORT_ERROR = ""
 try:
     from playwright_scraper import (
         scrape_with_playwright,
@@ -31,8 +42,9 @@ try:
         verify_login_otp,
         logout_scraper
     )
-except Exception:
+except Exception as pw_err:
     PLAYWRIGHT_INSTALLED = False
+    PLAYWRIGHT_IMPORT_ERROR = str(pw_err)
     scrape_with_playwright = None
     check_login_status = None
     get_saved_session_status = None
@@ -581,6 +593,10 @@ def parse_indian_price(price_val) -> float:
     return 0.0
 
 def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
+    if not HAS_REQUESTS or requests is None:
+        sys.stderr.write("HTTP fallback unavailable: neither curl_cffi nor requests is installed.\n")
+        return []
+
     url = config["url"]
     state = config.get("state", "India")
 
@@ -844,7 +860,7 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
             sys.stderr.write(f"JSON parsing error: {e}\n")
 
     # Priority 2: Fallback to HTML card extraction if __initialData__ was absent
-    if not items:
+    if not items and BeautifulSoup is not None:
         soup = BeautifulSoup(response.text, "html.parser")
         cards = soup.find_all("div", class_=re.compile(r"tupleNew__outerTupleWrap|tupleNew__tupleWrap"))
         for idx, card in enumerate(cards):
@@ -1206,7 +1222,7 @@ if __name__ == "__main__":
             for a in args:
                 if a.startswith("--mobile="):
                     mobile = a.split("=", 1)[1]
-        res = send_login_otp(mobile) if send_login_otp else {"success": False, "message": "Playwright not available"}
+        res = send_login_otp(mobile) if send_login_otp else {"success": False, "message": f"Playwright not available ({PLAYWRIGHT_IMPORT_ERROR or 'missing dependency'})"}
         if is_json:
             print("===JSON_START===")
             print(json.dumps(res))
@@ -1225,7 +1241,7 @@ if __name__ == "__main__":
         if not mobile and "--mobile" in args:
             m_idx = args.index("--mobile")
             mobile = args[m_idx + 1] if len(args) > m_idx + 1 else ""
-        res = verify_login_otp(otp, mobile) if verify_login_otp else {"success": False, "message": "Playwright not available"}
+        res = verify_login_otp(otp, mobile) if verify_login_otp else {"success": False, "message": f"Playwright not available ({PLAYWRIGHT_IMPORT_ERROR or 'missing dependency'})"}
         if is_json:
             print("===JSON_START===")
             print(json.dumps(res))

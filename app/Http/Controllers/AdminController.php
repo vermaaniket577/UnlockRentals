@@ -3579,11 +3579,28 @@ class AdminController extends Controller
         }
 
         $scriptPath = base_path('scrapers/crawl_and_import.py');
+        $candidates = array_filter([
+            env('SCRAPER_PYTHON_BIN'),
+            base_path('scrapers/venv/bin/python3'),
+            base_path('scrapers/venv/bin/python'),
+            base_path('venv/bin/python3'),
+            base_path('venv/bin/python'),
+            'python3',
+            '/usr/bin/python3',
+            '/usr/local/bin/python3',
+            'python',
+        ]);
+        foreach (glob('/home/*/virtualenv/*/*/bin/python*') ?: [] as $venvPy) {
+            if (is_executable($venvPy)) {
+                array_unshift($candidates, $venvPy);
+            }
+        }
+
         $pythonBinary = null;
-        foreach (['python3', '/usr/bin/python3', '/usr/local/bin/python3', 'python'] as $candidate) {
+        foreach (array_unique($candidates) as $candidate) {
             $out = [];
             $code = 1;
-            @exec("{$candidate} --version 2>&1", $out, $code);
+            @exec(escapeshellarg($candidate) . " --version 2>&1", $out, $code);
             if ($code === 0) {
                 $pythonBinary = $candidate;
                 break;
@@ -3597,7 +3614,7 @@ class AdminController extends Controller
             ];
         }
 
-        $cmd = "{$pythonBinary} " . escapeshellarg($scriptPath) . " {$arguments} 2>&1";
+        $cmd = escapeshellarg($pythonBinary) . " " . escapeshellarg($scriptPath) . " {$arguments} 2>&1";
         $output = [];
         $returnCode = 1;
         @exec($cmd, $output, $returnCode);
