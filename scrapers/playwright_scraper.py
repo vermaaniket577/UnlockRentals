@@ -18,6 +18,9 @@ try:
     from playwright.sync_api import sync_playwright, Browser, Page
     PLAYWRIGHT_INSTALLED = True
 except ImportError:
+    sync_playwright = None
+    Browser = Any
+    Page = Any
     PLAYWRIGHT_INSTALLED = False
 
 SCRAPER_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -206,7 +209,7 @@ def send_login_otp(mobile_number: str, headless: bool = True) -> Dict[str, Any]:
     fills the Phone Number input, clicks Continue, and waits on the OTP box (#otp1..#otp4).
     """
     if not PLAYWRIGHT_INSTALLED:
-        return {"success": False, "message": "Playwright is not installed."}
+        return {"success": False, "message": f"Playwright is not installed in server Python ({sys.executable}). Run: pip3 install playwright && playwright install chromium"}
 
     clean_digits = re.sub(r"\D", "", str(mobile_number))[-10:]
     if len(clean_digits) != 10:
@@ -286,7 +289,7 @@ def verify_login_otp(otp_code: str, mobile_number: str = "", headless: bool = Tr
     and persist the authenticated storage state into auth_session.json.
     """
     if not PLAYWRIGHT_INSTALLED:
-        return {"success": False, "message": "Playwright is not installed."}
+        return {"success": False, "message": f"Playwright is not installed in server Python ({sys.executable}). Run: pip3 install playwright && playwright install chromium"}
 
     clean_otp = re.sub(r"\D", "", str(otp_code)).strip()
     if len(clean_otp) < 4:

@@ -3597,15 +3597,25 @@ class AdminController extends Controller
         }
 
         $pythonBinary = null;
+        $fallbackPython = null;
         foreach (array_unique($candidates) as $candidate) {
             $out = [];
             $code = 1;
-            @exec(escapeshellarg($candidate) . " --version 2>&1", $out, $code);
+            @exec(escapeshellarg($candidate) . " -c \"import playwright\" 2>&1", $out, $code);
             if ($code === 0) {
                 $pythonBinary = $candidate;
                 break;
             }
+            if ($fallbackPython === null) {
+                $vOut = [];
+                $vCode = 1;
+                @exec(escapeshellarg($candidate) . " --version 2>&1", $vOut, $vCode);
+                if ($vCode === 0) {
+                    $fallbackPython = $candidate;
+                }
+            }
         }
+        $pythonBinary = $pythonBinary ?? $fallbackPython;
 
         if (!$pythonBinary) {
             return [

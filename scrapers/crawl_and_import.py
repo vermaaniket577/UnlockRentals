@@ -1205,6 +1205,8 @@ if __name__ == "__main__":
     if "--check-login" in args:
         if get_saved_session_status:
             status_data = get_saved_session_status()
+            if not PLAYWRIGHT_INSTALLED:
+                status_data["error"] = "Playwright is not installed in server Python."
             if is_json:
                 print("===JSON_START===")
                 print(json.dumps(status_data))
@@ -1212,7 +1214,9 @@ if __name__ == "__main__":
             else:
                 print(json.dumps(status_data, indent=2))
         else:
-            print(json.dumps({"is_logged_in": False, "error": "Playwright not installed"}))
+            print("===JSON_START===")
+            print(json.dumps({"is_logged_in": False, "error": PLAYWRIGHT_IMPORT_ERROR or "Playwright not installed"}))
+            print("===JSON_END===")
         sys.exit(0)
 
     if "--send-otp" in args:
