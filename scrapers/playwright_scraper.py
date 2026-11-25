@@ -53,11 +53,17 @@ def get_proxy_config() -> Optional[Dict[str, str]]:
                             break
             except Exception:
                 pass
-    if not proxy_url:
+    if not proxy_url or "PROXY_HOST" in proxy_url or ":PORT" in proxy_url:
         return None
     from urllib.parse import urlparse
-    parsed = urlparse(proxy_url)
-    cfg = {"server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}" if parsed.port else f"{parsed.scheme}://{parsed.hostname}"}
+    try:
+        parsed = urlparse(proxy_url)
+        port = parsed.port
+    except ValueError:
+        return None
+    if not parsed.scheme or not parsed.hostname:
+        return None
+    cfg = {"server": f"{parsed.scheme}://{parsed.hostname}:{port}" if port else f"{parsed.scheme}://{parsed.hostname}"}
     if parsed.username:
         cfg["username"] = parsed.username
     if parsed.password:

@@ -13,52 +13,14 @@ import time
 from playwright.sync_api import sync_playwright
 
 SCRAPER_DIR = os.path.dirname(os.path.abspath(__file__))
+if SCRAPER_DIR not in sys.path:
+    sys.path.insert(0, SCRAPER_DIR)
+from playwright_scraper import get_proxy_config, find_chrome_executable
+
 AUTH_SESSION_FILE = os.path.join(SCRAPER_DIR, "auth_session.json")
 AUTH_META_FILE = os.path.join(SCRAPER_DIR, "auth_session_meta.json")
 OTP_STATUS_FILE = os.path.join(SCRAPER_DIR, "otp_worker_status.json")
 OTP_SUBMIT_FILE = os.path.join(SCRAPER_DIR, "otp_submit.json")
-
-
-def get_proxy_config():
-    proxy_url = os.environ.get("SCRAPER_PROXY", "").strip()
-    if not proxy_url:
-        env_path = os.path.join(os.path.dirname(SCRAPER_DIR), ".env")
-        if os.path.isfile(env_path):
-            try:
-                with open(env_path, "r", encoding="utf-8", errors="ignore") as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith("SCRAPER_PROXY=") and not line.startswith("#"):
-                            proxy_url = line.split("=", 1)[1].strip().strip('"').strip("'")
-                            break
-            except Exception:
-                pass
-    if not proxy_url:
-        return None
-    from urllib.parse import urlparse
-    parsed = urlparse(proxy_url)
-    cfg = {"server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}" if parsed.port else f"{parsed.scheme}://{parsed.hostname}"}
-    if parsed.username:
-        cfg["username"] = parsed.username
-    if parsed.password:
-        cfg["password"] = parsed.password
-    return cfg
-
-
-def find_chrome_executable():
-    candidates = [
-        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-        os.path.expanduser(r"~\AppData\Local\Google\Chrome\Application\chrome.exe"),
-        "/usr/bin/google-chrome",
-        "/usr/bin/google-chrome-stable",
-        "/usr/bin/chromium-browser",
-        "/usr/bin/chromium",
-    ]
-    for p in candidates:
-        if os.path.isfile(p):
-            return p
-    return None
 
 
 def write_status(data: dict):
