@@ -102,7 +102,7 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
             page = context.new_page()
             page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
-            page.goto("https://www.99acres.com", timeout=30000, wait_until="domcontentloaded")
+            page.goto("https://www.99acres.com", timeout=30000, wait_until="load")
             time.sleep(2)
 
             page_title = ""
@@ -137,12 +137,26 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
                 except Exception:
                     continue
 
-            # 2. Wait for visible Phone Number input
-            phone_selector = 'input.commonInput__pl80:visible, input[placeholder*="Phone" i]:visible, input[placeholder*="mobile" i]:visible, input[type="tel"]:visible'
+            # 2. Wait for visible Phone Number input (exact 99acres Login / Register modal DOM)
+            phone_selector = (
+                'input[inpvariant="mobNum"]:visible, '
+                'input[for="phnNumber"]:visible, '
+                'input[title="Phone Number"]:visible, '
+                'input.commonInput__pl80:visible, '
+                'input[data-attr="inputText"]:visible, '
+                'input[placeholder*="Phone" i]:visible, '
+                'input[placeholder*="mobile" i]:visible, '
+                'input[type="tel"]:visible'
+            )
             try:
-                page.wait_for_selector(phone_selector, timeout=7000)
+                page.wait_for_selector(phone_selector, timeout=4000)
             except Exception:
-                pass
+                # Retry click after React hydration
+                try:
+                    page.locator('[data-label="LR.INITIATE"]').evaluate_all("els => els.forEach(el => el.click())")
+                    page.wait_for_selector(phone_selector, timeout=5000)
+                except Exception:
+                    pass
 
             phone_input = page.locator(phone_selector).first
             if phone_input.count() == 0:
@@ -159,14 +173,28 @@ def run_worker(mobile: str, timeout_seconds: int = 180):
                 })
                 return
 
+            try:
+                page.locator('[data-attr="inputWrapper"]:visible').first.click(timeout=2000)
+            except Exception:
+                pass
             phone_input.click()
+            phone_input.fill("")
             phone_input.press_sequentially(clean_mobile, delay=35)
             time.sleep(0.8)
 
-            # 3. Click Continue button
-            cont_btn = page.locator('button:has-text("Continue"):visible').first
-            if cont_btn.count() == 0 or cont_btn.is_disabled():
-                write_status({"status": "error", "success": False, "message": "Continue button is disabled or not found."})
+            # 3. Click Continue button ([data-label="CONTINUE"] / .phoneLogin__submitBtn)
+            cont_selector = '[data-label="CONTINUE"] button:visible, [data-label="CONTINUE"]:visible, .phoneLogin__submitBtn button:visible, .phoneLogin__submitBtn:visible, button:has-text("Continue"):visible'
+            cont_btn = page.locator(cont_selector).first
+            if cont_btn.count() == 0:
+                write_status({"status": "error", "success": False, "message": "Continue button is not found."})
+                return
+            is_disabled = False
+            try:
+                is_disabled = cont_btn.evaluate("el => el.disabled === true || el.getAttribute('aria-disabled') === 'true'")
+            except Exception:
+                pass
+            if is_disabled:
+                write_status({"status": "error", "success": False, "message": "Continue button is disabled."})
                 return
 
             cont_btn.click()
