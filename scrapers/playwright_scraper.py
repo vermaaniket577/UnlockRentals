@@ -42,6 +42,14 @@ FALLBACK_IMAGES = [
 def get_proxy_config() -> Optional[Dict[str, str]]:
     proxy_url = os.environ.get("SCRAPER_PROXY", "").strip()
     if not proxy_url:
+        proxy_json = os.path.join(SCRAPER_DIR, "proxy_settings.json")
+        if os.path.isfile(proxy_json):
+            try:
+                with open(proxy_json, "r", encoding="utf-8") as pf:
+                    proxy_url = str(json.load(pf).get("proxy_url", "")).strip()
+            except Exception:
+                pass
+    if not proxy_url:
         env_path = os.path.join(os.path.dirname(SCRAPER_DIR), ".env")
         if os.path.isfile(env_path):
             try:

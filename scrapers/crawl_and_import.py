@@ -609,6 +609,20 @@ def load_saved_cookies_dict() -> dict:
     return cookies_dict
 
 
+def load_saved_requests_proxies():
+    proxy_json = os.path.join(os.path.dirname(os.path.abspath(__file__)), "proxy_settings.json")
+    proxy_url = os.environ.get("SCRAPER_PROXY", "").strip()
+    if not proxy_url and os.path.isfile(proxy_json):
+        try:
+            with open(proxy_json, "r", encoding="utf-8") as pf:
+                proxy_url = str(json.load(pf).get("proxy_url", "")).strip()
+        except Exception:
+            pass
+    if not proxy_url or "PROXY_HOST" in proxy_url or ":PORT" in proxy_url:
+        return None
+    return {"http": proxy_url, "https": proxy_url}
+
+
 def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
     if not HAS_REQUESTS or requests is None:
         sys.stderr.write("HTTP fallback unavailable: neither curl_cffi nor requests is installed.\n")
@@ -617,12 +631,13 @@ def crawl_items_from_city(city_name: str, config: dict, max_items: int = 10):
     url = config["url"]
     state = config.get("state", "India")
     saved_cookies = load_saved_cookies_dict()
+    saved_proxies = load_saved_requests_proxies()
 
     try:
         if HAS_CURL_CFFI:
-            response = requests.get(url, headers=HEADERS, cookies=saved_cookies or None, impersonate="chrome120", timeout=25)
+            response = requests.get(url, headers=HEADERS, cookies=saved_cookies or None, proxies=saved_proxies, impersonate="chrome120", timeout=25)
         else:
-            response = requests.get(url, headers=HEADERS, cookies=saved_cookies or None, timeout=25)
+            response = requests.get(url, headers=HEADERS, cookies=saved_cookies or None, proxies=saved_proxies, timeout=25)
     except Exception as e:
         sys.stderr.write(f"Fetch error: {e}\n")
         return []

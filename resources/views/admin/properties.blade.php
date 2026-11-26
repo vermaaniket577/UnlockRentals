@@ -619,9 +619,9 @@
                             </summary>
                             <div class="px-3 pb-3 pt-1 space-y-2 border-t border-slate-100">
                                 <p class="text-[11px] text-slate-500">
-                                    Log in on <strong>99acres.com</strong> in Chrome, copy your <code class="px-1 bg-slate-100 rounded">Cookie:</code> header (or Cookie-Editor JSON / <code class="px-1 bg-slate-100 rounded">auth_session.json</code>), and paste below:
+                                    Log in on <strong>99acres.com</strong> in Chrome, copy your <code class="px-1 bg-slate-100 rounded">Cookie:</code> header, DevTools <strong>Application &rarr; Cookies</strong> rows, Cookie-Editor JSON, or <code class="px-1 bg-slate-100 rounded">auth_session.json</code>:
                                 </p>
-                                <textarea id="portal_session_cookies_input" rows="3" placeholder="Paste Cookie string (e.g. AUTH_TOKEN=...; profileId=...) or JSON cookies..." class="w-full px-2.5 py-2 text-[11px] font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white"></textarea>
+                                <textarea id="portal_session_cookies_input" rows="3" placeholder="Paste Cookie header, DevTools Application Cookies rows, Cookie-Editor JSON, or auth_session.json..." class="w-full px-2.5 py-2 text-[11px] font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white"></textarea>
                                 <div class="flex items-center justify-between gap-2">
                                     <span id="portal_import_msg" class="text-[11px] text-slate-500"></span>
                                     <button type="button" id="portal_import_session_btn" onclick="importScraperPortalSession()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer">
@@ -631,6 +631,25 @@
                             </div>
                         </details>
                     </div>
+
+                    {{-- Residential Proxy Setting (for hosted server IPs blocked by Akamai) --}}
+                    <details class="mt-2.5 bg-white/80 rounded-xl border border-slate-200">
+                        <summary class="px-3 py-2 text-[11px] font-bold text-slate-700 cursor-pointer flex items-center justify-between select-none">
+                            <span class="flex items-center gap-1.5"><i class="ph-bold ph-globe-hemisphere-east text-indigo-600"></i> Residential Proxy Settings (Optional)</span>
+                            <span class="text-[10px] font-semibold text-slate-400">http://user:pass@ip:port</span>
+                        </summary>
+                        <div class="px-3 pb-3 pt-1 space-y-2 border-t border-slate-100">
+                            <p class="text-[11px] text-slate-500">
+                                Route server Playwright &amp; OTP requests through an Indian residential proxy to prevent Akamai <em>Access Denied</em> on cloud IPs (leave blank &amp; save to clear):
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="portal_scraper_proxy_input" placeholder="http://username:password@proxy-ip:8080" class="flex-1 min-w-0 px-2.5 py-1.5 text-[11px] font-mono border border-slate-300 rounded-lg outline-none focus:border-indigo-600 bg-white">
+                                <button type="button" id="portal_save_proxy_btn" onclick="saveScraperProxySetting()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors shrink-0 cursor-pointer">
+                                    Save Proxy
+                                </button>
+                            </div>
+                        </div>
+                    </details>
                 </div>
 
                 {{-- Scraper Engine Selector (Playwright vs High-Speed) --}}
@@ -1753,6 +1772,38 @@ async function importScraperPortalSession() {
     } finally {
         btn.disabled = false;
         btn.textContent = 'Save Session & Cookies';
+    }
+}
+
+async function saveScraperProxySetting() {
+    const input = document.getElementById('portal_scraper_proxy_input');
+    const btn = document.getElementById('portal_save_proxy_btn');
+    const proxyUrl = (input?.value || '').trim();
+
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+    }
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+        const res = await fetch('{{ route('admin.properties.scraper-proxy') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ proxy_url: proxyUrl })
+        });
+        const data = await res.json();
+        showAdminToast(data.message || (data.success ? 'Proxy saved.' : 'Failed to save proxy.'), data.success ? 'success' : 'error');
+    } catch (err) {
+        showAdminToast('Error saving proxy: ' + err.message, 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Save Proxy';
+        }
     }
 }
 

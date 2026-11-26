@@ -3540,6 +3540,31 @@ class AdminController extends Controller
                     'sameSite' => $sameSite,
                 ];
             }
+        } elseif (str_contains($raw, "\t")) {
+            // Parse Chrome DevTools Application -> Cookies table copy-paste (TSV rows)
+            foreach (preg_split('/\r?\n/', $raw) as $line) {
+                $cols = explode("\t", $line);
+                if (count($cols) < 2) {
+                    continue;
+                }
+                $name = trim($cols[0]);
+                $val = trim($cols[1]);
+                if ($name === '' || (strtolower($name) === 'name' && strtolower($val) === 'value')) {
+                    continue;
+                }
+                $domain = isset($cols[2]) && trim($cols[2]) !== '' ? trim($cols[2]) : '.99acres.com';
+                $path = isset($cols[3]) && trim($cols[3]) !== '' ? trim($cols[3]) : '/';
+                $cookies[] = [
+                    'name'     => $name,
+                    'value'    => $val,
+                    'domain'   => $domain,
+                    'path'     => $path,
+                    'expires'  => -1,
+                    'httpOnly' => false,
+                    'secure'   => true,
+                    'sameSite' => 'Lax',
+                ];
+            }
         } else {
             // Parse raw "Cookie: key=val; key2=val2" header string
             $cookieLine = preg_replace('/^cookie\s*:\s*/i', '', $raw);
@@ -3599,6 +3624,46 @@ class AdminController extends Controller
             'cookie_count' => count($cookies),
             'mobile'       => $mobile,
             'message'      => 'Saved ' . count($cookies) . ' session cookies to scraper! Target portal session is now active.',
+        ]);
+    }
+
+    /**
+     * Save or clear an optional residential proxy URL for scraper requests.
+     */
+    public function scraperSaveProxy(Request $request)
+    {
+        $proxyUrl = trim((string) $request->input('proxy_url', ''));
+        $proxyFile = base_path('scrapers/proxy_settings.json');
+
+        if ($proxyUrl === '') {
+            if (file_exists($proxyFile)) {
+                @unlink($proxyFile);
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Residential proxy cleared.',
+            ]);
+        }
+
+        $parsed = @parse_url($proxyUrl);
+        if (
+            !is_array($parsed)
+            || empty($parsed['scheme'])
+            || empty($parsed['host'])
+            || str_contains($proxyUrl, 'PROXY_HOST')
+            || str_contains($proxyUrl, ':PORT')
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid proxy URL. Format: http://username:password@host:port (numeric port).',
+            ], 422);
+        }
+
+        file_put_contents($proxyFile, json_encode(['proxy_url' => $proxyUrl, 'updated_at' => now()->toIso8601String()], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        return response()->json([
+            'success' => true,
+            'message' => "Saved residential proxy ({$parsed['scheme']}://{$parsed['host']}" . (!empty($parsed['port']) ? ":{$parsed['port']}" : '') . ") for scraper & OTP worker.",
         ]);
     }
 
